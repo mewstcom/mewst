@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   match "/accounts",         via: :post, as: :accounts,         to: "accounts/create#call"
   match "/accounts/new",     via: :get,  as: :new_account,      to: "accounts/new#call"
   match "/home",             via: :get,  as: :home,             to: "home/show#call"
+  match "/sign_out",         via: :get,  as: :sign_out,         to: "sign_out/show#call"
   match "/sign_up",          via: :get,  as: :sign_up,          to: "sign_up/new#call"
   match "/sign_up",          via: :post,                        to: "sign_up/create#call"
   match "/sign_in/callback", via: :get,  as: :sign_in_callback, to: "sign_in_callbacks/show#call"

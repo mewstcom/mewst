@@ -15,6 +15,11 @@ module Authenticatable
     session[:user_id] = user.id
   end
 
+  sig { returns(T.untyped) }
+  def sign_out
+    reset_session
+  end
+
   sig { returns(T.nilable(User)) }
   def current_user
     return unless session[:user_id]
