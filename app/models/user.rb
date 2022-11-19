@@ -5,4 +5,6 @@ class User < ApplicationRecord
   include Profilable
 
   belongs_to :account
+
+  delegate :idname, to: :profile
 end
