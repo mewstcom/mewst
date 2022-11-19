@@ -4,19 +4,29 @@
 class Accounts::CreateController < ApplicationController
   include Authenticatable
 
-  before_action :require_confirmed_email
   before_action :require_no_authentication
 
   sig { returns(T.untyped) }
   def call
-    @sign_up = SignUp.new(email: session[:sign_up_email])
+    @sign_up = SignUp.new(sign_up_params)
+
+    result = ActiveRecord::Base.transaction do
+      @sign_up.create
+    end
+
+    if result.errors.any?
+      return render "accounts/new/call"
+    end
+
+    reset_session
+    sign_in(result.user)
+
+    redirect_to home_path
   end
 
   private
 
-  def require_confirmed_email
-    unless session[:sign_up_email]
-      redirect_to root_path
-    end
+  def sign_up_params
+    params.require(:sign_up).permit(:email, :idname)
   end
 end

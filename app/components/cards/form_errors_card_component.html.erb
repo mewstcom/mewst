@@ -1,0 +1,13 @@
+<div class="alert alert-danger rounded-3">
+  <div class="alert-heading h4">
+    <%= t "nouns.error" %>
+  </div>
+
+  <ul>
+    <% @errors.full_messages.each do |message| %>
+      <li>
+        <%= message %>
+      </li>
+    <% end %>
+  </ul>
+</div>

@@ -3,4 +3,6 @@
 
 class User < ApplicationRecord
   include Profilable
+
+  belongs_to :account
 end

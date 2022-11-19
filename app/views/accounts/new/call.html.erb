@@ -1,7 +1,10 @@
 <%= form_with model: @sign_up, url: accounts_path do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
   <div>
     <%= f.label :email %>
-    <%= @account.email %>
+    <%= f.hidden_field :email %>
+    <%= @sign_up.email %>
   </div>
 
   <div>
