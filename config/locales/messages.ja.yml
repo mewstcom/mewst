@@ -1,0 +1,6 @@
+ja:
+  messages:
+    authentication:
+      already_signed_in: すでにログインしています
+      confirmation_email_sent: メールアドレス確認用のメールを送信しました
+      sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください

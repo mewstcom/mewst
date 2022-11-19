@@ -81,6 +81,7 @@ GEM
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     concurrent-ruby (1.1.10)
+    connection_pool (2.3.0)
     crass (1.0.6)
     cssbundling-rails (1.1.1)
       railties (>= 6.0.0)
@@ -92,6 +93,8 @@ GEM
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
       railties (>= 3.2)
+    email_validator (2.2.3)
+      activemodel
     erubi (1.11.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
@@ -179,6 +182,8 @@ GEM
       parser (>= 2.6.4.0)
       sorbet-runtime (>= 0.5.9204)
       unparser
+    redis-client (0.11.2)
+      connection_pool
     regexp_parser (2.6.1)
     reline (0.3.1)
       io-console (~> 0.5)
@@ -224,6 +229,11 @@ GEM
     rubocop-sorbet (0.6.11)
       rubocop (>= 0.90.0)
     ruby-progressbar (1.11.0)
+    sidekiq (7.0.1)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.9.0)
     sorbet (0.5.10560)
       sorbet-static (= 0.5.10560)
     sorbet-runtime (0.5.10560)
@@ -286,6 +296,7 @@ DEPENDENCIES
   cssbundling-rails
   debug
   dotenv-rails
+  email_validator
   factory_bot_rails
   jsbundling-rails
   mysql2
@@ -296,6 +307,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   rubocop-sorbet
+  sidekiq
   sorbet
   sorbet-runtime
   standard

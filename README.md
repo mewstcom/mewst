@@ -1,24 +1,21 @@
-# README
+# Mewst
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Running the app
 
-Things you may want to cover:
+```
+$ git clone git@github.com:kiraka/mewst.git
+$ cd mewst
+$ touch .env.development.local
+$ docker compose up
+$ yarn
 
-* Ruby version
+// Tab 1
+$ bin/dev
 
-* System dependencies
+// Tab 2
+$ bin/sidekiq
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+// Tab 3
+$ bin/setup
+$ bin/rails s
+```

@@ -1,0 +1,13 @@
+<%= form_with model: @sign_up, url: accounts_path do |f| %>
+  <div>
+    <%= f.label :email %>
+    <%= @account.email %>
+  </div>
+
+  <div>
+    <%= f.label :idname %>
+    <%= f.text_field :idname %>
+  </div>
+
+  <%= f.submit %>
+<% end %>

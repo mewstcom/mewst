@@ -10,10 +10,12 @@ gem "rails", "~> 7.0.0"
 gem "activerecord-session_store"
 gem "bootsnap", require: false
 gem "cssbundling-rails"
+gem "email_validator"
 gem "jsbundling-rails"
 gem "mysql2"
 gem "propshaft"
 gem "puma"
+gem "sidekiq"
 gem "sorbet-runtime"
 gem "view_component"
 
