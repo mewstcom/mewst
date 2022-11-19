@@ -10,7 +10,7 @@ class SignOut::ShowController < ApplicationController
   def call
     sign_out
 
-    flash[:notice] = t("messages.authentication.signed_out_successfully")
+    flash[:success] = t("messages.authentication.signed_out_successfully")
     redirect_to root_path
   end
 end

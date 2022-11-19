@@ -11,7 +11,7 @@ class SignUpCallbacks::ShowController < ApplicationController
     email_confirmation = EmailConfirmation.find_by(event: :sign_up, token: params[:token])
 
     if !email_confirmation || email_confirmation.expired?
-      flash[:alert] = t("messages.authentication.sign_up_link_expired")
+      flash[:warning] = t("messages.authentication.sign_up_link_expired")
       return redirect_to(sign_up_path)
     end
 

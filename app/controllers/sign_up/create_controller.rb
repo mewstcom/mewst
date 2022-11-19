@@ -18,7 +18,7 @@ class SignUp::CreateController < ApplicationController
       @authentication.confirm_email_to_sign_up
     end
 
-    flash[:notice] = t("messages.authentication.confirmation_email_sent")
+    flash[:success] = t("messages.authentication.confirmation_email_sent")
     redirect_to sign_up_path
   end
 
