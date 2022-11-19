@@ -11,12 +11,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
 SET @@SESSION.SQL_LOG_BIN= 0;
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'f88461e0-6791-11ed-9576-5abec353b268:1-397';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'f88461e0-6791-11ed-9576-5abec353b268:1-427';
 DROP TABLE IF EXISTS `accounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `accounts` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `sign_in_count` int NOT NULL DEFAULT '0',
   `current_signed_in_at` timestamp NULL DEFAULT NULL,
@@ -42,8 +42,8 @@ DROP TABLE IF EXISTS `email_confirmations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `email_confirmations` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `account_id` bigint DEFAULT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `account_id` bigint unsigned DEFAULT NULL,
   `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `event` int NOT NULL,
   `token` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
@@ -60,9 +60,9 @@ DROP TABLE IF EXISTS `follows`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `follows` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `profile_id` bigint NOT NULL,
-  `target_profile_id` bigint NOT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `profile_id` bigint unsigned NOT NULL,
+  `target_profile_id` bigint unsigned NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
@@ -75,8 +75,8 @@ DROP TABLE IF EXISTS `organization_members`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `organization_members` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `organization_id` bigint NOT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `organization_id` bigint unsigned NOT NULL,
   `user_id` bigint NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS `organizations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `organizations` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
@@ -100,8 +100,8 @@ DROP TABLE IF EXISTS `posts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `posts` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `profile_id` bigint NOT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `profile_id` bigint unsigned NOT NULL,
   `body` text COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
@@ -113,9 +113,9 @@ DROP TABLE IF EXISTS `profiles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `profiles` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `profilable_type` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `profilable_id` bigint NOT NULL,
+  `profilable_id` bigint unsigned NOT NULL,
   `idname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `description` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
@@ -140,8 +140,8 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `account_id` bigint NOT NULL,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `account_id` bigint unsigned NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
