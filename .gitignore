@@ -1,5 +1,6 @@
 /.bundle
 /.env.*.local
+/.env.local
 /config/master.key
 /log/*
 /node_modules
