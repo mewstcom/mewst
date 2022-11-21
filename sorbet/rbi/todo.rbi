@@ -4,11 +4,9 @@
 
 # typed: false
 
-module ::Loofah::Scrubber; end
-module ::Minitest::Assertion; end
-module ::Minitest::Assertions; end
-module ::Minitest::Test; end
 module ActionMailer::Base::Mail::Message; end
+module Minitest::Assertion; end
+module Minitest::Assertions; end
 module Module::Concerning; end
 module Sidekiq::Process; end
 module Sidekiq::SortedEntry; end
