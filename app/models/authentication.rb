@@ -19,6 +19,14 @@ class Authentication
     EmailConfirmationMailer.sign_up_confirmation(email_confirmation.id, I18n.locale.to_s).deliver_later
   end
 
+  def confirm_email_to_sign_in
+    account = Account.find_by(email:)
+    return unless account
+
+    email_confirmation = EmailConfirmation.create!(email_confirmation_attributes(event: :sign_in))
+    EmailConfirmationMailer.sign_in_confirmation(email_confirmation.id, I18n.locale.to_s).deliver_later
+  end
+
   private
 
   def email_confirmation_attributes(event:, account: nil, back: nil)

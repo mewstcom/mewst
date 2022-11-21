@@ -4,4 +4,5 @@ ja:
       already_signed_in: すでにログインしています
       confirmation_email_sent: メールアドレス確認用のメールを送信しました
       signed_out_successfully: ログアウトしました
+      sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください

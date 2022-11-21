@@ -19,7 +19,8 @@ class EmailConfirmationMailer < ApplicationMailer
     email_confirmation = EmailConfirmation.find(email_confirmation_id)
 
     @email = email_confirmation.email
-    @url = sign_in_callback_url(token: email_confirmation.token, host: local_url(locale: locale))
+    @url = sign_in_callback_url(token: email_confirmation.token)
+    @expires_hours = EmailConfirmation::EXPIRES_IN.in_hours.to_i
 
     I18n.with_locale(locale) do
       subject = default_i18n_subject

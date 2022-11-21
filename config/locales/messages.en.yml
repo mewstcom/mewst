@@ -4,4 +4,5 @@ en:
       already_signed_in: Already signed in.
       confirmation_email_sent: Confirmation email sent.
       signed_out_successfully: Signed out successfully.
+      sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
