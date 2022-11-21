@@ -1,4 +1,4 @@
-# typed: strict
+# typed: true
 # frozen_string_literal: true
 
 class Accounts::CreateController < ApplicationController
@@ -26,7 +26,8 @@ class Accounts::CreateController < ApplicationController
 
   private
 
+  sig { returns(ActionController::Parameters) }
   def sign_up_params
-    params.require(:sign_up).permit(:email, :idname)
+    T.cast(params.require(:sign_up), ActionController::Parameters).permit(:email, :idname)
   end
 end

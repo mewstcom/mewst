@@ -24,6 +24,7 @@ class SignUp
   validate :email_uniqueness
   validate :idname_uniqueness
 
+  sig { returns(Result) }
   def create
     if invalid?
       return Result.new(account: nil, errors: errors.map {|error| Error.new(message: error.full_message)})
@@ -38,12 +39,14 @@ class SignUp
 
   private
 
+  sig { returns(T.untyped) }
   def email_uniqueness
     if Account.find_by(email:)
       errors.add(:email, :email_uniqueness)
     end
   end
 
+  sig { returns(T.untyped) }
   def idname_uniqueness
     if Profile.find_by(idname:)
       errors.add(:idname, :idname_uniqueness)

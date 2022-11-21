@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class EmailConfirmation < ApplicationRecord
-  EXPIRES_IN = 2.hours
+  EXPIRES_IN = T.let(2.hours, ActiveSupport::Duration)
 
   belongs_to :account, optional: true
 
@@ -14,6 +14,7 @@ class EmailConfirmation < ApplicationRecord
   validates :expires_at, presence: true
   validates :token, presence: true
 
+  sig { returns(T::Boolean) }
   def expired?
     expires_at.past?
   end
