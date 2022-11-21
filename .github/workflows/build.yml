@@ -1,0 +1,59 @@
+name: Build
+
+on: [push]
+
+jobs:
+  sorbet:
+    name: Sorbet
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - run: bin/srb tc
+
+
+  rubocop:
+    name: RuboCop
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - run: bin/rubocop
+
+  rspec:
+    name: RSpec
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      MEWST_DATABASE_HOST: ${{ secrets.MEWST_DATABASE_HOST }}
+      MEWST_DATABASE_PASSWORD: ${{ secrets.MEWST_DATABASE_PASSWORD }}
+      MEWST_DATABASE_SSLCA: ${{ secrets.MEWST_DATABASE_SSLCA }}
+      MEWST_DATABASE_USERNAME: ${{ secrets.MEWST_DATABASE_USERNAME }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - name: Setup Database
+        run: |
+          bin/rails db:prepare
+      - run: bin/rspec
