@@ -12,7 +12,7 @@ class SignUp
   end
 
   class Result < T::Struct
-    const :user, T.nilable(User)
+    const :account, T.nilable(Account)
     const :errors, T::Array[Error]
   end
 
@@ -26,14 +26,14 @@ class SignUp
 
   def create
     if invalid?
-      return Result.new(user: nil, errors: errors.map {|error| Error.new(message: error.full_message)})
+      return Result.new(account: nil, errors: errors.map {|error| Error.new(message: error.full_message)})
     end
 
     account = Account.create!(email:)
     user = account.users.create!
     user.create_profile!(idname:)
 
-    Result.new(user:, errors: [])
+    Result.new(account:, errors: [])
   end
 
   private

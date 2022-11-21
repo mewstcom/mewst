@@ -19,7 +19,7 @@ class Accounts::CreateController < ApplicationController
     end
 
     reset_session
-    sign_in(result.user)
+    sign_in(result.account)
 
     redirect_to home_path
   end

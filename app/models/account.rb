@@ -7,6 +7,10 @@ class Account < ApplicationRecord
 
   validates :email, email: true, presence: true, uniqueness: true
 
+  def default_user
+    users.order(:id).first
+  end
+
   def track_sign_in
     old_current, new_current = current_signed_in_at, Time.now.utc
 

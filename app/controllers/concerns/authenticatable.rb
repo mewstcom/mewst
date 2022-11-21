@@ -9,10 +9,10 @@ module Authenticatable
     helper_method :current_user, :signed_in?
   end
 
-  sig { params(user: User).returns(Integer) }
-  def sign_in(user)
-    user.account.track_sign_in
-    session[:user_id] = user.id
+  sig { params(account: Account).returns(Integer) }
+  def sign_in(account)
+    account.track_sign_in
+    session[:user_id] = account.default_user.id
   end
 
   sig { returns(T.untyped) }
