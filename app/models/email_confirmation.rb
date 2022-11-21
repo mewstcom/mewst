@@ -6,7 +6,7 @@ class EmailConfirmation < ApplicationRecord
 
   belongs_to :account, optional: true
 
-  enum :event, { sign_up: 0, sign_in: 1, update_email: 2 }
+  enum :event, {sign_up: 0, sign_in: 1, update_email: 2}
 
   validates :back, format: {with: %r{\A/}, allow_blank: true}
   validates :email, email: true, presence: true

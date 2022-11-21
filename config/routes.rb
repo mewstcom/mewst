@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => "/sidekiq"
   end
 
+  # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/accounts",         via: :post, as: :accounts,         to: "accounts/create#call"
   match "/accounts/new",     via: :get,  as: :new_account,      to: "accounts/new#call"
   match "/home",             via: :get,  as: :home,             to: "home/show#call"
@@ -18,6 +19,7 @@ Rails.application.routes.draw do
   match "/sign_up",          via: :get,  as: :sign_up,          to: "sign_up/new#call"
   match "/sign_up",          via: :post,                        to: "sign_up/create#call"
   match "/sign_up/callback", via: :get,  as: :sign_up_callback, to: "sign_up_callbacks/show#call"
+  # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"
 end

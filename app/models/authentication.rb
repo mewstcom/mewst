@@ -41,7 +41,7 @@ class Authentication
       event:,
       token: SecureRandom.uuid,
       back:,
-      expires_at: Time.current + EmailConfirmation::EXPIRES_IN,
+      expires_at: Time.current + EmailConfirmation::EXPIRES_IN
     }
   end
 end

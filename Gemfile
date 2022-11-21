@@ -36,4 +36,3 @@ group :development do
   gem "tapioca", require: false
   gem "web-console"
 end
-

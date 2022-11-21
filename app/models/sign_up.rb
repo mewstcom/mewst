@@ -27,7 +27,7 @@ class SignUp
   sig { returns(Result) }
   def create
     if invalid?
-      return Result.new(account: nil, errors: errors.map {|error| Error.new(message: error.full_message)})
+      return Result.new(account: nil, errors: errors.map { |error| Error.new(message: error.full_message) })
     end
 
     account = Account.create!(email:)

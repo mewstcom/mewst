@@ -5,6 +5,6 @@ module Profilable
   extend ActiveSupport::Concern
 
   included do
-    has_one :profile, as: :profilable
+    has_one :profile, as: :profilable, dependent: :restrict_with_exception
   end
 end

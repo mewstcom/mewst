@@ -40,13 +40,12 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :profiles, options: "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", unsigned: true do |t|
       t.references :profilable, polymorphic: true, null: false, type: :unsigned_bigint
-      t.string :idname, null: false
+      t.string :idname, null: false, index: {unique: true}
       t.string :name, null: false, default: ""
       t.string :description, null: false, default: ""
       t.timestamp :deleted_at
       t.timestamps
     end
-    add_index :profiles, :idname, unique: true
     add_index :profiles, %i[profilable_type profilable_id], unique: true
 
     create_table :follows, options: "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", unsigned: true do |t|
