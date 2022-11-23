@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  mysql:
+    build: ./docker/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   redis:
     image: redis:7.0
     ports:
@@ -9,4 +18,5 @@ services:
       - redis_data:/data
 
 volumes:
+  mysql_data:
   redis_data:
