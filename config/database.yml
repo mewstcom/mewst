@@ -3,17 +3,15 @@ default: &default
   ssl_mode: :verify_identity
   sslca: <%= ENV.fetch("MEWST_DATABASE_SSLCA") %>
   host: <%= ENV.fetch("MEWST_DATABASE_HOST") %>
+  database: <%= ENV.fetch("MEWST_DATABASE_NAME") %>
   username: <%= ENV.fetch("MEWST_DATABASE_USERNAME") %>
   password: <%= ENV.fetch("MEWST_DATABASE_PASSWORD") %>
 
 development:
   <<: *default
-  database: mewst_development
 
 test:
   <<: *default
-  database: mewst_test
 
 production:
   <<: *default
-  database: mewst_production

@@ -7,7 +7,6 @@
 
 . authenticate-ps.sh
 
-BRANCH_NAME="$1"
-
 . ps-create-helper-functions.sh
+
 create-db-branch "$MEWST_DATABASE_NAME" "$MEWST_BRANCH_NAME" "$MEWST_PLANETSCALE_ORG_NAME"
