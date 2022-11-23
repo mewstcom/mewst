@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe SignUp, type: :model do
+RSpec.describe SignUp do
   describe "#create" do
     let!(:email) { "hello@example.com" }
     let!(:idname) { "hello" }
@@ -23,11 +23,11 @@ RSpec.describe SignUp, type: :model do
         email:,
         sign_in_count: 0,
         current_signed_in_at: nil,
-        last_signed_in_at: nil,
+        last_signed_in_at: nil
       )
 
       expect(user).to have_attributes(
-        account_id: account.id,
+        account_id: account.id
       )
 
       expect(Profile.first).to have_attributes(
@@ -36,7 +36,7 @@ RSpec.describe SignUp, type: :model do
         idname:,
         name: "",
         description: "",
-        deleted_at: nil,
+        deleted_at: nil
       )
     end
   end
