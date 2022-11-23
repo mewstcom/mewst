@@ -6,41 +6,32 @@ jobs:
   sorbet:
     name: Sorbet
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.2
           bundler-cache: true
-
       - run: bin/srb tc
-
 
   rubocop:
     name: RuboCop
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.2
           bundler-cache: true
-
       - run: bin/rubocop
 
   rspec:
     name: RSpec
     runs-on: ubuntu-latest
-
     env:
       RAILS_ENV: test
-
     services:
       mysql:
         image: mysql:8.0
@@ -53,18 +44,14 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.2
           bundler-cache: true
-
       - name: Setup Database
         run: |
           bin/rails db:prepare
-
       - run: bin/rspec
