@@ -45,7 +45,55 @@ jobs:
       MEWST_DATABASE_USERNAME: ${{ secrets.MEWST_DATABASE_USERNAME }}
 
     steps:
+      # https://planetscale.com/blog/using-the-planetscale-cli-with-github-actions-workflows
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+        id: extract_branch
+
+      # https://planetscale.com/blog/using-the-planetscale-cli-with-github-actions-workflows
+      - name: Validate parameters
+        id: validate_params
+        uses: actions/github-script@v3
+        env:
+          MEWST_BRANCH_NAME: ${{ github.event.inputs.branch }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branch_name = process.env.MEWST_BRANCH_NAME || "${{steps.extract_branch.outputs.branch}}";
+            
+            const regex = /[^\/]+$/;
+            let clean_branch_name;
+            
+            if (branch_name.match(regex)) {
+              clean_branch_name = branch_name.match(regex)[0];
+            } else {
+              clean_branch_name = branch_name;
+            }
+            
+            if (! /^[a-zA-Z0-9_-]+$/.test(clean_branch_name)) {
+              const error = `The branch name contains illegal characters: ${clean_branch_name}`;
+              core.error(error);
+              core.setFailed(error);
+            }
+            core.setOutput('branch_name', clean_branch_name);
+
       - uses: actions/checkout@v2
+
+      # https://planetscale.com/blog/using-the-planetscale-cli-with-github-actions-workflows
+      - name: Create database branch - if asked, please click on displayed link to authenticate
+        id: create-db-branch
+        timeout-minutes: 3
+        env:
+          MEWST_PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.MEWST_PLANETSCALE_SERVICE_TOKEN_ID}}
+          MEWST_PLANETSCALE_SERVICE_TOKEN: ${{secrets.MEWST_PLANETSCALE_SERVICE_TOKEN}}
+          MEWST_PLANETSCALE_ORG_NAME: ${{secrets.MEWST_PLANETSCALE_ORG_NAME}}
+          MEWST_DATABASE_NAME: mewst_test
+          MEWST_GITHUB_USER: ${{github.actor}}
+          MEWST_BRANCH_NAME: ${{ steps.validate_params.outputs.branch_name }}
+        working-directory: .pscale/cli-helper-scripts/
+        run: |
+          ./create-branch.sh "$BRANCH_NAME"
 
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
@@ -56,4 +104,5 @@ jobs:
       - name: Setup Database
         run: |
           bin/rails db:prepare
+
       - run: bin/rspec
