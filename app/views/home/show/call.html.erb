@@ -1,4 +1,4 @@
-Hi, <%= current_user.idname %>!
+Hi, <%= link_to current_user.idname, profile_path(current_user.idname) %>!
 
 <div>
   <%= link_to t("nouns.sign_out"), sign_out_path %>

@@ -3,12 +3,15 @@
 
 require "sidekiq/web"
 
+ROUTING_USERNAME_FORMAT = /[A-Za-z0-9_]+/.freeze
+
 Rails.application.routes.draw do
   if Rails.env.development?
     mount Sidekiq::Web => "/sidekiq"
   end
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
+  match "/@:idname",         via: :get,  as: :profile,          to: "profiles/show#call",          idname: ROUTING_USERNAME_FORMAT
   match "/accounts",         via: :post, as: :accounts,         to: "accounts/create#call"
   match "/accounts/new",     via: :get,  as: :new_account,      to: "accounts/new#call"
   match "/home",             via: :get,  as: :home,             to: "home/show#call"
