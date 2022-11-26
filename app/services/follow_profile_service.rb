@@ -2,13 +2,16 @@
 # frozen_string_literal: true
 
 class FollowProfileService < ApplicationService
-  class Error < T::Struct
-    const :message, String
-  end
+  class Error < BaseError; end
+  class Result < BaseResult
+    sig { returns(T.nilable(Profile)) }
+    attr_reader :target_profile
 
-  class Result < T::Struct
-    const :errors, T::Array[Error]
-    const :target_profile, T.nilable(Profile)
+    sig { params(errors: T::Array[Error], target_profile: T.nilable(Profile)).void }
+    def initialize(errors: [], target_profile: nil)
+      super(errors:)
+      @target_profile = target_profile
+    end
   end
 
   sig { returns(T.nilable(Profile)) }
@@ -20,7 +23,7 @@ class FollowProfileService < ApplicationService
   validates :source_profile, presence: true
   validates :target_profile, presence: true
 
-  sig { returns(Result) }
+  sig { returns(BaseResult) }
   def call
     if invalid?
       return validation_error_result(errors:)
@@ -29,7 +32,7 @@ class FollowProfileService < ApplicationService
     follow = T.must(source_profile).follows.where(target_profile:).first_or_initialize
 
     if follow.persisted?
-      return Result.new(errors: [], target_profile:)
+      return Result.new(target_profile:)
     end
 
     if follow.invalid?
@@ -38,11 +41,6 @@ class FollowProfileService < ApplicationService
 
     follow.save!
 
-    Result.new(errors: [], target_profile:)
-  end
-
-  sig { params(errors: ActiveModel::Errors).returns(Result) }
-  private def validation_error_result(errors:)
-    Result.new(errors: errors.map { |error| Error.new(message: error.full_message) })
+    Result.new(target_profile:)
   end
 end
