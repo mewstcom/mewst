@@ -6,8 +6,4 @@ class ApplicationService
 
   include ActiveModel::Model
   include ActiveModel::Attributes
-
-  def call
-    raise NotImplementedError
-  end
 end

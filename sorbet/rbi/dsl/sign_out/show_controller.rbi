@@ -11,6 +11,7 @@ class SignOut::ShowController
   module HelperMethods
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::ComponentDataFetcherHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 

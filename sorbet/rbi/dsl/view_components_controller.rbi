@@ -11,6 +11,7 @@ class ViewComponentsController
   module HelperMethods
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
+    include ::ComponentDataFetcherHelper
     include ::PreviewHelper
   end
 

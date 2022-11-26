@@ -9,9 +9,9 @@ class Api::Internal::Follow::Toggle::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     target_profile = Profile.only_kept.find_by!(idname: params[:idname])
-    source_profile = current_user.profile
+    source_profile = T.must(current_user).profile
 
-    result = if current_user.following?(target_profile:)
+    result = if T.must(current_user).following?(target_profile:)
       UnfollowProfileService.new(source_profile:, target_profile:).call
     else
       FollowProfileService.new(source_profile:, target_profile:).call

@@ -119,8 +119,8 @@ class EmailConfirmation
     end
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::EmailConfirmation) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::EmailConfirmation)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -196,7 +196,7 @@ class EmailConfirmation
     sig { returns(::EmailConfirmation) }
     def second_to_last!; end
 
-    sig { returns(::EmailConfirmation) }
+    sig { returns(T.nilable(::EmailConfirmation)) }
     def sole; end
 
     sig do
@@ -645,16 +645,16 @@ class EmailConfirmation
     sig { void }
     def email_will_change!; end
 
-    sig { returns(::String) }
+    sig { returns(T.untyped) }
     def event; end
 
-    sig { params(value: T.any(::String, ::Symbol, ::Integer)).returns(T.any(::String, ::Symbol, ::Integer)) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def event=(value); end
 
     sig { returns(T::Boolean) }
     def event?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def event_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -663,28 +663,28 @@ class EmailConfirmation
     sig { returns(T::Boolean) }
     def event_came_from_user?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def event_change; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def event_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def event_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def event_in_database; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def event_previous_change; end
 
     sig { returns(T::Boolean) }
     def event_previously_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def event_previously_was; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def event_was; end
 
     sig { void }
@@ -831,7 +831,7 @@ class EmailConfirmation
     sig { returns(T::Boolean) }
     def saved_change_to_email?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_event; end
 
     sig { returns(T::Boolean) }

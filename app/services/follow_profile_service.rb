@@ -20,13 +20,13 @@ class FollowProfileService < ApplicationService
   validates :source_profile, presence: true
   validates :target_profile, presence: true
 
-  sig { override.returns(Result) }
+  sig { returns(Result) }
   def call
     if invalid?
       return validation_error_result(errors:)
     end
 
-    follow = source_profile.follows.where(target_profile:).first_or_initialize
+    follow = T.must(source_profile).follows.where(target_profile:).first_or_initialize
 
     if follow.persisted?
       return Result.new(errors: [], target_profile:)

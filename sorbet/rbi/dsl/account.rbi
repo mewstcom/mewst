@@ -73,8 +73,8 @@ class Account
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Account).void)).returns(::Account) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::Account) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::Account)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -145,7 +145,7 @@ class Account
     sig { returns(::Account) }
     def second_to_last!; end
 
-    sig { returns(::Account) }
+    sig { returns(T.nilable(::Account)) }
     def sole; end
 
     sig do
@@ -182,8 +182,6 @@ class Account
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def email_confirmation_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Account` class because it declared `has_many :email_confirmations`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::EmailConfirmation::PrivateCollectionProxy) }
     def email_confirmations; end
 
@@ -196,8 +194,6 @@ class Account
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def user_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Account` class because it declared `has_many :users`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::User::PrivateCollectionProxy) }
     def users; end
 

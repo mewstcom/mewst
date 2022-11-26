@@ -8,8 +8,12 @@ class Api::Internal::Following::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    idnames = params[:idnames]
-    follows = current_user.follows.where(target_profile: Profile.only_kept.where(idname: idnames))
+    if params[:idnames].nil?
+      render(json: {}, status: :not_found)
+    end
+
+    idnames = T.cast(params[:idnames], T::Array[String])
+    follows = T.must(current_user).follows.where(target_profile: Profile.only_kept.where(idname: idnames))
     following_idnames = follows.map(&:target_profile).map(&:idname)
 
     result = idnames.map do |idname|

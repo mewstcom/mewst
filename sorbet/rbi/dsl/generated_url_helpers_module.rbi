@@ -15,6 +15,12 @@ module GeneratedUrlHelpersModule
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_api_follow_toggle_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_following_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -22,6 +28,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_components_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end

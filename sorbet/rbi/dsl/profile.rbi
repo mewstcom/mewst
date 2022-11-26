@@ -73,8 +73,8 @@ class Profile
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::Profile) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::Profile)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -145,7 +145,7 @@ class Profile
     sig { returns(::Profile) }
     def second_to_last!; end
 
-    sig { returns(::Profile) }
+    sig { returns(T.nilable(::Profile)) }
     def sole; end
 
     sig do
@@ -176,6 +176,18 @@ class Profile
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def follow_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def follow_ids=(ids); end
+
+    sig { returns(::Follow::PrivateCollectionProxy) }
+    def follows; end
+
+    sig { params(value: T::Enumerable[::Follow]).void }
+    def follows=(value); end
+
     sig { returns(T.untyped) }
     def profilable; end
 
@@ -198,6 +210,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def deleted(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def distinct(*args, &blk); end
@@ -295,6 +310,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def only(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def only_kept(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def optimizer_hints(*args, &blk); end
@@ -901,6 +919,9 @@ class Profile
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def deleted(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def distinct(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -962,6 +983,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def only(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def only_kept(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def optimizer_hints(*args, &blk); end

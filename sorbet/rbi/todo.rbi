@@ -4,6 +4,7 @@
 
 # typed: false
 
+module ::PreviewHelper; end
 module ActionMailer::Base::Mail::Message; end
 module Minitest::Assertion; end
 module Minitest::Assertions; end

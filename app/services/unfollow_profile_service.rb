@@ -20,13 +20,13 @@ class UnfollowProfileService < ApplicationService
   validates :source_profile, presence: true
   validates :target_profile, presence: true
 
-  sig { override.returns(Result) }
+  sig { returns(Result) }
   def call
     if invalid?
       return validation_error_result(errors:)
     end
 
-    follow = source_profile.follows.find_by(target_profile:)
+    follow = T.must(source_profile).follows.find_by(target_profile:)
 
     unless follow
       return Result.new(errors: [], target_profile:)
