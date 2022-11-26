@@ -17,10 +17,10 @@ class Api::Internal::Follow::Toggle::CreateController < ApplicationController
       FollowProfileService.new(source_profile:, target_profile:).call
     end
 
-    if result.ok?
-      render(json: {}, status: :ok)
-    else
+    if result.errors.any?
       render(json: { errors: result.errors }, status: :unprocessable_entity)
+    else
+      render(json: {}, status: :ok)
     end
   end
 end
