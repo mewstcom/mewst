@@ -4,5 +4,5 @@
 class ApplicationComponent < ViewComponent::Base
   extend T::Sig
 
-  delegate :signed_in?, to: :helpers
+  delegate :current_user, :signed_in?, to: :helpers
 end

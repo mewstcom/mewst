@@ -11,7 +11,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
 SET @@SESSION.SQL_LOG_BIN= 0;
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'f88461e0-6791-11ed-9576-5abec353b268:1-427';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'f88461e0-6791-11ed-9576-5abec353b268:1-565';
 DROP TABLE IF EXISTS `accounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -61,13 +61,13 @@ DROP TABLE IF EXISTS `follows`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `follows` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `profile_id` bigint unsigned NOT NULL,
+  `source_profile_id` bigint unsigned NOT NULL,
   `target_profile_id` bigint unsigned NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `index_follows_on_profile_id_and_target_profile_id` (`profile_id`,`target_profile_id`),
-  KEY `index_follows_on_profile_id` (`profile_id`),
+  UNIQUE KEY `index_follows_on_source_profile_id_and_target_profile_id` (`source_profile_id`,`target_profile_id`),
+  KEY `index_follows_on_source_profile_id` (`source_profile_id`),
   KEY `index_follows_on_target_profile_id` (`target_profile_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

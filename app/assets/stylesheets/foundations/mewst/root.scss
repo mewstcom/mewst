@@ -1,0 +1,21 @@
+:root {
+  &[data-color-scheme='light'] {
+    @include mst-themes-light;
+  }
+
+  &[data-color-scheme='dark'] {
+    @include mst-themes-dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-color-scheme='dark']) {
+    @include mst-themes-light;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme='light']) {
+    @include mst-themes-dark;
+  }
+}

@@ -1,6 +1,9 @@
 ja:
   nouns:
+    following: フォロー中
     error: エラー
+    menu: メニュー
+    profile: プロフィール
     sign_in: ログイン
     sign_out: ログアウト
     sign_up: アカウント作成

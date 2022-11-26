@@ -1,1 +1,9 @@
+<%= component_data_fetcher_tag("follow-button", internal_api_following_list_path, payload: { idnames: [@profile.idname] }) %>
+
+<%= render Navbars::NavbarComponent.new %>
+
 <h1>@<%= @profile.idname %></h1>
+
+<% unless current_user.my_profile?(target_profile: @profile) %>
+  <%= render Buttons::FollowButtonComponent.new(target_profile: @profile) %>
+<% end %>

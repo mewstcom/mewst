@@ -1,6 +1,9 @@
 en:
   nouns:
+    following: Following
     error: Error
+    menu: Menu
+    profile: Profile
     sign_in: Sign in
     sign_out: Sign out
     sign_up: Sign up

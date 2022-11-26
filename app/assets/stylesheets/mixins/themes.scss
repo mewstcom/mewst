@@ -1,0 +1,11 @@
+@mixin mst-themes-light {
+  @each $name, $color in $mst-themes-light-map {
+    --mst-#{$name}: #{$color};
+  }
+}
+
+@mixin mst-themes-dark {
+  @each $name, $color in $mst-themes-dark-map {
+    --mst-#{$name}: #{$color};
+  }
+}

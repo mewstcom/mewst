@@ -1,0 +1,55 @@
+<nav class="c-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <%= link_to root_path, class: "navbar-brand py-0" do %>
+      <%= image_tag "mewst.svg", size: "32x32" %>
+    <% end %>
+
+    <button
+      aria-controls="navbar-supported-content"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+      class="navbar-toggler"
+      data-bs-target="#navbar-supported-content"
+      data-bs-toggle="collapse"
+      type="button"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar-supported-content">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <% if signed_in? %>
+          <li class="nav-item dropdown">
+            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
+              <%= t("nouns.menu") %>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <%= link_to profile_path(current_user.idname), class: "dropdown-item" do %>
+                  <%= t("nouns.profile") %>
+                <% end %>
+              </li>
+
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <%= link_to t("nouns.sign_out"), sign_out_path, class: "dropdown-item" %>
+              </li>
+            </ul>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to t("nouns.sign_in"), sign_in_path, aria: { current: "page" }, class: "nav-link" %>
+          </li>
+
+          <li class="nav-item">
+            <%= link_to t("nouns.sign_up"), sign_up_path, aria: { current: "page" }, class: "nav-link" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</nav>

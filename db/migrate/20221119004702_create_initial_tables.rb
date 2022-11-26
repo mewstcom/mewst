@@ -49,11 +49,11 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     add_index :profiles, %i[profilable_type profilable_id], unique: true
 
     create_table :follows, options: "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", unsigned: true do |t|
-      t.references :profile, null: false, type: :unsigned_bigint
+      t.references :source_profile, null: false, type: :unsigned_bigint
       t.references :target_profile, null: false, type: :unsigned_bigint
       t.timestamps
     end
-    add_index :follows, %i[profile_id target_profile_id], unique: true
+    add_index :follows, %i[source_profile_id target_profile_id], unique: true
 
     create_table :posts, options: "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", unsigned: true do |t|
       t.references :profile, null: false, type: :unsigned_bigint

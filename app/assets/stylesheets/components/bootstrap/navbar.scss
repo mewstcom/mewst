@@ -1,0 +1,19 @@
+.navbar {
+  background-color: var(--mst-color-navbar-background);
+
+  .navbar-brand {
+    color: var(--mst-color-navbar-brand-link);
+
+    &:hover {
+      color: var(--mst-color-navbar-brand-link-hover);
+    }
+  }
+
+  .nav-link {
+    color: var(--mst-color-navbar-link);
+
+    &:hover {
+      color: var(--mst-color-navbar-link-hover);
+    }
+  }
+}
