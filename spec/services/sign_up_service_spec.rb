@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe SignUpService do
-  context "valid" do
+  context "when valid" do
     let!(:email) { "hello@example.com" }
     let!(:idname) { "hello" }
     let!(:form) { SignUpForm.new(email:, idname:) }

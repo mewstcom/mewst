@@ -25,7 +25,7 @@ class SignIn::CreateController < ApplicationController
   sig { returns(ActionController::Parameters) }
   private def form_params
     T.cast(params.require(:authentication), ActionController::Parameters)
-     .permit(:email)
-     .merge(event: EmailConfirmationForm::EVENT_SIGN_IN)
+      .permit(:email)
+      .merge(event: EmailConfirmationForm::EVENT_SIGN_IN)
   end
 end

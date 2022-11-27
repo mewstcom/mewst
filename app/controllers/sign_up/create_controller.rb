@@ -25,7 +25,7 @@ class SignUp::CreateController < ApplicationController
   sig { returns(ActionController::Parameters) }
   private def form_params
     T.cast(params.require(:email_confirmation_form), ActionController::Parameters)
-     .permit(:email)
-     .merge(event: EmailConfirmationForm::EVENT_SIGN_UP)
+      .permit(:email)
+      .merge(event: EmailConfirmationForm::EVENT_SIGN_UP)
   end
 end

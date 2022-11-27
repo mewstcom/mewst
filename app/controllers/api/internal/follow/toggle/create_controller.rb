@@ -11,7 +11,7 @@ class Api::Internal::Follow::Toggle::CreateController < ApplicationController
     form = FollowForm.new(source_idname: T.must(current_user).idname, target_idname: params[:idname])
 
     if form.invalid?
-      return render(json: { errors: form.errors.full_messages }, status: :unprocessable_entity)
+      return render(json: {errors: form.errors.full_messages}, status: :unprocessable_entity)
     end
 
     ActiveRecord::Base.transaction do

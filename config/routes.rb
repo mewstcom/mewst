@@ -3,7 +3,7 @@
 
 require "sidekiq/web"
 
-ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/.freeze, Regexp)
+ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 
 Rails.application.routes.draw do
   if Rails.env.development?
