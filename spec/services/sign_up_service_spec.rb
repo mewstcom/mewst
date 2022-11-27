@@ -1,18 +1,18 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe SignUp do
-  describe "#create" do
+RSpec.describe SignUpService do
+  context "valid" do
     let!(:email) { "hello@example.com" }
     let!(:idname) { "hello" }
+    let!(:form) { SignUpForm.new(email:, idname:) }
 
     it "creates an account" do
       expect(Account.count).to eq(0)
       expect(User.count).to eq(0)
       expect(Profile.count).to eq(0)
 
-      sign_up = SignUp.new(email:, idname:)
-      sign_up.create
+      SignUpService.new(form:).call
 
       expect(Account.count).to eq(1)
       expect(User.count).to eq(1)
