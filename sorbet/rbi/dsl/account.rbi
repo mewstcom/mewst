@@ -176,6 +176,15 @@ class Account
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def build_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user!(*args, &blk); end
+
     sig { returns(T::Array[T.untyped]) }
     def email_confirmation_ids; end
 
@@ -188,17 +197,14 @@ class Account
     sig { params(value: T::Enumerable[::EmailConfirmation]).void }
     def email_confirmations=(value); end
 
-    sig { returns(T::Array[T.untyped]) }
-    def user_ids; end
+    sig { returns(T.nilable(::User)) }
+    def reload_user; end
 
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def user_ids=(ids); end
+    sig { returns(T.nilable(::User)) }
+    def user; end
 
-    sig { returns(::User::PrivateCollectionProxy) }
-    def users; end
-
-    sig { params(value: T::Enumerable[::User]).void }
-    def users=(value); end
+    sig { params(value: T.nilable(::User)).void }
+    def user=(value); end
   end
 
   module GeneratedAssociationRelationMethods
