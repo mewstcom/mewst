@@ -3,7 +3,7 @@
 ## Running the app
 
 ```
-$ git clone git@github.com:kiraka/mewst.git
+$ git clone git@github.com:joinmewst/mewst.git
 $ cd mewst
 $ yarn
 $ bin/setup
