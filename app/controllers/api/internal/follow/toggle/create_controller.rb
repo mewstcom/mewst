@@ -8,19 +8,20 @@ class Api::Internal::Follow::Toggle::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    target_profile = Profile.only_kept.find_by!(idname: params[:idname])
-    source_profile = T.must(current_user).profile
+    form = FollowForm.new(source_idname: T.must(current_user).idname, target_idname: params[:idname])
 
-    result = if T.must(current_user).following?(target_profile:)
-      UnfollowProfileService.new(source_profile:, target_profile:).call
-    else
-      FollowProfileService.new(source_profile:, target_profile:).call
+    if form.invalid?
+      return render(json: { errors: form.errors.full_messages }, status: :unprocessable_entity)
     end
 
-    if result.errors.any?
-      render(json: { errors: result.errors }, status: :unprocessable_entity)
-    else
-      render(json: {}, status: :ok)
+    ActiveRecord::Base.transaction do
+      if T.must(current_user).following?(target_profile: form.target_profile)
+        UnfollowProfileService.new(form:).call
+      else
+        FollowProfileService.new(form:).call
+      end
     end
+
+    render(json: {}, status: :ok)
   end
 end

@@ -7,42 +7,31 @@ class FollowProfileService < ApplicationService
   end
 
   class Result < T::Struct
-    const :errors, T::Array[Error]
-    const :target_profile, T.nilable(Profile)
+    const :errors, T::Array[Error], default: []
+    const :target_profile, Profile
   end
 
-  sig { returns(T.nilable(Profile)) }
-  attr_accessor :source_profile
-
-  sig { returns(T.nilable(Profile)) }
-  attr_accessor :target_profile
-
-  validates :source_profile, presence: true
-  validates :target_profile, presence: true
+  sig { params(form: FollowForm).void }
+  def initialize(form:)
+    @form = form
+  end
 
   sig { returns(Result) }
   def call
-    if invalid?
-      return validation_error_result(errors:)
-    end
-
-    follow = T.must(source_profile).follows.where(target_profile:).first_or_initialize
-
-    if follow.persisted?
-      return Result.new(errors: [], target_profile:)
-    end
-
-    if follow.invalid?
-      return validation_error_result(errors: follow.errors)
-    end
+    follow = source_profile.follows.where(target_profile:).first_or_initialize
 
     follow.save!
 
-    Result.new(errors: [], target_profile:)
+    Result.new(target_profile:)
   end
 
-  sig { params(errors: ActiveModel::Errors).returns(Result) }
-  private def validation_error_result(errors:)
-    Result.new(errors: errors.map { |error| Error.new(message: error.full_message) })
+  sig { returns(Profile) }
+  private def source_profile
+    @source_profile ||= @form.source_profile
+  end
+
+  sig { returns(Profile) }
+  private def target_profile
+    @target_profile ||= @form.target_profile
   end
 end

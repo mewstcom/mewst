@@ -8,6 +8,6 @@ class SignIn::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @authentication = Authentication.new
+    @form = EmailConfirmationForm.new
   end
 end

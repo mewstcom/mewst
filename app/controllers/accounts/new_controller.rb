@@ -9,13 +9,11 @@ class Accounts::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @sign_up = SignUp.new(email: session[:sign_up_email])
+    @form = SignUpForm.new(email: session[:sign_up_email])
   end
 
-  private
-
   sig { returns(T.untyped) }
-  def require_confirmed_email
+  private def require_confirmed_email
     unless session[:sign_up_email]
       redirect_to root_path
     end

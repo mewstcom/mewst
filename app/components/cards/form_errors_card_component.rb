@@ -7,10 +7,8 @@ class Cards::FormErrorsCardComponent < ApplicationComponent
     @errors = errors
   end
 
-  private
-
   sig { returns(T::Boolean) }
-  def render?
+  private def render?
     !@errors.empty?
   end
 end

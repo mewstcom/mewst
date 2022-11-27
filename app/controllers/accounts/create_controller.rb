@@ -8,14 +8,14 @@ class Accounts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @sign_up = SignUp.new(sign_up_params)
+    @form = SignUpForm.new(form_params)
 
-    result = ActiveRecord::Base.transaction do
-      @sign_up.create
+    if @form.invalid?
+      return render("accounts/new/call")
     end
 
-    if result.errors.any?
-      return render "accounts/new/call"
+    result = ActiveRecord::Base.transaction do
+      SignUpService.new(form: @form).call
     end
 
     reset_session
@@ -24,10 +24,8 @@ class Accounts::CreateController < ApplicationController
     redirect_to home_path
   end
 
-  private
-
   sig { returns(ActionController::Parameters) }
-  def sign_up_params
-    T.cast(params.require(:sign_up), ActionController::Parameters).permit(:email, :idname)
+  private def form_params
+    T.cast(params.require(:sign_up_form), ActionController::Parameters).permit(:email, :idname)
   end
 end

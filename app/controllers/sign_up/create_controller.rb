@@ -8,24 +8,24 @@ class SignUp::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @authentication = Authentication.new(authentication_params)
+    @form = EmailConfirmationForm.new(form_params)
 
-    if @authentication.invalid?
+    if @form.invalid?
       return render "sign_up/new/call"
     end
 
     ActiveRecord::Base.transaction do
-      @authentication.confirm_email_to_sign_up
+      ConfirmEmailService.new(form: @form).call
     end
 
     flash[:success] = t("messages.authentication.confirmation_email_sent")
     redirect_to sign_up_path
   end
 
-  private
-
   sig { returns(ActionController::Parameters) }
-  def authentication_params
-    T.cast(params.require(:authentication), ActionController::Parameters).permit(:email)
+  private def form_params
+    T.cast(params.require(:email_confirmation_form), ActionController::Parameters)
+     .permit(:email)
+     .merge(event: EmailConfirmationForm::EVENT_SIGN_UP)
   end
 end

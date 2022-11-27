@@ -3,14 +3,9 @@
 
 class Account < ApplicationRecord
   has_many :email_confirmations, dependent: :restrict_with_exception
-  has_many :users, dependent: :restrict_with_exception
+  has_one :users, dependent: :restrict_with_exception
 
   validates :email, email: true, presence: true, uniqueness: true
-
-  sig { returns(User) }
-  def default_user
-    users.order(:id).first
-  end
 
   sig { returns(T::Boolean) }
   def track_sign_in
