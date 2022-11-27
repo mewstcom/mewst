@@ -9,12 +9,14 @@ class FollowForm < ApplicationForm
   validates :target_profile, presence: true
   validate :target_profile_difference
 
+  sig { returns(T.nilable(Profile)) }
   def source_profile
-    @source_profile ||= Profile.only_kept.find_by(idname: source_idname)
+    @source_profile ||= T.let(Profile.only_kept.find_by(idname: source_idname), T.nilable(Profile))
   end
 
+  sig { returns(T.nilable(Profile)) }
   def target_profile
-    @target_profile ||= Profile.only_kept.find_by(idname: target_idname)
+    @target_profile ||= T.let(Profile.only_kept.find_by(idname: target_idname), T.nilable(Profile))
   end
 
   sig { returns(T.untyped) }

@@ -15,7 +15,7 @@ class Api::Internal::Follow::Toggle::CreateController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      if T.must(current_user).following?(target_profile: form.target_profile)
+      if T.must(current_user).following?(target_profile: T.must(form.target_profile))
         UnfollowProfileService.new(form:).call
       else
         FollowProfileService.new(form:).call

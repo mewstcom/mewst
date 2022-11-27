@@ -12,7 +12,7 @@ module Authenticatable
   sig { params(account: Account).returns(Integer) }
   def sign_in(account)
     account.track_sign_in
-    session[:user_id] = account.user.id
+    session[:user_id] = T.must(account.user).id
   end
 
   sig { returns(T.untyped) }

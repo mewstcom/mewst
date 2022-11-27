@@ -14,6 +14,8 @@ class UnfollowProfileService < ApplicationService
   sig { params(form: FollowForm).void }
   def initialize(form:)
     @form = form
+    @source_profile = T.let(T.must(@form.source_profile), Profile)
+    @target_profile = T.let(T.must(@form.target_profile), Profile)
   end
 
   sig { returns(Result) }
@@ -25,13 +27,11 @@ class UnfollowProfileService < ApplicationService
     Result.new(target_profile:)
   end
 
-  sig { returns(Profile) }
-  private def source_profile
-    @source_profile ||= @form.source_profile
-  end
+  private
 
   sig { returns(Profile) }
-  private def target_profile
-    @target_profile ||= @form.target_profile
-  end
+  attr_reader :source_profile
+
+  sig { returns(Profile) }
+  attr_reader :target_profile
 end

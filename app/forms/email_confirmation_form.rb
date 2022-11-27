@@ -14,14 +14,17 @@ class EmailConfirmationForm < ApplicationForm
   validates :email, email: true, presence: true
   validates :event, inclusion: {in: [EVENT_SIGN_UP, EVENT_SIGN_IN, EVENT_UPDATE_EMAIL]}
 
+  sig { returns(T::Boolean) }
   def on_sign_up?
     event == EVENT_SIGN_UP
   end
 
+  sig { returns(T::Boolean) }
   def on_sign_in?
     event == EVENT_SIGN_IN
   end
 
+  sig { returns(T::Boolean) }
   def on_update_email?
     event == EVENT_UPDATE_EMAIL
   end
