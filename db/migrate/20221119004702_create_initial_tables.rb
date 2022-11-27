@@ -23,7 +23,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     add_index :email_confirmations, :token, unique: true
 
     create_table :users, options: "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", unsigned: true do |t|
-      t.references :account, null: false, type: :unsigned_bigint
+      t.references :account, index: {unique: true}, null: false, type: :unsigned_bigint
       t.timestamps
     end
 

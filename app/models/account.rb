@@ -3,7 +3,7 @@
 
 class Account < ApplicationRecord
   has_many :email_confirmations, dependent: :restrict_with_exception
-  has_one :users, dependent: :restrict_with_exception
+  has_one :user, dependent: :restrict_with_exception
 
   validates :email, email: true, presence: true, uniqueness: true
 

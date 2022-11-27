@@ -19,7 +19,7 @@ class SignUpService < ApplicationService
   sig { returns(Result) }
   def call
     account = Account.create!(email: @form.email)
-    user = account.users.create!
+    user = account.create_user!
     user.create_profile!(idname: @form.idname)
 
     Result.new(account:)
