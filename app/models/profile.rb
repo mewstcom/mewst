@@ -7,6 +7,7 @@ class Profile < ApplicationRecord
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
+  has_many :posts, dependent: :restrict_with_exception
 
   delegated_type :profilable, types: %w[User Organization]
 

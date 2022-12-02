@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   match "/api/internal/follow/toggle", via: :post, as: :internal_api_follow_toggle,  to: "api/internal/follow/toggle/create#call"
   match "/api/internal/following",     via: :post, as: :internal_api_following_list, to: "api/internal/following/index#call"
   match "/home",                       via: :get,  as: :home,                        to: "home/show#call"
+  match "/posts",                      via: :post, as: :post_list,                   to: "posts/create#call"
   match "/sign_in",                    via: :get,  as: :sign_in,                     to: "sign_in/new#call"
   match "/sign_in",                    via: :post,                                   to: "sign_in/create#call"
   match "/sign_in/callback",           via: :get,  as: :sign_in_callback,            to: "sign_in_callbacks/show#call"

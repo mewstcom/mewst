@@ -8,5 +8,6 @@ class Home::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
+    @form = PostForm.new
   end
 end
