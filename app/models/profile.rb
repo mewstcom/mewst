@@ -9,7 +9,7 @@ class Profile < ApplicationRecord
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
   has_many :posts, dependent: :restrict_with_exception
 
-  delegated_type :profilable, types: %w[User Organization]
+  enum :profilable_type, {user: 0, organization: 1}, prefix: :as
 
   validates :idname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 end

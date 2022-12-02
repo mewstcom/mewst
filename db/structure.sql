@@ -42,21 +42,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: accounts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.accounts (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    email character varying NOT NULL,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_signed_in_at timestamp without time zone,
-    last_signed_in_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -74,7 +59,7 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.email_confirmations (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    account_id uuid,
+    user_id uuid,
     email character varying NOT NULL,
     event integer NOT NULL,
     token character varying NOT NULL,
@@ -112,6 +97,17 @@ CREATE TABLE public.organization_members (
 
 
 --
+-- Name: organization_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.organization_profiles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid,
+    profile_id uuid
+);
+
+
+--
 -- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -141,8 +137,7 @@ CREATE TABLE public.posts (
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    profilable_type character varying NOT NULL,
-    profilable_id bigint NOT NULL,
+    profilable_type integer NOT NULL,
     idname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -162,23 +157,29 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: user_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_profiles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    profile_id uuid
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    account_id uuid NOT NULL,
+    phone_number character varying NOT NULL,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_signed_in_at timestamp without time zone,
+    last_signed_in_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
-
-
---
--- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -214,6 +215,14 @@ ALTER TABLE ONLY public.organization_members
 
 
 --
+-- Name: organization_profiles organization_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.organization_profiles
+    ADD CONSTRAINT organization_profiles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -246,6 +255,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: user_profiles user_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT user_profiles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -254,24 +271,17 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: index_accounts_on_email; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_accounts_on_email ON public.accounts USING btree (email);
-
-
---
--- Name: index_email_confirmations_on_account_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_email_confirmations_on_account_id ON public.email_confirmations USING btree (account_id);
-
-
---
 -- Name: index_email_confirmations_on_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_email_confirmations_on_token ON public.email_confirmations USING btree (token);
+
+
+--
+-- Name: index_email_confirmations_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_email_confirmations_on_user_id ON public.email_confirmations USING btree (user_id);
 
 
 --
@@ -317,6 +327,27 @@ CREATE INDEX index_organization_members_on_user_id ON public.organization_member
 
 
 --
+-- Name: index_organization_profiles_on_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_organization_profiles_on_organization_id ON public.organization_profiles USING btree (organization_id);
+
+
+--
+-- Name: index_organization_profiles_on_organization_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_organization_profiles_on_organization_id_and_profile_id ON public.organization_profiles USING btree (organization_id, profile_id);
+
+
+--
+-- Name: index_organization_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_profiles USING btree (profile_id);
+
+
+--
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -331,24 +362,39 @@ CREATE UNIQUE INDEX index_profiles_on_idname ON public.profiles USING btree (idn
 
 
 --
--- Name: index_profiles_on_profilable; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_profiles_on_profilable ON public.profiles USING btree (profilable_type, profilable_id);
-
-
---
--- Name: index_profiles_on_profilable_type_and_profilable_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_profiles_on_profilable_type_and_profilable_id ON public.profiles USING btree (profilable_type, profilable_id);
+CREATE INDEX index_user_profiles_on_profile_id ON public.user_profiles USING btree (profile_id);
 
 
 --
--- Name: index_users_on_account_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_profiles_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_account_id ON public.users USING btree (account_id);
+CREATE INDEX index_user_profiles_on_user_id ON public.user_profiles USING btree (user_id);
+
+
+--
+-- Name: index_user_profiles_on_user_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_user_profiles_on_user_id_and_profile_id ON public.user_profiles USING btree (user_id, profile_id);
+
+
+--
+-- Name: index_users_on_phone_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_phone_number ON public.users USING btree (phone_number);
+
+
+--
+-- Name: email_confirmations fk_rails_422b33d86c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.email_confirmations
+    ADD CONSTRAINT fk_rails_422b33d86c FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -360,19 +406,27 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: users fk_rails_61ac11da2b; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_profiles fk_rails_70afd642db; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT fk_rails_61ac11da2b FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT fk_rails_70afd642db FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --
--- Name: email_confirmations fk_rails_8bbee3f97a; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: organization_profiles fk_rails_87611e9014; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.email_confirmations
-    ADD CONSTRAINT fk_rails_8bbee3f97a FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+ALTER TABLE ONLY public.organization_profiles
+    ADD CONSTRAINT fk_rails_87611e9014 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: user_profiles fk_rails_87a6352e58; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT fk_rails_87a6352e58 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -397,6 +451,14 @@ ALTER TABLE ONLY public.follows
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: organization_profiles fk_rails_d0c5dfda7d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.organization_profiles
+    ADD CONSTRAINT fk_rails_d0c5dfda7d FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
 
 
 --
