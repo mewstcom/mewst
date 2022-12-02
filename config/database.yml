@@ -1,11 +1,10 @@
 default: &default
-  adapter: mysql2
-  ssl_mode: <%= ENV.fetch("MEWST_DATABASE_SSL_MODE") %>
-  sslca: <%= ENV.fetch("MEWST_DATABASE_SSLCA") %>
-  host: <%= ENV.fetch("MEWST_DATABASE_HOST") %>
-  database: <%= ENV.fetch("MEWST_DATABASE_NAME") %>
-  username: <%= ENV.fetch("MEWST_DATABASE_USERNAME") %>
-  password: <%= ENV.fetch("MEWST_DATABASE_PASSWORD") %>
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV.fetch("MEWST_DATABASE_URL") %>
 
 development:
   <<: *default

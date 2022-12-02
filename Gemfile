@@ -12,7 +12,7 @@ gem "bootsnap", require: false
 gem "cssbundling-rails"
 gem "email_validator"
 gem "jsbundling-rails"
-gem "mysql2"
+gem "pg"
 gem "propshaft"
 gem "puma"
 gem "sidekiq"

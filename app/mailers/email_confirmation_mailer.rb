@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class EmailConfirmationMailer < ApplicationMailer
-  sig { params(email_confirmation_id: Integer, locale: String).void }
+  sig { params(email_confirmation_id: String, locale: String).void }
   def sign_up_confirmation(email_confirmation_id, locale)
     email_confirmation = EmailConfirmation.find(email_confirmation_id)
 
@@ -16,7 +16,7 @@ class EmailConfirmationMailer < ApplicationMailer
     end
   end
 
-  sig { params(email_confirmation_id: Integer, locale: String).void }
+  sig { params(email_confirmation_id: String, locale: String).void }
   def sign_in_confirmation(email_confirmation_id, locale)
     email_confirmation = EmailConfirmation.find(email_confirmation_id)
 
@@ -30,7 +30,7 @@ class EmailConfirmationMailer < ApplicationMailer
     end
   end
 
-  sig { params(email_confirmation_id: Integer, locale: String).void }
+  sig { params(email_confirmation_id: String, locale: String).void }
   def update_email_confirmation(email_confirmation_id, locale)
     email_confirmation = EmailConfirmation.find(email_confirmation_id)
     user = User.find(email_confirmation.user_id)

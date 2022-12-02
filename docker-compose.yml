@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  mysql:
-    build: ./docker/mysql
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+  postgresql:
+    image: postgres:15.1
     ports:
-      - 3306:3306
+      - 5432:5432
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgresql_data:/var/lib/postgresql/data:delegated
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
 
   redis:
     image: redis:7.0
@@ -18,5 +18,5 @@ services:
       - redis_data:/data
 
 volumes:
-  mysql_data:
+  postgresql_data:
   redis_data:
