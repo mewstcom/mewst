@@ -8,7 +8,7 @@ class SignUpService < ApplicationService
 
   class Result < T::Struct
     const :errors, T::Array[Error], default: []
-    const :account, T.nilable(Account)
+    const :user, T.nilable(User)
   end
 
   sig { params(form: SignUpForm).void }
@@ -18,10 +18,15 @@ class SignUpService < ApplicationService
 
   sig { returns(Result) }
   def call
-    account = Account.create!(email: @form.email)
-    user = account.create_user!
-    user.create_profile!(idname: @form.idname)
+    user = ActiveRecord::Base.transaction do
+      user = User.create!
+      user.create_user_phone_number!(phone_number: @form.phone_number)
+      profile = user.create_profile!(idname: @form.idname, profilable_type: :user)
+      user.create_user_profile!(profile:)
 
-    Result.new(account:)
+      user
+    end
+
+    Result.new(user:)
   end
 end

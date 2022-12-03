@@ -4,11 +4,10 @@
 class User < ApplicationRecord
   delegate :follows, :idname, to: :profile
 
-  has_many :email_confirmations, dependent: :restrict_with_exception
+  has_one :user_phone_number, dependent: :restrict_with_exception
   has_one :user_profile, dependent: :restrict_with_exception
+  has_one :phone_number, dependent: :restrict_with_exception, through: :user_phone_number
   has_one :profile, dependent: :restrict_with_exception, through: :user_profile
-
-  validates :email, email: true, presence: true, uniqueness: true
 
   sig { returns(T::Boolean) }
   def track_sign_in

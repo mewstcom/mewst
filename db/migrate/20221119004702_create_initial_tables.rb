@@ -2,23 +2,32 @@
 
 class CreateInitialTables < ActiveRecord::Migration[7.0]
   def change
+    create_table :phone_number_confirmations, id: :uuid do |t|
+      t.string :phone_number, null: false
+      t.string :phone_number_full, null: false
+      t.string :code, null: false
+      t.timestamps
+    end
+    add_index :phone_number_confirmations, %i[phone_number code], unique: true
+
+    create_table :phone_numbers, id: :uuid do |t|
+      t.string :value, index: {unique: true}, null: false
+      t.timestamps
+    end
+
     create_table :users, id: :uuid do |t|
-      t.string :phone_number, index: {unique: true}, null: false
-      t.integer :sign_in_count, null: false, default: 0
+      t.integer :sign_in_count, default: 0, null: false
       t.timestamp :current_signed_in_at
       t.timestamp :last_signed_in_at
       t.timestamps
     end
 
-    create_table :email_confirmations, id: :uuid do |t|
+    create_table :user_phone_numbers, id: :uuid do |t|
       t.references :user, foreign_key: true, type: :uuid
-      t.string :email, null: false
-      t.integer :event, null: false
-      t.string :token, index: {unique: true}, null: false
-      t.string :back
-      t.datetime :expires_at, null: false
+      t.references :phone_number, foreign_key: true, type: :uuid
       t.timestamps
     end
+    add_index :user_phone_numbers, %i[user_id phone_number_id], unique: true
 
     create_table :organizations, id: :uuid do |t|
       t.timestamps
@@ -33,9 +42,9 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :profiles, id: :uuid do |t|
       t.integer :profilable_type, null: false
-      t.citext :idname, null: false, index: {unique: true}
-      t.string :name, null: false, default: ""
-      t.string :description, null: false, default: ""
+      t.citext :idname, index: {unique: true}, null: false
+      t.string :name, default: "", null: false
+      t.string :description, default: "", null: false
       t.timestamp :deleted_at
       t.timestamps
     end
@@ -43,12 +52,14 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :user_profiles, id: :uuid do |t|
       t.references :user, foreign_key: true, type: :uuid
       t.references :profile, foreign_key: true, type: :uuid
+      t.timestamps
     end
     add_index :user_profiles, %i[user_id profile_id], unique: true
 
     create_table :organization_profiles, id: :uuid do |t|
       t.references :organization, foreign_key: true, type: :uuid
       t.references :profile, foreign_key: true, type: :uuid
+      t.timestamps
     end
     add_index :organization_profiles, %i[organization_id profile_id], unique: true
 

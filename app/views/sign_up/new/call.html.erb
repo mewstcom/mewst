@@ -1,7 +1,10 @@
 <%= form_with model: @form, url: sign_up_path do |f| %>
-  <div>
-    <%= f.label :email %>
-    <%= f.email_field :email %>
+  <div
+    class="c-phone-number-input"
+    data-controller="phone-number-input"
+  >
+    <%= f.label :phone_number %>
+    <%= f.telephone_field :phone_number, data: { action: "phone-number-input#input", phone_number_input_target: "field" } %>
   </div>
 
   <%= f.submit %>

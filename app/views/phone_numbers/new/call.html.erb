@@ -1,0 +1,8 @@
+<%= form_with model: @form, url: phone_number_list_path do |f| %>
+  <div>
+    <%= f.label :code %>
+    <%= f.text_field :code %>
+  </div>
+
+  <%= f.submit %>
+<% end %>

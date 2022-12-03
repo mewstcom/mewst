@@ -17,6 +17,7 @@ gem "propshaft"
 gem "puma"
 gem "sidekiq"
 gem "sorbet-runtime"
+gem "twilio-ruby"
 gem "view_component"
 
 group :development, :test do

@@ -16,6 +16,7 @@
 // -------------------------------------------------------------------
 
 @import 'bootstrap/scss/bootstrap';
+@import 'intl-tel-input/build/css/intlTelInput';
 
 // -------------------------------------------------------------------
 // Mixins using variables
@@ -36,4 +37,5 @@
 // -------------------------------------------------------------------
 
 @import './components/mewst/follow-button';
+@import './components/mewst/phone-number-input';
 @import './components/mewst/navbar';

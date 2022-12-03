@@ -54,23 +54,6 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: email_confirmations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.email_confirmations (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid,
-    email character varying NOT NULL,
-    event integer NOT NULL,
-    token character varying NOT NULL,
-    back character varying,
-    expires_at timestamp(6) without time zone NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: follows; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -103,7 +86,9 @@ CREATE TABLE public.organization_members (
 CREATE TABLE public.organization_profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     organization_id uuid,
-    profile_id uuid
+    profile_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -113,6 +98,32 @@ CREATE TABLE public.organization_profiles (
 
 CREATE TABLE public.organizations (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: phone_number_confirmations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.phone_number_confirmations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    phone_number character varying NOT NULL,
+    phone_number_full character varying NOT NULL,
+    code character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: phone_numbers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.phone_numbers (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    value character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -157,13 +168,28 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: user_phone_numbers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_phone_numbers (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    phone_number_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: user_profiles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.user_profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid,
-    profile_id uuid
+    profile_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -173,7 +199,6 @@ CREATE TABLE public.user_profiles (
 
 CREATE TABLE public.users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    phone_number character varying NOT NULL,
     sign_in_count integer DEFAULT 0 NOT NULL,
     current_signed_in_at timestamp without time zone,
     last_signed_in_at timestamp without time zone,
@@ -188,14 +213,6 @@ CREATE TABLE public.users (
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
-
-
---
--- Name: email_confirmations email_confirmations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.email_confirmations
-    ADD CONSTRAINT email_confirmations_pkey PRIMARY KEY (id);
 
 
 --
@@ -231,6 +248,22 @@ ALTER TABLE ONLY public.organizations
 
 
 --
+-- Name: phone_number_confirmations phone_number_confirmations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phone_number_confirmations
+    ADD CONSTRAINT phone_number_confirmations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: phone_numbers phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phone_numbers
+    ADD CONSTRAINT phone_numbers_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -255,6 +288,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: user_phone_numbers user_phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_phone_numbers
+    ADD CONSTRAINT user_phone_numbers_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_profiles user_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -268,20 +309,6 @@ ALTER TABLE ONLY public.user_profiles
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- Name: index_email_confirmations_on_token; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_email_confirmations_on_token ON public.email_confirmations USING btree (token);
-
-
---
--- Name: index_email_confirmations_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_email_confirmations_on_user_id ON public.email_confirmations USING btree (user_id);
 
 
 --
@@ -348,6 +375,20 @@ CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_pr
 
 
 --
+-- Name: index_phone_number_confirmations_on_phone_number_and_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_phone_number_confirmations_on_phone_number_and_code ON public.phone_number_confirmations USING btree (phone_number, code);
+
+
+--
+-- Name: index_phone_numbers_on_value; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_phone_numbers_on_value ON public.phone_numbers USING btree (value);
+
+
+--
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -359,6 +400,27 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 --
 
 CREATE UNIQUE INDEX index_profiles_on_idname ON public.profiles USING btree (idname);
+
+
+--
+-- Name: index_user_phone_numbers_on_phone_number_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_phone_numbers_on_phone_number_id ON public.user_phone_numbers USING btree (phone_number_id);
+
+
+--
+-- Name: index_user_phone_numbers_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_phone_numbers_on_user_id ON public.user_phone_numbers USING btree (user_id);
+
+
+--
+-- Name: index_user_phone_numbers_on_user_id_and_phone_number_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_user_phone_numbers_on_user_id_and_phone_number_id ON public.user_phone_numbers USING btree (user_id, phone_number_id);
 
 
 --
@@ -383,18 +445,19 @@ CREATE UNIQUE INDEX index_user_profiles_on_user_id_and_profile_id ON public.user
 
 
 --
--- Name: index_users_on_phone_number; Type: INDEX; Schema: public; Owner: -
+-- Name: user_phone_numbers fk_rails_40a6977317; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_phone_number ON public.users USING btree (phone_number);
+ALTER TABLE ONLY public.user_phone_numbers
+    ADD CONSTRAINT fk_rails_40a6977317 FOREIGN KEY (phone_number_id) REFERENCES public.phone_numbers(id);
 
 
 --
--- Name: email_confirmations fk_rails_422b33d86c; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_phone_numbers fk_rails_51f5e5a641; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.email_confirmations
-    ADD CONSTRAINT fk_rails_422b33d86c FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE ONLY public.user_phone_numbers
+    ADD CONSTRAINT fk_rails_51f5e5a641 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

@@ -12,11 +12,11 @@ Rails.application.routes.draw do
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:idname",                   via: :get,  as: :profile,                     to: "profiles/show#call",          idname: ROUTING_USERNAME_FORMAT
-  match "/accounts",                   via: :post, as: :accounts,                    to: "accounts/create#call"
-  match "/accounts/new",               via: :get,  as: :new_account,                 to: "accounts/new#call"
   match "/api/internal/follow/toggle", via: :post, as: :internal_api_follow_toggle,  to: "api/internal/follow/toggle/create#call"
   match "/api/internal/following",     via: :post, as: :internal_api_following_list, to: "api/internal/following/index#call"
   match "/home",                       via: :get,  as: :home,                        to: "home/show#call"
+  match "/phone_numbers",              via: :post, as: :phone_number_list,           to: "phone_numbers/create#call"
+  match "/phone_numbers/new",          via: :get,  as: :new_phone_number,            to: "phone_numbers/new#call"
   match "/posts",                      via: :post, as: :post_list,                   to: "posts/create#call"
   match "/sign_in",                    via: :get,  as: :sign_in,                     to: "sign_in/new#call"
   match "/sign_in",                    via: :post,                                   to: "sign_in/create#call"
@@ -25,6 +25,8 @@ Rails.application.routes.draw do
   match "/sign_up",                    via: :get,  as: :sign_up,                     to: "sign_up/new#call"
   match "/sign_up",                    via: :post,                                   to: "sign_up/create#call"
   match "/sign_up/callback",           via: :get,  as: :sign_up_callback,            to: "sign_up_callbacks/show#call"
+  match "/users",                      via: :post, as: :user_list,                   to: "users/create#call"
+  match "/users/new",                  via: :get,  as: :new_user,                    to: "users/new#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"

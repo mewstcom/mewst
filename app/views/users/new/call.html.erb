@@ -1,10 +1,9 @@
-<%= form_with model: @form, url: accounts_path do |f| %>
+<%= form_with model: @form, url: user_list_path do |f| %>
   <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
   <div>
-    <%= f.label :email %>
-    <%= f.hidden_field :email %>
-    <%= @form.email %>
+    <%= f.label :phone_number %>
+    <%= @phone_number.value %>
   </div>
 
   <div>

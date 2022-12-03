@@ -16,6 +16,7 @@
     "@rails/ujs": "^7.0.4",
     "bootstrap": "^5.2.3",
     "esbuild": "^0.15.15",
+    "intl-tel-input": "^17.0.19",
     "sass": "^1.56.1"
   },
   "devDependencies": {
