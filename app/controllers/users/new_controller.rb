@@ -10,7 +10,7 @@ class Users::NewController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @phone_number = PhoneNumber.find(session[:phone_number_id])
-    @form = SignUpForm.new
+    @form = NewUserForm.new
   end
 
   sig { returns(T.untyped) }

@@ -12,8 +12,8 @@ class PhoneNumberConfirmationJob
 
     client.messages.create(
       from: ENV.fetch("MEWST_TWILIO_PHONE_NUMBER"),
-      to: phone_number_confirmation.phone_number_full,
-      body: phone_number_confirmation.code
+      to: phone_number_confirmation.phone_number,
+      body: phone_number_confirmation.sms_code
     )
   end
 

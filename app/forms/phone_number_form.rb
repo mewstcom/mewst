@@ -2,17 +2,8 @@
 # frozen_string_literal: true
 
 class PhoneNumberForm < ApplicationForm
-  attribute :code, :string
+  attribute :phone_number_origin, :string
+  attribute :phone_number, :string
 
-  attr_accessor :phone_number_confirmation
-
-  validates :code, presence: true
-  validates :phone_number_confirmation, presence: true
-  validate :code_equal_to_phone_number_confirmation_code
-
-  private def code_equal_to_phone_number_confirmation_code
-    if code != phone_number_confirmation&.code
-      errors.add(:code, :mismatch)
-    end
-  end
+  validates :phone_number, presence: true
 end

@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class ConfirmPhoneNumberService < ApplicationService
+class CreatePhoneNumberConfirmationService < ApplicationService
   class Error < T::Struct
     const :message, String
   end
@@ -11,7 +11,7 @@ class ConfirmPhoneNumberService < ApplicationService
     const :phone_number_confirmation, T.nilable(PhoneNumberConfirmation)
   end
 
-  sig { params(form: PhoneNumberConfirmationForm).void }
+  sig { params(form: PhoneNumberForm).void }
   def initialize(form:)
     @form = form
   end
@@ -20,8 +20,7 @@ class ConfirmPhoneNumberService < ApplicationService
   def call
     phone_number_confirmation = PhoneNumberConfirmation.create!(
       phone_number: @form.phone_number,
-      phone_number_full: @form.phone_number_full,
-      code: PhoneNumberConfirmation.generate_code
+      sms_code: PhoneNumberConfirmation.generate_sms_code
     )
 
     PhoneNumberConfirmationJob.perform_async(phone_number_confirmation.id)

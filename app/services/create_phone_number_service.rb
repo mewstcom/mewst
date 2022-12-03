@@ -11,7 +11,7 @@ class CreatePhoneNumberService < ApplicationService
     const :phone_number, T.nilable(PhoneNumber)
   end
 
-  sig { params(form: PhoneNumberForm).void }
+  sig { params(form: SmsCodeForm).void }
   def initialize(form:)
     @form = form
   end
@@ -19,7 +19,7 @@ class CreatePhoneNumberService < ApplicationService
   sig { returns(Result) }
   def call
     phone_number = ActiveRecord::Base.transaction do
-      phone_number = PhoneNumber.find_or_create_by!(value: @form.phone_number_confirmation.phone_number_full)
+      phone_number = PhoneNumber.find_or_create_by!(value: @form.phone_number_confirmation.phone_number)
       @form.phone_number_confirmation.destroy
 
       phone_number

@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class SignUpService < ApplicationService
+class CreateUserService < ApplicationService
   class Error < T::Struct
     const :message, String
   end
@@ -11,7 +11,7 @@ class SignUpService < ApplicationService
     const :user, T.nilable(User)
   end
 
-  sig { params(form: SignUpForm).void }
+  sig { params(form: NewUserForm).void }
   def initialize(form:)
     @form = form
   end

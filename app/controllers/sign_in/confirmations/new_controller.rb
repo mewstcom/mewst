@@ -1,13 +1,13 @@
 # typed: true
 # frozen_string_literal: true
 
-class PhoneNumbers::NewController < ApplicationController
+class SignIn::Confirmations::NewController < ApplicationController
   include Authenticatable
 
   before_action :require_no_authentication
 
   sig { returns(T.untyped) }
   def call
-    @form = PhoneNumberForm.new
+    @form = SmsCodeForm.new
   end
 end

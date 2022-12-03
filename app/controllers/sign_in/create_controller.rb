@@ -8,24 +8,21 @@ class SignIn::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = EmailConfirmationForm.new(form_params)
+    @form = PhoneNumberForm.new(form_params)
 
     if @form.invalid?
       return render("sign_in/new/call")
     end
 
-    ActiveRecord::Base.transaction do
-      ConfirmEmailService.new(form: @form).call
-    end
+    result = CreatePhoneNumberConfirmationService.new(form: @form).call
 
-    flash[:success] = t("messages.authentication.confirmation_email_sent")
-    redirect_to sign_in_path
+    session[:phone_number_confirmation_id] = result.phone_number_confirmation.id
+    flash[:success] = t("messages.authentication.confirmation_sms_sent")
+    redirect_to sign_in_new_confirmation_path
   end
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:authentication), ActionController::Parameters)
-      .permit(:email)
-      .merge(event: EmailConfirmationForm::EVENT_SIGN_IN)
+    T.cast(params.require(:phone_number_form), ActionController::Parameters).permit(:phone_number_origin, :phone_number)
   end
 end

@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class SignUpForm < ApplicationForm
+class NewUserForm < ApplicationForm
   attribute :idname, :string
 
   attr_accessor :phone_number

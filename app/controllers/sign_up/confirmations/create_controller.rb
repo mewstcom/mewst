@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class PhoneNumbers::CreateController < ApplicationController
+class SignUp::Confirmations::CreateController < ApplicationController
   include Authenticatable
 
   before_action :require_no_authentication
@@ -9,10 +9,10 @@ class PhoneNumbers::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     phone_number_confirmation = PhoneNumberConfirmation.find(session[:phone_number_confirmation_id])
-    @form = PhoneNumberForm.new(form_params.merge(phone_number_confirmation:))
+    @form = SmsCodeForm.new(form_params.merge(phone_number_confirmation:))
 
     if @form.invalid?
-      return render("phone_numbers/new/call")
+      return render("sign_up/confirmations/new/call")
     end
 
     result = CreatePhoneNumberService.new(form: @form).call
@@ -23,6 +23,6 @@ class PhoneNumbers::CreateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:phone_number_form), ActionController::Parameters).permit(:code)
+    T.cast(params.require(:sms_code_form), ActionController::Parameters).permit(:sms_code)
   end
 end

@@ -10,13 +10,13 @@ class Users::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @phone_number = PhoneNumber.find(session[:phone_number_id])
-    @form = SignUpForm.new(form_params.merge(phone_number: @phone_number))
+    @form = NewUserForm.new(form_params.merge(phone_number: @phone_number))
 
     if @form.invalid?
       return render("users/new/call")
     end
 
-    result = SignUpService.new(form: @form).call
+    result = CreateUserService.new(form: @form).call
 
     reset_session
     sign_in(result.user)
@@ -26,7 +26,7 @@ class Users::CreateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:sign_up_form), ActionController::Parameters).permit(:idname)
+    T.cast(params.require(:new_user_form), ActionController::Parameters).permit(:idname)
   end
 
   sig { returns(T.untyped) }

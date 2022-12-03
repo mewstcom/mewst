@@ -1,0 +1,8 @@
+<%= form_with model: @form, url: sign_in_confirmation_list_path do |f| %>
+  <div>
+    <%= f.label :sms_code %>
+    <%= f.text_field :sms_code %>
+  </div>
+
+  <%= f.submit %>
+<% end %>
