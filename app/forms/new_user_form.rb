@@ -4,6 +4,7 @@
 class NewUserForm < ApplicationForm
   attribute :idname, :string
 
+  sig { returns(T.nilable(PhoneNumberConfirmation)) }
   attr_accessor :phone_number_confirmation
 
   validates :idname, format: {with: Profile::IDNAME_FORMAT}, length: {maximum: 20}, presence: true

@@ -16,7 +16,7 @@ class SignIn::CreateController < ApplicationController
 
     result = CreatePhoneNumberConfirmationService.new(form: @form).call
 
-    session[:phone_number_confirmation_id] = result.phone_number_confirmation.id
+    session[:phone_number_confirmation_id] = T.must(result.phone_number_confirmation).id
     flash[:success] = t("messages.authentication.confirmation_sms_sent")
     redirect_to sign_in_new_confirmation_path
   end

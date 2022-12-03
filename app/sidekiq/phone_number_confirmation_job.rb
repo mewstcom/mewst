@@ -21,6 +21,6 @@ class PhoneNumberConfirmationJob
 
   sig { returns(Twilio::REST::Client) }
   private def client
-    @client ||= Twilio::REST::Client.new(ENV.fetch("MEWST_TWILIO_ACCOUNT_SID"), ENV.fetch("MEWST_TWILIO_AUTH_TOKEN"))
+    @client ||= T.let(Twilio::REST::Client.new(ENV.fetch("MEWST_TWILIO_ACCOUNT_SID"), ENV.fetch("MEWST_TWILIO_AUTH_TOKEN")), T.nilable(Twilio::REST::Client))
   end
 end

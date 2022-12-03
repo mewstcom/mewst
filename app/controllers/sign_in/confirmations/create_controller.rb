@@ -19,7 +19,7 @@ class SignIn::Confirmations::CreateController < ApplicationController
 
     ActiveRecord::Base.transaction do
       phone_number_confirmation.destroy
-      sign_in(phone_number.user)
+      sign_in(T.must(phone_number.user))
     end
 
     redirect_to home_path

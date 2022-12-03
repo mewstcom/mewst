@@ -19,7 +19,7 @@ class Users::CreateController < ApplicationController
     result = CreateUserService.new(form: @form).call
 
     reset_session
-    sign_in(result.user)
+    sign_in(T.must(result.user))
 
     redirect_to home_path
   end

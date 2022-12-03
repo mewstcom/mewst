@@ -8,7 +8,7 @@ class Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PostForm.new(form_params.merge(profile: current_user.profile))
+    @form = PostForm.new(form_params.merge(profile: T.must(current_user).profile))
 
     if @form.invalid?
       return render("home/show/call", status: :unprocessable_entity)

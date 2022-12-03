@@ -18,17 +18,22 @@ class CreateUserService < ApplicationService
 
   sig { returns(Result) }
   def call
-    user = ActiveRecord::Base.transaction do
+    phone_number_confirmation = T.must(@form.phone_number_confirmation)
+
+    new_user = ActiveRecord::Base.transaction do
       user = User.create!
-      phone_number = PhoneNumber.find_or_create_by!(value: @form.phone_number_confirmation.phone_number)
+      phone_number = PhoneNumber.find_or_create_by!(value: phone_number_confirmation.phone_number)
+
       user.create_user_phone_number!(phone_number:)
+
       profile = user.create_profile!(idname: @form.idname, profilable_type: :user)
       user.create_user_profile!(profile:)
-      @form.phone_number_confirmation.destroy
+
+      phone_number_confirmation.destroy
 
       user
     end
 
-    Result.new(user:)
+    Result.new(user: new_user)
   end
 end
