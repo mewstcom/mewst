@@ -20,9 +20,11 @@ class CreateUserService < ApplicationService
   def call
     user = ActiveRecord::Base.transaction do
       user = User.create!
-      user.create_user_phone_number!(phone_number: @form.phone_number)
+      phone_number = PhoneNumber.find_or_create_by!(value: @form.phone_number_confirmation.phone_number)
+      user.create_user_phone_number!(phone_number:)
       profile = user.create_profile!(idname: @form.idname, profilable_type: :user)
       user.create_user_profile!(profile:)
+      @form.phone_number_confirmation.destroy
 
       user
     end

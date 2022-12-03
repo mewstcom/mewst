@@ -15,6 +15,8 @@ class PhoneNumberConfirmationJob
       to: phone_number_confirmation.phone_number,
       body: phone_number_confirmation.sms_code
     )
+  rescue Twilio::REST::RestError => e
+    Rails.logger.error(e)
   end
 
   sig { returns(Twilio::REST::Client) }

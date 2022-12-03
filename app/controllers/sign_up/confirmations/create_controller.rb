@@ -15,9 +15,6 @@ class SignUp::Confirmations::CreateController < ApplicationController
       return render("sign_up/confirmations/new/call")
     end
 
-    result = CreatePhoneNumberService.new(form: @form).call
-
-    session[:phone_number_id] = result.phone_number.id
     redirect_to new_user_path
   end
 

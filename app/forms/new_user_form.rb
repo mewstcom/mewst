@@ -4,10 +4,10 @@
 class NewUserForm < ApplicationForm
   attribute :idname, :string
 
-  attr_accessor :phone_number
+  attr_accessor :phone_number_confirmation
 
   validates :idname, format: {with: Profile::IDNAME_FORMAT}, length: {maximum: 20}, presence: true
-  validates :phone_number, presence: true
+  validates :phone_number_confirmation, presence: true
   validate :idname_uniqueness
 
   sig { returns(T.untyped) }

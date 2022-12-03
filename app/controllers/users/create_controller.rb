@@ -4,13 +4,13 @@
 class Users::CreateController < ApplicationController
   include Authenticatable
 
-  before_action :require_confirmed_phone_number
+  before_action :require_phone_number_confirmation_id
   before_action :require_no_authentication
 
   sig { returns(T.untyped) }
   def call
-    @phone_number = PhoneNumber.find(session[:phone_number_id])
-    @form = NewUserForm.new(form_params.merge(phone_number: @phone_number))
+    @phone_number_confirmation = PhoneNumberConfirmation.find(session[:phone_number_confirmation_id])
+    @form = NewUserForm.new(form_params.merge(phone_number_confirmation: @phone_number_confirmation))
 
     if @form.invalid?
       return render("users/new/call")
@@ -30,8 +30,8 @@ class Users::CreateController < ApplicationController
   end
 
   sig { returns(T.untyped) }
-  private def require_confirmed_phone_number
-    unless session[:phone_number_id]
+  private def require_phone_number_confirmation_id
+    unless session[:phone_number_confirmation_id]
       redirect_to root_path
     end
   end
