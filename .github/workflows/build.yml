@@ -33,14 +33,19 @@ jobs:
     env:
       RAILS_ENV: test
     services:
-      mysql:
-        image: mysql:8.0
+      postgresql:
+        image: postgres:14.6
         ports:
-          - 3306:3306
+          - 5432:5432
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          POSTGRES_USER: postgres
+          POSTGRES_DB: mewst_test
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: trust
+        # Adding a health check via options
+        # https://github.community/t5/GitHub-Actions/Github-Actions-services-not-reachable/td-p/30050
         options: >-
-          --health-cmd "mysqladmin ping"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
