@@ -110,7 +110,7 @@ CREATE TABLE public.organizations (
 CREATE TABLE public.phone_number_confirmations (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     phone_number character varying NOT NULL,
-    sms_code character varying NOT NULL,
+    verification_code character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -374,10 +374,10 @@ CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_pr
 
 
 --
--- Name: index_phone_number_confirmations_on_phone_number_and_sms_code; Type: INDEX; Schema: public; Owner: -
+-- Name: index_phone_number_confirmations_on_pn_and_vc; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_phone_number_confirmations_on_phone_number_and_sms_code ON public.phone_number_confirmations USING btree (phone_number, sms_code);
+CREATE UNIQUE INDEX index_phone_number_confirmations_on_pn_and_vc ON public.phone_number_confirmations USING btree (phone_number, verification_code);
 
 
 --

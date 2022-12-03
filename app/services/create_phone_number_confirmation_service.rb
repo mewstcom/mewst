@@ -20,7 +20,7 @@ class CreatePhoneNumberConfirmationService < ApplicationService
   def call
     phone_number_confirmation = PhoneNumberConfirmation.create!(
       phone_number: @form.phone_number,
-      sms_code: PhoneNumberConfirmation.generate_sms_code
+      verification_code: PhoneNumberConfirmation.generate_verification_code
     )
 
     PhoneNumberConfirmationJob.perform_async(phone_number_confirmation.id)

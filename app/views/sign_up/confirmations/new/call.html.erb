@@ -1,7 +1,7 @@
 <%= form_with model: @form, url: sign_up_confirmation_list_path do |f| %>
   <div>
-    <%= f.label :sms_code %>
-    <%= f.text_field :sms_code, autofocus: true %>
+    <%= f.label :verification_code %>
+    <%= f.text_field :verification_code, autofocus: true %>
   </div>
 
   <%= f.submit %>

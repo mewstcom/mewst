@@ -13,7 +13,7 @@ class PhoneNumberConfirmationJob
     client.messages.create(
       from: ENV.fetch("MEWST_TWILIO_PHONE_NUMBER"),
       to: phone_number_confirmation.phone_number,
-      body: phone_number_confirmation.sms_code
+      body: phone_number_confirmation.verification_code
     )
   rescue Twilio::REST::RestError => e
     Rails.logger.error(e)
