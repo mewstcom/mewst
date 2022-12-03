@@ -7,6 +7,7 @@
 class Profile
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include EnumMethodsModule
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -14,6 +15,11 @@ class Profile
 
   sig { returns(NilClass) }
   def to_ary; end
+
+  class << self
+    sig { returns(T::Hash[T.any(String, Symbol), Integer]) }
+    def profilable_types; end
+  end
 
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::Profile).returns(T.untyped))).returns(T::Boolean) }
@@ -175,6 +181,20 @@ class Profile
     def third_to_last!; end
   end
 
+  module EnumMethodsModule
+    sig { void }
+    def as_organization!; end
+
+    sig { returns(T::Boolean) }
+    def as_organization?; end
+
+    sig { void }
+    def as_user!; end
+
+    sig { returns(T::Boolean) }
+    def as_user?; end
+  end
+
   module GeneratedAssociationMethods
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
@@ -188,14 +208,17 @@ class Profile
     sig { params(value: T::Enumerable[::Follow]).void }
     def follows=(value); end
 
-    sig { returns(T.untyped) }
-    def profilable; end
+    sig { returns(T::Array[T.untyped]) }
+    def post_ids; end
 
-    sig { params(value: T.untyped).void }
-    def profilable=(value); end
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def post_ids=(ids); end
 
-    sig { returns(T.untyped) }
-    def reload_profilable; end
+    sig { returns(::Post::PrivateCollectionProxy) }
+    def posts; end
+
+    sig { params(value: T::Enumerable[::Post]).void }
+    def posts=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -207,6 +230,12 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def annotate(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def as_organization(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def as_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
@@ -306,6 +335,12 @@ class Profile
     def none(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_as_organization(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_as_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def offset(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -322,9 +357,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def order(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def organizations(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def preload(*args, &blk); end
@@ -379,9 +411,6 @@ class Profile
       ).returns(ActiveRecord::Result)
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def users(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
     def where(*args, &blk); end
@@ -526,16 +555,16 @@ class Profile
     sig { void }
     def description_will_change!; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(T.untyped) }
     def id; end
 
-    sig { params(value: ::Integer).returns(::Integer) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def id=(value); end
 
     sig { returns(T::Boolean) }
     def id?; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(T.untyped) }
     def id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -544,28 +573,28 @@ class Profile
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def id_changed?; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(T.untyped) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_previous_change; end
 
     sig { returns(T::Boolean) }
     def id_previously_changed?; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(T.untyped) }
     def id_previously_was; end
 
-    sig { returns(T.nilable(::Integer)) }
+    sig { returns(T.untyped) }
     def id_was; end
 
     sig { void }
@@ -661,61 +690,16 @@ class Profile
     sig { void }
     def name_will_change!; end
 
-    sig { returns(::Integer) }
-    def profilable_id; end
-
-    sig { params(value: ::Integer).returns(::Integer) }
-    def profilable_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def profilable_id?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def profilable_id_before_last_save; end
-
     sig { returns(T.untyped) }
-    def profilable_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def profilable_id_came_from_user?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def profilable_id_change; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def profilable_id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def profilable_id_changed?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def profilable_id_in_database; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def profilable_id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def profilable_id_previously_changed?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def profilable_id_previously_was; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def profilable_id_was; end
-
-    sig { void }
-    def profilable_id_will_change!; end
-
-    sig { returns(::String) }
     def profilable_type; end
 
-    sig { params(value: ::String).returns(::String) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def profilable_type=(value); end
 
     sig { returns(T::Boolean) }
     def profilable_type?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -724,28 +708,28 @@ class Profile
     sig { returns(T::Boolean) }
     def profilable_type_came_from_user?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def profilable_type_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_in_database; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_previous_change; end
 
     sig { returns(T::Boolean) }
     def profilable_type_previously_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_previously_was; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_was; end
 
     sig { void }
@@ -768,9 +752,6 @@ class Profile
 
     sig { void }
     def restore_name!; end
-
-    sig { void }
-    def restore_profilable_id!; end
 
     sig { void }
     def restore_profilable_type!; end
@@ -796,7 +777,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_description?; end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
@@ -814,13 +795,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def saved_change_to_profilable_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_profilable_id?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_profilable_type; end
 
     sig { returns(T::Boolean) }
@@ -896,9 +871,6 @@ class Profile
     def will_save_change_to_name?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_profilable_id?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_profilable_type?; end
 
     sig { returns(T::Boolean) }
@@ -914,6 +886,12 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def annotate(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def as_organization(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def as_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
@@ -979,6 +957,12 @@ class Profile
     def none(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_as_organization(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_as_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def offset(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -995,9 +979,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def order(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def organizations(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def preload(*args, &blk); end
@@ -1034,9 +1015,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def users(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
     def where(*args, &blk); end

@@ -9,9 +9,6 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def accounts_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -21,7 +18,10 @@ module GeneratedUrlHelpersModule
   def internal_api_following_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_account_url(*args); end
+  def new_user_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_component_url(*args); end
@@ -51,7 +51,10 @@ module GeneratedUrlHelpersModule
   def sidekiq_web_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_callback_url(*args); end
+  def sign_in_confirmation_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_in_new_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_in_url(*args); end
@@ -60,8 +63,14 @@ module GeneratedUrlHelpersModule
   def sign_out_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_callback_url(*args); end
+  def sign_up_confirmation_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_new_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_list_url(*args); end
 end
