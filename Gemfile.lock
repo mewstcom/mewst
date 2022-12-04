@@ -192,6 +192,8 @@ GEM
       parser (>= 2.6.4.0)
       sorbet-runtime (>= 0.5.9204)
       unparser
+    redis (5.0.5)
+      redis-client (>= 0.9.0)
     redis-client (0.11.2)
       connection_pool
     regexp_parser (2.6.1)
@@ -307,6 +309,7 @@ DEPENDENCIES
   activerecord-session_store
   bootsnap
   bullet
+  connection_pool
   cssbundling-rails
   debug
   dotenv-rails
@@ -317,6 +320,7 @@ DEPENDENCIES
   propshaft
   puma
   rails (~> 7.0.0)
+  redis
   rspec-rails
   rubocop-rails
   rubocop-rspec

@@ -10,13 +10,21 @@ services:
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
 
-  redis:
+  redis_cache:
     image: redis:7.0
     ports:
-      - 6379:6379
+      - 16379:6379
     volumes:
-      - redis_data:/data
+      - redis_cache_data:/data
+
+  redis_sidekiq:
+    image: redis:7.0
+    ports:
+      - 26379:6379
+    volumes:
+      - redis_sidekiq_data:/data
 
 volumes:
   postgresql_data:
-  redis_data:
+  redis_cache_data:
+  redis_sidekiq_data:

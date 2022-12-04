@@ -1,3 +1,16 @@
 <%= render Navbars::NavbarComponent.new %>
 
-<%= render Forms::PostFormComponent.new(form: @form) %>
+<div class="container">
+  <%= render Forms::PostFormComponent.new(form: @form) %>
+
+  <div>
+    <% @posts.each do |post| %>
+      <div>
+        <div>
+          @<%= post.profile.idname %>
+        </div>
+        <%= post.body %>
+      </div>
+    <% end %>
+  </div>
+</div>

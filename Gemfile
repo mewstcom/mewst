@@ -9,12 +9,14 @@ gem "rails", "~> 7.0.0"
 
 gem "activerecord-session_store"
 gem "bootsnap", require: false
+gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
 gem "jsbundling-rails"
 gem "pg"
 gem "propshaft"
 gem "puma"
+gem "redis"
 gem "sidekiq"
 gem "sorbet-runtime"
 gem "twilio-ruby"

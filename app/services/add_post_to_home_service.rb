@@ -1,28 +1,27 @@
 # typed: strict
 # frozen_string_literal: true
 
-class CreatePostService < ApplicationService
+class AddPostToHomeService < ApplicationService
   class Error < T::Struct
     const :message, String
   end
 
   class Result < T::Struct
     const :errors, T::Array[Error], default: []
-    const :post, T.nilable(Post)
   end
 
-  sig { params(form: PostForm).void }
+  sig { params(form: PostToHomeForm).void }
   def initialize(form:)
     @form = form
   end
 
   sig { returns(Result) }
   def call
+    post = T.must(@form.post)
     profile = T.must(@form.profile)
-    post = profile.posts.create!(body: @form.body)
 
-    FanOutPostJob.perform_async(post.id)
+    Mewst::Redis.client.zadd(profile.inbox_key, post.inbox_item_score, post.id)
 
-    Result.new(post:)
+    Result.new
   end
 end

@@ -67,6 +67,20 @@ CREATE TABLE public.follows (
 
 
 --
+-- Name: lists; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lists (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    profile_id uuid NOT NULL,
+    name character varying NOT NULL,
+    main boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: organization_members; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -223,6 +237,14 @@ ALTER TABLE ONLY public.follows
 
 
 --
+-- Name: lists lists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lists
+    ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: organization_members organization_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -329,6 +351,13 @@ CREATE UNIQUE INDEX index_follows_on_source_profile_id_and_target_profile_id ON 
 --
 
 CREATE INDEX index_follows_on_target_profile_id ON public.follows USING btree (target_profile_id);
+
+
+--
+-- Name: index_lists_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_lists_on_profile_id ON public.lists USING btree (profile_id);
 
 
 --
@@ -505,6 +534,14 @@ ALTER TABLE ONLY public.organization_members
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_abf061b756 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: lists fk_rails_c5455dc75c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lists
+    ADD CONSTRAINT fk_rails_c5455dc75c FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --
