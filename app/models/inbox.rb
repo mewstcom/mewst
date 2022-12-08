@@ -14,6 +14,6 @@ class Inbox
     start = "+inf"
     stop = "-inf"
 
-    Mewst::Redis.client.zrange(@inboxable.inbox_key, start, stop, by_score: true, rev: true, limit: [0, limit])
+    T.cast(Mewst::Redis.client, Redis).zrange(@inboxable.inbox_key, start, stop, by_score: true, rev: true, limit: [0, limit])
   end
 end

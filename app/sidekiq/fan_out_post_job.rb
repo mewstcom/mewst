@@ -25,7 +25,7 @@ class FanOutPostJob
 
   sig { params(post: Post).void }
   private def add_post_to_followers_home(post:)
-    followers = post.profile.followers
+    followers = T.must(post.profile).follows
 
     followers.find_each do |follower|
       AddPostToHomeJob.perform_async(post.id, follower.id)

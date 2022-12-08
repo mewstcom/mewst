@@ -202,11 +202,47 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def follow_ids=(ids); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def followee_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def followee_ids=(ids); end
+
+    sig { returns(::Profile::PrivateCollectionProxy) }
+    def followees; end
+
+    sig { params(value: T::Enumerable[::Profile]).void }
+    def followees=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def follower_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def follower_ids=(ids); end
+
+    sig { returns(::Profile::PrivateCollectionProxy) }
+    def followers; end
+
+    sig { params(value: T::Enumerable[::Profile]).void }
+    def followers=(value); end
+
     sig { returns(::Follow::PrivateCollectionProxy) }
     def follows; end
 
     sig { params(value: T::Enumerable[::Follow]).void }
     def follows=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def inverse_follow_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def inverse_follow_ids=(ids); end
+
+    sig { returns(::Follow::PrivateCollectionProxy) }
+    def inverse_follows; end
+
+    sig { params(value: T::Enumerable[::Follow]).void }
+    def inverse_follows=(value); end
 
     sig { returns(T::Array[T.untyped]) }
     def post_ids; end

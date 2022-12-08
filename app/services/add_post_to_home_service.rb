@@ -20,7 +20,7 @@ class AddPostToHomeService < ApplicationService
     post = T.must(@form.post)
     profile = T.must(@form.profile)
 
-    Mewst::Redis.client.zadd(profile.inbox_key, post.inbox_item_score, post.id)
+    T.cast(Mewst::Redis.client, Redis).zadd(profile.inbox_key, post.inbox_item_score, post.id)
 
     Result.new
   end

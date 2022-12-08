@@ -10,7 +10,7 @@ class Home::ShowController < ApplicationController
   def call
     @form = PostForm.new
 
-    post_ids = Inbox.new(current_user.profile).get_post_ids
+    post_ids = Inbox.new(T.must(T.must(current_user).profile)).get_post_ids
     @posts = Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
   end
 end

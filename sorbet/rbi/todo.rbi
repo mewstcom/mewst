@@ -4,11 +4,9 @@
 
 # typed: false
 
-module ::Account; end
 module ::PreviewHelper; end
-module ::SignUpForm; end
-module ::SignUpService; end
 module ActionMailer::Base::Mail::Message; end
+module ActiveSupport::Cache::ConnectionPoolLike; end
 module Minitest::Assertion; end
 module Minitest::Assertions; end
 module Module::Concerning; end
