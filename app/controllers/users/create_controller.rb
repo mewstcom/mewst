@@ -24,13 +24,15 @@ class Users::CreateController < ApplicationController
     redirect_to home_path
   end
 
+  private
+
   sig { returns(ActionController::Parameters) }
-  private def form_params
+  def form_params
     T.cast(params.require(:new_user_form), ActionController::Parameters).permit(:idname)
   end
 
   sig { returns(T.untyped) }
-  private def require_phone_number_confirmation_id
+  def require_phone_number_confirmation_id
     unless session[:phone_number_confirmation_id]
       redirect_to root_path
     end

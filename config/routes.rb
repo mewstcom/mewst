@@ -11,9 +11,10 @@ Rails.application.routes.draw do
   end
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
-  match "/@:idname",                   via: :get,  as: :profile,                     to: "profiles/show#call",          idname: ROUTING_USERNAME_FORMAT
-  match "/api/internal/follow/toggle", via: :post, as: :internal_api_follow_toggle,  to: "api/internal/follow/toggle/create#call"
+  match "/@:idname",                   via: :get,  as: :profile,                     to: "profiles/show#call",                idname: ROUTING_USERNAME_FORMAT
+  match "/api/internal/follow",        via: :post, as: :internal_api_follow,         to: "api/internal/follow/create#call"
   match "/api/internal/following",     via: :post, as: :internal_api_following_list, to: "api/internal/following/index#call"
+  match "/api/internal/unfollow",      via: :post, as: :internal_api_unfollow,       to: "api/internal/unfollow/create#call"
   match "/home",                       via: :get,  as: :home,                        to: "home/show#call"
   match "/posts",                      via: :post, as: :post_list,                   to: "posts/create#call"
   match "/sign_in",                    via: :get,  as: :sign_in,                     to: "sign_in/new#call"

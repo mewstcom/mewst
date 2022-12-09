@@ -1,7 +1,7 @@
 <%= render Navbars::NavbarComponent.new %>
 
 <div class="container">
-  <%= render Forms::PostFormComponent.new(form: @form) %>
+  <%= render Forms::PostFormComponent.new(post_creator: @post_creator) %>
 
   <div>
     <% @posts.each do |post| %>
@@ -9,7 +9,7 @@
         <div>
           @<%= post.profile.idname %>
         </div>
-        <%= post.body %>
+        <%= post.content %>
       </div>
     <% end %>
   </div>

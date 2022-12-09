@@ -1,13 +1,13 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Inboxable
+module TimelineOwnable
   extend T::Sig
   extend T::Helpers
 
   interface!
 
   sig { abstract.returns(String) }
-  def inbox_key
+  def timeline_key
   end
 end

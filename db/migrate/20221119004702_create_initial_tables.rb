@@ -71,7 +71,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :posts, id: :uuid do |t|
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.text :body, null: false
+      t.text :content, null: false
       t.timestamps
     end
   end

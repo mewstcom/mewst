@@ -8,20 +8,25 @@ class Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PostForm.new(form_params.merge(profile: T.must(current_user).profile))
+    content, = post_creator_params.values_at(:content)
+    @post_creator = T.must(current_profile).new_post(
+      content:
+    )
 
-    if @form.invalid?
+    if @post_creator.invalid?
       return render("home/show/call", status: :unprocessable_entity)
     end
 
-    CreatePostService.new(form: @form).call
+    @post_creator.call
 
     flash[:notice] = t("messages.posts.created")
     redirect_to home_path
   end
 
+  private
+
   sig { returns(ActionController::Parameters) }
-  private def form_params
-    T.cast(params.require(:post_form), ActionController::Parameters).permit(:body)
+  def post_creator_params
+    T.cast(params.require(:post_creator), ActionController::Parameters).permit(:content)
   end
 end

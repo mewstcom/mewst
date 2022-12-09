@@ -4,10 +4,10 @@
 class Mewst::Redis
   extend T::Sig
 
-  sig { returns(T.nilable(ConnectionPool::Wrapper)) }
+  sig { returns(T.any(ConnectionPool::Wrapper, Redis)) }
   def self.client
     @redis ||= T.let(ConnectionPool::Wrapper.new do
       Redis.new(url: ENV.fetch("MEWST_REDIS_CACHE_URL"))
-    end, T.nilable(ConnectionPool::Wrapper))
+    end, T.any(T.nilable(ConnectionPool::Wrapper), T.nilable(Redis)))
   end
 end

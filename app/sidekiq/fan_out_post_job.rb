@@ -10,25 +10,29 @@ class FanOutPostJob
   def perform(post_id)
     post = Post.find(post_id)
 
-    add_post_to_own_home(post:)
-    add_post_to_followers_home(post:)
+    add_post_to_own_home_timeline(post:)
+    add_post_to_followers_home_timeline(post:)
 
     true
   rescue ActiveRecord::RecordNotFound
     true
   end
 
-  sig { params(post: Post).void }
-  private def add_post_to_own_home(post:)
-    AddPostToHomeJob.perform_async(post.id, post.profile_id)
-  end
+  private
 
   sig { params(post: Post).void }
-  private def add_post_to_followers_home(post:)
+  def add_post_to_own_home_timeline(post:)
+    AddPostToHomeTimelineJob.perform_async(post.profile_id, post.id)
+  end
+
+  private
+
+  sig { params(post: Post).void }
+  def add_post_to_followers_home_timeline(post:)
     followers = T.must(post.profile).follows
 
     followers.find_each do |follower|
-      AddPostToHomeJob.perform_async(post.id, follower.id)
+      AddPostToHomeTimelineJob.perform_async(follower.id, post.id)
     end
   end
 end

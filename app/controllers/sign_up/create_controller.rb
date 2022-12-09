@@ -21,8 +21,10 @@ class SignUp::CreateController < ApplicationController
     redirect_to sign_up_new_confirmation_path
   end
 
+  private
+
   sig { returns(ActionController::Parameters) }
-  private def form_params
+  def form_params
     T.cast(params.require(:phone_number_form), ActionController::Parameters).permit(:phone_number_origin, :phone_number)
   end
 end

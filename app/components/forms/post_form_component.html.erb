@@ -1,6 +1,6 @@
 <div class="c-post-form">
-  <%= form_with model: @form, url: post_list_path do |f| %>
-    <%= f.text_area :body, autofocus: true %>
+  <%= form_with model: @post_creator, url: post_list_path do |f| %>
+    <%= f.text_area :content, autofocus: true %>
     <%= f.submit %>
   <% end %>
 </div>

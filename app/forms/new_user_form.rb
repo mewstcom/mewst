@@ -11,8 +11,10 @@ class NewUserForm < ApplicationForm
   validates :phone_number_confirmation, presence: true
   validate :idname_uniqueness
 
+  private
+
   sig { returns(T.untyped) }
-  private def idname_uniqueness
+  def idname_uniqueness
     if Profile.find_by(idname:)
       errors.add(:idname, :idname_uniqueness)
     end

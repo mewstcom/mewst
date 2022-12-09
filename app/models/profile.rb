@@ -3,7 +3,7 @@
 
 class Profile < ApplicationRecord
   include SoftDeletable
-  include Inboxable
+  include TimelineOwnable
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
@@ -18,7 +18,45 @@ class Profile < ApplicationRecord
   validates :idname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   sig { override.returns(String) }
-  def inbox_key
-    "inbox:profile:#{id}"
+  def timeline_key
+    "timeline:profile:#{id}"
+  end
+
+  sig { params(target_profile: Profile).returns(T::Boolean) }
+  def following?(target_profile:)
+    follows.exists?(target_profile:)
+  end
+
+  sig { params(target_profile: Profile).returns(T::Boolean) }
+  def my_profile?(target_profile:)
+    idname == target_profile.idname
+  end
+
+  sig { params(target_profile: Profile).returns(Profile::Friendship) }
+  def follow(target_profile:)
+    creator = Profile::Friendship.new(source_profile: self, target_profile:)
+
+    return creator if creator.invalid?
+
+    creator.follow
+  end
+
+  sig { params(target_profile: Profile).returns(Profile::Friendship) }
+  def unfollow(target_profile:)
+    creator = Profile::Friendship.new(source_profile: self, target_profile:)
+
+    return creator if creator.invalid?
+
+    creator.unfollow
+  end
+
+  sig { params(content: T.nilable(String)).returns(Post::Creator) }
+  def new_post(content: nil)
+    Post::Creator.new(profile: self, content:)
+  end
+
+  sig { params(post: Post).returns(Profile::Timeline::Home) }
+  def add_post_to_home_timeline(post:)
+    Profile::Timeline::Home.new(profile: self).add_post(post:)
   end
 end

@@ -18,8 +18,10 @@ class SignUp::Confirmations::CreateController < ApplicationController
     redirect_to new_user_path
   end
 
+  private
+
   sig { returns(ActionController::Parameters) }
-  private def form_params
+  def form_params
     T.cast(params.require(:verification_code_form), ActionController::Parameters).permit(:verification_code)
   end
 end

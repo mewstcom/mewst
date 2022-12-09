@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  delegate :follows, :idname, to: :profile
-
   has_one :user_phone_number, dependent: :restrict_with_exception
   has_one :user_profile, dependent: :restrict_with_exception
   has_one :phone_number, dependent: :restrict_with_exception, through: :user_phone_number
@@ -18,15 +16,5 @@ class User < ApplicationRecord
     self.sign_in_count += 1
 
     save!(validate: false)
-  end
-
-  sig { params(target_profile: Profile).returns(T::Boolean) }
-  def my_profile?(target_profile:)
-    idname == target_profile.idname
-  end
-
-  sig { params(target_profile: Profile).returns(T::Boolean) }
-  def following?(target_profile:)
-    follows.exists?(target_profile:)
   end
 end

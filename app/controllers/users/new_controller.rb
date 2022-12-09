@@ -13,8 +13,10 @@ class Users::NewController < ApplicationController
     @form = NewUserForm.new
   end
 
+  private
+
   sig { returns(T.untyped) }
-  private def require_phone_number_confirmation_id
+  def require_phone_number_confirmation_id
     unless session[:phone_number_confirmation_id]
       redirect_to root_path
     end

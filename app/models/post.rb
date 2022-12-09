@@ -5,7 +5,7 @@ class Post < ApplicationRecord
   belongs_to :profile
 
   sig { returns(String) }
-  def inbox_item_score
+  def timeline_item_score
     T.must(created_at).to_datetime.strftime("%Q")
   end
 end

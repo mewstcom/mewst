@@ -43,21 +43,31 @@ export default class extends Controller {
     this.loadingTarget.hidden = false;
   }
 
-  async toggleFollow(_event: any) {
+  async follow(_event: any) {
     this.showLoadingButton();
 
     try {
-      await fetcher.post('/api/internal/follow/toggle', {
+      await fetcher.post('/api/internal/follow', {
         idname: this.idnameValue,
       });
 
-      if (this.isFollowing) {
-        this.isFollowing = false;
-        this.showFollowButton();
-      } else {
-        this.isFollowing = true;
-        this.showFollowingButton();
-      }
+      this.isFollowing = true;
+      this.showFollowingButton();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async unfollow(_event: any) {
+    this.showLoadingButton();
+
+    try {
+      await fetcher.post('/api/internal/unfollow', {
+        idname: this.idnameValue,
+      });
+
+      this.isFollowing = false;
+      this.showFollowButton();
     } catch (err) {
       console.error(err);
     }
