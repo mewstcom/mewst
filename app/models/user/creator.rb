@@ -16,6 +16,7 @@ class User::Creator
   def initialize(phone_number_verification:, idname: nil)
     @phone_number_verification = phone_number_verification
     @idname = idname
+    @user = T.let(nil, T.nilable(User))
   end
 
   sig { returns(T.self_type) }
