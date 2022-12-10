@@ -12,10 +12,13 @@ module GeneratedPathHelpersModule
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_follow_toggle_path(*args); end
+  def internal_api_follow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_following_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_unfollow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_path(*args); end
@@ -63,13 +66,13 @@ module GeneratedPathHelpersModule
   def sign_out_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_confirmation_list_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_new_confirmation_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sign_up_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_verification_attempt_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_verification_new_attempt_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_list_path(*args); end

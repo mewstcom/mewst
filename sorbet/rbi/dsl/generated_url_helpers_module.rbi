@@ -12,10 +12,13 @@ module GeneratedUrlHelpersModule
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_follow_toggle_url(*args); end
+  def internal_api_follow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_following_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_unfollow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_url(*args); end
@@ -63,13 +66,13 @@ module GeneratedUrlHelpersModule
   def sign_out_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_confirmation_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_new_confirmation_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_verification_attempt_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_verification_new_attempt_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_list_url(*args); end

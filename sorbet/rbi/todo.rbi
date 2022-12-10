@@ -4,6 +4,10 @@
 
 # typed: false
 
+module ::CreateUserService; end
+module ::DEBUGGER__::TrapInterceptor; end
+module ::NewUserForm; end
+module ::PhoneNumberConfirmation; end
 module ::PreviewHelper; end
 module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
@@ -13,3 +17,9 @@ module Module::Concerning; end
 module Sidekiq::Process; end
 module Sidekiq::SortedEntry; end
 module Sidekiq::Web; end
+module SignIn::Confirmations::CreateController::PhoneNumberConfirmation; end
+module SignIn::Confirmations::CreateController::VerificationCodeForm; end
+module SignIn::Confirmations::NewController::VerificationCodeForm; end
+module SignIn::CreateController::CreatePhoneNumberConfirmationService; end
+module SignIn::CreateController::PhoneNumberForm; end
+module SignIn::NewController::PhoneNumberForm; end

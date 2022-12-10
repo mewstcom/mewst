@@ -73,8 +73,8 @@ class Post
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Post).void)).returns(::Post) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::Post)) }
-    def find_sole_by; end
+    sig { params(arg: T.untyped, args: T.untyped).returns(::Post) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -145,7 +145,7 @@ class Post
     sig { returns(::Post) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::Post)) }
+    sig { returns(::Post) }
     def sole; end
 
     sig do
@@ -377,49 +377,49 @@ class Post
 
   module GeneratedAttributeMethods
     sig { returns(::String) }
-    def body; end
+    def content; end
 
     sig { params(value: ::String).returns(::String) }
-    def body=(value); end
+    def content=(value); end
 
     sig { returns(T::Boolean) }
-    def body?; end
+    def content?; end
 
     sig { returns(T.nilable(::String)) }
-    def body_before_last_save; end
+    def content_before_last_save; end
 
     sig { returns(T.untyped) }
-    def body_before_type_cast; end
+    def content_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def body_came_from_user?; end
+    def content_came_from_user?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def body_change; end
+    def content_change; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def body_change_to_be_saved; end
+    def content_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
-    def body_changed?; end
+    def content_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def body_in_database; end
+    def content_in_database; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def body_previous_change; end
+    def content_previous_change; end
 
     sig { returns(T::Boolean) }
-    def body_previously_changed?; end
+    def content_previously_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def body_previously_was; end
+    def content_previously_was; end
 
     sig { returns(T.nilable(::String)) }
-    def body_was; end
+    def content_was; end
 
     sig { void }
-    def body_will_change!; end
+    def content_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
@@ -557,7 +557,7 @@ class Post
     def profile_id_will_change!; end
 
     sig { void }
-    def restore_body!; end
+    def restore_content!; end
 
     sig { void }
     def restore_created_at!; end
@@ -572,10 +572,10 @@ class Post
     def restore_updated_at!; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_body; end
+    def saved_change_to_content; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_body?; end
+    def saved_change_to_content?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -647,7 +647,7 @@ class Post
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_body?; end
+    def will_save_change_to_content?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end

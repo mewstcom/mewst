@@ -79,8 +79,8 @@ class Profile
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::Profile)) }
-    def find_sole_by; end
+    sig { params(arg: T.untyped, args: T.untyped).returns(::Profile) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -151,7 +151,7 @@ class Profile
     sig { returns(::Profile) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::Profile)) }
+    sig { returns(::Profile) }
     def sole; end
 
     sig do
@@ -208,6 +208,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def followee_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followees, through: :follows`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followees; end
 
@@ -220,12 +222,16 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def follower_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followers, through: :inverse_follows`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followers; end
 
     sig { params(value: T::Enumerable[::Profile]).void }
     def followers=(value); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :follows`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def follows; end
 
@@ -238,6 +244,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def inverse_follow_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :inverse_follows`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def inverse_follows; end
 
@@ -250,6 +258,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def post_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :posts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Post::PrivateCollectionProxy) }
     def posts; end
 
@@ -726,16 +736,16 @@ class Profile
     sig { void }
     def name_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(::String) }
     def profilable_type; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: T.any(::String, ::Symbol, ::Integer)).returns(T.any(::String, ::Symbol, ::Integer)) }
     def profilable_type=(value); end
 
     sig { returns(T::Boolean) }
     def profilable_type?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def profilable_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -744,28 +754,28 @@ class Profile
     sig { returns(T::Boolean) }
     def profilable_type_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def profilable_type_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def profilable_type_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def profilable_type_changed?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def profilable_type_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def profilable_type_previous_change; end
 
     sig { returns(T::Boolean) }
     def profilable_type_previously_changed?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def profilable_type_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def profilable_type_was; end
 
     sig { void }
@@ -831,7 +841,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_profilable_type; end
 
     sig { returns(T::Boolean) }

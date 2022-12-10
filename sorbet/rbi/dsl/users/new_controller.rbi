@@ -15,6 +15,9 @@ class Users::NewController
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 
+    sig { returns(T.nilable(::Profile)) }
+    def current_profile; end
+
     sig { returns(T.nilable(::User)) }
     def current_user; end
 
