@@ -12,7 +12,7 @@ class SendPhoneNumberVerificationMessageJob
 
     body = "Confirmation code: #{phone_number_verification.confirmation_code}"
     if ENV["MEWST_TWILIO_SKIP"]
-      puts body
+      Rails.logger.debug(body)
     else
       client.messages.create(
         from: ENV.fetch("MEWST_TWILIO_PHONE_NUMBER"),
