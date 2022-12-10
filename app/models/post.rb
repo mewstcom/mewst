@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
+  CONTENT_MAXIMUM_LENGTH = 500
+
   belongs_to :profile
 
   sig { returns(String) }

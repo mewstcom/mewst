@@ -9,8 +9,6 @@ class Home::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @post_creator = T.must(current_profile).new_post
-
-    post_ids = Timeline.new(T.must(current_profile)).get_post_ids
-    @posts = Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
+    @posts = T.must(current_profile).home_timeline_posts
   end
 end

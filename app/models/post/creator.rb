@@ -6,7 +6,7 @@ class Post::Creator
 
   include ActiveModel::Model
 
-  validates :content, length: {maximum: 1_000}, presence: true
+  validates :content, length: {maximum: Post::CONTENT_MAXIMUM_LENGTH}, presence: true
 
   sig { params(profile: Profile, content: T.nilable(String)).void }
   def initialize(profile:, content:)

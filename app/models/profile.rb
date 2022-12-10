@@ -32,6 +32,12 @@ class Profile < ApplicationRecord
     idname == target_profile.idname
   end
 
+  T::Sig::WithoutRuntime.sig { returns(Post::PrivateRelation) }
+  def home_timeline_posts
+    post_ids = ::Timeline.new(self).get_post_ids
+    Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
+  end
+
   sig { params(target_profile: Profile).returns(Profile::Friendship) }
   def follow(target_profile:)
     creator = Profile::Friendship.new(source_profile: self, target_profile:)

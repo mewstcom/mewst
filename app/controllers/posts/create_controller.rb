@@ -14,6 +14,7 @@ class Posts::CreateController < ApplicationController
     )
 
     if @post_creator.invalid?
+      @posts = T.must(current_profile).home_timeline_posts
       return render("home/show/call", status: :unprocessable_entity)
     end
 
