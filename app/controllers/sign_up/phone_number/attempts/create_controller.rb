@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class SignUp::Verification::Attempts::CreateController < ApplicationController
+class SignUp::PhoneNumber::Attempts::CreateController < ApplicationController
   include Authenticatable
 
   before_action :require_no_authentication

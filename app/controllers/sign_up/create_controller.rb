@@ -19,7 +19,7 @@ class SignUp::CreateController < ApplicationController
 
     session[:phone_number_verification_id] = @phone_number_verification.id
     flash[:success] = t("messages.authentication.confirmation_sms_sent")
-    redirect_to sign_up_verification_new_attempt_path
+    redirect_to sign_up_phone_number_new_attempt_path
   end
 
   private

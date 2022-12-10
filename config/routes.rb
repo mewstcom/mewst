@@ -24,8 +24,8 @@ Rails.application.routes.draw do
   match "/sign_out",                          via: :get,  as: :sign_out,                          to: "sign_out/show#call"
   match "/sign_up",                           via: :get,  as: :sign_up,                           to: "sign_up/new#call"
   match "/sign_up",                           via: :post,                                         to: "sign_up/create#call"
-  match "/sign_up/verification/attempts",     via: :post, as: :sign_up_verification_attempt_list, to: "sign_up/verification/attempts/create#call"
-  match "/sign_up/verification/attempts/new", via: :get,  as: :sign_up_verification_new_attempt,  to: "sign_up/verification/attempts/new#call"
+  match "/sign_up/phone_number/attempts",     via: :post, as: :sign_up_phone_number_attempt_list, to: "sign_up/phone_number/attempts/create#call"
+  match "/sign_up/phone_number/attempts/new", via: :get,  as: :sign_up_phone_number_new_attempt,  to: "sign_up/phone_number/attempts/new#call"
   match "/users",                             via: :post, as: :user_list,                         to: "users/create#call"
   match "/users/new",                         via: :get,  as: :new_user,                          to: "users/new#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
