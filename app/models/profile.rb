@@ -12,6 +12,7 @@ class Profile < ApplicationRecord
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
+  has_one_attached :avatar
 
   enum :profilable_type, {user: 0, organization: 1}, prefix: :as
 

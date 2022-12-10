@@ -1,7 +1,9 @@
 en:
   nouns:
-    following: Following
+    current_avatar: Current avatar
+    edit_profile: Edit Profile
     error: Error
+    following: Following
     menu: Menu
     profile: Profile
     sign_in: Sign in

@@ -8,3 +8,5 @@ en:
       sign_up_link_expired: Sign up link has expired. Please try again later.
     posts:
       created: Post created.
+    profiles:
+      updated: Profile updated.

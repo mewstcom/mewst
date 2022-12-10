@@ -4,6 +4,7 @@
 /config/master.key
 /log/*
 /node_modules
+/storage/*
 /tmp/*
 
 /app/assets/builds/*

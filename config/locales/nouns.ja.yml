@@ -1,7 +1,9 @@
 ja:
   nouns:
-    following: フォロー中
+    current_avatar: 現在の画像
+    edit_profile: プロフィール編集
     error: エラー
+    following: フォロー中
     menu: メニュー
     profile: プロフィール
     sign_in: ログイン

@@ -36,6 +36,16 @@
               </li>
 
               <li>
+                <%= link_to settings_profile_path, class: "dropdown-item" do %>
+                  <%= t("nouns.edit_profile") %>
+                <% end %>
+              </li>
+
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
                 <%= link_to t("nouns.sign_out"), sign_out_path, class: "dropdown-item" %>
               </li>
             </ul>

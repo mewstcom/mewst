@@ -40,5 +40,7 @@ module Mewst
     config.active_job.queue_adapter = :sidekiq
 
     config.active_record.schema_format = :sql
+
+    config.active_storage.variant_processor = :vips
   end
 end
