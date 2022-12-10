@@ -1,31 +1,31 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe CreateUserService do
+RSpec.describe User::Creator do
   context "when valid" do
     let!(:phone_number) { "+819000000000" }
-    let!(:phone_number_confirmation) { create(:phone_number_confirmation, phone_number:) }
+    let!(:phone_number_verification) { create(:phone_number_verification, phone_number:) }
     let!(:idname) { "hello" }
-    let!(:form) { NewUserForm.new(phone_number_confirmation:, idname:) }
+    let!(:user_creator) { User::Creator.new(phone_number_verification:, idname:) }
 
     it "creates an account" do
-      expect(PhoneNumberConfirmation.count).to eq(1)
+      expect(PhoneNumberVerification.count).to eq(1)
       expect(PhoneNumber.count).to eq(0)
       expect(Profile.count).to eq(0)
       expect(UserPhoneNumber.count).to eq(0)
       expect(UserProfile.count).to eq(0)
       expect(User.count).to eq(0)
 
-      result = CreateUserService.new(form:).call
+      user_creator.call
 
-      expect(PhoneNumberConfirmation.count).to eq(0)
+      expect(PhoneNumberVerification.count).to eq(0)
       expect(PhoneNumber.count).to eq(1)
       expect(Profile.count).to eq(1)
       expect(UserPhoneNumber.count).to eq(1)
       expect(UserProfile.count).to eq(1)
       expect(User.count).to eq(1)
 
-      user = result.user
+      user = user_creator.user
 
       expect(user).to have_attributes(
         sign_in_count: 0,
