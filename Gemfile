@@ -12,6 +12,7 @@ gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
+gem "image_processing" # Used by Active Storage
 gem "jsbundling-rails"
 gem "pg"
 gem "propshaft"
