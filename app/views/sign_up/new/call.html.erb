@@ -1,4 +1,4 @@
-<%= form_with model: @form, url: sign_up_path do |f| %>
+<%= form_with model: @phone_number_verification, url: sign_up_path do |f| %>
   <%= f.label :phone_number_origin %>
   <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :phone_number_origin, autofocus: true) %>
 

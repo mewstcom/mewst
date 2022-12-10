@@ -8,23 +8,24 @@ class SignUp::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PhoneNumberForm.new(form_params)
+    @phone_number_verification = PhoneNumberVerification.new(phone_number_verification_params)
+    @phone_number_verification.set_confirmation_code
 
-    if @form.invalid?
+    if @phone_number_verification.invalid?
       return render("sign_up/new/call")
     end
 
-    result = CreatePhoneNumberConfirmationService.new(form: @form).call
+    @phone_number_verification.send_sms
 
-    session[:phone_number_confirmation_id] = T.must(result.phone_number_confirmation).id
+    session[:phone_number_verification_id] = @phone_number_verification.id
     flash[:success] = t("messages.authentication.confirmation_sms_sent")
-    redirect_to sign_up_new_confirmation_path
+    redirect_to sign_up_verification_new_attempt_path
   end
 
   private
 
   sig { returns(ActionController::Parameters) }
-  def form_params
-    T.cast(params.require(:phone_number_form), ActionController::Parameters).permit(:phone_number_origin, :phone_number)
+  def phone_number_verification_params
+    T.cast(params.require(:phone_number_verification), ActionController::Parameters).permit(:phone_number, :phone_number_origin)
   end
 end

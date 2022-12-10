@@ -8,6 +8,6 @@ class SignUp::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PhoneNumberForm.new
+    @phone_number_verification = PhoneNumberVerification.new
   end
 end

@@ -4,22 +4,24 @@
 class Users::CreateController < ApplicationController
   include Authenticatable
 
-  before_action :require_phone_number_confirmation_id
+  before_action :require_phone_number_verification_id
   before_action :require_no_authentication
 
   sig { returns(T.untyped) }
   def call
-    @phone_number_confirmation = PhoneNumberConfirmation.find(session[:phone_number_confirmation_id])
-    @form = NewUserForm.new(form_params.merge(phone_number_confirmation: @phone_number_confirmation))
+    @phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
+    @user_creator = @phone_number_verification.new_user_creator(
+      idname: user_creator_params[:idname]
+    )
 
-    if @form.invalid?
+    if @user_creator.invalid?
       return render("users/new/call")
     end
 
-    result = CreateUserService.new(form: @form).call
+    @user_creator.call
 
     reset_session
-    sign_in(T.must(result.user))
+    sign_in(T.must(@user_creator.user))
 
     redirect_to home_path
   end
@@ -27,13 +29,13 @@ class Users::CreateController < ApplicationController
   private
 
   sig { returns(ActionController::Parameters) }
-  def form_params
-    T.cast(params.require(:new_user_form), ActionController::Parameters).permit(:idname)
+  def user_creator_params
+    T.cast(params.require(:user_creator), ActionController::Parameters).permit(:idname)
   end
 
   sig { returns(T.untyped) }
-  def require_phone_number_confirmation_id
-    unless session[:phone_number_confirmation_id]
+  def require_phone_number_verification_id
+    unless session[:phone_number_verification_id]
       redirect_to root_path
     end
   end
