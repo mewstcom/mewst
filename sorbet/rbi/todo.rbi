@@ -17,9 +17,3 @@ module Module::Concerning; end
 module Sidekiq::Process; end
 module Sidekiq::SortedEntry; end
 module Sidekiq::Web; end
-module SignIn::Confirmations::CreateController::PhoneNumberConfirmation; end
-module SignIn::Confirmations::CreateController::VerificationCodeForm; end
-module SignIn::Confirmations::NewController::VerificationCodeForm; end
-module SignIn::CreateController::CreatePhoneNumberConfirmationService; end
-module SignIn::CreateController::PhoneNumberForm; end
-module SignIn::NewController::PhoneNumberForm; end
