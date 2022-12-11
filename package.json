@@ -15,7 +15,7 @@
     "@popperjs/core": "^2.11.6",
     "@rails/ujs": "^7.0.4",
     "autosize": "^5.0.2",
-    "bootstrap": "^5.2.3",
+    "bootstrap": "twbs/bootstrap#main",
     "esbuild": "^0.16.4",
     "intl-tel-input": "^17.0.19",
     "sass": "^1.56.2"
