@@ -80,6 +80,4 @@ Rails.application.configure do
     port: ENV.fetch("MEWST_SMTP_PORT"),
     authentication: ENV.fetch("MEWST_SMTP_AUTHENTICATION", :cram_md5)
   }
-
-  config.active_storage.service = :local
 end

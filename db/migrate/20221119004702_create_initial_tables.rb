@@ -48,6 +48,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.citext :idname, index: {unique: true}, null: false
       t.string :name, default: "", null: false
       t.string :description, default: "", null: false
+      t.text :avatar_data
       t.timestamp :deleted_at
       t.timestamps
     end

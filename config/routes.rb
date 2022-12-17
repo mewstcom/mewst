@@ -10,13 +10,7 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  direct :cdn_image do |model, options|
-    signed_blob_id = model.blob.signed_id
-    variation_key = model.variation.key
-    filename = model.blob.filename
-
-    route_for(:rails_blob_representation_proxy, signed_blob_id, variation_key, filename, options.merge(host: ENV.fetch("MEWST_HOST")))
-  end
+  mount ImageUploader.derivation_endpoint => "/image"
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:idname",                          via: :get,   as: :profile,                           to: "profiles/show#call",                        idname: ROUTING_USERNAME_FORMAT

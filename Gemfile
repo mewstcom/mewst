@@ -12,12 +12,13 @@ gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
-gem "image_processing" # Used by Active Storage
+gem "image_processing" # Used by Shrine
 gem "jsbundling-rails"
 gem "pg"
 gem "propshaft"
 gem "puma"
 gem "redis"
+gem "shrine"
 gem "sidekiq"
 gem "sorbet-runtime"
 gem "twilio-ruby"

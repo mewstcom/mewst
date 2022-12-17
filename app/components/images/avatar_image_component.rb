@@ -13,6 +13,6 @@ class Images::AvatarImageComponent < ApplicationComponent
 
   sig { returns(T::Boolean) }
   def render?
-    @profile.avatar.attached?
+    @profile.master_avatar.exists?
   end
 end

@@ -34,6 +34,7 @@
 
     <div class="mb-3">
       <%= f.label :avatar, class: "form-label" %>
+      <%= f.hidden_field :avatar, value: f.object.cached_avatar_data %>
       <%= f.file_field :avatar, {
         class: "form-control"
       } %>
@@ -45,9 +46,7 @@
       </label>
 
       <div>
-        <% if @profile.avatar.attached? %>
-          <%= render Images::AvatarImageComponent.new(profile: @profile, width: 50) %>
-        <% end %>
+        <%= render Images::AvatarImageComponent.new(profile: @profile, width: 50) %>
       </div>
     </div>
 
