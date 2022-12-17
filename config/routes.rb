@@ -17,9 +17,9 @@ Rails.application.routes.draw do
   match "/@:idname/posts/:post_id",           via: :get,   as: :post,                              to: "posts/show#call",                           idname: ROUTING_USERNAME_FORMAT
   match "/api/internal/follow",               via: :post,  as: :internal_api_follow,               to: "api/internal/follow/create#call"
   match "/api/internal/following",            via: :post,  as: :internal_api_following_list,       to: "api/internal/following/index#call"
+  match "/api/internal/posts",                via: :post,  as: :internal_api_post_list,            to: "api/internal/posts/create#call"
   match "/api/internal/unfollow",             via: :post,  as: :internal_api_unfollow,             to: "api/internal/unfollow/create#call"
   match "/home",                              via: :get,   as: :home,                              to: "home/show#call"
-  match "/posts",                             via: :post,  as: :post_list,                         to: "posts/create#call"
   match "/settings/profile",                  via: :get,   as: :settings_profile,                  to: "settings/profiles/show#call"
   match "/settings/profile",                  via: :patch,                                         to: "settings/profiles/update#call"
   match "/sign_in",                           via: :get,   as: :sign_in,                           to: "sign_in/new#call"

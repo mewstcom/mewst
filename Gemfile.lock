@@ -121,6 +121,7 @@ GEM
     io-console (0.5.11)
     irb (1.5.1)
       reline (>= 0.3.0)
+    jb (0.8.0)
     jsbundling-rails (1.1.1)
       railties (>= 6.0.0)
     json (2.6.3)
@@ -334,6 +335,7 @@ DEPENDENCIES
   email_validator
   factory_bot_rails
   image_processing
+  jb
   jsbundling-rails
   pg
   propshaft

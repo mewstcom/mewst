@@ -6,7 +6,7 @@
     </div>
 
     <div class="col-5">
-      <%= render Forms::PostFormComponent.new(post_creator: @post_creator) %>
+      <%= render Forms::PostFormComponent.new %>
     </div>
 
     <div class="col-5">
@@ -18,7 +18,10 @@
     </div>
 
     <div class="col-5">
-      <div class="gap-3 pt-3 vstack">
+      <div
+        class="c-timeline gap-3 pt-3 vstack"
+        data-controller="timeline"
+      >
         <% @posts.each do |post| %>
           <%= render Cards::PostCardComponent.new(post:) %>
         <% end %>

@@ -1,20 +1,26 @@
-<div class="c-post-form">
-  <%= form_with model: @post_creator, url: post_list_path do |f| %>
-    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+<form
+  class="c-post-form"
+  data-action="post-form#submit:prevent"
+  data-controller="post-form"
+  data-post-form-timeline-outlet=".c-timeline"
+>
+  <div class="mb-2">
+    <textarea
+      autofocus="true"
+      class="form-control"
+      data-controller="autosize"
+      data-post-form-target="content"
+    ></textarea>
+  </div>
 
-    <div class="mb-2">
-      <%= f.text_area :content, {
-        autofocus: true,
-        class: "form-control",
-        data: { controller: "autosize" }
-      } %>
-    </div>
-
-    <div class="text-center">
-      <%= f.button class: "btn btn-primary", type: :submit do %>
-        <i class="bi bi-send mr-1"></i>
-        <%= t("verbs.post") %>
-      <% end %>
-    </div>
-  <% end %>
-</div>
+  <div class="text-center">
+    <button
+      class="btn btn-primary"
+      data-post-form-target="submitButton"
+      type="submit"
+    >
+      <i class="bi bi-send mr-1"></i>
+      <%= t("verbs.post") %>
+    </button>
+  </div>
+</form>

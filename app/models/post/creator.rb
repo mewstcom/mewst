@@ -6,6 +6,9 @@ class Post::Creator
 
   include ActiveModel::Model
 
+  sig { returns(T.nilable(Post)) }
+  attr_reader :post
+
   validates :content, length: {maximum: Post::CONTENT_MAXIMUM_LENGTH}, presence: true
 
   sig { params(profile: Profile, content: T.nilable(String)).void }
@@ -16,9 +19,9 @@ class Post::Creator
 
   sig { returns(T.self_type) }
   def call
-    post = profile.posts.create!(content:)
+    @post = profile.posts.create!(content:)
 
-    FanOutPostJob.perform_async(post.id)
+    FanOutPostJob.perform_async(@post.id)
 
     self
   end

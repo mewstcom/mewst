@@ -13,6 +13,7 @@ gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
 gem "image_processing" # Used by Shrine
+gem "jb"
 gem "jsbundling-rails"
 gem "pg"
 gem "propshaft"
