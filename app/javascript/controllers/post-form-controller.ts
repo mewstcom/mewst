@@ -1,8 +1,8 @@
 import { Controller } from '@hotwired/stimulus';
 import * as Turbo from '@hotwired/turbo';
 
-import TimelineController from "./timeline-controller";
-import fetcher from "../utils/fetcher";
+import TimelineController from './timeline-controller';
+import fetcher from '../utils/fetcher';
 
 export default class extends Controller {
   static outlets = ['timeline'];
@@ -19,7 +19,7 @@ export default class extends Controller {
       const content = this.contentTarget.value;
 
       const response = await fetcher.post('/api/internal/posts', {
-        content
+        content,
       });
 
       this.contentTarget.value = '';
@@ -33,6 +33,5 @@ export default class extends Controller {
     }
 
     this.submitButtonTarget.disabled = false;
-
   }
 }
