@@ -11,12 +11,6 @@ class Profile
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
-  sig { returns(ActiveStorage::Attached::One) }
-  def avatar; end
-
-  sig { params(attachable: T.untyped).returns(T.untyped) }
-  def avatar=(attachable); end
-
   private
 
   sig { returns(NilClass) }
@@ -202,36 +196,6 @@ class Profile
   end
 
   module GeneratedAssociationMethods
-    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
-    def avatar_attachment; end
-
-    sig { params(value: T.nilable(::ActiveStorage::Attachment)).void }
-    def avatar_attachment=(value); end
-
-    sig { returns(T.nilable(::ActiveStorage::Blob)) }
-    def avatar_blob; end
-
-    sig { params(value: T.nilable(::ActiveStorage::Blob)).void }
-    def avatar_blob=(value); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
-    def build_avatar_attachment(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
-    def build_avatar_blob(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
-    def create_avatar_attachment(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
-    def create_avatar_attachment!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
-    def create_avatar_blob(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
-    def create_avatar_blob!(*args, &blk); end
-
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
 
@@ -291,12 +255,6 @@ class Profile
 
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
-
-    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
-    def reload_avatar_attachment; end
-
-    sig { returns(T.nilable(::ActiveStorage::Blob)) }
-    def reload_avatar_blob; end
   end
 
   module GeneratedAssociationRelationMethods
@@ -494,13 +452,55 @@ class Profile
     def where(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def with_attached_avatar(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
   end
 
   module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def avatar_data; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def avatar_data=(value); end
+
+    sig { returns(T::Boolean) }
+    def avatar_data?; end
+
+    sig { returns(T.nilable(::String)) }
+    def avatar_data_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def avatar_data_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def avatar_data_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def avatar_data_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def avatar_data_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def avatar_data_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def avatar_data_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def avatar_data_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def avatar_data_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def avatar_data_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def avatar_data_was; end
+
+    sig { void }
+    def avatar_data_will_change!; end
+
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
 
@@ -817,6 +817,9 @@ class Profile
     def profilable_type_will_change!; end
 
     sig { void }
+    def restore_avatar_data!; end
+
+    sig { void }
     def restore_created_at!; end
 
     sig { void }
@@ -839,6 +842,12 @@ class Profile
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_avatar_data; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_avatar_data?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -932,6 +941,9 @@ class Profile
 
     sig { void }
     def updated_at_will_change!; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_avatar_data?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
@@ -1099,9 +1111,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
     def where(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def with_attached_avatar(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def without(*args, &blk); end

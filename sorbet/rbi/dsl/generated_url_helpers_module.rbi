@@ -9,9 +9,6 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def cdn_image_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -42,21 +39,6 @@ module GeneratedUrlHelpersModule
   def profile_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def rails_blob_representation_proxy_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_blob_representation_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_blob_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_direct_uploads_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_disk_service_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -67,21 +49,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_representation_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_service_blob_proxy_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_service_blob_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_storage_proxy_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_storage_redirect_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def root_url(*args); end
@@ -112,9 +79,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def update_rails_disk_service_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_list_url(*args); end

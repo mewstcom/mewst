@@ -6,11 +6,13 @@
 
 module ::PreviewHelper; end
 module ActionMailer::Base::Mail::Message; end
-module ActiveStorage::Attached::One; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
+module ImageUploader::MIME::Types; end
+module ImageUploader::UploadedFile; end
 module Minitest::Assertion; end
 module Minitest::Assertions; end
 module Module::Concerning; end
+module Shrine::Storage::FileSystem; end
 module Sidekiq::Process; end
 module Sidekiq::SortedEntry; end
 module Sidekiq::Web; end
