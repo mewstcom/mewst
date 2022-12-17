@@ -116,8 +116,8 @@ class PhoneNumberVerification
     end
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::PhoneNumberVerification) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::PhoneNumberVerification)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -205,7 +205,7 @@ class PhoneNumberVerification
     sig { returns(::PhoneNumberVerification) }
     def second_to_last!; end
 
-    sig { returns(::PhoneNumberVerification) }
+    sig { returns(T.nilable(::PhoneNumberVerification)) }
     def sole; end
 
     sig do

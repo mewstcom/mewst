@@ -4,12 +4,9 @@
 
 # typed: false
 
-module ::CreateUserService; end
-module ::DEBUGGER__::TrapInterceptor; end
-module ::NewUserForm; end
-module ::PhoneNumberConfirmation; end
 module ::PreviewHelper; end
 module ActionMailer::Base::Mail::Message; end
+module ActiveStorage::Attached::One; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
 module Minitest::Assertion; end
 module Minitest::Assertions; end

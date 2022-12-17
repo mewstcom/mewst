@@ -11,6 +11,12 @@ class Profile
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
+  sig { returns(ActiveStorage::Attached::One) }
+  def avatar; end
+
+  sig { params(attachable: T.untyped).returns(T.untyped) }
+  def avatar=(attachable); end
+
   private
 
   sig { returns(NilClass) }
@@ -79,8 +85,8 @@ class Profile
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::Profile) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::Profile)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -151,7 +157,7 @@ class Profile
     sig { returns(::Profile) }
     def second_to_last!; end
 
-    sig { returns(::Profile) }
+    sig { returns(T.nilable(::Profile)) }
     def sole; end
 
     sig do
@@ -196,6 +202,36 @@ class Profile
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
+    def avatar_attachment; end
+
+    sig { params(value: T.nilable(::ActiveStorage::Attachment)).void }
+    def avatar_attachment=(value); end
+
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
+    def avatar_blob; end
+
+    sig { params(value: T.nilable(::ActiveStorage::Blob)).void }
+    def avatar_blob=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def build_avatar_attachment(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def build_avatar_blob(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def create_avatar_attachment(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def create_avatar_attachment!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def create_avatar_blob(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def create_avatar_blob!(*args, &blk); end
+
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
 
@@ -208,8 +244,6 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def followee_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followees, through: :follows`.
-    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followees; end
 
@@ -222,16 +256,12 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def follower_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followers, through: :inverse_follows`.
-    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followers; end
 
     sig { params(value: T::Enumerable[::Profile]).void }
     def followers=(value); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :follows`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def follows; end
 
@@ -244,8 +274,6 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def inverse_follow_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :inverse_follows`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def inverse_follows; end
 
@@ -258,13 +286,17 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def post_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :posts`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Post::PrivateCollectionProxy) }
     def posts; end
 
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
+
+    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
+    def reload_avatar_attachment; end
+
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
+    def reload_avatar_blob; end
   end
 
   module GeneratedAssociationRelationMethods
@@ -460,6 +492,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
     def where(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def with_attached_avatar(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
@@ -736,16 +771,16 @@ class Profile
     sig { void }
     def name_will_change!; end
 
-    sig { returns(::String) }
+    sig { returns(T.untyped) }
     def profilable_type; end
 
-    sig { params(value: T.any(::String, ::Symbol, ::Integer)).returns(T.any(::String, ::Symbol, ::Integer)) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def profilable_type=(value); end
 
     sig { returns(T::Boolean) }
     def profilable_type?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -754,28 +789,28 @@ class Profile
     sig { returns(T::Boolean) }
     def profilable_type_came_from_user?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def profilable_type_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_in_database; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_previous_change; end
 
     sig { returns(T::Boolean) }
     def profilable_type_previously_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_previously_was; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_was; end
 
     sig { void }
@@ -841,7 +876,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_profilable_type; end
 
     sig { returns(T::Boolean) }
@@ -1064,6 +1099,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
     def where(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def with_attached_avatar(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def without(*args, &blk); end

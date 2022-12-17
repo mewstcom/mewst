@@ -15,6 +15,7 @@ class ApplicationController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
+    include ::ImageHelper
     include ::PreviewHelper
   end
 

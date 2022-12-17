@@ -113,8 +113,8 @@ class UserProfile
     end
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::UserProfile) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::UserProfile)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -190,7 +190,7 @@ class UserProfile
     sig { returns(::UserProfile) }
     def second_to_last!; end
 
-    sig { returns(::UserProfile) }
+    sig { returns(T.nilable(::UserProfile)) }
     def sole; end
 
     sig do

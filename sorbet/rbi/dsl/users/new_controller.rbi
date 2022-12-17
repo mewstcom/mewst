@@ -12,6 +12,7 @@ class Users::NewController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
+    include ::ImageHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 

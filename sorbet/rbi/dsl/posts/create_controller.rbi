@@ -12,6 +12,7 @@ class Posts::CreateController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
+    include ::ImageHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 

@@ -12,6 +12,7 @@ class Profiles::ShowController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
+    include ::ImageHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 
