@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:idname",                          via: :get,   as: :profile,                           to: "profiles/show#call",                        idname: ROUTING_USERNAME_FORMAT
+  match "/@:idname/posts/:post_id",           via: :get,   as: :post,                              to: "posts/show#call",                           idname: ROUTING_USERNAME_FORMAT
   match "/api/internal/follow",               via: :post,  as: :internal_api_follow,               to: "api/internal/follow/create#call"
   match "/api/internal/following",            via: :post,  as: :internal_api_following_list,       to: "api/internal/following/index#call"
   match "/api/internal/unfollow",             via: :post,  as: :internal_api_unfollow,             to: "api/internal/unfollow/create#call"

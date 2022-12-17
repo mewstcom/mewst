@@ -1,0 +1,48 @@
+<div
+  class="c-post-card card"
+  data-controller="post-card"
+  data-post-card-post-path-value="<%= post_path(profile.idname, post.id) %>"
+  data-post-card-sticky-post-frame-id-value="<%= dom_id(post) %>"
+  data-post-card-sticky-post-outlet=".c-sticky-post"
+>
+  <div class="card-body">
+    <div class="align-items-center gx-3 row">
+      <div class="col-auto">
+        <%= link_to profile_path(profile.idname) do %>
+          <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
+        <% end %>
+      </div>
+
+      <div class="col">
+        <div>
+          <%= link_to profile_path(profile.idname) do %>
+            <span class="fw-bold">
+              <%= profile.name %>
+            </span>
+
+            <span class="ms-1 text-muted">
+              @<%= profile.idname %>
+            </span>
+          <% end %>
+        </div>
+
+        <div class="small text-muted">
+          <%= link_to time_ago_in_words(post.created_at), post_path(profile.idname, post.id) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <%= post.content %>
+    </div>
+
+    <div class="mt-3">
+      <button
+        class="btn btn-outline-secondary"
+        data-action="click->post-card#showAsStickyPost"
+      >
+        <i class="bi bi-chat"></i>
+      </button>
+    </div>
+  </div>
+</div>

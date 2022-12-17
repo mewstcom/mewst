@@ -1,5 +1,7 @@
 .c-navbar {
   background-color: var(--mst-color-navbar-background);
+  height: $mst-navbar-height;
+  z-index: $zindex-sticky;
 
   .navbar-brand {
     color: var(--mst-color-navbar-brand-link);

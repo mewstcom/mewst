@@ -2,25 +2,38 @@
 
 <div class="mt-3 container-fluid">
   <div class="gx-3 row">
-    <div class="col-4">
+    <div class="col-2">
     </div>
 
-    <div class="col-4">
+    <div class="col-5">
       <%= render Forms::PostFormComponent.new(post_creator: @post_creator) %>
+    </div>
 
-      <div>
+    <div class="col-5">
+    </div>
+  </div>
+
+  <div class="gx-3 row">
+    <div class="col-2">
+    </div>
+
+    <div class="col-5">
+      <div class="gap-3 pt-3 vstack">
         <% @posts.each do |post| %>
-          <div>
-            <div>
-              @<%= post.profile.idname %>
-            </div>
-            <%= post.content %>
-          </div>
+          <%= render Cards::PostCardComponent.new(post:) %>
         <% end %>
       </div>
     </div>
 
-    <div class="col-4">
+    <div class="col-5">
+      <div
+        class="c-sticky-post position-sticky pt-3"
+        data-controller="sticky-post"
+      >
+        <turbo-frame
+          data-sticky-post-target="frame"
+        ></turbo-frame>
+      </div>
     </div>
   </div>
 </div>
