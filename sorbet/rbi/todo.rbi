@@ -4,6 +4,7 @@
 
 # typed: false
 
+module ::DEBUGGER__::TrapInterceptor; end
 module ::PreviewHelper; end
 module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
