@@ -736,6 +736,51 @@ class Profile
     sig { void }
     def idname_will_change!; end
 
+    sig { returns(T.untyped) }
+    def locale; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def locale=(value); end
+
+    sig { returns(T::Boolean) }
+    def locale?; end
+
+    sig { returns(T.untyped) }
+    def locale_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def locale_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def locale_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def locale_changed?; end
+
+    sig { returns(T.untyped) }
+    def locale_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def locale_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def locale_previously_was; end
+
+    sig { returns(T.untyped) }
+    def locale_was; end
+
+    sig { void }
+    def locale_will_change!; end
+
     sig { returns(::String) }
     def name; end
 
@@ -845,6 +890,9 @@ class Profile
     def restore_idname!; end
 
     sig { void }
+    def restore_locale!; end
+
+    sig { void }
     def restore_name!; end
 
     sig { void }
@@ -888,6 +936,12 @@ class Profile
 
     sig { returns(T::Boolean) }
     def saved_change_to_idname?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_locale; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_locale?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_name; end
@@ -969,6 +1023,9 @@ class Profile
 
     sig { returns(T::Boolean) }
     def will_save_change_to_idname?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_locale?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_name?; end

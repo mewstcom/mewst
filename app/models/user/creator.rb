@@ -7,8 +7,6 @@ class User::Creator
 
   include ActiveModel::Model
 
-  enumerize :locale, in: I18n.available_locales
-
   sig { returns(T.nilable(User)) }
   attr_reader :user
 
@@ -47,6 +45,9 @@ class User::Creator
 
   sig { returns(T.nilable(String)) }
   attr_reader :idname
+
+  sig { returns(T.nilable(Symbol)) }
+  attr_reader :locale
 
   sig { returns(T.untyped) }
   def idname_uniqueness

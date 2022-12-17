@@ -18,13 +18,13 @@ module GeneratedUrlHelpersModule
   def internal_api_following_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_api_post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_api_unfollow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_url(*args); end

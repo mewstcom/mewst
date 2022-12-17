@@ -18,13 +18,13 @@ module GeneratedPathHelpersModule
   def internal_api_following_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_api_post_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_api_unfollow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_user_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end
