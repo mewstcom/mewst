@@ -8,7 +8,7 @@ class Api::Internal::Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    post_creator = T.must(current_profile).new_post(
+    post_creator = current_profile!.new_post(
       content: T.cast(params[:content], String)
     )
 

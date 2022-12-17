@@ -10,7 +10,7 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = T.must(current_profile)
+    @profile = current_profile!
     @profile.attributes = profile_params
 
     if @profile.save

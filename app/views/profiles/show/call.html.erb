@@ -4,6 +4,6 @@
 
 <h1>@<%= @profile.idname %></h1>
 
-<% unless current_profile.my_profile?(target_profile: @profile) %>
+<% unless current_profile!.my_profile?(target_profile: @profile) %>
   <%= render Buttons::FollowButtonComponent.new(target_profile: @profile) %>
 <% end %>

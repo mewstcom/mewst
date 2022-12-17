@@ -10,6 +10,6 @@ class Home::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @posts = T.must(current_profile).home_timeline_posts
+    @posts = current_profile!.home_timeline_posts
   end
 end

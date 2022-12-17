@@ -13,7 +13,7 @@ class Api::Internal::Following::IndexController < ApplicationController
     end
 
     idnames = T.cast(params[:idnames], T::Array[String])
-    follows = T.must(current_profile).follows.where(target_profile: Profile.only_kept.where(idname: idnames))
+    follows = current_profile!.follows.where(target_profile: Profile.only_kept.where(idname: idnames))
     following_idnames = follows.map(&:target_profile).map { T.must(_1).idname }
 
     result = idnames.map do |idname|

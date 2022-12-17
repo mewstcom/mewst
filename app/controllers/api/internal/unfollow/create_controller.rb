@@ -10,11 +10,11 @@ class Api::Internal::Unfollow::CreateController < ApplicationController
   def call
     target_profile = Profile.only_kept.find_by!(idname: params[:idname])
 
-    unless T.must(current_profile).following?(target_profile:)
+    unless current_profile!.following?(target_profile:)
       return render(json: {}, status: :ok)
     end
 
-    unfollow_creator = T.must(current_profile).unfollow(target_profile:)
+    unfollow_creator = current_profile!.unfollow(target_profile:)
 
     if unfollow_creator.valid?
       return render(json: {}, status: :created)

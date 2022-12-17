@@ -6,7 +6,7 @@ module Authenticatable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_profile, :current_user, :signed_in?
+    helper_method :current_profile, :current_profile!, :current_user, :current_user!, :signed_in?
   end
 
   sig { params(user: User).returns(String) }
@@ -27,11 +27,21 @@ module Authenticatable
     @current_user ||= T.let(User.find_by(id: session[:user_id]), T.nilable(User))
   end
 
+  sig { returns(User) }
+  def current_user!
+    T.cast(current_user, User)
+  end
+
   sig { returns(T.nilable(Profile)) }
   def current_profile
     return unless signed_in?
 
-    @current_profile ||= T.let(T.must(current_user).profile, T.nilable(Profile))
+    @current_profile ||= T.let(current_user!.profile, T.nilable(Profile))
+  end
+
+  sig { returns(Profile) }
+  def current_profile!
+    T.cast(current_profile, Profile)
   end
 
   sig { returns(T::Boolean) }

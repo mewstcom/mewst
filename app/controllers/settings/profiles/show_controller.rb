@@ -10,6 +10,6 @@ class Settings::Profiles::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = T.must(current_profile)
+    @profile = current_profile!
   end
 end
