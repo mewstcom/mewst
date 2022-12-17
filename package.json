@@ -16,7 +16,7 @@
     "@rails/ujs": "^7.0.4",
     "autosize": "^5.0.2",
     "bootstrap": "twbs/bootstrap#main",
-    "esbuild": "^0.16.4",
+    "esbuild": "^0.16.8",
     "intl-tel-input": "^17.0.19",
     "sass": "^1.56.2"
   },
