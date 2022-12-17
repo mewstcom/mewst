@@ -60,10 +60,10 @@ module GeneratedUrlHelpersModule
   def sidekiq_web_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_attempt_list_url(*args); end
+  def sign_in_phone_number_new_verification_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_new_attempt_url(*args); end
+  def sign_in_phone_number_verification_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_in_url(*args); end
@@ -72,10 +72,10 @@ module GeneratedUrlHelpersModule
   def sign_out_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_attempt_list_url(*args); end
+  def sign_up_phone_number_new_verification_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_new_attempt_url(*args); end
+  def sign_up_phone_number_verification_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end

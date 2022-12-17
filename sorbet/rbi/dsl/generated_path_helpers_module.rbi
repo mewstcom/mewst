@@ -63,10 +63,10 @@ module GeneratedPathHelpersModule
   def sign_in_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_attempt_list_path(*args); end
+  def sign_in_phone_number_new_verification_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_new_attempt_path(*args); end
+  def sign_in_phone_number_verification_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_out_path(*args); end
@@ -75,10 +75,10 @@ module GeneratedPathHelpersModule
   def sign_up_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_attempt_list_path(*args); end
+  def sign_up_phone_number_new_verification_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_new_attempt_path(*args); end
+  def sign_up_phone_number_verification_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def user_list_path(*args); end

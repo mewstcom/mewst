@@ -1,32 +1,32 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe User::Creator do
+RSpec.describe Commands::CreateUser do
   context "when valid" do
     let!(:phone_number) { "+819000000000" }
-    let!(:phone_number_verification) { create(:phone_number_verification, phone_number:) }
+    let!(:phone_number_verification_challenge) { create(:phone_number_verification_challenge, phone_number:) }
     let!(:idname) { "hello" }
     let!(:locale) { "en" }
-    let!(:user_creator) { User::Creator.new(phone_number_verification:, idname:, locale:) }
+    let!(:command) { Commands::CreateUser.new(phone_number_verification_challenge:, idname:, locale:) }
 
     it "creates an account" do
-      expect(PhoneNumberVerification.count).to eq(1)
+      expect(PhoneNumberVerificationChallenge.count).to eq(1)
       expect(PhoneNumber.count).to eq(0)
       expect(Profile.count).to eq(0)
       expect(UserPhoneNumber.count).to eq(0)
       expect(UserProfile.count).to eq(0)
       expect(User.count).to eq(0)
 
-      user_creator.call
+      command.call
 
-      expect(PhoneNumberVerification.count).to eq(0)
+      expect(PhoneNumberVerificationChallenge.count).to eq(0)
       expect(PhoneNumber.count).to eq(1)
       expect(Profile.count).to eq(1)
       expect(UserPhoneNumber.count).to eq(1)
       expect(UserProfile.count).to eq(1)
       expect(User.count).to eq(1)
 
-      user = user_creator.user
+      user = command.user
 
       expect(user).to have_attributes(
         sign_in_count: 0,

@@ -2,13 +2,13 @@
 
 class CreateInitialTables < ActiveRecord::Migration[7.0]
   def change
-    create_table :phone_number_verifications, id: :uuid do |t|
+    create_table :phone_number_verification_challenges, id: :uuid do |t|
       t.string :phone_number, null: false
       t.string :phone_number_origin, null: false
       t.string :confirmation_code, null: false
       t.timestamps
 
-      t.index %i[phone_number confirmation_code], name: :index_phone_number_verifications_on_pn_and_cc, unique: true
+      t.index %i[phone_number confirmation_code], name: :index_phone_number_verification_challenges_on_pn_and_cc, unique: true
     end
 
     create_table :phone_numbers, id: :uuid do |t|

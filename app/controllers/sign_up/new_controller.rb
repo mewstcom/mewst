@@ -10,6 +10,6 @@ class SignUp::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @phone_number_verification = PhoneNumberVerification.new
+    @command = Commands::SetupPhoneNumberVerificationChallenge.new
   end
 end

@@ -104,10 +104,10 @@ CREATE TABLE public.organizations (
 
 
 --
--- Name: phone_number_verifications; Type: TABLE; Schema: public; Owner: -
+-- Name: phone_number_verification_challenges; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.phone_number_verifications (
+CREATE TABLE public.phone_number_verification_challenges (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     phone_number character varying NOT NULL,
     phone_number_origin character varying NOT NULL,
@@ -250,11 +250,11 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: phone_number_verifications phone_number_verifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: phone_number_verification_challenges phone_number_verification_challenges_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.phone_number_verifications
-    ADD CONSTRAINT phone_number_verifications_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.phone_number_verification_challenges
+    ADD CONSTRAINT phone_number_verification_challenges_pkey PRIMARY KEY (id);
 
 
 --
@@ -377,10 +377,10 @@ CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_pr
 
 
 --
--- Name: index_phone_number_verifications_on_pn_and_cc; Type: INDEX; Schema: public; Owner: -
+-- Name: index_phone_number_verification_challenges_on_pn_and_cc; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_phone_number_verifications_on_pn_and_cc ON public.phone_number_verifications USING btree (phone_number, confirmation_code);
+CREATE UNIQUE INDEX index_phone_number_verification_challenges_on_pn_and_cc ON public.phone_number_verification_challenges USING btree (phone_number, confirmation_code);
 
 
 --

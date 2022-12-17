@@ -20,8 +20,6 @@ class Profile < ApplicationRecord
 
   enum :profilable_type, {user: 0, organization: 1}, prefix: :as
 
-  validates :idname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
-
   sig { override.returns(String) }
   def timeline_key
     "timeline:profile:#{id}"
