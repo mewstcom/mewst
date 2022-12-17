@@ -6,7 +6,7 @@ class Images::AvatarImageComponent < ApplicationComponent
   def initialize(profile:, width:, alt: "")
     @profile = profile
     @width = width
-    @alt = alt.presence || "@#{@profile.idname}"
+    @alt = T.let(alt.presence || "@#{@profile.idname}", String)
   end
 
   private

@@ -5,7 +5,6 @@ class Cards::PostCardComponent < ApplicationComponent
   sig { params(post: Post).void }
   def initialize(post:)
     @post = post
-    @profile = T.let(post.profile, Profile)
   end
 
   private
@@ -14,5 +13,7 @@ class Cards::PostCardComponent < ApplicationComponent
   attr_reader :post
 
   sig { returns(Profile) }
-  attr_reader :profile
+  def profile
+    T.must(post.profile)
+  end
 end
