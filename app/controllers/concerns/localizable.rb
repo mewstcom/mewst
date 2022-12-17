@@ -17,6 +17,6 @@ module Localizable
   def preferred_locale
     preferred_languages = http_accept_language.user_preferred_languages
     # Chrome returns "ja", but Safari would return "ja-JP", not "ja".
-    preferred_languages.any? { |lang| lang.match?(/ja/) } ? :ja : :en
+    (preferred_languages.any? { |lang| lang.match?(/ja/) }) ? :ja : :en
   end
 end
