@@ -150,6 +150,7 @@ CREATE TABLE public.profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     profilable_type integer NOT NULL,
     idname public.citext NOT NULL,
+    locale character varying NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
     avatar_data text,

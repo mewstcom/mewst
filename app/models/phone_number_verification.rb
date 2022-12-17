@@ -11,9 +11,9 @@ class PhoneNumberVerification < ApplicationRecord
     PhoneNumberVerification::Attempt.new(phone_number_verification: self, confirmation_code:)
   end
 
-  sig { params(idname: T.nilable(String)).returns(User::Creator) }
-  def new_user_creator(idname: nil)
-    User::Creator.new(phone_number_verification: self, idname:)
+  sig { params(idname: T.nilable(String), locale: T.nilable(Symbol)).returns(User::Creator) }
+  def new_user_creator(idname: nil, locale: nil)
+    User::Creator.new(phone_number_verification: self, idname:, locale:)
   end
 
   sig { returns(T.self_type) }

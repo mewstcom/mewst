@@ -2,11 +2,15 @@
 # frozen_string_literal: true
 
 class Profile < ApplicationRecord
+  extend Enumerize
+
   include SoftDeletable
   include TimelineOwnable
   T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
+
+  enumerize :locale, in: I18n.available_locales
 
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
   has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
@@ -23,9 +27,9 @@ class Profile < ApplicationRecord
     "timeline:profile:#{id}"
   end
 
-  sig { returns(ImageUploader::UploadedFile) }
+  sig { returns(T.nilable(ImageUploader::UploadedFile)) }
   def master_avatar
-    avatar[:master]
+    avatar&.fetch(:master, nil)
   end
 
   sig { params(target_profile: Profile).returns(T::Boolean) }

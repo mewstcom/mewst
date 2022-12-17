@@ -33,6 +33,12 @@
     </div>
 
     <div class="mb-3">
+      <%= f.label :locale, class: "form-label" %>
+      <% options = options_for_select([[t("nouns.english"), "en"], [t("nouns.japanese"), "ja"]], @profile.locale) %>
+      <%= f.select :locale, options, {}, { class: "form-control" } %>
+    </div>
+
+    <div class="mb-3">
       <%= f.label :avatar, class: "form-label" %>
       <%= f.hidden_field :avatar, value: f.object.cached_avatar_data %>
       <%= f.file_field :avatar, {

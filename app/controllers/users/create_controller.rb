@@ -3,7 +3,9 @@
 
 class Users::CreateController < ApplicationController
   include Authenticatable
+  include Localizable
 
+  around_action :set_locale
   before_action :require_phone_number_verification_id
   before_action :require_no_authentication
 
@@ -11,7 +13,8 @@ class Users::CreateController < ApplicationController
   def call
     @phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
     @user_creator = @phone_number_verification.new_user_creator(
-      idname: user_creator_params[:idname]
+      idname: user_creator_params[:idname],
+      locale: I18n.locale
     )
 
     if @user_creator.invalid?

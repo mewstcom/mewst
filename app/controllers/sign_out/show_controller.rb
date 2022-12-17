@@ -3,7 +3,9 @@
 
 class SignOut::ShowController < ApplicationController
   include Authenticatable
+  include Localizable
 
+  around_action :set_locale
   before_action :require_authentication
 
   sig { returns(T.untyped) }

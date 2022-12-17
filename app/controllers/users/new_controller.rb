@@ -3,7 +3,9 @@
 
 class Users::NewController < ApplicationController
   include Authenticatable
+  include Localizable
 
+  around_action :set_locale
   before_action :require_phone_number_verification_id
   before_action :require_no_authentication
 

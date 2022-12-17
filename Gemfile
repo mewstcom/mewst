@@ -12,6 +12,8 @@ gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
+gem "enumerize"
+gem "http_accept_language"
 gem "image_processing" # Used by Shrine
 gem "jb"
 gem "jsbundling-rails"

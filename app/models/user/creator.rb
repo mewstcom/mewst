@@ -3,8 +3,11 @@
 
 class User::Creator
   extend T::Sig
+  extend Enumerize
 
   include ActiveModel::Model
+
+  enumerize :locale, in: I18n.available_locales
 
   sig { returns(T.nilable(User)) }
   attr_reader :user
@@ -12,10 +15,11 @@ class User::Creator
   validates :idname, format: {with: Profile::IDNAME_FORMAT}, length: {maximum: 20}, presence: true
   validate :idname_uniqueness
 
-  sig { params(phone_number_verification: PhoneNumberVerification, idname: T.nilable(String)).void }
-  def initialize(phone_number_verification:, idname: nil)
+  sig { params(phone_number_verification: PhoneNumberVerification, idname: T.nilable(String), locale: T.nilable(Symbol)).void }
+  def initialize(phone_number_verification:, idname: nil, locale: nil)
     @phone_number_verification = phone_number_verification
     @idname = idname
+    @locale = locale
     @user = T.let(nil, T.nilable(User))
   end
 
@@ -27,7 +31,7 @@ class User::Creator
 
       @user.create_user_phone_number!(phone_number:)
 
-      profile = @user.create_profile!(idname:, profilable_type: :user)
+      profile = @user.create_profile!(idname:, profilable_type: :user, locale:)
       @user.create_user_profile!(profile:)
 
       phone_number_verification.destroy

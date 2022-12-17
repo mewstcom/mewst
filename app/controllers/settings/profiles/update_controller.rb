@@ -3,7 +3,9 @@
 
 class Settings::Profiles::UpdateController < ApplicationController
   include Authenticatable
+  include Localizable
 
+  around_action :set_locale
   before_action :require_authentication
 
   sig { returns(T.untyped) }
@@ -23,6 +25,6 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def profile_params
-    T.cast(params.require(:profile), ActionController::Parameters).permit(:idname, :name, :description, :avatar)
+    T.cast(params.require(:profile), ActionController::Parameters).permit(:idname, :name, :description, :locale, :avatar)
   end
 end
