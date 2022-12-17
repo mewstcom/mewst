@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 class Profile < ApplicationRecord
-  include ImageUploader::Attachment(:avatar)
   include SoftDeletable
   include TimelineOwnable
+  T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 

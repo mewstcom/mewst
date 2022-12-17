@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 class ImageUploader < Shrine
-  ALLOWED_TYPES = %w[image/gif image/jpeg image/png].freeze
-  MAX_SIZE = 10.megabytes
-  MAX_SIDE_LENGTH = 5_000
+  ALLOWED_TYPES = T.let(%w[image/gif image/jpeg image/png].freeze, T::Array[String])
+  MAX_SIZE = T.let(10.megabytes, Integer)
+  MAX_SIDE_LENGTH = T.let(5_000, Integer)
 
   plugin :remove_attachment
   plugin :pretty_location
