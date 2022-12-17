@@ -6,7 +6,8 @@ RSpec.describe User::Creator do
     let!(:phone_number) { "+819000000000" }
     let!(:phone_number_verification) { create(:phone_number_verification, phone_number:) }
     let!(:idname) { "hello" }
-    let!(:user_creator) { User::Creator.new(phone_number_verification:, idname:) }
+    let!(:locale) { "en" }
+    let!(:user_creator) { User::Creator.new(phone_number_verification:, idname:, locale:) }
 
     it "creates an account" do
       expect(PhoneNumberVerification.count).to eq(1)
@@ -40,6 +41,7 @@ RSpec.describe User::Creator do
       expect(user.profile).to have_attributes(
         profilable_type: "user",
         idname:,
+        locale:,
         name: "",
         description: "",
         deleted_at: nil

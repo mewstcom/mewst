@@ -14,7 +14,7 @@ class Users::CreateController < ApplicationController
     @phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
     @user_creator = @phone_number_verification.new_user_creator(
       idname: user_creator_params[:idname],
-      locale: I18n.locale
+      locale: I18n.locale.to_s
     )
 
     if @user_creator.invalid?

@@ -13,7 +13,7 @@ class User::Creator
   validates :idname, format: {with: Profile::IDNAME_FORMAT}, length: {maximum: 20}, presence: true
   validate :idname_uniqueness
 
-  sig { params(phone_number_verification: PhoneNumberVerification, idname: T.nilable(String), locale: T.nilable(Symbol)).void }
+  sig { params(phone_number_verification: PhoneNumberVerification, idname: T.nilable(String), locale: T.nilable(String)).void }
   def initialize(phone_number_verification:, idname: nil, locale: nil)
     @phone_number_verification = phone_number_verification
     @idname = idname
@@ -46,7 +46,7 @@ class User::Creator
   sig { returns(T.nilable(String)) }
   attr_reader :idname
 
-  sig { returns(T.nilable(Symbol)) }
+  sig { returns(T.nilable(String)) }
   attr_reader :locale
 
   sig { returns(T.untyped) }
