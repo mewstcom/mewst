@@ -9,7 +9,7 @@ class Api::Internal::Posts::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     post_creator = T.must(current_profile).new_post(
-      content: params[:content]
+      content: T.cast(params[:content], String)
     )
 
     if post_creator.invalid?

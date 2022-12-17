@@ -15,6 +15,7 @@ class Post::Creator
   def initialize(profile:, content:)
     @profile = profile
     @content = content
+    @post = T.let(nil, T.nilable(Post))
   end
 
   sig { returns(T.self_type) }
