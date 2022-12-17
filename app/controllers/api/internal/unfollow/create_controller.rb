@@ -14,12 +14,14 @@ class Api::Internal::Unfollow::CreateController < ApplicationController
       return render(json: {}, status: :ok)
     end
 
-    unfollow_creator = current_profile!.unfollow(target_profile:)
+    unfollow_command = Commands::UnfollowProfile.new(source_profile: current_profile!, target_profile:)
 
-    if unfollow_creator.valid?
-      return render(json: {}, status: :created)
+    if unfollow_command.invalid?
+      return render(json: {errors: unfollow_command.errors.full_messages}, status: :unprocessable_entity)
     end
 
-    render(json: {errors: unfollow_creator.errors.full_messages}, status: :unprocessable_entity)
+    unfollow_command.call
+
+    render(json: {}, status: :created)
   end
 end

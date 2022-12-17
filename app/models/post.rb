@@ -8,6 +8,11 @@ class Post < ApplicationRecord
 
   sig { returns(String) }
   def timeline_item_score
-    T.must(created_at).to_datetime.strftime("%Q")
+    created_at!.to_datetime.strftime("%Q")
+  end
+
+  sig { returns(ActiveSupport::TimeWithZone) }
+  def created_at!
+    T.cast(created_at, ActiveSupport::TimeWithZone)
   end
 end

@@ -14,12 +14,14 @@ class Api::Internal::Follow::CreateController < ApplicationController
       return render(json: {}, status: :ok)
     end
 
-    follow_creator = current_profile!.follow(target_profile:)
+    follow_command = Commands::FollowProfile.new(source_profile: current_profile!, target_profile:)
 
-    if follow_creator.valid?
-      return render(json: {}, status: :created)
+    if follow_command.invalid?
+      return render(json: {errors: follow_command.errors.full_messages}, status: :unprocessable_entity)
     end
 
-    render(json: {errors: follow_creator.errors.full_messages}, status: :unprocessable_entity)
+    follow_command.call
+
+    render(json: {}, status: :created)
   end
 end

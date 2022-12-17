@@ -48,29 +48,6 @@ class Profile < ApplicationRecord
     Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
   end
 
-  sig { params(target_profile: Profile).returns(Profile::Friendship) }
-  def follow(target_profile:)
-    creator = Profile::Friendship.new(source_profile: self, target_profile:)
-
-    return creator if creator.invalid?
-
-    creator.follow
-  end
-
-  sig { params(target_profile: Profile).returns(Profile::Friendship) }
-  def unfollow(target_profile:)
-    creator = Profile::Friendship.new(source_profile: self, target_profile:)
-
-    return creator if creator.invalid?
-
-    creator.unfollow
-  end
-
-  sig { params(content: T.nilable(String)).returns(Post::Creator) }
-  def new_post(content: nil)
-    Post::Creator.new(profile: self, content:)
-  end
-
   sig { params(post: Post).returns(Profile::Timeline::Home) }
   def add_post_to_home_timeline(post:)
     Profile::Timeline::Home.new(profile: self).add_post(post:)

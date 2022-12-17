@@ -1,9 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Post::Creator
-  extend T::Sig
-
+class Commands::CreatePost < Commands::Base
   include ActiveModel::Model
 
   sig { returns(T.nilable(Post)) }
