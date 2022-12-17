@@ -113,8 +113,8 @@ class UserPhoneNumber
     end
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::UserPhoneNumber)) }
-    def find_sole_by; end
+    sig { params(arg: T.untyped, args: T.untyped).returns(::UserPhoneNumber) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -190,7 +190,7 @@ class UserPhoneNumber
     sig { returns(::UserPhoneNumber) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::UserPhoneNumber)) }
+    sig { returns(::UserPhoneNumber) }
     def sole; end
 
     sig do
