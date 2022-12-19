@@ -18,7 +18,7 @@
     "bootstrap": "twbs/bootstrap#main",
     "esbuild": "^0.16.8",
     "intl-tel-input": "^17.0.19",
-    "sass": "^1.56.2"
+    "sass": "^1.57.0"
   },
   "devDependencies": {
     "prettier": "2.8.1"
