@@ -152,7 +152,8 @@ binary-extensions@^2.0.0:
 
 bootstrap@twbs/bootstrap#main:
   version "5.2.3"
-  resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/fd3da4eb3e459bdbc868d1b9e2bd72a6b9d927d1"
+  uid "33dd82448c82e8abb5bc3dffefd784210d12c1a8"
+  resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/33dd82448c82e8abb5bc3dffefd784210d12c1a8"
 
 braces@~3.0.2:
   version "3.0.2"
