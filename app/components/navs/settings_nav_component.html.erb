@@ -1,0 +1,13 @@
+<ul class="nav">
+  <li class="nav-item">
+    <%= link_to settings_path, class: nav_link_class_names(settings_path) do %>
+      <%= t("nouns.profile") %>
+    <% end %>
+  </li>
+
+  <li class="nav-item">
+    <%= link_to settings_account_path, class: nav_link_class_names(settings_account_path) do %>
+      <%= t("nouns.account") %>
+    <% end %>
+  </li>
+</ul>

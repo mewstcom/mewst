@@ -61,6 +61,7 @@ CREATE TABLE public.account_profiles (
 CREATE TABLE public.accounts (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     phone_number character varying NOT NULL,
+    locale character varying NOT NULL,
     sign_in_count integer DEFAULT 0 NOT NULL,
     current_signed_in_at timestamp without time zone,
     last_signed_in_at timestamp without time zone,
@@ -166,7 +167,6 @@ CREATE TABLE public.profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     profilable_type character varying NOT NULL,
     atname public.citext NOT NULL,
-    locale character varying NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
     avatar_data text,

@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 class Account < ApplicationRecord
+  extend Enumerize
+
+  enumerize :locale, in: I18n.available_locales
+
   has_one :account_profile, dependent: :restrict_with_exception
   has_one :profile, dependent: :restrict_with_exception, through: :account_profile
 

@@ -13,6 +13,7 @@ class Accounts::CreateController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::ImageHelper
+    include ::TimeHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 

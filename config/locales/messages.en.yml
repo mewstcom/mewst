@@ -1,5 +1,7 @@
 en:
   messages:
+    accounts:
+      updated: Account updated.
     authentication:
       already_signed_in: Already signed in.
       confirmation_sms_sent: Confirmation SMS sent.

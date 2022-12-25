@@ -1,0 +1,25 @@
+<%= render Navbars::NavbarComponent.new %>
+
+<div class="mt-3 container">
+  <%= render Navs::SettingsNavComponent.new %>
+
+  <div class="mt-3">
+    <h1 class="fw-bold">
+      <%= t("nouns.edit_account") %>
+    </h1>
+
+    <%= form_with model: @account, url: settings_account_path do |f| %>
+      <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+      <div class="mb-3">
+        <%= f.label :locale, class: "form-label" %>
+        <% options = options_for_select([[t("nouns.english"), "en"], [t("nouns.japanese"), "ja"]], @account.locale) %>
+        <%= f.select :locale, options, {}, { class: "form-control" } %>
+      </div>
+
+      <%= f.button class: "btn btn-primary", type: :submit do %>
+        <%= t("verbs.update") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

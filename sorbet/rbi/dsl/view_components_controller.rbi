@@ -13,6 +13,7 @@ class ViewComponentsController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::ImageHelper
+    include ::TimeHelper
     include ::PreviewHelper
   end
 

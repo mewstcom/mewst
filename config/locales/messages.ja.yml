@@ -1,5 +1,7 @@
 ja:
   messages:
+    accounts:
+      updated: アカウントを更新しました
     authentication:
       already_signed_in: すでにログインしています
       confirmation_sms_sent: 電話番号確認用のSMSを送信しました

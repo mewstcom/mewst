@@ -28,6 +28,7 @@ RSpec.describe Account::Activation do
 
       expect(account).to have_attributes(
         phone_number:,
+        locale:,
         sign_in_count: 0,
         current_signed_in_at: nil,
         last_signed_in_at: nil
@@ -36,7 +37,6 @@ RSpec.describe Account::Activation do
       expect(account.profile).to have_attributes(
         profilable_type: "account",
         atname:,
-        locale:,
         name: "",
         description: "",
         deleted_at: nil

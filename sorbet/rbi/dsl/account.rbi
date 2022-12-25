@@ -574,6 +574,51 @@ class Account
     sig { void }
     def last_signed_in_at_will_change!; end
 
+    sig { returns(T.untyped) }
+    def locale; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def locale=(value); end
+
+    sig { returns(T::Boolean) }
+    def locale?; end
+
+    sig { returns(T.untyped) }
+    def locale_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def locale_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def locale_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def locale_changed?; end
+
+    sig { returns(T.untyped) }
+    def locale_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def locale_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def locale_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def locale_previously_was; end
+
+    sig { returns(T.untyped) }
+    def locale_was; end
+
+    sig { void }
+    def locale_will_change!; end
+
     sig { returns(::String) }
     def phone_number; end
 
@@ -632,6 +677,9 @@ class Account
     def restore_last_signed_in_at!; end
 
     sig { void }
+    def restore_locale!; end
+
+    sig { void }
     def restore_phone_number!; end
 
     sig { void }
@@ -663,6 +711,12 @@ class Account
 
     sig { returns(T::Boolean) }
     def saved_change_to_last_signed_in_at?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_locale; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_locale?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_phone_number; end
@@ -783,6 +837,9 @@ class Account
 
     sig { returns(T::Boolean) }
     def will_save_change_to_last_signed_in_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_locale?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_phone_number?; end

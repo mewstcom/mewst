@@ -13,6 +13,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :accounts, id: :uuid do |t|
       t.string :phone_number, index: {unique: true}, null: false
+      t.string :locale, null: false
       t.integer :sign_in_count, default: 0, null: false
       t.timestamp :current_signed_in_at
       t.timestamp :last_signed_in_at
@@ -34,7 +35,6 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :profiles, id: :uuid do |t|
       t.string :profilable_type, null: false
       t.citext :atname, index: {unique: true}, null: false
-      t.string :locale, null: false
       t.string :name, default: "", null: false
       t.string :description, default: "", null: false
       t.text :avatar_data

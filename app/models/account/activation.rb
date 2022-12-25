@@ -23,9 +23,9 @@ class Account::Activation
 
     account = T.let(nil, T.nilable(Account))
     ActiveRecord::Base.transaction do
-      account = Account.create!(phone_number:)
+      account = Account.create!(phone_number:, locale:)
 
-      profile = account.create_profile!(atname:, profilable_type: Profile::PROFILABLE_TYPE_ACCOUNT, locale:)
+      profile = account.create_profile!(atname:, profilable_type: Profile::PROFILABLE_TYPE_ACCOUNT)
       account.create_account_profile!(profile:)
 
       phone_number_verification!.destroy

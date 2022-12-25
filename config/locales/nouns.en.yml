@@ -1,7 +1,9 @@
 en:
   nouns:
+    account: Account
     ago: Ago
     current_avatar: Current avatar
+    edit_account: Edit Account
     edit_profile: Edit Profile
     english: English
     error: Error
