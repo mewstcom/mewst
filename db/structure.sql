@@ -42,6 +42,34 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: account_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_profiles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    account_id uuid,
+    profile_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: accounts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.accounts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    phone_number character varying NOT NULL,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_signed_in_at timestamp without time zone,
+    last_signed_in_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -73,7 +101,7 @@ CREATE TABLE public.follows (
 CREATE TABLE public.organization_members (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     organization_id uuid NOT NULL,
-    user_id uuid NOT NULL,
+    account_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -104,26 +132,14 @@ CREATE TABLE public.organizations (
 
 
 --
--- Name: phone_number_verification_challenges; Type: TABLE; Schema: public; Owner: -
+-- Name: phone_number_verifications; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.phone_number_verification_challenges (
+CREATE TABLE public.phone_number_verifications (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     phone_number character varying NOT NULL,
-    phone_number_origin character varying NOT NULL,
+    raw_phone_number character varying NOT NULL,
     confirmation_code character varying NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: phone_numbers; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.phone_numbers (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    value character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -148,8 +164,8 @@ CREATE TABLE public.posts (
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    profilable_type integer NOT NULL,
-    idname public.citext NOT NULL,
+    profilable_type character varying NOT NULL,
+    atname public.citext NOT NULL,
     locale character varying NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -170,43 +186,19 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: user_phone_numbers; Type: TABLE; Schema: public; Owner: -
+-- Name: account_profiles account_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE TABLE public.user_phone_numbers (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid,
-    phone_number_id uuid,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
+ALTER TABLE ONLY public.account_profiles
+    ADD CONSTRAINT account_profiles_pkey PRIMARY KEY (id);
 
 
 --
--- Name: user_profiles; Type: TABLE; Schema: public; Owner: -
+-- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE TABLE public.user_profiles (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid,
-    profile_id uuid,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_signed_in_at timestamp without time zone,
-    last_signed_in_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
+ALTER TABLE ONLY public.accounts
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -250,19 +242,11 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: phone_number_verification_challenges phone_number_verification_challenges_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: phone_number_verifications phone_number_verifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.phone_number_verification_challenges
-    ADD CONSTRAINT phone_number_verification_challenges_pkey PRIMARY KEY (id);
-
-
---
--- Name: phone_numbers phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.phone_numbers
-    ADD CONSTRAINT phone_numbers_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.phone_number_verifications
+    ADD CONSTRAINT phone_number_verifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -290,27 +274,24 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: user_phone_numbers user_phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: index_account_profiles_on_account_id; Type: INDEX; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_phone_numbers
-    ADD CONSTRAINT user_phone_numbers_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_profiles user_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_profiles
-    ADD CONSTRAINT user_profiles_pkey PRIMARY KEY (id);
+CREATE UNIQUE INDEX index_account_profiles_on_account_id ON public.account_profiles USING btree (account_id);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: index_account_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+CREATE UNIQUE INDEX index_account_profiles_on_profile_id ON public.account_profiles USING btree (profile_id);
+
+
+--
+-- Name: index_accounts_on_phone_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_accounts_on_phone_number ON public.accounts USING btree (phone_number);
 
 
 --
@@ -335,6 +316,13 @@ CREATE INDEX index_follows_on_target_profile_id ON public.follows USING btree (t
 
 
 --
+-- Name: index_organization_members_on_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_organization_members_on_account_id ON public.organization_members USING btree (account_id);
+
+
+--
 -- Name: index_organization_members_on_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -342,17 +330,10 @@ CREATE INDEX index_organization_members_on_organization_id ON public.organizatio
 
 
 --
--- Name: index_organization_members_on_organization_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organization_members_on_organization_id_and_account_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_organization_members_on_organization_id_and_user_id ON public.organization_members USING btree (organization_id, user_id);
-
-
---
--- Name: index_organization_members_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_organization_members_on_user_id ON public.organization_members USING btree (user_id);
+CREATE UNIQUE INDEX index_organization_members_on_organization_id_and_account_id ON public.organization_members USING btree (organization_id, account_id);
 
 
 --
@@ -377,17 +358,10 @@ CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_pr
 
 
 --
--- Name: index_phone_number_verification_challenges_on_pn_and_cc; Type: INDEX; Schema: public; Owner: -
+-- Name: index_phone_number_verifications_on_pn_and_cc; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_phone_number_verification_challenges_on_pn_and_cc ON public.phone_number_verification_challenges USING btree (phone_number, confirmation_code);
-
-
---
--- Name: index_phone_numbers_on_value; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_phone_numbers_on_value ON public.phone_numbers USING btree (value);
+CREATE UNIQUE INDEX index_phone_number_verifications_on_pn_and_cc ON public.phone_number_verifications USING btree (phone_number, confirmation_code);
 
 
 --
@@ -398,68 +372,10 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 
 
 --
--- Name: index_profiles_on_idname; Type: INDEX; Schema: public; Owner: -
+-- Name: index_profiles_on_atname; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_profiles_on_idname ON public.profiles USING btree (idname);
-
-
---
--- Name: index_user_phone_numbers_on_phone_number_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_phone_numbers_on_phone_number_id ON public.user_phone_numbers USING btree (phone_number_id);
-
-
---
--- Name: index_user_phone_numbers_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_phone_numbers_on_user_id ON public.user_phone_numbers USING btree (user_id);
-
-
---
--- Name: index_user_phone_numbers_on_user_id_and_phone_number_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_user_phone_numbers_on_user_id_and_phone_number_id ON public.user_phone_numbers USING btree (user_id, phone_number_id);
-
-
---
--- Name: index_user_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_profiles_on_profile_id ON public.user_profiles USING btree (profile_id);
-
-
---
--- Name: index_user_profiles_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_profiles_on_user_id ON public.user_profiles USING btree (user_id);
-
-
---
--- Name: index_user_profiles_on_user_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_user_profiles_on_user_id_and_profile_id ON public.user_profiles USING btree (user_id, profile_id);
-
-
---
--- Name: user_phone_numbers fk_rails_40a6977317; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_phone_numbers
-    ADD CONSTRAINT fk_rails_40a6977317 FOREIGN KEY (phone_number_id) REFERENCES public.phone_numbers(id);
-
-
---
--- Name: user_phone_numbers fk_rails_51f5e5a641; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_phone_numbers
-    ADD CONSTRAINT fk_rails_51f5e5a641 FOREIGN KEY (user_id) REFERENCES public.users(id);
+CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atname);
 
 
 --
@@ -471,11 +387,11 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: user_profiles fk_rails_70afd642db; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: account_profiles fk_rails_85b5ae6af1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_profiles
-    ADD CONSTRAINT fk_rails_70afd642db FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+ALTER TABLE ONLY public.account_profiles
+    ADD CONSTRAINT fk_rails_85b5ae6af1 FOREIGN KEY (account_id) REFERENCES public.accounts(id);
 
 
 --
@@ -487,19 +403,11 @@ ALTER TABLE ONLY public.organization_profiles
 
 
 --
--- Name: user_profiles fk_rails_87a6352e58; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_profiles
-    ADD CONSTRAINT fk_rails_87a6352e58 FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- Name: organization_members fk_rails_a0a760b9b4; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: organization_members fk_rails_9e0fce095d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organization_members
-    ADD CONSTRAINT fk_rails_a0a760b9b4 FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_9e0fce095d FOREIGN KEY (account_id) REFERENCES public.accounts(id);
 
 
 --
@@ -524,6 +432,14 @@ ALTER TABLE ONLY public.posts
 
 ALTER TABLE ONLY public.organization_profiles
     ADD CONSTRAINT fk_rails_d0c5dfda7d FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: account_profiles fk_rails_f84ed5bded; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_profiles
+    ADD CONSTRAINT fk_rails_f84ed5bded FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --

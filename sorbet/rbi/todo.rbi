@@ -4,8 +4,6 @@
 
 # typed: false
 
-module ::DEBUGGER__::TrapInterceptor; end
-module ::PhoneNumberVerification; end
 module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
 module Minitest::Assertion; end
@@ -15,4 +13,3 @@ module Shrine::Storage::FileSystem; end
 module Sidekiq::Process; end
 module Sidekiq::SortedEntry; end
 module Sidekiq::Web; end
-module User::Creator; end

@@ -1,0 +1,5 @@
+ja:
+  activemodel:
+    attributes:
+      phone_number_verification/challenge:
+        challenged_confirmation_code: 認証コード

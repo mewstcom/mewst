@@ -1,8 +1,0 @@
-<%= form_with model: @command, url: sign_in_phone_number_verification_list_path do |f| %>
-  <div>
-    <%= f.label :confirmation_code %>
-    <%= f.text_field :confirmation_code, autofocus: true %>
-  </div>
-
-  <%= f.submit %>
-<% end %>

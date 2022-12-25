@@ -1,0 +1,15 @@
+<%= form_with model: @account_activation, url: account_list_path do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+  <div>
+    <%= f.label :phone_number %>
+    <%= @account_activation.phone_number %>
+  </div>
+
+  <div>
+    <%= f.label :atname %>
+    <%= f.text_field :atname, autofocus: true %>
+  </div>
+
+  <%= f.submit %>
+<% end %>

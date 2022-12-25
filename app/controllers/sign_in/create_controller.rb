@@ -10,25 +10,23 @@ class SignIn::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    phone_number, phone_number_origin = form_params.values_at(:phone_number, :phone_number_origin)
-    confirmation_code = PhoneNumberVerificationChallenge.generate_confirmation_code
-    @command = Commands::SetupPhoneNumberVerificationChallenge.new(phone_number:, phone_number_origin:, confirmation_code:)
+    confirmation_code = PhoneNumberVerification.generate_confirmation_code
+    @verification = PhoneNumberVerification.new(form_params.merge(confirmation_code:))
 
-    if @command.invalid?
-      return render("sign_in/new/call")
-    end
+    @verification.save!
+    SendPhoneNumberVerificationMessageJob.perform_async(@verification.id)
 
-    @command.call
-
-    session[:phone_number_verification_challenge_id] = @command.phone_number_verification_challenge!.id
+    session[:phone_number_verification_id] = @verification.id
     flash[:success] = t("messages.authentication.confirmation_sms_sent")
-    redirect_to sign_in_phone_number_new_verification_path
+    redirect_to sign_in_verification_phone_number_new_challenge_path
+  rescue ActiveRecord::RecordInvalid
+    render("sign_in/new/call", status: :unprocessable_entity)
   end
 
   private
 
   sig { returns(ActionController::Parameters) }
   def form_params
-    T.cast(params.require(:commands_setup_phone_number_verification_challenge), ActionController::Parameters).permit(:phone_number, :phone_number_origin)
+    T.cast(params.require(:phone_number_verification), ActionController::Parameters).permit(:phone_number, :raw_phone_number)
   end
 end

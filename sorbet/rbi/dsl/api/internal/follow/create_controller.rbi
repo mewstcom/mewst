@@ -16,17 +16,17 @@ class Api::Internal::Follow::CreateController
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
 
+    sig { returns(T.nilable(::Account)) }
+    def current_account; end
+
+    sig { returns(::Account) }
+    def current_account!; end
+
     sig { returns(T.nilable(::Profile)) }
     def current_profile; end
 
     sig { returns(::Profile) }
     def current_profile!; end
-
-    sig { returns(T.nilable(::User)) }
-    def current_user; end
-
-    sig { returns(::User) }
-    def current_user!; end
 
     sig { returns(T::Boolean) }
     def signed_in?; end

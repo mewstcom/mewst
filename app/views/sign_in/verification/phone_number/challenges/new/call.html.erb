@@ -1,0 +1,10 @@
+<%= form_with model: @challenge, url: sign_in_verification_phone_number_challenge_list_path do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+  <div>
+    <%= f.label :challenged_confirmation_code %>
+    <%= f.text_field :challenged_confirmation_code, autofocus: true %>
+  </div>
+
+  <%= f.submit %>
+<% end %>

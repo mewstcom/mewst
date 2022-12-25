@@ -8,19 +8,13 @@ class Api::Internal::Follow::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    target_profile = Profile.only_kept.find_by!(idname: params[:idname])
+    target_profile = Profile.only_kept.find_by!(atname: params[:atname])
 
     if current_profile!.following?(target_profile:)
       return render(json: {}, status: :ok)
     end
 
-    follow_command = Commands::FollowProfile.new(source_profile: current_profile!, target_profile:)
-
-    if follow_command.invalid?
-      return render(json: {errors: follow_command.errors.full_messages}, status: :unprocessable_entity)
-    end
-
-    follow_command.call
+    current_profile!.follow(target_profile:)
 
     render(json: {}, status: :created)
   end

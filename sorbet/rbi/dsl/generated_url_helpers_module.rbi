@@ -9,6 +9,9 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def account_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -24,7 +27,7 @@ module GeneratedUrlHelpersModule
   def internal_api_unfollow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_user_url(*args); end
+  def new_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_url(*args); end
@@ -60,26 +63,23 @@ module GeneratedUrlHelpersModule
   def sidekiq_web_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_new_verification_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_verification_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sign_in_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_in_verification_phone_number_challenge_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_in_verification_phone_number_new_challenge_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_out_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_new_verification_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_verification_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def user_list_url(*args); end
+  def sign_up_verification_phone_number_challenge_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_verification_phone_number_new_challenge_url(*args); end
 end

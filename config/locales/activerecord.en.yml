@@ -1,0 +1,9 @@
+ja:
+  activerecord:
+    attributes:
+      phone_number_verification:
+        confirmation_code: Confirmation code
+        phone_number: Phone number
+        raw_phone_number: Raw phone number
+      profile:
+        atname: At name

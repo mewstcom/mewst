@@ -8,16 +8,16 @@ class Api::Internal::Following::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    if params[:idnames].nil?
+    if params[:atnames].nil?
       render(json: {}, status: :not_found)
     end
 
-    idnames = T.cast(params[:idnames], T::Array[String])
-    follows = current_profile!.follows.where(target_profile: Profile.only_kept.where(idname: idnames))
-    following_idnames = follows.map(&:target_profile).map { T.must(_1).idname }
+    atnames = T.cast(params[:atnames], T::Array[String])
+    follows = current_profile!.follows.where(target_profile: Profile.only_kept.where(atname: atnames))
+    following_atnames = follows.map(&:target_profile).map { T.must(_1).atname }
 
-    result = idnames.map do |idname|
-      [idname, idname.in?(following_idnames)]
+    result = atnames.map do |atname|
+      [atname, atname.in?(following_atnames)]
     end
 
     render(json: result.to_h)

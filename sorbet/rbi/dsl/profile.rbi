@@ -7,7 +7,6 @@
 class Profile
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
-  include EnumMethodsModule
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -15,11 +14,6 @@ class Profile
 
   sig { returns(NilClass) }
   def to_ary; end
-
-  class << self
-    sig { returns(T::Hash[T.any(String, Symbol), Integer]) }
-    def profilable_types; end
-  end
 
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::Profile).returns(T.untyped))).returns(T::Boolean) }
@@ -79,8 +73,8 @@ class Profile
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { params(arg: T.untyped, args: T.untyped).returns(::Profile) }
-    def find_sole_by(arg, *args); end
+    sig { returns(T.nilable(::Profile)) }
+    def find_sole_by; end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -151,7 +145,7 @@ class Profile
     sig { returns(::Profile) }
     def second_to_last!; end
 
-    sig { returns(::Profile) }
+    sig { returns(T.nilable(::Profile)) }
     def sole; end
 
     sig do
@@ -181,20 +175,6 @@ class Profile
     def third_to_last!; end
   end
 
-  module EnumMethodsModule
-    sig { void }
-    def as_organization!; end
-
-    sig { returns(T::Boolean) }
-    def as_organization?; end
-
-    sig { void }
-    def as_user!; end
-
-    sig { returns(T::Boolean) }
-    def as_user?; end
-  end
-
   module GeneratedAssociationMethods
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
@@ -208,8 +188,6 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def followee_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followees, through: :follows`.
-    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followees; end
 
@@ -222,16 +200,12 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def follower_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followers, through: :inverse_follows`.
-    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followers; end
 
     sig { params(value: T::Enumerable[::Profile]).void }
     def followers=(value); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :follows`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def follows; end
 
@@ -244,8 +218,6 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def inverse_follow_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :inverse_follows`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def inverse_follows; end
 
@@ -258,8 +230,6 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def post_ids=(ids); end
 
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :posts`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Post::PrivateCollectionProxy) }
     def posts; end
 
@@ -276,12 +246,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def annotate(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def as_organization(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def as_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
@@ -381,12 +345,6 @@ class Profile
     def none(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def not_as_organization(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def not_as_user(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def offset(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -466,6 +424,51 @@ class Profile
   end
 
   module GeneratedAttributeMethods
+    sig { returns(::String) }
+    def atname; end
+
+    sig { params(value: ::String).returns(::String) }
+    def atname=(value); end
+
+    sig { returns(T::Boolean) }
+    def atname?; end
+
+    sig { returns(T.nilable(::String)) }
+    def atname_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def atname_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def atname_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def atname_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def atname_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def atname_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def atname_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def atname_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def atname_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def atname_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def atname_was; end
+
+    sig { void }
+    def atname_will_change!; end
+
     sig { returns(T.nilable(::String)) }
     def avatar_data; end
 
@@ -691,51 +694,6 @@ class Profile
     sig { void }
     def id_will_change!; end
 
-    sig { returns(::String) }
-    def idname; end
-
-    sig { params(value: ::String).returns(::String) }
-    def idname=(value); end
-
-    sig { returns(T::Boolean) }
-    def idname?; end
-
-    sig { returns(T.nilable(::String)) }
-    def idname_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def idname_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def idname_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def idname_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def idname_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def idname_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def idname_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def idname_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def idname_previously_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def idname_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def idname_was; end
-
-    sig { void }
-    def idname_will_change!; end
-
     sig { returns(T.untyped) }
     def locale; end
 
@@ -826,16 +784,16 @@ class Profile
     sig { void }
     def name_will_change!; end
 
-    sig { returns(::String) }
+    sig { returns(T.untyped) }
     def profilable_type; end
 
-    sig { params(value: T.any(::String, ::Symbol, ::Integer)).returns(T.any(::String, ::Symbol, ::Integer)) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def profilable_type=(value); end
 
     sig { returns(T::Boolean) }
     def profilable_type?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -844,32 +802,35 @@ class Profile
     sig { returns(T::Boolean) }
     def profilable_type_came_from_user?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
     def profilable_type_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_in_database; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profilable_type_previous_change; end
 
     sig { returns(T::Boolean) }
     def profilable_type_previously_changed?; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_previously_was; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(T.untyped) }
     def profilable_type_was; end
 
     sig { void }
     def profilable_type_will_change!; end
+
+    sig { void }
+    def restore_atname!; end
 
     sig { void }
     def restore_avatar_data!; end
@@ -887,9 +848,6 @@ class Profile
     def restore_id!; end
 
     sig { void }
-    def restore_idname!; end
-
-    sig { void }
     def restore_locale!; end
 
     sig { void }
@@ -900,6 +858,12 @@ class Profile
 
     sig { void }
     def restore_updated_at!; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_atname; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_atname?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_avatar_data; end
@@ -931,12 +895,6 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_idname; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_idname?; end
-
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_locale; end
 
@@ -949,7 +907,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_profilable_type; end
 
     sig { returns(T::Boolean) }
@@ -1007,6 +965,9 @@ class Profile
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_atname?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_avatar_data?; end
 
     sig { returns(T::Boolean) }
@@ -1020,9 +981,6 @@ class Profile
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_idname?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_locale?; end
@@ -1046,12 +1004,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def annotate(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def as_organization(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def as_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
@@ -1115,12 +1067,6 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def none(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def not_as_organization(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def not_as_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def offset(*args, &blk); end

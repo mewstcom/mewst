@@ -6,17 +6,17 @@ class SendPhoneNumberVerificationMessageJob
 
   include Sidekiq::Job
 
-  sig { params(phone_number_verification_challenge_id: String).void }
-  def perform(phone_number_verification_challenge_id)
-    phone_number_verification_challenge = PhoneNumberVerificationChallenge.find(phone_number_verification_challenge_id)
+  sig { params(phone_number_verification_id: String).void }
+  def perform(phone_number_verification_id)
+    verification = PhoneNumberVerification.find(phone_number_verification_id)
 
-    body = "Confirmation code: #{phone_number_verification_challenge.confirmation_code}"
+    body = "Confirmation code: #{verification.confirmation_code}"
     if ENV["MEWST_TWILIO_SKIP"]
       Rails.logger.debug(body)
     else
       client.messages.create(
         from: ENV.fetch("MEWST_TWILIO_PHONE_NUMBER"),
-        to: phone_number_verification_challenge.phone_number,
+        to: verification.phone_number,
         body:
       )
     end

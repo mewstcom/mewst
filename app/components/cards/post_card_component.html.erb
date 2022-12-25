@@ -1,33 +1,33 @@
 <div
   class="c-post-card card"
   data-controller="post-card"
-  data-post-card-post-path-value="<%= post_path(profile.idname, post.id) %>"
+  data-post-card-post-path-value="<%= post_path(profile.atname, post.id) %>"
   data-post-card-sticky-post-frame-id-value="<%= dom_id(post) %>"
   data-post-card-sticky-post-outlet=".c-sticky-post"
 >
   <div class="card-body">
     <div class="align-items-center gx-3 row">
       <div class="col-auto">
-        <%= link_to profile_path(profile.idname) do %>
+        <%= link_to profile_path(profile.atname) do %>
           <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
         <% end %>
       </div>
 
       <div class="col">
         <div>
-          <%= link_to profile_path(profile.idname) do %>
+          <%= link_to profile_path(profile.atname) do %>
             <span class="fw-bold">
               <%= profile.name %>
             </span>
 
             <span class="text-muted">
-              @<%= profile.idname %>
+              @<%= profile.atname %>
             </span>
           <% end %>
         </div>
 
         <div class="small text-muted">
-          <%= link_to time_ago_in_words(post.created_at), post_path(profile.idname, post.id) %>
+          <%= link_to time_ago_in_words(post.created_at), post_path(profile.atname, post.id) %>
         </div>
       </div>
     </div>

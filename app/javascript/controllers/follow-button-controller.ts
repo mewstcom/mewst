@@ -5,21 +5,21 @@ import fetcher from '../utils/fetcher';
 export default class extends Controller {
   static targets = ['follow', 'following', 'loading']
   static values = {
-    idname: String,
+    atname: String,
   };
 
   followTarget!: HTMLButtonElement;
   followingTarget!: HTMLButtonElement;
   loadingTarget!: HTMLButtonElement;
 
-  idnameValue!: string;
+  atnameValue!: string;
 
   isFollowing: boolean;
 
   initialize() {
     document.addEventListener('component-data-fetcher:follow-button:fetched', (event: any) => {
       const data = event.detail;
-      this.isFollowing = !!data[this.idnameValue];
+      this.isFollowing = !!data[this.atnameValue];
 
       this.isFollowing ? this.showFollowingButton() : this.showFollowButton();
     });
@@ -48,7 +48,7 @@ export default class extends Controller {
 
     try {
       await fetcher.post('/api/internal/follow', {
-        idname: this.idnameValue,
+        atname: this.atnameValue,
       });
 
       this.isFollowing = true;
@@ -63,7 +63,7 @@ export default class extends Controller {
 
     try {
       await fetcher.post('/api/internal/unfollow', {
-        idname: this.idnameValue,
+        atname: this.atnameValue,
       });
 
       this.isFollowing = false;

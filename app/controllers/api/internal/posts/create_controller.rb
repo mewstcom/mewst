@@ -8,17 +8,12 @@ class Api::Internal::Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    content = T.cast(params[:content], String)
-    command = Commands::CreatePost.new(profile: current_profile!, content:)
+    content = T.cast(params[:content], T.nilable(String))
 
-    if command.invalid?
-      return render(json: {errors: command.errors.full_messages}, status: :unprocessable_entity)
-    end
-
-    command.call
-
-    @post = T.must(command.post)
+    @post = current_profile!.create_post(content:)
 
     render(status: :created)
+  rescue ActiveRecord::RecordInvalid => e
+    render(json: {errors: e.record.errors.full_messages}, status: :unprocessable_entity)
   end
 end

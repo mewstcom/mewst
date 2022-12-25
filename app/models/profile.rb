@@ -4,21 +4,20 @@
 class Profile < ApplicationRecord
   extend Enumerize
 
+  include Postable
   include SoftDeletable
   include TimelineOwnable
+  include Followable
   T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
+  PROFILABLE_TYPE_ACCOUNT = :account
+  PROFILABLE_TYPE_ORGANIZATION = :organization
 
   enumerize :locale, in: I18n.available_locales
+  enumerize :profilable_type, in: [PROFILABLE_TYPE_ACCOUNT, PROFILABLE_TYPE_ORGANIZATION]
 
-  has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
-  has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
-  has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
-  has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
-  has_many :posts, dependent: :restrict_with_exception
-
-  enum :profilable_type, {user: 0, organization: 1}, prefix: :as
+  validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   sig { override.returns(String) }
   def timeline_key
@@ -36,8 +35,8 @@ class Profile < ApplicationRecord
   end
 
   sig { params(target_profile: Profile).returns(T::Boolean) }
-  def my_profile?(target_profile:)
-    idname == target_profile.idname
+  def me?(target_profile:)
+    atname == target_profile.atname
   end
 
   T::Sig::WithoutRuntime.sig { returns(Post::PrivateRelation) }

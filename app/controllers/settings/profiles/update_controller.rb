@@ -25,6 +25,6 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def profile_params
-    T.cast(params.require(:profile), ActionController::Parameters).permit(:idname, :name, :description, :locale, :avatar)
+    T.cast(params.require(:profile), ActionController::Parameters).permit(:atname, :name, :description, :locale, :avatar)
   end
 end

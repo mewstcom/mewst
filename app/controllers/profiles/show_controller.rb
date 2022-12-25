@@ -10,6 +10,6 @@ class Profiles::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = Profile.only_kept.find_by!(idname: params[:idname])
+    @profile = Profile.only_kept.find_by!(atname: params[:atname])
   end
 end

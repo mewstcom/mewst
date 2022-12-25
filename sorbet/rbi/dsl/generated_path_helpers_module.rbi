@@ -9,6 +9,9 @@ module GeneratedPathHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def account_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -24,7 +27,7 @@ module GeneratedPathHelpersModule
   def internal_api_unfollow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_user_path(*args); end
+  def new_account_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end
@@ -63,10 +66,10 @@ module GeneratedPathHelpersModule
   def sign_in_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_new_verification_path(*args); end
+  def sign_in_verification_phone_number_challenge_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_in_phone_number_verification_list_path(*args); end
+  def sign_in_verification_phone_number_new_challenge_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_out_path(*args); end
@@ -75,11 +78,8 @@ module GeneratedPathHelpersModule
   def sign_up_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_new_verification_path(*args); end
+  def sign_up_verification_phone_number_challenge_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_phone_number_verification_list_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def user_list_path(*args); end
+  def sign_up_verification_phone_number_new_challenge_path(*args); end
 end

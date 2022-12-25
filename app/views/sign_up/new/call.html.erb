@@ -1,6 +1,8 @@
-<%= form_with model: @command, url: sign_up_path do |f| %>
+<%= form_with model: @verification, url: sign_up_path do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
   <%= f.label :phone_number_origin %>
-  <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :phone_number_origin, autofocus: true) %>
+  <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :raw_phone_number, autofocus: true) %>
 
   <%= f.submit %>
 <% end %>
