@@ -151,9 +151,9 @@ binary-extensions@^2.0.0:
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
 bootstrap@twbs/bootstrap#main:
-  version "5.2.3"
-  uid "41f62c5a11d98d49646296f996fa844d05f9514d"
-  resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/41f62c5a11d98d49646296f996fa844d05f9514d"
+  version "5.3.0-alpha1"
+  uid "8befabbde90e8ee19f8bf9196840e25c07130710"
+  resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/8befabbde90e8ee19f8bf9196840e25c07130710"
 
 braces@~3.0.2:
   version "3.0.2"
