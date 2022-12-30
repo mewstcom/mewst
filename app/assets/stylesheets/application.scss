@@ -10,6 +10,7 @@
 
 @import './variables/mewst';
 @import './variables/bootstrap';
+@import './variables/bootstrap-dark';
 
 // -------------------------------------------------------------------
 // Vendors
@@ -22,15 +23,9 @@
 // Mixins using variables
 // -------------------------------------------------------------------
 
-@import './mixins/themes';
-
 // -------------------------------------------------------------------
 // Foundations
 // -------------------------------------------------------------------
-
-@import './foundations/bootstrap/reboot';
-
-@import './foundations/mewst/root';
 
 // -------------------------------------------------------------------
 // Utilities

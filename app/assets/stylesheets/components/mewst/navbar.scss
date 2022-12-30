@@ -1,21 +1,4 @@
 .c-navbar {
-  background-color: var(--mst-color-navbar-background);
   height: $mst-navbar-height;
   z-index: $zindex-sticky;
-
-  .navbar-brand {
-    color: var(--mst-color-navbar-brand-link);
-
-    &:hover {
-      color: var(--mst-color-navbar-brand-link-hover);
-    }
-  }
-
-  .nav-link {
-    color: var(--mst-color-navbar-link);
-
-    &:hover {
-      color: var(--mst-color-navbar-link-hover);
-    }
-  }
 }
