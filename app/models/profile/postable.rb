@@ -17,4 +17,12 @@ module Profile::Postable
 
     post
   end
+
+  sig { params(post: Post).void }
+  def delete_post(post:)
+    ActiveRecord::Base.transaction do
+      post.destroy!
+      home_timeline.remove_post(post:)
+    end
+  end
 end

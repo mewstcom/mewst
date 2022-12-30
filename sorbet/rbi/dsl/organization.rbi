@@ -112,8 +112,14 @@ class Organization
     end
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::Organization)) }
-    def find_sole_by; end
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(T.nilable(::Organization)) }
+    def find_signed(signed_id, purpose: nil); end
+
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(::Organization) }
+    def find_signed!(signed_id, purpose: nil); end
+
+    sig { params(arg: T.untyped, args: T.untyped).returns(::Organization) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -189,7 +195,7 @@ class Organization
     sig { returns(::Organization) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::Organization)) }
+    sig { returns(::Organization) }
     def sole; end
 
     sig do

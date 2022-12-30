@@ -16,6 +16,7 @@ class Home::ShowController
     include ::TimeHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
+    include ::Pundit::Helper
 
     sig { returns(T.nilable(::Account)) }
     def current_account; end
@@ -28,6 +29,15 @@ class Home::ShowController
 
     sig { returns(::Profile) }
     def current_profile!; end
+
+    sig { params(record: T.untyped).returns(T.untyped) }
+    def policy(record); end
+
+    sig { params(scope: T.untyped).returns(T.untyped) }
+    def pundit_policy_scope(scope); end
+
+    sig { returns(::Profile) }
+    def pundit_user; end
 
     sig { returns(T::Boolean) }
     def signed_in?; end

@@ -3,6 +3,7 @@
 
 class Api::Internal::Posts::CreateController < ApplicationController
   include Authenticatable
+  include Authorizable
 
   before_action :require_authentication
 

@@ -9,6 +9,8 @@ en:
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
     posts:
+      are_you_sure_to_delete_post: Are you sure to delete this post?
       created: Post created.
+      deleted: Post deleted.
     profiles:
       updated: Profile updated.

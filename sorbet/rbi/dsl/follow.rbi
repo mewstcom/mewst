@@ -73,8 +73,14 @@ class Follow
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Follow).void)).returns(::Follow) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::Follow)) }
-    def find_sole_by; end
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(T.nilable(::Follow)) }
+    def find_signed(signed_id, purpose: nil); end
+
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(::Follow) }
+    def find_signed!(signed_id, purpose: nil); end
+
+    sig { params(arg: T.untyped, args: T.untyped).returns(::Follow) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -145,7 +151,7 @@ class Follow
     sig { returns(::Follow) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::Follow)) }
+    sig { returns(::Follow) }
     def sole; end
 
     sig do

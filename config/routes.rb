@@ -13,28 +13,29 @@ Rails.application.routes.draw do
   mount ImageUploader.derivation_endpoint => "/image"
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
-  match "/@:atname",                                         via: :get,   as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
-  match "/@:atname/posts/:post_id",                          via: :get,   as: :post,                                             to: "posts/show#call",                           atname: ROUTING_USERNAME_FORMAT
-  match "/accounts",                                         via: :post,  as: :account_list,                                     to: "accounts/create#call"
-  match "/accounts/new",                                     via: :get,   as: :new_account,                                      to: "accounts/new#call"
-  match "/api/internal/follow",                              via: :post,  as: :internal_api_follow,                              to: "api/internal/follow/create#call"
-  match "/api/internal/following",                           via: :post,  as: :internal_api_following_list,                      to: "api/internal/following/index#call"
-  match "/api/internal/posts",                               via: :post,  as: :internal_api_post_list,                           to: "api/internal/posts/create#call"
-  match "/api/internal/unfollow",                            via: :post,  as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
-  match "/home",                                             via: :get,   as: :home,                                             to: "home/show#call"
-  match "/settings",                                         via: :get,   as: :settings,                                         to: "settings/profiles/show#call"
-  match "/settings",                                         via: :patch,                                                        to: "settings/profiles/update#call"
-  match "/settings/account",                                 via: :get,   as: :settings_account,                                 to: "settings/accounts/show#call"
-  match "/settings/account",                                 via: :patch,                                                        to: "settings/accounts/update#call"
-  match "/sign_in",                                          via: :get,   as: :sign_in,                                          to: "sign_in/new#call"
-  match "/sign_in",                                          via: :post,                                                         to: "sign_in/create#call"
-  match "/sign_in/verification/phone_number/challenges",     via: :post,  as: :sign_in_verification_phone_number_challenge_list, to: "sign_in/verification/phone_number/challenges/create#call"
-  match "/sign_in/verification/phone_number/challenges/new", via: :get,   as: :sign_in_verification_phone_number_new_challenge,  to: "sign_in/verification/phone_number/challenges/new#call"
-  match "/sign_out",                                         via: :get,   as: :sign_out,                                         to: "sign_out/show#call"
-  match "/sign_up",                                          via: :get,   as: :sign_up,                                          to: "sign_up/new#call"
-  match "/sign_up",                                          via: :post,                                                         to: "sign_up/create#call"
-  match "/sign_up/verification/phone_number/challenges",     via: :post,  as: :sign_up_verification_phone_number_challenge_list, to: "sign_up/verification/phone_number/challenges/create#call"
-  match "/sign_up/verification/phone_number/challenges/new", via: :get,   as: :sign_up_verification_phone_number_new_challenge,  to: "sign_up/verification/phone_number/challenges/new#call"
+  match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
+  match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT
+  match "/@:atname/posts/:post_id",                          via: :get,                                                           to: "posts/show#call",                           atname: ROUTING_USERNAME_FORMAT
+  match "/accounts",                                         via: :post,   as: :account_list,                                     to: "accounts/create#call"
+  match "/accounts/new",                                     via: :get,    as: :new_account,                                      to: "accounts/new#call"
+  match "/api/internal/follow",                              via: :post,   as: :internal_api_follow,                              to: "api/internal/follow/create#call"
+  match "/api/internal/following",                           via: :post,   as: :internal_api_following_list,                      to: "api/internal/following/index#call"
+  match "/api/internal/posts",                               via: :post,   as: :internal_api_post_list,                           to: "api/internal/posts/create#call"
+  match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
+  match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"
+  match "/settings",                                         via: :get,    as: :settings,                                         to: "settings/profiles/show#call"
+  match "/settings",                                         via: :patch,                                                         to: "settings/profiles/update#call"
+  match "/settings/account",                                 via: :get,    as: :settings_account,                                 to: "settings/accounts/show#call"
+  match "/settings/account",                                 via: :patch,                                                         to: "settings/accounts/update#call"
+  match "/sign_in",                                          via: :get,    as: :sign_in,                                          to: "sign_in/new#call"
+  match "/sign_in",                                          via: :post,                                                          to: "sign_in/create#call"
+  match "/sign_in/verification/phone_number/challenges",     via: :post,   as: :sign_in_verification_phone_number_challenge_list, to: "sign_in/verification/phone_number/challenges/create#call"
+  match "/sign_in/verification/phone_number/challenges/new", via: :get,    as: :sign_in_verification_phone_number_new_challenge,  to: "sign_in/verification/phone_number/challenges/new#call"
+  match "/sign_out",                                         via: :get,    as: :sign_out,                                         to: "sign_out/show#call"
+  match "/sign_up",                                          via: :get,    as: :sign_up,                                          to: "sign_up/new#call"
+  match "/sign_up",                                          via: :post,                                                          to: "sign_up/create#call"
+  match "/sign_up/verification/phone_number/challenges",     via: :post,   as: :sign_up_verification_phone_number_challenge_list, to: "sign_up/verification/phone_number/challenges/create#call"
+  match "/sign_up/verification/phone_number/challenges/new", via: :get,    as: :sign_up_verification_phone_number_new_challenge,  to: "sign_up/verification/phone_number/challenges/new#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"

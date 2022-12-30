@@ -1,0 +1,5 @@
+.c-post-options-dropdown {
+  .dropdown-toggle::after {
+    display: none; // Hide caret
+  }
+}

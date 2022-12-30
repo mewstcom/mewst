@@ -12,7 +12,7 @@ class AddPostToHomeTimelineJob
     post = Post.find_by(id: post_id)
 
     if profile && post
-      profile.add_post_to_home_timeline(post:)
+      profile.home_timeline.add_post(post:)
     end
 
     true

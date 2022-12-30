@@ -162,6 +162,8 @@ GEM
     public_suffix (5.0.0)
     puma (6.0.1)
       nio4r (~> 2.0)
+    pundit (2.3.0)
+      activesupport (>= 3.0.0)
     racc (1.6.2)
     rack (2.2.4)
     rack-test (2.0.2)
@@ -341,6 +343,7 @@ DEPENDENCIES
   pg
   propshaft
   puma
+  pundit
   rails (~> 7.0.0)
   rails-i18n
   redis

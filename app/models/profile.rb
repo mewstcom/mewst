@@ -18,6 +18,11 @@ class Profile < ApplicationRecord
 
   validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
+  sig { returns(Profile::Timeline::Home) }
+  def home_timeline
+    Profile::Timeline::Home.new(profile: self)
+  end
+
   sig { override.returns(String) }
   def timeline_key
     "timeline:profile:#{id}"
@@ -42,10 +47,5 @@ class Profile < ApplicationRecord
   def home_timeline_posts
     post_ids = ::Timeline.new(self).get_post_ids
     Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
-  end
-
-  sig { params(post: Post).returns(Profile::Timeline::Home) }
-  def add_post_to_home_timeline(post:)
-    Profile::Timeline::Home.new(profile: self).add_post(post:)
   end
 end

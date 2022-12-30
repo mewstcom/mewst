@@ -3,6 +3,7 @@
 
 class Home::ShowController < ApplicationController
   include Authenticatable
+  include Authorizable
   include Localizable
 
   around_action :set_locale

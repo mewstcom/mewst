@@ -9,6 +9,8 @@ ja:
       sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
     posts:
+      are_you_sure_to_delete_post: この投稿を削除しますか？
       created: 投稿しました
+      deleted: 投稿を削除しました
     profiles:
       updated: プロフィールを更新しました

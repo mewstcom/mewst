@@ -73,8 +73,14 @@ class Profile
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_initialize_by(attributes, &block); end
 
-    sig { returns(T.nilable(::Profile)) }
-    def find_sole_by; end
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(T.nilable(::Profile)) }
+    def find_signed(signed_id, purpose: nil); end
+
+    sig { params(signed_id: T.untyped, purpose: T.untyped).returns(::Profile) }
+    def find_signed!(signed_id, purpose: nil); end
+
+    sig { params(arg: T.untyped, args: T.untyped).returns(::Profile) }
+    def find_sole_by(arg, *args); end
 
     sig { params(limit: T.untyped).returns(T.untyped) }
     def first(limit = nil); end
@@ -145,7 +151,7 @@ class Profile
     sig { returns(::Profile) }
     def second_to_last!; end
 
-    sig { returns(T.nilable(::Profile)) }
+    sig { returns(::Profile) }
     def sole; end
 
     sig do
@@ -188,6 +194,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def followee_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followees, through: :follows`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followees; end
 
@@ -200,12 +208,16 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def follower_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :followers, through: :inverse_follows`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
     sig { returns(::Profile::PrivateCollectionProxy) }
     def followers; end
 
     sig { params(value: T::Enumerable[::Profile]).void }
     def followers=(value); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :follows`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def follows; end
 
@@ -218,6 +230,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def inverse_follow_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :inverse_follows`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Follow::PrivateCollectionProxy) }
     def inverse_follows; end
 
@@ -230,6 +244,8 @@ class Profile
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
     def post_ids=(ids); end
 
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :posts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
     sig { returns(::Post::PrivateCollectionProxy) }
     def posts; end
 

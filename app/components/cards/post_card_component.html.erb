@@ -30,6 +30,10 @@
           <%= link_to mst_time_ago_in_words(post.created_at), post_path(profile.atname, post.id) %>
         </div>
       </div>
+
+      <div class="col-auto">
+        <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+      </div>
     </div>
 
     <div class="mt-2">

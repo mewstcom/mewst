@@ -29,7 +29,7 @@ class FanOutPostJob
 
   sig { params(post: Post).void }
   def add_post_to_followers_home_timeline(post:)
-    followers = T.must(post.profile).follows
+    followers = T.must(post.profile).followers
 
     followers.find_each do |follower|
       AddPostToHomeTimelineJob.perform_async(follower.id, post.id)

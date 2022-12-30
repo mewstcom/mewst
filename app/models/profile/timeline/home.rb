@@ -16,6 +16,13 @@ class Profile::Timeline::Home
     self
   end
 
+  sig { params(post: Post).returns(T.self_type) }
+  def remove_post(post:)
+    T.cast(Mewst::Redis.client, Redis).zrem(profile.timeline_key, post.id)
+
+    self
+  end
+
   private
 
   sig { returns(Profile) }
