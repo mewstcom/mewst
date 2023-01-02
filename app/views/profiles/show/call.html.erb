@@ -2,8 +2,42 @@
 
 <%= render Navbars::NavbarComponent.new %>
 
-<h1>@<%= @profile.atname %></h1>
+<div class="u-flat u-narrow container py-3">
+  <div class="u-flat card">
+    <div class="card-body text-center">
+      <%= link_to profile_path(@profile.atname) do %>
+        <%= render Images::AvatarImageComponent.new(profile: @profile, width: 100) %>
+      <% end %>
 
-<% unless current_profile!.me?(target_profile: @profile) %>
-  <%= render Buttons::FollowButtonComponent.new(target_profile: @profile) %>
-<% end %>
+      <div class="fw-bold mt-2">
+        <% if @profile.name.present? %>
+          <div class="h3 mb-0">
+            <%= @profile.name %>
+          </div>
+        <% end %>
+
+        <div class="text-muted">
+          @<%= @profile.atname %>
+        </div>
+      </div>
+
+      <% if @profile.description.present? %>
+        <div class="mt-3">
+          <%= @profile.description %>
+        </div>
+      <% end %>
+
+      <% unless current_profile!.me?(target_profile: @profile) %>
+        <div class="mt-3">
+          <%= render Buttons::FollowButtonComponent.new(target_profile: @profile) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="gap-3 mt-3 vstack">
+    <% @posts.each do |post| %>
+      <%= render Cards::PostCardComponent.new(post:) %>
+    <% end %>
+  </div>
+</div>
