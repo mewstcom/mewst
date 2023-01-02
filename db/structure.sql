@@ -37,6 +37,17 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
+--
+-- Name: generate_ulid(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.generate_ulid() RETURNS uuid
+    LANGUAGE sql
+    AS $$
+  SELECT (lpad(to_hex(floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint), 12, '0') || encode(gen_random_bytes(10), 'hex'))::uuid;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -46,7 +57,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.account_profiles (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     account_id uuid,
     profile_id uuid,
     created_at timestamp(6) without time zone NOT NULL,
@@ -59,7 +70,7 @@ CREATE TABLE public.account_profiles (
 --
 
 CREATE TABLE public.accounts (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     phone_number character varying NOT NULL,
     locale character varying NOT NULL,
     sign_in_count integer DEFAULT 0 NOT NULL,
@@ -87,7 +98,7 @@ CREATE TABLE public.ar_internal_metadata (
 --
 
 CREATE TABLE public.follows (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     source_profile_id uuid NOT NULL,
     target_profile_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -100,7 +111,7 @@ CREATE TABLE public.follows (
 --
 
 CREATE TABLE public.organization_members (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     organization_id uuid NOT NULL,
     account_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -113,7 +124,7 @@ CREATE TABLE public.organization_members (
 --
 
 CREATE TABLE public.organization_profiles (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     organization_id uuid,
     profile_id uuid,
     created_at timestamp(6) without time zone NOT NULL,
@@ -126,7 +137,7 @@ CREATE TABLE public.organization_profiles (
 --
 
 CREATE TABLE public.organizations (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -137,7 +148,7 @@ CREATE TABLE public.organizations (
 --
 
 CREATE TABLE public.phone_number_verifications (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     phone_number character varying NOT NULL,
     raw_phone_number character varying NOT NULL,
     confirmation_code character varying NOT NULL,
@@ -151,7 +162,7 @@ CREATE TABLE public.phone_number_verifications (
 --
 
 CREATE TABLE public.posts (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
     content text NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -164,7 +175,7 @@ CREATE TABLE public.posts (
 --
 
 CREATE TABLE public.profiles (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
     profilable_type character varying NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
