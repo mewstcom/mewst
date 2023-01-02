@@ -1,7 +1,5 @@
 <%= render Navbars::NavbarComponent.new %>
 
-<div class="container mt-3">
-  <turbo-frame id="<%= dom_id(@post) %>">
-    <%= render Cards::PostCardComponent.new(post: @post) %>
-  </turbo-frame>
+<div class="container py-3 u-flat u-narrow">
+  <%= render Cards::PostCardComponent.new(post: @post) %>
 </div>
