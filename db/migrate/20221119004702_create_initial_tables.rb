@@ -49,15 +49,15 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :account_profiles, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :account, foreign_key: true, index: {unique: true}, type: :uuid
-      t.references :profile, foreign_key: true, index: {unique: true}, type: :uuid
+      t.references :account, foreign_key: true, index: {unique: true}, null: false, type: :uuid
+      t.references :profile, foreign_key: true, index: {unique: true}, null: false, type: :uuid
       t.timestamps
     end
 
     create_table :organization_profiles, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :organization, foreign_key: true, type: :uuid
-      t.references :profile, foreign_key: true, type: :uuid
+      t.references :organization, foreign_key: true, null: false, type: :uuid
+      t.references :profile, foreign_key: true, null: false, type: :uuid
       t.timestamps
 
       t.index %i[organization_id profile_id], unique: true

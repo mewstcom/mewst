@@ -58,8 +58,8 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.account_profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    account_id uuid,
-    profile_id uuid,
+    account_id uuid NOT NULL,
+    profile_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -125,8 +125,8 @@ CREATE TABLE public.organization_members (
 
 CREATE TABLE public.organization_profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    organization_id uuid,
-    profile_id uuid,
+    organization_id uuid NOT NULL,
+    profile_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
