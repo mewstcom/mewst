@@ -356,7 +356,7 @@ DEPENDENCIES
   sorbet
   sorbet-runtime
   standard
-  tapioca
+  tapioca (~> 0.10.0)
   twilio-ruby
   view_component
   web-console
