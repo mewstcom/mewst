@@ -203,11 +203,10 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.twitter_accounts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
+    access_token character varying NOT NULL,
+    scopes character varying[] NOT NULL,
     uid character varying NOT NULL,
     username character varying NOT NULL,
-    scopes character varying[] NOT NULL,
-    access_token character varying NOT NULL,
-    refresh_token character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );

@@ -10,6 +10,9 @@ en:
       sign_up_link_expired: Sign up link has expired. Please try again later.
     connected_accounts:
       connected: Connected.
+      connecting_error: Connecting error has occurred. Please try again.
+      disconnected: Disconnected.
+      disconnecting: Disconnecting...
       not_connected: Not connected.
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
@@ -17,9 +20,5 @@ en:
       deleted: Post deleted.
     profiles:
       updated: Profile updated.
-    twitter_accounts:
-      connected: Connected.
-      disconnected: Disconnected.
-      disconnecting: Disconnecting...
     twitter_authorization:
       usages: What do you want to do with your Twitter account?

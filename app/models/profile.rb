@@ -4,10 +4,11 @@
 class Profile < ApplicationRecord
   extend Enumerize
 
-  include Postable
+  include Profile::Followable
+  include Profile::Postable
+  include Profile::TwitterConnectable
   include SoftDeletable
   include TimelineOwnable
-  include Followable
   T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/

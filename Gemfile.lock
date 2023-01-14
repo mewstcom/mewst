@@ -356,6 +356,7 @@ DEPENDENCIES
   email_validator
   enumerize
   factory_bot_rails
+  faraday
   http_accept_language
   image_processing
   jb

@@ -2,19 +2,20 @@
 # frozen_string_literal: true
 
 class TwitterAccount < ApplicationRecord
-  sig { params(code: String).returns(T.self_type) }
-  def self.create_from_authorization_code(code:)
-    res = twitter.create_access_token(code: )
-    twitter_account = profile!.build_twitter_account()
-  end
+  validate :valid_scopes
 
-  def can_tweet?
-
+  def refresh
+    twitter_client.me
+    binding.irb
   end
 
   private
 
-  def twitter
-    @twitter ||= Twitter.new
+  def valid_scopes
+    binding.irb
+  end
+
+  def twitter_client
+    @twitter_client = Mewst::TwitterClient.new(access_token:)
   end
 end

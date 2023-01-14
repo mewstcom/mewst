@@ -10,6 +10,6 @@ class Settings::ConnectedAccounts::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @twitter_authorization = TwitterAuthorization.new
+    @twitter_auth = TwitterAuthorization.new
   end
 end

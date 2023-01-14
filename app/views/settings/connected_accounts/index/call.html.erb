@@ -22,7 +22,7 @@
               <% if current_profile!.twitter_account.present? %>
                 <%= button_to t("verbs.disconnect"), settings_twitter_account_path, class: "btn btn-link", data: { disable_with: t("messages.twitter_accounts.disconnecting") }, method: :delete %>
               <% else %>
-                <%= form_with data: { turbo: false }, model: @twitter_authorization, url: settings_twitter_authorization_path do |f| %>
+                <%= form_with data: { turbo: false }, model: @twitter_auth, url: settings_twitter_authorization_path do |f| %>
                   <label class="form-label">
                     <%= t("messages.twitter_authorization.usages") %>
                   </label>

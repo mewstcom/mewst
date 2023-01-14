@@ -10,16 +10,35 @@ class Settings::TwitterAuthorizations::Callbacks::ShowController < ApplicationCo
 
   sig { returns(T.untyped) }
   def call
-    TwitterAccount.create_from_authorization_code(code: form_params[:code])
+    if invalid_response?
+      flash[:alert] = t("messages.connected_accounts.connecting_error")
+      return redirect_to(settings_connected_account_list_path)
+    end
 
-    flash[:success] = t("messages.twitter_accounts.connected")
-    redirect_back(fallback_location: settings_connected_account_list_path)
+    current_profile!.upsert_twitter_account(authorization_code:, code_verifier:)
+
+    flash[:success] = t("messages.connected_accounts.connected")
+    redirect_to settings_connected_account_list_path
   end
 
   private
 
   sig { returns(ActionController::Parameters) }
-  def form_params
-    T.cast(params, ActionController::Parameters).permit(:code)
+  def callback_params
+    T.cast(params, ActionController::Parameters).permit(:code, :error, :state)
+  end
+
+  def invalid_response?
+    callback_params[:error] ||
+      callback_params[:state] != session[:twitter_oauth2_state] ||
+      !code_verifier
+  end
+
+  def authorization_code
+    callback_params[:code]
+  end
+
+  def code_verifier
+    session[:twitter_oauth2_code_verifier]
   end
 end

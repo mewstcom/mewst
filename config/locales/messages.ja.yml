@@ -10,6 +10,9 @@ ja:
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
     connected_accounts:
       connected: 連携しています
+      connecting_error: 連携中にエラーが発生しました。もう一度お試しください
+      disconnected: 接続解除しました
+      disconnecting: 接続解除しています...
       not_connected: 連携していません
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
@@ -17,9 +20,5 @@ ja:
       deleted: 投稿を削除しました
     profiles:
       updated: プロフィールを更新しました
-    twitter_accounts:
-      connected: 連携しました
-      disconnected: 接続解除しました
-      disconnecting: 接続解除しています...
     twitter_authorization:
       usages: Twitterアカウントを使って何をしたいですか？

@@ -10,17 +10,20 @@ class Settings::TwitterAuthorizations::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    authorization = TwitterAuthorization.new(form_params)
-    authorization_url = authorization.url
-    session[:code_verifier] = authorization.client.code_verifier
+    twitter_auth = TwitterAuthorization.new(form_params)
 
-    redirect_to(authorization_url, allow_other_host: true)
+    authorization_uri = twitter_auth.authorization_uri
+    session[:twitter_oauth2_code_verifier] = twitter_auth.code_verifier
+    session[:twitter_oauth2_state] = twitter_auth.state
+
+    redirect_to(authorization_uri, allow_other_host: true)
   end
 
   private
 
   sig { returns(ActionController::Parameters) }
   def form_params
-    T.cast(params.require(:twitter_authorization), ActionController::Parameters).permit(:usage_cross_post, :usage_find_friends)
+    T.cast(params.require(:twitter_authorization), ActionController::Parameters)
+      .permit(:cross_post_usage, :find_friends_usage)
   end
 end
