@@ -14,6 +14,8 @@ class Profile < ApplicationRecord
   PROFILABLE_TYPE_ACCOUNT = :account
   PROFILABLE_TYPE_ORGANIZATION = :organization
 
+  has_one :twitter_account, dependent: :restrict_with_exception
+
   enumerize :profilable_type, in: [PROFILABLE_TYPE_ACCOUNT, PROFILABLE_TYPE_ORGANIZATION]
 
   validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true

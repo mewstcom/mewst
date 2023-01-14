@@ -2,6 +2,7 @@ en:
   nouns:
     account: Account
     ago: Ago
+    connected_accounts: Connected accounts
     current_avatar: Current avatar
     edit_account: Edit Account
     edit_profile: Edit Profile

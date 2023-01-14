@@ -8,9 +8,18 @@ en:
       signed_out_successfully: Signed out successfully.
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
+    connected_accounts:
+      connected: Connected.
+      not_connected: Not connected.
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
       created: Post created.
       deleted: Post deleted.
     profiles:
       updated: Profile updated.
+    twitter_accounts:
+      connected: Connected.
+      disconnected: Disconnected.
+      disconnecting: Disconnecting...
+    twitter_authorization:
+      usages: What do you want to do with your Twitter account?

@@ -197,6 +197,23 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: twitter_accounts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.twitter_accounts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    uid character varying NOT NULL,
+    username character varying NOT NULL,
+    scopes character varying[] NOT NULL,
+    access_token character varying NOT NULL,
+    refresh_token character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: account_profiles account_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -282,6 +299,14 @@ ALTER TABLE ONLY public.profiles
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: twitter_accounts twitter_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.twitter_accounts
+    ADD CONSTRAINT twitter_accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -390,6 +415,13 @@ CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atn
 
 
 --
+-- Name: index_twitter_accounts_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_twitter_accounts_on_profile_id ON public.twitter_accounts USING btree (profile_id);
+
+
+--
 -- Name: follows fk_rails_5e22b9865a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -443,6 +475,14 @@ ALTER TABLE ONLY public.posts
 
 ALTER TABLE ONLY public.organization_profiles
     ADD CONSTRAINT fk_rails_d0c5dfda7d FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
+
+
+--
+-- Name: twitter_accounts fk_rails_eb2a6ad196; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.twitter_accounts
+    ADD CONSTRAINT fk_rails_eb2a6ad196 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --

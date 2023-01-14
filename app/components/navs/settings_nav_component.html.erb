@@ -10,4 +10,10 @@
       <%= t("nouns.account") %>
     <% end %>
   </li>
+
+  <li class="nav-item">
+    <%= link_to settings_connected_account_list_path, class: nav_link_class_names(settings_connected_account_list_path) do %>
+      <%= t("nouns.connected_accounts") %>
+    <% end %>
+  </li>
 </ul>

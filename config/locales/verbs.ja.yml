@@ -1,5 +1,7 @@
 ja:
   verbs:
+    connect: 連携する
+    disconnect: 連携解除する
     follow: フォローする
     post: 投稿する
     update: 更新する

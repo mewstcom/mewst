@@ -27,6 +27,7 @@ gem "shrine"
 gem "sidekiq"
 gem "sorbet-runtime"
 gem "twilio-ruby"
+gem "twitter_oauth2"
 gem "view_component"
 
 group :development, :test do

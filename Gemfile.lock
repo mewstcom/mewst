@@ -74,7 +74,10 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    aes_key_wrap (1.1.0)
     ast (2.4.2)
+    attr_required (1.0.1)
+    bindata (2.4.14)
     bindex (0.8.1)
     bootsnap (1.15.0)
       msgpack (~> 1.2)
@@ -108,11 +111,14 @@ GEM
     faraday (2.7.2)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
     ffi (1.15.5)
     globalid (1.0.0)
       activesupport (>= 5.0)
     http_accept_language (2.1.1)
+    httpclient (2.8.3)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
@@ -122,6 +128,12 @@ GEM
     jsbundling-rails (1.1.1)
       railties (>= 6.0.0)
     json (2.6.3)
+    json-jwt (1.16.1)
+      activesupport (>= 4.2)
+      aes_key_wrap
+      bindata
+      faraday (~> 2.0)
+      faraday-follow_redirects
     jwt (2.5.0)
     language_server-protocol (3.17.0.2)
     loofah (2.19.1)
@@ -166,6 +178,12 @@ GEM
       activesupport (>= 3.0.0)
     racc (1.6.2)
     rack (2.2.4)
+    rack-oauth2 (1.21.3)
+      activesupport
+      attr_required
+      httpclient
+      json-jwt (>= 1.11.0)
+      rack (>= 2.1.0)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (7.0.4)
@@ -294,6 +312,8 @@ GEM
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, <= 2.5)
       nokogiri (>= 1.6, < 2.0)
+    twitter_oauth2 (0.5.1)
+      rack-oauth2 (~> 1.19)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.3.0)
@@ -358,6 +378,7 @@ DEPENDENCIES
   standard
   tapioca (~> 0.10.0)
   twilio-ruby
+  twitter_oauth2
   view_component
   web-console
 

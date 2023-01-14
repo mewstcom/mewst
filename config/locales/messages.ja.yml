@@ -8,9 +8,18 @@ ja:
       signed_out_successfully: ログアウトしました
       sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
+    connected_accounts:
+      connected: 連携しています
+      not_connected: 連携していません
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
       created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
       updated: プロフィールを更新しました
+    twitter_accounts:
+      connected: 連携しました
+      disconnected: 接続解除しました
+      disconnecting: 接続解除しています...
+    twitter_authorization:
+      usages: Twitterアカウントを使って何をしたいですか？
