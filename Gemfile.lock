@@ -135,7 +135,7 @@ GEM
       bindata
       faraday (~> 2.0)
       faraday-follow_redirects
-    jwt (2.5.0)
+    jwt (2.6.0)
     language_server-protocol (3.17.0.2)
     loofah (2.19.1)
       crass (~> 1.0.2)
@@ -149,7 +149,6 @@ GEM
     method_source (1.0.0)
     mini_magick (4.11.0)
     mini_mime (1.1.2)
-    mini_portile2 (2.8.1)
     minitest (5.17.0)
     msgpack (1.6.0)
     multi_json (1.15.0)
@@ -164,8 +163,9 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.5.8)
-    nokogiri (1.13.10)
-      mini_portile2 (~> 2.8.0)
+    nokogiri (1.14.0-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.14.0-x86_64-linux)
       racc (~> 1.4)
     oj (3.13.23)
     parallel (1.22.1)
@@ -314,9 +314,9 @@ GEM
       yard-sorbet
     thor (1.2.1)
     timeout (0.3.1)
-    twilio-ruby (5.74.0)
+    twilio-ruby (5.74.1)
       faraday (>= 0.9, < 3.0)
-      jwt (>= 1.5, <= 2.5)
+      jwt (>= 1.5, <= 2.6)
       nokogiri (>= 1.6, < 2.0)
     twitter_oauth2 (0.5.1)
       rack-oauth2 (~> 1.19)
