@@ -2,6 +2,7 @@ ja:
   verbs:
     connect: 連携する
     disconnect: 連携解除する
+    find_friends_on_twitter: Twitterの友達を見つける
     follow: フォローする
     post: 投稿する
     update: 更新する
