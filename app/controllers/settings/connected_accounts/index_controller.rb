@@ -11,5 +11,6 @@ class Settings::ConnectedAccounts::IndexController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @twitter_auth = TwitterAuthorization.new
+    @twitter_account = current_profile!.twitter_account
   end
 end

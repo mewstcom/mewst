@@ -18,6 +18,7 @@ gem "http_accept_language"
 gem "image_processing" # Used by Shrine
 gem "jb"
 gem "jsbundling-rails"
+gem "oj"
 gem "pg"
 gem "propshaft"
 gem "puma"

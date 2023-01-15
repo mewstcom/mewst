@@ -11,7 +11,7 @@ class Mewst::TwitterOauth2
     users_read: "users.read"
   }.freeze
 
-  class AccessToken < T::Struct
+  class AccessTokenResponse < T::Struct
     const :access_token, String
     const :scopes, T::Array[String]
   end
@@ -32,9 +32,11 @@ class Mewst::TwitterOauth2
 
   def create_access_token(authorization_code:, code_verifier:)
     client.authorization_code = authorization_code
-    token_response = client.access_token!(code_verifier)
 
+    token_response = client.access_token!(code_verifier)
+    access_token = token_response.access_token
     scopes = token_response.scope.split(" ")
-    AccessToken.new(access_token: token_response.access_token, scopes:)
+
+    AccessTokenResponse.new(access_token:, scopes:)
   end
 end

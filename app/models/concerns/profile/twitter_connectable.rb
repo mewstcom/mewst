@@ -9,14 +9,12 @@ module Profile::TwitterConnectable
 
   sig { params(authorization_code: String, code_verifier: String).returns(T.self_type) }
   def upsert_twitter_account(authorization_code:, code_verifier:)
-    access_token = twitter_oauth2.create_access_token(authorization_code:, code_verifier:)
+    access_token_responce = twitter_oauth2.create_access_token(authorization_code:, code_verifier:)
 
-    if twitter_account
-      twitter_account.access_token = access_token.access_token
-      return twitter_account.refresh
-    end
+    ta = twitter_account.presence || build_twitter_account
+    ta.reset_attributes(access_token_responce:)
+    ta.save!
 
-    twitter_account = build_twitter_account(access_token: access_token.access_token)
-    twitter_account.refresh
+    ta
   end
 end

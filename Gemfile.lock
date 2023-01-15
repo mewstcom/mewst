@@ -162,6 +162,7 @@ GEM
     nokogiri (1.13.10)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
+    oj (3.13.23)
     parallel (1.22.1)
     parser (3.2.0.0)
       ast (~> 2.4.1)
@@ -361,6 +362,7 @@ DEPENDENCIES
   image_processing
   jb
   jsbundling-rails
+  oj
   pg
   propshaft
   puma
