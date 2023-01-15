@@ -4,14 +4,17 @@
 class TwitterAccount < ApplicationRecord
   validate :permitted_scopes
 
+  sig { returns(T::Boolean) }
   def can_cross_post?
-    TwitterAuthorization::TWITTER_SCOPES[:cross_post].all? { |scope| scope.in?(scopes) }
+    TwitterAuthorization::TWITTER_CROSS_POST_SCOPES.all? { |scope| scope.in?(scopes) }
   end
 
+  sig { returns(T::Boolean) }
   def can_find_friends?
-    TwitterAuthorization::TWITTER_SCOPES[:find_friends].all? { |scope| scope.in?(scopes) }
+    TwitterAuthorization::TWITTER_FIND_FRIENDS_SCOPES.all? { |scope| scope.in?(scopes) }
   end
 
+  sig { params(access_token_responce: Mewst::TwitterOauth2::AccessTokenResponse).returns(T.self_type) }
   def reset_attributes(access_token_responce:)
     self.access_token = access_token_responce.access_token
     self.scopes = access_token_responce.scopes
@@ -20,10 +23,13 @@ class TwitterAccount < ApplicationRecord
 
     self.uid = me.id
     self.username = me.username
+
+    self
   end
 
   private
 
+  sig { void }
   def permitted_scopes
     unpermitted_scopes = (scopes - Mewst::TwitterOauth2::SCOPES.values)
 
@@ -35,7 +41,8 @@ class TwitterAccount < ApplicationRecord
     ))
   end
 
+  sig { returns(Mewst::TwitterClient) }
   def twitter_client
-    @twitter_client = Mewst::TwitterClient.new(access_token:)
+    Mewst::TwitterClient.new(access_token:)
   end
 end

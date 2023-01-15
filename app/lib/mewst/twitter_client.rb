@@ -9,12 +9,14 @@ class Mewst::TwitterClient
     const :username, String
   end
 
+  sig { params(access_token: String).void }
   def initialize(access_token:)
-    @access_token = access_token
+    @access_token = T.let(access_token, String)
   end
 
+  sig { returns(Me) }
   def me
-    @me ||= begin
+    @me ||= T.let(begin
       response = conn.get("/2/users/me")
       body = Oj.load(response.body)
 
@@ -22,14 +24,15 @@ class Mewst::TwitterClient
         id: body.dig("data", "id"),
         username: body.dig("data", "username")
       )
-    end
+    end, T.nilable(Me))
   end
 
   private
 
+  sig { returns(Faraday::Connection) }
   def conn
-    @conn ||= Faraday.new(url: "https://api.twitter.com") do |f|
+    @conn ||= T.let(Faraday.new(url: "https://api.twitter.com") do |f|
       f.request(:authorization, "Bearer", @access_token)
-    end
+    end, T.nilable(Faraday::Connection))
   end
 end

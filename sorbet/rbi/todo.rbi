@@ -4,7 +4,6 @@
 
 # typed: false
 
-module ::Addressable::URI; end
 module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
 module Module::Concerning; end
