@@ -4,7 +4,6 @@
 
 # typed: false
 
-module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
 module Module::Concerning; end
 module Shrine::Storage::FileSystem; end
