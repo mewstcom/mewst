@@ -36,7 +36,6 @@ class TwitterAuthorization
     cross_post_scopes = cross_post_usage ? TWITTER_SCOPES[:cross_post] : []
     find_friends_scopes = find_friends_usage ? TWITTER_SCOPES[:find_friends] : []
 
-    # (["offline.access"] + cross_post_scopes + find_friends_scopes).uniq
     (cross_post_scopes + find_friends_scopes).uniq
   end
 end
