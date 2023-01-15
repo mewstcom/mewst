@@ -45,6 +45,6 @@ end
 group :development do
   gem "bullet"
   gem "sorbet"
-  gem "tapioca", "~> 0.10.0", require: false
+  gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"
 end

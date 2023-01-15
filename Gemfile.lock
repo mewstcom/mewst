@@ -384,7 +384,7 @@ DEPENDENCIES
   sorbet
   sorbet-runtime
   standard
-  tapioca (~> 0.10.0)
+  tapioca (>= 0.10.5)
   twilio-ruby
   twitter_oauth2
   view_component
