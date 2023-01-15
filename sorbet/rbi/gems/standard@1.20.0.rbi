@@ -10,10 +10,10 @@ module RuboCop; end
 # source://standard//lib/standard/cop/block_single_line_braces.rb#1
 module RuboCop::Cop; end
 
-# source://rubocop/1.39.0/lib/rubocop/cop/mixin/allowed_methods.rb#38
+# source://rubocop/1.40.0/lib/rubocop/cop/mixin/allowed_methods.rb#38
 RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 
-# source://rubocop/1.39.0/lib/rubocop/cop/mixin/allowed_pattern.rb#54
+# source://rubocop/1.40.0/lib/rubocop/cop/mixin/allowed_pattern.rb#54
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 
 module RuboCop::Cop::Lint; end
@@ -23,37 +23,37 @@ class RuboCop::Cop::Lint::AssignmentInCondition < ::RuboCop::Cop::Base
   # source://standard//lib/standard/rubocop/ext.rb#4
   def message(_); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#49
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_if(node); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#49
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_until(node); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#49
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_while(node); end
 
   private
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#72
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#82
   def allowed_construct?(asgn_node); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#76
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#86
   def conditional_assignment?(asgn_node); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#80
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#90
   def skip_children?(asgn_node); end
 
-  # source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#86
+  # source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#96
   def traverse_node(node, &block); end
 end
 
-# source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#47
+# source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#53
 RuboCop::Cop::Lint::AssignmentInCondition::ASGN_TYPES = T.let(T.unsafe(nil), Array)
 
-# source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#44
+# source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#50
 RuboCop::Cop::Lint::AssignmentInCondition::MSG_WITHOUT_SAFE_ASSIGNMENT_ALLOWED = T.let(T.unsafe(nil), String)
 
-# source://rubocop/1.39.0/lib/rubocop/cop/lint/assignment_in_condition.rb#40
+# source://rubocop/1.40.0/lib/rubocop/cop/lint/assignment_in_condition.rb#46
 RuboCop::Cop::Lint::AssignmentInCondition::MSG_WITH_SAFE_ASSIGNMENT_ALLOWED = T.let(T.unsafe(nil), String)
 
 # source://standard//lib/standard/cop/block_single_line_braces.rb#2
@@ -111,117 +111,117 @@ end
 
 # source://standard//lib/standard/rubocop/ext.rb#9
 class RuboCop::DirectiveComment
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#30
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#30
   def initialize(comment, cop_registry = T.unsafe(nil)); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#80
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#80
   def all_cops?; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#28
   def comment; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#85
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#85
   def cop_names; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#28
   def cop_registry; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#28
   def cops; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#91
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#91
   def department_names; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#105
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#105
   def directive_count; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#60
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#60
   def disabled?; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#75
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#75
   def disabled_all?; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#65
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#65
   def enabled?; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#70
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#70
   def enabled_all?; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#96
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#96
   def in_directive_department?(cop); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#110
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#110
   def line_number; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#42
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#42
   def match?(cop_names); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#55
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#55
   def match_captures; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#28
   def mode; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#101
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#101
   def overridden_by_department?(cop); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#46
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#46
   def range; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#37
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#37
   def single_line?; end
 
   private
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#130
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#130
   def all_cop_names; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#134
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#134
   def cop_names_for_department(department); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#126
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#126
   def department?(name); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#140
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#140
   def exclude_redundant_directive_cop(cops); end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#120
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#120
   def parsed_cop_names; end
 
-  # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#116
+  # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#116
   def splitted_cops_string; end
 
   class << self
-    # source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#24
+    # source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#24
     def before_comment(line); end
   end
 end
 
-# source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#17
+# source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#17
 RuboCop::DirectiveComment::COPS_PATTERN = T.let(T.unsafe(nil), String)
 
-# source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#15
+# source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#15
 RuboCop::DirectiveComment::COP_NAMES_PATTERN = T.let(T.unsafe(nil), String)
 
-# source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#13
+# source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#13
 RuboCop::DirectiveComment::COP_NAME_PATTERN = T.let(T.unsafe(nil), String)
 
 # source://standard//lib/standard/rubocop/ext.rb#11
 RuboCop::DirectiveComment::DIRECTIVE_COMMENT_REGEXP = T.let(T.unsafe(nil), Regexp)
 
-# source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#11
+# source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#11
 RuboCop::DirectiveComment::REDUNDANT_DIRECTIVE_COP = T.let(T.unsafe(nil), String)
 
-# source://rubocop/1.39.0/lib/rubocop/directive_comment.rb#9
+# source://rubocop/1.40.0/lib/rubocop/directive_comment.rb#9
 RuboCop::DirectiveComment::REDUNDANT_DIRECTIVE_COP_DEPARTMENT = T.let(T.unsafe(nil), String)
 
-# source://rubocop/1.39.0/lib/rubocop/ast_aliases.rb#5
+# source://rubocop/1.40.0/lib/rubocop/ast_aliases.rb#5
 RuboCop::NodePattern = RuboCop::AST::NodePattern
 
-# source://rubocop/1.39.0/lib/rubocop/ast_aliases.rb#6
+# source://rubocop/1.40.0/lib/rubocop/ast_aliases.rb#6
 RuboCop::ProcessedSource = RuboCop::AST::ProcessedSource
 
-# source://rubocop/1.39.0/lib/rubocop/ast_aliases.rb#7
+# source://rubocop/1.40.0/lib/rubocop/ast_aliases.rb#7
 RuboCop::Token = RuboCop::AST::Token
 
 # source://standard//lib/standard/version.rb#1

@@ -60,6 +60,18 @@ module GeneratedUrlHelpersModule
   def settings_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def settings_connected_account_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_account_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_authorization_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_authorization_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def settings_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

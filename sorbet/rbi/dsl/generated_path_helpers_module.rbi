@@ -60,7 +60,19 @@ module GeneratedPathHelpersModule
   def settings_account_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def settings_connected_account_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def settings_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_account_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_authorization_callback_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_twitter_authorization_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sidekiq_web_path(*args); end

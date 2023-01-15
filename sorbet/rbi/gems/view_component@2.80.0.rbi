@@ -681,49 +681,49 @@ class ViewComponent::Compiler
 
   private
 
-  # source://view_component//lib/view_component/compiler.rb#247
+  # source://view_component//lib/view_component/compiler.rb#243
   def call_method_name(variant); end
 
-  # source://view_component//lib/view_component/compiler.rb#229
+  # source://view_component//lib/view_component/compiler.rb#225
   def compiled_template(file_path); end
 
   # Returns the value of attribute component_class.
   #
-  # source://view_component//lib/view_component/compiler.rb#90
+  # source://view_component//lib/view_component/compiler.rb#86
   def component_class; end
 
-  # source://view_component//lib/view_component/compiler.rb#92
+  # source://view_component//lib/view_component/compiler.rb#88
   def define_render_template_for; end
 
-  # source://view_component//lib/view_component/compiler.rb#198
+  # source://view_component//lib/view_component/compiler.rb#194
   def inline_calls; end
 
-  # source://view_component//lib/view_component/compiler.rb#213
+  # source://view_component//lib/view_component/compiler.rb#209
   def inline_calls_defined_on_self; end
 
-  # source://view_component//lib/view_component/compiler.rb#255
+  # source://view_component//lib/view_component/compiler.rb#251
   def normalized_variant_name(variant); end
 
   # Returns the value of attribute redefinition_lock.
   #
-  # source://view_component//lib/view_component/compiler.rb#90
+  # source://view_component//lib/view_component/compiler.rb#86
   def redefinition_lock; end
 
   # @return [Boolean]
   #
-  # source://view_component//lib/view_component/compiler.rb#259
+  # source://view_component//lib/view_component/compiler.rb#255
   def should_compile_superclass?; end
 
-  # source://view_component//lib/view_component/compiler.rb#116
+  # source://view_component//lib/view_component/compiler.rb#112
   def template_errors; end
 
-  # source://view_component//lib/view_component/compiler.rb#182
+  # source://view_component//lib/view_component/compiler.rb#178
   def templates; end
 
-  # source://view_component//lib/view_component/compiler.rb#217
+  # source://view_component//lib/view_component/compiler.rb#213
   def variants; end
 
-  # source://view_component//lib/view_component/compiler.rb#223
+  # source://view_component//lib/view_component/compiler.rb#219
   def variants_from_inline_calls(calls); end
 
   class << self
@@ -824,6 +824,7 @@ end
 # source://view_component//lib/view_component/deprecation.rb#6
 ViewComponent::DEPRECATION_HORIZON = T.let(T.unsafe(nil), String)
 
+# source://view_component//lib/view_component/deprecation.rb#7
 ViewComponent::Deprecation = T.let(T.unsafe(nil), ActiveSupport::Deprecation)
 
 # source://view_component//lib/view_component/engine.rb#7
@@ -1436,6 +1437,20 @@ class ViewComponentsController < ::Rails::ApplicationController
     # source://activesupport/7.0.4/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
+    # source://actionpack/7.0.4/lib/action_controller/metal.rb#210
+    def middleware_stack; end
+  end
+end
+
+class ViewComponentsSystemTestController < ::Rails::ApplicationController
+  def system_test_entrypoint; end
+
+  private
+
+  # source://actionview/7.0.4/lib/action_view/layouts.rb#328
+  def _layout(lookup_context, formats); end
+
+  class << self
     # source://actionpack/7.0.4/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end

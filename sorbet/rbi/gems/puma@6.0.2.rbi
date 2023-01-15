@@ -11,7 +11,7 @@ module Puma
   class << self
     # @return [Boolean]
     #
-    # source://puma//lib/puma.rb#47
+    # source://puma//lib/puma.rb#45
     def abstract_unix_socket?; end
 
     # @return [Boolean]
@@ -36,23 +36,23 @@ module Puma
     # source://puma//lib/puma/detect.rb#27
     def osx?; end
 
-    # source://puma//lib/puma.rb#77
+    # source://puma//lib/puma.rb#75
     def set_thread_name(name); end
 
     # @return [Boolean]
     #
-    # source://puma//lib/puma.rb#43
+    # source://puma//lib/puma.rb#41
     def ssl?; end
 
-    # source://puma//lib/puma.rb#67
+    # source://puma//lib/puma.rb#65
     def stats; end
 
     # @version 5.0.0
     #
-    # source://puma//lib/puma.rb#73
+    # source://puma//lib/puma.rb#71
     def stats_hash; end
 
-    # source://puma//lib/puma.rb#62
+    # source://puma//lib/puma.rb#60
     def stats_object=(val); end
 
     # @return [Boolean]
@@ -462,113 +462,113 @@ Puma::Client::TE_ERR_MSG = T.let(T.unsafe(nil), String)
 class Puma::Cluster < ::Puma::Runner
   # @return [Cluster] a new instance of Cluster
   #
-  # source://puma//lib/puma/cluster.rb#20
+  # source://puma//lib/puma/cluster.rb#18
   def initialize(launcher); end
 
   # @return [Boolean]
   #
-  # source://puma//lib/puma/cluster.rb#153
+  # source://puma//lib/puma/cluster.rb#151
   def all_workers_booted?; end
 
-  # source://puma//lib/puma/cluster.rb#157
+  # source://puma//lib/puma/cluster.rb#155
   def check_workers; end
 
-  # source://puma//lib/puma/cluster.rb#136
+  # source://puma//lib/puma/cluster.rb#134
   def cull_start_index(diff); end
 
-  # source://puma//lib/puma/cluster.rb#112
+  # source://puma//lib/puma/cluster.rb#110
   def cull_workers; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/cluster.rb#280
+  # source://puma//lib/puma/cluster.rb#278
   def fork_worker!; end
 
-  # source://puma//lib/puma/cluster.rb#237
+  # source://puma//lib/puma/cluster.rb#235
   def halt; end
 
-  # source://puma//lib/puma/cluster.rb#146
+  # source://puma//lib/puma/cluster.rb#144
   def next_worker_index; end
 
-  # source://puma//lib/puma/cluster.rb#216
+  # source://puma//lib/puma/cluster.rb#214
   def phased_restart(refork = T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://puma//lib/puma/cluster.rb#275
+  # source://puma//lib/puma/cluster.rb#273
   def preload?; end
 
-  # source://puma//lib/puma/cluster.rb#61
+  # source://puma//lib/puma/cluster.rb#59
   def redirect_io; end
 
-  # source://puma//lib/puma/cluster.rb#242
+  # source://puma//lib/puma/cluster.rb#240
   def reload_worker_directory; end
 
-  # source://puma//lib/puma/cluster.rb#211
+  # source://puma//lib/puma/cluster.rb#209
   def restart; end
 
-  # source://puma//lib/puma/cluster.rb#340
+  # source://puma//lib/puma/cluster.rb#338
   def run; end
 
   # We do this in a separate method to keep the lambda scope
   # of the signals handlers as small as possible.
   #
-  # source://puma//lib/puma/cluster.rb#289
+  # source://puma//lib/puma/cluster.rb#287
   def setup_signals; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/cluster.rb#98
+  # source://puma//lib/puma/cluster.rb#96
   def spawn_worker(idx, master); end
 
-  # source://puma//lib/puma/cluster.rb#67
+  # source://puma//lib/puma/cluster.rb#65
   def spawn_workers; end
 
-  # source://puma//lib/puma/cluster.rb#49
+  # source://puma//lib/puma/cluster.rb#47
   def start_phased_restart; end
 
   # Inside of a child process, this will return all zeroes, as @workers is only populated in
   # the master process.
   #
-  # source://puma//lib/puma/cluster.rb#251
+  # source://puma//lib/puma/cluster.rb#249
   def stats; end
 
-  # source://puma//lib/puma/cluster.rb#225
+  # source://puma//lib/puma/cluster.rb#223
   def stop; end
 
-  # source://puma//lib/puma/cluster.rb#230
+  # source://puma//lib/puma/cluster.rb#228
   def stop_blocked; end
 
-  # source://puma//lib/puma/cluster.rb#34
+  # source://puma//lib/puma/cluster.rb#32
   def stop_workers; end
 
-  # source://puma//lib/puma/cluster.rb#189
+  # source://puma//lib/puma/cluster.rb#187
   def worker(index, master); end
 
   # Returns the list of cluster worker handles.
   #
   # @return [Array<Puma::Cluster::WorkerHandle>]
   #
-  # source://puma//lib/puma/cluster.rb#32
+  # source://puma//lib/puma/cluster.rb#30
   def workers; end
 
-  # source://puma//lib/puma/cluster.rb#126
+  # source://puma//lib/puma/cluster.rb#124
   def workers_to_cull(diff); end
 
   private
 
-  # source://puma//lib/puma/cluster.rb#500
+  # source://puma//lib/puma/cluster.rb#498
   def single_worker_warning; end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/cluster.rb#535
+  # source://puma//lib/puma/cluster.rb#533
   def timeout_workers; end
 
   # loops thru @workers, removing workers that exited, and calling
   # `#term` if needed
   #
-  # source://puma//lib/puma/cluster.rb#511
+  # source://puma//lib/puma/cluster.rb#509
   def wait_workers; end
 end
 
@@ -863,294 +863,273 @@ class Puma::ConnectionError < ::RuntimeError; end
 # REMOTE_USER, or REMOTE_HOST parameters since those are either a security problem or
 # too taxing on performance.
 #
-# source://puma//lib/puma/const.rb#101
+# source://puma//lib/puma/const.rb#100
 module Puma::Const; end
 
 # Banned keys of response header
 #
-# source://puma//lib/puma/const.rb#244
+# source://puma//lib/puma/const.rb#236
 Puma::Const::BANNED_HEADER_KEY = T.let(T.unsafe(nil), Regexp)
 
-# source://puma//lib/puma/const.rb#183
+# source://puma//lib/puma/const.rb#175
 Puma::Const::CGI_VER = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#224
+# source://puma//lib/puma/const.rb#216
 Puma::Const::CHUNKED = T.let(T.unsafe(nil), String)
 
 # The basic max request size we'll try to read.
 #
-# source://puma//lib/puma/const.rb#140
+# source://puma//lib/puma/const.rb#139
 Puma::Const::CHUNK_SIZE = T.let(T.unsafe(nil), Integer)
 
-# source://puma//lib/puma/const.rb#210
+# source://puma//lib/puma/const.rb#202
 Puma::Const::CLOSE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#222
+# source://puma//lib/puma/const.rb#214
 Puma::Const::CLOSE_CHUNKED = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#104
+# source://puma//lib/puma/const.rb#103
 Puma::Const::CODE_NAME = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#226
+# source://puma//lib/puma/const.rb#218
 Puma::Const::COLON = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#218
+# source://puma//lib/puma/const.rb#210
 Puma::Const::CONNECTION_CLOSE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#219
+# source://puma//lib/puma/const.rb#211
 Puma::Const::CONNECTION_KEEP_ALIVE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#118
+# source://puma//lib/puma/const.rb#117
 Puma::Const::CONTENT_LENGTH = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#213
+# source://puma//lib/puma/const.rb#205
 Puma::Const::CONTENT_LENGTH2 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#214
+# source://puma//lib/puma/const.rb#206
 Puma::Const::CONTENT_LENGTH_S = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#204
+# source://puma//lib/puma/const.rb#196
 Puma::Const::CONTINUE = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#154
-Puma::Const::DELETE = T.let(T.unsafe(nil), String)
 
 # Illegal character in the key or value of response header
 #
-# source://puma//lib/puma/const.rb#237
+# source://puma//lib/puma/const.rb#229
 Puma::Const::DQUOTE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#234
+# source://puma//lib/puma/const.rb#226
 Puma::Const::EARLY_HINTS = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#124
+# source://puma//lib/puma/const.rb#123
 Puma::Const::ERROR_RESPONSE = T.let(T.unsafe(nil), Hash)
 
-# source://puma//lib/puma/const.rb#108
+# source://puma//lib/puma/const.rb#107
 Puma::Const::FAST_TRACK_KA_TIMEOUT = T.let(T.unsafe(nil), Float)
 
-# source://puma//lib/puma/const.rb#182
+# source://puma//lib/puma/const.rb#174
 Puma::Const::GATEWAY_INTERFACE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#151
-Puma::Const::GET = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#186
+# source://puma//lib/puma/const.rb#178
 Puma::Const::HALT_COMMAND = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#150
+# source://puma//lib/puma/const.rb#149
 Puma::Const::HEAD = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#231
+# source://puma//lib/puma/const.rb#223
 Puma::Const::HIJACK = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#232
+# source://puma//lib/puma/const.rb#224
 Puma::Const::HIJACK_IO = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#230
+# source://puma//lib/puma/const.rb#222
 Puma::Const::HIJACK_P = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#196
+# source://puma//lib/puma/const.rb#188
 Puma::Const::HTTP = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#197
+# source://puma//lib/puma/const.rb#189
 Puma::Const::HTTPS = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#199
+# source://puma//lib/puma/const.rb#191
 Puma::Const::HTTPS_KEY = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#208
+# source://puma//lib/puma/const.rb#200
 Puma::Const::HTTP_10_200 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#179
+# source://puma//lib/puma/const.rb#171
 Puma::Const::HTTP_11 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#206
+# source://puma//lib/puma/const.rb#198
 Puma::Const::HTTP_11_100 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#207
+# source://puma//lib/puma/const.rb#199
 Puma::Const::HTTP_11_200 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#202
+# source://puma//lib/puma/const.rb#194
 Puma::Const::HTTP_CONNECTION = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#203
+# source://puma//lib/puma/const.rb#195
 Puma::Const::HTTP_EXPECT = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#238
+# source://puma//lib/puma/const.rb#230
 Puma::Const::HTTP_HEADER_DELIMITER = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#169
+# source://puma//lib/puma/const.rb#161
 Puma::Const::HTTP_HOST = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#201
+# source://puma//lib/puma/const.rb#193
 Puma::Const::HTTP_VERSION = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#162
+# source://puma//lib/puma/const.rb#154
 Puma::Const::HTTP_X_FORWARDED_FOR = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#165
+# source://puma//lib/puma/const.rb#157
 Puma::Const::HTTP_X_FORWARDED_PROTO = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#164
+# source://puma//lib/puma/const.rb#156
 Puma::Const::HTTP_X_FORWARDED_SCHEME = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#163
+# source://puma//lib/puma/const.rb#155
 Puma::Const::HTTP_X_FORWARDED_SSL = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#239
+# source://puma//lib/puma/const.rb#231
 Puma::Const::ILLEGAL_HEADER_KEY_REGEX = T.let(T.unsafe(nil), Regexp)
 
 # header values can contain HTAB?
 #
-# source://puma//lib/puma/const.rb#241
+# source://puma//lib/puma/const.rb#233
 Puma::Const::ILLEGAL_HEADER_VALUE_REGEX = T.let(T.unsafe(nil), Regexp)
 
-# source://puma//lib/puma/const.rb#211
+# source://puma//lib/puma/const.rb#203
 Puma::Const::KEEP_ALIVE = T.let(T.unsafe(nil), String)
 
 # ETag is based on the apache standard of hex mtime-size-inode (inode is 0 on win32)
 #
-# source://puma//lib/puma/const.rb#160
+# source://puma//lib/puma/const.rb#152
 Puma::Const::LINE_END = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#172
+# source://puma//lib/puma/const.rb#164
 Puma::Const::LOCALHOST = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#173
+# source://puma//lib/puma/const.rb#165
 Puma::Const::LOCALHOST_IPV4 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#174
+# source://puma//lib/puma/const.rb#166
 Puma::Const::LOCALHOST_IPV6 = T.let(T.unsafe(nil), String)
 
 # Maximum request body size before it is moved out of memory and into a tempfile for reading.
 #
-# source://puma//lib/puma/const.rb#147
+# source://puma//lib/puma/const.rb#146
 Puma::Const::MAX_BODY = T.let(T.unsafe(nil), Integer)
 
 # This is the maximum header that is allowed before a client is booted.  The parser detects
 # this, but we'd also like to do this as well.
 #
-# source://puma//lib/puma/const.rb#144
+# source://puma//lib/puma/const.rb#143
 Puma::Const::MAX_HEADER = T.let(T.unsafe(nil), Integer)
 
-# source://puma//lib/puma/const.rb#228
+# source://puma//lib/puma/const.rb#220
 Puma::Const::NEWLINE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#155
-Puma::Const::OPTIONS = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#157
-Puma::Const::PATCH = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#120
+# source://puma//lib/puma/const.rb#119
 Puma::Const::PATH_INFO = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#171
+# source://puma//lib/puma/const.rb#163
 Puma::Const::PORT_443 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#170
+# source://puma//lib/puma/const.rb#162
 Puma::Const::PORT_80 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#152
-Puma::Const::POST = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#246
+# source://puma//lib/puma/const.rb#238
 Puma::Const::PROXY_PROTOCOL_V1_REGEX = T.let(T.unsafe(nil), Regexp)
 
-# source://puma//lib/puma/const.rb#193
+# source://puma//lib/puma/const.rb#185
 Puma::Const::PUMA_CONFIG = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#194
+# source://puma//lib/puma/const.rb#186
 Puma::Const::PUMA_PEERCERT = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#106
+# source://puma//lib/puma/const.rb#105
 Puma::Const::PUMA_SERVER_STRING = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#192
+# source://puma//lib/puma/const.rb#184
 Puma::Const::PUMA_SOCKET = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#122
+# source://puma//lib/puma/const.rb#121
 Puma::Const::PUMA_TMP_BASE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#103
+# source://puma//lib/puma/const.rb#102
 Puma::Const::PUMA_VERSION = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#153
-Puma::Const::PUT = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#117
+# source://puma//lib/puma/const.rb#116
 Puma::Const::QUERY_STRING = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#191
+# source://puma//lib/puma/const.rb#183
 Puma::Const::RACK_AFTER_REPLY = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#189
+# source://puma//lib/puma/const.rb#181
 Puma::Const::RACK_INPUT = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#190
+# source://puma//lib/puma/const.rb#182
 Puma::Const::RACK_URL_SCHEME = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#161
+# source://puma//lib/puma/const.rb#153
 Puma::Const::REMOTE_ADDR = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#149
+# source://puma//lib/puma/const.rb#148
 Puma::Const::REQUEST_METHOD = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#116
+# source://puma//lib/puma/const.rb#115
 Puma::Const::REQUEST_PATH = T.let(T.unsafe(nil), String)
 
 # The original URI requested by the client.
 #
-# source://puma//lib/puma/const.rb#115
+# source://puma//lib/puma/const.rb#114
 Puma::Const::REQUEST_URI = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#187
+# source://puma//lib/puma/const.rb#179
 Puma::Const::RESTART_COMMAND = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#167
+# source://puma//lib/puma/const.rb#159
 Puma::Const::SERVER_NAME = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#168
+# source://puma//lib/puma/const.rb#160
 Puma::Const::SERVER_PORT = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#178
+# source://puma//lib/puma/const.rb#170
 Puma::Const::SERVER_PROTOCOL = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#181
+# source://puma//lib/puma/const.rb#173
 Puma::Const::SERVER_SOFTWARE = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#185
+# source://puma//lib/puma/const.rb#177
 Puma::Const::STOP_COMMAND = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#158
+# source://puma//lib/puma/const.rb#150
 Puma::Const::SUPPORTED_HTTP_METHODS = T.let(T.unsafe(nil), Array)
 
-# source://puma//lib/puma/const.rb#156
-Puma::Const::TRACE = T.let(T.unsafe(nil), String)
-
-# source://puma//lib/puma/const.rb#215
+# source://puma//lib/puma/const.rb#207
 Puma::Const::TRANSFER_ENCODING = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#216
+# source://puma//lib/puma/const.rb#208
 Puma::Const::TRANSFER_ENCODING2 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#221
+# source://puma//lib/puma/const.rb#213
 Puma::Const::TRANSFER_ENCODING_CHUNKED = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#175
+# source://puma//lib/puma/const.rb#167
 Puma::Const::UNSPECIFIED_IPV4 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#176
+# source://puma//lib/puma/const.rb#168
 Puma::Const::UNSPECIFIED_IPV6 = T.let(T.unsafe(nil), String)
 
-# source://puma//lib/puma/const.rb#103
+# source://puma//lib/puma/const.rb#102
 Puma::Const::VERSION = T.let(T.unsafe(nil), String)
 
 # How long to wait when getting some write blocking on the socket when
 # sending data back
 #
-# source://puma//lib/puma/const.rb#112
+# source://puma//lib/puma/const.rb#111
 Puma::Const::WRITE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # The methods that are available for use inside the configuration file.
@@ -2124,10 +2103,10 @@ Puma::HAS_NATIVE_IO_WAIT = T.let(T.unsafe(nil), TrueClass)
 # at present, MiniSSL::Engine is only defined in extension code (puma_http11),
 # not in minissl.rb
 #
-# source://puma//lib/puma.rb#29
+# source://puma//lib/puma.rb#27
 Puma::HAS_SSL = T.let(T.unsafe(nil), TrueClass)
 
-# source://puma//lib/puma.rb#31
+# source://puma//lib/puma.rb#29
 Puma::HAS_UNIX_SOCKET = T.let(T.unsafe(nil), TrueClass)
 
 # Every standard HTTP code mapped to the appropriate message.
@@ -2136,7 +2115,7 @@ Puma::HAS_UNIX_SOCKET = T.let(T.unsafe(nil), TrueClass)
 #   ruby -ne 'm = /^(\d{3}),(?!Unassigned|\(Unused\))([^,]+)/.match($_) and \
 #             puts "#{m[1]} => \x27#{m[2].strip}\x27,"'
 #
-# source://puma//lib/puma/const.rb#18
+# source://puma//lib/puma/const.rb#17
 Puma::HTTP_STATUS_CODES = T.let(T.unsafe(nil), Hash)
 
 class Puma::HttpParser
@@ -3550,13 +3529,16 @@ class Puma::Runner
   # source://puma//lib/puma/runner.rb#179
   def ensure_output_directory_exists(path, io_name); end
 
-  # source://puma//lib/puma/runner.rb#185
+  # source://puma//lib/puma/runner.rb#189
   def stats; end
+
+  # source://puma//lib/puma/runner.rb#185
+  def utc_iso8601(val); end
 end
 
 # For some HTTP status codes the client only expects headers.
 #
-# source://puma//lib/puma/const.rb#84
+# source://puma//lib/puma/const.rb#83
 Puma::STATUS_WITH_NO_ENTITY_BODY = T.let(T.unsafe(nil), Hash)
 
 # The HTTP Server itself. Serves out a single Rack app.
