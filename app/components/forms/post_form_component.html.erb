@@ -16,8 +16,8 @@
       <% if current_profile!.twitter_account&.can_cross_post? %>
         <div class="form-check">
           <%= tag.input(
-            class: "form-check-input",
             checked: current_profile!.twitter_account.cross_post?,
+            class: "form-check-input",
             data: {
               post_form_target: "crossPostToTwitterCheckbox"
             },
@@ -29,6 +29,15 @@
             <i class="bi bi-twitter text-twitter"></i>
           </label>
         </div>
+      <% else %>
+        <%= tag.input(
+          checked: false,
+          class: "d-none",
+          data: {
+            post_form_target: "crossPostToTwitterCheckbox"
+          },
+          type: "checkbox"
+        ) %>
       <% end %>
     </div>
 
