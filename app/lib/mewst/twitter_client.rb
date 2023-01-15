@@ -27,6 +27,16 @@ class Mewst::TwitterClient
     end, T.nilable(Me))
   end
 
+  sig { params(text: String).void }
+  def tweet(text:)
+    conn.post("/2/tweets") do |req|
+      req.headers["Content-Type"] = "application/json"
+      req.body = {
+        text:
+      }.to_json
+    end
+  end
+
   private
 
   sig { returns(Faraday::Connection) }

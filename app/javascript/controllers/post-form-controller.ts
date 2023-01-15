@@ -6,9 +6,10 @@ import fetcher from '../utils/fetcher';
 
 export default class extends Controller {
   static outlets = ['timeline'];
-  static targets = ['content', 'submitButton'];
+  static targets = ['content', 'crossPostToTwitterCheckbox', 'submitButton'];
 
   contentTarget!: HTMLTextAreaElement;
+  crossPostToTwitterCheckboxTarget!: HTMLInputElement;
   submitButtonTarget!: HTMLButtonElement;
   timelineOutlet!: TimelineController | null;
 
@@ -17,9 +18,11 @@ export default class extends Controller {
 
     try {
       const content = this.contentTarget.value;
+      const crossPostToTwitter = this.crossPostToTwitterCheckboxTarget.checked;
 
       const response = await fetcher.post('/api/internal/posts', {
         content,
+        cross_post_to_twitter: crossPostToTwitter
       });
 
       this.contentTarget.value = '';

@@ -27,6 +27,11 @@ class TwitterAccount < ApplicationRecord
     self
   end
 
+  sig { params(text: String).void }
+  def tweet(text:)
+    twitter_client.tweet(text:)
+  end
+
   private
 
   sig { void }

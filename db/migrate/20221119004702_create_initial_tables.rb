@@ -86,6 +86,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.string :scopes, array: true, null: false
       t.string :uid, null: false
       t.string :username, null: false
+      t.boolean :cross_post, default: false, null: false
       t.timestamps
     end
   end

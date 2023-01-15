@@ -8,6 +8,11 @@ class Post < ApplicationRecord
 
   validates :content, length: {maximum: CONTENT_MAXIMUM_LENGTH}, presence: true
 
+  sig { returns(Profile) }
+  def profile!
+    T.cast(profile, Profile)
+  end
+
   sig { returns(String) }
   def timeline_item_score
     created_at!.to_datetime.strftime("%Q")

@@ -25,11 +25,11 @@ class Mewst::TwitterOauth2
 
   sig { returns(TwitterOAuth2::Client) }
   def client
-    TwitterOAuth2::Client.new(
+    @client ||= T.let(TwitterOAuth2::Client.new(
       identifier: @client_id,
       secret: @client_secret,
       redirect_uri: @redirect_uri
-    )
+    ), T.nilable(TwitterOAuth2::Client))
   end
 
   sig { params(authorization_code: String, code_verifier: String).returns(AccessTokenResponse) }
