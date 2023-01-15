@@ -33,4 +33,3 @@ class Mewst::TwitterClient
     end
   end
 end
-
