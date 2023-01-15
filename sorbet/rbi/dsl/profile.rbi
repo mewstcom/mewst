@@ -182,6 +182,15 @@ class Profile
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
+    def build_twitter_account(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
+    def create_twitter_account(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
+    def create_twitter_account!(*args, &blk); end
+
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
 
@@ -251,6 +260,15 @@ class Profile
 
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
+
+    sig { returns(T.nilable(::TwitterAccount)) }
+    def reload_twitter_account; end
+
+    sig { returns(T.nilable(::TwitterAccount)) }
+    def twitter_account; end
+
+    sig { params(value: T.nilable(::TwitterAccount)).void }
+    def twitter_account=(value); end
   end
 
   module GeneratedAssociationRelationMethods

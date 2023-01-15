@@ -7,3 +7,9 @@ ja:
         raw_phone_number: Raw phone number
       profile:
         atname: At name
+    errors:
+      models:
+        twitter_account:
+          attributes:
+            base:
+              permitted_scopes: "Unpermitted scopes exist: %{unpermitted_scopes}"

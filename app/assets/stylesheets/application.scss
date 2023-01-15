@@ -9,8 +9,13 @@
 // -------------------------------------------------------------------
 
 @import './variables/mewst';
-@import './variables/bootstrap';
-@import './variables/bootstrap-dark';
+@import './variables/bootstrap-before';
+@import './variables/bootstrap-dark-before';
+
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+
+@import './variables/bootstrap-after';
 
 // -------------------------------------------------------------------
 // Vendors

@@ -7,3 +7,9 @@ ja:
         raw_phone_number: 入力された電話番号
       profile:
         atname: アット名
+    errors:
+      models:
+        twitter_account:
+          attributes:
+            base:
+              permitted_scopes: "許可されていないスコープが含まれています: %{unpermitted_scopes}"

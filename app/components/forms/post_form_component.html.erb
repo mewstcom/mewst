@@ -4,13 +4,37 @@
   data-controller="post-form"
   data-post-form-timeline-outlet=".js-timeline"
 >
-  <div class="mb-2">
-    <textarea
-      autofocus="true"
-      class="form-control"
-      data-controller="autosize"
-      data-post-form-target="content"
-    ></textarea>
+  <textarea
+    autofocus="true"
+    class="form-control"
+    data-controller="autosize"
+    data-post-form-target="content"
+  ></textarea>
+
+  <div class="gx-3 mt-2 row">
+    <div class="col-6">
+      <% if current_profile!.twitter_account&.can_cross_post? %>
+        <div class="form-check">
+          <%= tag.input(
+            class: "form-check-input",
+            checked: current_profile!.twitter_account.cross_post?,
+            data: {
+              post_form_target: "crossPostToTwitterCheckbox"
+            },
+            id: "crossPostToTwitterCheckbox",
+            type: "checkbox"
+          ) %>
+
+          <label class="form-check-label" for="crossPostToTwitterCheckbox">
+            <i class="bi bi-twitter text-twitter"></i>
+          </label>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-6 text-end">
+      500 <%# TODO: Decrease char count %>
+    </div>
   </div>
 
   <div class="text-center">

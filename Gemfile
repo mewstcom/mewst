@@ -13,10 +13,12 @@ gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
 gem "email_validator"
 gem "enumerize"
+gem "faraday"
 gem "http_accept_language"
 gem "image_processing" # Used by Shrine
 gem "jb"
 gem "jsbundling-rails"
+gem "oj"
 gem "pg"
 gem "propshaft"
 gem "puma"
@@ -27,6 +29,7 @@ gem "shrine"
 gem "sidekiq"
 gem "sorbet-runtime"
 gem "twilio-ruby"
+gem "twitter_oauth2"
 gem "view_component"
 
 group :development, :test do

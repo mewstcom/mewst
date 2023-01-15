@@ -4,11 +4,7 @@
 
 # typed: false
 
-module ::DEBUGGER__::TrapInterceptor; end
-module ActionMailer::Base::Mail::Message; end
 module ActiveSupport::Cache::ConnectionPoolLike; end
-module Minitest::Assertion; end
-module Minitest::Assertions; end
 module Module::Concerning; end
 module Shrine::Storage::FileSystem; end
 module Sidekiq::Process; end

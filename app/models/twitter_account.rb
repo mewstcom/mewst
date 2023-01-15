@@ -1,0 +1,53 @@
+# typed: strict
+# frozen_string_literal: true
+
+class TwitterAccount < ApplicationRecord
+  validate :permitted_scopes
+
+  sig { returns(T::Boolean) }
+  def can_cross_post?
+    TwitterAuthorization::TWITTER_CROSS_POST_SCOPES.all? { |scope| scope.in?(scopes) }
+  end
+
+  sig { returns(T::Boolean) }
+  def can_find_friends?
+    TwitterAuthorization::TWITTER_FIND_FRIENDS_SCOPES.all? { |scope| scope.in?(scopes) }
+  end
+
+  sig { params(access_token_responce: Mewst::TwitterOauth2::AccessTokenResponse).returns(T.self_type) }
+  def reset_attributes(access_token_responce:)
+    self.access_token = access_token_responce.access_token
+    self.scopes = access_token_responce.scopes
+
+    me = twitter_client.me
+
+    self.uid = me.id
+    self.username = me.username
+
+    self
+  end
+
+  sig { params(text: String).void }
+  def tweet(text:)
+    twitter_client.tweet(text:)
+  end
+
+  private
+
+  sig { void }
+  def permitted_scopes
+    unpermitted_scopes = (scopes - Mewst::TwitterOauth2::SCOPES.values)
+
+    return if unpermitted_scopes.empty?
+
+    errors.add(:base, I18n.t(
+      "activerecord.errors.models.twitter_account.attributes.base.permitted_scopes",
+      unpermitted_scopes: unpermitted_scopes.join(", ")
+    ))
+  end
+
+  sig { returns(Mewst::TwitterClient) }
+  def twitter_client
+    Mewst::TwitterClient.new(access_token:)
+  end
+end

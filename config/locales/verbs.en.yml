@@ -1,5 +1,7 @@
 en:
   verbs:
+    connect: Connect
+    disconnect: Disconnect
     follow: Follow
     post: Post
     update: Update

@@ -3,3 +3,6 @@ ja:
     attributes:
       phone_number_verification/challenge:
         challenged_confirmation_code: 認証コード
+      twitter_authorization:
+        cross_post_usage: Twitterにクロスポストする
+        find_friends_usage: Twitterでフォローしている人を探す

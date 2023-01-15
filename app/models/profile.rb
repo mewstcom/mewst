@@ -4,15 +4,18 @@
 class Profile < ApplicationRecord
   extend Enumerize
 
-  include Postable
+  include Profile::Followable
+  include Profile::Postable
+  include Profile::TwitterConnectable
   include SoftDeletable
   include TimelineOwnable
-  include Followable
   T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   PROFILABLE_TYPE_ACCOUNT = :account
   PROFILABLE_TYPE_ORGANIZATION = :organization
+
+  has_one :twitter_account, dependent: :restrict_with_exception
 
   enumerize :profilable_type, in: [PROFILABLE_TYPE_ACCOUNT, PROFILABLE_TYPE_ORGANIZATION]
 

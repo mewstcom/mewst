@@ -78,5 +78,16 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.text :content, null: false
       t.timestamps
     end
+
+    create_table :twitter_accounts, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :profile, foreign_key: true, index: {unique: true}, null: false, type: :uuid
+      t.string :access_token, null: false
+      t.string :scopes, array: true, null: false
+      t.string :uid, null: false
+      t.string :username, null: false
+      t.boolean :cross_post, default: false, null: false
+      t.timestamps
+    end
   end
 end
