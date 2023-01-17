@@ -496,6 +496,51 @@ class TwitterAccount
     sig { void }
     def created_at_will_change!; end
 
+    sig { returns(T::Boolean) }
+    def cross_post; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def cross_post=(value); end
+
+    sig { returns(T::Boolean) }
+    def cross_post?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def cross_post_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def cross_post_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def cross_post_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def cross_post_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def cross_post_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def cross_post_changed?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def cross_post_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def cross_post_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def cross_post_previously_changed?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def cross_post_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def cross_post_was; end
+
+    sig { void }
+    def cross_post_will_change!; end
+
     sig { returns(T.untyped) }
     def id; end
 
@@ -593,6 +638,9 @@ class TwitterAccount
     def restore_created_at!; end
 
     sig { void }
+    def restore_cross_post!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -621,6 +669,12 @@ class TwitterAccount
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_cross_post; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_cross_post?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_id; end
@@ -843,6 +897,9 @@ class TwitterAccount
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_cross_post?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end

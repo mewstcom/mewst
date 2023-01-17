@@ -5,6 +5,9 @@
 # Please instead update this file by running `bin/tapioca dsl ViewComponentsSystemTestController`.
 
 class ViewComponentsSystemTestController
+  include GeneratedUrlHelpersModule
+  include GeneratedPathHelpersModule
+
   sig { returns(HelperProxy) }
   def helpers; end
 

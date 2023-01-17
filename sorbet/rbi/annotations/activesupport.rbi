@@ -108,10 +108,10 @@ class Array
   sig { returns(T::Hash[T.untyped, T.untyped]) }
   def extract_options!; end
 
-  sig { type_parameters(:FillType).params(number: Integer, fill_with: T.type_parameter(:FillType), block: T.nilable(T.proc.params(group: T::Array[T.any(Elem, T.type_parameter(:FillType))]).void)).returns(T::Array[T.any(Elem, T.type_parameter(:FillType))]) }
+  sig { type_parameters(:FillType).params(number: Integer, fill_with: T.type_parameter(:FillType), block: T.nilable(T.proc.params(group: T::Array[T.any(Elem, T.type_parameter(:FillType))]).void)).returns(T::Array[T::Array[T.any(Elem, T.type_parameter(:FillType))]]) }
   def in_groups(number, fill_with = T.unsafe(nil), &block); end
 
-  sig { type_parameters(:FillType).params(number: Integer, fill_with: T.type_parameter(:FillType), block: T.nilable(T.proc.params(group: T::Array[T.any(Elem, T.type_parameter(:FillType))]).void)).returns(T::Array[T.any(Elem, T.type_parameter(:FillType))]) }
+  sig { type_parameters(:FillType).params(number: Integer, fill_with: T.type_parameter(:FillType), block: T.nilable(T.proc.params(group: T::Array[T.any(Elem, T.type_parameter(:FillType))]).void)).returns(T::Array[T::Array[T.any(Elem, T.type_parameter(:FillType))]]) }
   def in_groups_of(number, fill_with = T.unsafe(nil), &block); end
 
   sig { params(value: T.untyped, block: T.nilable(T.proc.params(element: Elem).returns(T.untyped))).returns(T::Array[T::Array[Elem]]) }

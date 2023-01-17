@@ -97,4 +97,7 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_verification_phone_number_new_challenge_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def twitter_friend_list_path(*args); end
 end
