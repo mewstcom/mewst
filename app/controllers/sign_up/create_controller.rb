@@ -10,6 +10,9 @@ class SignUp::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
+    # TODO: Remove if the app will be in Beta
+    raise if Rails.env.production?
+
     confirmation_code = PhoneNumberVerification.generate_confirmation_code
     @verification = PhoneNumberVerification.new(form_params.merge(confirmation_code:))
 
