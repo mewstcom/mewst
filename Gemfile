@@ -8,6 +8,7 @@ ruby "3.2.0"
 gem "rails", "~> 7.0.0"
 
 gem "activerecord-session_store"
+gem "aws-sdk-s3" # Used by Shrine
 gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
