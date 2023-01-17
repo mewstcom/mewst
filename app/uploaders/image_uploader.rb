@@ -38,7 +38,7 @@ class ImageUploader < Shrine
         .convert(:jpg)
         .saver(quality: 90)
         .strip
-        .resize_to_limit(1000, nil, sharpen: false)
+        .resize_to_limit(3_000, nil, sharpen: false)
         .call
     end
 
