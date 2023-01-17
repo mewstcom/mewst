@@ -27,7 +27,7 @@
         </div>
       <% end %>
 
-      <% unless current_profile!.me?(target_profile: @profile) %>
+      <% if signed_in? && !current_profile!.me?(target_profile: @profile) %>
         <div class="mt-3">
           <%= render Buttons::FollowButtonComponent.new(target_profile: @profile) %>
         </div>
