@@ -19,10 +19,14 @@ processes = []
 [experimental]
   auto_rollback = true
 
+[processes]
+web = "bin/rails fly:server"
+worker = "bin/sidekiq"
+
 [[services]]
   http_checks = []
   internal_port = 8080
-  processes = ["app"]
+  processes = ["web"]
   protocol = "tcp"
   script_checks = []
   [services.concurrency]
