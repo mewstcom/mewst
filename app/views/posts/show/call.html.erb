@@ -1,3 +1,6 @@
+<% title = t("meta.title.posts.show", atname: @profile.atname, name: @profile.name, content: @post.content.truncate(50)) %>
+<% set_meta_tags(title:) %>
+
 <%= render Navbars::NavbarComponent.new %>
 
 <div class="container py-3 u-flat u-narrow">

@@ -1,0 +1,9 @@
+ja:
+  meta:
+    title:
+      posts:
+        show: "%{name} (@%{atname}): %{content}"
+      profiles:
+        show: "%{name} (@%{atname}) のプロフィール"
+      welcome:
+        show: A microblogging service

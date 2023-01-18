@@ -167,6 +167,8 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
+    meta-tags (2.18.0)
+      actionpack (>= 3.2.0, < 7.1)
     method_source (1.0.0)
     mini_magick (4.11.0)
     mini_mime (1.1.2)
@@ -396,6 +398,7 @@ DEPENDENCIES
   image_processing
   jb
   jsbundling-rails
+  meta-tags
   oj
   pg
   propshaft

@@ -1,3 +1,6 @@
+<% title = t("meta.title.profiles.show", atname: @profile.atname, name: @profile.name) %>
+<% set_meta_tags(title:) %>
+
 <%= component_data_fetcher_tag("follow-button", internal_api_following_list_path, payload: { atnames: [@profile.atname] }) %>
 
 <%= render Navbars::NavbarComponent.new %>
