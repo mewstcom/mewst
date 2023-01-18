@@ -3,4 +3,22 @@
 
 <%= render Navbars::NavbarComponent.new %>
 
-<h1>Mewst</h1>
+<div class="container py-3 u-flat u-narrow">
+  <h1 class="fw-bold">
+    Mewst
+  </h1>
+
+  <div class="mt-3">
+    <%= t("messages.welcome.alpha_html") %>
+
+    <ul class="mt-3">
+      <li>
+        <%= link_to "shimba.co", "https://shimba.co", target: "_blank", rel: "nofollow" %>
+      </li>
+
+      <li>
+        <%= link_to "Twitter (@joinmewst)", "https://twitter.com/joinmewst", target: "_blank", rel: "nofollow" %>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -24,3 +24,8 @@ ja:
       updated: プロフィールを更新しました
     twitter_authorization:
       usages: Twitterアカウントを使って何をしたいですか？
+    welcome:
+      alpha_html: |-
+        現在アルファ版です。<br>
+        アルファ版の間は開発者 (<a href="/@shimbaco">@shimbaco</a>) しか使えません。<br>
+        開発の進捗は以下の個人ブログやTwitterで行っていきます。

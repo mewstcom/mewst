@@ -24,3 +24,8 @@ en:
       updated: Profile updated.
     twitter_authorization:
       usages: What do you want to do with your Twitter account?
+    welcome:
+      alpha_html: |-
+        This is an alpha product.<br>
+        During alpha, it is only available to the developer (<a href="/@shimbaco">@shimbaco</a>).<br>
+        Development progress will be posted on the following personal blog and Twitter.
