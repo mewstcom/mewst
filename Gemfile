@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.2.0"
 
-gem "rails", "~> 7.0.0"
+gem "rails", "~> 7.0.4"
 
 gem "activerecord-session_store"
 gem "aws-sdk-s3" # Used by Shrine
