@@ -211,7 +211,7 @@ CREATE TABLE public.twitter_accounts (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     refresh_token character varying NOT NULL,
-    access_token_expired_at timestamp(6) without time zone NOT NULL
+    access_token_expired_at timestamp without time zone NOT NULL
 );
 
 
