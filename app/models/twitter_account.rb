@@ -4,6 +4,11 @@
 class TwitterAccount < ApplicationRecord
   validate :permitted_scopes
 
+  sig { returns(String) }
+  def profile_url
+    "https://twitter.com/#{username}"
+  end
+
   sig { returns(T::Boolean) }
   def can_cross_post?
     TwitterAuthorization::TWITTER_CROSS_POST_SCOPES.all? { |scope| scope.in?(scopes) }
