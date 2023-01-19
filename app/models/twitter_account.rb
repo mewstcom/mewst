@@ -18,6 +18,8 @@ class TwitterAccount < ApplicationRecord
   def reset_attributes(access_token_responce:)
     self.access_token = access_token_responce.access_token
     self.scopes = access_token_responce.scopes
+    self.refresh_token = access_token_responce.refresh_token
+    self.access_token_expired_at = access_token_responce.access_token_expired_at
 
     me = twitter_client.me
 
