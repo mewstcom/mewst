@@ -33,7 +33,7 @@ class Post < ApplicationRecord
 
     sliced_content = content.slice(0, max_tweet_length - 3)
     reversed_sliced_content = sliced_content.reverse
-    url_match_regex = %r{\A[^ ]+\/\/:(ptth|sptth)}
+    url_match_regex = %r{\A[^ ]+//:(ptth|sptth)}
 
     text = if reversed_sliced_content.match?(url_match_regex)
       reversed_sliced_content.sub(url_match_regex, "...").reverse
