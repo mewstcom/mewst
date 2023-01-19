@@ -13,26 +13,10 @@ class CrossPostToTwitterJob
 
     return true unless twitter_account&.can_cross_post?
 
-    twitter_account.tweet(text: tweet_text(post:))
+    twitter_account.tweet(text: post.tweet_text)
 
     true
   rescue ActiveRecord::RecordNotFound
     true
-  end
-
-  private
-
-  sig { params(post: Post).returns(String) }
-  def tweet_text(post:)
-    if post.content.length < 130
-      return post.content
-    end
-
-    mewst_url = Rails.application.routes.url_helpers.post_url(post.profile!.atname, post.id, host: ENV.fetch("MEWST_HOST"))
-
-    [
-      post.content.truncate(130),
-      "Read more: #{mewst_url}"
-    ].join("\n")
   end
 end
