@@ -31,7 +31,7 @@ class Post < ApplicationRecord
       return content
     end
 
-    sliced_content = content.slice(0, max_tweet_length - 3)
+    sliced_content = T.must(content.slice(0, max_tweet_length - 3))
     reversed_sliced_content = sliced_content.reverse
     url_match_regex = %r{\A[^ ]+//:(ptth|sptth)}
 

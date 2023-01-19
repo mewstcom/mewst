@@ -16,7 +16,7 @@ class Mewst::TwitterOauth2
     const :access_token, String
     const :refresh_token, String
     const :scopes, T::Array[String]
-    const :access_token_expired_at, Time
+    const :access_token_expired_at, ActiveSupport::TimeWithZone
   end
 
   sig { params(client_id: String, client_secret: String, redirect_uri: String).void }

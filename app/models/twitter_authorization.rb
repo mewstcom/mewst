@@ -43,7 +43,7 @@ class TwitterAuthorization
   def scopes
     # Add `offline_access` scope to issue a refresh token.
     # https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code
-    default_scopes = [Mewst::TwitterOauth2::SCOPES[:offline_access]]
+    default_scopes = T.cast([Mewst::TwitterOauth2::SCOPES[:offline_access]], T::Array[String])
 
     cross_post_scopes = cross_post_usage ? TWITTER_CROSS_POST_SCOPES : []
     find_friends_scopes = find_friends_usage ? TWITTER_FIND_FRIENDS_SCOPES : []
