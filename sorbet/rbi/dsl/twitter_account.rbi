@@ -5,6 +5,7 @@
 # Please instead update this file by running `bin/tapioca dsl TwitterAccount`.
 
 class TwitterAccount
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -223,6 +224,26 @@ class TwitterAccount
 
     sig { returns(::TwitterAccount) }
     def third_to_last!; end
+  end
+
+  module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile!(*args, &blk); end
+
+    sig { returns(T.nilable(::Profile)) }
+    def profile; end
+
+    sig { params(value: T.nilable(::Profile)).void }
+    def profile=(value); end
+
+    sig { returns(T.nilable(::Profile)) }
+    def reload_profile; end
   end
 
   module GeneratedAssociationRelationMethods
