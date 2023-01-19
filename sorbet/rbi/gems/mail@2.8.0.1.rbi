@@ -8577,7 +8577,7 @@ module Mail::VERSION
 end
 
 # source://mail//lib/mail/version.rb#8
-Mail::VERSION::BUILD = T.let(T.unsafe(nil), T.untyped)
+Mail::VERSION::BUILD = T.let(T.unsafe(nil), Integer)
 
 # source://mail//lib/mail/version.rb#5
 Mail::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
