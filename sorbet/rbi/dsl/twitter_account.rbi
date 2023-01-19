@@ -433,6 +433,51 @@ class TwitterAccount
     sig { returns(T::Boolean) }
     def access_token_changed?; end
 
+    sig { returns(::ActiveSupport::TimeWithZone) }
+    def access_token_expired_at; end
+
+    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
+    def access_token_expired_at=(value); end
+
+    sig { returns(T::Boolean) }
+    def access_token_expired_at?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def access_token_expired_at_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def access_token_expired_at_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def access_token_expired_at_came_from_user?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def access_token_expired_at_change; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def access_token_expired_at_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def access_token_expired_at_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def access_token_expired_at_in_database; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def access_token_expired_at_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def access_token_expired_at_previously_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def access_token_expired_at_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def access_token_expired_at_was; end
+
+    sig { void }
+    def access_token_expired_at_will_change!; end
+
     sig { returns(T.nilable(::String)) }
     def access_token_in_database; end
 
@@ -631,8 +676,56 @@ class TwitterAccount
     sig { void }
     def profile_id_will_change!; end
 
+    sig { returns(::String) }
+    def refresh_token; end
+
+    sig { params(value: ::String).returns(::String) }
+    def refresh_token=(value); end
+
+    sig { returns(T::Boolean) }
+    def refresh_token?; end
+
+    sig { returns(T.nilable(::String)) }
+    def refresh_token_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def refresh_token_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def refresh_token_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def refresh_token_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def refresh_token_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def refresh_token_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def refresh_token_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def refresh_token_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def refresh_token_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def refresh_token_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def refresh_token_was; end
+
+    sig { void }
+    def refresh_token_will_change!; end
+
     sig { void }
     def restore_access_token!; end
+
+    sig { void }
+    def restore_access_token_expired_at!; end
 
     sig { void }
     def restore_created_at!; end
@@ -645,6 +738,9 @@ class TwitterAccount
 
     sig { void }
     def restore_profile_id!; end
+
+    sig { void }
+    def restore_refresh_token!; end
 
     sig { void }
     def restore_scopes!; end
@@ -663,6 +759,12 @@ class TwitterAccount
 
     sig { returns(T::Boolean) }
     def saved_change_to_access_token?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def saved_change_to_access_token_expired_at; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_access_token_expired_at?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -687,6 +789,12 @@ class TwitterAccount
 
     sig { returns(T::Boolean) }
     def saved_change_to_profile_id?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_refresh_token; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_refresh_token?; end
 
     sig { returns(T.nilable([T::Array[::String], T::Array[::String]])) }
     def saved_change_to_scopes; end
@@ -896,6 +1004,9 @@ class TwitterAccount
     def will_save_change_to_access_token?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_access_token_expired_at?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
@@ -906,6 +1017,9 @@ class TwitterAccount
 
     sig { returns(T::Boolean) }
     def will_save_change_to_profile_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_refresh_token?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_scopes?; end
