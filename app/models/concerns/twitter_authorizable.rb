@@ -5,8 +5,6 @@ module TwitterAuthorizable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  private
-
   def twitter_oauth2
     @twitter_oauth2 ||= Mewst::TwitterOauth2.new(
       client_id: ENV.fetch("MEWST_TWITTER_CLIENT_ID"),

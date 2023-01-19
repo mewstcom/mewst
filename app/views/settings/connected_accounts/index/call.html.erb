@@ -30,6 +30,10 @@
               <%= t("messages.connected_accounts.connected") %>
             </span>
 
+            <span class="ms-1">
+              (<%= link_to "@#{@twitter_account.username}", @twitter_account.profile_url, target: "_blank", rel: "nofollow" %>)
+            </span>
+
             <% if @twitter_account.can_cross_post? || @twitter_account.can_find_friends? %>
               <ul class="mt-3">
                 <% if @twitter_account.can_cross_post? %>

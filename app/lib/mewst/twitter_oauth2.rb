@@ -6,6 +6,7 @@ class Mewst::TwitterOauth2
 
   SCOPES = T.let({
     follows_read: "follows.read",
+    offline_access: "offline.access",
     tweet_read: "tweet.read",
     tweet_write: "tweet.write",
     users_read: "users.read"
@@ -13,7 +14,9 @@ class Mewst::TwitterOauth2
 
   class AccessTokenResponse < T::Struct
     const :access_token, String
+    const :refresh_token, String
     const :scopes, T::Array[String]
+    const :access_token_expired_at, ActiveSupport::TimeWithZone
   end
 
   sig { params(client_id: String, client_secret: String, redirect_uri: String).void }
@@ -37,9 +40,27 @@ class Mewst::TwitterOauth2
     client.authorization_code = authorization_code
 
     token_response = client.access_token!(code_verifier)
+
+    build_access_token_response(token_response:)
+  end
+
+  sig { params(refresh_token: String).returns(AccessTokenResponse) }
+  def refresh_access_token(refresh_token:)
+    client.refresh_token = refresh_token
+    token_response = client.access_token!
+
+    build_access_token_response(token_response:)
+  end
+
+  private
+
+  sig { params(token_response: Rack::OAuth2::AccessToken::Bearer).returns(AccessTokenResponse) }
+  def build_access_token_response(token_response:)
     access_token = token_response.access_token
     scopes = token_response.scope.split(" ")
+    refresh_token = token_response.refresh_token
+    access_token_expired_at = Time.current + token_response.expires_in
 
-    AccessTokenResponse.new(access_token:, scopes:)
+    AccessTokenResponse.new(access_token:, scopes:, refresh_token:, access_token_expired_at:)
   end
 end

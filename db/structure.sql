@@ -209,7 +209,9 @@ CREATE TABLE public.twitter_accounts (
     username character varying NOT NULL,
     cross_post boolean DEFAULT false NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    refresh_token character varying NOT NULL,
+    access_token_expired_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -509,6 +511,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20220000000001'),
-('20221119004702');
+('20221119004702'),
+('20230119130108');
 
 

@@ -2,7 +2,19 @@
 # frozen_string_literal: true
 
 class TwitterAccount < ApplicationRecord
+  belongs_to :profile
+
   validate :permitted_scopes
+
+  sig { returns(Profile) }
+  def profile!
+    T.cast(profile, Profile)
+  end
+
+  sig { returns(String) }
+  def profile_url
+    "https://twitter.com/#{username}"
+  end
 
   sig { returns(T::Boolean) }
   def can_cross_post?
@@ -18,6 +30,8 @@ class TwitterAccount < ApplicationRecord
   def reset_attributes(access_token_responce:)
     self.access_token = access_token_responce.access_token
     self.scopes = access_token_responce.scopes
+    self.refresh_token = access_token_responce.refresh_token
+    self.access_token_expired_at = access_token_responce.access_token_expired_at
 
     me = twitter_client.me
 
@@ -29,6 +43,12 @@ class TwitterAccount < ApplicationRecord
 
   sig { params(text: String).void }
   def tweet(text:)
+    if access_token_expired_at.past?
+      access_token_responce = profile!.twitter_oauth2.refresh_access_token(refresh_token:)
+      reset_attributes(access_token_responce:)
+      save!
+    end
+
     twitter_client.tweet(text:)
   end
 
