@@ -45,10 +45,4 @@ class Profile < ApplicationRecord
   def me?(target_profile:)
     atname == target_profile.atname
   end
-
-  T::Sig::WithoutRuntime.sig { returns(Post::PrivateRelation) }
-  def home_timeline_posts
-    post_ids = ::Timeline.new(self).get_post_ids
-    Post.where(id: post_ids).preload(:profile).order(created_at: :desc)
-  end
 end

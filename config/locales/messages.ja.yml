@@ -16,6 +16,9 @@ ja:
       disconnected: 連携解除しました
       disconnecting: 連携解除しています...
       not_connected: 連携していません
+    pagination:
+      next: 次へ
+      prev: 前へ
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
       created: 投稿しました
