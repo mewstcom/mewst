@@ -14,7 +14,7 @@ class PhoneNumberVerificationChallenge
 
   delegate :account, to: :phone_number_verification!
 
-  validates :challenged_confirmation_code, comparison: {equal_to: :confirmation_code}
+  validate :valid_challenged_confirmation_code
 
   sig { returns(PhoneNumberVerification) }
   def phone_number_verification!
@@ -24,4 +24,11 @@ class PhoneNumberVerificationChallenge
   private
 
   delegate :confirmation_code, to: :phone_number_verification!
+
+  sig { void }
+  def valid_challenged_confirmation_code
+    return if challenged_confirmation_code == confirmation_code
+
+    errors.add(:base, :equal_to_confirmation_code)
+  end
 end

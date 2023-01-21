@@ -1,10 +1,14 @@
-<%= form_with model: @challenge, url: sign_in_verification_phone_number_challenge_list_path do |f| %>
-  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+<div class="container py-5 u-flat u-narrow">
+  <%= form_with model: @challenge, url: sign_in_verification_phone_number_challenge_list_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-  <div>
-    <%= f.label :challenged_confirmation_code %>
-    <%= f.text_field :challenged_confirmation_code, autofocus: true %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :challenged_confirmation_code, class: "form-label" %>
+      <%= f.text_field :challenged_confirmation_code, autofocus: true, class: "form-control" %>
+    </div>
 
-  <%= f.submit %>
-<% end %>
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
+</div>
