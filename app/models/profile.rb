@@ -21,9 +21,9 @@ class Profile < ApplicationRecord
 
   validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
-  sig { returns(Profile::Timeline::Home) }
+  sig { returns(Profile::HomeTimeline) }
   def home_timeline
-    Profile::Timeline::Home.new(profile: self)
+    Profile::HomeTimeline.new(profile: self)
   end
 
   sig { override.returns(String) }

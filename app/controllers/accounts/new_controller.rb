@@ -11,7 +11,7 @@ class Accounts::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @account_activation = Account::Activation.new
+    @account_activation = AccountActivation.new
     @account_activation.phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
   end
 end

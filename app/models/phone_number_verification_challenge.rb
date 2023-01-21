@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class PhoneNumberVerification::Challenge
+class PhoneNumberVerificationChallenge
   extend T::Sig
 
   include ActiveModel::Model

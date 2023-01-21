@@ -1,13 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Account::Activation do
+RSpec.describe AccountActivation do
   context "when valid" do
     let!(:phone_number) { "+819000000000" }
     let!(:phone_number_verification) { create(:phone_number_verification, phone_number:) }
     let!(:atname) { "shimbaco" }
     let!(:locale) { "en" }
-    let!(:activation) { Account::Activation.new(atname:, locale:) }
+    let!(:activation) { AccountActivation.new(atname:, locale:) }
 
     before do
       activation.phone_number_verification = phone_number_verification

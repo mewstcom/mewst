@@ -12,7 +12,7 @@ class Accounts::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     locale = I18n.locale.to_s
-    @account_activation = Account::Activation.new(form_params.merge(locale:))
+    @account_activation = AccountActivation.new(form_params.merge(locale:))
     @account_activation.phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
 
     account = @account_activation.run

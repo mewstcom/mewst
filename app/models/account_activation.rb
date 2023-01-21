@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Account::Activation
+class AccountActivation
   extend T::Sig
 
   include ActiveModel::Model

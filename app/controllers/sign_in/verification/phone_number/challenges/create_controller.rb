@@ -11,7 +11,7 @@ class SignIn::Verification::PhoneNumber::Challenges::CreateController < Applicat
 
   sig { returns(T.untyped) }
   def call
-    @challenge = PhoneNumberVerification::Challenge.new(form_params)
+    @challenge = PhoneNumberVerificationChallenge.new(form_params)
     @challenge.phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
 
     if @challenge.invalid?

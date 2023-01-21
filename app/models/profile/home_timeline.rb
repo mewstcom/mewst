@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Profile::Timeline::Home
+class Profile::HomeTimeline
   extend T::Sig
 
   sig { params(profile: Profile).void }

@@ -11,6 +11,6 @@ class SignUp::Verification::PhoneNumber::Challenges::NewController < Application
 
   sig { returns(T.untyped) }
   def call
-    @challenge = PhoneNumberVerification::Challenge.new
+    @challenge = PhoneNumberVerificationChallenge.new
   end
 end
