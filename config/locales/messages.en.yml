@@ -17,8 +17,8 @@ en:
       disconnecting: Disconnecting...
       not_connected: Not connected.
     pagination:
-      next: "Next&nbsp;&rsaquo;"
-      prev: "&lsaquo;&nbsp;Prev"
+      next_html: "Next&nbsp;&rsaquo;"
+      prev_html: "&lsaquo;&nbsp;Prev"
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
       created: Post created.
