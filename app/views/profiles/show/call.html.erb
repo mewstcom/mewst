@@ -43,4 +43,8 @@
       <%= render Cards::PostCardComponent.new(post:) %>
     <% end %>
   </div>
+
+  <div class="mt-3 text-center">
+    <%= render Paginations::OffsetPaginationComponent.new(pagy: @pagy) %>
+  </div>
 </div>
