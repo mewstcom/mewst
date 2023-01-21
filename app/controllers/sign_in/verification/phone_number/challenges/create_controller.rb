@@ -8,6 +8,7 @@ class SignIn::Verification::PhoneNumber::Challenges::CreateController < Applicat
 
   around_action :set_locale
   before_action :require_no_authentication
+  before_action :require_phone_number_verification_id
 
   sig { returns(T.untyped) }
   def call

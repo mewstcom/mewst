@@ -5,12 +5,6 @@ module PhoneNumberVerificationFindable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  included do
-    before_action :require_phone_number_verification_id
-  end
-
-  private
-
   sig { returns(T.untyped) }
   def require_phone_number_verification_id
     unless session[:phone_number_verification_id]
