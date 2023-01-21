@@ -4,7 +4,7 @@ ja:
       phone_number_verification:
         confirmation_code: Confirmation code
         phone_number: Phone number
-        raw_phone_number: Raw phone number
+        raw_phone_number: Phone number
       profile:
         atname: At name
     errors:

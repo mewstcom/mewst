@@ -4,7 +4,7 @@ ja:
       phone_number_verification:
         confirmation_code: 認証コード
         phone_number: 電話番号
-        raw_phone_number: 入力された電話番号
+        raw_phone_number: 電話番号
       profile:
         atname: アット名
     errors:
