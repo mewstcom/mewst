@@ -13,7 +13,10 @@
 
       <div class="mb-3">
         <%= f.label :locale, class: "form-label" %>
-        <% options = options_for_select([[t("nouns.english"), "en"], [t("nouns.japanese"), "ja"]], @account.locale) %>
+        <% options = options_for_select([
+          [lang_option_text(lang: :english), "en"],
+          [lang_option_text(lang: :japanese), "ja"]
+        ], @account.locale) %>
         <%= f.select :locale, options, {}, { class: "form-control" } %>
       </div>
 

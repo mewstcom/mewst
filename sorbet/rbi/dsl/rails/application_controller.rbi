@@ -16,6 +16,7 @@ class Rails::ApplicationController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::ImageHelper
+    include ::LanguageHelper
     include ::TimeHelper
     include ::PreviewHelper
   end

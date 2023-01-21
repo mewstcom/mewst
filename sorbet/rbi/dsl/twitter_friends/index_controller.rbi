@@ -13,6 +13,7 @@ class TwitterFriends::IndexController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::ImageHelper
+    include ::LanguageHelper
     include ::TimeHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods
