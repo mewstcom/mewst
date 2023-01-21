@@ -16,4 +16,3 @@ class Mewst::Redis
     end, T.any(T.nilable(ConnectionPool::Wrapper), T.nilable(Redis)))
   end
 end
-
