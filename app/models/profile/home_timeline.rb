@@ -74,14 +74,14 @@ class Profile::HomeTimeline
 
   sig { params(post: Post).returns(T.self_type) }
   def add_post(post:)
-    T.cast(Mewst::Redis.client, Redis).zadd(profile.timeline_key, post.timeline_item_score, post.id)
+    redis_client.zadd(profile.timeline_key, post.timeline_item_score, post.id)
 
     self
   end
 
   sig { params(post: Post).returns(T.self_type) }
   def remove_post(post:)
-    T.cast(Mewst::Redis.client, Redis).zrem(profile.timeline_key, post.id)
+    redis_client.zrem(profile.timeline_key, post.id)
 
     self
   end
@@ -90,4 +90,9 @@ class Profile::HomeTimeline
 
   sig { returns(Profile) }
   attr_reader :profile
+
+  sig { returns(Redis) }
+  def redis_client
+    T.cast(Mewst::Redis.new(url: ENV.fetch("MEWST_REDIS_UNEVICTABLE_CACHE_URL")).client, Redis)
+  end
 end
