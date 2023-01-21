@@ -431,21 +431,30 @@ Standard::CreatesConfigStore::ConfiguresIgnoredPaths::DEFAULT_IGNORES = T.let(T.
 
 # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#4
 class Standard::CreatesConfigStore::MergesUserConfigExtensions
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#12
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#16
   def call(options_config, standard_config); end
 
   private
 
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#46
-  def except(hash, keys); end
+  # Blank configuration object to merge extensions into, with all known
+  # AllCops keys set to avoid warnings about unknown properties
+  #
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#59
+  def blank_rubocop_config(example_config); end
 
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#22
-  def load_and_merge_extended_rubocop_configs(standard_config); end
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#63
+  def except(hash_or_config, keys); end
 
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#40
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#50
+  def fake_out_rubocop_default_configuration(options_config); end
+
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#26
+  def load_and_merge_extended_rubocop_configs(options_config, standard_config); end
+
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#44
   def merge_extended_rules_into_standard!(options_config, extended_config); end
 
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#34
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#38
   def merge_standard_and_user_all_cops!(options_config, extended_config); end
 end
 

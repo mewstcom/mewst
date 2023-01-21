@@ -7090,19 +7090,11 @@ end
 
 # source://aws-sdk-kms//lib/aws-sdk-kms/endpoint_provider.rb#11
 class Aws::KMS::EndpointProvider
-  # @return [EndpointProvider] a new instance of EndpointProvider
+  # @raise [ArgumentError]
   #
   # source://aws-sdk-kms//lib/aws-sdk-kms/endpoint_provider.rb#12
-  def initialize(rule_set = T.unsafe(nil)); end
-
-  # source://aws-sdk-kms//lib/aws-sdk-kms/endpoint_provider.rb#25
   def resolve_endpoint(parameters); end
 end
-
-# @api private
-#
-# source://aws-sdk-kms//lib/aws-sdk-kms/endpoint_provider.rb#30
-Aws::KMS::EndpointProvider::RULES = T.let(T.unsafe(nil), String)
 
 # source://aws-sdk-kms//lib/aws-sdk-kms/endpoints.rb#12
 module Aws::KMS::Endpoints; end

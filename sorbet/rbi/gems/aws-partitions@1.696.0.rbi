@@ -7,33 +7,33 @@
 # source://aws-partitions//lib/aws-partitions/endpoint_provider.rb#3
 module Aws
   class << self
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#133
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#133
     def config; end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#136
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#136
     def config=(config); end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#195
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#195
     def eager_autoload!(*args); end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#188
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#188
     def empty_connection_pools!; end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#145
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#145
     def partition(partition_name); end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#150
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#150
     def partitions; end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#126
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#126
     def shared_config; end
 
-    # source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#165
+    # source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#165
     def use_bundled_cert!; end
   end
 end
 
-# source://aws-sdk-core/3.168.4/lib/aws-sdk-core.rb#119
+# source://aws-sdk-core/3.169.0/lib/aws-sdk-core.rb#119
 Aws::CORE_GEM_VERSION = T.let(T.unsafe(nil), String)
 
 # A {Partition} is a group of AWS {Region} and {Service} objects. You
