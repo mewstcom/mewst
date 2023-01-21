@@ -6,12 +6,12 @@
   <ul class="justify-content-center pagination">
     <% if @pagy.prev %>
       <li class="page-item prev">
-        <%== link.call(@pagy.prev, t("messages.pagination.prev"), 'aria-label="previous"') %>
+        <%== link.call(@pagy.prev, t("messages.pagination.prev_html"), 'aria-label="previous"') %>
       </li>
     <% else %>
       <li class="page-item prev disabled">
         <a href="#" class="page-link">
-          <%== t("messages.pagination.prev") %>
+          <%= t("messages.pagination.prev_html") %>
         </a>
       </li>
     <% end %>
@@ -36,12 +36,12 @@
 
     <% if @pagy.next %>
       <li class="page-item next">
-        <%== link.call(@pagy.next, t("messages.pagination.next"), 'aria-label="next"') %>
+        <%== link.call(@pagy.next, t("messages.pagination.next_html"), 'aria-label="next"') %>
       </li>
     <% else %>
       <li class="page-item next disabled">
         <a href="#" class="page-link">
-          <%== t("messages.pagination.next") %>
+          <%= t("messages.pagination.next_html") %>
         </a>
       </li>
     <% end %>
