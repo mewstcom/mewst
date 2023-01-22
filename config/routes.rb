@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   mount ImageUploader.derivation_endpoint => "/image"
 
-  # rubocop:disable Layout/ExtraSpacing, Rails/MatchRoute
+  # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
   match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT
   match "/@:atname/posts/:post_id",                          via: :get,                                                           to: "posts/show#call",                           atname: ROUTING_USERNAME_FORMAT
@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   match "/sign_up",                                          via: :post,                                                          to: "sign_up/create#call"
   match "/sign_up/verification/phone_number/challenges",     via: :post,   as: :sign_up_verification_phone_number_challenge_list, to: "sign_up/verification/phone_number/challenges/create#call"
   match "/sign_up/verification/phone_number/challenges/new", via: :get,    as: :sign_up_verification_phone_number_new_challenge,  to: "sign_up/verification/phone_number/challenges/new#call"
-  # rubocop:enable Layout/ExtraSpacing, Rails/MatchRoute
+  # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"
 end

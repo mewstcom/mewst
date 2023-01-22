@@ -2,20 +2,6 @@ require:
   - rubocop-rails
   - rubocop-rspec
   - rubocop-sorbet
-  - standard
-
-inherit_gem:
-  standard: config/ruby-3.0.yml
-
-inherit_from:
-  - .rubocop_todo.yml
-
-AllCops:
-  NewCops: enable
-  TargetRubyVersion: 3.1
-  Exclude:
-    - public/**/*
-    - vendor/**/*
 
 # https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribedclass
 RSpec/DescribedClass:
