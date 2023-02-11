@@ -11,7 +11,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.0
+          ruby-version: 3.2.1
           bundler-cache: true
       - run: bin/srb tc
 
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.0
+          ruby-version: 3.2.1
           bundler-cache: true
       - run: bin/standardrb
 
@@ -54,7 +54,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.0
+          ruby-version: 3.2.1
           bundler-cache: true
       - name: Setup Database
         run: |
