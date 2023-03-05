@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   match "/api/internal/follow",                              via: :post,   as: :internal_api_follow,                              to: "api/internal/follow/create#call"
   match "/api/internal/following",                           via: :post,   as: :internal_api_following_list,                      to: "api/internal/following/index#call"
   match "/api/internal/posts",                               via: :post,   as: :internal_api_post_list,                           to: "api/internal/posts/create#call"
+  match "/api/internal/pubsub/fanout_post/messages",         via: :post,   as: :internal_api_pubsub_fanout_post_message_list,     to: "api/internal/pubsub/fanout_post/messages/create#call"
+  match "/api/internal/pubsub/add_post_to_home_timeline",    via: :post,   as: :internal_api_pubsub_add_post_to_home_timeline,    to: "api/internal/pubsub/add_post_to_home_timeline/create#call"
   match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
   match "/twitter_friends",                                  via: :get,    as: :twitter_friend_list,                              to: "twitter_friends/index#call"
   match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"

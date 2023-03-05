@@ -18,7 +18,7 @@ class Profile::Postability
       CrossPostToTwitterJob.perform_async(post.id)
     end
 
-    FanOutPostJob.perform_async(post.id)
+    FanoutPostJob.perform_async(post_id: post.id)
 
     post
   end
