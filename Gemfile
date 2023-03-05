@@ -15,6 +15,7 @@ gem "cssbundling-rails"
 gem "email_validator"
 gem "enumerize"
 gem "faraday"
+gem "google-cloud-pubsub"
 gem "http-cookie" # Used by twitter_oauth2
 gem "http_accept_language"
 gem "image_processing" # Used by Shrine
