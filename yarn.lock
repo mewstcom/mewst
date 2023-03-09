@@ -229,10 +229,10 @@ immutable@^4.0.0:
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.1.0.tgz#f795787f0db780183307b9eb2091fcac1f6fafef"
   integrity sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==
 
-intl-tel-input@^17.0.19:
-  version "17.0.19"
-  resolved "https://registry.yarnpkg.com/intl-tel-input/-/intl-tel-input-17.0.19.tgz#4c277e3bf02069fac2ef3821a62a3d7e8b55740a"
-  integrity sha512-GBNoUT4JVgm2e1N+yFMaBQ24g5EQfZhDznGneCM9IEZwfKsMUAUa1dS+v0wOiKpRAZ5IPNLJMIEEFGgqlCI22A==
+intl-tel-input@^17.0.20:
+  version "17.0.20"
+  resolved "https://registry.yarnpkg.com/intl-tel-input/-/intl-tel-input-17.0.20.tgz#7b0da5e7c05fa8a2b109efb450d5819bac5f0162"
+  integrity sha512-hwX2AaolA3tLwE/UzAS5bWVG0eyTsbLGyvWXaVWEs1lrosduOKsMrFx+0cmA1A8zKCCrhWVIanZivT/A4Ci5Xg==
 
 is-binary-path@~2.1.0:
   version "2.1.0"
