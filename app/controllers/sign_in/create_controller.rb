@@ -17,7 +17,7 @@ class SignIn::CreateController < ApplicationController
     SendPhoneNumberVerificationMessageJob.perform_async(@verification.id)
 
     session[:phone_number_verification_id] = @verification.id
-    flash[:success] = t("messages.authentication.confirmation_sms_sent")
+    flash[:success] = t("messages.authentication.verification_mail_sent")
     redirect_to sign_in_verification_phone_number_new_challenge_path
   rescue ActiveRecord::RecordInvalid
     render("sign_in/new/call", status: :unprocessable_entity)

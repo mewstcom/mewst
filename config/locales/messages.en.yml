@@ -4,7 +4,6 @@ en:
       updated: Account updated.
     authentication:
       already_signed_in: Already signed in.
-      confirmation_sms_sent: Confirmation SMS sent.
       signed_out_successfully: Signed out successfully.
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
@@ -27,6 +26,8 @@ en:
       updated: Profile updated.
     twitter_authorization:
       usages: What do you want to do with your Twitter account?
+    verifications:
+      verification_mail_sent: Verification mail has been sent.
     welcome:
       alpha_html: |-
         This is an alpha product.<br>

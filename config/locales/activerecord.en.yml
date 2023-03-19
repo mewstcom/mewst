@@ -1,12 +1,11 @@
 ja:
   activerecord:
     attributes:
-      phone_number_verification:
-        confirmation_code: Confirmation code
-        phone_number: Phone number
-        raw_phone_number: Phone number
       profile:
         atname: At name
+      verification:
+        code: Verification code
+        email: Email
     errors:
       models:
         twitter_account:

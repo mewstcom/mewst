@@ -93,6 +93,7 @@ GEM
       aws-sigv4 (~> 1.4)
     aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
+    bcrypt (3.1.18)
     bindata (2.4.14)
     bindex (0.8.1)
     bootsnap (1.16.0)
@@ -161,6 +162,23 @@ GEM
       gapic-common (>= 0.17.1, < 2.a)
       google-cloud-errors (~> 1.0)
       google-iam-v1 (>= 0.4, < 2.a)
+    google-cloud-tasks (2.3.0)
+      google-cloud-core (~> 1.6)
+      google-cloud-tasks-v2 (>= 0.0, < 2.a)
+      google-cloud-tasks-v2beta2 (>= 0.0, < 2.a)
+      google-cloud-tasks-v2beta3 (>= 0.0, < 2.a)
+    google-cloud-tasks-v2 (0.6.0)
+      gapic-common (>= 0.10, < 2.a)
+      google-cloud-errors (~> 1.0)
+      grpc-google-iam-v1 (~> 1.1)
+    google-cloud-tasks-v2beta2 (0.7.0)
+      gapic-common (>= 0.10, < 2.a)
+      google-cloud-errors (~> 1.0)
+      grpc-google-iam-v1 (~> 1.1)
+    google-cloud-tasks-v2beta3 (0.8.0)
+      gapic-common (>= 0.10, < 2.a)
+      google-cloud-errors (~> 1.0)
+      grpc-google-iam-v1 (~> 1.1)
     google-iam-v1 (0.4.0)
       gapic-common (>= 0.17.1, < 2.a)
       google-cloud-errors (~> 1.0)
@@ -449,6 +467,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-session_store
   aws-sdk-s3
+  bcrypt
   bootsnap
   bullet
   connection_pool
@@ -459,6 +478,7 @@ DEPENDENCIES
   factory_bot_rails
   faraday
   google-cloud-pubsub
+  google-cloud-tasks
   http-cookie
   http_accept_language
   image_processing

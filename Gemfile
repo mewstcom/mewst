@@ -9,6 +9,7 @@ gem "rails", "~> 7.0.4"
 
 gem "activerecord-session_store"
 gem "aws-sdk-s3" # Used by Shrine
+gem "bcrypt" # Used by `has_secure_password`
 gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "cssbundling-rails"
@@ -16,6 +17,7 @@ gem "email_validator"
 gem "enumerize"
 gem "faraday"
 gem "google-cloud-pubsub"
+gem "google-cloud-tasks"
 gem "http-cookie" # Used by twitter_oauth2
 gem "http_accept_language"
 gem "image_processing" # Used by Shrine

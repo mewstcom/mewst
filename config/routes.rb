@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   match "/api/internal/posts",                               via: :post,   as: :internal_api_post_list,                           to: "api/internal/posts/create#call"
   match "/api/internal/pubsub/fanout_post/messages",         via: :post,   as: :internal_api_pubsub_fanout_post_message_list,     to: "api/internal/pubsub/fanout_post/messages/create#call"
   match "/api/internal/pubsub/add_post_to_home_timeline",    via: :post,   as: :internal_api_pubsub_add_post_to_home_timeline,    to: "api/internal/pubsub/add_post_to_home_timeline/create#call"
+  match "/api/internal/tasks/send_verification_mail",        via: :post,   as: :internal_api_tasks_send_verification_mail,        to: "api/internal/tasks/send_verification_mail#call"
   match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
   match "/twitter_friends",                                  via: :get,    as: :twitter_friend_list,                              to: "twitter_friends/index#call"
   match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"
@@ -41,8 +42,8 @@ Rails.application.routes.draw do
   match "/sign_out",                                         via: :get,    as: :sign_out,                                         to: "sign_out/show#call"
   match "/sign_up",                                          via: :get,    as: :sign_up,                                          to: "sign_up/new#call"
   match "/sign_up",                                          via: :post,                                                          to: "sign_up/create#call"
-  match "/sign_up/verification/phone_number/challenges",     via: :post,   as: :sign_up_verification_phone_number_challenge_list, to: "sign_up/verification/phone_number/challenges/create#call"
-  match "/sign_up/verification/phone_number/challenges/new", via: :get,    as: :sign_up_verification_phone_number_new_challenge,  to: "sign_up/verification/phone_number/challenges/new#call"
+  match "/verification_challenges",                          via: :post,   as: :verification_challenge_list,                      to: "verification_challenges/create#call"
+  match "/verification_challenges/new",                      via: :get,    as: :new_verification_challenge,                       to: "verification_challenges/new#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"

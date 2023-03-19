@@ -6,13 +6,13 @@ module Authenticatable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_profile, :current_profile!, :current_account, :current_account!, :signed_in?
+    helper_method :current_profile, :current_profile!, :current_user, :current_user!, :signed_in?
   end
 
-  sig { params(account: Account).returns(T::Boolean) }
-  def sign_in(account)
-    account.track_sign_in
-    session[:account_id] = account.id
+  sig { params(user: User).returns(T::Boolean) }
+  def sign_in(user)
+    user.track_sign_in
+    session[:user_id] = user.id
     true
   end
 
@@ -22,16 +22,16 @@ module Authenticatable
     true
   end
 
-  sig { returns(T.nilable(Account)) }
-  def current_account
-    return unless session[:account_id]
+  sig { returns(T.nilable(User)) }
+  def current_user
+    return unless session[:user_id]
 
-    @current_account ||= T.let(Account.find_by(id: session[:account_id]), T.nilable(Account))
+    @current_user ||= T.let(User.find_by(id: session[:user_id]), T.nilable(User))
   end
 
-  sig { returns(Account) }
-  def current_account!
-    T.cast(current_account, Account)
+  sig { returns(User) }
+  def current_user!
+    T.cast(current_user, User)
   end
 
   sig { returns(T.nilable(Profile)) }
@@ -48,7 +48,7 @@ module Authenticatable
 
   sig { returns(T::Boolean) }
   def signed_in?
-    !current_account.nil?
+    !current_user.nil?
   end
 
   sig { returns(T.untyped) }

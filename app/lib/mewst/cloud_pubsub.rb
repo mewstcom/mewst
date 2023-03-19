@@ -8,9 +8,9 @@ class Mewst::CloudPubsub
 
   def self.client
     @client ||= new(
-      project_id: ENV.fetch("MEWST_GOOGLE_CLOUD_PUBSUB_PROJECT_ID"),
+      project_id: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
       credentials: Google::Cloud::PubSub::Credentials.new(
-        JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_PUBSUB_CREDENTIALS"))
+        JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
       ),
     ).client
   end

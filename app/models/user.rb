@@ -1,13 +1,13 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Account < ApplicationRecord
+class User < ApplicationRecord
   extend Enumerize
 
   enumerize :locale, in: I18n.available_locales
 
-  has_one :account_profile, dependent: :restrict_with_exception
-  has_one :profile, dependent: :restrict_with_exception, through: :account_profile
+  has_many :profile_members, dependent: :restrict_with_exception
+  has_many :profiles, dependent: :restrict_with_exception, through: :profile_members
 
   validates :phone_number, presence: true, uniqueness: true
 

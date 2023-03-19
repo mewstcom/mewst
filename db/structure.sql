@@ -53,35 +53,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: account_profiles; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.account_profiles (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    account_id uuid NOT NULL,
-    profile_id uuid NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: accounts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.accounts (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    phone_number character varying NOT NULL,
-    locale character varying NOT NULL,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_signed_in_at timestamp without time zone,
-    last_signed_in_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -107,57 +78,6 @@ CREATE TABLE public.follows (
 
 
 --
--- Name: organization_members; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.organization_members (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    organization_id uuid NOT NULL,
-    account_id uuid NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: organization_profiles; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.organization_profiles (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    organization_id uuid NOT NULL,
-    profile_id uuid NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: organizations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.organizations (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: phone_number_verifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.phone_number_verifications (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    phone_number character varying NOT NULL,
-    raw_phone_number character varying NOT NULL,
-    confirmation_code character varying NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: posts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -171,16 +91,28 @@ CREATE TABLE public.posts (
 
 
 --
+-- Name: profile_members; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.profile_members (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: profiles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profilable_type character varying NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
-    avatar_data text,
+    avatar_url character varying,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
@@ -197,38 +129,34 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: twitter_accounts; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.twitter_accounts (
+CREATE TABLE public.users (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profile_id uuid NOT NULL,
-    access_token character varying NOT NULL,
-    scopes character varying[] NOT NULL,
-    uid character varying NOT NULL,
-    username character varying NOT NULL,
-    cross_post boolean DEFAULT false NOT NULL,
+    email character varying NOT NULL,
+    password_digest character varying NOT NULL,
+    locale character varying NOT NULL,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_signed_in_at timestamp without time zone,
+    last_signed_in_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    refresh_token character varying NOT NULL,
-    access_token_expired_at timestamp without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
 --
--- Name: account_profiles account_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: verifications; Type: TABLE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.account_profiles
-    ADD CONSTRAINT account_profiles_pkey PRIMARY KEY (id);
-
-
---
--- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
+CREATE TABLE public.verifications (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    email character varying NOT NULL,
+    event character varying NOT NULL,
+    code character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
 
 
 --
@@ -248,43 +176,19 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: organization_members organization_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_members
-    ADD CONSTRAINT organization_members_pkey PRIMARY KEY (id);
-
-
---
--- Name: organization_profiles organization_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_profiles
-    ADD CONSTRAINT organization_profiles_pkey PRIMARY KEY (id);
-
-
---
--- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organizations
-    ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
-
-
---
--- Name: phone_number_verifications phone_number_verifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.phone_number_verifications
-    ADD CONSTRAINT phone_number_verifications_pkey PRIMARY KEY (id);
-
-
---
 -- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profile_members profile_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.profile_members
+    ADD CONSTRAINT profile_members_pkey PRIMARY KEY (id);
 
 
 --
@@ -304,32 +208,19 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: twitter_accounts twitter_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.twitter_accounts
-    ADD CONSTRAINT twitter_accounts_pkey PRIMARY KEY (id);
-
-
---
--- Name: index_account_profiles_on_account_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_account_profiles_on_account_id ON public.account_profiles USING btree (account_id);
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
--- Name: index_account_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
+-- Name: verifications verifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_account_profiles_on_profile_id ON public.account_profiles USING btree (profile_id);
-
-
---
--- Name: index_accounts_on_phone_number; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_accounts_on_phone_number ON public.accounts USING btree (phone_number);
+ALTER TABLE ONLY public.verifications
+    ADD CONSTRAINT verifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -354,59 +245,31 @@ CREATE INDEX index_follows_on_target_profile_id ON public.follows USING btree (t
 
 
 --
--- Name: index_organization_members_on_account_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_organization_members_on_account_id ON public.organization_members USING btree (account_id);
-
-
---
--- Name: index_organization_members_on_organization_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_organization_members_on_organization_id ON public.organization_members USING btree (organization_id);
-
-
---
--- Name: index_organization_members_on_organization_id_and_account_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_organization_members_on_organization_id_and_account_id ON public.organization_members USING btree (organization_id, account_id);
-
-
---
--- Name: index_organization_profiles_on_organization_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_organization_profiles_on_organization_id ON public.organization_profiles USING btree (organization_id);
-
-
---
--- Name: index_organization_profiles_on_organization_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_organization_profiles_on_organization_id_and_profile_id ON public.organization_profiles USING btree (organization_id, profile_id);
-
-
---
--- Name: index_organization_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_organization_profiles_on_profile_id ON public.organization_profiles USING btree (profile_id);
-
-
---
--- Name: index_phone_number_verifications_on_pn_and_cc; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_phone_number_verifications_on_pn_and_cc ON public.phone_number_verifications USING btree (phone_number, confirmation_code);
-
-
---
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
+
+
+--
+-- Name: index_profile_members_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_profile_members_on_profile_id ON public.profile_members USING btree (profile_id);
+
+
+--
+-- Name: index_profile_members_on_profile_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_profile_members_on_profile_id_and_user_id ON public.profile_members USING btree (profile_id, user_id);
+
+
+--
+-- Name: index_profile_members_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_profile_members_on_user_id ON public.profile_members USING btree (user_id);
 
 
 --
@@ -417,10 +280,32 @@ CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atn
 
 
 --
--- Name: index_twitter_accounts_on_profile_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_twitter_accounts_on_profile_id ON public.twitter_accounts USING btree (profile_id);
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: index_verifications_on_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_verifications_on_created_at ON public.verifications USING btree (created_at);
+
+
+--
+-- Name: index_verifications_on_email_and_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_verifications_on_email_and_code ON public.verifications USING btree (email, code);
+
+
+--
+-- Name: profile_members fk_rails_5a8b59bd8b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.profile_members
+    ADD CONSTRAINT fk_rails_5a8b59bd8b FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --
@@ -432,27 +317,11 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: account_profiles fk_rails_85b5ae6af1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: profile_members fk_rails_87765715d2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.account_profiles
-    ADD CONSTRAINT fk_rails_85b5ae6af1 FOREIGN KEY (account_id) REFERENCES public.accounts(id);
-
-
---
--- Name: organization_profiles fk_rails_87611e9014; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_profiles
-    ADD CONSTRAINT fk_rails_87611e9014 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: organization_members fk_rails_9e0fce095d; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_members
-    ADD CONSTRAINT fk_rails_9e0fce095d FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+ALTER TABLE ONLY public.profile_members
+    ADD CONSTRAINT fk_rails_87765715d2 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -472,38 +341,6 @@ ALTER TABLE ONLY public.posts
 
 
 --
--- Name: organization_profiles fk_rails_d0c5dfda7d; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_profiles
-    ADD CONSTRAINT fk_rails_d0c5dfda7d FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
-
-
---
--- Name: twitter_accounts fk_rails_eb2a6ad196; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.twitter_accounts
-    ADD CONSTRAINT fk_rails_eb2a6ad196 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: account_profiles fk_rails_f84ed5bded; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.account_profiles
-    ADD CONSTRAINT fk_rails_f84ed5bded FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: organization_members fk_rails_ff629e24d8; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_members
-    ADD CONSTRAINT fk_rails_ff629e24d8 FOREIGN KEY (organization_id) REFERENCES public.organizations(id);
-
-
---
 -- PostgreSQL database dump complete
 --
 
@@ -511,7 +348,6 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20220000000001'),
-('20221119004702'),
-('20230119130108');
+('20221119004702');
 
 

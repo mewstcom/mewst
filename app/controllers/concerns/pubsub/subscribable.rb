@@ -13,8 +13,6 @@ module Pubsub::Subscribable
     end
   end
 
-  private
-
   def message_data
     @decoded_data ||= begin
       if (data = params.dig(:message, :data))

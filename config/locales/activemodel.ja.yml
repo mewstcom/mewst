@@ -1,14 +1,11 @@
 ja:
   activemodel:
     attributes:
-      phone_number_verification_challenge:
-        challenged_confirmation_code: 認証コード
-      twitter_authorization:
-        cross_post_usage: Twitterにクロスポストする
-        find_friends_usage: Twitterでフォローしている人を探す
+      verification_challenge:
+        challenged_code: 確認用コード
     errors:
       models:
-        phone_number_verification_challenge:
+        verification_challenge:
           attributes:
             base:
-              equal_to_confirmation_code: 認証コードが正しくありません
+              equal_to_code: 認証コードが正しくありません

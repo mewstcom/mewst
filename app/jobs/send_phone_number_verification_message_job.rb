@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class SendPhoneNumberVerificationMessageJob
+class SendEmailVerificationMailJob
   extend T::Sig
 
   include Sidekiq::Job

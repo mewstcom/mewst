@@ -1,10 +1,10 @@
 <div class="container py-5 u-flat u-narrow">
-  <%= form_with model: @verification, url: sign_up_path do |f| %>
+  <%= form_with model: @challenge, url: verification_challenge_list_path do |f| %>
     <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
     <div class="mb-3">
-      <%= f.label :email %>
-      <%= f.email_field :email, autofocus: true, class: "form-control" %>
+      <%= f.label :challenged_code %>
+      <%= f.text_field :challenged_code, autofocus: true, class: "form-control" %>
     </div>
 
     <%= f.button class: "btn btn-primary", type: :submit do %>

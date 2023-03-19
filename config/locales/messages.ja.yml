@@ -4,7 +4,6 @@ ja:
       updated: アカウントを更新しました
     authentication:
       already_signed_in: すでにログインしています
-      confirmation_sms_sent: 電話番号確認用のSMSを送信しました
       signed_out_successfully: ログアウトしました
       sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
@@ -27,6 +26,8 @@ ja:
       updated: プロフィールを更新しました
     twitter_authorization:
       usages: Twitterアカウントを使って何をしたいですか？
+    verifications:
+      verification_mail_sent: 確認用のメールを送信しました
     welcome:
       alpha_html: |-
         現在アルファ版です。<br>

@@ -6,7 +6,6 @@ class Profile < ApplicationRecord
 
   include SoftDeletable
   include TimelineOwnable
-  include TwitterAuthorizable
   T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
@@ -18,7 +17,6 @@ class Profile < ApplicationRecord
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
-  has_one :twitter_account, dependent: :restrict_with_exception
 
   enumerize :profilable_type, in: [PROFILABLE_TYPE_ACCOUNT, PROFILABLE_TYPE_ORGANIZATION]
 

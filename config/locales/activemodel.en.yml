@@ -1,14 +1,11 @@
 en:
   activemodel:
     attributes:
-      phone_number_verification_challenge:
-        challenged_confirmation_code: Confirmation code
-      twitter_authorization:
-        cross_post_usage: Cross post to Twitter
-        find_friends_usage: Find friends on Twitter
+      verification_challenge:
+        challenged_code: Verification code
     errors:
       models:
-        phone_number_verification_challenge:
+        verification_challenge:
           attributes:
             base:
-              equal_to_confirmation_code: Incorrect confirmation code.
+              equal_to_code: Incorrect verification code.
