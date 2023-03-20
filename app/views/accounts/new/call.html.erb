@@ -1,15 +1,28 @@
-<%= form_with model: @account_activation, url: account_list_path do |f| %>
-  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+<div class="container py-5 u-flat u-narrow">
+  <%= form_with model: @account_activation, url: account_list_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-  <div>
-    <%= f.label :phone_number %>
-    <%= @account_activation.phone_number %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :email, class: "form-label" %>
+      <input class="form-control-plaintext" readonly type="text" value="<%= f.object.email %>">
+    </div>
 
-  <div>
-    <%= f.label :atname %>
-    <%= f.text_field :atname, autofocus: true %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :atname, class: "form-label" %>
 
-  <%= f.submit %>
-<% end %>
+      <div class="input-group">
+        <span class="input-group-text">@</span>
+        <%= f.text_field :atname, autofocus: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :password, class: "form-label" %>
+      <%= f.password_field :password, class: "form-control" %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
+</div>

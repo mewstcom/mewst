@@ -15,8 +15,9 @@ class SignUp::CreateController < ApplicationController
 
     code = Verification.generate_code
     @verification = Verification.new(form_params.merge(code:, event: :sign_up))
+    @verification.save!
 
-    @verification.send_verification_mail
+    SendVerificationMailJob.perform_later(verification_id: @verification.id, locale: I18n.locale)
 
     session[:verification_id] = @verification.id
     flash[:success] = t("messages.verifications.verification_mail_sent")

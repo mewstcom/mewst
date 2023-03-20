@@ -6,13 +6,14 @@ module Authenticatable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_profile, :current_profile!, :current_user, :current_user!, :signed_in?
+    helper_method :current_account, :current_account!, :current_profile, :current_profile!, :signed_in?
   end
 
-  sig { params(user: User).returns(T::Boolean) }
-  def sign_in(user)
-    user.track_sign_in
-    session[:user_id] = user.id
+  sig { params(account: Account).returns(T::Boolean) }
+  def sign_in(account)
+    account.track_sign_in
+    session[:current_account_id] = account.id
+    session[:current_profile_id] = account.first_profile.id
     true
   end
 
@@ -22,23 +23,23 @@ module Authenticatable
     true
   end
 
-  sig { returns(T.nilable(User)) }
-  def current_user
-    return unless session[:user_id]
+  sig { returns(T.nilable(Account)) }
+  def current_account
+    return unless session[:current_account_id]
 
-    @current_user ||= T.let(User.find_by(id: session[:user_id]), T.nilable(User))
+    @current_account ||= T.let(Account.find_by(id: session[:current_account_id]), T.nilable(Account))
   end
 
-  sig { returns(User) }
-  def current_user!
-    T.cast(current_user, User)
+  sig { returns(Account) }
+  def current_account!
+    T.cast(current_account, Account)
   end
 
   sig { returns(T.nilable(Profile)) }
   def current_profile
-    return unless signed_in?
+    return unless session[:current_profile_id]
 
-    @current_profile ||= T.let(current_account!.profile, T.nilable(Profile))
+    @current_profile ||= T.let(current_account!.profiles.find_by(id: session[:current_profile_id]), T.nilable(Profile))
   end
 
   sig { returns(Profile) }
@@ -48,7 +49,7 @@ module Authenticatable
 
   sig { returns(T::Boolean) }
   def signed_in?
-    !current_user.nil?
+    !current_account.nil?
   end
 
   sig { returns(T.untyped) }

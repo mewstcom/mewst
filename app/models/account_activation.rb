@@ -7,15 +7,18 @@ class AccountActivation
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  sig { returns(T.nilable(PhoneNumberVerification)) }
-  attr_accessor :phone_number_verification
+  sig { returns(T.nilable(Verification)) }
+  attr_accessor :verification
 
-  delegate :phone_number, to: :phone_number_verification!
+  delegate :email, to: :verification!
 
   attribute :atname, :string
   attribute :locale, :string
+  attribute :password, :string
 
-  validates :phone_number_verification, presence: true
+  validates :atname, presence: true
+  validates :password, length: {in: 6..128}, presence: true
+  validates :verification, presence: true
 
   sig { returns(Account) }
   def run
@@ -23,12 +26,10 @@ class AccountActivation
 
     account = T.let(nil, T.nilable(Account))
     ActiveRecord::Base.transaction do
-      account = Account.create!(phone_number:, locale:)
+      account = Account.create!(email:, locale:, password:)
+      account.profiles.create!(atname:)
 
-      profile = account.create_profile!(atname:, profilable_type: Profile::PROFILABLE_TYPE_ACCOUNT)
-      account.create_account_profile!(profile:)
-
-      phone_number_verification!.destroy
+      verification!.destroy
     end
 
     T.cast(account, Account)
@@ -42,8 +43,8 @@ class AccountActivation
 
   private
 
-  sig { returns(PhoneNumberVerification) }
-  def phone_number_verification!
-    T.cast(phone_number_verification, PhoneNumberVerification)
+  sig { returns(Verification) }
+  def verification!
+    T.cast(verification, Verification)
   end
 end

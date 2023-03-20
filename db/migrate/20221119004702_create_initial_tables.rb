@@ -13,7 +13,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.index %i[email code], unique: true
     end
 
-    create_table :users, id: false do |t|
+    create_table :accounts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.string :email, index: {unique: true}, null: false
       t.string :password_digest, null: false
@@ -37,10 +37,10 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :profile_members, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :user, foreign_key: true, null: false, type: :uuid
+      t.references :account, foreign_key: true, null: false, type: :uuid
       t.timestamps
 
-      t.index %i[profile_id user_id], unique: true
+      t.index %i[profile_id account_id], unique: true
     end
 
     create_table :follows, id: false do |t|

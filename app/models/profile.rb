@@ -6,7 +6,6 @@ class Profile < ApplicationRecord
 
   include SoftDeletable
   include TimelineOwnable
-  T.unsafe(self).include ImageUploader::Attachment(:avatar)
 
   IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   PROFILABLE_TYPE_ACCOUNT = :account

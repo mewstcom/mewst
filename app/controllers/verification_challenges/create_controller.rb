@@ -1,22 +1,22 @@
 # typed: true
 # frozen_string_literal: true
 
-class SignUp::Verification::PhoneNumber::Challenges::CreateController < ApplicationController
+class VerificationChallenges::CreateController < ApplicationController
   include Authenticatable
   include Localizable
-  include PhoneNumberVerificationFindable
+  include VerificationFindable
 
   around_action :set_locale
   before_action :require_no_authentication
-  before_action :require_phone_number_verification_id
+  before_action :require_verification_id
 
   sig { returns(T.untyped) }
   def call
-    @challenge = PhoneNumberVerificationChallenge.new(form_params)
-    @challenge.phone_number_verification = PhoneNumberVerification.find(session[:phone_number_verification_id])
+    @challenge = VerificationChallenge.new(form_params)
+    @challenge.verification = Verification.active.find(session[:verification_id])
 
     if @challenge.invalid?
-      return render("sign_up/verification/phone_number/challenges/new/call", status: :unprocessable_entity)
+      return render("verification_challenges/new/call", status: :unprocessable_entity)
     end
 
     redirect_to new_account_path
@@ -26,6 +26,6 @@ class SignUp::Verification::PhoneNumber::Challenges::CreateController < Applicat
 
   sig { returns(ActionController::Parameters) }
   def form_params
-    T.cast(params.require(:phone_number_verification_challenge), ActionController::Parameters).permit(:challenged_confirmation_code)
+    T.cast(params.require(:verification_challenge), ActionController::Parameters).permit(:challenged_code)
   end
 end

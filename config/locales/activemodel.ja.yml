@@ -1,6 +1,10 @@
 ja:
   activemodel:
     attributes:
+      account_activation:
+        atname: アットネーム
+        email: メールアドレス
+        password: パスワード
       verification_challenge:
         challenged_code: 確認用コード
     errors:

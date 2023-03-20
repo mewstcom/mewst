@@ -11,12 +11,13 @@ class Mewst::CloudTasks
     @priority = priority
   end
 
-  def create_task(url:, payload: nil, seconds: nil)
+  def create_task(path:, payload: nil, seconds: nil)
     parent = client.queue_path(
       project: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
       location: ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_LOCATION"),
       queue: queue_id
     )
+    url = "#{ENV.fetch("MEWST_URL")}#{path}"
 
     task = {
       http_request: {

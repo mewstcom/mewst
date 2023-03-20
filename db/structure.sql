@@ -53,6 +53,23 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: accounts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.accounts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    email character varying NOT NULL,
+    password_digest character varying NOT NULL,
+    locale character varying NOT NULL,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_signed_in_at timestamp without time zone,
+    last_signed_in_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -97,7 +114,7 @@ CREATE TABLE public.posts (
 CREATE TABLE public.profile_members (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
-    user_id uuid NOT NULL,
+    account_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -129,23 +146,6 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    email character varying NOT NULL,
-    password_digest character varying NOT NULL,
-    locale character varying NOT NULL,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_signed_in_at timestamp without time zone,
-    last_signed_in_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: verifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -157,6 +157,14 @@ CREATE TABLE public.verifications (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
+
+
+--
+-- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.accounts
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -208,19 +216,18 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
 -- Name: verifications verifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.verifications
     ADD CONSTRAINT verifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_accounts_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_accounts_on_email ON public.accounts USING btree (email);
 
 
 --
@@ -252,6 +259,13 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 
 
 --
+-- Name: index_profile_members_on_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_profile_members_on_account_id ON public.profile_members USING btree (account_id);
+
+
+--
 -- Name: index_profile_members_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -259,17 +273,10 @@ CREATE INDEX index_profile_members_on_profile_id ON public.profile_members USING
 
 
 --
--- Name: index_profile_members_on_profile_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_profile_members_on_profile_id_and_account_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_profile_members_on_profile_id_and_user_id ON public.profile_members USING btree (profile_id, user_id);
-
-
---
--- Name: index_profile_members_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_profile_members_on_user_id ON public.profile_members USING btree (user_id);
+CREATE UNIQUE INDEX index_profile_members_on_profile_id_and_account_id ON public.profile_members USING btree (profile_id, account_id);
 
 
 --
@@ -277,13 +284,6 @@ CREATE INDEX index_profile_members_on_user_id ON public.profile_members USING bt
 --
 
 CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atname);
-
-
---
--- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
@@ -301,6 +301,14 @@ CREATE UNIQUE INDEX index_verifications_on_email_and_code ON public.verification
 
 
 --
+-- Name: profile_members fk_rails_2b8c77ebca; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.profile_members
+    ADD CONSTRAINT fk_rails_2b8c77ebca FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
 -- Name: profile_members fk_rails_5a8b59bd8b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -314,14 +322,6 @@ ALTER TABLE ONLY public.profile_members
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_5e22b9865a FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: profile_members fk_rails_87765715d2; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.profile_members
-    ADD CONSTRAINT fk_rails_87765715d2 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

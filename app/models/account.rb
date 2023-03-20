@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class User < ApplicationRecord
+class Account < ApplicationRecord
   extend Enumerize
 
   enumerize :locale, in: I18n.available_locales
@@ -9,7 +9,13 @@ class User < ApplicationRecord
   has_many :profile_members, dependent: :restrict_with_exception
   has_many :profiles, dependent: :restrict_with_exception, through: :profile_members
 
-  validates :phone_number, presence: true, uniqueness: true
+  has_secure_password
+
+  validates :email, presence: true, uniqueness: true
+
+  def first_profile
+    profiles.first
+  end
 
   sig { returns(T::Boolean) }
   def track_sign_in

@@ -7,7 +7,7 @@ module Localizable
 
   sig { params(action: Proc).returns(T.untyped) }
   def set_locale(&action)
-    session[:current_locale] = current_user&.locale.presence ||
+    session[:current_locale] = current_account&.locale.presence ||
       params[:locale].presence ||
       session[:current_locale].presence ||
       preferred_locale
