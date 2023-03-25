@@ -1,14 +1,19 @@
-<div class="container py-5 u-flat u-narrow">
-  <%= form_with model: @verification, url: sign_in_path do |f| %>
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @account, url: sign_in_path do |f| %>
     <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
     <div class="mb-3">
-      <%= f.label :raw_phone_number, class: "form-label" %>
-      <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :raw_phone_number, autofocus: true) %>
+      <%= f.label :email, class: "form-label" %>
+      <%= f.email_field :email, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :password, class: "form-label" %>
+      <%= f.password_field :password, class: "form-control" %>
     </div>
 
     <%= f.button class: "btn btn-primary", type: :submit do %>
-      <%= t("verbs.submit") %>
+      <%= t("verbs.sign_in") %>
     <% end %>
   <% end %>
-</div>
+<% end %>

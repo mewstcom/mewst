@@ -10,6 +10,6 @@ class SignIn::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @verification = EmailVerification.new
+    @account = Account.new
   end
 end

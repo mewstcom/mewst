@@ -1,6 +1,9 @@
 ja:
   activerecord:
     attributes:
+      account:
+        email: Email
+        password: Password
       profile:
         atname: At name
       verification:

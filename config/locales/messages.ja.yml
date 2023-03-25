@@ -1,6 +1,8 @@
 ja:
   messages:
     accounts:
+      authentication_failed: メールアドレスまたはパスワードが正しくありません
+      signed_in_successfully: ログインしました
       updated: アカウントを更新しました
     authentication:
       already_signed_in: すでにログインしています

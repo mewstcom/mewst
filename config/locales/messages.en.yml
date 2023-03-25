@@ -1,6 +1,8 @@
 en:
   messages:
     accounts:
+      authentication_failed: Incorrect email or password.
+      signed_in_successfully: Signed in successfully.
       updated: Account updated.
     authentication:
       already_signed_in: Already signed in.

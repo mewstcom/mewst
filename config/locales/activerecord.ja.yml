@@ -1,6 +1,9 @@
 ja:
   activerecord:
     attributes:
+      account:
+        email: メールアドレス
+        password: パスワード
       profile:
         atname: アット名
       verification:
