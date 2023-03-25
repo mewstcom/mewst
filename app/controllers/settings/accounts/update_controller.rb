@@ -14,7 +14,7 @@ class Settings::Accounts::UpdateController < ApplicationController
     @account.attributes = form_params
 
     if @account.save
-      flash[:notice] = t("messages.accounts.updated")
+      flash[:success] = t("messages.accounts.updated")
       redirect_to settings_account_path
     else
       render("settings/accounts/show/call", status: :unprocessable_entity)

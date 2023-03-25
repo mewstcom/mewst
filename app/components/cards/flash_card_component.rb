@@ -24,7 +24,7 @@ class Cards::FlashCardComponent < ApplicationComponent
     case flash_type
     when :alert
       "alert-danger"
-    when :notice
+    when :success
       "alert-success"
     else
       ""
@@ -36,7 +36,7 @@ class Cards::FlashCardComponent < ApplicationComponent
     case flash_type
     when :alert
       "fa-exclamation-triangle"
-    when :notice
+    when :success
       "fa-check-circle"
     else
       ""
