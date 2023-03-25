@@ -1,9 +1,17 @@
 en:
   meta:
     title:
+      accounts:
+        new: Create an account
       posts:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname})'s profile"
+      sign_in:
+        new: Sign in
+      sign_up:
+        new: Sign up
+      verification_challenges:
+        new: Verification
       welcome:
         show: A microblogging service

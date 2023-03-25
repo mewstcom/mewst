@@ -1,3 +1,8 @@
+<% title = t("meta.title.sign_in.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render Cards::FlashCardComponent.new(flash:) %>
+
 <%= render(Containers::NarrowContainerComponent.new) do %>
   <%= form_with model: @account, url: sign_in_path do |f| %>
     <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>

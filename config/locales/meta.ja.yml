@@ -1,9 +1,17 @@
 ja:
   meta:
     title:
+      accounts:
+        new: アカウント作成
       posts:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
+      sign_in:
+        new: ログイン
+      sign_up:
+        new: アカウント作成
+      verification_challenges:
+        new: 確認コード入力
       welcome:
         show: A microblogging service

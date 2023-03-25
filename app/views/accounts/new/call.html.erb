@@ -1,4 +1,9 @@
-<div class="container py-5 u-flat u-narrow">
+<% title = t("meta.title.accounts.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render Cards::FlashCardComponent.new(flash:) %>
+
+<%= render(Containers::NarrowContainerComponent.new) do %>
   <%= form_with model: @account_activation, url: account_list_path do |f| %>
     <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
@@ -25,4 +30,4 @@
       <%= t("verbs.submit") %>
     <% end %>
   <% end %>
-</div>
+<% end %>
