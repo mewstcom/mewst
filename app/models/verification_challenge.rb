@@ -21,6 +21,10 @@ class VerificationChallenge
     T.cast(verification, Verification)
   end
 
+  def success
+    verification!.update!(succeeded_at: Time.current)
+  end
+
   private
 
   sig { void }

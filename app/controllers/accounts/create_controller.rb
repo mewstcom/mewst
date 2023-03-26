@@ -8,12 +8,12 @@ class Accounts::CreateController < ApplicationController
 
   around_action :set_locale
   before_action :require_no_authentication
-  before_action :require_verification_id
+  before_action :require_succeeded_verification
 
   sig { returns(T.untyped) }
   def call
     @account_activation = AccountActivation.new(form_params.merge(locale: I18n.locale.to_s))
-    @account_activation.verification = Verification.find(session[:verification_id])
+    @account_activation.verification = @verification
 
     account = @account_activation.run
 

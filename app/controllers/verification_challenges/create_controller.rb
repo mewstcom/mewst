@@ -19,6 +19,8 @@ class VerificationChallenges::CreateController < ApplicationController
       return render("verification_challenges/new/call", status: :unprocessable_entity)
     end
 
+    @challenge.success
+
     redirect_to next_path(@challenge.verification)
   end
 

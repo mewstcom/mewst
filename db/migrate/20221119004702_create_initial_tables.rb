@@ -7,6 +7,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.string :email, null: false
       t.string :event, null: false
       t.string :code, null: false
+      t.timestamp :succeeded_at
       t.timestamps
 
       t.index :created_at

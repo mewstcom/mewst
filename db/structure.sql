@@ -154,6 +154,7 @@ CREATE TABLE public.verifications (
     email character varying NOT NULL,
     event character varying NOT NULL,
     code character varying NOT NULL,
+    succeeded_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );

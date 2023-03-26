@@ -11,6 +11,7 @@ class Verification < ApplicationRecord
   enumerize :event, in: [EVENT_PASSWORD_RESET, EVENT_SIGN_UP]
 
   scope :active, -> { where("created_at > ?", EXPIRES_IN.ago) }
+  scope :succeeded, -> { where.not(succeeded_at: nil) }
 
   validates :email, presence: true
   validates :code, format: {with: /\A\d{6}\z/}, presence: true
