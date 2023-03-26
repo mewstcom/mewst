@@ -23,7 +23,6 @@ class Profile < ApplicationRecord
 
   delegate :follow, :unfollow, to: :followability
   delegate :create_post, :delete_post, to: :postability
-  delegate :upsert_twitter_account, to: :twitter_connectability
 
   sig { returns(Profile::HomeTimeline) }
   def home_timeline
@@ -60,10 +59,5 @@ class Profile < ApplicationRecord
   sig { returns(Profile::Postability) }
   def postability
     Profile::Postability.new(profile: self)
-  end
-
-  sig { returns(Profile::TwitterConnectability) }
-  def twitter_connectability
-    Profile::TwitterConnectability.new(profile: self)
   end
 end

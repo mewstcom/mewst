@@ -12,36 +12,7 @@
   ></textarea>
 
   <div class="gx-3 mt-2 row">
-    <div class="col-6">
-      <% if current_profile!.twitter_account&.can_cross_post? %>
-        <div class="form-check">
-          <%= tag.input(
-            checked: current_profile!.twitter_account.cross_post?,
-            class: "form-check-input",
-            data: {
-              post_form_target: "crossPostToTwitterCheckbox"
-            },
-            id: "crossPostToTwitterCheckbox",
-            type: "checkbox"
-          ) %>
-
-          <label class="form-check-label" for="crossPostToTwitterCheckbox">
-            <i class="bi bi-twitter text-twitter"></i>
-          </label>
-        </div>
-      <% else %>
-        <%= tag.input(
-          checked: false,
-          class: "d-none",
-          data: {
-            post_form_target: "crossPostToTwitterCheckbox"
-          },
-          type: "checkbox"
-        ) %>
-      <% end %>
-    </div>
-
-    <div class="col-6 text-end">
+    <div class="col-12 text-end">
       500 <%# TODO: Decrease char count %>
     </div>
   </div>

@@ -18,7 +18,6 @@ gem "enumerize"
 gem "faraday"
 gem "google-cloud-pubsub"
 gem "google-cloud-tasks"
-gem "http-cookie" # Used by twitter_oauth2
 gem "http_accept_language"
 gem "image_processing" # Used by Shrine
 gem "jb"
@@ -37,7 +36,6 @@ gem "sidekiq"
 gem "sorbet-runtime"
 gem "sucker_punch"
 gem "twilio-ruby"
-gem "twitter_oauth2"
 gem "view_component"
 
 group :development, :test do

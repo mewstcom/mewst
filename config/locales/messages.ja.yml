@@ -27,8 +27,6 @@ ja:
       deleted: 投稿を削除しました
     profiles:
       updated: プロフィールを更新しました
-    twitter_authorization:
-      usages: Twitterアカウントを使って何をしたいですか？
     verifications:
       verification_mail_sent: 確認用のメールを送信しました
     welcome:

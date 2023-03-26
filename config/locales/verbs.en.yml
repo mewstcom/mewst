@@ -2,7 +2,6 @@ en:
   verbs:
     connect: Connect
     disconnect: Disconnect
-    find_friends_on_twitter: Find friends on Twitter
     follow: Follow
     post: Post
     sign_in: Sign in

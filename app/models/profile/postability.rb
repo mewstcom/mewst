@@ -9,14 +9,9 @@ class Profile::Postability
     @profile = profile
   end
 
-  sig { params(content: T.nilable(String), cross_post_to_twitter: T::Boolean).returns(Post) }
-  def create_post(content:, cross_post_to_twitter:)
+  sig { params(content: T.nilable(String)).returns(Post) }
+  def create_post(content:)
     post = profile.posts.create!(content:)
-    profile.twitter_account&.update!(cross_post: cross_post_to_twitter)
-
-    if cross_post_to_twitter
-      CrossPostToTwitterJob.perform_async(post.id)
-    end
 
     FanoutPostJob.perform_async(post_id: post.id)
 

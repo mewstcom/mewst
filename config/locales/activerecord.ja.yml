@@ -9,9 +9,3 @@ ja:
       verification:
         code: 確認用コード
         email: メールアドレス
-    errors:
-      models:
-        twitter_account:
-          attributes:
-            base:
-              permitted_scopes: "許可されていないスコープが含まれています: %{unpermitted_scopes}"

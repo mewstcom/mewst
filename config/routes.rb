@@ -34,10 +34,6 @@ Rails.application.routes.draw do
   match "/settings",                                         via: :patch,                                                         to: "settings/profiles/update#call"
   match "/settings/account",                                 via: :get,    as: :settings_account,                                 to: "settings/accounts/show#call"
   match "/settings/account",                                 via: :patch,                                                         to: "settings/accounts/update#call"
-  match "/settings/connected_accounts",                      via: :get,    as: :settings_connected_account_list,                  to: "settings/connected_accounts/index#call"
-  match "/settings/twitter_account",                         via: :delete, as: :settings_twitter_account,                         to: "settings/twitter_accounts/destroy#call"
-  match "/settings/twitter_authorization",                   via: :post,   as: :settings_twitter_authorization,                   to: "settings/twitter_authorizations/create#call"
-  match "/settings/twitter_authorization/callback",          via: :get,    as: :settings_twitter_authorization_callback,          to: "settings/twitter_authorizations/callbacks/show#call"
   match "/sign_in",                                          via: :get,    as: :sign_in,                                          to: "sign_in/new#call"
   match "/sign_in",                                          via: :post,                                                          to: "sign_in/create#call"
   match "/sign_in/verification/phone_number/challenges",     via: :post,   as: :sign_in_verification_phone_number_challenge_list, to: "sign_in/verification/phone_number/challenges/create#call"
@@ -45,7 +41,6 @@ Rails.application.routes.draw do
   match "/sign_out",                                         via: :get,    as: :sign_out,                                         to: "sign_out/show#call"
   match "/sign_up",                                          via: :get,    as: :sign_up,                                          to: "sign_up/new#call"
   match "/sign_up",                                          via: :post,                                                          to: "sign_up/create#call"
-  match "/twitter_friends",                                  via: :get,    as: :twitter_friend_list,                              to: "twitter_friends/index#call"
   match "/verification_challenges",                          via: :post,   as: :verification_challenge_list,                      to: "verification_challenges/create#call"
   match "/verification_challenges/new",                      via: :get,    as: :new_verification_challenge,                       to: "verification_challenges/new#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute

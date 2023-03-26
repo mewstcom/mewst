@@ -27,8 +27,6 @@ en:
       deleted: Post deleted.
     profiles:
       updated: Profile updated.
-    twitter_authorization:
-      usages: What do you want to do with your Twitter account?
     verifications:
       verification_mail_sent: Verification mail has been sent.
     welcome:

@@ -9,9 +9,3 @@ ja:
       verification:
         code: Verification code
         email: Email
-    errors:
-      models:
-        twitter_account:
-          attributes:
-            base:
-              permitted_scopes: "Unpermitted scopes exist: %{unpermitted_scopes}"
