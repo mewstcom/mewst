@@ -35,7 +35,6 @@ RSpec.describe AccountActivation do
       )
 
       expect(account.profile).to have_attributes(
-        profilable_type: "account",
         atname:,
         name: "",
         description: "",

@@ -64,6 +64,30 @@ class Profile
     sig { params(args: T.untyped).returns(::Profile) }
     def find_by!(*args); end
 
+    sig do
+      params(
+        start: T.untyped,
+        finish: T.untyped,
+        batch_size: Integer,
+        error_on_ignore: T.untyped,
+        order: Symbol,
+        block: T.nilable(T.proc.params(object: ::Profile).void)
+      ).returns(T.nilable(T::Enumerator[::Profile]))
+    end
+    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+
+    sig do
+      params(
+        start: T.untyped,
+        finish: T.untyped,
+        batch_size: Integer,
+        error_on_ignore: T.untyped,
+        order: Symbol,
+        block: T.nilable(T.proc.params(object: T::Array[::Profile]).void)
+      ).returns(T.nilable(T::Enumerator[T::Enumerator[::Profile]]))
+    end
+    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Profile).void)).returns(::Profile) }
     def find_or_create_by(attributes, &block); end
 
@@ -102,6 +126,19 @@ class Profile
 
     sig { returns(Array) }
     def ids; end
+
+    sig do
+      params(
+        of: Integer,
+        start: T.untyped,
+        finish: T.untyped,
+        load: T.untyped,
+        error_on_ignore: T.untyped,
+        order: Symbol,
+        block: T.nilable(T.proc.params(object: PrivateRelation).void)
+      ).returns(T.nilable(::ActiveRecord::Batches::BatchEnumerator))
+    end
+    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, order: :asc, &block); end
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
@@ -182,15 +219,6 @@ class Profile
   end
 
   module GeneratedAssociationMethods
-    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
-    def build_twitter_account(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
-    def create_twitter_account(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::TwitterAccount) }
-    def create_twitter_account!(*args, &blk); end
-
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
 
@@ -260,15 +288,6 @@ class Profile
 
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
-
-    sig { returns(T.nilable(::TwitterAccount)) }
-    def reload_twitter_account; end
-
-    sig { returns(T.nilable(::TwitterAccount)) }
-    def twitter_account; end
-
-    sig { params(value: T.nilable(::TwitterAccount)).void }
-    def twitter_account=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -504,49 +523,49 @@ class Profile
     def atname_will_change!; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_data; end
+    def avatar_url; end
 
     sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def avatar_data=(value); end
+    def avatar_url=(value); end
 
     sig { returns(T::Boolean) }
-    def avatar_data?; end
+    def avatar_url?; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_data_before_last_save; end
+    def avatar_url_before_last_save; end
 
     sig { returns(T.untyped) }
-    def avatar_data_before_type_cast; end
+    def avatar_url_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def avatar_data_came_from_user?; end
+    def avatar_url_came_from_user?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def avatar_data_change; end
+    def avatar_url_change; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def avatar_data_change_to_be_saved; end
+    def avatar_url_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
-    def avatar_data_changed?; end
+    def avatar_url_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_data_in_database; end
+    def avatar_url_in_database; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def avatar_data_previous_change; end
+    def avatar_url_previous_change; end
 
     sig { returns(T::Boolean) }
-    def avatar_data_previously_changed?; end
+    def avatar_url_previously_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_data_previously_was; end
+    def avatar_url_previously_was; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_data_was; end
+    def avatar_url_was; end
 
     sig { void }
-    def avatar_data_will_change!; end
+    def avatar_url_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
@@ -773,56 +792,11 @@ class Profile
     sig { void }
     def name_will_change!; end
 
-    sig { returns(T.untyped) }
-    def profilable_type; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def profilable_type=(value); end
-
-    sig { returns(T::Boolean) }
-    def profilable_type?; end
-
-    sig { returns(T.untyped) }
-    def profilable_type_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def profilable_type_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def profilable_type_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profilable_type_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profilable_type_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def profilable_type_changed?; end
-
-    sig { returns(T.untyped) }
-    def profilable_type_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profilable_type_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def profilable_type_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def profilable_type_previously_was; end
-
-    sig { returns(T.untyped) }
-    def profilable_type_was; end
-
-    sig { void }
-    def profilable_type_will_change!; end
-
     sig { void }
     def restore_atname!; end
 
     sig { void }
-    def restore_avatar_data!; end
+    def restore_avatar_url!; end
 
     sig { void }
     def restore_created_at!; end
@@ -840,9 +814,6 @@ class Profile
     def restore_name!; end
 
     sig { void }
-    def restore_profilable_type!; end
-
-    sig { void }
     def restore_updated_at!; end
 
     sig { returns(T.nilable([::String, ::String])) }
@@ -852,10 +823,10 @@ class Profile
     def saved_change_to_atname?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_avatar_data; end
+    def saved_change_to_avatar_url; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_avatar_data?; end
+    def saved_change_to_avatar_url?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -886,12 +857,6 @@ class Profile
 
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_profilable_type; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_profilable_type?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -948,7 +913,7 @@ class Profile
     def will_save_change_to_atname?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_avatar_data?; end
+    def will_save_change_to_avatar_url?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
@@ -964,9 +929,6 @@ class Profile
 
     sig { returns(T::Boolean) }
     def will_save_change_to_name?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_profilable_type?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end

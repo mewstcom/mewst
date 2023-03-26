@@ -4,23 +4,9 @@
 
 # typed: false
 
-module ::ImageHelper; end
-module ::LanguageServer::Protocol; end
-module ::LanguageServer::Protocol::Constant::DiagnosticSeverity; end
-module ::Sidekiq::Job; end
-module ::Sidekiq::Job::ClassMethods; end
-module ::Sidekiq::Job::Options; end
-module ::Sidekiq::Job::Options::ClassMethods; end
-module ::TwitterAccount; end
+module ::AccountProfile; end
+module ::PhoneNumberVerification; end
 module Google::Cloud::PubSub::Credentials; end
 module Google::Cloud::Tasks::V2::CloudTasks::Client; end
 module Google::Cloud::Tasks::V2::CloudTasks::Credentials; end
-module Google::Protobuf::Duration; end
 module Google::Protobuf::EnumDescriptor; end
-module Google::Protobuf::FieldMask; end
-module Google::Protobuf::Map; end
-module Google::Protobuf::RepeatedField; end
-module Google::Protobuf::Timestamp; end
-module Google::Rpc::Status; end
-module Google::Type::Expr; end
-module ProfileMember::PrivateCollectionProxy; end

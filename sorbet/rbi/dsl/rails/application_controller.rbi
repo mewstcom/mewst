@@ -15,7 +15,6 @@ class Rails::ApplicationController
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
-    include ::ImageHelper
     include ::LanguageHelper
     include ::TimeHelper
     include ::PreviewHelper
