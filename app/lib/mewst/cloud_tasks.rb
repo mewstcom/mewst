@@ -28,7 +28,7 @@ class Mewst::CloudTasks
         },
         headers: {
           "Content-Type": "application/json"
-        },
+        }
       }
     }
 
@@ -44,7 +44,7 @@ class Mewst::CloudTasks
 
     response = client.create_task(parent:, task:)
 
-    puts "Created task: #{response.name}"
+    Rails.logger.debug "Created task: #{response.name}"
   end
 
   private
@@ -64,11 +64,6 @@ class Mewst::CloudTasks
   end
 
   def queue_id
-    case priority
-    when :default
-      ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT")
-    else
-      ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT")
-    end
+    ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT")
   end
 end

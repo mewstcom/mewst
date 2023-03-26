@@ -9,8 +9,8 @@ class SendVerificationMailJob < ApplicationJob
       path: "/api/internal/tasks/send_verification_mail",
       payload: {
         verification_id:,
-        locale:,
-      }.to_json,
+        locale:
+      }.to_json
     )
   end
 end

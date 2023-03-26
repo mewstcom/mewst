@@ -16,7 +16,7 @@ class Api::Internal::Tasks::SendVerificationMailController < ApplicationControll
       locale: payload_params[:locale]
     ).deliver_now
 
-    head 204
+    head :no_content
   end
 
   private

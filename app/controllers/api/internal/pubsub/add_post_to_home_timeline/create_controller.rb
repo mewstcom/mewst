@@ -16,6 +16,6 @@ class Api::Internal::Pubsub::AddPostToHomeTimeline::CreateController < Applicati
       profile.home_timeline.add_post(post:)
     end
 
-    head 204
+    head :no_content
   end
 end

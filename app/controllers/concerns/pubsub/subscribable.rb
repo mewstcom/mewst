@@ -14,11 +14,8 @@ module Pubsub::Subscribable
   end
 
   def message_data
-    @decoded_data ||= begin
-      if (data = params.dig(:message, :data))
-        JSON.parse(Base64.decode64(data))
-      end
+    @decoded_data ||= if (data = params.dig(:message, :data))
+      JSON.parse(Base64.decode64(data))
     end
   end
 end
-

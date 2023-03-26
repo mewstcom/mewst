@@ -14,6 +14,6 @@ class Api::Internal::Pubsub::FanoutPost::CreateController < ApplicationControlle
     post.add_to_own_home_timeline
     post.add_to_followers_home_timeline
 
-    head 204
+    head :no_content
   end
 end

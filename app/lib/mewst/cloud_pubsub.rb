@@ -11,7 +11,7 @@ class Mewst::CloudPubsub
       project_id: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
       credentials: Google::Cloud::PubSub::Credentials.new(
         JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
-      ),
+      )
     ).client
   end
 
