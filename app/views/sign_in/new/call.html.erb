@@ -9,7 +9,7 @@
 
     <div class="mb-3">
       <%= f.label :email, class: "form-label" %>
-      <%= f.email_field :email, class: "form-control" %>
+      <%= f.email_field :email, autofocus: true, class: "form-control", tabindex: 1 %>
     </div>
 
     <div class="mb-3">
@@ -19,14 +19,14 @@
         </div>
 
         <div class="col-auto">
-          <%= link_to t("meta.title.password_resets.new"), password_reset_path, class: "form-text" %>
+          <%= link_to t("meta.title.password_resets.new"), password_reset_path, class: "form-text", tabindex: 4 %>
         </div>
       </div>
 
-      <%= f.password_field :password, class: "form-control" %>
+      <%= f.password_field :password, class: "form-control", tabindex: 2 %>
     </div>
 
-    <%= f.button class: "btn btn-primary", type: :submit do %>
+    <%= f.button class: "btn btn-primary", tabindex: 3, type: :submit do %>
       <%= t("verbs.sign_in") %>
     <% end %>
   <% end %>
