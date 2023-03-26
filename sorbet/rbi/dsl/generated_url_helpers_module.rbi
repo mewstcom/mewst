@@ -12,6 +12,9 @@ module GeneratedUrlHelpersModule
   def account_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -24,10 +27,28 @@ module GeneratedUrlHelpersModule
   def internal_api_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_api_pubsub_add_post_to_home_timeline_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_pubsub_fanout_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_tasks_send_verification_mail_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_api_unfollow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_account_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_verification_challenge_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_reset_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_url(*args); end
@@ -60,22 +81,7 @@ module GeneratedUrlHelpersModule
   def settings_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def settings_connected_account_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_account_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_authorization_callback_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_authorization_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def settings_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sidekiq_web_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_in_url(*args); end
@@ -93,11 +99,5 @@ module GeneratedUrlHelpersModule
   def sign_up_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_verification_phone_number_challenge_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_verification_phone_number_new_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def twitter_friend_list_url(*args); end
+  def verification_challenge_list_url(*args); end
 end

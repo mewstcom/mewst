@@ -7,10 +7,12 @@ require "google/cloud/tasks/v2"
 class Mewst::CloudTasks
   extend T::Sig
 
+  sig { params(priority: Symbol).void }
   def initialize(priority: :default)
-    @priority = priority
+    @priority = T.let(priority, Symbol)
   end
 
+  sig { params(path: String, payload: T.nilable(String), seconds: T.nilable(Integer)).void }
   def create_task(path:, payload: nil, seconds: nil)
     parent = client.queue_path(
       project: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
@@ -49,10 +51,12 @@ class Mewst::CloudTasks
 
   private
 
+  sig { returns(Symbol) }
   attr_reader :priority
 
+  sig { returns(Google::Cloud::Tasks::V2::CloudTasks::Client) }
   def client
-    @client ||= begin
+    @client ||= T.let(begin
       Google::Cloud::Tasks.configure do |config|
         config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
           JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
@@ -60,9 +64,10 @@ class Mewst::CloudTasks
       end
 
       Google::Cloud::Tasks.cloud_tasks
-    end
+    end, Google::Cloud::Tasks::V2::CloudTasks::Client)
   end
 
+  sig { returns(String) }
   def queue_id
     ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT")
   end

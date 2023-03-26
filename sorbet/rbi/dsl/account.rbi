@@ -10,6 +10,21 @@ class Account
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
+  sig { params(unencrypted_password: T.untyped).returns(T.untyped) }
+  def authenticate(unencrypted_password); end
+
+  sig { params(unencrypted_password: T.untyped).returns(T.untyped) }
+  def authenticate_password(unencrypted_password); end
+
+  sig { returns(T.untyped) }
+  def password; end
+
+  sig { params(unencrypted_password: T.untyped).returns(T.untyped) }
+  def password=(unencrypted_password); end
+
+  sig { params(unencrypted_password: T.untyped).returns(T.untyped) }
+  def password_confirmation=(unencrypted_password); end
+
   private
 
   sig { returns(NilClass) }
@@ -182,41 +197,33 @@ class Account
   end
 
   module GeneratedAssociationMethods
-    sig { returns(T.nilable(::AccountProfile)) }
-    def account_profile; end
+    sig { returns(T::Array[T.untyped]) }
+    def profile_ids; end
 
-    sig { params(value: T.nilable(::AccountProfile)).void }
-    def account_profile=(value); end
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def profile_ids=(ids); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::AccountProfile) }
-    def build_account_profile(*args, &blk); end
+    sig { returns(T::Array[T.untyped]) }
+    def profile_member_ids; end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def build_profile(*args, &blk); end
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def profile_member_ids=(ids); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::AccountProfile) }
-    def create_account_profile(*args, &blk); end
+    # This method is created by ActiveRecord on the `Account` class because it declared `has_many :profile_members`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::ProfileMember::PrivateCollectionProxy) }
+    def profile_members; end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::AccountProfile) }
-    def create_account_profile!(*args, &blk); end
+    sig { params(value: T::Enumerable[::ProfileMember]).void }
+    def profile_members=(value); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_profile(*args, &blk); end
+    # This method is created by ActiveRecord on the `Account` class because it declared `has_many :profiles, through: :profile_members`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Profile::PrivateCollectionProxy) }
+    def profiles; end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_profile!(*args, &blk); end
-
-    sig { returns(T.nilable(::Profile)) }
-    def profile; end
-
-    sig { params(value: T.nilable(::Profile)).void }
-    def profile=(value); end
-
-    sig { returns(T.nilable(::AccountProfile)) }
-    def reload_account_profile; end
-
-    sig { returns(T.nilable(::Profile)) }
-    def reload_profile; end
+    sig { params(value: T::Enumerable[::Profile]).void }
+    def profiles=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -490,6 +497,51 @@ class Account
     sig { void }
     def current_signed_in_at_will_change!; end
 
+    sig { returns(::String) }
+    def email; end
+
+    sig { params(value: ::String).returns(::String) }
+    def email=(value); end
+
+    sig { returns(T::Boolean) }
+    def email?; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def email_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def email_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def email_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def email_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def email_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def email_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def email_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_was; end
+
+    sig { void }
+    def email_will_change!; end
+
     sig { returns(T.untyped) }
     def id; end
 
@@ -626,55 +678,58 @@ class Account
     def locale_will_change!; end
 
     sig { returns(::String) }
-    def phone_number; end
+    def password_digest; end
 
     sig { params(value: ::String).returns(::String) }
-    def phone_number=(value); end
+    def password_digest=(value); end
 
     sig { returns(T::Boolean) }
-    def phone_number?; end
+    def password_digest?; end
 
     sig { returns(T.nilable(::String)) }
-    def phone_number_before_last_save; end
+    def password_digest_before_last_save; end
 
     sig { returns(T.untyped) }
-    def phone_number_before_type_cast; end
+    def password_digest_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def phone_number_came_from_user?; end
+    def password_digest_came_from_user?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def phone_number_change; end
+    def password_digest_change; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def phone_number_change_to_be_saved; end
+    def password_digest_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
-    def phone_number_changed?; end
+    def password_digest_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def phone_number_in_database; end
+    def password_digest_in_database; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def phone_number_previous_change; end
+    def password_digest_previous_change; end
 
     sig { returns(T::Boolean) }
-    def phone_number_previously_changed?; end
+    def password_digest_previously_changed?; end
 
     sig { returns(T.nilable(::String)) }
-    def phone_number_previously_was; end
+    def password_digest_previously_was; end
 
     sig { returns(T.nilable(::String)) }
-    def phone_number_was; end
+    def password_digest_was; end
 
     sig { void }
-    def phone_number_will_change!; end
+    def password_digest_will_change!; end
 
     sig { void }
     def restore_created_at!; end
 
     sig { void }
     def restore_current_signed_in_at!; end
+
+    sig { void }
+    def restore_email!; end
 
     sig { void }
     def restore_id!; end
@@ -686,7 +741,7 @@ class Account
     def restore_locale!; end
 
     sig { void }
-    def restore_phone_number!; end
+    def restore_password_digest!; end
 
     sig { void }
     def restore_sign_in_count!; end
@@ -705,6 +760,12 @@ class Account
 
     sig { returns(T::Boolean) }
     def saved_change_to_current_signed_in_at?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_email; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_email?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_id; end
@@ -725,10 +786,10 @@ class Account
     def saved_change_to_locale?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_phone_number; end
+    def saved_change_to_password_digest; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_phone_number?; end
+    def saved_change_to_password_digest?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_sign_in_count; end
@@ -839,6 +900,9 @@ class Account
     def will_save_change_to_current_signed_in_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_email?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
@@ -848,7 +912,7 @@ class Account
     def will_save_change_to_locale?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_phone_number?; end
+    def will_save_change_to_password_digest?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_sign_in_count?; end

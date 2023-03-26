@@ -13,8 +13,9 @@ class Account < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  sig { returns(Profile) }
   def first_profile
-    profiles.first
+    T.let(profiles.first, Profile)
   end
 
   sig { returns(T::Boolean) }

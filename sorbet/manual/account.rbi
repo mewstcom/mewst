@@ -3,4 +3,5 @@
 
 class Account
   def self.enumerize(*args); end
+  def authenticate(*args); end
 end

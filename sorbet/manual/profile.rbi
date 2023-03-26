@@ -3,5 +3,4 @@
 
 class Profile
   def self.enumerize(*args); end
-  def avatar; end
 end

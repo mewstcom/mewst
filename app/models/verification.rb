@@ -6,7 +6,7 @@ class Verification < ApplicationRecord
 
   EVENT_PASSWORD_RESET = :password_reset
   EVENT_SIGN_UP = :sign_up
-  EXPIRES_IN = 15.minutes
+  EXPIRES_IN = T.let(15.minutes, ActiveSupport::Duration)
 
   enumerize :event, in: [EVENT_PASSWORD_RESET, EVENT_SIGN_UP]
 

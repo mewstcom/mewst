@@ -12,6 +12,9 @@ module GeneratedPathHelpersModule
   def account_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_password_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -24,10 +27,28 @@ module GeneratedPathHelpersModule
   def internal_api_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_api_pubsub_add_post_to_home_timeline_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_pubsub_fanout_post_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_api_tasks_send_verification_mail_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_api_unfollow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_account_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_verification_challenge_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_reset_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end
@@ -60,22 +81,7 @@ module GeneratedPathHelpersModule
   def settings_account_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def settings_connected_account_list_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def settings_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_account_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_authorization_callback_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_twitter_authorization_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sidekiq_web_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_in_path(*args); end
@@ -93,11 +99,5 @@ module GeneratedPathHelpersModule
   def sign_up_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def sign_up_verification_phone_number_challenge_list_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_verification_phone_number_new_challenge_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def twitter_friend_list_path(*args); end
+  def verification_challenge_list_path(*args); end
 end

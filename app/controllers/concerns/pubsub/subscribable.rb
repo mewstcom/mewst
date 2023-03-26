@@ -5,7 +5,7 @@ module Pubsub::Subscribable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  sig { returns(T.untyped) }
+  sig { void }
   def require_authentication
     authenticate_or_request_with_http_token do |token|
       claim = Google::Auth::IDTokens.verify_oidc(token)
@@ -13,9 +13,12 @@ module Pubsub::Subscribable
     end
   end
 
+  sig { returns(Hash) }
   def message_data
-    @decoded_data ||= if (data = params.dig(:message, :data))
+    result = if (data = params.dig(:message, :data))
       JSON.parse(Base64.decode64(data))
     end
+
+    T.must(result)
   end
 end
