@@ -361,11 +361,6 @@ GEM
     shrine (3.4.0)
       content_disposition (~> 1.0)
       down (~> 5.1)
-    sidekiq (7.0.3)
-      concurrent-ruby (< 2)
-      connection_pool (>= 2.3.0)
-      rack (>= 2.2.4)
-      redis-client (>= 0.11.0)
     signet (0.17.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -471,7 +466,6 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-sorbet
   shrine
-  sidekiq
   sorbet
   sorbet-runtime
   standard

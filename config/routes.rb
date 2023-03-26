@@ -1,15 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "sidekiq/web"
-
 ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 
 Rails.application.routes.draw do
-  if Rails.env.development?
-    mount Sidekiq::Web => "/sidekiq"
-  end
-
   mount ImageUploader.derivation_endpoint => "/image"
 
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
