@@ -34,7 +34,6 @@ gem "redis"
 gem "shrine"
 gem "sorbet-runtime"
 gem "sucker_punch"
-gem "twilio-ruby"
 gem "view_component"
 
 group :development, :test do
