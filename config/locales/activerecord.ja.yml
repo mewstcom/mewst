@@ -6,6 +6,9 @@ ja:
         password: パスワード
       profile:
         atname: アット名
+        avatar_url: アバターURL
+        description: 自己紹介
+        name: 名前
       verification:
         code: 確認用コード
         email: メールアドレス

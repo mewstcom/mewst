@@ -6,6 +6,9 @@ ja:
         password: Password
       profile:
         atname: At name
+        avatar_url: Avatar URL
+        description: Description
+        name: Name
       verification:
         code: Verification code
         email: Email

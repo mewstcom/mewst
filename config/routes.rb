@@ -4,8 +4,6 @@
 ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 
 Rails.application.routes.draw do
-  mount ImageUploader.derivation_endpoint => "/image"
-
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
   match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT

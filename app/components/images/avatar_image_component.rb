@@ -11,8 +11,8 @@ class Images::AvatarImageComponent < ApplicationComponent
 
   private
 
-  sig { returns(T::Boolean) }
-  def render?
-    @profile.master_avatar.present?
+  sig { returns(String) }
+  def avatar_url
+    @profile.avatar_url.presence || asset_url("avatar.png")
   end
 end

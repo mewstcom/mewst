@@ -34,11 +34,6 @@ class Profile < ApplicationRecord
     "timeline:profile:#{id}"
   end
 
-  sig { returns(T.nilable(ImageUploader::UploadedFile)) }
-  def master_avatar
-    avatar&.fetch(:master, nil)
-  end
-
   sig { params(target_profile: Profile).returns(T::Boolean) }
   def following?(target_profile:)
     follows.exists?(target_profile:)

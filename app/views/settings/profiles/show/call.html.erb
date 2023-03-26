@@ -36,9 +36,8 @@
       </div>
 
       <div class="mb-3">
-        <%= f.label :avatar, class: "form-label" %>
-        <%= f.hidden_field :avatar, value: f.object.cached_avatar_data %>
-        <%= f.file_field :avatar, {
+        <%= f.label :avatar_url, class: "form-label" %>
+        <%= f.text_field :avatar_url, {
           class: "form-control"
         } %>
       </div>
