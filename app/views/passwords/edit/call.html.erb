@@ -1,0 +1,19 @@
+<% title = t("meta.title.passwords.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render Cards::FlashCardComponent.new(flash:) %>
+
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @account, url: password_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+    <div class="mb-3">
+      <%= f.label :password %>
+      <%= f.password_field :password, autofocus: true, class: "form-control" %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
+<% end %>

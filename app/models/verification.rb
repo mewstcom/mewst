@@ -4,9 +4,11 @@
 class Verification < ApplicationRecord
   extend Enumerize
 
+  EVENT_PASSWORD_RESET = :password_reset
+  EVENT_SIGN_UP = :sign_up
   EXPIRES_IN = 15.minutes
 
-  enumerize :event, in: %i[sign_up]
+  enumerize :event, in: [EVENT_PASSWORD_RESET, EVENT_SIGN_UP]
 
   scope :active, -> { where("created_at > ?", EXPIRES_IN.ago) }
 
@@ -20,6 +22,6 @@ class Verification < ApplicationRecord
 
   sig { returns(T.nilable(Account)) }
   def account
-    @account ||= T.let(Account.find_by(phone_number:), T.nilable(Account))
+    @account ||= T.let(Account.find_by(email:), T.nilable(Account))
   end
 end

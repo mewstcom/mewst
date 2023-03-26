@@ -3,6 +3,10 @@ ja:
     title:
       accounts:
         new: アカウント作成
+      password_resets:
+        new: パスワード忘れた？
+      passwords:
+        new: パスワードリセット
       posts:
         show: "%{name} (@%{atname}): %{content}"
       profiles:

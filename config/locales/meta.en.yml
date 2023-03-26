@@ -3,6 +3,10 @@ en:
     title:
       accounts:
         new: Create an account
+      password_resets:
+        new: Forgot your password?
+      passwords:
+        new: Password reset
       posts:
         show: "%{name} (@%{atname}): %{content}"
       profiles:

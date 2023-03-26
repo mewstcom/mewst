@@ -23,12 +23,10 @@ class VerificationChallenge
 
   private
 
-  delegate :code, to: :verification!
-
   sig { void }
   def valid_challenged_code
-    return if challenged_code == code
+    return if challenged_code == verification&.code
 
-    errors.add(:base, :equal_to_code)
+    errors.add(:challenged_code, :incorrect_or_expired)
   end
 end

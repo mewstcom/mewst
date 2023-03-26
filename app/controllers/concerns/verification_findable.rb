@@ -11,4 +11,13 @@ module VerificationFindable
       redirect_to root_path
     end
   end
+
+  sig { returns(T.untyped) }
+  def require_succeeded_verification
+    @verification = Verification.find_by(id: session[:verification_id])
+
+    unless @verification
+      redirect_to root_path
+    end
+  end
 end

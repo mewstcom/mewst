@@ -11,5 +11,5 @@ en:
       models:
         verification_challenge:
           attributes:
-            base:
-              equal_to_code: Incorrect verification code.
+            challenged_code:
+              incorrect_or_expired: is incorrect or expired

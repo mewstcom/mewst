@@ -2,6 +2,7 @@ en:
   messages:
     accounts:
       authentication_failed: Incorrect email or password.
+      password_reset_successfully: Password reset successfully.
       signed_in_successfully: Signed in successfully.
       updated: Account updated.
     authentication:

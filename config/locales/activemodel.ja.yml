@@ -11,5 +11,5 @@ ja:
       models:
         verification_challenge:
           attributes:
-            base:
-              equal_to_code: 認証コードが正しくありません
+            challenged_code:
+              incorrect_or_expired: が間違っているか古くなっています

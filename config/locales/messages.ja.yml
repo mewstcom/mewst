@@ -2,6 +2,7 @@ ja:
   messages:
     accounts:
       authentication_failed: メールアドレスまたはパスワードが正しくありません
+      password_reset_successfully: パスワードをリセットしました
       signed_in_successfully: ログインしました
       updated: アカウントを更新しました
     authentication:
