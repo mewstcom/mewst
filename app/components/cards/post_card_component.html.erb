@@ -1,6 +1,6 @@
 <div class="c-post-card card">
   <div class="card-body">
-    <div class="align-items-center gx-3 row">
+    <div class="gx-3 row">
       <div class="col-auto">
         <%= link_to profile_path(profile.atname) do %>
           <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
@@ -8,36 +8,38 @@
       </div>
 
       <div class="col">
-        <div>
-          <%= link_to profile_path(profile.atname) do %>
-            <span class="fw-bold">
-              <%= profile.name %>
-            </span>
+        <div class="align-items-center gx-3 row">
+          <div class="col">
+            <%= link_to profile_path(profile.atname) do %>
+              <span class="fw-bold">
+                <%= profile.name %>
+              </span>
 
-            <span class="text-muted">
-              @<%= profile.atname %>
-            </span>
+              <span class="text-muted">
+                @<%= profile.atname %>
+              </span>
+            <% end %>
+
+            <div class="small text-muted">
+              <%= link_to mst_time_ago_in_words(post.created_at), post_path(profile.atname, post.id) %>
+            </div>
+          </div>
+
+          <div class="col-auto">
+            <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+          </div>
+        </div>
+
+        <div class="py-3">
+          <%= post.content %>
+        </div>
+
+        <div>
+          <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm" do %>
+            <i class="bi bi-chat-text"></i>
           <% end %>
         </div>
-
-        <div class="small text-muted">
-          <%= link_to mst_time_ago_in_words(post.created_at), post_path(profile.atname, post.id) %>
-        </div>
       </div>
-
-      <div class="col-auto">
-        <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
-      </div>
-    </div>
-
-    <div class="py-3">
-      <%= post.content %>
-    </div>
-
-    <div>
-      <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm" do %>
-        <i class="bi bi-chat-text"></i>
-      <% end %>
     </div>
   </div>
 </div>
