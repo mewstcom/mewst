@@ -9,8 +9,8 @@ class Api::Internal::Pubsub::AddPostToHomeTimeline::CreateController < Applicati
 
   sig { returns(T.untyped) }
   def call
-    profile = Profile.only_kept.find_by(id: message_data["profile_id"])
-    post = Post.find_by(id: message_data["post_id"])
+    profile = Profile.only_kept.find_by(id: message_data&.dig("profile_id"))
+    post = Post.find_by(id: message_data&.dig("post_id"))
 
     if profile && post
       profile.home_timeline.add_post(post:)

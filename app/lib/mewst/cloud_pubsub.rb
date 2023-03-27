@@ -6,8 +6,9 @@ require "google/cloud/pubsub"
 class Mewst::CloudPubsub
   extend T::Sig
 
+  sig { returns(Google::Cloud::PubSub) }
   def self.client
-    @client ||= new(
+    new(
       project_id: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
       credentials: Google::Cloud::PubSub::Credentials.new(
         JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
@@ -21,11 +22,16 @@ class Mewst::CloudPubsub
     @credentials = credentials
   end
 
+  sig { returns(Google::Cloud::PubSub) }
   def client
-    @client ||= Google::Cloud::PubSub.new(project_id:, credentials:)
+    Google::Cloud::PubSub.new(project_id:, credentials:)
   end
 
   private
 
-  attr_reader :project_id, :credentials
+  sig { returns(String) }
+  attr_reader :project_id
+
+  sig { returns(Google::Cloud::PubSub::Credentials) }
+  attr_reader :credentials
 end

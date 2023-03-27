@@ -12,6 +12,6 @@ class Passwords::EditController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @account = @verification.account
+    @account = T.must(@verification).account
   end
 end

@@ -21,6 +21,7 @@ class VerificationChallenge
     T.cast(verification, Verification)
   end
 
+  sig { returns(T::Boolean) }
   def success
     verification!.update!(succeeded_at: Time.current)
   end

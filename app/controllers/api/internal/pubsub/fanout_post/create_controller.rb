@@ -9,7 +9,7 @@ class Api::Internal::Pubsub::FanoutPost::CreateController < ApplicationControlle
 
   sig { returns(T.untyped) }
   def call
-    post = Post.find(message_data["post_id"])
+    post = Post.find(message_data&.dig("post_id"))
 
     post.add_to_own_home_timeline
     post.add_to_followers_home_timeline

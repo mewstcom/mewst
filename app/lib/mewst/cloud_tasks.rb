@@ -56,15 +56,13 @@ class Mewst::CloudTasks
 
   sig { returns(Google::Cloud::Tasks::V2::CloudTasks::Client) }
   def client
-    @client ||= T.let(begin
-      Google::Cloud::Tasks.configure do |config|
-        config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
-          JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
-        )
-      end
+    Google::Cloud::Tasks.configure do |config|
+      config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
+        JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
+      )
+    end
 
-      Google::Cloud::Tasks.cloud_tasks
-    end, Google::Cloud::Tasks::V2::CloudTasks::Client)
+    Google::Cloud::Tasks.cloud_tasks
   end
 
   sig { returns(String) }

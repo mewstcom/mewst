@@ -12,7 +12,11 @@ class Passwords::UpdateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @account = @verification.account
+    @account = T.must(@verification).account
+
+    unless @account
+      return redirect_to(root_path)
+    end
 
     if @account.update(form_params)
       reset_session

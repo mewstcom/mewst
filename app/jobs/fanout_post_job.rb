@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "google/cloud/pubsub"
+
 class FanoutPostJob
   extend T::Sig
 
@@ -13,7 +15,8 @@ class FanoutPostJob
 
   private
 
+  sig { returns(Google::Cloud::PubSub::V1::Topic) }
   def topic
-    @topic ||= Mewst::CloudPubsub.client.topic(ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_FANOUT_POST"))
+    Mewst::CloudPubsub.client.topic(ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_FANOUT_POST"))
   end
 end

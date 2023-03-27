@@ -13,12 +13,10 @@ module Pubsub::Subscribable
     end
   end
 
-  sig { returns(Hash) }
+  sig { returns(T.nilable(T::Hash[String, String])) }
   def message_data
-    result = if (data = params.dig(:message, :data))
+    if (data = params.dig(:message, :data))
       JSON.parse(Base64.decode64(data))
     end
-
-    T.must(result)
   end
 end
