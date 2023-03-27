@@ -37,7 +37,7 @@ module Mewst
     # Don't generate system test files.
     config.generators.system_tests = nil
 
-    config.active_job.queue_adapter = :sidekiq
+    config.active_job.queue_adapter = :async
 
     config.active_record.schema_format = :sql
 

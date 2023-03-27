@@ -10,23 +10,23 @@ class SignIn::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    confirmation_code = PhoneNumberVerification.generate_confirmation_code
-    @verification = PhoneNumberVerification.new(form_params.merge(confirmation_code:))
+    @account = Account.find_by(email: form_params[:email])
 
-    @verification.save!
-    SendPhoneNumberVerificationMessageJob.perform_async(@verification.id)
+    unless @account&.authenticate(form_params[:password])
+      flash[:alert] = t("messages.accounts.authentication_failed")
+      return redirect_to(sign_in_path)
+    end
 
-    session[:phone_number_verification_id] = @verification.id
-    flash[:success] = t("messages.authentication.confirmation_sms_sent")
-    redirect_to sign_in_verification_phone_number_new_challenge_path
-  rescue ActiveRecord::RecordInvalid
-    render("sign_in/new/call", status: :unprocessable_entity)
+    sign_in(@account)
+
+    flash[:success] = t("messages.accounts.signed_in_successfully")
+    redirect_to home_path
   end
 
   private
 
   sig { returns(ActionController::Parameters) }
   def form_params
-    T.cast(params.require(:phone_number_verification), ActionController::Parameters).permit(:phone_number, :raw_phone_number)
+    T.cast(params.require(:account), ActionController::Parameters).permit(:email, :password)
   end
 end

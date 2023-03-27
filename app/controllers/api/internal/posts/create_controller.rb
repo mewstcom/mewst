@@ -10,9 +10,8 @@ class Api::Internal::Posts::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     content = T.cast(params[:content], T.nilable(String))
-    cross_post_to_twitter = T.cast(params[:cross_post_to_twitter], T::Boolean) == true
 
-    @post = current_profile!.create_post(content:, cross_post_to_twitter:)
+    @post = current_profile!.create_post(content:)
 
     render(status: :created)
   rescue ActiveRecord::RecordInvalid => e

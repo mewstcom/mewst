@@ -1,14 +1,33 @@
-<div class="container py-5 u-flat u-narrow">
-  <%= form_with model: @verification, url: sign_in_path do |f| %>
+<% title = t("meta.title.sign_in.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render Cards::FlashCardComponent.new(flash:) %>
+
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @account, url: sign_in_path do |f| %>
     <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
     <div class="mb-3">
-      <%= f.label :raw_phone_number, class: "form-label" %>
-      <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :raw_phone_number, autofocus: true) %>
+      <%= f.label :email, class: "form-label" %>
+      <%= f.email_field :email, autofocus: true, class: "form-control", tabindex: 1 %>
     </div>
 
-    <%= f.button class: "btn btn-primary", type: :submit do %>
-      <%= t("verbs.submit") %>
+    <div class="mb-3">
+      <div class="row">
+        <div class="col">
+          <%= f.label :password, class: "form-label" %>
+        </div>
+
+        <div class="col-auto">
+          <%= link_to t("meta.title.password_resets.new"), password_reset_path, class: "form-text", tabindex: 4 %>
+        </div>
+      </div>
+
+      <%= f.password_field :password, class: "form-control", tabindex: 2 %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", tabindex: 3, type: :submit do %>
+      <%= t("verbs.sign_in") %>
     <% end %>
   <% end %>
-</div>
+<% end %>

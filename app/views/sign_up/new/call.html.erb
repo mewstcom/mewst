@@ -1,8 +1,19 @@
-<%= form_with model: @verification, url: sign_up_path do |f| %>
-  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+<% title = t("meta.title.sign_up.new") %>
+<% set_meta_tags(title:) %>
 
-  <%= f.label :phone_number_origin %>
-  <%= render Inputs::PhoneNumberInputComponent.new(form: f, field_name: :raw_phone_number, autofocus: true) %>
+<%= render Cards::FlashCardComponent.new(flash:) %>
 
-  <%= f.submit %>
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @verification, url: sign_up_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+    <div class="mb-3">
+      <%= f.label :email %>
+      <%= f.email_field :email, autofocus: true, class: "form-control" %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
 <% end %>

@@ -70,7 +70,7 @@ Rails.application.configure do
 
   config.logger = ActiveSupport::TaggedLogging.new(Logger.new($stdout))
 
-  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_HOST"), port: ENV.fetch("PORT")}
+  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_HOST"), port: ENV.fetch("MEWST_PORT")}
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     user_name: ENV.fetch("MEWST_SMTP_USERNAME"),
@@ -80,4 +80,8 @@ Rails.application.configure do
     port: ENV.fetch("MEWST_SMTP_PORT"),
     authentication: ENV.fetch("MEWST_SMTP_AUTHENTICATION", :cram_md5)
   }
+
+  config.hosts += [
+    ENV.fetch("MEWST_HOST")
+  ]
 end

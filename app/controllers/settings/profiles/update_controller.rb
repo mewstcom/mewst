@@ -14,7 +14,7 @@ class Settings::Profiles::UpdateController < ApplicationController
     @profile.attributes = profile_params
 
     if @profile.save
-      flash[:notice] = t("messages.profiles.updated")
+      flash[:success] = t("messages.profiles.updated")
       redirect_to settings_path
     else
       render("settings/profiles/show/call", status: :unprocessable_entity)
@@ -25,6 +25,6 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def profile_params
-    T.cast(params.require(:profile), ActionController::Parameters).permit(:atname, :name, :description, :avatar)
+    T.cast(params.require(:profile), ActionController::Parameters).permit(:atname, :name, :description, :avatar_url)
   end
 end

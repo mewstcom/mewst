@@ -10,18 +10,18 @@ class SignUp::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    # TODO: Remove if the app will be in Beta
+    # TODO: Remove when the app will be in Beta
     raise if Rails.env.production?
 
-    confirmation_code = PhoneNumberVerification.generate_confirmation_code
-    @verification = PhoneNumberVerification.new(form_params.merge(confirmation_code:))
-
+    code = Verification.generate_code
+    @verification = Verification.new(form_params.merge(code:, event: :sign_up))
     @verification.save!
-    SendPhoneNumberVerificationMessageJob.perform_async(@verification.id)
 
-    session[:phone_number_verification_id] = @verification.id
-    flash[:success] = t("messages.authentication.confirmation_sms_sent")
-    redirect_to sign_up_verification_phone_number_new_challenge_path
+    SendVerificationMailJob.perform_later(verification_id: @verification.id, locale: I18n.locale)
+
+    session[:verification_id] = @verification.id
+    flash[:success] = t("messages.verifications.verification_mail_sent")
+    redirect_to new_verification_challenge_path
   rescue ActiveRecord::RecordInvalid
     render("sign_up/new/call", status: :unprocessable_entity)
   end
@@ -30,6 +30,6 @@ class SignUp::CreateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   def form_params
-    T.cast(params.require(:phone_number_verification), ActionController::Parameters).permit(:phone_number, :raw_phone_number)
+    T.cast(params.require(:verification), ActionController::Parameters).permit(:email)
   end
 end

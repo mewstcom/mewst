@@ -1,15 +1,14 @@
 ja:
   activerecord:
     attributes:
-      phone_number_verification:
-        confirmation_code: Confirmation code
-        phone_number: Phone number
-        raw_phone_number: Phone number
+      account:
+        email: Email
+        password: Password
       profile:
         atname: At name
-    errors:
-      models:
-        twitter_account:
-          attributes:
-            base:
-              permitted_scopes: "Unpermitted scopes exist: %{unpermitted_scopes}"
+        avatar_url: Avatar URL
+        description: Description
+        name: Name
+      verification:
+        code: Verification code
+        email: Email

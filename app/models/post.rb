@@ -23,6 +23,22 @@ class Post < ApplicationRecord
     T.cast(created_at, ActiveSupport::TimeWithZone)
   end
 
+  sig { void }
+  def add_to_own_home_timeline
+    topic = Mewst::CloudPubsub.client.topic(ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_ADD_POST_TO_HOME_TIMELINE"))
+    topic.publish_async({profile_id: profile_id, post_id: id}.to_json)
+  end
+
+  sig { void }
+  def add_to_followers_home_timeline
+    followers = profile!.followers
+    topic = Mewst::CloudPubsub.client.topic(ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_ADD_POST_TO_HOME_TIMELINE"))
+
+    followers.find_each do |follower|
+      topic.publish_async({profile_id: follower.id, post_id: id}.to_json)
+    end
+  end
+
   sig { returns(String) }
   def tweet_text
     max_tweet_length = 130

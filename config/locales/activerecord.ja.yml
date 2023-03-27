@@ -1,15 +1,14 @@
 ja:
   activerecord:
     attributes:
-      phone_number_verification:
-        confirmation_code: 認証コード
-        phone_number: 電話番号
-        raw_phone_number: 電話番号
+      account:
+        email: メールアドレス
+        password: パスワード
       profile:
         atname: アット名
-    errors:
-      models:
-        twitter_account:
-          attributes:
-            base:
-              permitted_scopes: "許可されていないスコープが含まれています: %{unpermitted_scopes}"
+        avatar_url: アバターURL
+        description: 自己紹介
+        name: 名前
+      verification:
+        code: 確認用コード
+        email: メールアドレス

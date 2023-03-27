@@ -4,10 +4,4 @@
 
 # typed: false
 
-module ::LanguageServer::Protocol; end
-module ::LanguageServer::Protocol::Constant::DiagnosticSeverity; end
-module Shrine::Storage::FileSystem; end
-module Shrine::Storage::S3; end
-module Sidekiq::Process; end
-module Sidekiq::SortedEntry; end
-module Sidekiq::Web; end
+module Google::Protobuf::EnumDescriptor; end

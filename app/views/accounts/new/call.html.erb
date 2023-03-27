@@ -1,15 +1,33 @@
-<%= form_with model: @account_activation, url: account_list_path do |f| %>
-  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+<% title = t("meta.title.accounts.new") %>
+<% set_meta_tags(title:) %>
 
-  <div>
-    <%= f.label :phone_number %>
-    <%= @account_activation.phone_number %>
-  </div>
+<%= render Cards::FlashCardComponent.new(flash:) %>
 
-  <div>
-    <%= f.label :atname %>
-    <%= f.text_field :atname, autofocus: true %>
-  </div>
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @account_activation, url: account_list_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-  <%= f.submit %>
+    <div class="mb-3">
+      <%= f.label :email, class: "form-label" %>
+      <input class="form-control-plaintext" readonly type="text" value="<%= f.object.email %>">
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :atname, class: "form-label" %>
+
+      <div class="input-group">
+        <span class="input-group-text">@</span>
+        <%= f.text_field :atname, autofocus: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :password, class: "form-label" %>
+      <%= f.password_field :password, class: "form-control" %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
 <% end %>

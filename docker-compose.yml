@@ -17,14 +17,6 @@ services:
     volumes:
       - redis_cache_data:/data
 
-  redis_sidekiq:
-    image: redis:7.0
-    ports:
-      - 26379:6379
-    volumes:
-      - redis_sidekiq_data:/data
-
 volumes:
   postgresql_data:
   redis_cache_data:
-  redis_sidekiq_data:

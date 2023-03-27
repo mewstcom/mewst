@@ -2,8 +2,9 @@
 <% set_meta_tags(title:, reverse: false) %>
 
 <%= render Navbars::NavbarComponent.new %>
+<%= render Cards::FlashCardComponent.new(flash:) %>
 
-<div class="container py-3 u-flat u-narrow">
+<%= render(Containers::MainContainerComponent.new) do %>
   <h1 class="fw-bold">
     Mewst
   </h1>
@@ -21,4 +22,4 @@
       </li>
     </ul>
   </div>
-</div>
+<% end %>

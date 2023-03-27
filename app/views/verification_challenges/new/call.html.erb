@@ -1,0 +1,19 @@
+<% title = t("meta.title.verification_challenges.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render Cards::FlashCardComponent.new(flash:) %>
+
+<%= render(Containers::NarrowContainerComponent.new) do %>
+  <%= form_with model: @challenge, url: verification_challenge_list_path do |f| %>
+    <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+    <div class="mb-3">
+      <%= f.label :challenged_code %>
+      <%= f.number_field :challenged_code, autofocus: true, class: "form-control" %>
+    </div>
+
+    <%= f.button class: "btn btn-primary", type: :submit do %>
+      <%= t("verbs.submit") %>
+    <% end %>
+  <% end %>
+<% end %>

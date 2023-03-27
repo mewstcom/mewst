@@ -122,8 +122,6 @@ RUN chmod +x /app/bin/* && \
 # as necessary.  If no combination works for you, see:
 # https://fly.io/docs/rails/getting-started/existing/#access-to-environment-variables-at-build-time
 ENV SECRET_KEY_BASE 1
-ENV MEWST_SHRINE_SECRET_KEY 1
-ENV MEWST_REDIS_WORKER_URL 1
 
 # Run build task defined in lib/tasks/fly.rake
 ARG BUILD_COMMAND="bin/rails fly:build"

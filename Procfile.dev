@@ -2,4 +2,3 @@ docker: docker compose up
 css: yarn build:css --watch
 js: yarn build --watch
 web: env PORT=3300 bin/rails server
-worker: env PORT=3300 bin/sidekiq
