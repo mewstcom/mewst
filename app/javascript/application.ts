@@ -6,7 +6,6 @@ import 'bootstrap';
 import AutosizeController from './controllers/autosize-controller';
 import ComponentDataFetcherController from './controllers/component-data-fetcher-controller';
 import FollowButtonController from './controllers/follow-button-controller';
-import PhoneNumberInputController from "./controllers/phone-number-input-controller";
 import PostFormController from "./controllers/post-form-controller";
 import TimelineController from "./controllers/timeline-controller";
 
@@ -14,7 +13,6 @@ window.Stimulus = Application.start();
 Stimulus.register('autosize', AutosizeController);
 Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
 Stimulus.register('follow-button', FollowButtonController);
-Stimulus.register('phone-number-input', PhoneNumberInputController);
 Stimulus.register('post-form', PostFormController);
 Stimulus.register('timeline', TimelineController);
 
