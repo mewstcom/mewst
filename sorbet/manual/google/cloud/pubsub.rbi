@@ -3,5 +3,4 @@
 
 module Google::Cloud::PubSub
   def self.new(*args); end
-  def topic(*args); end
 end

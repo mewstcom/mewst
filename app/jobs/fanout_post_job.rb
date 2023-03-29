@@ -15,7 +15,7 @@ class FanoutPostJob
 
   private
 
-  sig { returns(Google::Cloud::PubSub::V1::Topic) }
+  sig { returns(Google::Cloud::PubSub::Topic) }
   def topic
     Mewst::CloudPubsub.client.topic(ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_FANOUT_POST"))
   end
