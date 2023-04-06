@@ -353,7 +353,7 @@ GEM
       sorbet (>= 0.5.10187)
       sorbet-runtime (>= 0.5.9204)
       thor (>= 0.19.2)
-    standard (1.25.3)
+    standard (1.26.0)
       language_server-protocol (~> 3.17.0.2)
       rubocop (~> 1.48.1)
       rubocop-performance (~> 1.16.0)
