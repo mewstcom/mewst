@@ -13,6 +13,7 @@ class VerificationChallenges::CreateController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::LanguageHelper
+    include ::TextHelper
     include ::TimeHelper
     include ::PreviewHelper
     include ::ApplicationController::HelperMethods

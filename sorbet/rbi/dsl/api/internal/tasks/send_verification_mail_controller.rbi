@@ -13,6 +13,7 @@ class Api::Internal::Tasks::SendVerificationMailController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::LanguageHelper
+    include ::TextHelper
     include ::TimeHelper
     include ::PreviewHelper
   end

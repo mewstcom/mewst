@@ -16,6 +16,7 @@ class ViewComponentsSystemTestController
     include ::ApplicationHelper
     include ::ComponentDataFetcherHelper
     include ::LanguageHelper
+    include ::TextHelper
     include ::TimeHelper
     include ::PreviewHelper
   end
