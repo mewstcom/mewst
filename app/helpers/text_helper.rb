@@ -6,6 +6,6 @@ module TextHelper
 
   sig { params(content: String).returns(String) }
   def render_content(content)
-    simple_format(content)
+    auto_link(simple_format(content), html: {target: "_blank"}, link: :urls)
   end
 end
