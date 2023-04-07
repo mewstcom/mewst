@@ -13,6 +13,7 @@ class Profile::Postability
   def create_post(content:)
     post = profile.posts.create!(content:)
 
+    profile.home_timeline.add_post(post:)
     FanoutPostJob.perform_async(post_id: post.id)
 
     post
