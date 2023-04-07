@@ -276,11 +276,6 @@ class Standard::BuildsConfig
 
   # source://standard//lib/standard/builds_config.rb#16
   def call(argv, search_path = T.unsafe(nil)); end
-
-  private
-
-  # source://standard//lib/standard/builds_config.rb#32
-  def determine_yaml_file(argv, search_path, option_name, default_file); end
 end
 
 # source://standard//lib/standard/cli.rb#5
@@ -450,73 +445,54 @@ end
 # source://standard//lib/standard/creates_config_store/sets_target_ruby_version.rb#10
 Standard::CreatesConfigStore::SetsTargetRubyVersion::MIN_TARGET_RUBY_VERSION = T.let(T.unsafe(nil), String)
 
-# source://standard//lib/standard/detects_fixability.rb#2
-class Standard::DetectsFixability
-  # source://standard//lib/standard/detects_fixability.rb#3
-  def call(offenses); end
-
-  private
-
-  # source://standard//lib/standard/detects_fixability.rb#12
-  def cop_instance(cop_name); end
-end
-
 # source://standard//lib/standard/file_finder.rb#4
 class Standard::FileFinder
   # source://standard//lib/standard/file_finder.rb#5
   def call(name, search_path); end
 end
 
-# source://standard//lib/standard/formatter.rb#6
+# source://standard//lib/standard/formatter.rb#5
 class Standard::Formatter < ::RuboCop::Formatter::BaseFormatter
-  # @return [Formatter] a new instance of Formatter
-  #
-  # source://standard//lib/standard/formatter.rb#17
-  def initialize(*args); end
-
-  # source://standard//lib/standard/formatter.rb#29
+  # source://standard//lib/standard/formatter.rb#18
   def file_finished(file, offenses); end
 
-  # source://standard//lib/standard/formatter.rb#44
+  # source://standard//lib/standard/formatter.rb#37
   def finished(_inspected_files); end
 
-  # source://standard//lib/standard/formatter.rb#25
+  # source://standard//lib/standard/formatter.rb#10
   def started(_target_files); end
+
+  # source://standard//lib/standard/formatter.rb#30
+  def track_stats(offenses); end
 
   private
 
-  # @return [Boolean]
-  #
-  # source://standard//lib/standard/formatter.rb#105
-  def auto_correct_option_provided?; end
+  # source://standard//lib/standard/formatter.rb#106
+  def determine_run_mode; end
 
-  # source://standard//lib/standard/formatter.rb#101
+  # source://standard//lib/standard/formatter.rb#114
+  def fixable_error_message(command); end
+
+  # source://standard//lib/standard/formatter.rb#92
   def path_to(file); end
 
-  # source://standard//lib/standard/formatter.rb#58
-  def print_fix_suggestion_once(offenses); end
+  # source://standard//lib/standard/formatter.rb#96
+  def potential_fix_mode; end
 
-  # source://standard//lib/standard/formatter.rb#50
+  # source://standard//lib/standard/formatter.rb#52
+  def print_fix_suggestion; end
+
+  # source://standard//lib/standard/formatter.rb#44
   def print_header_once; end
 
-  # source://standard//lib/standard/formatter.rb#87
+  # source://standard//lib/standard/formatter.rb#82
   def print_todo_congratulations; end
 
-  # source://standard//lib/standard/formatter.rb#71
+  # source://standard//lib/standard/formatter.rb#66
   def print_todo_warning; end
-
-  # @return [Boolean]
-  #
-  # source://standard//lib/standard/formatter.rb#109
-  def should_suggest_fix?(offenses); end
-
-  class << self
-    # source://standard//lib/standard/formatter.rb#11
-    def fixable_error_message(command); end
-  end
 end
 
-# source://standard//lib/standard/formatter.rb#7
+# source://standard//lib/standard/formatter.rb#6
 Standard::Formatter::STANDARD_GREETING = T.let(T.unsafe(nil), String)
 
 # source://standard//lib/standard/loads_runner.rb#9
@@ -590,27 +566,27 @@ class Standard::Lsp::Routes
   # source://standard//lib/standard/lsp/routes.rb#26
   def handle_initialize(request); end
 
-  # source://standard//lib/standard/lsp/routes.rb#40
+  # source://standard//lib/standard/lsp/routes.rb#39
   def handle_initialized(request); end
 
-  # source://standard//lib/standard/lsp/routes.rb#126
+  # source://standard//lib/standard/lsp/routes.rb#125
   def handle_method_missing(request); end
 
-  # source://standard//lib/standard/lsp/routes.rb#44
+  # source://standard//lib/standard/lsp/routes.rb#43
   def handle_shutdown(request); end
 
-  # source://standard//lib/standard/lsp/routes.rb#118
+  # source://standard//lib/standard/lsp/routes.rb#117
   def handle_unsupported_method(request, method = T.unsafe(nil)); end
 
   private
 
-  # source://standard//lib/standard/lsp/routes.rb#159
+  # source://standard//lib/standard/lsp/routes.rb#158
   def diagnostic(file_uri, text); end
 
-  # source://standard//lib/standard/lsp/routes.rb#138
+  # source://standard//lib/standard/lsp/routes.rb#137
   def format_file(file_uri); end
 
-  # source://standard//lib/standard/lsp/routes.rb#134
+  # source://standard//lib/standard/lsp/routes.rb#133
   def uri_to_path(uri); end
 
   class << self
@@ -677,10 +653,10 @@ class Standard::MergesSettings
 
   private
 
-  # source://standard//lib/standard/merges_settings.rb#37
+  # source://standard//lib/standard/merges_settings.rb#42
   def determine_command(argv); end
 
-  # source://standard//lib/standard/merges_settings.rb#53
+  # source://standard//lib/standard/merges_settings.rb#58
   def merge(standard_yaml, standard_cli_flags, rubocop_cli_flags); end
 
   # source://standard//lib/standard/merges_settings.rb#27
@@ -689,7 +665,7 @@ class Standard::MergesSettings
   # source://standard//lib/standard/merges_settings.rb#21
   def separate_argv(argv); end
 
-  # source://standard//lib/standard/merges_settings.rb#63
+  # source://standard//lib/standard/merges_settings.rb#69
   def without_banned(rubocop_cli_flags); end
 end
 
@@ -737,17 +713,22 @@ class Standard::MergesSettings::Settings < ::Struct
   end
 end
 
-# source://standard//lib/standard/parses_cli_option.rb#4
-class Standard::ParsesCliOption
-  # source://standard//lib/standard/parses_cli_option.rb#16
-  def argv_value_for(argv, option_name); end
-
-  # source://standard//lib/standard/parses_cli_option.rb#5
-  def call(argv, option_name); end
-end
-
 # source://standard//lib/standard/railtie.rb#4
 class Standard::Railtie < ::Rails::Railtie; end
+
+# source://standard//lib/standard/resolves_yaml_option.rb#4
+class Standard::ResolvesYamlOption
+  # source://standard//lib/standard/resolves_yaml_option.rb#5
+  def call(argv, search_path, option_name, default_file); end
+
+  private
+
+  # source://standard//lib/standard/resolves_yaml_option.rb#22
+  def argv_value_for(argv, option_name); end
+
+  # source://standard//lib/standard/resolves_yaml_option.rb#11
+  def search_argv(argv, option_name); end
+end
 
 # source://standard//lib/standard/runners/rubocop.rb#4
 module Standard::Runners; end

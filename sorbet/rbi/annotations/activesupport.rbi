@@ -43,6 +43,14 @@ class ActiveSupport::TestCase
   def self.test(name, &block); end
 end
 
+class ActiveSupport::TimeWithZone
+  # @shim: Methods on ActiveSupport::TimeWithZone are delegated to `Time` using `method_missing
+  include ::DateAndTime::Zones
+
+  # @shim: Methods on ActiveSupport::TimeWithZone are delegated to `Time` using `method_missing
+  include ::DateAndTime::Calculations
+end
+
 class Object
   sig { returns(T::Boolean) }
   def blank?; end

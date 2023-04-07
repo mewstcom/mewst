@@ -185,7 +185,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.10736/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -967,7 +967,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.10736/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -978,7 +978,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.10736/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1281,7 +1281,7 @@ end
 class Tapioca::Gem::Event
   abstract!
 
-  # source://sorbet-runtime/0.5.10736/lib/types/private/abstract/declare.rb#37
+  # source://sorbet-runtime/0.5.10751/lib/types/private/abstract/declare.rb#37
   def initialize(*args, **_arg1, &blk); end
 end
 
@@ -1908,12 +1908,16 @@ module Tapioca::GemHelper
   def gem_in_bundle_path?(full_gem_path); end
 
   # source://tapioca//lib/tapioca/helpers/gem_helper.rb#22
+  sig { params(full_gem_path: ::String).returns(T::Boolean) }
+  def gem_in_ruby_path?(full_gem_path); end
+
+  # source://tapioca//lib/tapioca/helpers/gem_helper.rb#27
   sig { params(path: T.any(::Pathname, ::String)).returns(::String) }
   def to_realpath(path); end
 
   private
 
-  # source://tapioca//lib/tapioca/helpers/gem_helper.rb#31
+  # source://tapioca//lib/tapioca/helpers/gem_helper.rb#36
   sig { params(path: T.any(::Pathname, ::String), dir: T.any(::Pathname, ::String)).returns(T::Boolean) }
   def path_in_dir?(path, dir); end
 end
@@ -2192,7 +2196,7 @@ class Tapioca::Loaders::Loader
 
   abstract!
 
-  # source://sorbet-runtime/0.5.10736/lib/types/private/abstract/declare.rb#37
+  # source://sorbet-runtime/0.5.10751/lib/types/private/abstract/declare.rb#37
   def initialize(*args, **_arg1, &blk); end
 
   # @abstract
@@ -2994,20 +2998,20 @@ Tapioca::SORBET_DIR = T.let(T.unsafe(nil), String)
 
 # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#5
 module Tapioca::SorbetHelper
-  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#31
+  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#33
   sig { params(sorbet_args: ::String).returns(::Spoom::ExecResult) }
   def sorbet(*sorbet_args); end
 
-  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#36
+  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#38
   sig { returns(::String) }
   def sorbet_path; end
 
-  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#43
+  # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#45
   sig { params(feature: ::Symbol, version: T.nilable(::Gem::Version)).returns(T::Boolean) }
   def sorbet_supports?(feature, version: T.unsafe(nil)); end
 end
 
-# source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#22
+# source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#24
 Tapioca::SorbetHelper::FEATURE_REQUIREMENTS = T.let(T.unsafe(nil), Hash)
 
 # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#13
@@ -3021,6 +3025,9 @@ Tapioca::SorbetHelper::SORBET_GEM_SPEC = T.let(T.unsafe(nil), Gem::Specification
 
 # source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#20
 Tapioca::SorbetHelper::SORBET_PAYLOAD_URL = T.let(T.unsafe(nil), String)
+
+# source://tapioca//lib/tapioca/helpers/sorbet_helper.rb#22
+Tapioca::SorbetHelper::SPOOM_CONTEXT = T.let(T.unsafe(nil), Spoom::Context)
 
 # source://tapioca//lib/tapioca/static/symbol_table_parser.rb#5
 module Tapioca::Static; end
