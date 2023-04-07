@@ -150,10 +150,10 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bootstrap@^5.3.0-alpha2:
-  version "5.3.0-alpha2"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.0-alpha2.tgz#81ac5909258dc3abb3cc08348853d121ecac619d"
-  integrity sha512-r1ayh5d56rhwrezVjhM8bt8tiUcdQ8J9JeCwCTAeKSpOrCWH5V5S6XiJ26DqbX7o5QSH5HIKm7W88CKxVjhCVQ==
+bootstrap@^5.3.0-alpha3:
+  version "5.3.0-alpha3"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.0-alpha3.tgz#ad64d9a663c53ab7aca99c560e0bd16b5e023441"
+  integrity sha512-FBhOWMxkCFr74hesJdchLXhqagPTXS+kRNU3gE0FR5Ki/AdPSz32Ik96Z28+yBluCnE/pc9st7l1yPwKgbtfSA==
 
 braces@~3.0.2:
   version "3.0.2"
