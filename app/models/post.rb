@@ -32,32 +32,4 @@ class Post < ApplicationRecord
       topic.publish_async({profile_id: follower.id, post_id: id}.to_json)
     end
   end
-
-  sig { returns(String) }
-  def tweet_text
-    max_tweet_length = 130
-
-    if content.length < max_tweet_length
-      return content
-    end
-
-    sliced_content = T.must(content.slice(0, max_tweet_length - 3))
-    reversed_sliced_content = sliced_content.reverse
-    url_match_regex = %r{\A[^ ]+//:(ptth|sptth)}
-
-    text = if reversed_sliced_content.match?(url_match_regex)
-      reversed_sliced_content.sub(url_match_regex, "...").reverse
-    else
-      sliced_content + "..."
-    end
-
-    mewst_url = Rails.application.routes.url_helpers.post_url(profile!.atname, id, host: "www.mewst.com")
-
-    [
-      text,
-      "",
-      "Read more:",
-      mewst_url
-    ].join("\n")
-  end
 end
