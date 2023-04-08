@@ -9,9 +9,9 @@ class Profile::Postability
     @profile = profile
   end
 
-  sig { params(content: T.nilable(String)).returns(Post) }
-  def create_post(content:)
-    post = profile.posts.create!(content:)
+  sig { params(comment: T.nilable(String)).returns(Post) }
+  def create_post(comment:)
+    post = profile.posts.create!(comment:)
 
     profile.home_timeline.add_post(post:)
     FanoutPostJob.perform_async(post_id: post.id)

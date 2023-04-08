@@ -4,8 +4,8 @@
 module TextHelper
   extend T::Sig
 
-  sig { params(content: String).returns(String) }
-  def render_content(content)
-    auto_link(simple_format(content), html: {target: "_blank"}, link: :urls)
+  sig { params(comment: String).returns(String) }
+  def render_comment(comment)
+    auto_link(simple_format(comment), html: {target: "_blank"}, link: :urls)
   end
 end

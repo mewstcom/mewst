@@ -8,7 +8,7 @@ ja:
       passwords:
         new: パスワードリセット
       posts:
-        show: "%{name} (@%{atname}): %{content}"
+        show: "%{name} (@%{atname}): %{comment}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
       sign_in:

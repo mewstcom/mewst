@@ -2,11 +2,11 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
-  CONTENT_MAXIMUM_LENGTH = 500
+  MAXIMUM_COMMENT_LENGTH = 500
 
   belongs_to :profile
 
-  validates :content, length: {maximum: CONTENT_MAXIMUM_LENGTH}, presence: true
+  validates :comment, length: {maximum: MAXIMUM_COMMENT_LENGTH}, presence: true
 
   sig { returns(Profile) }
   def profile!

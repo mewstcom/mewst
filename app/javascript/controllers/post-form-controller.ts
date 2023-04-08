@@ -6,9 +6,9 @@ import fetcher from '../utils/fetcher';
 
 export default class extends Controller {
   static outlets = ['timeline'];
-  static targets = ['content', 'submitButton'];
+  static targets = ['comment', 'submitButton'];
 
-  contentTarget!: HTMLTextAreaElement;
+  commentTarget!: HTMLTextAreaElement;
   submitButtonTarget!: HTMLButtonElement;
   timelineOutlet!: TimelineController | null;
 
@@ -16,14 +16,14 @@ export default class extends Controller {
     this.submitButtonTarget.disabled = true;
 
     try {
-      const content = this.contentTarget.value;
+      const comment = this.commentTarget.value;
 
       const response = await fetcher.post('/api/internal/posts', {
-        content,
+        comment,
       });
 
-      this.contentTarget.value = '';
-      this.contentTarget.focus();
+      this.commentTarget.value = '';
+      this.commentTarget.focus();
 
       setTimeout(() => {
         this.timelineOutlet.element.insertAdjacentHTML('afterbegin', response.postCardHtml);

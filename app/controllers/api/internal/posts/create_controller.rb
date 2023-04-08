@@ -11,9 +11,9 @@ class Api::Internal::Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    content = T.cast(params[:content], T.nilable(String))
+    comment = T.cast(params[:comment], T.nilable(String))
 
-    @post = current_profile!.create_post(content:)
+    @post = current_profile!.create_post(comment:)
 
     render(status: :created)
   rescue ActiveRecord::RecordInvalid => e
