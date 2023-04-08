@@ -547,13 +547,13 @@ class RuboCop::Cop::Rails::ActionOrder < ::RuboCop::Cop::Base
   # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#94
   def range_with_comments(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#106
+  # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#105
   def range_with_comments_and_lines(node); end
 
   # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#68
   def register_offense(previous, current); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#110
+  # source://rubocop-rails//lib/rubocop/cop/rails/action_order.rb#109
   def swap_range(corrector, range1, range2); end
 end
 
@@ -623,7 +623,7 @@ class RuboCop::Cop::Rails::ActiveRecordCallbacksOrder < ::RuboCop::Cop::Base
   # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#111
   def begin_pos_with_comment(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#134
+  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#137
   def buffer; end
 
   # @return [Boolean]
@@ -639,13 +639,13 @@ class RuboCop::Cop::Rails::ActiveRecordCallbacksOrder < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#126
+  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#125
   def inline_comment?(comment); end
 
   # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#99
   def source_range_with_comment(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#130
+  # source://rubocop-rails//lib/rubocop/cop/rails/active_record_callbacks_order.rb#133
   def start_line_position(node); end
 end
 
@@ -1625,9 +1625,11 @@ RuboCop::Cop::Rails::ContentTag::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-rails//lib/rubocop/cop/rails/content_tag.rb#29
 RuboCop::Cop::Rails::ContentTag::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# Checks the migration for which timestamps are not included
-# when creating a new table.
+# Checks the migration for which timestamps are not included when creating a new table.
 # In many cases, timestamps are useful information and should be added.
+#
+# NOTE: Allow `timestamps` not written when `id: false` because this emphasizes respecting
+# user's editing intentions.
 #
 # @example
 #   # bad
@@ -1663,34 +1665,43 @@ RuboCop::Cop::Rails::ContentTag::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 #   t.datetime :updated_at, default: -> { 'CURRENT_TIMESTAMP' }
 #   end
 #
-# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#43
+#   # good
+#   create_table :users, articles, id: false do |t|
+#   t.integer :user_id
+#   t.integer :article_id
+#   end
+#
+# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#52
 class RuboCop::Cop::Rails::CreateTableWithTimestamps < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ActiveRecordMigrationsHelper
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#49
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#62
   def create_table_with_timestamps_proc?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#57
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#70
   def created_at_or_updated_at_included?(param0); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#63
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#76
   def on_send(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#53
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#66
   def timestamps_included?(param0); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#58
+  def use_id_false_option?(param0); end
 
   private
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#79
+  # source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#92
   def time_columns_included?(node); end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#46
+# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#55
 RuboCop::Cop::Rails::CreateTableWithTimestamps::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#47
+# source://rubocop-rails//lib/rubocop/cop/rails/create_table_with_timestamps.rb#56
 RuboCop::Cop::Rails::CreateTableWithTimestamps::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Checks for the correct use of Date methods,
@@ -1883,6 +1894,14 @@ RuboCop::Cop::Rails::DefaultScope::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 #   # good
 #   delegate :bar, to: :foo
 #
+#   # bad
+#   def bar
+#   self.bar
+#   end
+#
+#   # good
+#   delegate :bar, to: :self
+#
 #   # good
 #   def bar
 #   foo&.bar
@@ -1910,53 +1929,53 @@ RuboCop::Cop::Rails::DefaultScope::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 #   # good
 #   delegate :bar, to: :foo, prefix: true
 #
-# source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#55
+# source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#63
 class RuboCop::Cop::Rails::Delegate < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::VisibilityHelp
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#61
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#69
   def delegate?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#66
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#74
   def on_def(node); end
 
   private
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#90
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#102
   def arguments_match?(arg_array, body); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#104
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#116
   def include_prefix_case?; end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#100
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#112
   def method_name_matches?(method_name, body); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#108
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#120
   def prefixed_method_name(body); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#112
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#126
   def private_or_protected_delegation(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#116
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#130
   def private_or_protected_inline(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#75
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#83
   def register_offense(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#84
+  # source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#96
   def trivial_delegate?(def_node); end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#59
+# source://rubocop-rails//lib/rubocop/cop/rails/delegate.rb#67
 RuboCop::Cop::Rails::Delegate::MSG = T.let(T.unsafe(nil), String)
 
 # Looks for delegations that pass :allow_blank as an option
@@ -2751,77 +2770,86 @@ RuboCop::Cop::Rails::ExpandedDateRange::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-rails//lib/rubocop/cop/rails/expanded_date_range.rb#32
 RuboCop::Cop::Rails::ExpandedDateRange::PREFERRED_METHODS = T.let(T.unsafe(nil), Hash)
 
-# Identifies usages of file path joining process
-# to use `Rails.root.join` clause. It is used to add uniformity when
-# joining paths.
+# Identifies usages of file path joining process to use `Rails.root.join` clause.
+# It is used to add uniformity when joining paths.
 #
 # @example EnforcedStyle: slashes (default)
 #   # bad
 #   Rails.root.join('app', 'models', 'goober')
+#
+#   # good
+#   Rails.root.join('app/models/goober')
+#
+#   # bad
 #   File.join(Rails.root, 'app/models/goober')
 #   "#{Rails.root}/app/models/goober"
 #
 #   # good
-#   Rails.root.join('app/models/goober')
+#   Rails.root.join('app/models/goober').to_s
 # @example EnforcedStyle: arguments
 #   # bad
 #   Rails.root.join('app/models/goober')
-#   File.join(Rails.root, 'app/models/goober')
-#   "#{Rails.root}/app/models/goober"
 #
 #   # good
 #   Rails.root.join('app', 'models', 'goober')
 #
-# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#28
+#   # bad
+#   File.join(Rails.root, 'app/models/goober')
+#   "#{Rails.root}/app/models/goober"
+#
+#   # good
+#   Rails.root.join('app', 'models', 'goober').to_s
+#
+# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#37
 class RuboCop::Cop::Rails::FilePath < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   include ::RuboCop::Cop::RangeHelp
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#36
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#45
   def file_join_nodes?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#48
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#57
   def on_dstr(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#59
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#68
   def on_send(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#44
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#53
   def rails_root_join_nodes?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#40
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#49
   def rails_root_nodes?(param0); end
 
   private
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#67
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#116
+  def build_message(require_to_s); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#76
   def check_for_file_join_with_rails_root(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#84
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#93
   def check_for_rails_root_join_with_slash_separated_path(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#74
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#83
   def check_for_rails_root_join_with_string_arguments(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#103
-  def message(_range); end
-
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#97
-  def register_offense(node); end
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#106
+  def register_offense(node, require_to_s:); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#93
+  # source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#102
   def string_with_slash?(node); end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#33
+# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#42
 RuboCop::Cop::Rails::FilePath::MSG_ARGUMENTS = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#32
+# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#41
 RuboCop::Cop::Rails::FilePath::MSG_SLASHES = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#34
+# source://rubocop-rails//lib/rubocop/cop/rails/file_path.rb#43
 RuboCop::Cop::Rails::FilePath::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Identifies usages of `where.take` and change them to use `find_by` instead.
@@ -2934,8 +2962,7 @@ RuboCop::Cop::Rails::FindById::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-rails//lib/rubocop/cop/rails/find_by_id.rb#24
 RuboCop::Cop::Rails::FindById::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# Identifies usages of `all.each` and
-# change them to use `all.find_each` instead.
+# Identifies usages of `all.each` and change them to use `all.find_each` instead.
 #
 # @example
 #   # bad
@@ -2950,41 +2977,41 @@ RuboCop::Cop::Rails::FindById::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 #   # good
 #   User.order(:foo).each
 #
-# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#23
+# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#27
 class RuboCop::Cop::Rails::FindEach < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ActiveRecordHelper
   include ::RuboCop::Cop::AllowedMethods
   include ::RuboCop::Cop::AllowedPattern
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#37
+  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#41
   def on_send(node); end
 
   private
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#63
+  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#67
   def active_model_error?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#59
+  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#63
   def active_model_error_where?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#51
+  # source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#55
   def ignored?(node); end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#29
+# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#33
 RuboCop::Cop::Rails::FindEach::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#30
+# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#34
 RuboCop::Cop::Rails::FindEach::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#32
+# source://rubocop-rails//lib/rubocop/cop/rails/find_each.rb#36
 RuboCop::Cop::Rails::FindEach::SCOPE_METHODS = T.let(T.unsafe(nil), Array)
 
 # Identifies usages of `travel_to` with an argument of the current time and
@@ -3217,6 +3244,9 @@ RuboCop::Cop::Rails::HelperInstanceVariable::MSG = T.let(T.unsafe(nil), String)
 # Rails/HttpPositionalArguments cop or set your TargetRailsVersion in your
 # .rubocop.yml file to 4.2.
 #
+# NOTE: It does not detect any cases where `include Rack::Test::Methods` is used
+# which makes the http methods incompatible behavior.
+#
 # @example
 #   # bad
 #   get :new, { user_id: 1}
@@ -3225,66 +3255,74 @@ RuboCop::Cop::Rails::HelperInstanceVariable::MSG = T.let(T.unsafe(nil), String)
 #   get :new, params: { user_id: 1 }
 #   get :new, **options
 #
-# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#20
+# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#23
 class RuboCop::Cop::Rails::HttpPositionalArguments < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
   extend ::RuboCop::Cop::TargetRailsVersion
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#32
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#35
   def http_request?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#36
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#43
+  def include_rack_test_methods?(param0 = T.unsafe(nil)); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#39
   def kwsplat_hash?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#40
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#50
   def on_send(node); end
 
   private
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#93
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#109
   def convert_hash_data(data, type); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#107
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#123
   def correction(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#120
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#136
   def correction_template(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#83
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#99
   def format_arg?(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#87
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#103
   def highlight_range(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#66
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#76
   def in_routing_block?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#70
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#86
   def needs_conversion?(data); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#79
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#95
   def special_keyword_arg?(node); end
+
+  # @return [Boolean]
+  #
+  # source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#80
+  def use_rack_test_methods?; end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#26
+# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#29
 RuboCop::Cop::Rails::HttpPositionalArguments::KEYWORD_ARGS = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#25
+# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#28
 RuboCop::Cop::Rails::HttpPositionalArguments::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#28
+# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#31
 RuboCop::Cop::Rails::HttpPositionalArguments::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#27
+# source://rubocop-rails//lib/rubocop/cop/rails/http_positional_arguments.rb#30
 RuboCop::Cop::Rails::HttpPositionalArguments::ROUTING_METHODS = T.let(T.unsafe(nil), Array)
 
 # Enforces use of symbolic or numeric value to define HTTP status.
@@ -4503,10 +4541,10 @@ class RuboCop::Cop::Rails::Output < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/output.rb#53
+  # source://rubocop-rails//lib/rubocop/cop/rails/output.rb#54
   def match_gvar?(sym); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/output.rb#57
+  # source://rubocop-rails//lib/rubocop/cop/rails/output.rb#58
   def offense_range(node); end
 end
 
@@ -4579,31 +4617,34 @@ RuboCop::Cop::Rails::Output::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#65
 class RuboCop::Cop::Rails::OutputSafety < ::RuboCop::Cop::Base
   # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#69
+  def i18n_method?(param0); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#73
   def on_csend(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#69
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#73
   def on_send(node); end
 
   private
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#86
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#90
   def looks_like_rails_html_safe?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#90
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#94
   def looks_like_rails_raw?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#94
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#98
   def looks_like_rails_safe_concat?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#82
+  # source://rubocop-rails//lib/rubocop/cop/rails/output_safety.rb#86
   def non_interpolated_string?(node); end
 end
 
@@ -5573,35 +5614,43 @@ RuboCop::Cop::Rails::RedundantTravelBack::RESTRICT_ON_SEND = T.let(T.unsafe(nil)
 #
 # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#20
 class RuboCop::Cop::Rails::ReflectionClassName < ::RuboCop::Cop::Base
-  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#25
+  extend ::RuboCop::Cop::AutoCorrector
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#27
   def association_with_reflection(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#35
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#37
+  def const_or_string(param0 = T.unsafe(nil)); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#41
   def on_send(node); end
 
-  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#31
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#33
   def reflection_class_name(param0 = T.unsafe(nil)); end
 
   private
 
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#76
+  def autocorrect(corrector, class_config); end
+
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#60
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#68
   def reflection_class_value?(class_value); end
 
   # @return [Boolean]
   #
-  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#46
+  # source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#54
   def str_assigned?(reflection_class_name); end
 end
 
-# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#23
+# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#25
 RuboCop::Cop::Rails::ReflectionClassName::ALLOWED_REFLECTION_CLASS_TYPES = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#21
+# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#23
 RuboCop::Cop::Rails::ReflectionClassName::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#22
+# source://rubocop-rails//lib/rubocop/cop/rails/reflection_class_name.rb#24
 RuboCop::Cop::Rails::ReflectionClassName::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Use `assert_not` methods instead of `refute` methods.
@@ -7102,6 +7151,46 @@ end
 # source://rubocop-rails//lib/rubocop/cop/rails/table_name_assignment.rb#30
 RuboCop::Cop::Rails::TableNameAssignment::MSG = T.let(T.unsafe(nil), String)
 
+# Enforces that boolean columns are created with default values (`false` or `true`) and
+# `NOT NULL` constraint.
+#
+# @example
+#   # bad
+#   add_column :users, :active, :boolean
+#   t.column :active, :boolean
+#   t.boolean :active
+#
+#   # good
+#   add_column :users, :active, :boolean, default: true, null: false
+#   t.column :active, :boolean, default: true, null: false
+#   t.boolean :active, default: true, null: false
+#
+# source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#20
+class RuboCop::Cop::Rails::ThreeStateBooleanColumn < ::RuboCop::Cop::Base
+  # source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#37
+  def change_column_null?(param0, param1, param2); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#41
+  def on_send(node); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#33
+  def required_options?(param0 = T.unsafe(nil)); end
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#25
+  def three_state_boolean?(param0 = T.unsafe(nil)); end
+
+  private
+
+  # source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#57
+  def table_node(node); end
+end
+
+# source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#21
+RuboCop::Cop::Rails::ThreeStateBooleanColumn::MSG = T.let(T.unsafe(nil), String)
+
+# source://rubocop-rails//lib/rubocop/cop/rails/three_state_boolean_column.rb#23
+RuboCop::Cop::Rails::ThreeStateBooleanColumn::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 # Checks for the use of Time methods without zone.
 #
 # Built on top of Ruby on Rails style guide (https://rails.rubystyle.guide#time)
@@ -7547,7 +7636,7 @@ RuboCop::Cop::Rails::UniqBeforePluck::PATTERN = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::UniqBeforePluck::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # When you define a uniqueness validation in Active Record model,
-# you also should add a unique index for the column. There are two reasons
+# you also should add a unique index for the column. There are two reasons.
 # First, duplicated records may occur even if Active Record's validation
 # is defined.
 # Second, it will cause slow queries. The validation executes a `SELECT`
@@ -8182,7 +8271,7 @@ class RuboCop::Cop::Style::MethodCallWithArgsParentheses < ::RuboCop::Cop::Base
   def args_parenthesized?(node); end
 
   class << self
-    # source://rubocop-rails//lib/rubocop-rails.rb#21
+    # source://rubocop-rails//lib/rubocop-rails.rb#22
     def autocorrect_incompatible_with; end
   end
 end
@@ -8266,7 +8355,7 @@ class RuboCop::Cop::Style::RedundantSelf < ::RuboCop::Cop::Base
   def regular_method_call?(node); end
 
   class << self
-    # source://rubocop-rails//lib/rubocop-rails.rb#29
+    # source://rubocop-rails//lib/rubocop-rails.rb#30
     def autocorrect_incompatible_with; end
   end
 end
