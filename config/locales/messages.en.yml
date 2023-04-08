@@ -1,5 +1,7 @@
 en:
   messages:
+    _common:
+      still_under_development: This feature is still under development.
     accounts:
       authentication_failed: Incorrect email or password.
       password_reset_successfully: Password reset successfully.

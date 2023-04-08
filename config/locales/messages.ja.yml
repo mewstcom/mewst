@@ -1,5 +1,7 @@
 ja:
   messages:
+    _common:
+      still_under_development: この機能は開発中です
     accounts:
       authentication_failed: メールアドレスまたはパスワードが正しくありません
       password_reset_successfully: パスワードをリセットしました
