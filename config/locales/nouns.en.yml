@@ -10,10 +10,13 @@ en:
     english_native: English
     error: Error
     following: Following
+    home: Home
     japanese: Japanese
     japanese_native: 日本語
     menu: Menu
+    notifications: Notifications
     profile: Profile
+    settings: Settings
     sign_in: Sign in
     sign_out: Sign out
     sign_up: Sign up

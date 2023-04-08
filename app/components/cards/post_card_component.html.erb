@@ -1,4 +1,4 @@
-<div class="c-post-card card">
+<div class="c-post-card border-0 card rounded-4">
   <div class="card-body">
     <div class="gx-3 row">
       <div class="col-auto">
@@ -34,10 +34,36 @@
           <%= helpers.render_content(post.content) %>
         </div>
 
-        <div>
-          <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm" do %>
-            <i class="bi bi-chat-text"></i>
-          <% end %>
+        <div class="gx-3 row">
+          <div class="col-auto">
+            <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm rounded-pill" do %>
+              <i class="bi bi-chat-text"></i>
+
+              <span class="ms-1">
+                <%= 0 %>
+              </span>
+            <% end %>
+          </div>
+
+          <div class="col-auto">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="bi bi-repeat"></i>
+
+              <span class="ms-1">
+                <%= 0 %>
+              </span>
+            </button>
+          </div>
+
+          <div class="col-auto">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="bi bi-star"></i>
+
+              <span class="ms-1">
+                <%= 0 %>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
