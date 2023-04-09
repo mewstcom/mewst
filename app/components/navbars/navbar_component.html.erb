@@ -52,13 +52,9 @@
     </ul>
 
     <div style="width: 24px;"></div>
+
     <% if false %>
-    <ul class="navbar-nav">
-      <% if signed_in? %>
-        <li class="nav-item">
-          <%= link_to t("nouns.sign_out"), sign_out_path, class: "nav-link" %>
-        </li>
-      <% else %>
+      <ul class="navbar-nav">
         <li class="nav-item">
           <%= link_to t("nouns.sign_in"), sign_in_path, class: "nav-link" %>
         </li>
@@ -66,8 +62,7 @@
         <li class="nav-item">
           <%= link_to t("nouns.sign_up"), sign_up_path, class: "disabled nav-link" %>
         </li>
-      <% end %>
-    </ul>
+      </ul>
     <% end %>
   </div>
 </nav>

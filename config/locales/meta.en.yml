@@ -11,6 +11,8 @@ en:
         show: "%{name} (@%{atname}): %{comment}"
       profiles:
         show: "%{name} (@%{atname})'s profile"
+      settings:
+        index: Settings
       sign_in:
         new: Sign in
       sign_up:

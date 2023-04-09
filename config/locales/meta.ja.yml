@@ -11,6 +11,8 @@ ja:
         show: "%{name} (@%{atname}): %{comment}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
+      settings:
+        index: 設定
       sign_in:
         new: ログイン
       sign_up:
