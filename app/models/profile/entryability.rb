@@ -11,13 +11,7 @@ class Profile::Entryability
 
   sig { params(comment: T.nilable(String)).returns(Entry) }
   def create_post_entry(comment:)
-    current_time = Time.current
-    entry = profile.entries.create!(
-      entryable: Post.create!(comment:),
-      published_at: current_time,
-      created_at: current_time,
-      updated_at: current_time
-    )
+    entry = profile.entries.create!(entryable: Post.create!(comment:), published_at: Time.current)
 
     profile.home_timeline.add_entry(entry:)
     FanoutEntryJob.perform_async(entry_id: entry.id)

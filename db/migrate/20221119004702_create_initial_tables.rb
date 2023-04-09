@@ -22,6 +22,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.integer :sign_in_count, default: 0, null: false
       t.timestamp :current_signed_in_at
       t.timestamp :last_signed_in_at
+      t.timestamp :signed_up_at, null: false
       t.timestamps
     end
 
@@ -32,6 +33,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.string :description, default: "", null: false
       t.string :avatar_url
       t.timestamp :deleted_at
+      t.timestamp :joined_at, null: false
       t.timestamps
     end
 
@@ -39,6 +41,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
       t.references :account, foreign_key: true, null: false, type: :uuid
+      t.timestamp :joined_at, null: false
       t.timestamps
 
       t.index %i[profile_id account_id], unique: true
@@ -48,6 +51,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :source_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
       t.references :target_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
+      t.timestamp :followed_at, null: false
       t.timestamps
 
       t.index %i[source_profile_id target_profile_id], unique: true

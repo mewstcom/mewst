@@ -64,6 +64,7 @@ CREATE TABLE public.accounts (
     sign_in_count integer DEFAULT 0 NOT NULL,
     current_signed_in_at timestamp without time zone,
     last_signed_in_at timestamp without time zone,
+    signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -104,6 +105,7 @@ CREATE TABLE public.follows (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     source_profile_id uuid NOT NULL,
     target_profile_id uuid NOT NULL,
+    followed_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -129,6 +131,7 @@ CREATE TABLE public.profile_members (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
     account_id uuid NOT NULL,
+    joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -145,6 +148,7 @@ CREATE TABLE public.profiles (
     description character varying DEFAULT ''::character varying NOT NULL,
     avatar_url character varying,
     deleted_at timestamp without time zone,
+    joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );

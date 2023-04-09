@@ -26,8 +26,11 @@ class AccountActivation
 
     account = T.let(nil, T.nilable(Account))
     ActiveRecord::Base.transaction do
-      account = Account.create!(email:, locale:, password:)
-      account.profiles.create!(atname:)
+      current_time = Time.current
+
+      account = Account.create!(email:, locale:, password:, signed_up_at: current_time)
+      profile = account.profiles.new(atname:, joined_at: current_time)
+      account.profile_members.create!(profile:, joined_at: current_time)
 
       verification!.destroy
     end
