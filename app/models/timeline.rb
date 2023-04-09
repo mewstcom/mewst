@@ -17,7 +17,7 @@ class Timeline
   end
 
   sig { params(start_score: T.nilable(String), limit: Integer, order: Order).returns(T::Array[String]) }
-  def post_ids(start_score: nil, limit: 50, order: Order::Desc)
+  def entry_ids(start_score: nil, limit: 50, order: Order::Desc)
     start, stop, rev = case order
     when Order::Asc
       [start_score.presence || "-inf", "+inf", false]

@@ -1,0 +1,8 @@
+<% title = t("meta.title.entries.show", atname: @profile.atname, name: @profile.name, comment: @entry.comment.truncate(50)) %>
+<% set_meta_tags(title:) %>
+
+<%= render Navbars::NavbarComponent.new %>
+
+<div class="container py-3 u-flat u-narrow">
+  <%= render Cards::EntryCardComponent.new(entry: @entry) %>
+</div>

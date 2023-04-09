@@ -5,15 +5,15 @@ import * as bootstrap from 'bootstrap'
 
 import AutosizeController from './controllers/autosize-controller';
 import ComponentDataFetcherController from './controllers/component-data-fetcher-controller';
+import EntryFormController from "./controllers/entry-form-controller";
 import FollowButtonController from './controllers/follow-button-controller';
-import PostFormController from "./controllers/post-form-controller";
 import TimelineController from "./controllers/timeline-controller";
 
 window.Stimulus = Application.start();
 Stimulus.register('autosize', AutosizeController);
 Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
+Stimulus.register('entry-form', EntryFormController);
 Stimulus.register('follow-button', FollowButtonController);
-Stimulus.register('post-form', PostFormController);
 Stimulus.register('timeline', TimelineController);
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');

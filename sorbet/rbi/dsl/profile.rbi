@@ -219,6 +219,20 @@ class Profile
   end
 
   module GeneratedAssociationMethods
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :entries`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Entry::PrivateCollectionProxy) }
+    def entries; end
+
+    sig { params(value: T::Enumerable[::Entry]).void }
+    def entries=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def entry_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def entry_ids=(ids); end
+
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
 
@@ -274,20 +288,6 @@ class Profile
 
     sig { params(value: T::Enumerable[::Follow]).void }
     def inverse_follows=(value); end
-
-    sig { returns(T::Array[T.untyped]) }
-    def post_ids; end
-
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def post_ids=(ids); end
-
-    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :posts`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
-    sig { returns(::Post::PrivateCollectionProxy) }
-    def posts; end
-
-    sig { params(value: T::Enumerable[::Post]).void }
-    def posts=(value); end
   end
 
   module GeneratedAssociationRelationMethods

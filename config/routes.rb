@@ -6,15 +6,15 @@ ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 Rails.application.routes.draw do
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
-  match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT
-  match "/@:atname/posts/:post_id",                          via: :get,                                                           to: "posts/show#call",                           atname: ROUTING_USERNAME_FORMAT
+  match "/@:atname/entries/:entry_id",                       via: :delete, as: :entry,                                            to: "entries/destroy#call",                      atname: ROUTING_USERNAME_FORMAT
+  match "/@:atname/entries/:entry_id",                       via: :get,                                                           to: "entries/show#call",                         atname: ROUTING_USERNAME_FORMAT
   match "/accounts",                                         via: :post,   as: :account_list,                                     to: "accounts/create#call"
   match "/accounts/new",                                     via: :get,    as: :new_account,                                      to: "accounts/new#call"
   match "/api/internal/follow",                              via: :post,   as: :internal_api_follow,                              to: "api/internal/follow/create#call"
   match "/api/internal/following",                           via: :post,   as: :internal_api_following_list,                      to: "api/internal/following/index#call"
-  match "/api/internal/posts",                               via: :post,   as: :internal_api_post_list,                           to: "api/internal/posts/create#call"
-  match "/api/internal/pubsub/add_post_to_home_timeline",    via: :post,   as: :internal_api_pubsub_add_post_to_home_timeline,    to: "api/internal/pubsub/add_post_to_home_timeline/create#call"
-  match "/api/internal/pubsub/fanout_post",                  via: :post,   as: :internal_api_pubsub_fanout_post,                  to: "api/internal/pubsub/fanout_post/create#call"
+  match "/api/internal/post_entries",                        via: :post,   as: :internal_api_post_entry_list,                     to: "api/internal/post_entries/create#call"
+  match "/api/internal/pubsub/add_entry_to_home_timeline",   via: :post,   as: :internal_api_pubsub_add_entry_to_home_timeline,   to: "api/internal/pubsub/add_entry_to_home_timeline/create#call"
+  match "/api/internal/pubsub/fanout_entry",                 via: :post,   as: :internal_api_pubsub_fanout_entry,                 to: "api/internal/pubsub/fanout_entry/create#call"
   match "/api/internal/tasks/send_verification_mail",        via: :post,   as: :internal_api_tasks_send_verification_mail,        to: "api/internal/tasks/send_verification_mail#call"
   match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
   match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"

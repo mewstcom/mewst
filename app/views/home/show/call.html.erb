@@ -1,14 +1,14 @@
 <%= render Navbars::NavbarComponent.new %>
 
 <div class="container py-3 u-flat u-narrow">
-  <%= render Forms::PostFormComponent.new %>
+  <%= render Forms::EntryFormComponent.new %>
 
   <div
     class="gap-3 js-timeline mt-4 vstack"
     data-controller="timeline"
   >
-    <% @posts.each do |post| %>
-      <%= render Cards::PostCardComponent.new(post:) %>
+    <% @entries.each do |entry| %>
+      <%= render Cards::EntryCardComponent.new(entry:) %>
     <% end %>
   </div>
 

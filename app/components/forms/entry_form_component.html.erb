@@ -1,0 +1,30 @@
+<form
+  class="c-entry-form"
+  data-action="entry-form#submit:prevent"
+  data-controller="entry-form"
+  data-entry-form-timeline-outlet=".js-timeline"
+>
+  <textarea
+    autofocus="true"
+    class="form-control rounded-4"
+    data-controller="autosize"
+    data-entry-form-target="comment"
+  ></textarea>
+
+  <div class="gx-3 mt-2 row">
+    <div class="col-12 text-end">
+      500 <%# TODO: Decrease char count %>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <button
+      class="btn btn-primary rounded-pill"
+      data-entry-form-target="submitButton"
+      type="submit"
+    >
+      <i class="bi bi-send mr-1"></i>
+      <%= t("verbs.post") %>
+    </button>
+  </div>
+</form>

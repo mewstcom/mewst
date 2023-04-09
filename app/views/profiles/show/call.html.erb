@@ -39,8 +39,8 @@
   </div>
 
   <div class="gap-3 mt-3 vstack">
-    <% @posts.each do |post| %>
-      <%= render Cards::PostCardComponent.new(post:) %>
+    <% @entries.each do |entry| %>
+      <%= render Cards::EntryCardComponent.new(entry:) %>
     <% end %>
   </div>
 

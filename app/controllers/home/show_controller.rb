@@ -11,7 +11,7 @@ class Home::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @posts, @page_info = current_profile!.home_timeline.posts_with_page_info(
+    @entries, @page_info = current_profile!.home_timeline.entries_with_page_info(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 20

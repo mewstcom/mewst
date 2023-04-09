@@ -1,9 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Profiles::ShowController < ApplicationController
-  include Pagy::Backend
-
+class Entries::ShowController < ApplicationController
   include Authenticatable
   include Authorizable
   include Localizable
@@ -13,6 +11,6 @@ class Profiles::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @profile = Profile.only_kept.find_by!(atname: params[:atname])
-    @pagy, @entries = pagy(@profile.entries.order(created_at: :desc))
+    @entry = @profile.entries.find(params[:entry_id])
   end
 end
