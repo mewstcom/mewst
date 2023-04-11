@@ -57,16 +57,16 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.index %i[source_profile_id target_profile_id], unique: true
     end
 
-    create_table :entries, id: false do |t|
+    create_table :posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.string :entryable_type, null: false
-      t.uuid :entryable_id, null: false
+      t.string :postable_type, null: false
+      t.uuid :postable_id, null: false
       t.timestamp :published_at, null: false
       t.timestamps
     end
 
-    create_table :posts, id: false do |t|
+    create_table :commented_posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.text :comment, null: false
       t.timestamps

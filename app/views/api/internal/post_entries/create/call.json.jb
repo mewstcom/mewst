@@ -1,3 +1,0 @@
-{
-  entryCardHtml: render(Cards::EntryCardComponent.new(entry: @entry))
-}

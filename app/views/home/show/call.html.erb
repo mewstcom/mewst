@@ -5,7 +5,7 @@
 
 <div class="py-3">
   <div class="container u-flat u-narrow">
-    <%= render Forms::EntryFormComponent.new %>
+    <%= render Forms::PostFormComponent.new %>
 
     <hr>
 
@@ -15,8 +15,8 @@
       class="gap-3 js-timeline mt-4 vstack"
       data-controller="timeline"
     >
-      <% @entries.each do |entry| %>
-        <%= render Cards::EntryCardComponent.new(entry:) %>
+      <% @posts.each do |post| %>
+        <%= render Cards::PostCardComponent.new(post:) %>
       <% end %>
     </div>
 

@@ -1,0 +1,73 @@
+<div class="c-content-card border-0 card rounded-4">
+  <div class="card-body">
+    <div class="gx-3 row">
+      <div class="col-auto">
+        <%= link_to profile_path(profile.atname) do %>
+          <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
+        <% end %>
+      </div>
+
+      <div class="col">
+        <div class="gx-3 row">
+          <div class="col">
+            <%= link_to profile_path(profile.atname) do %>
+              <span class="fw-bold">
+                <%= profile.name %>
+              </span>
+
+              <span class="text-muted">
+                @<%= profile.atname %>
+              </span>
+            <% end %>
+
+            <div class="small text-muted">
+              <%= link_to mst_time_ago_in_words(post.published_at), post_path(profile.atname, post.id) %>
+            </div>
+          </div>
+
+          <div class="col-auto">
+            <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+          </div>
+        </div>
+
+        <div class="py-3">
+          <%= helpers.render_comment(post.postable.comment) %>
+        </div>
+
+        <div class="gx-3 row">
+          <div class="col-auto">
+            <span data-bs-toggle="tooltip" data-bs-title="<%= t("messages._common.still_under_development") %>">
+              <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm disabled rounded-pill" do %>
+                <i class="bi bi-chat-text"></i>
+
+                <span class="ms-1">
+                  <%= 0 %>
+                </span>
+              <% end %>
+            </span>
+          </div>
+
+          <div class="col-auto">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="bi bi-repeat"></i>
+
+              <span class="ms-1">
+                <%= 0 %>
+              </span>
+            </button>
+          </div>
+
+          <div class="col-auto">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="bi bi-star"></i>
+
+              <span class="ms-1">
+                <%= 0 %>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

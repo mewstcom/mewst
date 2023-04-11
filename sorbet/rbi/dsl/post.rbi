@@ -5,7 +5,9 @@
 # Please instead update this file by running `bin/tapioca dsl Post`.
 
 class Post
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include GeneratedDelegatedTypeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -217,6 +219,35 @@ class Post
     def third_to_last!; end
   end
 
+  module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile!(*args, &blk); end
+
+    sig { returns(T.untyped) }
+    def postable; end
+
+    sig { params(value: T.untyped).void }
+    def postable=(value); end
+
+    sig { returns(T.nilable(::Profile)) }
+    def profile; end
+
+    sig { params(value: T.nilable(::Profile)).void }
+    def profile=(value); end
+
+    sig { returns(T.untyped) }
+    def reload_postable; end
+
+    sig { returns(T.nilable(::Profile)) }
+    def reload_profile; end
+  end
+
   module GeneratedAssociationRelationMethods
     sig { returns(PrivateAssociationRelation) }
     def all; end
@@ -226,6 +257,9 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def annotate(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def commented_posts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
@@ -398,51 +432,6 @@ class Post
   end
 
   module GeneratedAttributeMethods
-    sig { returns(::String) }
-    def comment; end
-
-    sig { params(value: ::String).returns(::String) }
-    def comment=(value); end
-
-    sig { returns(T::Boolean) }
-    def comment?; end
-
-    sig { returns(T.nilable(::String)) }
-    def comment_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def comment_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def comment_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def comment_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def comment_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def comment_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def comment_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def comment_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def comment_previously_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def comment_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def comment_was; end
-
-    sig { void }
-    def comment_will_change!; end
-
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
 
@@ -533,8 +522,185 @@ class Post
     sig { void }
     def id_will_change!; end
 
+    sig { returns(T.untyped) }
+    def postable_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def postable_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def postable_id?; end
+
+    sig { returns(T.untyped) }
+    def postable_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def postable_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def postable_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def postable_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def postable_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def postable_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def postable_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def postable_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def postable_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def postable_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def postable_id_was; end
+
     sig { void }
-    def restore_comment!; end
+    def postable_id_will_change!; end
+
+    sig { returns(::String) }
+    def postable_type; end
+
+    sig { params(value: ::String).returns(::String) }
+    def postable_type=(value); end
+
+    sig { returns(T::Boolean) }
+    def postable_type?; end
+
+    sig { returns(T.nilable(::String)) }
+    def postable_type_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def postable_type_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def postable_type_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def postable_type_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def postable_type_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def postable_type_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def postable_type_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def postable_type_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def postable_type_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def postable_type_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def postable_type_was; end
+
+    sig { void }
+    def postable_type_will_change!; end
+
+    sig { returns(T.untyped) }
+    def profile_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def profile_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def profile_id?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profile_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def profile_id_was; end
+
+    sig { void }
+    def profile_id_will_change!; end
+
+    sig { returns(::ActiveSupport::TimeWithZone) }
+    def published_at; end
+
+    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
+    def published_at=(value); end
+
+    sig { returns(T::Boolean) }
+    def published_at?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def published_at_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def published_at_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def published_at_came_from_user?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def published_at_change; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def published_at_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def published_at_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def published_at_in_database; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def published_at_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def published_at_previously_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def published_at_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def published_at_was; end
+
+    sig { void }
+    def published_at_will_change!; end
 
     sig { void }
     def restore_created_at!; end
@@ -543,13 +709,19 @@ class Post
     def restore_id!; end
 
     sig { void }
+    def restore_postable_id!; end
+
+    sig { void }
+    def restore_postable_type!; end
+
+    sig { void }
+    def restore_profile_id!; end
+
+    sig { void }
+    def restore_published_at!; end
+
+    sig { void }
     def restore_updated_at!; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_comment; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_comment?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -562,6 +734,30 @@ class Post
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_postable_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_postable_id?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_postable_type; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_postable_type?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_profile_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profile_id?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def saved_change_to_published_at; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_published_at?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -615,16 +811,45 @@ class Post
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_comment?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_postable_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_postable_type?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_profile_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_published_at?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
+  end
+
+  module GeneratedDelegatedTypeMethods
+    sig { params(args: T.untyped).returns(T.any(CommentedPost)) }
+    def build_postable(*args); end
+
+    sig { returns(T.nilable(CommentedPost)) }
+    def commented_post; end
+
+    sig { returns(T::Boolean) }
+    def commented_post?; end
+
+    sig { returns(T.untyped) }
+    def commented_post_id; end
+
+    sig { returns(Class) }
+    def postable_class; end
+
+    sig { returns(ActiveSupport::StringInquirer) }
+    def postable_name; end
   end
 
   module GeneratedRelationMethods
@@ -636,6 +861,9 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def annotate(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def commented_posts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end

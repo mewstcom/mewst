@@ -13,12 +13,12 @@ class Profile < ApplicationRecord
   has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
-  has_many :entries, dependent: :restrict_with_exception
+  has_many :posts, dependent: :restrict_with_exception
 
   validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
-  delegate :create_post_entry, :delete_entry, to: :entryability
+  delegate :create_commented_post, :delete_post, to: :postability
 
   sig { returns(Profile::HomeTimeline) }
   def home_timeline
@@ -47,8 +47,8 @@ class Profile < ApplicationRecord
     Profile::Followability.new(source_profile: self)
   end
 
-  sig { returns(Profile::Entryability) }
-  def entryability
-    Profile::Entryability.new(profile: self)
+  sig { returns(Profile::Postability) }
+  def postability
+    Profile::Postability.new(profile: self)
   end
 end

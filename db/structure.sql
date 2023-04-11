@@ -83,15 +83,12 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: entries; Type: TABLE; Schema: public; Owner: -
+-- Name: commented_posts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.entries (
+CREATE TABLE public.commented_posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profile_id uuid NOT NULL,
-    entryable_type character varying NOT NULL,
-    entryable_id uuid NOT NULL,
-    published_at timestamp without time zone NOT NULL,
+    comment text NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -117,7 +114,10 @@ CREATE TABLE public.follows (
 
 CREATE TABLE public.posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    comment text NOT NULL,
+    profile_id uuid NOT NULL,
+    postable_type character varying NOT NULL,
+    postable_id uuid NOT NULL,
+    published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -195,11 +195,11 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
--- Name: entries entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: commented_posts commented_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.entries
-    ADD CONSTRAINT entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.commented_posts
+    ADD CONSTRAINT commented_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -258,13 +258,6 @@ CREATE UNIQUE INDEX index_accounts_on_email ON public.accounts USING btree (emai
 
 
 --
--- Name: index_entries_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_entries_on_profile_id ON public.entries USING btree (profile_id);
-
-
---
 -- Name: index_follows_on_source_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -283,6 +276,13 @@ CREATE UNIQUE INDEX index_follows_on_source_profile_id_and_target_profile_id ON 
 --
 
 CREATE INDEX index_follows_on_target_profile_id ON public.follows USING btree (target_profile_id);
+
+
+--
+-- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 
 
 --
@@ -360,11 +360,11 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: entries fk_rails_ddece3cdb3; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: posts fk_rails_cd61a4aa45; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.entries
-    ADD CONSTRAINT fk_rails_ddece3cdb3 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --

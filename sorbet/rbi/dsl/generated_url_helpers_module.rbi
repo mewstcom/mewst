@@ -15,10 +15,10 @@ module GeneratedUrlHelpersModule
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def entry_url(*args); end
+  def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def home_url(*args); end
+  def internal_api_commented_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_follow_url(*args); end
@@ -27,13 +27,10 @@ module GeneratedUrlHelpersModule
   def internal_api_following_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_post_entry_list_url(*args); end
+  def internal_api_pubsub_add_post_to_home_timeline_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_add_entry_to_home_timeline_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_fanout_entry_url(*args); end
+  def internal_api_pubsub_fanout_post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_tasks_send_verification_mail_url(*args); end
@@ -52,6 +49,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_component_url(*args); end

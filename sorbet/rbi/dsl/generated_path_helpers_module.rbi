@@ -15,10 +15,10 @@ module GeneratedPathHelpersModule
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def entry_path(*args); end
+  def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def home_path(*args); end
+  def internal_api_commented_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_follow_path(*args); end
@@ -27,13 +27,10 @@ module GeneratedPathHelpersModule
   def internal_api_following_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_post_entry_list_path(*args); end
+  def internal_api_pubsub_add_post_to_home_timeline_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_add_entry_to_home_timeline_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_fanout_entry_path(*args); end
+  def internal_api_pubsub_fanout_post_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_tasks_send_verification_mail_path(*args); end
@@ -52,6 +49,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def password_reset_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_component_path(*args); end
