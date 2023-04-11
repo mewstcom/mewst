@@ -747,6 +747,51 @@ class Profile
     sig { void }
     def id_will_change!; end
 
+    sig { returns(::ActiveSupport::TimeWithZone) }
+    def joined_at; end
+
+    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
+    def joined_at=(value); end
+
+    sig { returns(T::Boolean) }
+    def joined_at?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def joined_at_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def joined_at_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def joined_at_came_from_user?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def joined_at_change; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def joined_at_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def joined_at_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def joined_at_in_database; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def joined_at_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def joined_at_previously_changed?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def joined_at_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def joined_at_was; end
+
+    sig { void }
+    def joined_at_will_change!; end
+
     sig { returns(::String) }
     def name; end
 
@@ -811,6 +856,9 @@ class Profile
     def restore_id!; end
 
     sig { void }
+    def restore_joined_at!; end
+
+    sig { void }
     def restore_name!; end
 
     sig { void }
@@ -851,6 +899,12 @@ class Profile
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
+
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
+    def saved_change_to_joined_at; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_joined_at?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_name; end
@@ -926,6 +980,9 @@ class Profile
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_joined_at?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_name?; end
