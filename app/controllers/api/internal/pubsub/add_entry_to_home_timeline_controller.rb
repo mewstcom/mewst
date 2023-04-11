@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Api::Internal::Pubsub::AddEntryToHomeTimeline::CreateController < ApplicationController
+class Api::Internal::Pubsub::AddEntryToHomeTimelineController < ApplicationController
   include Pubsub::Subscribable
 
   skip_before_action :verify_authenticity_token

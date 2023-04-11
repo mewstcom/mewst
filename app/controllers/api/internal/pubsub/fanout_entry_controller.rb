@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Api::Internal::Pubsub::FanoutEntry::CreateController < ApplicationController
+class Api::Internal::Pubsub::FanoutEntryController < ApplicationController
   include Pubsub::Subscribable
 
   skip_before_action :verify_authenticity_token
