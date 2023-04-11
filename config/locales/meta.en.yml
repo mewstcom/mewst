@@ -3,6 +3,8 @@ en:
     title:
       accounts:
         new: Create an account
+      home:
+        show: Home
       password_resets:
         new: Forgot your password?
       passwords:

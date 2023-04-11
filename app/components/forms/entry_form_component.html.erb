@@ -11,20 +11,22 @@
     data-entry-form-target="comment"
   ></textarea>
 
-  <div class="gx-3 mt-2 row">
-    <div class="col-12 text-end">
+  <div class="mt-3 row">
+    <div class="col-1"></div>
+
+    <div class="col-10 text-center">
+      <button
+        class="btn btn-primary rounded-pill"
+        data-entry-form-target="submitButton"
+        type="submit"
+      >
+        <i class="bi bi-send mr-1"></i>
+        <%= t("verbs.post") %>
+      </button>
+    </div>
+
+    <div class="col-1">
       500 <%# TODO: Decrease char count %>
     </div>
-  </div>
-
-  <div class="text-center">
-    <button
-      class="btn btn-primary rounded-pill"
-      data-entry-form-target="submitButton"
-      type="submit"
-    >
-      <i class="bi bi-send mr-1"></i>
-      <%= t("verbs.post") %>
-    </button>
   </div>
 </form>

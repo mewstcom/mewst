@@ -1,5 +1,6 @@
 en:
   verbs:
+    add: Add
     connect: Connect
     disconnect: Disconnect
     follow: Follow

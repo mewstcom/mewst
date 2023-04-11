@@ -3,6 +3,8 @@ ja:
     title:
       accounts:
         new: アカウント作成
+      home:
+        show: ホーム
       password_resets:
         new: パスワード忘れた？
       passwords:
