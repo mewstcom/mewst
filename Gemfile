@@ -11,6 +11,7 @@ gem "activerecord-session_store"
 gem "bcrypt" # Used by `has_secure_password`
 gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
+gem "counter_culture"
 gem "cssbundling-rails"
 gem "email_validator"
 gem "enumerize"

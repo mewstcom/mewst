@@ -85,6 +85,9 @@ GEM
       uniform_notifier (~> 1.11)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.0)
+    counter_culture (3.3.0)
+      activerecord (>= 4.2)
+      activesupport (>= 4.2)
     crass (1.0.6)
     cssbundling-rails (1.1.2)
       railties (>= 6.0.0)
@@ -408,6 +411,7 @@ DEPENDENCIES
   bootsnap
   bullet
   connection_pool
+  counter_culture
   cssbundling-rails
   dotenv-rails
   email_validator
