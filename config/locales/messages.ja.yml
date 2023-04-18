@@ -27,6 +27,7 @@ ja:
       are_you_sure_to_delete_post: この投稿を削除しますか？
       created: 投稿しました
       deleted: 投稿を削除しました
+      profile_reposted_html: "<a href='/@%{atname}'>%{name}</a>がリポストしました"
     profiles:
       updated: プロフィールを更新しました
     verifications:

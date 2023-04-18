@@ -89,6 +89,7 @@ CREATE TABLE public.ar_internal_metadata (
 CREATE TABLE public.commented_posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     comment text NOT NULL,
+    reposts_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -149,6 +150,20 @@ CREATE TABLE public.profiles (
     avatar_url character varying,
     deleted_at timestamp without time zone,
     joined_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: reposts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reposts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    repostable_type character varying NOT NULL,
+    repostable_id uuid NOT NULL,
+    comment text DEFAULT ''::text NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -232,6 +247,14 @@ ALTER TABLE ONLY public.profile_members
 
 ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reposts reposts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT reposts_pkey PRIMARY KEY (id);
 
 
 --

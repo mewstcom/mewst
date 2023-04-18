@@ -1,0 +1,21 @@
+<div class="gx-3 row">
+  <div class="col">
+    <%= link_to profile_path(profile.atname) do %>
+      <span class="fw-bold">
+        <%= profile.name %>
+      </span>
+
+      <span class="text-muted">
+        @<%= profile.atname %>
+      </span>
+    <% end %>
+
+    <div class="small text-muted">
+      <%= link_to mst_time_ago_in_words(post.published_at), post_path(profile.atname, post.id) %>
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+  </div>
+</div>

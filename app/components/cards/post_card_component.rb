@@ -16,4 +16,15 @@ class Cards::PostCardComponent < ApplicationComponent
   def profile
     T.must(post.profile)
   end
+
+  def postable_component
+    case post.postable_type
+    when "CommentedPost"
+      Cards::CommentedPostCardComponent
+    when "Repost"
+      Cards::RepostCardComponent
+    else
+      fail "Unknown postable type: #{post.postable_type.inspect}"
+    end
+  end
 end

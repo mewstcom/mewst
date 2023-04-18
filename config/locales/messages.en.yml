@@ -27,6 +27,7 @@ en:
       are_you_sure_to_delete_post: Are you sure to delete this post?
       created: Post created.
       deleted: Post deleted.
+      profile_reposted_html: "<a href='/@%{atname}'>%{name}</a> reposted"
     profiles:
       updated: Profile updated.
     verifications:

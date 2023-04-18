@@ -4,9 +4,11 @@
 class Post < ApplicationRecord
   belongs_to :profile
 
-  delegated_type :postable, types: %w[
-    CommentedPost
-  ], dependent: :destroy
+  delegated_type :postable, types: Postable::TYPES, dependent: :destroy
+
+  delegate :comment, :reposts_count, to: :postable
+
+  validates :postable_type, inclusion: {in: Postable::TYPES}
 
   sig { returns(Profile) }
   def profile!
@@ -26,5 +28,10 @@ class Post < ApplicationRecord
     followers.find_each do |follower|
       topic.publish_async({profile_id: follower.id, post_id: id}.to_json)
     end
+  end
+
+  sig { returns(T::Boolean) }
+  def repostable?
+    postable_type.in?(Repostable::TYPES)
   end
 end

@@ -18,7 +18,12 @@ class Profile < ApplicationRecord
   validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
-  delegate :create_commented_post, :delete_post, to: :postability
+  delegate :create_commented_post, :create_repost, :delete_post, to: :postability
+
+  sig { returns(String) }
+  def name_or_atname
+    name.presence || atname
+  end
 
   sig { returns(Profile::HomeTimeline) }
   def home_timeline

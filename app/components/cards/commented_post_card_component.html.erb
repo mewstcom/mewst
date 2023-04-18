@@ -1,0 +1,21 @@
+<div class="c-content-card border-0 card rounded-4">
+  <div class="card-body">
+    <div class="gx-3 row">
+      <div class="col-auto">
+        <%= link_to profile_path(profile.atname) do %>
+          <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
+        <% end %>
+      </div>
+
+      <div class="col">
+        <%= render Cards::PostCard::HeaderComponent.new(post:) %>
+
+        <div class="py-3">
+          <%= render Cards::PostCard::BodyComponent.new(post:) %>
+        </div>
+
+        <%= render Cards::PostCard::FooterComponent.new(post:) %>
+      </div>
+    </div>
+  </div>
+</div>

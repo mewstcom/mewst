@@ -1,4 +1,4 @@
-<% title = t("meta.title.posts.show", atname: @profile.atname, name: @profile.name, comment: @post.postable.comment.truncate(50)) %>
+<% title = t("meta.title.posts.show", atname: @profile.atname, name: @profile.name, comment: @post.comment.truncate(50)) %>
 <% set_meta_tags(title:) %>
 
 <%= render Navbars::NavbarComponent.new %>
