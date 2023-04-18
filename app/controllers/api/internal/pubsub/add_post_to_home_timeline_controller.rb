@@ -12,9 +12,11 @@ class Api::Internal::Pubsub::AddPostToHomeTimelineController < ApplicationContro
     profile = Profile.only_kept.find_by(id: message_data&.dig("profile_id"))
     post = Post.find_by(id: message_data&.dig("post_id"))
 
-    if profile && post
-      profile.home_timeline.add_post(post:)
+    if profile.nil? || post.nil?
+      fail "Invalid message_data: #{message_data.inspect}"
     end
+
+    profile.home_timeline.add_post(post:)
 
     head :no_content
   end
