@@ -14,4 +14,9 @@ class Repost < ApplicationRecord
   def reposts_count
     0
   end
+
+  sig { returns(T::Boolean) }
+  def commented?
+    comment.present?
+  end
 end
