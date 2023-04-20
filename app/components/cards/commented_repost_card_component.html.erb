@@ -34,9 +34,11 @@
                   </span>
                 <% end %>
 
-                <div>
-                  <%= link_to mst_time_ago_in_words(target_post.published_at), post_path(target_profile.atname, target_post.id), class: "small text-muted" %>
-                </div>
+                <span class="text-muted">
+                  ·
+                </span>
+
+                <%= link_to mst_time_ago_in_words(target_post.published_at), post_path(target_profile.atname, target_post.id), class: "small text-muted" %>
 
                 <div class="mt-3">
                   <%= render Cards::PostCard::BodyComponent.new(post: target_post) %>

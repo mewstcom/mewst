@@ -10,9 +10,11 @@
       </span>
     <% end %>
 
-    <div>
-      <%= link_to mst_time_ago_in_words(post.published_at), post_path(profile.atname, post.id), class: "small text-muted" %>
-    </div>
+    <span class="text-muted">
+      ·
+    </span>
+
+    <%= link_to mst_time_ago_in_words(post.published_at), post_path(profile.atname, post.id), class: "small text-muted" %>
   </div>
 
   <div class="col-auto">
