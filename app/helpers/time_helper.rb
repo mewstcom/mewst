@@ -10,7 +10,6 @@ module TimeHelper
 
     return from_time.to_fs(:ymdhm) if days > 3
 
-    spacer = (I18n.locale == :en) ? " " : ""
-    "#{time_ago_in_words(from_time)}#{spacer}#{I18n.t("nouns.ago").downcase}"
+    time_ago_in_words(from_time)
   end
 end
