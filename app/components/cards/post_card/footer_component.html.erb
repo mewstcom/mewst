@@ -1,33 +1,37 @@
-<div class="gx-3 row">
-  <div class="col-auto">
-    <span data-bs-toggle="tooltip" data-bs-title="<%= t("messages._common.still_under_development") %>">
-      <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm disabled rounded-pill" do %>
-        <i class="bi bi-chat-text"></i>
+<div class="align-items-center d-flex justify-content-between">
+  <div class="gx-3 row">
+    <div class="col-auto">
+      <span data-bs-toggle="tooltip" data-bs-title="<%= t("messages._common.still_under_development") %>">
+        <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm disabled rounded-pill" do %>
+          <i class="bi bi-chat-text"></i>
+
+          <span class="ms-1">
+            <%= 0 %>
+          </span>
+        <% end %>
+      </span>
+    </div>
+
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary btn-sm rounded-pill">
+        <i class="bi bi-repeat"></i>
+
+        <span class="ms-1">
+          <%= post.reposts_count %>
+        </span>
+      </button>
+    </div>
+
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary btn-sm rounded-pill">
+        <i class="bi bi-star"></i>
 
         <span class="ms-1">
           <%= 0 %>
         </span>
-      <% end %>
-    </span>
+      </button>
+    </div>
   </div>
 
-  <div class="col-auto">
-    <button class="btn btn-outline-secondary btn-sm rounded-pill">
-      <i class="bi bi-repeat"></i>
-
-      <span class="ms-1">
-        <%= post.reposts_count %>
-      </span>
-    </button>
-  </div>
-
-  <div class="col-auto">
-    <button class="btn btn-outline-secondary btn-sm rounded-pill">
-      <i class="bi bi-star"></i>
-
-      <span class="ms-1">
-        <%= 0 %>
-      </span>
-    </button>
-  </div>
+  <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
 </div>
