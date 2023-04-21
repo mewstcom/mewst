@@ -77,7 +77,15 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.string :repostable_type, null: false
       t.uuid :repostable_id, null: false
-      t.text :comment, default: "", null: false
+      t.timestamps
+    end
+
+    create_table :commented_reposts, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.string :repostable_type, null: false
+      t.uuid :repostable_id, null: false
+      t.text :comment, null: false
+      t.integer :reposts_count, default: 0, null: false
       t.timestamps
     end
   end

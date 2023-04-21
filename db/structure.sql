@@ -96,6 +96,21 @@ CREATE TABLE public.commented_posts (
 
 
 --
+-- Name: commented_reposts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commented_reposts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    repostable_type character varying NOT NULL,
+    repostable_id uuid NOT NULL,
+    comment text NOT NULL,
+    reposts_count integer DEFAULT 0 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: follows; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -163,7 +178,6 @@ CREATE TABLE public.reposts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     repostable_type character varying NOT NULL,
     repostable_id uuid NOT NULL,
-    comment text DEFAULT ''::text NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -215,6 +229,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.commented_posts
     ADD CONSTRAINT commented_posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commented_reposts commented_reposts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commented_reposts
+    ADD CONSTRAINT commented_reposts_pkey PRIMARY KEY (id);
 
 
 --
