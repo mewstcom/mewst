@@ -25,4 +25,9 @@ class Verification < ApplicationRecord
   def account
     @account ||= T.let(Account.find_by(email:), T.nilable(Account))
   end
+
+  sig { returns(T::Boolean) }
+  def success
+    update!(succeeded_at: Time.current)
+  end
 end

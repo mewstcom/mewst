@@ -12,18 +12,13 @@ class VerificationChallenge
 
   attribute :challenged_code, :string
 
-  delegate :account, to: :verification!
+  delegate :account, :success, to: :verification!
 
   validate :valid_challenged_code
 
   sig { returns(Verification) }
   def verification!
     T.cast(verification, Verification)
-  end
-
-  sig { returns(T::Boolean) }
-  def success
-    verification!.update!(succeeded_at: Time.current)
   end
 
   private
