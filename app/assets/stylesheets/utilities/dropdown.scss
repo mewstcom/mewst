@@ -1,0 +1,7 @@
+.dropdown {
+  &.u-hidden-caret {
+    .dropdown-toggle::after {
+      display: none; // Hide caret
+    }
+  }
+}
