@@ -1,7 +1,18 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+[
+  ["me@shimba.co", "shimbaco", "password", "https://shimba.co/img/shimbaco.jpg"],
+  ["user1@example.com", "user1", "password", ""],
+  ["user2@example.com", "user2", "password", ""],
+  ["user3@example.com", "user3", "password", ""],
+].each do |(email, atname, password, avatar_url)|
+  ActiveRecord::Base.transaction do
+    verification = Verification.create!(email:, event: :sign_up, code: 111111, succeeded_at: Time.current)
+    account_activation = AccountActivation.new(atname:, locale: "ja", password:)
+    account_activation.verification = verification
+    account = account_activation.run
+
+    if avatar_url.present?
+      profile = account.profiles.first
+      profile.update!(avatar_url:)
+    end
+  end
+end
