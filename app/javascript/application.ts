@@ -5,8 +5,10 @@ import * as bootstrap from 'bootstrap'
 
 import AutosizeController from './controllers/autosize-controller';
 import ComponentDataFetcherController from './controllers/component-data-fetcher-controller';
-import PostFormController from "./controllers/post-form-controller";
 import FollowButtonController from './controllers/follow-button-controller';
+import PostFormController from "./controllers/post-form-controller";
+import RepostButtonController from "./controllers/repost-button-controller";
+import RepostDropdownController from "./controllers/repost-dropdown-controller";
 import TimelineController from "./controllers/timeline-controller";
 
 window.Stimulus = Application.start();
@@ -14,6 +16,8 @@ Stimulus.register('autosize', AutosizeController);
 Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
 Stimulus.register('post-form', PostFormController);
 Stimulus.register('follow-button', FollowButtonController);
+Stimulus.register('repost-button', RepostButtonController);
+Stimulus.register('repost-dropdown', RepostDropdownController);
 Stimulus.register('timeline', TimelineController);
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');

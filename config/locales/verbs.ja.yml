@@ -5,6 +5,8 @@ ja:
     disconnect: 連携解除する
     follow: フォローする
     post: 投稿する
+    repost: リポストする
+    repost_with_comment: コメント付きでリポストする
     sign_in: ログインする
     submit: 送信する
     update: 更新する

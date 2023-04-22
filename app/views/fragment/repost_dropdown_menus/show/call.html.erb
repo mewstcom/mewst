@@ -1,0 +1,26 @@
+<turbo-frame id="repost_dropdown_item_list_<%= @post.id %>">
+  <button
+    class="dropdown-item"
+    data-action="click->repost-button#repost"
+    data-controller="repost-button"
+    data-repost-button-post-id-value="<%= @post.id %>"
+    type="button"
+  >
+    <i class="bi bi-repeat"></i>
+
+    <span class="ms-1">
+      <%= t("verbs.repost") %>
+    </span>
+  </button>
+
+  <button
+    class="dropdown-item"
+    type="button"
+  >
+    <i class="bi bi-chat-quote"></i>
+
+    <span class="ms-1">
+      <%= t("verbs.repost_with_comment") %>
+    </span>
+  </button>
+</turbo-frame>

@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Cards::CommentedPostCardComponent < ApplicationComponent
+class Cards::PostCard::CommentedPostContentComponent < ApplicationComponent
   sig { params(post: Post).void }
   def initialize(post:)
     @post = post

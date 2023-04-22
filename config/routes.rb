@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   match "/api/internal/pubsub/fanout_post",                  via: :post,   as: :internal_api_pubsub_fanout_post,                  to: "api/internal/pubsub/fanout_post#call"
   match "/api/internal/tasks/send_verification_mail",        via: :post,   as: :internal_api_tasks_send_verification_mail,        to: "api/internal/tasks/send_verification_mail#call"
   match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
+  match "/fragment/posts/:post_id/repost_dropdown_menu",     via: :get,    as: :fragment_repost_dropdown_menu,                    to: "fragment/repost_dropdown_menus/show#call"
   match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"
   match "/password",                                         via: :patch,  as: :password,                                         to: "passwords/update#call"
   match "/password/edit",                                    via: :get,    as: :edit_password,                                    to: "passwords/edit#call"

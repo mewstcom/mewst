@@ -20,9 +20,11 @@ class Cards::PostCardComponent < ApplicationComponent
   def postable_component
     case post.postable_type
     when "CommentedPost"
-      Cards::CommentedPostCardComponent
+      Cards::PostCard::CommentedPostContentComponent
+    when "CommentedRepost"
+      Cards::PostCard::CommentedRepostContentComponent
     when "Repost"
-      Cards::RepostCardComponent
+      Cards::PostCard::RepostContentComponent
     else
       fail "Unknown postable type: #{post.postable_type.inspect}"
     end

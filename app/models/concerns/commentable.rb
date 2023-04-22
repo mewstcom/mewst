@@ -1,12 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Repostable
+module Commentable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  TYPES = %w[
-    CommentedPost
-    CommentedRepost
-  ].freeze
+  MAXIMUM_COMMENT_LENGTH = 500
 end

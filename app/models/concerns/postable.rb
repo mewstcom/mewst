@@ -7,6 +7,7 @@ module Postable
 
   TYPES = %w[
     CommentedPost
+    CommentedRepost
     Repost
   ].freeze
 end
