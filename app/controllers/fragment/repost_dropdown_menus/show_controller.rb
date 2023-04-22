@@ -12,5 +12,6 @@ class Fragment::RepostDropdownMenus::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @post = Post.find(params[:post_id])
+    @repost_creator = Repost::Creator.new(post_id: @post.id)
   end
 end

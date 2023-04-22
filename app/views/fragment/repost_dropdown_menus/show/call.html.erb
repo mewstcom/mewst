@@ -1,17 +1,15 @@
 <turbo-frame id="repost_dropdown_item_list_<%= @post.id %>">
-  <button
-    class="dropdown-item"
-    data-action="click->repost-button#repost"
-    data-controller="repost-button"
-    data-repost-button-post-id-value="<%= @post.id %>"
-    type="button"
-  >
-    <i class="bi bi-repeat"></i>
+  <%= form_with(model: @repost_creator, url: repost_list_path(post_id: @post.id)) do |f| %>
+    <%= f.hidden_field :post_id %>
 
-    <span class="ms-1">
-      <%= t("verbs.repost") %>
-    </span>
-  </button>
+    <%= f.button(class: "dropdown-item", type: :submit) do %>
+      <i class="bi bi-repeat"></i>
+
+      <span class="ms-1">
+        <%= t("verbs.repost") %>
+      </span>
+    <% end %>
+  <% end %>
 
   <button
     class="dropdown-item"
