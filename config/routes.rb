@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   match "/password/edit",                                    via: :get,    as: :edit_password,                                    to: "passwords/edit#call"
   match "/password_reset",                                   via: :get,    as: :password_reset,                                   to: "password_resets/new#call"
   match "/password_reset",                                   via: :post,                                                          to: "password_resets/create#call"
+  match "/posts/:post_id/repost",                            via: :delete, as: :repost,                                           to: "reposts/destroy#call"
   match "/posts/:post_id/reposts",                           via: :post,   as: :repost_list,                                      to: "reposts/create#call"
   match "/settings",                                         via: :get,    as: :settings,                                         to: "settings/index#call"
   match "/settings/account",                                 via: :get,    as: :settings_account,                                 to: "settings/accounts/show#call"

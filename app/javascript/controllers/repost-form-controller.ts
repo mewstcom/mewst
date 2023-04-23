@@ -17,8 +17,4 @@ export default class extends Controller {
       this.dispatch("submit-end", { detail: { postId: this.postIdValue } });
     });
   }
-
-  // submit(event: any) {
-  //   this.dispatch("submit-start", { detail: { postId: this.postIdValue } })
-  // }
 }

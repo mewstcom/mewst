@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Reposts::CreateController < ApplicationController
+class Reposts::DestroyController < ApplicationController
   include Authenticatable
   include Authorizable
   include Localizable
@@ -11,13 +11,13 @@ class Reposts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @repost_creator = Repost::Creator.new(post_id: params[:post_id])
-    @repost_creator.profile = current_profile!
+    post = Post.find(params[:post_id])
+    repost = current_profile!.reposts.find_sole_by(repostable: post.postable)
 
     ActiveRecord::Base.transaction do
-      @repost_creator.call
+      current_profile!.delete_post(post: repost.post)
     end
 
-    head :created
+    head :no_content
   end
 end
