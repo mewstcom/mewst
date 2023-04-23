@@ -11,11 +11,11 @@ class Reposts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @repost_creator = Repost::Creator.new(post_id: params[:post_id])
-    @repost_creator.profile = current_profile!
+    form = Forms::Repost.new(profile: current_profile!, post_id: params[:post_id])
+    command = Commands::CreateRepost.new(form:)
 
     ActiveRecord::Base.transaction do
-      @repost_creator.call
+      command.execute
     end
 
     head :created
