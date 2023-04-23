@@ -1,5 +1,13 @@
 <turbo-frame id="repost_dropdown_item_list_<%= @post.id %>">
-  <%= form_with(model: @repost_creator, url: repost_list_path(post_id: @post.id)) do |f| %>
+  <%= form_with(
+    data: {
+      action: "repost-form:submit-start->repost-dropdown#disable repost-form:submit-end->repost-dropdown#reload",
+      controller: "repost-form",
+      repost_form_post_id_value: @post.id
+    },
+    model: @repost_creator,
+    url: repost_list_path(post_id: @post.id)
+  ) do |f| %>
     <%= f.hidden_field :post_id %>
 
     <%= f.button(class: "dropdown-item", type: :submit) do %>

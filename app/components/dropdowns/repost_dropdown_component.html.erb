@@ -1,0 +1,25 @@
+<turbo-frame
+  class="c-repost-dropdown dropdown u-hidden-caret"
+  data-controller="repost-dropdown"
+  id="repost_dropdown_<%= post.id %>"
+>
+  <button
+    class="<%= repost_dropdown_button_class_names %>"
+    data-bs-toggle="dropdown"
+    data-repost-dropdown-target="button"
+    type="button"
+  >
+    <i class="<%= repost_icon_class_names %>"></i>
+
+    <span class="<%= repost_count_class_names %>">
+      <%= post.reposts_count %>
+    </span>
+  </button>
+
+  <turbo-frame
+    class="dropdown-menu rounded-4"
+    id="repost_dropdown_item_list_<%= post.id %>"
+    loading="lazy"
+    src="/fragment/posts/<%= post.id %>/repost_dropdown_menu"
+  ></turbo-frame>
+</turbo-frame>

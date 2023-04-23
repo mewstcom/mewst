@@ -2,7 +2,7 @@
   <div class="gx-3 row">
     <div class="col-auto">
       <span data-bs-toggle="tooltip" data-bs-title="<%= t("messages._common.still_under_development") %>">
-        <%= link_to post_path(profile.atname, post.id), class: "btn btn-outline-secondary btn-sm disabled rounded-pill" do %>
+        <%= link_to post_path(profile.atname, post.id), class: "btn btn-secondary btn-sm disabled rounded-pill" do %>
           <i class="bi bi-chat-text"></i>
 
           <span class="ms-1">
@@ -13,33 +13,11 @@
     </div>
 
     <div class="col-auto">
-      <turbo-frame
-        class="dropdown u-hidden-caret"
-        data-controller="repost-dropdown"
-      >
-        <button
-          class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill"
-          data-bs-toggle="dropdown"
-          type="button"
-        >
-          <i class="bi bi-repeat"></i>
-
-          <span class="ms-1">
-            <%= post.reposts_count %>
-          </span>
-        </button>
-
-        <turbo-frame
-          class="dropdown-menu rounded-4"
-          id="repost_dropdown_item_list_<%= post.id %>"
-          loading="lazy"
-          src="/fragment/posts/<%= post.id %>/repost_dropdown_menu"
-        ></turbo-frame>
-      </turbo-frame>
+      <%= render Dropdowns::RepostDropdownComponent.new(post:) %>
     </div>
 
     <div class="col-auto">
-      <button class="btn btn-outline-secondary btn-sm rounded-pill">
+      <button class="btn btn-secondary btn-sm rounded-pill">
         <i class="bi bi-star"></i>
 
         <span class="ms-1">

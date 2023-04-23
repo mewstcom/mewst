@@ -13,6 +13,7 @@ class Reposts::CreateController < ApplicationController
   def call
     @repost_creator = Repost::Creator.new(form_params)
     @repost_creator.profile = current_profile!
+    sleep 3
 
     ActiveRecord::Base.transaction do
       @repost_creator.call
