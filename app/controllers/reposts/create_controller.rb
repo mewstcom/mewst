@@ -15,7 +15,7 @@ class Reposts::CreateController < ApplicationController
     command = Commands::CreateRepost.new(form:)
 
     ActiveRecord::Base.transaction do
-      command.execute
+      command.call
     end
 
     head :created

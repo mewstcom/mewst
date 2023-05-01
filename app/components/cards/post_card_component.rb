@@ -17,6 +17,13 @@ class Cards::PostCardComponent < ApplicationComponent
     T.must(post.profile)
   end
 
+  sig do
+    returns(T.any(
+      T.class_of(Cards::PostCard::CommentedPostContentComponent),
+      T.class_of(Cards::PostCard::CommentedRepostContentComponent),
+      T.class_of(Cards::PostCard::RepostContentComponent))
+    )
+  end
   def postable_component
     case post.postable_type
     when "CommentedPost"

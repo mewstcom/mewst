@@ -5,9 +5,9 @@ module Postable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  TYPES = %w[
+  TYPES = T.let(%w[
     CommentedPost
     CommentedRepost
     Repost
-  ].freeze
+  ].freeze, T::Array[String])
 end

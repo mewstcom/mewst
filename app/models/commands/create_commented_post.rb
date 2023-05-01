@@ -2,7 +2,9 @@
 # frozen_string_literal: true
 
 class Commands::CreateCommentedPost < Commands::Base
-  Result = Data.define(:post)
+  class Result < T::Struct
+    const :post, Post
+  end
 
   sig { params(form: Forms::CommentedPost).void }
   def initialize(form:)
@@ -13,11 +15,11 @@ class Commands::CreateCommentedPost < Commands::Base
   def call
     new_post = ActiveRecord::Base.transaction do
       commented_post = CommentedPost.create!(comment: form.comment)
-      post = form.profile.posts.create!(postable: commented_post, published_at: Time.current)
+      post = form.profile!.posts.create!(postable: commented_post, published_at: Time.current)
       post
     end
 
-    form.profile.home_timeline.add_post(post: new_post)
+    form.profile!.home_timeline.add_post(post: new_post)
     FanoutPostJob.perform_async(post_id: new_post.id)
 
     Result.new(post: new_post)

@@ -2,7 +2,9 @@
 # frozen_string_literal: true
 
 class Commands::CreateRepost < Commands::Base
-  Result = Data.define(:post)
+  class Result < T::Struct
+    const :post, Post
+  end
 
   sig { params(form: Forms::Repost).void }
   def initialize(form:)
@@ -12,13 +14,13 @@ class Commands::CreateRepost < Commands::Base
   sig { returns(Result) }
   def call
     new_post = ActiveRecord::Base.transaction do
-      repost = Repost.create!(repostable: form.post.postable)
-      post = form.profile.posts.create!(postable: repost, published_at: Time.current)
+      repost = Repost.create!(repostable: form.post!.postable)
+      post = form.profile!.posts.create!(postable: repost, published_at: Time.current)
 
       post
     end
 
-    form.profile.home_timeline.add_post(post: new_post)
+    form.profile!.home_timeline.add_post(post: new_post)
     FanoutPostJob.perform_async(post_id: new_post.id)
 
     Result.new(post: new_post)
