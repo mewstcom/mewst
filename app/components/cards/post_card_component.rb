@@ -21,8 +21,8 @@ class Cards::PostCardComponent < ApplicationComponent
     returns(T.any(
       T.class_of(Cards::PostCard::CommentedPostContentComponent),
       T.class_of(Cards::PostCard::CommentedRepostContentComponent),
-      T.class_of(Cards::PostCard::RepostContentComponent))
-    )
+      T.class_of(Cards::PostCard::RepostContentComponent)
+    ))
   end
   def postable_component
     case post.postable_type

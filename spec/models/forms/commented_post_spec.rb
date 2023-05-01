@@ -8,7 +8,7 @@ RSpec.describe Forms::CommentedPost do
     context "when comment is blank" do
       let!(:form) { Forms::CommentedPost.new(profile:, comment: "") }
 
-      it "should be invalid" do
+      it "is invalid" do
         expect(form.invalid?).to be(true)
         expect(form.errors.where(:comment, :blank)).to be_present
       end
@@ -18,7 +18,7 @@ RSpec.describe Forms::CommentedPost do
       let!(:long_comment) { "a" * (Commentable::MAXIMUM_COMMENT_LENGTH + 1) }
       let!(:form) { Forms::CommentedPost.new(profile:, comment: long_comment) }
 
-      it "should be invalid" do
+      it "is invalid" do
         expect(form.invalid?).to be(true)
         expect(form.errors.where(:comment, :too_long)).to be_present
       end

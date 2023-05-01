@@ -6,7 +6,7 @@ class CommentedRepost < ApplicationRecord
 
   counter_culture :repostable, column_name: "reposts_count"
 
-  has_one :post, as: :postable, touch: true
+  has_one :post, as: :postable, dependent: :restrict_with_exception, touch: true
 
   validates :comment, length: {maximum: Commentable::MAXIMUM_COMMENT_LENGTH}, presence: true
   validates :repostable_type, inclusion: {in: Repostable::TYPES}
