@@ -7,9 +7,8 @@ class Forms::Repost < Forms::Base
 
   validates :post, presence: true
 
-  private
-
+  sig { returns(T.nilable(Post)) }
   def post
-    Post.find(post_id)
+    Post.find_by(id: post_id)
   end
 end

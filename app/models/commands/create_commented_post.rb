@@ -1,10 +1,10 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::CreateRepost < Commands::Base
+class Commands::CreateCommentedPost < Commands::Base
   Result = Data.define(:post)
 
-  sig { params(form: Forms::Repost).void }
+  sig { params(form: Forms::CommentedPost).void }
   def initialize(form:)
     @form = form
   end
@@ -12,9 +12,8 @@ class Commands::CreateRepost < Commands::Base
   sig { returns(Result) }
   def call
     new_post = ActiveRecord::Base.transaction do
-      repost = Repost.create!(repostable: form.post.postable)
-      post = form.profile.posts.create!(postable: repost, published_at: Time.current)
-
+      commented_post = CommentedPost.create!(comment: form.comment)
+      post = form.profile.posts.create!(postable: commented_post, published_at: Time.current)
       post
     end
 
@@ -26,6 +25,6 @@ class Commands::CreateRepost < Commands::Base
 
   private
 
-  sig { returns(Forms::Repost) }
+  sig { returns(Forms::CommentedPost) }
   attr_reader :form
 end
