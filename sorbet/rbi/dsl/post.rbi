@@ -262,6 +262,9 @@ class Post
     def commented_posts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def commented_reposts(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -381,6 +384,9 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def reorder(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def reselect(*args, &blk); end
@@ -833,7 +839,7 @@ class Post
   end
 
   module GeneratedDelegatedTypeMethods
-    sig { params(args: T.untyped).returns(T.any(CommentedPost)) }
+    sig { params(args: T.untyped).returns(T.any(CommentedPost, CommentedRepost, Repost)) }
     def build_postable(*args); end
 
     sig { returns(T.nilable(CommentedPost)) }
@@ -845,11 +851,29 @@ class Post
     sig { returns(T.untyped) }
     def commented_post_id; end
 
+    sig { returns(T.nilable(CommentedRepost)) }
+    def commented_repost; end
+
+    sig { returns(T::Boolean) }
+    def commented_repost?; end
+
+    sig { returns(T.untyped) }
+    def commented_repost_id; end
+
     sig { returns(Class) }
     def postable_class; end
 
     sig { returns(ActiveSupport::StringInquirer) }
     def postable_name; end
+
+    sig { returns(T.nilable(Repost)) }
+    def repost; end
+
+    sig { returns(T::Boolean) }
+    def repost?; end
+
+    sig { returns(T.untyped) }
+    def repost_id; end
   end
 
   module GeneratedRelationMethods
@@ -864,6 +888,9 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def commented_posts(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def commented_reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
@@ -951,6 +978,9 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def reorder(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def reselect(*args, &blk); end

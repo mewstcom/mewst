@@ -15,6 +15,12 @@ module GeneratedPathHelpersModule
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def fragment_repost_dropdown_menu_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def fragment_repost_dropdown_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -73,6 +79,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def repost_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def repost_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def root_path(*args); end

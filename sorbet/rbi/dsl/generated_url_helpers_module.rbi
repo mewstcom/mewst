@@ -15,6 +15,12 @@ module GeneratedUrlHelpersModule
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def fragment_repost_dropdown_menu_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def fragment_repost_dropdown_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -73,6 +79,12 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def repost_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def repost_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def root_url(*args); end

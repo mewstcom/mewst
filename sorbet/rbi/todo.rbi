@@ -5,3 +5,4 @@
 # typed: false
 
 module Google::Protobuf::EnumDescriptor; end
+module Repost::Creator; end
