@@ -10,6 +10,11 @@ class Mewst::Redis
   end
 
   sig { returns(T.any(ConnectionPool::Wrapper, Redis)) }
+  def self.unevictable_client
+    new(url: ENV.fetch("MEWST_REDIS_UNEVICTABLE_CACHE_URL")).client
+  end
+
+  sig { returns(T.any(ConnectionPool::Wrapper, Redis)) }
   def client
     @client ||= T.let(ConnectionPool::Wrapper.new do
       Redis.new(url: @url)
