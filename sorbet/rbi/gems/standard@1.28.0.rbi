@@ -14,25 +14,25 @@ class RuboCop::CommentConfig
   # source://standard//lib/standard/rubocop/ext.rb#20
   def initialize(processed_source); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#63
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#63
   def comment_only_line?(line_number); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def config(*args, **_arg1, &block); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#51
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#51
   def cop_disabled_line_ranges; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#39
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#39
   def cop_enabled_at_line?(cop, line_number); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#47
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#47
   def cop_opted_in?(cop); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#55
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#55
   def extra_enabled_comments; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#30
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#30
   def processed_source; end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -40,55 +40,53 @@ class RuboCop::CommentConfig
 
   private
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#96
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#96
   def analyze; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#124
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#124
   def analyze_cop(analysis, directive); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#144
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#144
   def analyze_disabled(analysis, directive); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#155
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#155
   def analyze_rest(analysis, directive); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#135
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#135
   def analyze_single_line(analysis, directive); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#164
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#164
   def cop_line_ranges(analysis); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#170
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#170
   def each_directive; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#69
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#69
   def extra_enabled_comments_with_names(extras:, names:); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#190
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#190
   def handle_enable_all(directive, names, extras); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#204
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#204
   def handle_switch(directive, names, extras); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#115
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#115
   def inject_disabled_cops_directives(analyses); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#183
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#183
   def non_comment_token_line_numbers; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#34
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#34
   def old_initialize(processed_source); end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#83
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#83
   def opt_in_cops; end
 
-  # source://rubocop/1.48.1/lib/rubocop/comment_config.rb#179
+  # source://rubocop/1.50.2/lib/rubocop/comment_config.rb#179
   def qualified_cop_name(cop_name); end
 end
 
-# source://standard//lib/standard/cop/block_single_line_braces.rb#1
 module RuboCop::Cop; end
-
 module RuboCop::Cop::Lint; end
 
 # source://standard//lib/standard/rubocop/ext.rb#2
@@ -96,167 +94,114 @@ class RuboCop::Cop::Lint::AssignmentInCondition < ::RuboCop::Cop::Base
   # source://standard//lib/standard/rubocop/ext.rb#4
   def message(_); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#55
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_if(node); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#55
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_until(node); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#55
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#55
   def on_while(node); end
 
   private
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#82
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#82
   def allowed_construct?(asgn_node); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#86
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#86
   def conditional_assignment?(asgn_node); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#90
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#90
   def skip_children?(asgn_node); end
 
-  # source://rubocop/1.48.1/lib/rubocop/cop/lint/assignment_in_condition.rb#96
+  # source://rubocop/1.50.2/lib/rubocop/cop/lint/assignment_in_condition.rb#96
   def traverse_node(node, &block); end
-end
-
-# source://standard//lib/standard/cop/block_single_line_braces.rb#2
-module RuboCop::Cop::Standard; end
-
-# Check for uses of braces around single line blocks, but allows either
-# braces or do/end for multi-line blocks.
-#
-# @example
-#   # bad - single line block
-#   items.each do |item| item / 5 end
-#
-#   # good - single line block
-#   items.each { |item| item / 5 }
-#
-# source://standard//lib/standard/cop/block_single_line_braces.rb#13
-class RuboCop::Cop::Standard::BlockSingleLineBraces < ::RuboCop::Cop::Base
-  extend ::RuboCop::Cop::AutoCorrector
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#31
-  def on_block(node); end
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#16
-  def on_send(node); end
-
-  private
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#69
-  def autocorrect(corrector, node); end
-
-  # @return [Boolean]
-  #
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#75
-  def correction_would_break_code?(node); end
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#43
-  def get_blocks(node, &block); end
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#65
-  def message(node); end
-
-  # @return [Boolean]
-  #
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#61
-  def proper_block_style?(node); end
-
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#81
-  def replace_do_end_with_braces(corrector, loc); end
-
-  # @return [Boolean]
-  #
-  # source://standard//lib/standard/cop/block_single_line_braces.rb#91
-  def whitespace_after?(range, length = T.unsafe(nil)); end
 end
 
 # source://standard//lib/standard/rubocop/ext.rb#9
 class RuboCop::DirectiveComment
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#30
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#30
   def initialize(comment, cop_registry = T.unsafe(nil)); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#80
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#80
   def all_cops?; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#28
   def comment; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#85
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#85
   def cop_names; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#28
   def cop_registry; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#28
   def cops; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#91
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#91
   def department_names; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#105
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#105
   def directive_count; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#60
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#60
   def disabled?; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#75
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#75
   def disabled_all?; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#65
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#65
   def enabled?; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#70
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#70
   def enabled_all?; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#96
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#96
   def in_directive_department?(cop); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#110
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#110
   def line_number; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#42
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#42
   def match?(cop_names); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#55
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#55
   def match_captures; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#28
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#28
   def mode; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#101
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#101
   def overridden_by_department?(cop); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#46
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#46
   def range; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#37
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#37
   def single_line?; end
 
   private
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#130
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#130
   def all_cop_names; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#134
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#134
   def cop_names_for_department(department); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#126
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#126
   def department?(name); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#140
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#140
   def exclude_redundant_directive_cop(cops); end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#120
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#120
   def parsed_cop_names; end
 
-  # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#116
+  # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#116
   def splitted_cops_string; end
 
   class << self
-    # source://rubocop/1.48.1/lib/rubocop/directive_comment.rb#24
+    # source://rubocop/1.50.2/lib/rubocop/directive_comment.rb#24
     def before_comment(line); end
   end
 end
@@ -264,7 +209,7 @@ end
 # source://standard//lib/standard/rubocop/ext.rb#11
 RuboCop::DirectiveComment::DIRECTIVE_COMMENT_REGEXP = T.let(T.unsafe(nil), Regexp)
 
-# source://standard//lib/standard/version.rb#1
+# source://standard//lib/standard.rb#4
 module Standard; end
 
 # source://standard//lib/standard/builds_config.rb#8
@@ -351,7 +296,7 @@ class Standard::CreatesConfigStore
   # source://standard//lib/standard/creates_config_store.rb#10
   def initialize; end
 
-  # source://standard//lib/standard/creates_config_store.rb#17
+  # source://standard//lib/standard/creates_config_store.rb#18
   def call(standard_config); end
 end
 
@@ -359,11 +304,6 @@ end
 class Standard::CreatesConfigStore::AssignsRubocopYaml
   # source://standard//lib/standard/creates_config_store/assigns_rubocop_yaml.rb#5
   def call(config_store, standard_config); end
-
-  private
-
-  # source://standard//lib/standard/creates_config_store/assigns_rubocop_yaml.rb#12
-  def rubocop_yaml_path(desired_version); end
 end
 
 # source://standard//lib/standard/creates_config_store/configures_ignored_paths.rb#2
@@ -388,37 +328,30 @@ end
 # source://standard//lib/standard/creates_config_store/configures_ignored_paths.rb#3
 Standard::CreatesConfigStore::ConfiguresIgnoredPaths::DEFAULT_IGNORES = T.let(T.unsafe(nil), Array)
 
-# source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#4
+# source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#5
 class Standard::CreatesConfigStore::MergesUserConfigExtensions
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#16
-  def call(options_config, standard_config); end
-
-  private
-
-  # Blank configuration object to merge extensions into, with all known
-  # AllCops keys set to avoid warnings about unknown properties
+  # @return [MergesUserConfigExtensions] a new instance of MergesUserConfigExtensions
   #
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#59
-  def blank_rubocop_config(example_config); end
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#24
+  def initialize; end
 
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#63
-  def except(hash_or_config, keys); end
-
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#50
-  def fake_out_rubocop_default_configuration(options_config); end
-
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#26
-  def load_and_merge_extended_rubocop_configs(options_config, standard_config); end
-
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#44
-  def merge_extended_rules_into_standard!(options_config, extended_config); end
-
-  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#38
-  def merge_standard_and_user_all_cops!(options_config, extended_config); end
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#28
+  def call(options_config, standard_config); end
 end
 
-# source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#5
-Standard::CreatesConfigStore::MergesUserConfigExtensions::DISALLOWED_ALLCOPS_KEYS = T.let(T.unsafe(nil), Array)
+# source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#6
+class Standard::CreatesConfigStore::MergesUserConfigExtensions::ExtendConfigPlugin < ::LintRoller::Plugin
+  # @return [ExtendConfigPlugin] a new instance of ExtendConfigPlugin
+  #
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#7
+  def initialize(path); end
+
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#11
+  def about; end
+
+  # source://standard//lib/standard/creates_config_store/merges_user_config_extensions.rb#15
+  def rules(context); end
+end
 
 # source://standard//lib/standard/creates_config_store/sets_target_ruby_version.rb#2
 class Standard::CreatesConfigStore::SetsTargetRubyVersion
@@ -511,19 +444,19 @@ class Standard::LoadsYamlConfig
 
   private
 
-  # source://standard//lib/standard/loads_yaml_config.rb#56
+  # source://standard//lib/standard/loads_yaml_config.rb#57
   def arrayify(object); end
 
   # source://standard//lib/standard/loads_yaml_config.rb#25
   def construct_config(yaml_path, standard_yaml, todo_path, todo_yaml); end
 
-  # source://standard//lib/standard/loads_yaml_config.rb#46
+  # source://standard//lib/standard/loads_yaml_config.rb#47
   def expand_ignore_config(ignore_config); end
 
   # source://standard//lib/standard/loads_yaml_config.rb#17
   def load_standard_yaml(yaml_path); end
 
-  # source://standard//lib/standard/loads_yaml_config.rb#40
+  # source://standard//lib/standard/loads_yaml_config.rb#41
   def normalized_ruby_version(version); end
 end
 
@@ -713,6 +646,133 @@ class Standard::MergesSettings::Settings < ::Struct
   end
 end
 
+# source://standard//lib/standard/plugin.rb#2
+module Standard::Plugin; end
+
+# source://standard//lib/standard/plugin/combines_plugin_configs.rb#3
+class Standard::Plugin::CombinesPluginConfigs
+  # @return [CombinesPluginConfigs] a new instance of CombinesPluginConfigs
+  #
+  # source://standard//lib/standard/plugin/combines_plugin_configs.rb#4
+  def initialize; end
+
+  # source://standard//lib/standard/plugin/combines_plugin_configs.rb#9
+  def call(options_config, standard_config); end
+end
+
+# source://standard//lib/standard/plugin/creates_runner_context.rb#3
+class Standard::Plugin::CreatesRunnerContext
+  # source://standard//lib/standard/plugin/creates_runner_context.rb#4
+  def call(standard_config); end
+end
+
+# source://standard//lib/standard/plugin/determines_class_constant.rb#3
+class Standard::Plugin::DeterminesClassConstant
+  # source://standard//lib/standard/plugin/determines_class_constant.rb#4
+  def call(plugin_name, user_config); end
+
+  private
+
+  # source://standard//lib/standard/plugin/determines_class_constant.rb#41
+  def require_plugin(require_path); end
+end
+
+# source://standard//lib/standard/plugin/initializes_plugins.rb#3
+class Standard::Plugin::InitializesPlugins
+  # @return [InitializesPlugins] a new instance of InitializesPlugins
+  #
+  # source://standard//lib/standard/plugin/initializes_plugins.rb#4
+  def initialize; end
+
+  # source://standard//lib/standard/plugin/initializes_plugins.rb#9
+  def call(plugins); end
+end
+
+# source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#3
+class Standard::Plugin::MergesPluginsIntoRubocopConfig
+  # @return [MergesPluginsIntoRubocopConfig] a new instance of MergesPluginsIntoRubocopConfig
+  #
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#24
+  def initialize; end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#28
+  def call(options_config, standard_config, plugins, permit_merging:); end
+
+  private
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#133
+  def blank_rubocop_config(example_config); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#37
+  def combine_rubocop_configs(options_config, runner_context, plugins); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#57
+  def config_for_plugin(plugin, runner_context); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#96
+  def delete_already_configured_keys!(configured_keys, next_config, dont_delete_keys: T.unsafe(nil)); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#137
+  def except(hash_or_config, keys); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#126
+  def fake_out_rubocop_default_configuration(options_config); end
+
+  # Always deletes nil entries, always overwrites arrays
+  # This is a simplified version of rubocop's ConfigLoader#merge:
+  # https://github.com/rubocop/rubocop/blob/v1.48.1/lib/rubocop/config_loader_resolver.rb#L98
+  #
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#144
+  def merge(old_hash, new_hash); end
+
+  # This is how we ensure "first-in wins": plugins can override AllCops settings that are
+  # set by RuboCop's default configuration, but once a plugin sets an AllCop setting, they
+  # have exclusive first-in-wins rights to that setting.
+  #
+  # The one exception to this are array fields, because we don't want to
+  # overwrite the AllCops defaults but rather munge the arrays (`existing |
+  # new`) to allow plugins to add to the array, for example Include and
+  # Exclude paths and patterns.
+  #
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#77
+  def merge_all_cop_settings(existing_all_cops, new_all_cops, already_configured_keys); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#104
+  def merge_config_into_all_cops!(options_config, plugin_config); end
+
+  # source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#110
+  def merge_config_into_standard!(options_config, plugin_config, permit_merging:); end
+end
+
+# AllCops keys that standard does not allow to be set by plugins
+#
+# source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#10
+Standard::Plugin::MergesPluginsIntoRubocopConfig::DISALLOWED_ALLCOPS_KEYS = T.let(T.unsafe(nil), Array)
+
+# Blank configuration object to merge plugins into, with only the following spared:
+#   - AllCops keys set to avoid warnings about unknown properties
+#   - Lint/Syntax must be set to avoid a nil error when verifying inherited configs
+#
+# source://standard//lib/standard/plugin/merges_plugins_into_rubocop_config.rb#7
+Standard::Plugin::MergesPluginsIntoRubocopConfig::MANDATORY_RUBOCOP_CONFIG_KEYS = T.let(T.unsafe(nil), Array)
+
+# source://standard//lib/standard/plugin/standardizes_configured_plugins.rb#3
+class Standard::Plugin::StandardizesConfiguredPlugins
+  # source://standard//lib/standard/plugin/standardizes_configured_plugins.rb#19
+  def call(plugins); end
+
+  private
+
+  # source://standard//lib/standard/plugin/standardizes_configured_plugins.rb#25
+  def normalize_config_shape(plugins); end
+end
+
+# source://standard//lib/standard/plugin/standardizes_configured_plugins.rb#10
+Standard::Plugin::StandardizesConfiguredPlugins::BUILT_INS = T.let(T.unsafe(nil), Array)
+
+# source://standard//lib/standard/plugin/standardizes_configured_plugins.rb#4
+Standard::Plugin::StandardizesConfiguredPlugins::DEFAULT_PLUGIN_CONFIG = T.let(T.unsafe(nil), Hash)
+
 # source://standard//lib/standard/railtie.rb#4
 class Standard::Railtie < ::Rails::Railtie; end
 
@@ -760,7 +820,7 @@ class Standard::Runners::Rubocop
 
   # This is a workaround for an issue with how `parallel` and `stdin`
   # interact when invoked in this way. See:
-  #   https://github.com/testdouble/standard/issues/536
+  #   https://github.com/standardrb/standard/issues/536
   #
   # source://standard//lib/standard/runners/rubocop.rb#23
   def without_parallelizing_in_stdin_mode(options); end

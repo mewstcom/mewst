@@ -185,7 +185,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10799/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -967,7 +967,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10799/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -978,7 +978,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.10751/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.10799/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1281,7 +1281,7 @@ end
 class Tapioca::Gem::Event
   abstract!
 
-  # source://sorbet-runtime/0.5.10751/lib/types/private/abstract/declare.rb#37
+  # source://sorbet-runtime/0.5.10799/lib/types/private/abstract/declare.rb#37
   def initialize(*args, **_arg1, &blk); end
 end
 
@@ -2196,7 +2196,7 @@ class Tapioca::Loaders::Loader
 
   abstract!
 
-  # source://sorbet-runtime/0.5.10751/lib/types/private/abstract/declare.rb#37
+  # source://sorbet-runtime/0.5.10799/lib/types/private/abstract/declare.rb#37
   def initialize(*args, **_arg1, &blk); end
 
   # @abstract
@@ -3224,14 +3224,14 @@ class URI::Source < ::URI::File
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
-  # source://uri/0.12.0/uri/generic.rb#243
+  # source://uri/0.12.1/uri/generic.rb#243
   def gem_name; end
 
   # source://tapioca//lib/tapioca/helpers/source_uri.rb#25
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
-  # source://uri/0.12.0/uri/generic.rb#283
+  # source://uri/0.12.1/uri/generic.rb#283
   def line_number; end
 
   # source://tapioca//lib/tapioca/helpers/source_uri.rb#51
