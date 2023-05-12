@@ -4,6 +4,10 @@
 ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 
 Rails.application.routes.draw do
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+  end
+  post "/graphql", to: "graphql#execute"
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
   match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT
