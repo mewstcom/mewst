@@ -1,6 +1,9 @@
-class MewstSchema < GraphQL::Schema
-  mutation(Types::MutationType)
-  query(Types::QueryType)
+# typed: strict
+# frozen_string_literal: true
+
+class Internal::MewstSchema < GraphQL::Schema
+  mutation(Internal::Types::Objects::MutationType)
+  query(Internal::Types::Objects::QueryType)
 
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
