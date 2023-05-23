@@ -13,6 +13,7 @@ gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "counter_culture"
 gem "cssbundling-rails"
+gem "doorkeeper"
 gem "email_validator"
 gem "enumerize"
 gem "faraday"

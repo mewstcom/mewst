@@ -93,6 +93,8 @@ GEM
       railties (>= 6.0.0)
     date (3.3.3)
     diff-lcs (1.5.0)
+    doorkeeper (5.6.6)
+      railties (>= 5)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
@@ -432,6 +434,7 @@ DEPENDENCIES
   connection_pool
   counter_culture
   cssbundling-rails
+  doorkeeper
   dotenv-rails
   email_validator
   enumerize
