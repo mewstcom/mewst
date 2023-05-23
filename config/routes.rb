@@ -7,7 +7,6 @@ Rails.application.routes.draw do
   if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
-  post "/graphql", to: "graphql#execute"
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                         via: :get,    as: :profile,                                          to: "profiles/show#call",                        atname: ROUTING_USERNAME_FORMAT
   match "/@:atname/posts/:post_id",                          via: :delete, as: :post,                                             to: "posts/destroy#call",                        atname: ROUTING_USERNAME_FORMAT
@@ -23,6 +22,8 @@ Rails.application.routes.draw do
   match "/api/internal/unfollow",                            via: :post,   as: :internal_api_unfollow,                            to: "api/internal/unfollow/create#call"
   match "/fragment/posts/:post_id/repost_dropdown",          via: :get,    as: :fragment_repost_dropdown,                         to: "fragment/repost_dropdowns/show#call"
   match "/fragment/posts/:post_id/repost_dropdown_menu",     via: :get,    as: :fragment_repost_dropdown_menu,                    to: "fragment/repost_dropdown_menus/show#call"
+  match "/graphql/internal",                                 via: :post,   as: :graphql_internal,                                 to: "graphql/internal#call"
+  match "/graphql/trunk",                                    via: :post,   as: :graphql_trunk,                                    to: "graphql/trunk#call"
   match "/home",                                             via: :get,    as: :home,                                             to: "home/show#call"
   match "/password",                                         via: :patch,  as: :password,                                         to: "passwords/update#call"
   match "/password/edit",                                    via: :get,    as: :edit_password,                                    to: "passwords/edit#call"

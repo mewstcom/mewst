@@ -9,7 +9,7 @@ ja:
         challenged_code: 確認用コード
     errors:
       models:
-        verification_challenge:
+        forms/email_confirmation_challenge:
           attributes:
-            challenged_code:
+            confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています

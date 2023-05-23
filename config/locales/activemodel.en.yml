@@ -9,7 +9,7 @@ en:
         challenged_code: Verification code
     errors:
       models:
-        verification_challenge:
+        forms/email_confirmation_challenge:
           attributes:
-            challenged_code:
+            confirmation_code:
               incorrect_or_expired: is incorrect or expired

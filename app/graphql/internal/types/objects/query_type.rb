@@ -2,17 +2,11 @@
 # frozen_string_literal: true
 
 class Internal::Types::Objects::QueryType < Internal::Types::Objects::Base
-  # Add `node(id: ID!) and `nodes(ids: [ID!]!)`
-  include GraphQL::Types::Relay::HasNodeField
-  include GraphQL::Types::Relay::HasNodesField
+  field :succeeded_email_confirmation, Internal::Types::Objects::EmailConfirmationType, null: true do
+    argument :email_confirmation_id, String, required: true
+  end
 
-  # Add root-level fields here.
-  # They will be entry points for queries on your schema.
-
-  # TODO: remove me
-  field :test_field, String, null: false,
-    description: "An example field added by the generator"
-  def test_field
-    "Hello World!"
+  def succeeded_email_confirmation(email_confirmation_id:)
+    Verification.succeeded.find_by(id: email_confirmation_id)
   end
 end

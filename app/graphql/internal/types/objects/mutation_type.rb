@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 
 class Internal::Types::Objects::MutationType < Internal::Types::Objects::Base
-  # TODO: remove me
-  field :test_field, String, null: false,
-        description: "An example field added by the generator"
-  def test_field
-    "Hello World"
-  end
+  field :confirm_email, mutation: Internal::Mutations::ConfirmEmail
+  field :send_email_confirmation_code, mutation: Internal::Mutations::SendEmailConfirmationCode
 end

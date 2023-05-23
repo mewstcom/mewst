@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class SendVerificationMailJob < ApplicationJob
-  sig { params(verification_id: String, locale: Symbol).void }
+  sig { params(verification_id: String, locale: String).void }
   def perform(verification_id:, locale:)
     tasks = Mewst::CloudTasks.new
     tasks.create_task(
