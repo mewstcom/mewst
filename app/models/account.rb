@@ -4,6 +4,8 @@
 class Account < ApplicationRecord
   extend Enumerize
 
+  ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
+
   enumerize :locale, in: I18n.available_locales
 
   has_many :profile_members, dependent: :restrict_with_exception

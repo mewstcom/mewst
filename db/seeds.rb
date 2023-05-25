@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 [
-  ["me@shimba.co", "shimbaco", "password", "https://shimba.co/img/shimbaco.jpg"],
+  %w[me@shimba.co shimbaco password https://shimba.co/img/shimbaco.jpg],
   ["user1@example.com", "user1", "password", ""],
   ["user2@example.com", "user2", "password", ""],
   ["user3@example.com", "user3", "password", ""]
@@ -16,3 +18,10 @@
     end
   end
 end
+
+OauthApplication.create!(
+  name: "Mewst Web",
+  uid: OauthApplication::MEWST_WEB_UID,
+  redirect_uri: "#{ENV.fetch("MEWST_WEB_URL")}/callback",
+  scopes: ""
+)

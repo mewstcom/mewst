@@ -49,7 +49,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :oauth_applications, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.string :name, null: false
+      t.string :name, index: {unique: true}, null: false
       t.string :uid, index: {unique: true}, null: false
       t.string :secret, null: false
       t.text :redirect_uri, null: false
@@ -72,6 +72,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :oauth_access_tokens, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :account, foreign_key: true, null: false, type: :uuid
       t.references :resource_owner, foreign_key: {to_table: :profiles}, type: :uuid
       t.references :application, foreign_key: {to_table: :oauth_applications}, null: false, type: :uuid
       t.string :token, index: {unique: true}, null: false

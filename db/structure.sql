@@ -147,6 +147,7 @@ CREATE TABLE public.oauth_access_grants (
 
 CREATE TABLE public.oauth_access_tokens (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
+    account_id uuid NOT NULL,
     resource_owner_id uuid,
     application_id uuid NOT NULL,
     token character varying NOT NULL,
@@ -421,6 +422,13 @@ CREATE UNIQUE INDEX index_oauth_access_grants_on_token ON public.oauth_access_gr
 
 
 --
+-- Name: index_oauth_access_tokens_on_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_tokens_on_account_id ON public.oauth_access_tokens USING btree (account_id);
+
+
+--
 -- Name: index_oauth_access_tokens_on_application_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -446,6 +454,13 @@ CREATE INDEX index_oauth_access_tokens_on_resource_owner_id ON public.oauth_acce
 --
 
 CREATE UNIQUE INDEX index_oauth_access_tokens_on_token ON public.oauth_access_tokens USING btree (token);
+
+
+--
+-- Name: index_oauth_applications_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oauth_applications_on_name ON public.oauth_applications USING btree (name);
 
 
 --
@@ -542,6 +557,14 @@ ALTER TABLE ONLY public.follows
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_732cb83ab7 FOREIGN KEY (application_id) REFERENCES public.oauth_applications(id);
+
+
+--
+-- Name: oauth_access_tokens fk_rails_90b645246c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_tokens
+    ADD CONSTRAINT fk_rails_90b645246c FOREIGN KEY (account_id) REFERENCES public.accounts(id);
 
 
 --
