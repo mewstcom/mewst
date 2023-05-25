@@ -4,6 +4,7 @@
 ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 
 Rails.application.routes.draw do
+  use_doorkeeper
   if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
