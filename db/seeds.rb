@@ -1,27 +1,33 @@
 # frozen_string_literal: true
 
-[
-  %w[me@shimba.co shimbaco password https://shimba.co/img/shimbaco.jpg],
-  ["user1@example.com", "user1", "password", ""],
-  ["user2@example.com", "user2", "password", ""],
-  ["user3@example.com", "user3", "password", ""]
-].each do |(email, atname, password, avatar_url)|
-  ActiveRecord::Base.transaction do
-    verification = Verification.create!(email:, event: :sign_up, code: 111111, succeeded_at: Time.current)
-    account_activation = AccountActivation.new(atname:, locale: "ja", password:)
-    account_activation.verification = verification
-    account = account_activation.run
-
-    if avatar_url.present?
-      profile = account.profiles.first
-      profile.update!(avatar_url:)
-    end
-  end
-end
-
 OauthApplication.create!(
   name: "Mewst Web",
   uid: OauthApplication::MEWST_WEB_UID,
   redirect_uri: "#{ENV.fetch("MEWST_WEB_URL")}/callback",
   scopes: ""
 )
+
+[
+  %w[me@shimba.co ja shimbaco password https://shimba.co/img/shimbaco.jpg],
+  ["user1@example.com", "ja", "user1", "password", ""],
+  ["user2@example.com", "ja", "user2", "password", ""],
+  ["user3@example.com", "ja", "user3", "password", ""]
+].each do |(email, locale, atname, password, avatar_url)|
+  ActiveRecord::Base.transaction do
+    form = Forms::EmailConfirmation.new(email:, locale:)
+    result = Commands::SendEmailConfirmationCode.new(form:).call
+
+    form = Forms::EmailConfirmationChallenge.new(
+      email_confirmation_id: result.email_confirmation.id,
+      confirmation_code: result.email_confirmation.code
+    )
+    Commands::ConfirmEmail.new(form:).call
+
+    form = Forms::SignUp.new(atname:, email:, locale:, password:)
+    result = Commands::SignUp.new(form:).call
+
+    if avatar_url.present?
+      result.oauth_access_token.profile.update!(avatar_url:)
+    end
+  end
+end
