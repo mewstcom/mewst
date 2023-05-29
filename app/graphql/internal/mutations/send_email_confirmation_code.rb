@@ -3,13 +3,12 @@
 
 class Internal::Mutations::SendEmailConfirmationCode < Internal::Mutations::Base
   argument :email, String, required: true
-  argument :locale, Internal::Types::Enums::Locale, required: true
 
   field :email_confirmation_id, String, null: true
   field :errors, [Internal::Types::Objects::ClientErrorType], null: false
 
-  def resolve(email:, locale:)
-    form = Forms::EmailConfirmation.new(email:, locale:)
+  def resolve(email:)
+    form = Forms::EmailConfirmation.new(email:, locale: context[:current_locale])
 
     if form.invalid?
       return {

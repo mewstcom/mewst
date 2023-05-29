@@ -18,7 +18,7 @@ class Commands::SendEmailConfirmationCode < Commands::Base
       code: Verification.generate_code,
       event: Verification::EVENT_SIGN_UP
     )
-    SendVerificationMailJob.perform_later(verification_id: email_confirmation.id, locale: form.locale!.serialize)
+    SendVerificationMailJob.perform_later(verification_id: email_confirmation.id, locale: form.locale)
 
     Result.new(email_confirmation:)
   end

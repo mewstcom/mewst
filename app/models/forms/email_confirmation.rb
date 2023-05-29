@@ -6,10 +6,5 @@ class Forms::EmailConfirmation < Forms::Base
   attribute :locale, :string
 
   validates :email, email: true, presence: true
-  validates :locale, presence: true
-
-  sig { returns(Locale) }
-  def locale!
-    Locale.deserialize(locale&.downcase)
-  end
+  validates :locale, inclusion: {in: Locale.values.map(&:serialize)}, presence: true
 end

@@ -7,20 +7,20 @@ module Localizable
 
   sig { params(action: Proc).returns(T.untyped) }
   def set_locale(&action)
-    session[:current_locale] = current_account&.locale.presence ||
-      params[:locale].presence ||
-      session[:current_locale].presence ||
-      preferred_locale
-
-    I18n.with_locale(session[:current_locale], &action)
+    I18n.with_locale(preferred_locale.serialize, &action)
   end
 
   private
 
-  sig { returns(Symbol) }
+  sig { returns(Locale) }
   def preferred_locale
     preferred_languages = http_accept_language.user_preferred_languages
     # Chrome returns "ja", but Safari would return "ja-JP", not "ja".
-    (preferred_languages.any? { |lang| lang.match?(/ja/) }) ? :ja : :en
+    (preferred_languages.any? { |lang| lang.match?(/ja/) }) ? Locale::Ja : default_locale
+  end
+
+  sig { returns(Locale) }
+  def default_locale
+    Locale::En
   end
 end
