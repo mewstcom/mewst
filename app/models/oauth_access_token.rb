@@ -3,4 +3,5 @@
 
 class OauthAccessToken < Doorkeeper::AccessToken
   belongs_to :account
+  belongs_to :profile, foreign_key: :resource_owner_id
 end

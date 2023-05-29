@@ -6,7 +6,7 @@ class Internal::Mutations::SignUp < Internal::Mutations::Base
   argument :email, String, required: true
   argument :password, String, required: true
 
-  field :oauth_access_token, Internal::Types::Objects::OauthAccessToken, null: true
+  field :oauth_access_token, Internal::Types::Objects::OauthAccessTokenType, null: true
   field :errors, [Internal::Types::Objects::ClientErrorType], null: false
 
   def resolve(atname:, email:, password:)
