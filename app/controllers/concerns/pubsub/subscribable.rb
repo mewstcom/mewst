@@ -5,6 +5,10 @@ module Pubsub::Subscribable
   extend T::Sig
   extend ActiveSupport::Concern
 
+  included do
+    include ActionController::HttpAuthentication::Token::ControllerMethods
+  end
+
   sig { void }
   def require_authentication
     authenticate_or_request_with_http_token do |token|
