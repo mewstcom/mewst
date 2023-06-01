@@ -4,6 +4,8 @@
 class Commands::SignUp < Commands::Base
   class Result < T::Struct
     const :oauth_access_token, OauthAccessToken
+    const :profile, Profile
+    const :user, User
   end
 
   sig { params(form: Forms::SignUp).void }
@@ -13,31 +15,32 @@ class Commands::SignUp < Commands::Base
 
   sig { returns(Result) }
   def call
+    user = T.let(nil, T.nilable(User))
+    profile = T.let(nil, T.nilable(Profile))
     oauth_access_token = T.let(nil, T.nilable(OauthAccessToken))
     current_time = Time.current
 
     ActiveRecord::Base.transaction do
-      account = Account.create!(
+      user = User.create!(
         email: form.email,
         locale: form.locale,
         password: form.password,
         signed_up_at: current_time
       )
-      profile = account.profiles.new(
+      profile = user.profiles.new(
         atname: form.atname,
         joined_at: current_time
       )
-      account.profile_members.create!(profile:, joined_at: current_time)
+      user.profile_members.create!(profile:, joined_at: current_time)
 
       oauth_access_token = OauthAccessToken.find_or_create_for(
         application: OauthApplication.mewst_web,
-        resource_owner: profile,
-        scopes: "",
-        account:
+        resource_owner: user,
+        scopes: ""
       )
     end
 
-    Result.new(oauth_access_token:)
+    Result.new(oauth_access_token:, profile:, user:)
   end
 
   private

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-OauthApplication.create!(
-  name: "Mewst Web",
-  uid: OauthApplication::MEWST_WEB_UID,
+OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
+  name: "Mewst for Web",
   redirect_uri: "#{ENV.fetch("MEWST_WEB_URL")}/callback",
   scopes: ""
 )
@@ -27,7 +26,7 @@ OauthApplication.create!(
     result = Commands::SignUp.new(form:).call
 
     if avatar_url.present?
-      result.oauth_access_token.profile.update!(avatar_url:)
+      result.profile.update!(avatar_url:)
     end
   end
 end

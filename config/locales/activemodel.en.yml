@@ -1,12 +1,5 @@
 en:
   activemodel:
-    attributes:
-      account_activation:
-        atname: At name
-        email: Email
-        password: Password
-      verification_challenge:
-        challenged_code: Verification code
     errors:
       models:
         forms/email_confirmation_challenge:

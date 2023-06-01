@@ -7,6 +7,6 @@ class Internal::Types::Objects::QueryType < Internal::Types::Objects::Base
   end
 
   def succeeded_email_confirmation(email_confirmation_id:)
-    Verification.succeeded.find_by(id: email_confirmation_id)
+    EmailConfirmation.succeeded.find_by(id: email_confirmation_id)
   end
 end

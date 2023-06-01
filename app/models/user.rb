@@ -1,10 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Account < ApplicationRecord
+class User < ApplicationRecord
   extend Enumerize
-
-  ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
   enumerize :locale, in: I18n.available_locales
 

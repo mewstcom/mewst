@@ -30,8 +30,6 @@ en:
       profile_reposted_html: "<a href='/@%{atname}'>%{name}</a> reposted"
     profiles:
       updated: Profile updated.
-    verifications:
-      verification_mail_sent: Verification mail has been sent.
     welcome:
       alpha_html: |-
         This is an alpha product.<br>

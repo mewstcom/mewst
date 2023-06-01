@@ -3,7 +3,7 @@
 
 class Commands::SendEmailConfirmationCode < Commands::Base
   class Result < T::Struct
-    const :email_confirmation, Verification
+    const :email_confirmation, EmailConfirmation
   end
 
   sig { params(form: Forms::EmailConfirmation).void }
@@ -13,12 +13,12 @@ class Commands::SendEmailConfirmationCode < Commands::Base
 
   sig { returns(Result) }
   def call
-    email_confirmation = Verification.create!(
+    email_confirmation = EmailConfirmation.create!(
       email: form.email,
-      code: Verification.generate_code,
-      event: Verification::EVENT_SIGN_UP
+      code: EmailConfirmation.generate_code,
+      event: EmailConfirmation::EVENT_SIGN_UP
     )
-    SendVerificationMailJob.perform_later(verification_id: email_confirmation.id, locale: form.locale)
+    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: form.locale)
 
     Result.new(email_confirmation:)
   end

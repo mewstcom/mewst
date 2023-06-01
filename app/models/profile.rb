@@ -7,7 +7,7 @@ class Profile < ApplicationRecord
   include SoftDeletable
   include TimelineOwnable
 
-  IDNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
+  ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
   has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
@@ -16,7 +16,7 @@ class Profile < ApplicationRecord
   has_many :posts, dependent: :restrict_with_exception
   has_many :reposts, through: :posts, source: :postable, source_type: "Repost"
 
-  validates :atname, format: {with: IDNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
+  validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
   delegate :create_commented_post, :create_repost, :delete_post, to: :postability

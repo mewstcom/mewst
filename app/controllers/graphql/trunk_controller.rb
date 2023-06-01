@@ -2,15 +2,16 @@
 # frozen_string_literal: true
 
 class Graphql::TrunkController < ApplicationController
+  before_action :doorkeeper_authorize!
+
   def call
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
-    }
-    result = MewstSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+      current_profile_member:
+    }.freeze
+    result = MewstSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
     raise e unless Rails.env.development?
@@ -18,6 +19,10 @@ class Graphql::TrunkController < ApplicationController
   end
 
   private
+
+  def current_profile_member
+    binding.irb
+  end
 
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)

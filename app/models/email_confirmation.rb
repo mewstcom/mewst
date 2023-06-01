@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Verification < ApplicationRecord
+class EmailConfirmation < ApplicationRecord
   extend Enumerize
 
   EVENT_PASSWORD_RESET = :password_reset
@@ -19,11 +19,6 @@ class Verification < ApplicationRecord
   sig { returns(String) }
   def self.generate_code
     6.times.map { rand(10) }.join
-  end
-
-  sig { returns(T.nilable(Account)) }
-  def account
-    @account ||= T.let(Account.find_by(email:), T.nilable(Account))
   end
 
   sig { returns(T::Boolean) }

@@ -2,12 +2,7 @@
 # frozen_string_literal: true
 
 class Internal::Types::Objects::OauthAccessTokenType < Internal::Types::Objects::Base
-  field :database_id, String, null: false
-  field :token, String, null: false
-  field :account, Internal::Types::Objects::AccountType, null: false
-  field :profile, Internal::Types::Objects::ProfileType, null: false
+  implements GraphQL::Types::Relay::Node
 
-  def database_id
-    object.id
-  end
+  field :token, String, null: false
 end

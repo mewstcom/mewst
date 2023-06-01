@@ -7,16 +7,16 @@ class Forms::EmailConfirmationChallenge < Forms::Base
 
   validate :valid_confirmation_code
 
-  sig { returns(Verification) }
+  sig { returns(EmailConfirmation) }
   def email_confirmation!
-    T.let(Verification.find_by(id: email_confirmation_id), Verification)
+    T.let(EmailConfirmation.find_by(id: email_confirmation_id), EmailConfirmation)
   end
 
   private
 
-  sig { returns(T.nilable(Verification)) }
+  sig { returns(T.nilable(EmailConfirmation)) }
   def active_email_confirmation
-    @active_email_confirmation ||= Verification.active.find_by(id: email_confirmation_id)
+    @active_email_confirmation ||= EmailConfirmation.active.find_by(id: email_confirmation_id)
   end
 
   sig { void }

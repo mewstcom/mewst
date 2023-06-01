@@ -2,7 +2,7 @@
 
 class CreateInitialTables < ActiveRecord::Migration[7.0]
   def change
-    create_table :verifications, id: false do |t|
+    create_table :email_confirmations, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.string :email, null: false
       t.string :event, null: false
@@ -14,7 +14,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.index %i[email code], unique: true
     end
 
-    create_table :accounts, id: false do |t|
+    create_table :users, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.string :email, index: {unique: true}, null: false
       t.string :password_digest, null: false
@@ -31,7 +31,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.citext :atname, index: {unique: true}, null: false
       t.string :name, default: "", null: false
       t.string :description, default: "", null: false
-      t.string :avatar_url
+      t.string :avatar_url, default: "", null: false
       t.timestamp :deleted_at
       t.timestamp :joined_at, null: false
       t.timestamps
@@ -39,12 +39,12 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :profile_members, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :user, foreign_key: true, null: false, type: :uuid
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :account, foreign_key: true, null: false, type: :uuid
       t.timestamp :joined_at, null: false
       t.timestamps
 
-      t.index %i[profile_id account_id], unique: true
+      t.index %i[user_id profile_id], unique: true
     end
 
     create_table :oauth_applications, id: false do |t|
@@ -60,7 +60,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :oauth_access_grants, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :resource_owner, foreign_key: {to_table: :profiles}, null: false, type: :uuid
+      t.references :resource_owner, foreign_key: {to_table: :users}, null: false, type: :uuid
       t.references :application, foreign_key: {to_table: :oauth_applications}, null: false, type: :uuid
       t.string :token, index: {unique: true}, null: false
       t.integer :expires_in, null: false
@@ -72,8 +72,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :oauth_access_tokens, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :account, foreign_key: true, null: false, type: :uuid
-      t.references :resource_owner, foreign_key: {to_table: :profiles}, type: :uuid
+      t.references :resource_owner, foreign_key: {to_table: :users}, type: :uuid
       t.references :application, foreign_key: {to_table: :oauth_applications}, null: false, type: :uuid
       t.string :token, index: {unique: true}, null: false
       t.string :refresh_token, index: {unique: true}

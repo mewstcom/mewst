@@ -19,7 +19,5 @@ ja:
         new: ログイン
       sign_up:
         new: アカウント作成
-      verification_challenges:
-        new: 確認コード入力
       welcome:
         show: A microblogging service
