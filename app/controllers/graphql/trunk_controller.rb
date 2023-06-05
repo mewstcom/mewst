@@ -9,9 +9,9 @@ class Graphql::TrunkController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      current_profile_member:
+      viewer: current_user
     }.freeze
-    result = MewstSchema.execute(query, variables:, context:, operation_name:)
+    result = Trunk::MewstSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
     raise e unless Rails.env.development?
@@ -20,8 +20,10 @@ class Graphql::TrunkController < ApplicationController
 
   private
 
-  def current_profile_member
-    binding.irb
+  def current_user
+    return if doorkeeper_token.blank?
+
+    @current_user ||= doorkeeper_token.user
   end
 
   # Handle variables in form data, JSON body, or a blank value

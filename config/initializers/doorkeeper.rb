@@ -34,9 +34,9 @@ Doorkeeper.configure do
   #
   # Be default Doorkeeper ActiveRecord ORM uses it's own classes:
   #
-  # access_token_class "Doorkeeper::AccessToken"
+  access_token_class "OauthAccessToken"
   # access_grant_class "Doorkeeper::AccessGrant"
-  # application_class "Doorkeeper::Application"
+  application_class "OauthApplication"
   #
   # Don't forget to include Doorkeeper ORM mixins into your custom models:
   #
