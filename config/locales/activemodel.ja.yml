@@ -6,3 +6,7 @@ ja:
           attributes:
             confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています
+        forms/profile:
+          attributes:
+            atname:
+              atname_uniqueness: はすでに存在します
