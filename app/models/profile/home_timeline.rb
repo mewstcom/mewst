@@ -4,72 +4,66 @@
 class Profile::HomeTimeline
   extend T::Sig
 
+  class Result < T::Struct
+    const :posts, T::Array[Post]
+    const :page_info, PageInfo
+  end
+
   sig { params(profile: Profile).void }
   def initialize(profile:)
     @profile = profile
   end
 
   T::Sig::WithoutRuntime.sig do
-    params(before: T.nilable(String), after: T.nilable(String), limit: Integer)
-      .returns([Post::PrivateRelation, PageInfo])
+    params(
+      before: T.nilable(String),
+      after: T.nilable(String),
+      first: T.nilable(Integer),
+      last: T.nilable(Integer),
+      max_page_size: T.nilable(Integer)
+    ).returns(Result)
   end
-  def posts_with_page_info(before: nil, after: nil, limit: 50)
+  def posts_with_page_info(before: nil, after: nil, first: nil, last: nil, max_page_size: nil)
     before_post = before.nil? ? nil : Post.find(before)
     after_post = after.nil? ? nil : Post.find(after)
 
     post_ids = if before_post.nil? && after_post.nil?
       ::Timeline.new(profile).post_ids(
         start_score: nil,
-        limit: limit + 1,
+        limit: max_page_size + 1,
         order: ::Timeline::Order::Desc
       )
     elsif before_post
       ::Timeline.new(profile).post_ids(
         start_score: before_post.timeline_score,
-        limit: limit + 1,
+        limit: max_page_size + 1,
         order: ::Timeline::Order::Asc
       )
     elsif after_post
       ::Timeline.new(profile).post_ids(
         start_score: after_post.timeline_score,
-        limit: limit + 1,
+        limit: max_page_size + 1,
         order: ::Timeline::Order::Desc
       )
     end
 
-    posts = Post.where(id: T.must(post_ids).first(limit)).preload(:profile, :postable).order(id: :desc)
+    posts = Post.where(id: T.must(post_ids).first(max_page_size)).preload(:profile, :postable).order(id: :desc)
+    posts = posts.first(first) if first
+    posts = posts.last(last) if last
 
     has_page = ->(post_ids, limit) {
       post_ids.length == (limit + 1)
     }
 
-    cursor = ->(has_page, post_ids) {
-      has_page ? post_ids[-2] : post_ids.last
-    }
-
-    page_info = if before_post.nil? && after_post.nil?
-      has_next_page = has_page.call(post_ids, limit)
-      end_cursor = cursor.call(has_next_page, post_ids)
-      has_previous_page = false
-      start_cursor = nil
-
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+    has_next_page, has_previous_page = if before_post.nil? && after_post.nil?
+      [has_page.call(post_ids, max_page_size), false]
     elsif before_post
-      has_next_page = true
-      end_cursor = post_ids.first
-      has_previous_page = has_page.call(post_ids, limit)
-      start_cursor = cursor.call(has_next_page, post_ids)
-
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+      [true, has_page.call(post_ids, max_page_size)]
     elsif after_post
-      has_next_page = has_page.call(post_ids, limit)
-      end_cursor = cursor.call(has_next_page, post_ids)
-      has_previous_page = true
-      start_cursor = post_ids.first
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+      [has_page.call(post_ids, max_page_size), true]
     end
 
-    [posts, T.must(page_info)]
+    Result.new(posts:, page_info: PageInfo.new(has_next_page:, has_previous_page:))
   end
 
   sig { params(post: Post).returns(T.self_type) }

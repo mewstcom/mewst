@@ -8,6 +8,10 @@ class Trunk::MewstSchema < GraphQL::Schema
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
 
+  # connections.add(Profile::HomeTimeline, Trunk::Connections::TimelineConnection)
+
+  default_max_page_size 50
+
   # GraphQL-Ruby calls this when something goes wrong while running a query:
   def self.type_error(err, context)
     # if err.is_a?(GraphQL::InvalidNullError)
@@ -18,10 +22,13 @@ class Trunk::MewstSchema < GraphQL::Schema
   end
 
   # Union and Interface Resolution
-  def self.resolve_type(abstract_type, obj, ctx)
-    # TODO: Implement this method
-    # to return the correct GraphQL object type for `obj`
-    raise(GraphQL::RequiredImplementationMissingError)
+  def self.resolve_type(_abstract_type, obj, _ctx)
+    case obj
+    when CommentedPost
+      Trunk::Types::Objects::CommentedPostType
+    else
+      raise "Unexpected object: #{obj}"
+    end
   end
 
   # Stop validating when it encounters this many errors:
