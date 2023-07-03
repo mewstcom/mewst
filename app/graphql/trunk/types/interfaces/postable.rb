@@ -4,5 +4,5 @@
 module Trunk::Types::Interfaces::Postable
   include Trunk::Types::Interfaces::Base
 
-  orphan_types Trunk::Types::Objects::CommentedPostType
+  orphan_types Trunk::Types::Objects::CommentedPostType, Trunk::Types::Objects::RepostType
 end
