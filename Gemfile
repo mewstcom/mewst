@@ -38,6 +38,8 @@ gem "sucker_punch"
 gem "view_component"
 
 group :development, :test do
+  gem "committee"
+  gem "committee-rails"
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "rspec-rails"

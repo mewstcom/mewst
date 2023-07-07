@@ -83,6 +83,15 @@ GEM
     bullet (7.0.7)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
+    committee (5.0.0)
+      json_schema (~> 0.14, >= 0.14.3)
+      openapi_parser (~> 1.0)
+      rack (>= 1.5)
+    committee-rails (0.7.0)
+      actionpack
+      activesupport
+      committee (>= 5.0.0)
+      railties
     concurrent-ruby (1.2.2)
     connection_pool (2.4.0)
     counter_culture (3.3.0)
@@ -197,6 +206,7 @@ GEM
     jsbundling-rails (1.1.1)
       railties (>= 6.0.0)
     json (2.6.3)
+    json_schema (0.21.0)
     jwt (2.7.0)
     language_server-protocol (3.17.0.3)
     lint_roller (1.0.0)
@@ -233,6 +243,7 @@ GEM
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
     oj (3.14.3)
+    openapi_parser (1.0.0)
     os (1.1.4)
     pagy (6.0.3)
     parallel (1.23.0)
@@ -431,6 +442,8 @@ DEPENDENCIES
   bcrypt
   bootsnap
   bullet
+  committee
+  committee-rails
   connection_pool
   counter_culture
   cssbundling-rails
