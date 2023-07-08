@@ -15,6 +15,15 @@ class Post < ApplicationRecord
     T.cast(profile, Profile)
   end
 
+  sig { returns(Integer) }
+  def reposts_count
+    if commented_post?
+      postable.reposts_count
+    else
+      fail
+    end
+  end
+
   sig { returns(String) }
   def timeline_score
     published_at.strftime("%s%L")
