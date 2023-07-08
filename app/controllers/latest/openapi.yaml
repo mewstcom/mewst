@@ -138,6 +138,12 @@ components:
             - $ref: "#/components/schemas/commented_post"
             - $ref: "#/components/schemas/commented_repost"
             - $ref: "#/components/schemas/repost"
+        postable_type:
+          enum:
+            - commented_post
+            - commented_repost
+            - repost
+          type: string
         profile:
           $ref: "#/components/schemas/profile"
         published_at:

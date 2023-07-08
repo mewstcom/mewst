@@ -15,5 +15,9 @@ class Resources::Post < Resources::Base
     end
   }
 
+  attribute :postable_type do |post|
+    post.postable_type.underscore
+  end
+
   one :profile, resource: Resources::Profile
 end
