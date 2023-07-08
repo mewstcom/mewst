@@ -8,6 +8,7 @@ ruby "3.2.2"
 gem "rails", "~> 7.0.4"
 
 gem "activerecord-session_store"
+gem "alba"
 gem "bcrypt" # Used by `has_secure_password`
 gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
