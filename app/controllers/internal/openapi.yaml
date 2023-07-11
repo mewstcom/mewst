@@ -1,0 +1,107 @@
+---
+openapi: 3.0.3
+info:
+  description: Mewst's internal REST API.
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  title: Mewst API (internal)
+  version: 0.0.0
+servers:
+  - description: Production server
+    url: https://api.mewst.com/internal
+  - description: Development server
+    url: http://localhost:3000/internal
+paths:
+  "/email_confirmations":
+    post:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: ""
+              required:
+                - email
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  email_confirmation:
+                    "$ref": "#/components/schemas/email-confirmation"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - email_confirmations
+components:
+  responses:
+    validation_failed:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/validation-error"
+                type: array
+  schemas:
+    email-confirmation:
+      additionalProperties: false
+      title: Email Confirmation
+      description: ""
+      type: object
+      properties:
+        code:
+          type: string
+        email:
+          type: string
+        event:
+          enum:
+            - sign_up
+          type: string
+      required:
+        - code
+        - email
+        - event
+    error:
+      additionalProperties: false
+      description: ""
+      title: Error
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+            - invalid_input_data
+      required:
+        - message
+        - code
+      type: object
+    validation-error:
+      description: ""
+      title: Validation Error
+      allOf:
+        - "$ref": "#/components/schemas/error"
+        - type: object
+          additionalProperties: false
+          properties:
+            field:
+              type: string
+          required:
+            - field
+      type: object

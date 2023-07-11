@@ -10,6 +10,13 @@ RSpec.configure do |config|
     strict_reference_validation: true
   }
 
+  config.before :all, api_version: :internal do
+    RSpec.configure do |config|
+      config.committee_options[:schema_path] = Rails.root.join("app", "controllers", "internal", "openapi.yaml").to_s
+      config.committee_options[:prefix] = "/internal"
+    end
+  end
+
   config.before :all, api_version: :latest do
     RSpec.configure do |config|
       config.committee_options[:schema_path] = Rails.root.join("app", "controllers", "latest", "openapi.yaml").to_s
