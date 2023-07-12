@@ -65,18 +65,10 @@ components:
       description: ""
       type: object
       properties:
-        code:
-          type: string
-        email:
-          type: string
-        event:
-          enum:
-            - sign_up
+        id:
           type: string
       required:
-        - code
-        - email
-        - event
+        - id
     error:
       additionalProperties: false
       description: ""

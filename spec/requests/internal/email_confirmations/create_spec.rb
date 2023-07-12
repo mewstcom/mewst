@@ -38,9 +38,7 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
 
       expected = {
         email_confirmation: {
-          code: email_confirmation.code,
-          email: email_confirmation.email,
-          event: email_confirmation.event
+          id: email_confirmation.id
         }
       }
       actual = JSON.parse(response.body)

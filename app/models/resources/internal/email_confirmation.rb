@@ -4,5 +4,5 @@
 class Resources::Internal::EmailConfirmation < Resources::Internal::Base
   root_key :email_confirmation, :email_confirmations
 
-  attributes :code, :email, :event
+  attributes :id
 end
