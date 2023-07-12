@@ -20,8 +20,8 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      assert_response_schema_confirm(422)
       expect(response).to have_http_status(422)
+      assert_response_schema_confirm(422)
     end
   end
 
@@ -44,8 +44,8 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      assert_response_schema_confirm(201)
       expect(response).to have_http_status(201)
+      assert_response_schema_confirm(201)
     end
   end
 end
