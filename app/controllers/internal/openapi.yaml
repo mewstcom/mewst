@@ -44,7 +44,40 @@ paths:
       summary: ""
       tags:
         - email_confirmations
+  "/email_confirmations/{email_confirmation_id}/challenge":
+    post:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/email-confirmation-id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmation_code:
+                  type: string
+                  description: ""
+              required:
+                - confirmation_code
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - email_confirmations
 components:
+  parameters:
+    email-confirmation-id:
+      name: email_confirmation_id
+      description: ""
+      in: path
+      required: true
+      schema:
+        type: string
   responses:
     validation_failed:
       description: ""
