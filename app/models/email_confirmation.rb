@@ -21,8 +21,13 @@ class EmailConfirmation < ApplicationRecord
     6.times.map { rand(10) }.join
   end
 
+  def succeeded?
+    !succeeded_at.nil?
+  end
+
   sig { returns(T::Boolean) }
   def success
-    update!(succeeded_at: Time.current)
+    update!(succeeded_at: Time.current) unless succeeded?
+    true
   end
 end

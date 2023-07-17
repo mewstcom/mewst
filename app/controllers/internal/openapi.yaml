@@ -131,6 +131,8 @@ components:
       description: ""
       type: object
       properties:
+        email:
+          type: string
         id:
           type: string
         succeeded_at:
