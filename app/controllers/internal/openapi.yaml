@@ -44,6 +44,27 @@ paths:
       summary: ""
       tags:
         - email_confirmations
+  "/email_confirmations/{email_confirmation_id}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/email-confirmation-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  email_confirmation:
+                    "$ref": "#/components/schemas/email-confirmation"
+                type: object
+          description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
+      summary: ""
+      tags:
+        - email_confirmations
   "/email_confirmations/{email_confirmation_id}/challenge":
     post:
       description: ""
@@ -79,6 +100,18 @@ components:
       schema:
         type: string
   responses:
+    not_found:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/error"
+                type: array
     validation_failed:
       description: ""
       content:
@@ -100,8 +133,12 @@ components:
       properties:
         id:
           type: string
+        succeeded_at:
+          nullable: true
+          type: string
       required:
         - id
+        - succeeded_at
     error:
       additionalProperties: false
       description: ""
@@ -113,6 +150,7 @@ components:
           type: string
           enum:
             - invalid_input_data
+            - not_found
       required:
         - message
         - code

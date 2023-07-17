@@ -15,7 +15,8 @@ Rails.application.routes.draw do
   match "/graphql/internal",                                              via: :post,  as: :graphql_internal,                                to: "graphql/internal#call"
   match "/graphql/trunk",                                                 via: :post,  as: :graphql_trunk,                                   to: "graphql/trunk#call"
   match "/internal/email_confirmations",                                  via: :post,  as: :internal_email_confirmation_list,                to: "internal/email_confirmations/create#call"
-  match "/internal/email_confirmations/:email_confirmation_id/challenge", via: :post,  as: :internal_email_confirmation_challenge,             to: "internal/email_confirmations/challenges/create#call"
+  match "/internal/email_confirmations/:email_confirmation_id",           via: :get,   as: :internal_email_confirmation,                     to: "internal/email_confirmations/show#call"
+  match "/internal/email_confirmations/:email_confirmation_id/challenge", via: :post,  as: :internal_email_confirmation_challenge,           to: "internal/email_confirmations/challenges/create#call"
   match "/latest/@:atname/timeline",                                      via: :get,   as: :latest_timeline,                                 to: "latest/timeline/show#call", atname: ROUTING_USERNAME_FORMAT
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 end
