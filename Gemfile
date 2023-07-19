@@ -20,7 +20,6 @@ gem "enumerize"
 gem "faraday"
 gem "google-cloud-pubsub"
 gem "google-cloud-tasks"
-gem "graphql"
 gem "http_accept_language"
 gem "jb"
 gem "jsbundling-rails"
@@ -56,4 +55,3 @@ group :development do
   gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"
 end
-gem "graphiql-rails", group: :development
