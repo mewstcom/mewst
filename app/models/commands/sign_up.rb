@@ -15,12 +15,9 @@ class Commands::SignUp < Commands::Base
 
   sig { returns(Result) }
   def call
-    user = T.let(nil, T.nilable(User))
-    profile = T.let(nil, T.nilable(Profile))
-    oauth_access_token = T.let(nil, T.nilable(OauthAccessToken))
     current_time = Time.current
 
-    ActiveRecord::Base.transaction do
+    oauth_access_token, profile, user = ActiveRecord::Base.transaction do
       user = User.create!(
         email: form.email,
         locale: form.locale,
@@ -38,6 +35,8 @@ class Commands::SignUp < Commands::Base
         resource_owner: user,
         scopes: ""
       )
+
+      [oauth_access_token, profile, user]
     end
 
     Result.new(oauth_access_token:, profile:, user:)

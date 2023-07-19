@@ -18,7 +18,7 @@ class Commands::SendEmailConfirmationCode < Commands::Base
       code: EmailConfirmation.generate_code,
       event: EmailConfirmation::EVENT_SIGN_UP
     )
-    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: form.locale)
+    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: T.must(form.locale))
 
     Result.new(email_confirmation:)
   end

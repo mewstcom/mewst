@@ -6,7 +6,7 @@ FactoryBot.define do
     sequence(:atname) { |n| "test_#{n}" }
     joined_at { Time.current }
 
-    trait :with_account do
+    trait :with_member do
       after(:create) do |profile|
         create(:profile_member, profile:)
       end

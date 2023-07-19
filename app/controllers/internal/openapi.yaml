@@ -1,0 +1,273 @@
+---
+openapi: 3.0.3
+info:
+  description: Mewst's internal REST API.
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  title: Mewst API (internal)
+  version: 0.0.0
+servers:
+  - description: Production server
+    url: https://api.mewst.com/internal
+  - description: Development server
+    url: http://localhost:3000/internal
+paths:
+  "/email_confirmations":
+    post:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: ""
+              required:
+                - email
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  email_confirmation:
+                    "$ref": "#/components/schemas/email-confirmation"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - email_confirmations
+  "/email_confirmations/{email_confirmation_id}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/email-confirmation-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  email_confirmation:
+                    "$ref": "#/components/schemas/email-confirmation"
+                type: object
+          description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
+      summary: ""
+      tags:
+        - email_confirmations
+  "/email_confirmations/{email_confirmation_id}/challenge":
+    post:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/email-confirmation-id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmation_code:
+                  type: string
+                  description: ""
+              required:
+                - confirmation_code
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - email_confirmations
+  "/sign_up":
+    post:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                atname:
+                  type: string
+                  description: ""
+                email:
+                  type: string
+                  description: ""
+                locale:
+                  type: string
+                  description: ""
+                password:
+                  type: string
+                  description: ""
+              required:
+                - atname
+                - email
+                - locale
+                - password
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  sign_up:
+                    "$ref": "#/components/schemas/sign-up"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - sign_up
+components:
+  parameters:
+    email-confirmation-id:
+      name: email_confirmation_id
+      description: ""
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    not_found:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/error"
+                type: array
+    validation_failed:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/validation-error"
+                type: array
+  schemas:
+    email-confirmation:
+      additionalProperties: false
+      title: Email Confirmation
+      description: ""
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+        succeeded_at:
+          nullable: true
+          type: string
+      required:
+        - id
+        - succeeded_at
+    error:
+      additionalProperties: false
+      description: ""
+      title: Error
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+            - invalid_input_data
+            - not_found
+      required:
+        - message
+        - code
+      type: object
+    oauth-access-token:
+      additionalProperties: false
+      title: OAuth Access Token
+      description: ""
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    profile:
+      additionalProperties: false
+      title: Profile
+      description: ""
+      type: object
+      properties:
+        atname:
+          type: string
+        avatar_url:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - atname
+        - avatar_url
+        - id
+        - name
+    sign-up:
+      additionalProperties: false
+      title: Sign Up
+      description: ""
+      type: object
+      properties:
+        oauth_access_token:
+          "$ref": "#/components/schemas/oauth-access-token"
+        profile:
+          "$ref": "#/components/schemas/profile"
+        user:
+          "$ref": "#/components/schemas/user"
+      required:
+        - oauth_access_token
+        - profile
+        - user
+    user:
+      additionalProperties: false
+      title: User
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        locale:
+          type: string
+      required:
+        - id
+        - locale
+    validation-error:
+      description: ""
+      title: Validation Error
+      allOf:
+        - "$ref": "#/components/schemas/error"
+        - type: object
+          additionalProperties: false
+          properties:
+            field:
+              type: string
+          required:
+            - field
+      type: object

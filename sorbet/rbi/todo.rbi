@@ -4,4 +4,5 @@
 
 # typed: false
 
+module ::AccountActivation; end
 module Google::Protobuf::EnumDescriptor; end

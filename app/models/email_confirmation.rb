@@ -22,7 +22,13 @@ class EmailConfirmation < ApplicationRecord
   end
 
   sig { returns(T::Boolean) }
+  def succeeded?
+    !succeeded_at.nil?
+  end
+
+  sig { returns(T::Boolean) }
   def success
-    update!(succeeded_at: Time.current)
+    update!(succeeded_at: Time.current) unless succeeded?
+    true
   end
 end

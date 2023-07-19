@@ -9,64 +9,34 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def account_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def edit_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def fragment_repost_dropdown_menu_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def fragment_repost_dropdown_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def home_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_commented_post_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_follow_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_following_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def internal_api_pubsub_add_post_to_home_timeline_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def internal_api_pubsub_fanout_post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_tasks_send_verification_mail_url(*args); end
+  def internal_api_tasks_send_email_confirmation_mail_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_unfollow_url(*args); end
+  def internal_email_confirmation_challenge_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_account_url(*args); end
+  def internal_email_confirmation_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_verification_challenge_url(*args); end
+  def internal_email_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def password_reset_url(*args); end
+  def internal_sign_up_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def post_url(*args); end
+  def latest_timeline_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_component_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def preview_view_components_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def profile_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end
@@ -79,40 +49,4 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def repost_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def repost_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def root_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_account_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_profile_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def settings_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_in_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_in_verification_phone_number_challenge_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_in_verification_phone_number_new_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_out_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_up_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def verification_challenge_list_url(*args); end
 end

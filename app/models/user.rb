@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   enumerize :locale, in: I18n.available_locales
 
+  has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
   has_many :profile_members, dependent: :restrict_with_exception
   has_many :profiles, dependent: :restrict_with_exception, through: :profile_members
 
