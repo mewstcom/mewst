@@ -4,7 +4,7 @@
 FactoryBot.define do
   factory :profile_member do
     profile
-    account
+    user
     joined_at { Time.current }
   end
 end

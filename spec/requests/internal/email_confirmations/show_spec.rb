@@ -33,6 +33,7 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
 
       expected = {
         email_confirmation: {
+          email: email_confirmation.email,
           id: email_confirmation.id,
           succeeded_at: nil
         }

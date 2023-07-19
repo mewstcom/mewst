@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Forms::CommentedPost do
-  let!(:profile) { create(:profile, :with_account) }
+  let!(:profile) { create(:profile, :with_member) }
 
   context "when invalid" do
     context "when comment is blank" do
