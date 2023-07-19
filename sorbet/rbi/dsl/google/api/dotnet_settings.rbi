@@ -5,15 +5,69 @@
 # Please instead update this file by running `bin/tapioca dsl Google::Api::DotnetSettings`.
 
 class Google::Api::DotnetSettings
-  sig { params(common: T.nilable(Google::Api::CommonLanguageSettings)).void }
-  def initialize(common: nil); end
+  sig do
+    params(
+      common: T.nilable(Google::Api::CommonLanguageSettings),
+      forced_namespace_aliases: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      handwritten_signatures: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      ignored_resources: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      renamed_resources: T.nilable(T.any(Google::Protobuf::Map[String, String], T::Hash[String, String])),
+      renamed_services: T.nilable(T.any(Google::Protobuf::Map[String, String], T::Hash[String, String]))
+    ).void
+  end
+  def initialize(common: nil, forced_namespace_aliases: Google::Protobuf::RepeatedField.new(:string), handwritten_signatures: Google::Protobuf::RepeatedField.new(:string), ignored_resources: Google::Protobuf::RepeatedField.new(:string), renamed_resources: Google::Protobuf::Map.new(:string, :string), renamed_services: Google::Protobuf::Map.new(:string, :string)); end
 
   sig { void }
   def clear_common; end
+
+  sig { void }
+  def clear_forced_namespace_aliases; end
+
+  sig { void }
+  def clear_handwritten_signatures; end
+
+  sig { void }
+  def clear_ignored_resources; end
+
+  sig { void }
+  def clear_renamed_resources; end
+
+  sig { void }
+  def clear_renamed_services; end
 
   sig { returns(T.nilable(Google::Api::CommonLanguageSettings)) }
   def common; end
 
   sig { params(value: T.nilable(Google::Api::CommonLanguageSettings)).void }
   def common=(value); end
+
+  sig { returns(Google::Protobuf::RepeatedField[String]) }
+  def forced_namespace_aliases; end
+
+  sig { params(value: Google::Protobuf::RepeatedField[String]).void }
+  def forced_namespace_aliases=(value); end
+
+  sig { returns(Google::Protobuf::RepeatedField[String]) }
+  def handwritten_signatures; end
+
+  sig { params(value: Google::Protobuf::RepeatedField[String]).void }
+  def handwritten_signatures=(value); end
+
+  sig { returns(Google::Protobuf::RepeatedField[String]) }
+  def ignored_resources; end
+
+  sig { params(value: Google::Protobuf::RepeatedField[String]).void }
+  def ignored_resources=(value); end
+
+  sig { returns(Google::Protobuf::Map[String, String]) }
+  def renamed_resources; end
+
+  sig { params(value: Google::Protobuf::Map[String, String]).void }
+  def renamed_resources=(value); end
+
+  sig { returns(Google::Protobuf::Map[String, String]) }
+  def renamed_services; end
+
+  sig { params(value: Google::Protobuf::Map[String, String]).void }
+  def renamed_services=(value); end
 end

@@ -74,6 +74,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
+    alba (2.3.0)
     ast (2.4.2)
     bcrypt (3.1.18)
     bindex (0.8.1)
@@ -83,6 +84,15 @@ GEM
     bullet (7.0.7)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
+    committee (5.0.0)
+      json_schema (~> 0.14, >= 0.14.3)
+      openapi_parser (~> 1.0)
+      rack (>= 1.5)
+    committee-rails (0.7.0)
+      actionpack
+      activesupport
+      committee (>= 5.0.0)
+      railties
     concurrent-ruby (1.2.2)
     connection_pool (2.4.0)
     counter_culture (3.3.0)
@@ -93,6 +103,8 @@ GEM
       railties (>= 6.0.0)
     date (3.3.3)
     diff-lcs (1.5.0)
+    doorkeeper (5.6.6)
+      railties (>= 5)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
@@ -187,10 +199,10 @@ GEM
     http_accept_language (2.1.1)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    jb (0.8.0)
     jsbundling-rails (1.1.1)
       railties (>= 6.0.0)
     json (2.6.3)
+    json_schema (0.21.0)
     jwt (2.7.0)
     language_server-protocol (3.17.0.3)
     lint_roller (1.0.0)
@@ -227,6 +239,7 @@ GEM
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
     oj (3.14.3)
+    openapi_parser (1.0.0)
     os (1.1.4)
     pagy (6.0.3)
     parallel (1.23.0)
@@ -415,12 +428,16 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-session_store
+  alba
   bcrypt
   bootsnap
   bullet
+  committee
+  committee-rails
   connection_pool
   counter_culture
   cssbundling-rails
+  doorkeeper
   dotenv-rails
   email_validator
   enumerize
@@ -429,7 +446,6 @@ DEPENDENCIES
   google-cloud-pubsub
   google-cloud-tasks
   http_accept_language
-  jb
   jsbundling-rails
   meta-tags
   oj

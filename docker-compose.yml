@@ -17,6 +17,16 @@ services:
     volumes:
       - redis_cache_data:/data
 
+  swagger_ui:
+    image: swaggerapi/swagger-ui:latest
+    volumes:
+      - ./app/controllers/latest/openapi.yaml:/openapi.yaml
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+    ports:
+      - 3302:8080
+
 volumes:
   postgresql_data:
   redis_cache_data:
+  swagger_ui_data:

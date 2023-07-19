@@ -4,7 +4,6 @@
 class Api::Internal::Pubsub::AddPostToHomeTimelineController < ApplicationController
   include Pubsub::Subscribable
 
-  skip_before_action :verify_authenticity_token
   before_action :require_authentication
 
   sig { returns(T.untyped) }

@@ -1,0 +1,159 @@
+---
+openapi: 3.0.3
+info:
+  description: Mewst's latest REST API.
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  title: Mewst API (latest)
+  version: 0.0.0
+tags:
+  - description: Post
+    name: posts
+servers:
+  - description: Production server
+    url: https://api.mewst.com/latest
+  - description: Development server
+    url: http://localhost:3000/latest
+paths:
+  "/@{atname}/timeline":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          posts:
+                            items:
+                              "$ref": "#/components/schemas/post"
+                            type: array
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      errors:
+                        items:
+                          "$ref": "#/components/schemas/error"
+                        type: array
+          description: Response
+      summary: Get posts on home timeline
+      tags:
+        - posts
+components:
+  parameters:
+    atname:
+      description: The handle for the Mewst account profile.
+      in: path
+      name: atname
+      required: true
+      schema:
+        type: string
+  schemas:
+    commented_post:
+      additionalProperties: false
+      title: Commented Post
+      description: ""
+      type: object
+      properties:
+        comment:
+          type: string
+      required:
+        - comment
+    commented_repost:
+      additionalProperties: false
+      title: Commented Repost
+      description: ""
+      type: object
+      properties:
+        comment:
+          type: string
+        repostable:
+          anyOf:
+            - $ref: "#/components/schemas/commented_post"
+            - $ref: "#/components/schemas/commented_repost"
+      required:
+        - comment
+        - repostable
+    error:
+      additionalProperties: false
+      title: Error
+      description: ""
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    repost:
+      additionalProperties: false
+      description: ""
+      properties:
+        repostable:
+          anyOf:
+            - $ref: "#/components/schemas/commented_post"
+            - $ref: "#/components/schemas/commented_repost"
+      required:
+        - repostable
+      title: Repost
+      type: object
+    profile:
+      additionalProperties: false
+      description: ""
+      properties:
+        atname:
+          type: string
+        avatar_url:
+          type: string
+        name:
+          type: string
+      required:
+        - atname
+        - avatar_url
+        - name
+      title: Profile
+      type: object
+    post:
+      additionalProperties: false
+      title: Post
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        postable:
+          anyOf:
+            - $ref: "#/components/schemas/commented_post"
+            - $ref: "#/components/schemas/commented_repost"
+            - $ref: "#/components/schemas/repost"
+        postable_type:
+          enum:
+            - commented_post
+            - commented_repost
+            - repost
+          type: string
+        profile:
+          $ref: "#/components/schemas/profile"
+        published_at:
+          type: string
+          format: date-time
+        reposts_count:
+          type: integer
+      required:
+        - id
+        - postable
+        - profile
+        - published_at
+        - reposts_count

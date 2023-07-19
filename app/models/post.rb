@@ -6,13 +6,22 @@ class Post < ApplicationRecord
 
   delegated_type :postable, types: Postable::TYPES, dependent: :destroy
 
-  delegate :comment, :reposts_count, to: :postable
+  delegate :comment, to: :postable
 
   validates :postable_type, inclusion: {in: Postable::TYPES}
 
   sig { returns(Profile) }
   def profile!
     T.cast(profile, Profile)
+  end
+
+  sig { returns(Integer) }
+  def reposts_count
+    if commented_post?
+      postable.reposts_count
+    else
+      fail
+    end
   end
 
   sig { returns(String) }

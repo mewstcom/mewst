@@ -1,15 +1,12 @@
 ja:
   activemodel:
-    attributes:
-      account_activation:
-        atname: アットネーム
-        email: メールアドレス
-        password: パスワード
-      verification_challenge:
-        challenged_code: 確認用コード
     errors:
       models:
-        verification_challenge:
+        forms/email_confirmation_challenge:
           attributes:
-            challenged_code:
+            confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています
+        forms/profile:
+          attributes:
+            atname:
+              atname_uniqueness: はすでに存在します

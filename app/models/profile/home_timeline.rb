@@ -43,33 +43,15 @@ class Profile::HomeTimeline
       post_ids.length == (limit + 1)
     }
 
-    cursor = ->(has_page, post_ids) {
-      has_page ? post_ids[-2] : post_ids.last
-    }
-
-    page_info = if before_post.nil? && after_post.nil?
-      has_next_page = has_page.call(post_ids, limit)
-      end_cursor = cursor.call(has_next_page, post_ids)
-      has_previous_page = false
-      start_cursor = nil
-
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+    has_next_page, has_previous_page = if before_post.nil? && after_post.nil?
+      [has_page.call(post_ids, limit), false]
     elsif before_post
-      has_next_page = true
-      end_cursor = post_ids.first
-      has_previous_page = has_page.call(post_ids, limit)
-      start_cursor = cursor.call(has_next_page, post_ids)
-
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+      [true, has_page.call(post_ids, limit)]
     elsif after_post
-      has_next_page = has_page.call(post_ids, limit)
-      end_cursor = cursor.call(has_next_page, post_ids)
-      has_previous_page = true
-      start_cursor = post_ids.first
-      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
+      [has_page.call(post_ids, limit), true]
     end
 
-    [posts, T.must(page_info)]
+    [posts, PageInfo.new(has_next_page:, has_previous_page:)]
   end
 
   sig { params(post: Post).returns(T.self_type) }

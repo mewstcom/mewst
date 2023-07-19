@@ -7,21 +7,4 @@
 class ApplicationController
   include GeneratedUrlHelpersModule
   include GeneratedPathHelpersModule
-
-  sig { returns(HelperProxy) }
-  def helpers; end
-
-  module HelperMethods
-    include ::ActionController::Base::HelperMethods
-    include ::ApplicationHelper
-    include ::ComponentDataFetcherHelper
-    include ::LanguageHelper
-    include ::TextHelper
-    include ::TimeHelper
-    include ::PreviewHelper
-  end
-
-  class HelperProxy < ::ActionView::Base
-    include HelperMethods
-  end
 end

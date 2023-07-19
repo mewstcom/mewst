@@ -30,8 +30,6 @@ ja:
       profile_reposted_html: "<a href='/@%{atname}'>%{name}</a>がリポストしました"
     profiles:
       updated: プロフィールを更新しました
-    verifications:
-      verification_mail_sent: 確認用のメールを送信しました
     welcome:
       alpha_html: |-
         現在アルファ版です。<br>

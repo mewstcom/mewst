@@ -264,23 +264,11 @@ class ProfileMember
   end
 
   module GeneratedAssociationMethods
-    sig { returns(T.nilable(::Account)) }
-    def account; end
-
-    sig { params(value: T.nilable(::Account)).void }
-    def account=(value); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Account) }
-    def build_account(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Account) }
-    def create_account(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Account) }
-    def create_account!(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def build_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile(*args, &blk); end
@@ -288,17 +276,29 @@ class ProfileMember
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile!(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user!(*args, &blk); end
+
     sig { returns(T.nilable(::Profile)) }
     def profile; end
 
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
 
-    sig { returns(T.nilable(::Account)) }
-    def reload_account; end
-
     sig { returns(T.nilable(::Profile)) }
     def reload_profile; end
+
+    sig { returns(T.nilable(::User)) }
+    def reload_user; end
+
+    sig { returns(T.nilable(::User)) }
+    def user; end
+
+    sig { params(value: T.nilable(::User)).void }
+    def user=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -482,51 +482,6 @@ class ProfileMember
   end
 
   module GeneratedAttributeMethods
-    sig { returns(T.untyped) }
-    def account_id; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def account_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def account_id?; end
-
-    sig { returns(T.untyped) }
-    def account_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def account_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def account_id_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def account_id_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def account_id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def account_id_changed?; end
-
-    sig { returns(T.untyped) }
-    def account_id_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def account_id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def account_id_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def account_id_previously_was; end
-
-    sig { returns(T.untyped) }
-    def account_id_was; end
-
-    sig { void }
-    def account_id_will_change!; end
-
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
 
@@ -708,9 +663,6 @@ class ProfileMember
     def profile_id_will_change!; end
 
     sig { void }
-    def restore_account_id!; end
-
-    sig { void }
     def restore_created_at!; end
 
     sig { void }
@@ -725,11 +677,8 @@ class ProfileMember
     sig { void }
     def restore_updated_at!; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_account_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_account_id?; end
+    sig { void }
+    def restore_user_id!; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -760,6 +709,12 @@ class ProfileMember
 
     sig { returns(T::Boolean) }
     def saved_change_to_updated_at?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_user_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_user_id?; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
@@ -806,8 +761,50 @@ class ProfileMember
     sig { void }
     def updated_at_will_change!; end
 
+    sig { returns(T.untyped) }
+    def user_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def user_id=(value); end
+
     sig { returns(T::Boolean) }
-    def will_save_change_to_account_id?; end
+    def user_id?; end
+
+    sig { returns(T.untyped) }
+    def user_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def user_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def user_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def user_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def user_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def user_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def user_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def user_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def user_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def user_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def user_id_was; end
+
+    sig { void }
+    def user_id_will_change!; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
@@ -823,6 +820,9 @@ class ProfileMember
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_user_id?; end
   end
 
   module GeneratedRelationMethods

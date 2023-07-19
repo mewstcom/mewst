@@ -8,18 +8,19 @@ ruby "3.2.2"
 gem "rails", "~> 7.0.4"
 
 gem "activerecord-session_store"
+gem "alba"
 gem "bcrypt" # Used by `has_secure_password`
 gem "bootsnap", require: false
 gem "connection_pool" # Used by Redis
 gem "counter_culture"
 gem "cssbundling-rails"
+gem "doorkeeper"
 gem "email_validator"
 gem "enumerize"
 gem "faraday"
 gem "google-cloud-pubsub"
 gem "google-cloud-tasks"
 gem "http_accept_language"
-gem "jb"
 gem "jsbundling-rails"
 gem "meta-tags"
 gem "oj"
@@ -36,6 +37,8 @@ gem "sucker_punch"
 gem "view_component"
 
 group :development, :test do
+  gem "committee"
+  gem "committee-rails"
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "rspec-rails"

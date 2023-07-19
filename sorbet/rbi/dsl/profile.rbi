@@ -536,10 +536,10 @@ class Profile
     sig { void }
     def atname_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(::String) }
     def avatar_url; end
 
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    sig { params(value: ::String).returns(::String) }
     def avatar_url=(value); end
 
     sig { returns(T::Boolean) }
@@ -554,10 +554,10 @@ class Profile
     sig { returns(T::Boolean) }
     def avatar_url_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def avatar_url_change; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def avatar_url_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
@@ -566,7 +566,7 @@ class Profile
     sig { returns(T.nilable(::String)) }
     def avatar_url_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def avatar_url_previous_change; end
 
     sig { returns(T::Boolean) }
@@ -884,7 +884,7 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_atname?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_avatar_url; end
 
     sig { returns(T::Boolean) }
