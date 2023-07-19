@@ -29,7 +29,9 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
   end
 
   context "when valid input data" do
-    let!(:oauth_application) { create(:oauth_application, :mewst_web) }
+    before do
+      create(:oauth_application, :mewst_web)
+    end
 
     it "responses 201" do
       expect(User.count).to eq(0)
