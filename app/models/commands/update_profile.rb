@@ -13,9 +13,9 @@ class Commands::UpdateProfile < Commands::Base
 
   sig { returns(Result) }
   def call
-    form.profile.update!(form.attributes)
+    form.profile!.update!(form.attributes)
 
-    Result.new(profile: form.profile)
+    Result.new(profile: form.profile!)
   end
 
   private

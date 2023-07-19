@@ -8,7 +8,13 @@ class Latest::ApplicationController < ActionController::API
 
   private
 
+  sig { returns(T.nilable(User)) }
   def current_user
-    @current_user ||= doorkeeper_token&.user
+    @current_user ||= T.let(doorkeeper_token&.user, T.nilable(User))
+  end
+
+  sig { returns(User) }
+  def current_user!
+    T.cast(current_user, User)
   end
 end

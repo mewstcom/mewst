@@ -6,7 +6,7 @@ class Post < ApplicationRecord
 
   delegated_type :postable, types: Postable::TYPES, dependent: :destroy
 
-  delegate :comment, :reposts_count, to: :postable
+  delegate :comment, to: :postable
 
   validates :postable_type, inclusion: {in: Postable::TYPES}
 

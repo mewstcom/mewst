@@ -16,12 +16,14 @@ class Forms::SignUp < Forms::Base
 
   private
 
+  sig { void }
   def atname_uniqueness
     if Profile.find_by(atname:)
       errors.add(:atname, :atname_uniqueness)
     end
   end
 
+  sig { void }
   def email_uniqueness
     if User.find_by(email:)
       errors.add(:email, :email_uniqueness)

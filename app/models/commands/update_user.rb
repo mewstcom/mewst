@@ -13,9 +13,9 @@ class Commands::UpdateUser < Commands::Base
 
   sig { returns(Result) }
   def call
-    form.user.update!(form.attributes)
+    form.user!.update!(form.attributes)
 
-    Result.new(user: form.user)
+    Result.new(user: form.user!)
   end
 
   private
