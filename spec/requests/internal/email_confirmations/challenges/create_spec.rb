@@ -22,7 +22,7 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       assert_response_schema_confirm(422)
     end
   end
@@ -40,9 +40,9 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
 
       expect(EmailConfirmation.count).to eq(1)
       email_confirmation = EmailConfirmation.first
-      expect(email_confirmation.succeeded_at).to_not be_nil
+      expect(email_confirmation.succeeded_at).not_to be_nil
 
-      expect(response).to have_http_status(204)
+      expect(response).to have_http_status(:no_content)
       assert_response_schema_confirm(204)
     end
   end

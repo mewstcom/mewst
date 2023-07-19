@@ -19,7 +19,7 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
       assert_response_schema_confirm(404)
     end
   end
@@ -34,13 +34,13 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
       expected = {
         email_confirmation: {
           id: email_confirmation.id,
-          succeeded_at: nil,
+          succeeded_at: nil
         }
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)
     end
   end

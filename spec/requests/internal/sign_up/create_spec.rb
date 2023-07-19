@@ -23,7 +23,7 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       assert_response_schema_confirm(422)
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
       expected = {
         sign_up: {
           oauth_access_token: {
-            token: oauth_access_token.token,
+            token: oauth_access_token.token
           },
           profile: {
             atname: profile.atname,
@@ -72,7 +72,7 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
 
-      expect(response).to have_http_status(201)
+      expect(response).to have_http_status(:created)
       assert_response_schema_confirm(201)
     end
   end

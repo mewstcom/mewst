@@ -11,12 +11,12 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
     if form.invalid?
       return render(
         json: Resources::Internal::ActiveModelErrors.new(form.errors),
-        status: 422
+        status: :unprocessable_entity
       )
     end
 
     Commands::ConfirmEmail.new(form:).call
 
-    head 204
+    head :no_content
   end
 end

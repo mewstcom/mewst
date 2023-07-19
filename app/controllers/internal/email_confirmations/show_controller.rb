@@ -12,7 +12,7 @@ class Internal::EmailConfirmations::ShowController < Internal::ApplicationContro
       )
       return render(
         json: Resources::Internal::Error.new([error]),
-        status: 404
+        status: :not_found
       )
     end
 

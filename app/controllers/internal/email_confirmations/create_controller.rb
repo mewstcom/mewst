@@ -8,7 +8,7 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
     if form.invalid?
       return render(
         json: Resources::Internal::ActiveModelErrors.new(form.errors),
-        status: 422
+        status: :unprocessable_entity
       )
     end
 
@@ -16,7 +16,7 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
 
     render(
       json: Resources::Internal::EmailConfirmation.new(result.email_confirmation),
-      status: 201
+      status: :created
     )
   end
 end

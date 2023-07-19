@@ -13,7 +13,7 @@ class Internal::SignUp::CreateController < Internal::ApplicationController
     if form.invalid?
       return render(
         json: Resources::Internal::ActiveModelErrors.new(form.errors),
-        status: 422
+        status: :unprocessable_entity
       )
     end
 
@@ -22,7 +22,7 @@ class Internal::SignUp::CreateController < Internal::ApplicationController
 
     render(
       json: Resources::Internal::SignUp.new(result),
-      status: 201
+      status: :created
     )
   end
 end

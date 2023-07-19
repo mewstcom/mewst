@@ -10,7 +10,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
 
     it "returns expected status" do
       get "/latest/@hoge/timeline"
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(:ok)
     end
   end
 end
