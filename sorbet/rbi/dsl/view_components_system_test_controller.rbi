@@ -13,12 +13,8 @@ class ViewComponentsSystemTestController
 
   module HelperMethods
     include ::ActionController::Base::HelperMethods
-    include ::ApplicationHelper
-    include ::ComponentDataFetcherHelper
-    include ::LanguageHelper
-    include ::TextHelper
-    include ::TimeHelper
     include ::PreviewHelper
+    include ::Doorkeeper::DashboardHelper
   end
 
   class HelperProxy < ::ActionView::Base

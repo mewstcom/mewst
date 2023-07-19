@@ -15,10 +15,11 @@ class Google::Api::Publishing
       library_settings: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Api::ClientLibrarySettings], T::Array[Google::Api::ClientLibrarySettings])),
       method_settings: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Api::MethodSettings], T::Array[Google::Api::MethodSettings])),
       new_issue_uri: T.nilable(String),
-      organization: T.nilable(T.any(Symbol, Integer))
+      organization: T.nilable(T.any(Symbol, Integer)),
+      proto_reference_documentation_uri: T.nilable(String)
     ).void
   end
-  def initialize(api_short_name: nil, codeowner_github_teams: Google::Protobuf::RepeatedField.new(:string), doc_tag_prefix: nil, documentation_uri: nil, github_label: nil, library_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::ClientLibrarySettings), method_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::MethodSettings), new_issue_uri: nil, organization: nil); end
+  def initialize(api_short_name: nil, codeowner_github_teams: Google::Protobuf::RepeatedField.new(:string), doc_tag_prefix: nil, documentation_uri: nil, github_label: nil, library_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::ClientLibrarySettings), method_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::MethodSettings), new_issue_uri: nil, organization: nil, proto_reference_documentation_uri: nil); end
 
   sig { returns(String) }
   def api_short_name; end
@@ -52,6 +53,9 @@ class Google::Api::Publishing
 
   sig { void }
   def clear_organization; end
+
+  sig { void }
+  def clear_proto_reference_documentation_uri; end
 
   sig { returns(Google::Protobuf::RepeatedField[String]) }
   def codeowner_github_teams; end
@@ -100,4 +104,10 @@ class Google::Api::Publishing
 
   sig { params(value: T.any(Symbol, Integer)).void }
   def organization=(value); end
+
+  sig { returns(String) }
+  def proto_reference_documentation_uri; end
+
+  sig { params(value: String).void }
+  def proto_reference_documentation_uri=(value); end
 end
