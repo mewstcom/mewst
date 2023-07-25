@@ -26,25 +26,12 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                  - type: object
-                    additionalProperties: false
-                    properties:
-                      data:
-                        type: object
-                        additionalProperties: false
-                        properties:
-                          posts:
-                            items:
-                              "$ref": "#/components/schemas/post"
-                            type: array
-                  - type: object
-                    additionalProperties: false
-                    properties:
-                      errors:
-                        items:
-                          "$ref": "#/components/schemas/error"
-                        type: array
+                additionalProperties: false
+                properties:
+                  posts:
+                    items:
+                      "$ref": "#/components/schemas/post"
+                    type: array
           description: Response
       summary: Get posts on home timeline
       tags:

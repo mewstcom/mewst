@@ -11,6 +11,6 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
     )
     @posts = Post.preload(:postable, :profile).first(3)
 
-    render(json: {data: Resources::Post.new(@posts)}.as_json)
+    render(json: Resources::Post.new(@posts))
   end
 end
