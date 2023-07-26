@@ -37,10 +37,10 @@ group :development, :test do
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "rspec-rails"
-  gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
-  gem "rubocop-sorbet", require: false
   gem "standard"
+  gem "standard-rails"
+  gem "standard-sorbet"
 end
 
 group :development do

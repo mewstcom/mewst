@@ -1,7 +1,5 @@
 require:
-  - rubocop-rails
   - rubocop-rspec
-  - rubocop-sorbet
 
 # https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribedclass
 RSpec/DescribedClass:
