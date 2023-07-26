@@ -13,7 +13,7 @@ module Pubsub::Subscribable
   def require_authentication
     authenticate_or_request_with_http_token do |token|
       claim = Google::Auth::IDTokens.verify_oidc(token)
-      claim["email_verified"] == true && claim["email"] == ENV.fetch("MEWST_GOOGLE_CLOUD_SERVICE_EMAIL")
+      claim["email_verified"] == true && claim["email"] == Rails.configuration.mewst["google_cloud_service_email"]
     end
   end
 

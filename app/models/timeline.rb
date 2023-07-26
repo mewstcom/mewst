@@ -35,6 +35,6 @@ class Timeline
 
   sig { returns(Redis) }
   def redis_client
-    T.cast(Mewst::Redis.new(url: ENV.fetch("MEWST_REDIS_UNEVICTABLE_CACHE_URL")).client, Redis)
+    T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client, Redis)
   end
 end

@@ -1,0 +1,10 @@
+shared:
+  google_cloud_credentials: <%= ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS") %>
+  google_cloud_project_id: <%= ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID") %>
+  google_cloud_service_email: <%= ENV.fetch("MEWST_GOOGLE_CLOUD_SERVICE_EMAIL") %>
+  google_cloud_tasks_location: <%= ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_LOCATION") %>
+  google_cloud_tasks_queue_id_default: <%= ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT") %>
+  pubsub_topic_name_add_post_to_home_timeline: <%= ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_ADD_POST_TO_HOME_TIMELINE") %>
+  pubsub_topic_name_fanout_post: <%= ENV.fetch("MEWST_PUBSUB_TOPIC_NAME_FANOUT_POST") %>
+  redis_unevictable_cache_url: <%= ENV.fetch("MEWST_REDIS_UNEVICTABLE_CACHE_URL") %>
+  url: <%= ENV.fetch("MEWST_URL") %>

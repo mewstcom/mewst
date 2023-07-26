@@ -9,9 +9,9 @@ class Mewst::CloudPubsub
   sig { returns(Google::Cloud::PubSub::Project) }
   def self.client
     new(
-      project_id: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
+      project_id: Rails.configuration.mewst["google_cloud_project_id"],
       credentials: Google::Cloud::PubSub::Credentials.new(
-        JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
+        JSON.parse(Rails.configuration.mewst["google_cloud_credentials"])
       )
     ).client
   end

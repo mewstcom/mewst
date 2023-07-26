@@ -44,5 +44,7 @@ module Mewst
     config.active_record.schema_format = :sql
 
     config.i18n.available_locales = %i[en ja]
+
+    config.mewst = config_for(:mewst)
   end
 end

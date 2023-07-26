@@ -15,18 +15,18 @@ class Mewst::CloudTasks
   sig { params(path: String, payload: T.nilable(String), seconds: T.nilable(Integer)).void }
   def create_task(path:, payload: nil, seconds: nil)
     parent = client.queue_path(
-      project: ENV.fetch("MEWST_GOOGLE_CLOUD_PROJECT_ID"),
-      location: ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_LOCATION"),
+      project: Rails.configuration.mewst["google_cloud_project_id"],
+      location: Rails.configuration.mewst["google_cloud_tasks_location"],
       queue: queue_id
     )
-    url = "#{ENV.fetch("MEWST_URL")}#{path}"
+    url = "#{Rails.configuration.mewst["url"]}#{path}"
 
     task = {
       http_request: {
         http_method: :POST,
         url:,
         oidc_token: {
-          service_account_email: ENV.fetch("MEWST_GOOGLE_CLOUD_SERVICE_EMAIL")
+          service_account_email: Rails.configuration.mewst["google_cloud_service_email"]
         },
         headers: {
           "Content-Type": "application/json"
@@ -58,7 +58,7 @@ class Mewst::CloudTasks
   def client
     Google::Cloud::Tasks.configure do |config|
       config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
-        JSON.parse(ENV.fetch("MEWST_GOOGLE_CLOUD_CREDENTIALS"))
+        JSON.parse(Rails.configuration.mewst["google_cloud_credentials"])
       )
     end
 
@@ -67,6 +67,6 @@ class Mewst::CloudTasks
 
   sig { returns(String) }
   def queue_id
-    ENV.fetch("MEWST_GOOGLE_CLOUD_TASKS_QUEUE_ID_DEFAULT")
+    Rails.configuration.mewst["google_cloud_tasks_queue_id_default"]
   end
 end
