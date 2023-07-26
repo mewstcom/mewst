@@ -4,8 +4,6 @@ fly.toml
 tmp
 !tmp/pids
 log
-public/assets
-public/packs
 .bundle
 
 db/*.sqlite3

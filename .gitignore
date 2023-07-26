@@ -6,6 +6,3 @@
 /node_modules
 /public/uploads/*
 /tmp/*
-
-/app/assets/builds/*
-!/app/assets/builds/.keep
