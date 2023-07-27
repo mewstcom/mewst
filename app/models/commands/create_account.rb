@@ -1,14 +1,14 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::SignUp < Commands::Base
+class Commands::CreateAccount < Commands::Base
   class Result < T::Struct
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile
     const :user, User
   end
 
-  sig { params(form: Forms::SignUp).void }
+  sig { params(form: Forms::Account).void }
   def initialize(form:)
     @form = form
   end
@@ -44,6 +44,6 @@ class Commands::SignUp < Commands::Base
 
   private
 
-  sig { returns(Forms::SignUp) }
+  sig { returns(Forms::Account) }
   attr_reader :form
 end

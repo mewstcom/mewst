@@ -1,9 +1,9 @@
 # typed: true
 # frozen_string_literal: true
 
-class Internal::SignUp::CreateController < Internal::ApplicationController
+class Internal::Accounts::CreateController < Internal::ApplicationController
   def call
-    form = Forms::SignUp.new(
+    form = Forms::Account.new(
       atname: params[:atname],
       email: params[:email],
       locale: I18n.locale,
@@ -17,11 +17,11 @@ class Internal::SignUp::CreateController < Internal::ApplicationController
       )
     end
 
-    result = Commands::SignUp.new(form:).call
+    result = Commands::CreateAccount.new(form:).call
     result.oauth_access_token.user.track_sign_in
 
     render(
-      json: Resources::Internal::SignUp.new(result),
+      json: Resources::Internal::Account.new(result),
       status: :created
     )
   end

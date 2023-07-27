@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Forms::SignUp < Forms::Base
+class Forms::Account < Forms::Base
   attribute :atname, :string
   attribute :email, :string
   attribute :locale, :string

@@ -4,5 +4,6 @@
 
 # typed: false
 
-module ::AccountActivation; end
+module Commands::SignUp; end
+module Forms::SignUp; end
 module Google::Protobuf::EnumDescriptor; end

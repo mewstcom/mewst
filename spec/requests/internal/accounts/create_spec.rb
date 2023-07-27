@@ -1,10 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal do
+RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal do
   context "when invalid atname" do
     it "responses 422" do
-      post("/internal/sign_up", params: {
+      post("/internal/accounts", params: {
         atname: "a" * 31,
         email: "test@example.com",
         locale: "ja",
@@ -39,7 +39,7 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
       expect(ProfileMember.count).to eq(0)
       expect(OauthAccessToken.count).to eq(0)
 
-      post("/internal/sign_up", params: {
+      post("/internal/accounts", params: {
         atname: "shimbaco",
         email: "shimbaco@example.com",
         locale: "ja",
@@ -55,7 +55,7 @@ RSpec.describe "POST /internal/sign_up", type: :request, api_version: :internal 
       oauth_access_token = user.oauth_access_tokens.first
 
       expected = {
-        sign_up: {
+        account: {
           oauth_access_token: {
             token: oauth_access_token.token
           },

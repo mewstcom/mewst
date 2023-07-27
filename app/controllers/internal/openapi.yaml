@@ -90,7 +90,7 @@ paths:
       summary: ""
       tags:
         - email_confirmations
-  "/sign_up":
+  "/accounts":
     post:
       description: ""
       requestBody:
@@ -125,14 +125,14 @@ paths:
                 type: object
                 additionalProperties: false
                 properties:
-                  sign_up:
-                    "$ref": "#/components/schemas/sign-up"
+                  account:
+                    "$ref": "#/components/schemas/account"
           description: Response
         '422':
           "$ref": "#/components/responses/validation_failed"
       summary: ""
       tags:
-        - sign_up
+        - accounts
 components:
   parameters:
     email-confirmation-id:
@@ -229,9 +229,9 @@ components:
         - avatar_url
         - id
         - name
-    sign-up:
+    account:
       additionalProperties: false
-      title: Sign Up
+      title: Account
       description: ""
       type: object
       properties:
