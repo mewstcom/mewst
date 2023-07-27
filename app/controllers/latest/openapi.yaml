@@ -46,7 +46,7 @@ components:
       schema:
         type: string
   schemas:
-    commented_post:
+    commented-post:
       additionalProperties: false
       title: Commented Post
       description: ""
@@ -56,7 +56,7 @@ components:
           type: string
       required:
         - comment
-    commented_repost:
+    commented-repost:
       additionalProperties: false
       title: Commented Repost
       description: ""
@@ -66,8 +66,8 @@ components:
           type: string
         repostable:
           anyOf:
-            - $ref: "#/components/schemas/commented_post"
-            - $ref: "#/components/schemas/commented_repost"
+            - $ref: "#/components/schemas/commented-post"
+            - $ref: "#/components/schemas/commented-repost"
       required:
         - comment
         - repostable
@@ -90,8 +90,8 @@ components:
       properties:
         repostable:
           anyOf:
-            - $ref: "#/components/schemas/commented_post"
-            - $ref: "#/components/schemas/commented_repost"
+            - $ref: "#/components/schemas/commented-post"
+            - $ref: "#/components/schemas/commented-repost"
       required:
         - repostable
       title: Repost
@@ -122,8 +122,8 @@ components:
           type: string
         postable:
           anyOf:
-            - $ref: "#/components/schemas/commented_post"
-            - $ref: "#/components/schemas/commented_repost"
+            - $ref: "#/components/schemas/commented-post"
+            - $ref: "#/components/schemas/commented-repost"
             - $ref: "#/components/schemas/repost"
         postable_type:
           enum:
