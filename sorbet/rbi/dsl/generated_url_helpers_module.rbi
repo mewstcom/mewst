@@ -12,15 +12,6 @@ module GeneratedUrlHelpersModule
   def internal_account_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_add_post_to_home_timeline_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_fanout_post_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_tasks_send_email_confirmation_mail_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def internal_email_confirmation_challenge_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -28,6 +19,15 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def internal_email_confirmation_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_pubsub_add_post_to_home_timeline_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_pubsub_fanout_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_tasks_send_email_confirmation_mail_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_timeline_url(*args); end

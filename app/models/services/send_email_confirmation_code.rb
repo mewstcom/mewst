@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::SendEmailConfirmationCode < Commands::Base
+class Services::SendEmailConfirmationCode < Services::Base
   class Result < T::Struct
     const :email_confirmation, EmailConfirmation
   end

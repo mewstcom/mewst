@@ -15,7 +15,7 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
       )
     end
 
-    Commands::ConfirmEmail.new(form:).call
+    Services::ConfirmEmail.new(form:).call
 
     head :no_content
   end

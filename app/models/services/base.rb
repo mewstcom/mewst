@@ -1,6 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::Base
+class Services::Base
   extend T::Sig
 end

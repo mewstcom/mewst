@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::CreateCommentedPost < Commands::Base
+class Services::CreateCommentedPost < Services::Base
   class Result < T::Struct
     const :post, Post
   end

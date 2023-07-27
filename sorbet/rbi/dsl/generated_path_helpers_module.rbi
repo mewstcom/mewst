@@ -12,15 +12,6 @@ module GeneratedPathHelpersModule
   def internal_account_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_add_post_to_home_timeline_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_pubsub_fanout_post_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_api_tasks_send_email_confirmation_mail_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def internal_email_confirmation_challenge_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -28,6 +19,15 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def internal_email_confirmation_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_pubsub_add_post_to_home_timeline_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_pubsub_fanout_post_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def internal_tasks_send_email_confirmation_mail_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_timeline_path(*args); end

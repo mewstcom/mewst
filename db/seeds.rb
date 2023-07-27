@@ -14,16 +14,16 @@ OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
 ].each do |(email, locale, atname, password, avatar_url)|
   ActiveRecord::Base.transaction do
     form = Forms::EmailConfirmation.new(email:, locale:)
-    result = Commands::SendEmailConfirmationCode.new(form:).call
+    result = Services::SendEmailConfirmationCode.new(form:).call
 
     form = Forms::EmailConfirmationChallenge.new(
       email_confirmation_id: result.email_confirmation.id,
       confirmation_code: result.email_confirmation.code
     )
-    Commands::ConfirmEmail.new(form:).call
+    Services::ConfirmEmail.new(form:).call
 
     form = Forms::SignUp.new(atname:, email:, locale:, password:)
-    result = Commands::SignUp.new(form:).call
+    result = Services::SignUp.new(form:).call
 
     if avatar_url.present?
       result.profile.update!(avatar_url:)

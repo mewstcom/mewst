@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::UpdateUser < Commands::Base
+class Services::UpdateUser < Services::Base
   class Result < T::Struct
     const :user, User
   end

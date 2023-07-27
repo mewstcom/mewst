@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::CreateAccount < Commands::Base
+class Services::CreateAccount < Services::Base
   class Result < T::Struct
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile

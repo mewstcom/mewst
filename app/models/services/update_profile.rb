@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::UpdateProfile < Commands::Base
+class Services::UpdateProfile < Services::Base
   class Result < T::Struct
     const :profile, Profile
   end

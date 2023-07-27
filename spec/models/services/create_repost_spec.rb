@@ -1,12 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Commands::CreateRepost do
+RSpec.describe Services::CreateRepost do
   let!(:profile) { create(:profile, :with_member) }
   let!(:commented_post_form) { Forms::CommentedPost.new(profile:, comment: "hello") }
-  let!(:target_post) { Commands::CreateCommentedPost.new(form: commented_post_form).call.post }
+  let!(:target_post) { Services::CreateCommentedPost.new(form: commented_post_form).call.post }
   let!(:form) { Forms::Repost.new(profile:, post_id: target_post.id) }
-  let!(:command) { Commands::CreateRepost.new(form:) }
+  let!(:command) { Services::CreateRepost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do

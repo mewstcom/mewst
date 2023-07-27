@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Commands::ConfirmEmail < Commands::Base
+class Services::ConfirmEmail < Services::Base
   class Result < T::Struct; end
 
   sig { params(form: Forms::EmailConfirmationChallenge).void }

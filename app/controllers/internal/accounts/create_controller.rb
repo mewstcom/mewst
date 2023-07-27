@@ -17,7 +17,7 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
       )
     end
 
-    result = Commands::CreateAccount.new(form:).call
+    result = Services::CreateAccount.new(form:).call
     result.oauth_access_token.user.track_sign_in
 
     render(

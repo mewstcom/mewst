@@ -12,7 +12,7 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
       )
     end
 
-    result = Commands::SendEmailConfirmationCode.new(form:).call
+    result = Services::SendEmailConfirmationCode.new(form:).call
 
     render(
       json: Resources::Internal::EmailConfirmation.new(result.email_confirmation),
