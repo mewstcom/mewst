@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Resources::Post < Resources::Base
+class Resources::Latest::Post < Resources::Base
   root_key :post, :posts
 
   attributes :id, :published_at, :reposts_count
@@ -9,7 +9,7 @@ class Resources::Post < Resources::Base
   one :postable, resource: ->(record) {
     case record
     when CommentedPost
-      Resources::CommentedPost
+      Resources::Latest::CommentedPost
     else
       fail
     end
@@ -19,5 +19,5 @@ class Resources::Post < Resources::Base
     post.postable_type.underscore
   end
 
-  one :profile, resource: Resources::Profile
+  one :profile, resource: Resources::Latest::Profile
 end
