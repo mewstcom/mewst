@@ -58,7 +58,7 @@ class Mewst::CloudTasks
   def client
     Google::Cloud::Tasks.configure do |config|
       config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
-        JSON.parse(Rails.configuration.mewst["google_cloud_credentials"])
+        Rails.configuration.mewst["google_cloud_credentials"]
       )
     end
 
