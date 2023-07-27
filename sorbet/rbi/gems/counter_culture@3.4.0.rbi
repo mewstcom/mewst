@@ -6,23 +6,23 @@
 
 # source://counter_culture//lib/counter_culture/version.rb#1
 module CounterCulture
-  # source://counter_culture//lib/counter_culture.rb#10
+  # source://counter_culture//lib/counter_culture.rb#11
   def batch_size; end
 
-  # source://counter_culture//lib/counter_culture.rb#10
+  # source://counter_culture//lib/counter_culture.rb#11
   def batch_size=(val); end
 
   class << self
-    # source://counter_culture//lib/counter_culture.rb#10
+    # source://counter_culture//lib/counter_culture.rb#11
     def batch_size; end
 
-    # source://counter_culture//lib/counter_culture.rb#10
+    # source://counter_culture//lib/counter_culture.rb#11
     def batch_size=(val); end
 
     # @yield [_self]
     # @yieldparam _self [CounterCulture] the object that the method was called on
     #
-    # source://counter_culture//lib/counter_culture.rb#13
+    # source://counter_culture//lib/counter_culture.rb#14
     def config; end
   end
 end
@@ -84,7 +84,7 @@ class CounterCulture::Counter
   # source://counter_culture//lib/counter_culture/counter.rb#6
   def execute_after_commit; end
 
-  # source://counter_culture//lib/counter_culture/counter.rb#321
+  # source://counter_culture//lib/counter_culture/counter.rb#323
   def execute_now_or_after_commit(obj, &block); end
 
   # @return [Boolean]
@@ -99,10 +99,10 @@ class CounterCulture::Counter
   # relation: a symbol or array of symbols; specifies the relation
   #   that has the counter cache column
   #
-  # source://counter_culture//lib/counter_culture/counter.rb#298
+  # source://counter_culture//lib/counter_culture/counter.rb#300
   def first_level_relation_foreign_key; end
 
-  # source://counter_culture//lib/counter_culture/counter.rb#303
+  # source://counter_culture//lib/counter_culture/counter.rb#305
   def first_level_relation_foreign_type; end
 
   # gets the value of the foreign key on the given relation
@@ -132,7 +132,7 @@ class CounterCulture::Counter
   # source://counter_culture//lib/counter_culture/counter.rb#256
   def polymorphic?; end
 
-  # source://counter_culture//lib/counter_culture/counter.rb#309
+  # source://counter_culture//lib/counter_culture/counter.rb#311
   def previous_model(obj); end
 
   # source://counter_culture//lib/counter_culture/counter.rb#6
@@ -185,7 +185,7 @@ class CounterCulture::Counter
 
   private
 
-  # source://counter_culture//lib/counter_culture/counter.rb#332
+  # source://counter_culture//lib/counter_culture/counter.rb#334
   def attribute_was(obj, attr); end
 end
 
@@ -205,24 +205,24 @@ module CounterCulture::Extensions
 
   # called by after_create callback
   #
-  # source://counter_culture//lib/counter_culture/extensions.rb#98
+  # source://counter_culture//lib/counter_culture/extensions.rb#108
   def _update_counts_after_create; end
 
   # called by after_destroy callback
   #
-  # source://counter_culture//lib/counter_culture/extensions.rb#106
+  # source://counter_culture//lib/counter_culture/extensions.rb#116
   def _update_counts_after_destroy; end
 
   # called by after_update callback
   #
-  # source://counter_culture//lib/counter_culture/extensions.rb#116
+  # source://counter_culture//lib/counter_culture/extensions.rb#126
   def _update_counts_after_update; end
 
   # check if record is soft-deleted
   #
   # @return [Boolean]
   #
-  # source://counter_culture//lib/counter_culture/extensions.rb#136
+  # source://counter_culture//lib/counter_culture/extensions.rb#146
   def destroyed_for_counter_culture?; end
 end
 
@@ -256,6 +256,9 @@ module CounterCulture::Extensions::ClassMethods
   #
   # source://counter_culture//lib/counter_culture/extensions.rb#75
   def counter_culture_fix_counts(options = T.unsafe(nil)); end
+
+  # source://counter_culture//lib/counter_culture/extensions.rb#95
+  def skip_counter_culture_updates; end
 end
 
 # source://counter_culture//lib/counter_culture/reconciler.rb#5
@@ -442,6 +445,26 @@ class CounterCulture::Reconciler::Reconciliation
 
   # source://counter_culture//lib/counter_culture/reconciler.rb#330
   def with_writing_db_connection(&block); end
+end
+
+# source://counter_culture//lib/counter_culture/skip_updates.rb#2
+module CounterCulture::SkipUpdates
+  private
+
+  # called by after_create callback
+  #
+  # source://counter_culture//lib/counter_culture/skip_updates.rb#6
+  def _update_counts_after_create; end
+
+  # called by after_destroy callback
+  #
+  # source://counter_culture//lib/counter_culture/skip_updates.rb#13
+  def _update_counts_after_destroy; end
+
+  # called by after_update callback
+  #
+  # source://counter_culture//lib/counter_culture/skip_updates.rb#20
+  def _update_counts_after_update; end
 end
 
 # source://counter_culture//lib/counter_culture/version.rb#2
