@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Api::Internal::Pubsub::FanoutPostController < ApplicationController
+class Internal::Pubsub::FanoutPostController < ApplicationController
   include Pubsub::Subscribable
 
   before_action :require_authentication

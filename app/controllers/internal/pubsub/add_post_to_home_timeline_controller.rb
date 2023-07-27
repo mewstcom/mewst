@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Api::Internal::Pubsub::AddPostToHomeTimelineController < ApplicationController
+class Internal::Pubsub::AddPostToHomeTimelineController < ApplicationController
   include Pubsub::Subscribable
 
   before_action :require_authentication

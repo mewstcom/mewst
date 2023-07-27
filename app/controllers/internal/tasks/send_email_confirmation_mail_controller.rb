@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Api::Internal::Tasks::SendEmailConfirmationMailController < ApplicationController
+class Internal::Tasks::SendEmailConfirmationMailController < ApplicationController
   include Pubsub::Subscribable
 
   before_action :require_authentication

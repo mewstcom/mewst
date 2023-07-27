@@ -6,7 +6,7 @@ class SendEmailConfirmationMailJob < ApplicationJob
   def perform(email_confirmation_id:, locale:)
     tasks = Mewst::CloudTasks.new
     tasks.create_task(
-      path: "/api/internal/tasks/send_email_confirmation_mail",
+      path: "/internal/tasks/send_email_confirmation_mail",
       payload: {
         email_confirmation_id:,
         locale:
