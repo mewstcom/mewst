@@ -12,7 +12,7 @@ class Google::Rpc::ErrorInfo
       reason: T.nilable(String)
     ).void
   end
-  def initialize(domain: nil, metadata: Google::Protobuf::Map.new(:string, :string), reason: nil); end
+  def initialize(domain: nil, metadata: T.unsafe(nil), reason: nil); end
 
   sig { void }
   def clear_domain; end

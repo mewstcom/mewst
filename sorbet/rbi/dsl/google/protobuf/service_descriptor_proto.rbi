@@ -12,7 +12,7 @@ class Google::Protobuf::ServiceDescriptorProto
       options: T.nilable(Google::Protobuf::ServiceOptions)
     ).void
   end
-  def initialize(method: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::MethodDescriptorProto), name: nil, options: nil); end
+  def initialize(method: T.unsafe(nil), name: nil, options: nil); end
 
   sig { void }
   def clear_method; end

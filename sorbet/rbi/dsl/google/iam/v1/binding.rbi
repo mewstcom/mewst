@@ -12,7 +12,7 @@ class Google::Iam::V1::Binding
       role: T.nilable(String)
     ).void
   end
-  def initialize(condition: nil, members: Google::Protobuf::RepeatedField.new(:string), role: nil); end
+  def initialize(condition: nil, members: T.unsafe(nil), role: nil); end
 
   sig { void }
   def clear_condition; end

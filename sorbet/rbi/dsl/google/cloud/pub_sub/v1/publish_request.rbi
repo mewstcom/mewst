@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::PublishRequest
       topic: T.nilable(String)
     ).void
   end
-  def initialize(messages: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::PubsubMessage), topic: nil); end
+  def initialize(messages: T.unsafe(nil), topic: nil); end
 
   sig { void }
   def clear_messages; end

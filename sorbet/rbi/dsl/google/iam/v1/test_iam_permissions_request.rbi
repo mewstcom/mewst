@@ -11,7 +11,7 @@ class Google::Iam::V1::TestIamPermissionsRequest
       resource: T.nilable(String)
     ).void
   end
-  def initialize(permissions: Google::Protobuf::RepeatedField.new(:string), resource: nil); end
+  def initialize(permissions: T.unsafe(nil), resource: nil); end
 
   sig { void }
   def clear_permissions; end

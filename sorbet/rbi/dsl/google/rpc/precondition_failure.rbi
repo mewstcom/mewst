@@ -10,7 +10,7 @@ class Google::Rpc::PreconditionFailure
       violations: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Rpc::PreconditionFailure::Violation], T::Array[Google::Rpc::PreconditionFailure::Violation]))
     ).void
   end
-  def initialize(violations: Google::Protobuf::RepeatedField.new(:message, Google::Rpc::PreconditionFailure::Violation)); end
+  def initialize(violations: T.unsafe(nil)); end
 
   sig { void }
   def clear_violations; end

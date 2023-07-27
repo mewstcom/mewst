@@ -6,7 +6,7 @@
 
 class Google::Protobuf::FieldMask
   sig { params(paths: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))).void }
-  def initialize(paths: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(paths: T.unsafe(nil)); end
 
   sig { void }
   def clear_paths; end

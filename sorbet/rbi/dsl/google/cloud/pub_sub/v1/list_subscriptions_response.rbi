@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::ListSubscriptionsResponse
       subscriptions: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Cloud::PubSub::V1::Subscription], T::Array[Google::Cloud::PubSub::V1::Subscription]))
     ).void
   end
-  def initialize(next_page_token: nil, subscriptions: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::Subscription)); end
+  def initialize(next_page_token: nil, subscriptions: T.unsafe(nil)); end
 
   sig { void }
   def clear_next_page_token; end

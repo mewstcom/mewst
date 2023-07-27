@@ -11,7 +11,7 @@ class Google::Rpc::DebugInfo
       stack_entries: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))
     ).void
   end
-  def initialize(detail: nil, stack_entries: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(detail: nil, stack_entries: T.unsafe(nil)); end
 
   sig { void }
   def clear_detail; end

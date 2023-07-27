@@ -10,7 +10,7 @@ class Google::Protobuf::GeneratedCodeInfo
       annotation: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::GeneratedCodeInfo::Annotation], T::Array[Google::Protobuf::GeneratedCodeInfo::Annotation]))
     ).void
   end
-  def initialize(annotation: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::GeneratedCodeInfo::Annotation)); end
+  def initialize(annotation: T.unsafe(nil)); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Protobuf::GeneratedCodeInfo::Annotation]) }
   def annotation; end

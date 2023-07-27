@@ -20,7 +20,7 @@ class Google::Protobuf::FieldOptions
       weak: T.nilable(T::Boolean)
     ).void
   end
-  def initialize(ctype: nil, debug_redact: nil, deprecated: nil, jstype: nil, lazy: nil, packed: nil, retention: nil, target: nil, uninterpreted_option: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption), unverified_lazy: nil, weak: nil); end
+  def initialize(ctype: nil, debug_redact: nil, deprecated: nil, jstype: nil, lazy: nil, packed: nil, retention: nil, target: nil, uninterpreted_option: T.unsafe(nil), unverified_lazy: nil, weak: nil); end
 
   sig { void }
   def clear_ctype; end

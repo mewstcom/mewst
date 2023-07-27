@@ -14,7 +14,7 @@ class Google::Cloud::PubSub::V1::PubsubMessage
       publish_time: T.nilable(Google::Protobuf::Timestamp)
     ).void
   end
-  def initialize(attributes: Google::Protobuf::Map.new(:string, :string), data: nil, message_id: nil, ordering_key: nil, publish_time: nil); end
+  def initialize(attributes: T.unsafe(nil), data: nil, message_id: nil, ordering_key: nil, publish_time: nil); end
 
   sig { returns(Google::Protobuf::Map[String, String]) }
   def attributes; end

@@ -11,7 +11,7 @@ class Google::Api::CommonLanguageSettings
       reference_docs_uri: T.nilable(String)
     ).void
   end
-  def initialize(destinations: Google::Protobuf::RepeatedField.new(:enum, T.any(Symbol, Integer)), reference_docs_uri: nil); end
+  def initialize(destinations: T.unsafe(nil), reference_docs_uri: nil); end
 
   sig { void }
   def clear_destinations; end

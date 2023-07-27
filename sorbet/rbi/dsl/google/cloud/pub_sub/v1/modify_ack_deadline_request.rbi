@@ -12,7 +12,7 @@ class Google::Cloud::PubSub::V1::ModifyAckDeadlineRequest
       subscription: T.nilable(String)
     ).void
   end
-  def initialize(ack_deadline_seconds: nil, ack_ids: Google::Protobuf::RepeatedField.new(:string), subscription: nil); end
+  def initialize(ack_deadline_seconds: nil, ack_ids: T.unsafe(nil), subscription: nil); end
 
   sig { returns(Integer) }
   def ack_deadline_seconds; end

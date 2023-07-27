@@ -10,7 +10,7 @@ class Google::Protobuf::FileDescriptorSet
       file: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::FileDescriptorProto], T::Array[Google::Protobuf::FileDescriptorProto]))
     ).void
   end
-  def initialize(file: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::FileDescriptorProto)); end
+  def initialize(file: T.unsafe(nil)); end
 
   sig { void }
   def clear_file; end

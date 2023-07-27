@@ -10,7 +10,7 @@ class Google::Rpc::QuotaFailure
       violations: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Rpc::QuotaFailure::Violation], T::Array[Google::Rpc::QuotaFailure::Violation]))
     ).void
   end
-  def initialize(violations: Google::Protobuf::RepeatedField.new(:message, Google::Rpc::QuotaFailure::Violation)); end
+  def initialize(violations: T.unsafe(nil)); end
 
   sig { void }
   def clear_violations; end

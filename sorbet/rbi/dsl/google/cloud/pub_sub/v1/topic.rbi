@@ -16,7 +16,7 @@ class Google::Cloud::PubSub::V1::Topic
       schema_settings: T.nilable(Google::Cloud::PubSub::V1::SchemaSettings)
     ).void
   end
-  def initialize(kms_key_name: nil, labels: Google::Protobuf::Map.new(:string, :string), message_retention_duration: nil, message_storage_policy: nil, name: nil, satisfies_pzs: nil, schema_settings: nil); end
+  def initialize(kms_key_name: nil, labels: T.unsafe(nil), message_retention_duration: nil, message_storage_policy: nil, name: nil, satisfies_pzs: nil, schema_settings: nil); end
 
   sig { void }
   def clear_kms_key_name; end

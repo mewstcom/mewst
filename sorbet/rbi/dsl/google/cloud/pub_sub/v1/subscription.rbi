@@ -26,7 +26,7 @@ class Google::Cloud::PubSub::V1::Subscription
       topic_message_retention_duration: T.nilable(Google::Protobuf::Duration)
     ).void
   end
-  def initialize(ack_deadline_seconds: nil, bigquery_config: nil, dead_letter_policy: nil, detached: nil, enable_exactly_once_delivery: nil, enable_message_ordering: nil, expiration_policy: nil, filter: nil, labels: Google::Protobuf::Map.new(:string, :string), message_retention_duration: nil, name: nil, push_config: nil, retain_acked_messages: nil, retry_policy: nil, state: nil, topic: nil, topic_message_retention_duration: nil); end
+  def initialize(ack_deadline_seconds: nil, bigquery_config: nil, dead_letter_policy: nil, detached: nil, enable_exactly_once_delivery: nil, enable_message_ordering: nil, expiration_policy: nil, filter: nil, labels: T.unsafe(nil), message_retention_duration: nil, name: nil, push_config: nil, retain_acked_messages: nil, retry_policy: nil, state: nil, topic: nil, topic_message_retention_duration: nil); end
 
   sig { returns(Integer) }
   def ack_deadline_seconds; end

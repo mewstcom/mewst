@@ -11,7 +11,7 @@ class Google::Iam::V1::AuditConfig
       service: T.nilable(String)
     ).void
   end
-  def initialize(audit_log_configs: Google::Protobuf::RepeatedField.new(:message, Google::Iam::V1::AuditLogConfig), service: nil); end
+  def initialize(audit_log_configs: T.unsafe(nil), service: nil); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Iam::V1::AuditLogConfig]) }
   def audit_log_configs; end

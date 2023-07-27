@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::AcknowledgeRequest
       subscription: T.nilable(String)
     ).void
   end
-  def initialize(ack_ids: Google::Protobuf::RepeatedField.new(:string), subscription: nil); end
+  def initialize(ack_ids: T.unsafe(nil), subscription: nil); end
 
   sig { returns(Google::Protobuf::RepeatedField[String]) }
   def ack_ids; end

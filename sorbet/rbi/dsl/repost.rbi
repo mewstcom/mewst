@@ -743,7 +743,7 @@ class Repost
     sig { returns(T.untyped) }
     def commented_repost_id; end
 
-    sig { returns(Class) }
+    sig { returns(T::Class[T.anything]) }
     def repostable_class; end
 
     sig { returns(ActiveSupport::StringInquirer) }

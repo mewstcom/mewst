@@ -19,7 +19,7 @@ class Google::Protobuf::DescriptorProto
       reserved_range: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::DescriptorProto::ReservedRange], T::Array[Google::Protobuf::DescriptorProto::ReservedRange]))
     ).void
   end
-  def initialize(enum_type: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::EnumDescriptorProto), extension: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::FieldDescriptorProto), extension_range: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::DescriptorProto::ExtensionRange), field: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::FieldDescriptorProto), name: nil, nested_type: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::DescriptorProto), oneof_decl: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::OneofDescriptorProto), options: nil, reserved_name: Google::Protobuf::RepeatedField.new(:string), reserved_range: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::DescriptorProto::ReservedRange)); end
+  def initialize(enum_type: T.unsafe(nil), extension: T.unsafe(nil), extension_range: T.unsafe(nil), field: T.unsafe(nil), name: nil, nested_type: T.unsafe(nil), oneof_decl: T.unsafe(nil), options: nil, reserved_name: T.unsafe(nil), reserved_range: T.unsafe(nil)); end
 
   sig { void }
   def clear_enum_type; end

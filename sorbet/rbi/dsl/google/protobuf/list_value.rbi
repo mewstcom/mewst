@@ -10,7 +10,7 @@ class Google::Protobuf::ListValue
       values: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::Value], T::Array[Google::Protobuf::Value]))
     ).void
   end
-  def initialize(values: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::Value)); end
+  def initialize(values: T.unsafe(nil)); end
 
   sig { void }
   def clear_values; end

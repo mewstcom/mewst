@@ -19,7 +19,7 @@ class Google::Api::HttpRule
       selector: T.nilable(String)
     ).void
   end
-  def initialize(additional_bindings: Google::Protobuf::RepeatedField.new(:message, Google::Api::HttpRule), body: nil, custom: nil, delete: nil, get: nil, patch: nil, post: nil, put: nil, response_body: nil, selector: nil); end
+  def initialize(additional_bindings: T.unsafe(nil), body: nil, custom: nil, delete: nil, get: nil, patch: nil, post: nil, put: nil, response_body: nil, selector: nil); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Api::HttpRule]) }
   def additional_bindings; end

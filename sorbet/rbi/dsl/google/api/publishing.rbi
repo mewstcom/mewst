@@ -19,7 +19,7 @@ class Google::Api::Publishing
       proto_reference_documentation_uri: T.nilable(String)
     ).void
   end
-  def initialize(api_short_name: nil, codeowner_github_teams: Google::Protobuf::RepeatedField.new(:string), doc_tag_prefix: nil, documentation_uri: nil, github_label: nil, library_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::ClientLibrarySettings), method_settings: Google::Protobuf::RepeatedField.new(:message, Google::Api::MethodSettings), new_issue_uri: nil, organization: nil, proto_reference_documentation_uri: nil); end
+  def initialize(api_short_name: nil, codeowner_github_teams: T.unsafe(nil), doc_tag_prefix: nil, documentation_uri: nil, github_label: nil, library_settings: T.unsafe(nil), method_settings: T.unsafe(nil), new_issue_uri: nil, organization: nil, proto_reference_documentation_uri: nil); end
 
   sig { returns(String) }
   def api_short_name; end

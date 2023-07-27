@@ -13,7 +13,7 @@ class Google::Cloud::PubSub::V1::StreamingPullResponse
       subscription_properties: T.nilable(Google::Cloud::PubSub::V1::StreamingPullResponse::SubscriptionProperties)
     ).void
   end
-  def initialize(acknowledge_confirmation: nil, modify_ack_deadline_confirmation: nil, received_messages: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::ReceivedMessage), subscription_properties: nil); end
+  def initialize(acknowledge_confirmation: nil, modify_ack_deadline_confirmation: nil, received_messages: T.unsafe(nil), subscription_properties: nil); end
 
   sig { returns(T.nilable(Google::Cloud::PubSub::V1::StreamingPullResponse::AcknowledgeConfirmation)) }
   def acknowledge_confirmation; end

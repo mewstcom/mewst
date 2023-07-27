@@ -17,7 +17,7 @@ class Google::Cloud::PubSub::V1::StreamingPullRequest
       subscription: T.nilable(String)
     ).void
   end
-  def initialize(ack_ids: Google::Protobuf::RepeatedField.new(:string), client_id: nil, max_outstanding_bytes: nil, max_outstanding_messages: nil, modify_deadline_ack_ids: Google::Protobuf::RepeatedField.new(:string), modify_deadline_seconds: Google::Protobuf::RepeatedField.new(:int32), stream_ack_deadline_seconds: nil, subscription: nil); end
+  def initialize(ack_ids: T.unsafe(nil), client_id: nil, max_outstanding_bytes: nil, max_outstanding_messages: nil, modify_deadline_ack_ids: T.unsafe(nil), modify_deadline_seconds: T.unsafe(nil), stream_ack_deadline_seconds: nil, subscription: nil); end
 
   sig { returns(Google::Protobuf::RepeatedField[String]) }
   def ack_ids; end

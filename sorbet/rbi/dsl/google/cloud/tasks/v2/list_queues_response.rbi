@@ -11,7 +11,7 @@ class Google::Cloud::Tasks::V2::ListQueuesResponse
       queues: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Cloud::Tasks::V2::Queue], T::Array[Google::Cloud::Tasks::V2::Queue]))
     ).void
   end
-  def initialize(next_page_token: nil, queues: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::Tasks::V2::Queue)); end
+  def initialize(next_page_token: nil, queues: T.unsafe(nil)); end
 
   sig { void }
   def clear_next_page_token; end

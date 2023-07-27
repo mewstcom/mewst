@@ -11,7 +11,7 @@ class Google::Iam::V1::PolicyDelta
       binding_deltas: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Iam::V1::BindingDelta], T::Array[Google::Iam::V1::BindingDelta]))
     ).void
   end
-  def initialize(audit_config_deltas: Google::Protobuf::RepeatedField.new(:message, Google::Iam::V1::AuditConfigDelta), binding_deltas: Google::Protobuf::RepeatedField.new(:message, Google::Iam::V1::BindingDelta)); end
+  def initialize(audit_config_deltas: T.unsafe(nil), binding_deltas: T.unsafe(nil)); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Iam::V1::AuditConfigDelta]) }
   def audit_config_deltas; end

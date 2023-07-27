@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::ListSchemaRevisionsResponse
       schemas: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Cloud::PubSub::V1::Schema], T::Array[Google::Cloud::PubSub::V1::Schema]))
     ).void
   end
-  def initialize(next_page_token: nil, schemas: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::Schema)); end
+  def initialize(next_page_token: nil, schemas: T.unsafe(nil)); end
 
   sig { void }
   def clear_next_page_token; end

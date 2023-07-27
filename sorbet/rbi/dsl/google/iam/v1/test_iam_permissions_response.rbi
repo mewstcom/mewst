@@ -6,7 +6,7 @@
 
 class Google::Iam::V1::TestIamPermissionsResponse
   sig { params(permissions: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))).void }
-  def initialize(permissions: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(permissions: T.unsafe(nil)); end
 
   sig { void }
   def clear_permissions; end

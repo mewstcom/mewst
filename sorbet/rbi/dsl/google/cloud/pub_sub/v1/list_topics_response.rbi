@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::ListTopicsResponse
       topics: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Cloud::PubSub::V1::Topic], T::Array[Google::Cloud::PubSub::V1::Topic]))
     ).void
   end
-  def initialize(next_page_token: nil, topics: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::Topic)); end
+  def initialize(next_page_token: nil, topics: T.unsafe(nil)); end
 
   sig { void }
   def clear_next_page_token; end

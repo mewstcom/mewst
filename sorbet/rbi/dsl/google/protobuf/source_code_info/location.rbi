@@ -14,7 +14,7 @@ class Google::Protobuf::SourceCodeInfo::Location
       trailing_comments: T.nilable(String)
     ).void
   end
-  def initialize(leading_comments: nil, leading_detached_comments: Google::Protobuf::RepeatedField.new(:string), path: Google::Protobuf::RepeatedField.new(:int32), span: Google::Protobuf::RepeatedField.new(:int32), trailing_comments: nil); end
+  def initialize(leading_comments: nil, leading_detached_comments: T.unsafe(nil), path: T.unsafe(nil), span: T.unsafe(nil), trailing_comments: nil); end
 
   sig { void }
   def clear_leading_comments; end

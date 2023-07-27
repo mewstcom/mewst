@@ -6,7 +6,7 @@
 
 class Google::Cloud::PubSub::V1::PublishResponse
   sig { params(message_ids: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))).void }
-  def initialize(message_ids: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(message_ids: T.unsafe(nil)); end
 
   sig { void }
   def clear_message_ids; end

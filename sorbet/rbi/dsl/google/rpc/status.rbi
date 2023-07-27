@@ -12,7 +12,7 @@ class Google::Rpc::Status
       message: T.nilable(String)
     ).void
   end
-  def initialize(code: nil, details: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::Any), message: nil); end
+  def initialize(code: nil, details: T.unsafe(nil), message: nil); end
 
   sig { void }
   def clear_code; end

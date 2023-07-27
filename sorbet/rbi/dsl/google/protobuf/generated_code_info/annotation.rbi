@@ -14,7 +14,7 @@ class Google::Protobuf::GeneratedCodeInfo::Annotation
       source_file: T.nilable(String)
     ).void
   end
-  def initialize(begin: nil, end: nil, path: Google::Protobuf::RepeatedField.new(:int32), semantic: nil, source_file: nil); end
+  def initialize(begin: nil, end: nil, path: T.unsafe(nil), semantic: nil, source_file: nil); end
 
   sig { returns(Integer) }
   def begin; end

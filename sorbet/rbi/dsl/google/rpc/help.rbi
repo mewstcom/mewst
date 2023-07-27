@@ -10,7 +10,7 @@ class Google::Rpc::Help
       links: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Rpc::Help::Link], T::Array[Google::Rpc::Help::Link]))
     ).void
   end
-  def initialize(links: Google::Protobuf::RepeatedField.new(:message, Google::Rpc::Help::Link)); end
+  def initialize(links: T.unsafe(nil)); end
 
   sig { void }
   def clear_links; end

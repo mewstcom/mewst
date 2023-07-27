@@ -13,7 +13,7 @@ class Google::Protobuf::EnumOptions
       uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption]))
     ).void
   end
-  def initialize(allow_alias: nil, deprecated: nil, deprecated_legacy_json_field_conflicts: nil, uninterpreted_option: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption)); end
+  def initialize(allow_alias: nil, deprecated: nil, deprecated_legacy_json_field_conflicts: nil, uninterpreted_option: T.unsafe(nil)); end
 
   sig { returns(T::Boolean) }
   def allow_alias; end

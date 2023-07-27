@@ -10,7 +10,7 @@ class Google::Cloud::PubSub::V1::MessageStoragePolicy
       allowed_persistence_regions: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))
     ).void
   end
-  def initialize(allowed_persistence_regions: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(allowed_persistence_regions: T.unsafe(nil)); end
 
   sig { returns(Google::Protobuf::RepeatedField[String]) }
   def allowed_persistence_regions; end

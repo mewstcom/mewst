@@ -12,7 +12,7 @@ class Google::Api::JavaSettings
       service_class_names: T.nilable(T.any(Google::Protobuf::Map[String, String], T::Hash[String, String]))
     ).void
   end
-  def initialize(common: nil, library_package: nil, service_class_names: Google::Protobuf::Map.new(:string, :string)); end
+  def initialize(common: nil, library_package: nil, service_class_names: T.unsafe(nil)); end
 
   sig { void }
   def clear_common; end

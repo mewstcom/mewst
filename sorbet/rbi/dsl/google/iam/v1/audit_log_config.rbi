@@ -11,7 +11,7 @@ class Google::Iam::V1::AuditLogConfig
       log_type: T.nilable(T.any(Symbol, Integer))
     ).void
   end
-  def initialize(exempted_members: Google::Protobuf::RepeatedField.new(:string), log_type: nil); end
+  def initialize(exempted_members: T.unsafe(nil), log_type: nil); end
 
   sig { void }
   def clear_exempted_members; end

@@ -10,7 +10,7 @@ class Google::Protobuf::SourceCodeInfo
       location: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::SourceCodeInfo::Location], T::Array[Google::Protobuf::SourceCodeInfo::Location]))
     ).void
   end
-  def initialize(location: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::SourceCodeInfo::Location)); end
+  def initialize(location: T.unsafe(nil)); end
 
   sig { void }
   def clear_location; end

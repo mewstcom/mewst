@@ -30,7 +30,7 @@ class Google::Protobuf::FileOptions
       uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption]))
     ).void
   end
-  def initialize(cc_enable_arenas: nil, cc_generic_services: nil, csharp_namespace: nil, deprecated: nil, go_package: nil, java_generate_equals_and_hash: nil, java_generic_services: nil, java_multiple_files: nil, java_outer_classname: nil, java_package: nil, java_string_check_utf8: nil, objc_class_prefix: nil, optimize_for: nil, php_class_prefix: nil, php_generic_services: nil, php_metadata_namespace: nil, php_namespace: nil, py_generic_services: nil, ruby_package: nil, swift_prefix: nil, uninterpreted_option: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption)); end
+  def initialize(cc_enable_arenas: nil, cc_generic_services: nil, csharp_namespace: nil, deprecated: nil, go_package: nil, java_generate_equals_and_hash: nil, java_generic_services: nil, java_multiple_files: nil, java_outer_classname: nil, java_package: nil, java_string_check_utf8: nil, objc_class_prefix: nil, optimize_for: nil, php_class_prefix: nil, php_generic_services: nil, php_metadata_namespace: nil, php_namespace: nil, py_generic_services: nil, ruby_package: nil, swift_prefix: nil, uninterpreted_option: T.unsafe(nil)); end
 
   sig { returns(T::Boolean) }
   def cc_enable_arenas; end

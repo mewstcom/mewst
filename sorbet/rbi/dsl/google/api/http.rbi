@@ -11,7 +11,7 @@ class Google::Api::Http
       rules: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Api::HttpRule], T::Array[Google::Api::HttpRule]))
     ).void
   end
-  def initialize(fully_decode_reserved_expansion: nil, rules: Google::Protobuf::RepeatedField.new(:message, Google::Api::HttpRule)); end
+  def initialize(fully_decode_reserved_expansion: nil, rules: T.unsafe(nil)); end
 
   sig { void }
   def clear_fully_decode_reserved_expansion; end

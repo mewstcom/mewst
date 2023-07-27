@@ -10,7 +10,7 @@ class Google::Protobuf::Struct
       fields: T.nilable(T.any(Google::Protobuf::Map[String, Google::Protobuf::Value], T::Hash[String, Google::Protobuf::Value]))
     ).void
   end
-  def initialize(fields: Google::Protobuf::Map.new(:string, :message, Google::Protobuf::Value)); end
+  def initialize(fields: T.unsafe(nil)); end
 
   sig { void }
   def clear_fields; end

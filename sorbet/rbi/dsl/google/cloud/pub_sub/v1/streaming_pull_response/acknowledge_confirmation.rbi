@@ -13,7 +13,7 @@ class Google::Cloud::PubSub::V1::StreamingPullResponse::AcknowledgeConfirmation
       unordered_ack_ids: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))
     ).void
   end
-  def initialize(ack_ids: Google::Protobuf::RepeatedField.new(:string), invalid_ack_ids: Google::Protobuf::RepeatedField.new(:string), temporary_failed_ack_ids: Google::Protobuf::RepeatedField.new(:string), unordered_ack_ids: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(ack_ids: T.unsafe(nil), invalid_ack_ids: T.unsafe(nil), temporary_failed_ack_ids: T.unsafe(nil), unordered_ack_ids: T.unsafe(nil)); end
 
   sig { returns(Google::Protobuf::RepeatedField[String]) }
   def ack_ids; end

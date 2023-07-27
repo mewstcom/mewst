@@ -14,7 +14,7 @@ class Google::Cloud::Tasks::V2::AppEngineHttpRequest
       relative_uri: T.nilable(String)
     ).void
   end
-  def initialize(app_engine_routing: nil, body: nil, headers: Google::Protobuf::Map.new(:string, :string), http_method: nil, relative_uri: nil); end
+  def initialize(app_engine_routing: nil, body: nil, headers: T.unsafe(nil), http_method: nil, relative_uri: nil); end
 
   sig { returns(T.nilable(Google::Cloud::Tasks::V2::AppEngineRouting)) }
   def app_engine_routing; end

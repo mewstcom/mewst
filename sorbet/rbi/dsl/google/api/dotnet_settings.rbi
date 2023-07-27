@@ -15,7 +15,7 @@ class Google::Api::DotnetSettings
       renamed_services: T.nilable(T.any(Google::Protobuf::Map[String, String], T::Hash[String, String]))
     ).void
   end
-  def initialize(common: nil, forced_namespace_aliases: Google::Protobuf::RepeatedField.new(:string), handwritten_signatures: Google::Protobuf::RepeatedField.new(:string), ignored_resources: Google::Protobuf::RepeatedField.new(:string), renamed_resources: Google::Protobuf::Map.new(:string, :string), renamed_services: Google::Protobuf::Map.new(:string, :string)); end
+  def initialize(common: nil, forced_namespace_aliases: T.unsafe(nil), handwritten_signatures: T.unsafe(nil), ignored_resources: T.unsafe(nil), renamed_resources: T.unsafe(nil), renamed_services: T.unsafe(nil)); end
 
   sig { void }
   def clear_common; end

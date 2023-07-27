@@ -12,7 +12,7 @@ class Google::Cloud::PubSub::V1::CreateSnapshotRequest
       subscription: T.nilable(String)
     ).void
   end
-  def initialize(labels: Google::Protobuf::Map.new(:string, :string), name: nil, subscription: nil); end
+  def initialize(labels: T.unsafe(nil), name: nil, subscription: nil); end
 
   sig { void }
   def clear_labels; end

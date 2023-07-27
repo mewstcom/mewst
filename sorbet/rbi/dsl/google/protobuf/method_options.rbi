@@ -12,7 +12,7 @@ class Google::Protobuf::MethodOptions
       uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption]))
     ).void
   end
-  def initialize(deprecated: nil, idempotency_level: nil, uninterpreted_option: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption)); end
+  def initialize(deprecated: nil, idempotency_level: nil, uninterpreted_option: T.unsafe(nil)); end
 
   sig { void }
   def clear_deprecated; end

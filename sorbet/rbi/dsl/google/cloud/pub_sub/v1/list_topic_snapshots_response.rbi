@@ -11,7 +11,7 @@ class Google::Cloud::PubSub::V1::ListTopicSnapshotsResponse
       snapshots: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String]))
     ).void
   end
-  def initialize(next_page_token: nil, snapshots: Google::Protobuf::RepeatedField.new(:string)); end
+  def initialize(next_page_token: nil, snapshots: T.unsafe(nil)); end
 
   sig { void }
   def clear_next_page_token; end

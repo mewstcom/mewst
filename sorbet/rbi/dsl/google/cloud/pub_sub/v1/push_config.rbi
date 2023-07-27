@@ -12,7 +12,7 @@ class Google::Cloud::PubSub::V1::PushConfig
       push_endpoint: T.nilable(String)
     ).void
   end
-  def initialize(attributes: Google::Protobuf::Map.new(:string, :string), oidc_token: nil, push_endpoint: nil); end
+  def initialize(attributes: T.unsafe(nil), oidc_token: nil, push_endpoint: nil); end
 
   sig { returns(Google::Protobuf::Map[String, String]) }
   def attributes; end

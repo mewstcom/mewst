@@ -13,7 +13,7 @@ class Google::Cloud::PubSub::V1::Snapshot
       topic: T.nilable(String)
     ).void
   end
-  def initialize(expire_time: nil, labels: Google::Protobuf::Map.new(:string, :string), name: nil, topic: nil); end
+  def initialize(expire_time: nil, labels: T.unsafe(nil), name: nil, topic: nil); end
 
   sig { void }
   def clear_expire_time; end

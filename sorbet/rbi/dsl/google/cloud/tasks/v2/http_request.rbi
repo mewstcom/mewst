@@ -15,7 +15,7 @@ class Google::Cloud::Tasks::V2::HttpRequest
       url: T.nilable(String)
     ).void
   end
-  def initialize(body: nil, headers: Google::Protobuf::Map.new(:string, :string), http_method: nil, oauth_token: nil, oidc_token: nil, url: nil); end
+  def initialize(body: nil, headers: T.unsafe(nil), http_method: nil, oauth_token: nil, oidc_token: nil, url: nil); end
 
   sig { returns(T.nilable(Symbol)) }
   def authorization_header; end

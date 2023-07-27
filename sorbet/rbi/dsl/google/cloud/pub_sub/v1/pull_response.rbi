@@ -10,7 +10,7 @@ class Google::Cloud::PubSub::V1::PullResponse
       received_messages: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Cloud::PubSub::V1::ReceivedMessage], T::Array[Google::Cloud::PubSub::V1::ReceivedMessage]))
     ).void
   end
-  def initialize(received_messages: Google::Protobuf::RepeatedField.new(:message, Google::Cloud::PubSub::V1::ReceivedMessage)); end
+  def initialize(received_messages: T.unsafe(nil)); end
 
   sig { void }
   def clear_received_messages; end

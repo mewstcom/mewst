@@ -16,7 +16,7 @@ class Google::Api::ResourceDescriptor
       type: T.nilable(String)
     ).void
   end
-  def initialize(history: nil, name_field: nil, pattern: Google::Protobuf::RepeatedField.new(:string), plural: nil, singular: nil, style: Google::Protobuf::RepeatedField.new(:enum, T.any(Symbol, Integer)), type: nil); end
+  def initialize(history: nil, name_field: nil, pattern: T.unsafe(nil), plural: nil, singular: nil, style: T.unsafe(nil), type: nil); end
 
   sig { void }
   def clear_history; end

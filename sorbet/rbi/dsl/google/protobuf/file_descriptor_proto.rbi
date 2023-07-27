@@ -22,7 +22,7 @@ class Google::Protobuf::FileDescriptorProto
       weak_dependency: T.nilable(T.any(Google::Protobuf::RepeatedField[Integer], T::Array[Integer]))
     ).void
   end
-  def initialize(dependency: Google::Protobuf::RepeatedField.new(:string), edition: nil, enum_type: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::EnumDescriptorProto), extension: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::FieldDescriptorProto), message_type: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::DescriptorProto), name: nil, options: nil, package: nil, public_dependency: Google::Protobuf::RepeatedField.new(:int32), service: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::ServiceDescriptorProto), source_code_info: nil, syntax: nil, weak_dependency: Google::Protobuf::RepeatedField.new(:int32)); end
+  def initialize(dependency: T.unsafe(nil), edition: nil, enum_type: T.unsafe(nil), extension: T.unsafe(nil), message_type: T.unsafe(nil), name: nil, options: nil, package: nil, public_dependency: T.unsafe(nil), service: T.unsafe(nil), source_code_info: nil, syntax: nil, weak_dependency: T.unsafe(nil)); end
 
   sig { void }
   def clear_dependency; end

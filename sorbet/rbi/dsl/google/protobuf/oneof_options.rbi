@@ -10,7 +10,7 @@ class Google::Protobuf::OneofOptions
       uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption]))
     ).void
   end
-  def initialize(uninterpreted_option: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption)); end
+  def initialize(uninterpreted_option: T.unsafe(nil)); end
 
   sig { void }
   def clear_uninterpreted_option; end

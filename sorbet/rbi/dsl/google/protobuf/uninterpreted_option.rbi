@@ -16,7 +16,7 @@ class Google::Protobuf::UninterpretedOption
       string_value: T.nilable(String)
     ).void
   end
-  def initialize(aggregate_value: nil, double_value: nil, identifier_value: nil, name: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::UninterpretedOption::NamePart), negative_int_value: nil, positive_int_value: nil, string_value: nil); end
+  def initialize(aggregate_value: nil, double_value: nil, identifier_value: nil, name: T.unsafe(nil), negative_int_value: nil, positive_int_value: nil, string_value: nil); end
 
   sig { returns(String) }
   def aggregate_value; end

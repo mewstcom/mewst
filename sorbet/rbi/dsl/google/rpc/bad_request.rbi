@@ -10,7 +10,7 @@ class Google::Rpc::BadRequest
       field_violations: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Rpc::BadRequest::FieldViolation], T::Array[Google::Rpc::BadRequest::FieldViolation]))
     ).void
   end
-  def initialize(field_violations: Google::Protobuf::RepeatedField.new(:message, Google::Rpc::BadRequest::FieldViolation)); end
+  def initialize(field_violations: T.unsafe(nil)); end
 
   sig { void }
   def clear_field_violations; end

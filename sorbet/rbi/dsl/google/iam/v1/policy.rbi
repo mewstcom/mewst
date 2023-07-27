@@ -13,7 +13,7 @@ class Google::Iam::V1::Policy
       version: T.nilable(Integer)
     ).void
   end
-  def initialize(audit_configs: Google::Protobuf::RepeatedField.new(:message, Google::Iam::V1::AuditConfig), bindings: Google::Protobuf::RepeatedField.new(:message, Google::Iam::V1::Binding), etag: nil, version: nil); end
+  def initialize(audit_configs: T.unsafe(nil), bindings: T.unsafe(nil), etag: nil, version: nil); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Iam::V1::AuditConfig]) }
   def audit_configs; end

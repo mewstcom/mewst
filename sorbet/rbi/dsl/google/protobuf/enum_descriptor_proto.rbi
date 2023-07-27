@@ -14,7 +14,7 @@ class Google::Protobuf::EnumDescriptorProto
       value: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::EnumValueDescriptorProto], T::Array[Google::Protobuf::EnumValueDescriptorProto]))
     ).void
   end
-  def initialize(name: nil, options: nil, reserved_name: Google::Protobuf::RepeatedField.new(:string), reserved_range: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::EnumDescriptorProto::EnumReservedRange), value: Google::Protobuf::RepeatedField.new(:message, Google::Protobuf::EnumValueDescriptorProto)); end
+  def initialize(name: nil, options: nil, reserved_name: T.unsafe(nil), reserved_range: T.unsafe(nil), value: T.unsafe(nil)); end
 
   sig { void }
   def clear_name; end
