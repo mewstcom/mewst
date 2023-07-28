@@ -109,7 +109,7 @@ GEM
       railties (>= 3.2)
     email_validator (2.2.4)
       activemodel
-    enumerize (2.6.1)
+    enumerize (2.7.0)
       activesupport (>= 3.2)
     erubi (1.12.0)
     factory_bot (6.2.1)
