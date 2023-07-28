@@ -133,6 +133,41 @@ paths:
       summary: ""
       tags:
         - accounts
+  "/sessions":
+    post:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: ""
+                password:
+                  type: string
+                  description: ""
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  account:
+                    "$ref": "#/components/schemas/account"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - sessions
 components:
   parameters:
     email-confirmation-id:

@@ -10,3 +10,5 @@ en:
           attributes:
             atname:
               atname_uniqueness: is already taken
+        forms/session:
+          unauthenticated: Login failed. Email or password is incorrect

@@ -27,6 +27,9 @@ module GeneratedPathHelpersModule
   def internal_pubsub_fanout_post_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_session_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_tasks_send_email_confirmation_mail_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
