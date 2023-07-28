@@ -456,6 +456,7 @@ DEPENDENCIES
   rails_autolink
   redis
   rspec-rails
+  rubocop-factory_bot
   rubocop-rspec
   sorbet
   sorbet-runtime

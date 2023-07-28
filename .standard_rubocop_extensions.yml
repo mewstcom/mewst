@@ -1,4 +1,5 @@
 require:
+  - rubocop-factory_bot
   - rubocop-rspec
 
 # https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribedclass
