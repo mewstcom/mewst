@@ -10,3 +10,5 @@ ja:
           attributes:
             atname:
               atname_uniqueness: はすでに存在します
+        forms/session:
+          unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています
