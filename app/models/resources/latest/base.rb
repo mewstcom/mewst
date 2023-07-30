@@ -14,7 +14,7 @@ class Resources::Latest::Base
   end
 
   class Error < T::Struct
-    const :code, ErrorCode
+    const :code, Resources::Latest::Base::ErrorCode
     const :message, String
   end
 end

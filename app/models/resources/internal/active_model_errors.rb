@@ -5,7 +5,7 @@ class Resources::Internal::ActiveModelErrors < Resources::Internal::Base
   root_key :error, :errors
 
   attribute :code do
-    Internal::ErrorCode::InvalidInputData.serialize
+    Resources::Internal::Base::ErrorCode::InvalidInputData.serialize
   end
 
   attribute :message, &:full_message
