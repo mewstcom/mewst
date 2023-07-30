@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Resources::Latest::Post < Resources::Base
+class Resources::Latest::Post < Resources::Latest::Base
   root_key :post, :posts
 
   attributes :id, :published_at, :reposts_count
