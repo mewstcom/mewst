@@ -33,6 +33,9 @@ module GeneratedPathHelpersModule
   def internal_tasks_send_email_confirmation_mail_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_commented_post_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_timeline_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
