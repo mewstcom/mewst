@@ -41,7 +41,7 @@ RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_vers
       expect(CommentedPost.count).to eq(0)
 
       post("/latest/@#{profile.atname}/commented_posts", headers:, params: {
-        comment: "Hello",
+        comment: "Hello"
       })
       expect(response).to have_http_status(:created)
 
@@ -53,7 +53,7 @@ RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_vers
         post: {
           id: post.id,
           postable: {
-            comment: "Hello",
+            comment: "Hello"
           },
           postable_type: "commented_post",
           profile: {
