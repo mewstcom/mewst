@@ -33,6 +33,9 @@ module GeneratedUrlHelpersModule
   def internal_tasks_send_email_confirmation_mail_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_commented_post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_timeline_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

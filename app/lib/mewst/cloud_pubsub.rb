@@ -11,7 +11,7 @@ class Mewst::CloudPubsub
     new(
       project_id: Rails.configuration.mewst["google_cloud_project_id"],
       credentials: Google::Cloud::PubSub::Credentials.new(
-        JSON.parse(Rails.configuration.mewst["google_cloud_credentials"])
+        Rails.configuration.mewst["google_cloud_credentials"]
       )
     ).client
   end

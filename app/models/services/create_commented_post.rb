@@ -13,16 +13,13 @@ class Services::CreateCommentedPost < Services::Base
 
   sig { returns(Result) }
   def call
-    new_post = ActiveRecord::Base.transaction do
-      commented_post = CommentedPost.create!(comment: form.comment)
-      post = form.profile!.posts.create!(postable: commented_post, published_at: Time.current)
-      post
-    end
+    commented_post = CommentedPost.create!(comment: form.comment)
+    post = form.profile!.posts.create!(postable: commented_post, published_at: Time.current)
 
-    form.profile!.home_timeline.add_post(post: new_post)
-    FanoutPostJob.perform_async(post_id: new_post.id)
+    form.profile!.home_timeline.add_post(post:)
+    FanoutPostJob.perform_async(post_id: post.id)
 
-    Result.new(post: new_post)
+    Result.new(post:)
   end
 
   private
