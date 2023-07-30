@@ -7,17 +7,37 @@
 class Google::Protobuf::ExtensionRangeOptions
   sig do
     params(
-      uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption]))
+      declaration: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::ExtensionRangeOptions::Declaration], T::Array[Google::Protobuf::ExtensionRangeOptions::Declaration])),
+      uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption])),
+      verification: T.nilable(T.any(Symbol, Integer))
     ).void
   end
-  def initialize(uninterpreted_option: T.unsafe(nil)); end
+  def initialize(declaration: T.unsafe(nil), uninterpreted_option: T.unsafe(nil), verification: nil); end
+
+  sig { void }
+  def clear_declaration; end
 
   sig { void }
   def clear_uninterpreted_option; end
+
+  sig { void }
+  def clear_verification; end
+
+  sig { returns(Google::Protobuf::RepeatedField[Google::Protobuf::ExtensionRangeOptions::Declaration]) }
+  def declaration; end
+
+  sig { params(value: Google::Protobuf::RepeatedField[Google::Protobuf::ExtensionRangeOptions::Declaration]).void }
+  def declaration=(value); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption]) }
   def uninterpreted_option; end
 
   sig { params(value: Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption]).void }
   def uninterpreted_option=(value); end
+
+  sig { returns(T.any(Symbol, Integer)) }
+  def verification; end
+
+  sig { params(value: T.any(Symbol, Integer)).void }
+  def verification=(value); end
 end

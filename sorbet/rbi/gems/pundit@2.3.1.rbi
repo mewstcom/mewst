@@ -24,7 +24,7 @@ module Pundit
     # @raise [NotAuthorizedError] if the given query method returned false
     # @return [Object] Always returns the passed object record
     #
-    # source://pundit//lib/pundit.rb#76
+    # source://pundit//lib/pundit.rb#78
     def authorize(user, possibly_namespaced_record, query, policy_class: T.unsafe(nil), cache: T.unsafe(nil)); end
 
     # @api public
@@ -42,7 +42,7 @@ module Pundit
     # @return [Object, nil] instance of policy class with query methods
     # @see https://github.com/varvet/pundit#policies
     #
-    # source://pundit//lib/pundit.rb#137
+    # source://pundit//lib/pundit.rb#139
     def policy(user, record); end
 
     # Retrieves the policy for the given record.
@@ -55,7 +55,7 @@ module Pundit
     # @return [Object] instance of policy class with query methods
     # @see https://github.com/varvet/pundit#policies
     #
-    # source://pundit//lib/pundit.rb#152
+    # source://pundit//lib/pundit.rb#154
     def policy!(user, record); end
 
     # Retrieves the policy scope for the given record.
@@ -67,7 +67,7 @@ module Pundit
     # @return [Scope{#resolve}, nil] instance of scope class which can resolve to a scope
     # @see https://github.com/varvet/pundit#scopes
     #
-    # source://pundit//lib/pundit.rb#96
+    # source://pundit//lib/pundit.rb#98
     def policy_scope(user, scope); end
 
     # Retrieves the policy scope for the given record.
@@ -80,14 +80,14 @@ module Pundit
     # @return [Scope{#resolve}] instance of scope class which can resolve to a scope
     # @see https://github.com/varvet/pundit#scopes
     #
-    # source://pundit//lib/pundit.rb#117
+    # source://pundit//lib/pundit.rb#119
     def policy_scope!(user, scope); end
 
     private
 
     # @api public
     #
-    # source://pundit//lib/pundit.rb#161
+    # source://pundit//lib/pundit.rb#163
     def pundit_model(record); end
   end
 end
@@ -258,11 +258,11 @@ module Pundit::Generators; end
 
 # @api private
 #
-# source://pundit//lib/pundit.rb#167
+# source://pundit//lib/pundit.rb#169
 module Pundit::Helper
   # @api private
   #
-  # source://pundit//lib/pundit.rb#168
+  # source://pundit//lib/pundit.rb#170
   def policy_scope(scope); end
 end
 

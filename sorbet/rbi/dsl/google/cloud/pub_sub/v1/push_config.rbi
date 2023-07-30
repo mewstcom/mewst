@@ -8,11 +8,13 @@ class Google::Cloud::PubSub::V1::PushConfig
   sig do
     params(
       attributes: T.nilable(T.any(Google::Protobuf::Map[String, String], T::Hash[String, String])),
+      no_wrapper: T.nilable(Google::Cloud::PubSub::V1::PushConfig::NoWrapper),
       oidc_token: T.nilable(Google::Cloud::PubSub::V1::PushConfig::OidcToken),
+      pubsub_wrapper: T.nilable(Google::Cloud::PubSub::V1::PushConfig::PubsubWrapper),
       push_endpoint: T.nilable(String)
     ).void
   end
-  def initialize(attributes: T.unsafe(nil), oidc_token: nil, push_endpoint: nil); end
+  def initialize(attributes: T.unsafe(nil), no_wrapper: nil, oidc_token: nil, pubsub_wrapper: nil, push_endpoint: nil); end
 
   sig { returns(Google::Protobuf::Map[String, String]) }
   def attributes; end
@@ -27,10 +29,22 @@ class Google::Cloud::PubSub::V1::PushConfig
   def clear_attributes; end
 
   sig { void }
+  def clear_no_wrapper; end
+
+  sig { void }
   def clear_oidc_token; end
 
   sig { void }
+  def clear_pubsub_wrapper; end
+
+  sig { void }
   def clear_push_endpoint; end
+
+  sig { returns(T.nilable(Google::Cloud::PubSub::V1::PushConfig::NoWrapper)) }
+  def no_wrapper; end
+
+  sig { params(value: T.nilable(Google::Cloud::PubSub::V1::PushConfig::NoWrapper)).void }
+  def no_wrapper=(value); end
 
   sig { returns(T.nilable(Google::Cloud::PubSub::V1::PushConfig::OidcToken)) }
   def oidc_token; end
@@ -38,9 +52,18 @@ class Google::Cloud::PubSub::V1::PushConfig
   sig { params(value: T.nilable(Google::Cloud::PubSub::V1::PushConfig::OidcToken)).void }
   def oidc_token=(value); end
 
+  sig { returns(T.nilable(Google::Cloud::PubSub::V1::PushConfig::PubsubWrapper)) }
+  def pubsub_wrapper; end
+
+  sig { params(value: T.nilable(Google::Cloud::PubSub::V1::PushConfig::PubsubWrapper)).void }
+  def pubsub_wrapper=(value); end
+
   sig { returns(String) }
   def push_endpoint; end
 
   sig { params(value: String).void }
   def push_endpoint=(value); end
+
+  sig { returns(T.nilable(Symbol)) }
+  def wrapper; end
 end

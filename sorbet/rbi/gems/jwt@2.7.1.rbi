@@ -60,24 +60,24 @@ end
 module JWT::Algos
   extend ::JWT::Algos
 
-  # source://jwt//lib/jwt/algos.rb#45
+  # source://jwt//lib/jwt/algos.rb#44
   def create(algorithm); end
 
-  # source://jwt//lib/jwt/algos.rb#41
+  # source://jwt//lib/jwt/algos.rb#40
   def find(algorithm); end
 
   # @return [Boolean]
   #
-  # source://jwt//lib/jwt/algos.rb#49
+  # source://jwt//lib/jwt/algos.rb#48
   def implementation?(algorithm); end
 
   private
 
-  # source://jwt//lib/jwt/algos.rb#56
+  # source://jwt//lib/jwt/algos.rb#55
   def indexed; end
 end
 
-# source://jwt//lib/jwt/algos.rb#24
+# source://jwt//lib/jwt/algos.rb#23
 JWT::Algos::ALGOS = T.let(T.unsafe(nil), Array)
 
 # source://jwt//lib/jwt/algos/algo_wrapper.rb#5
@@ -113,8 +113,14 @@ end
 module JWT::Algos::Ecdsa
   private
 
-  # source://jwt//lib/jwt/algos/ecdsa.rb#55
+  # source://jwt//lib/jwt/algos/ecdsa.rb#70
+  def asn1_to_raw(signature, public_key); end
+
+  # source://jwt//lib/jwt/algos/ecdsa.rb#57
   def curve_by_name(name); end
+
+  # source://jwt//lib/jwt/algos/ecdsa.rb#63
+  def raw_to_asn1(signature, private_key); end
 
   # source://jwt//lib/jwt/algos/ecdsa.rb#33
   def sign(algorithm, msg, key); end
@@ -123,8 +129,14 @@ module JWT::Algos::Ecdsa
   def verify(algorithm, public_key, signing_input, signature); end
 
   class << self
-    # source://jwt//lib/jwt/algos/ecdsa.rb#55
+    # source://jwt//lib/jwt/algos/ecdsa.rb#70
+    def asn1_to_raw(signature, public_key); end
+
+    # source://jwt//lib/jwt/algos/ecdsa.rb#57
     def curve_by_name(name); end
+
+    # source://jwt//lib/jwt/algos/ecdsa.rb#63
+    def raw_to_asn1(signature, private_key); end
 
     # source://jwt//lib/jwt/algos/ecdsa.rb#33
     def sign(algorithm, msg, key); end
@@ -258,7 +270,7 @@ module JWT::Algos::Ps
   # source://jwt//lib/jwt/algos/ps.rb#12
   def sign(algorithm, msg, key); end
 
-  # source://jwt//lib/jwt/algos/ps.rb#24
+  # source://jwt//lib/jwt/algos/ps.rb#22
   def verify(algorithm, public_key, signing_input, signature); end
 
   class << self
@@ -270,7 +282,7 @@ module JWT::Algos::Ps
     # source://jwt//lib/jwt/algos/ps.rb#12
     def sign(algorithm, msg, key); end
 
-    # source://jwt//lib/jwt/algos/ps.rb#24
+    # source://jwt//lib/jwt/algos/ps.rb#22
     def verify(algorithm, public_key, signing_input, signature); end
   end
 end
@@ -1242,41 +1254,6 @@ class JWT::MissingRequiredClaim < ::JWT::DecodeError; end
 
 # source://jwt//lib/jwt/error.rb#6
 class JWT::RequiredDependencyError < ::StandardError; end
-
-# Collection of security methods
-#
-# @see: https://github.com/rails/rails/blob/master/activesupport/lib/active_support/security_utils.rb
-#
-# source://jwt//lib/jwt/security_utils.rb#7
-module JWT::SecurityUtils
-  private
-
-  # source://jwt//lib/jwt/security_utils.rb#20
-  def asn1_to_raw(signature, public_key); end
-
-  # source://jwt//lib/jwt/security_utils.rb#25
-  def raw_to_asn1(signature, private_key); end
-
-  # source://jwt//lib/jwt/security_utils.rb#14
-  def verify_ps(algorithm, public_key, signing_input, signature); end
-
-  # source://jwt//lib/jwt/security_utils.rb#10
-  def verify_rsa(algorithm, public_key, signing_input, signature); end
-
-  class << self
-    # source://jwt//lib/jwt/security_utils.rb#20
-    def asn1_to_raw(signature, public_key); end
-
-    # source://jwt//lib/jwt/security_utils.rb#25
-    def raw_to_asn1(signature, private_key); end
-
-    # source://jwt//lib/jwt/security_utils.rb#14
-    def verify_ps(algorithm, public_key, signing_input, signature); end
-
-    # source://jwt//lib/jwt/security_utils.rb#10
-    def verify_rsa(algorithm, public_key, signing_input, signature); end
-  end
-end
 
 # source://jwt//lib/jwt/error.rb#13
 class JWT::UnsupportedEcdsaCurve < ::JWT::IncorrectAlgorithm; end

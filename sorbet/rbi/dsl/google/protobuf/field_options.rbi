@@ -15,12 +15,13 @@ class Google::Protobuf::FieldOptions
       packed: T.nilable(T::Boolean),
       retention: T.nilable(T.any(Symbol, Integer)),
       target: T.nilable(T.any(Symbol, Integer)),
+      targets: T.nilable(T.any(Google::Protobuf::RepeatedField[T.any(Symbol, Integer)], T::Array[T.any(Symbol, Integer)])),
       uninterpreted_option: T.nilable(T.any(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption], T::Array[Google::Protobuf::UninterpretedOption])),
       unverified_lazy: T.nilable(T::Boolean),
       weak: T.nilable(T::Boolean)
     ).void
   end
-  def initialize(ctype: nil, debug_redact: nil, deprecated: nil, jstype: nil, lazy: nil, packed: nil, retention: nil, target: nil, uninterpreted_option: T.unsafe(nil), unverified_lazy: nil, weak: nil); end
+  def initialize(ctype: nil, debug_redact: nil, deprecated: nil, jstype: nil, lazy: nil, packed: nil, retention: nil, target: nil, targets: T.unsafe(nil), uninterpreted_option: T.unsafe(nil), unverified_lazy: nil, weak: nil); end
 
   sig { void }
   def clear_ctype; end
@@ -45,6 +46,9 @@ class Google::Protobuf::FieldOptions
 
   sig { void }
   def clear_target; end
+
+  sig { void }
+  def clear_targets; end
 
   sig { void }
   def clear_uninterpreted_option; end
@@ -102,6 +106,12 @@ class Google::Protobuf::FieldOptions
 
   sig { params(value: T.any(Symbol, Integer)).void }
   def target=(value); end
+
+  sig { returns(Google::Protobuf::RepeatedField[T.any(Symbol, Integer)]) }
+  def targets; end
+
+  sig { params(value: Google::Protobuf::RepeatedField[T.any(Symbol, Integer)]).void }
+  def targets=(value); end
 
   sig { returns(Google::Protobuf::RepeatedField[Google::Protobuf::UninterpretedOption]) }
   def uninterpreted_option; end

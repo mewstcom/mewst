@@ -20,5 +20,8 @@ end
 Google::Api::ClientLibraryOrganization::ADS = 2
 Google::Api::ClientLibraryOrganization::CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED = 0
 Google::Api::ClientLibraryOrganization::CLOUD = 1
+Google::Api::ClientLibraryOrganization::GENERATIVE_AI = 7
+Google::Api::ClientLibraryOrganization::GEO = 6
 Google::Api::ClientLibraryOrganization::PHOTOS = 3
+Google::Api::ClientLibraryOrganization::SHOPPING = 5
 Google::Api::ClientLibraryOrganization::STREET_VIEW = 4

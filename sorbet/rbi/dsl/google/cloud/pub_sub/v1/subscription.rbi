@@ -9,6 +9,7 @@ class Google::Cloud::PubSub::V1::Subscription
     params(
       ack_deadline_seconds: T.nilable(Integer),
       bigquery_config: T.nilable(Google::Cloud::PubSub::V1::BigQueryConfig),
+      cloud_storage_config: T.nilable(Google::Cloud::PubSub::V1::CloudStorageConfig),
       dead_letter_policy: T.nilable(Google::Cloud::PubSub::V1::DeadLetterPolicy),
       detached: T.nilable(T::Boolean),
       enable_exactly_once_delivery: T.nilable(T::Boolean),
@@ -26,7 +27,7 @@ class Google::Cloud::PubSub::V1::Subscription
       topic_message_retention_duration: T.nilable(Google::Protobuf::Duration)
     ).void
   end
-  def initialize(ack_deadline_seconds: nil, bigquery_config: nil, dead_letter_policy: nil, detached: nil, enable_exactly_once_delivery: nil, enable_message_ordering: nil, expiration_policy: nil, filter: nil, labels: T.unsafe(nil), message_retention_duration: nil, name: nil, push_config: nil, retain_acked_messages: nil, retry_policy: nil, state: nil, topic: nil, topic_message_retention_duration: nil); end
+  def initialize(ack_deadline_seconds: nil, bigquery_config: nil, cloud_storage_config: nil, dead_letter_policy: nil, detached: nil, enable_exactly_once_delivery: nil, enable_message_ordering: nil, expiration_policy: nil, filter: nil, labels: T.unsafe(nil), message_retention_duration: nil, name: nil, push_config: nil, retain_acked_messages: nil, retry_policy: nil, state: nil, topic: nil, topic_message_retention_duration: nil); end
 
   sig { returns(Integer) }
   def ack_deadline_seconds; end
@@ -45,6 +46,9 @@ class Google::Cloud::PubSub::V1::Subscription
 
   sig { void }
   def clear_bigquery_config; end
+
+  sig { void }
+  def clear_cloud_storage_config; end
 
   sig { void }
   def clear_dead_letter_policy; end
@@ -90,6 +94,12 @@ class Google::Cloud::PubSub::V1::Subscription
 
   sig { void }
   def clear_topic_message_retention_duration; end
+
+  sig { returns(T.nilable(Google::Cloud::PubSub::V1::CloudStorageConfig)) }
+  def cloud_storage_config; end
+
+  sig { params(value: T.nilable(Google::Cloud::PubSub::V1::CloudStorageConfig)).void }
+  def cloud_storage_config=(value); end
 
   sig { returns(T.nilable(Google::Cloud::PubSub::V1::DeadLetterPolicy)) }
   def dead_letter_policy; end
