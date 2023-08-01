@@ -39,19 +39,30 @@ class Profile::HomeTimeline
 
     posts = Post.where(id: T.must(post_ids).first(limit)).preload(:profile, :postable).order(id: :desc)
 
-    has_page = ->(post_ids, limit) {
-      post_ids.length == (limit + 1)
-    }
+    page_info = if before_post.nil? && after_post.nil?
+      has_next_page = has_page(post_ids: T.must(post_ids), limit:)
+      end_cursor = cursor(has_next_page:, post_ids: T.must(post_ids))
+      has_previous_page = false
+      start_cursor = nil
 
-    has_next_page, has_previous_page = if before_post.nil? && after_post.nil?
-      [has_page.call(post_ids, limit), false]
+      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
     elsif before_post
-      [true, has_page.call(post_ids, limit)]
+      has_next_page = true
+      end_cursor = post_ids.first
+      has_previous_page = has_page(post_ids:, limit:)
+      start_cursor = cursor(has_next_page:, post_ids:)
+
+      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
     elsif after_post
-      [has_page.call(post_ids, limit), true]
+      has_next_page = has_page(post_ids:, limit:)
+      end_cursor = cursor(has_next_page:, post_ids:)
+      has_previous_page = true
+      start_cursor = post_ids.first
+
+      PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
     end
 
-    [posts, PageInfo.new(has_next_page:, has_previous_page:)]
+    [posts, T.must(page_info)]
   end
 
   sig { params(post: Post).returns(T.self_type) }
@@ -76,5 +87,15 @@ class Profile::HomeTimeline
   sig { returns(Redis) }
   def redis_client
     T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client, Redis)
+  end
+
+  sig { params(post_ids: T::Array[String], limit: Integer).returns(T::Boolean) }
+  def has_page(post_ids:, limit:)
+    post_ids.length == (limit + 1)
+  end
+
+  sig { params(has_next_page: T::Boolean, post_ids: T::Array[String]).returns(T.nilable(String)) }
+  def cursor(has_next_page:, post_ids:)
+    has_next_page ? post_ids[-2] : post_ids.last
   end
 end
