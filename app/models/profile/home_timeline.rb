@@ -40,8 +40,8 @@ class Profile::HomeTimeline
     posts = Post.where(id: T.must(post_ids).first(limit)).preload(:profile, :postable).order(id: :desc)
 
     page_info = if before_post.nil? && after_post.nil?
-      has_next_page = has_page(post_ids:, limit:)
-      end_cursor = cursor(has_next_page:, post_ids:)
+      has_next_page = has_page(post_ids: T.must(post_ids), limit:)
+      end_cursor = cursor(has_next_page:, post_ids: T.must(post_ids))
       has_previous_page = false
       start_cursor = nil
 
@@ -62,7 +62,7 @@ class Profile::HomeTimeline
       PageInfo.new(end_cursor:, has_next_page:, has_previous_page:, start_cursor:)
     end
 
-    [posts, page_info]
+    [posts, T.must(page_info)]
   end
 
   sig { params(post: Post).returns(T.self_type) }
