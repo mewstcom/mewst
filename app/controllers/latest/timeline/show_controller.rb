@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Latest::Timeline::ShowController < Latest::ApplicationController
-  include Paginateable
   def call
     profile = current_user!.profiles.find_by!(atname: params[:atname])
     posts, page_info = profile.home_timeline.posts_with_page_info(
@@ -11,7 +10,16 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
       limit: 5
     )
 
-    response_pagination_headers(page_info:, path: "/@#{params[:atname]}/timeline")
-    render(json: Resources::Latest::Post.new(posts))
+    json = Alba.serialize do
+      attribute :posts do
+        Resources::Latest::Post.new(posts).to_h
+      end
+
+      attribute :page_info do
+        Resources::Latest::PageInfo.new(page_info).to_h
+      end
+    end
+
+    render(json:)
   end
 end

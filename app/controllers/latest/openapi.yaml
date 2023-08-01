@@ -34,10 +34,9 @@ paths:
                     items:
                       "$ref": "#/components/schemas/post"
                     type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
           description: Response
-          headers:
-            Link:
-              "$ref": "#/components/headers/link"
       summary: Get posts on home timeline
       tags:
         - posts
@@ -75,12 +74,6 @@ paths:
       tags:
         - posts
 components:
-  headers:
-    link:
-      example: <https://api.mewst.com/resource?before=xxxxx>; rel="prev", <https://api.mewst.com/resource?after=xxxxx>;
-        rel="next"
-      schema:
-        type: string
   parameters:
     atname:
       description: The handle for the Mewst account profile.
@@ -166,6 +159,27 @@ components:
       required:
         - repostable
       title: Repost
+      type: object
+    page-info:
+      additionalProperties: false
+      description: ""
+      properties:
+        end_cursor:
+          type: string
+          nullable: true
+        has_next_page:
+          type: boolean
+        has_previous_page:
+          type: boolean
+        start_cursor:
+          type: string
+          nullable: true
+      required:
+        - end_cursor
+        - has_next_page
+        - has_previous_page
+        - start_cursor
+      title: Page Info
       type: object
     profile:
       additionalProperties: false
