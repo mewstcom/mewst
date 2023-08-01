@@ -21,6 +21,8 @@ paths:
       description: ""
       parameters:
         - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/pagination-after"
+        - "$ref": "#/components/parameters/pagination-before"
       responses:
         '200':
           content:
@@ -33,6 +35,9 @@ paths:
                       "$ref": "#/components/schemas/post"
                     type: array
           description: Response
+          headers:
+            Link:
+              "$ref": "#/components/headers/link"
       summary: Get posts on home timeline
       tags:
         - posts
@@ -70,12 +75,32 @@ paths:
       tags:
         - posts
 components:
+  headers:
+    link:
+      example: <https://api.mewst.com/resource?before=xxxxx>; rel="prev", <https://api.mewst.com/resource?after=xxxxx>;
+        rel="next"
+      schema:
+        type: string
   parameters:
     atname:
       description: The handle for the Mewst account profile.
       in: path
       name: atname
       required: true
+      schema:
+        type: string
+    pagination-after:
+      description: ""
+      in: query
+      name: after
+      required: false
+      schema:
+        type: string
+    pagination-before:
+      description: ""
+      in: query
+      name: before
+      required: false
       schema:
         type: string
   responses:

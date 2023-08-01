@@ -8,3 +8,4 @@ shared:
   pubsub_topic_name_fanout_post: <%= ENV["MEWST_PUBSUB_TOPIC_NAME_FANOUT_POST"] %>
   redis_unevictable_cache_url: <%= ENV["MEWST_REDIS_UNEVICTABLE_CACHE_URL"] %>
   url: <%= ENV["MEWST_URL"] %>
+  web_url: <%= ENV["MEWST_WEB_URL"] %>
