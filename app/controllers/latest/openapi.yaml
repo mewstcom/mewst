@@ -223,12 +223,18 @@ components:
           format: date-time
         reposts_count:
           type: integer
+        stamps_count:
+          type: integer
+        viewer_has_stamped:
+          type: boolean
       required:
         - id
         - postable
         - profile
         - published_at
         - reposts_count
+        - stamps_count
+        - viewer_has_stamped
     validation-error:
       description: ""
       title: Validation Error
