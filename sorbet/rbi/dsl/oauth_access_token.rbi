@@ -273,8 +273,11 @@ class OauthAccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def build_application(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_resource_owner(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def build_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def create_application(*args, &blk); end
@@ -282,23 +285,38 @@ class OauthAccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def create_application!(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_resource_owner(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_resource_owner!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    def create_user!(*args, &blk); end
 
     sig { returns(T.nilable(::OauthApplication)) }
     def reload_application; end
 
-    sig { returns(T.nilable(::User)) }
+    sig { returns(T.nilable(::Profile)) }
     def reload_resource_owner; end
 
     sig { returns(T.nilable(::User)) }
+    def reload_user; end
+
+    sig { returns(T.nilable(::Profile)) }
     def resource_owner; end
 
-    sig { params(value: T.nilable(::User)).void }
+    sig { params(value: T.nilable(::Profile)).void }
     def resource_owner=(value); end
+
+    sig { returns(T.nilable(::User)) }
+    def user; end
+
+    sig { params(value: T.nilable(::User)).void }
+    def user=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -707,6 +725,51 @@ class OauthAccessToken
     sig { void }
     def previous_refresh_token_will_change!; end
 
+    sig { returns(T.untyped) }
+    def profile; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def profile=(value); end
+
+    sig { returns(T::Boolean) }
+    def profile?; end
+
+    sig { returns(T.untyped) }
+    def profile_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profile_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profile_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def profile_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def profile_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_previously_was; end
+
+    sig { returns(T.untyped) }
+    def profile_was; end
+
+    sig { void }
+    def profile_will_change!; end
+
     sig { returns(T.nilable(::String)) }
     def refresh_token; end
 
@@ -813,6 +876,9 @@ class OauthAccessToken
     def restore_previous_refresh_token!; end
 
     sig { void }
+    def restore_profile!; end
+
+    sig { void }
     def restore_refresh_token!; end
 
     sig { void }
@@ -828,7 +894,7 @@ class OauthAccessToken
     def restore_token!; end
 
     sig { void }
-    def restore_user!; end
+    def restore_user_id!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def revoked_at; end
@@ -905,6 +971,12 @@ class OauthAccessToken
     sig { returns(T::Boolean) }
     def saved_change_to_previous_refresh_token?; end
 
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_profile; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profile?; end
+
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_refresh_token; end
 
@@ -936,10 +1008,10 @@ class OauthAccessToken
     def saved_change_to_token?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_user; end
+    def saved_change_to_user_id; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_user?; end
+    def saved_change_to_user_id?; end
 
     sig { returns(T.nilable(::String)) }
     def scopes; end
@@ -1032,49 +1104,49 @@ class OauthAccessToken
     def token_will_change!; end
 
     sig { returns(T.untyped) }
-    def user; end
+    def user_id; end
 
     sig { params(value: T.untyped).returns(T.untyped) }
-    def user=(value); end
+    def user_id=(value); end
 
     sig { returns(T::Boolean) }
-    def user?; end
+    def user_id?; end
 
     sig { returns(T.untyped) }
-    def user_before_last_save; end
+    def user_id_before_last_save; end
 
     sig { returns(T.untyped) }
-    def user_before_type_cast; end
+    def user_id_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def user_came_from_user?; end
+    def user_id_came_from_user?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_change; end
+    def user_id_change; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_change_to_be_saved; end
+    def user_id_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
-    def user_changed?; end
+    def user_id_changed?; end
 
     sig { returns(T.untyped) }
-    def user_in_database; end
+    def user_id_in_database; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_previous_change; end
+    def user_id_previous_change; end
 
     sig { returns(T::Boolean) }
-    def user_previously_changed?; end
+    def user_id_previously_changed?; end
 
     sig { returns(T.untyped) }
-    def user_previously_was; end
+    def user_id_previously_was; end
 
     sig { returns(T.untyped) }
-    def user_was; end
+    def user_id_was; end
 
     sig { void }
-    def user_will_change!; end
+    def user_id_will_change!; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_application_id?; end
@@ -1092,6 +1164,9 @@ class OauthAccessToken
     def will_save_change_to_previous_refresh_token?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_profile?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_refresh_token?; end
 
     sig { returns(T::Boolean) }
@@ -1107,7 +1182,7 @@ class OauthAccessToken
     def will_save_change_to_token?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_user?; end
+    def will_save_change_to_user_id?; end
   end
 
   module GeneratedRelationMethods

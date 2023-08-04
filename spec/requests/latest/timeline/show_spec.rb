@@ -4,7 +4,7 @@
 RSpec.describe "GET /latest/@:atname/timeline", type: :request, api_version: :latest do
   context "when success" do
     let!(:user) { create(:user, :with_profile, :with_mewst_web_access_token) }
-    let!(:profile) { user.first_profile }
+    let!(:profile) { user.profile }
     let!(:oauth_access_token) { user.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:form) { Forms::CommentedPost.new(comment: "Hello", profile:) }

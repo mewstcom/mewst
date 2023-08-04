@@ -6,7 +6,6 @@
 
 class ProfileMember
   include GeneratedAssociationMethods
-  include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -264,40 +263,40 @@ class ProfileMember
   end
 
   module GeneratedAssociationMethods
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def build_profile(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def build_user(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def create_profile(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def create_profile!(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def create_user(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def create_user!(*args, &blk); end
 
-    sig { returns(T.nilable(::Profile)) }
+    sig { returns(T.untyped) }
     def profile; end
 
-    sig { params(value: T.nilable(::Profile)).void }
+    sig { params(value: T.untyped).void }
     def profile=(value); end
 
-    sig { returns(T.nilable(::Profile)) }
+    sig { returns(T.untyped) }
     def reload_profile; end
 
-    sig { returns(T.nilable(::User)) }
+    sig { returns(T.untyped) }
     def reload_user; end
 
-    sig { returns(T.nilable(::User)) }
+    sig { returns(T.untyped) }
     def user; end
 
-    sig { params(value: T.nilable(::User)).void }
+    sig { params(value: T.untyped).void }
     def user=(value); end
   end
 
@@ -479,350 +478,6 @@ class ProfileMember
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
-  end
-
-  module GeneratedAttributeMethods
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def created_at; end
-
-    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
-    def created_at=(value); end
-
-    sig { returns(T::Boolean) }
-    def created_at?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def created_at_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def created_at_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def created_at_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def created_at_change; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def created_at_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def created_at_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def created_at_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def created_at_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def created_at_previously_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def created_at_previously_was; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def created_at_was; end
-
-    sig { void }
-    def created_at_will_change!; end
-
-    sig { returns(T.untyped) }
-    def id; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def id=(value); end
-
-    sig { returns(T::Boolean) }
-    def id?; end
-
-    sig { returns(T.untyped) }
-    def id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def id_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def id_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def id_changed?; end
-
-    sig { returns(T.untyped) }
-    def id_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def id_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def id_previously_was; end
-
-    sig { returns(T.untyped) }
-    def id_was; end
-
-    sig { void }
-    def id_will_change!; end
-
-    sig { returns(::ActiveSupport::TimeWithZone) }
-    def joined_at; end
-
-    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
-    def joined_at=(value); end
-
-    sig { returns(T::Boolean) }
-    def joined_at?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def joined_at_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def joined_at_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def joined_at_came_from_user?; end
-
-    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
-    def joined_at_change; end
-
-    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
-    def joined_at_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def joined_at_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def joined_at_in_database; end
-
-    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
-    def joined_at_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def joined_at_previously_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def joined_at_previously_was; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def joined_at_was; end
-
-    sig { void }
-    def joined_at_will_change!; end
-
-    sig { returns(T.untyped) }
-    def profile_id; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def profile_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def profile_id?; end
-
-    sig { returns(T.untyped) }
-    def profile_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def profile_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def profile_id_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profile_id_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profile_id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def profile_id_changed?; end
-
-    sig { returns(T.untyped) }
-    def profile_id_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profile_id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def profile_id_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def profile_id_previously_was; end
-
-    sig { returns(T.untyped) }
-    def profile_id_was; end
-
-    sig { void }
-    def profile_id_will_change!; end
-
-    sig { void }
-    def restore_created_at!; end
-
-    sig { void }
-    def restore_id!; end
-
-    sig { void }
-    def restore_joined_at!; end
-
-    sig { void }
-    def restore_profile_id!; end
-
-    sig { void }
-    def restore_updated_at!; end
-
-    sig { void }
-    def restore_user_id!; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def saved_change_to_created_at; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_created_at?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_id?; end
-
-    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
-    def saved_change_to_joined_at; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_joined_at?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_profile_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_profile_id?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def saved_change_to_updated_at; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_updated_at?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_user_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_user_id?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def updated_at; end
-
-    sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
-    def updated_at=(value); end
-
-    sig { returns(T::Boolean) }
-    def updated_at?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def updated_at_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def updated_at_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def updated_at_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def updated_at_change; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def updated_at_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def updated_at_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def updated_at_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
-    def updated_at_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def updated_at_previously_changed?; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def updated_at_previously_was; end
-
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
-    def updated_at_was; end
-
-    sig { void }
-    def updated_at_will_change!; end
-
-    sig { returns(T.untyped) }
-    def user_id; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def user_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def user_id?; end
-
-    sig { returns(T.untyped) }
-    def user_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def user_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def user_id_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_id_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def user_id_changed?; end
-
-    sig { returns(T.untyped) }
-    def user_id_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def user_id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def user_id_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def user_id_previously_was; end
-
-    sig { returns(T.untyped) }
-    def user_id_was; end
-
-    sig { void }
-    def user_id_will_change!; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_created_at?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_joined_at?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_profile_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_updated_at?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_user_id?; end
   end
 
   module GeneratedRelationMethods

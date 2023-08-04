@@ -7,6 +7,7 @@
 class Profile
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include GeneratedDelegatedTypeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -276,6 +277,20 @@ class Profile
     def inverse_follows=(value); end
 
     sig { returns(T::Array[T.untyped]) }
+    def oauth_access_token_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def oauth_access_token_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :oauth_access_tokens`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::OauthAccessToken::PrivateCollectionProxy) }
+    def oauth_access_tokens; end
+
+    sig { params(value: T::Enumerable[::OauthAccessToken]).void }
+    def oauth_access_tokens=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
     def post_ids; end
 
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
@@ -288,6 +303,15 @@ class Profile
 
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
+
+    sig { returns(T.untyped) }
+    def profileable; end
+
+    sig { params(value: T.untyped).void }
+    def profileable=(value); end
+
+    sig { returns(T.untyped) }
+    def reload_profileable; end
 
     sig { returns(T::Array[T.untyped]) }
     def repost_ids; end
@@ -482,6 +506,9 @@ class Profile
       ).returns(ActiveRecord::Result)
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def users(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
     def where(*args, &blk); end
@@ -851,6 +878,96 @@ class Profile
     sig { void }
     def name_will_change!; end
 
+    sig { returns(T.untyped) }
+    def profileable_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def profileable_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def profileable_id?; end
+
+    sig { returns(T.untyped) }
+    def profileable_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profileable_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profileable_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def profileable_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def profileable_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def profileable_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def profileable_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def profileable_id_was; end
+
+    sig { void }
+    def profileable_id_will_change!; end
+
+    sig { returns(::String) }
+    def profileable_type; end
+
+    sig { params(value: ::String).returns(::String) }
+    def profileable_type=(value); end
+
+    sig { returns(T::Boolean) }
+    def profileable_type?; end
+
+    sig { returns(T.nilable(::String)) }
+    def profileable_type_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profileable_type_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profileable_type_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def profileable_type_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def profileable_type_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def profileable_type_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def profileable_type_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def profileable_type_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def profileable_type_previously_changed?; end
+
+    sig { returns(T.nilable(::String)) }
+    def profileable_type_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def profileable_type_was; end
+
+    sig { void }
+    def profileable_type_will_change!; end
+
     sig { void }
     def restore_atname!; end
 
@@ -874,6 +991,12 @@ class Profile
 
     sig { void }
     def restore_name!; end
+
+    sig { void }
+    def restore_profileable_id!; end
+
+    sig { void }
+    def restore_profileable_type!; end
 
     sig { void }
     def restore_updated_at!; end
@@ -925,6 +1048,18 @@ class Profile
 
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_profileable_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profileable_id?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_profileable_type; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profileable_type?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -1002,7 +1137,33 @@ class Profile
     def will_save_change_to_name?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_profileable_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_profileable_type?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
+  end
+
+  module GeneratedDelegatedTypeMethods
+    sig { params(args: T.untyped).returns(T.any(User)) }
+    def build_profileable(*args); end
+
+    sig { returns(T::Class[T.anything]) }
+    def profileable_class; end
+
+    sig { returns(ActiveSupport::StringInquirer) }
+    def profileable_name; end
+
+    sig { returns(T.nilable(User)) }
+    def user; end
+
+    sig { returns(T::Boolean) }
+    def user?; end
+
+    sig { returns(T.untyped) }
+    def user_id; end
   end
 
   module GeneratedRelationMethods
@@ -1131,6 +1292,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def users(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
     def where(*args, &blk); end

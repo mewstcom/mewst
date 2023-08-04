@@ -24,16 +24,17 @@ class Services::CreateAccount < Services::Base
         password: form.password,
         signed_up_at: current_time
       )
-      profile = user.profiles.new(
+
+      profile = user.create_profile!(
         atname: form.atname,
         joined_at: current_time
       )
-      user.profile_members.create!(profile:, joined_at: current_time)
 
       oauth_access_token = OauthAccessToken.find_or_create_for(
         application: OauthApplication.mewst_web,
-        resource_owner: user,
-        scopes: ""
+        resource_owner: profile,
+        scopes: "",
+        user:
       )
 
       [oauth_access_token, profile, user]

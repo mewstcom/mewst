@@ -32,11 +32,11 @@ class Services::CreateSession < Services::Base
 
   sig { returns(Profile) }
   def profile
-    user.first_profile
+    user.profile
   end
 
   sig { returns(OauthAccessToken) }
   def oauth_access_token
-    T.cast(OauthAccessToken.matching_token_for(OauthApplication.mewst_web, user, "", include_expired: false), OauthAccessToken)
+    T.cast(OauthAccessToken.matching_token_for(OauthApplication.mewst_web, profile, "", include_expired: false), OauthAccessToken)
   end
 end

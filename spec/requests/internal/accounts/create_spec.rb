@@ -51,7 +51,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
       expect(ProfileMember.count).to eq(1)
       expect(OauthAccessToken.count).to eq(1)
       user = User.first
-      profile = user.profiles.first
+      profile = user.profile
       oauth_access_token = user.oauth_access_tokens.first
 
       expected = {

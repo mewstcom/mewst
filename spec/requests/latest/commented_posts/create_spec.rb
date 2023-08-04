@@ -4,7 +4,7 @@
 RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_version: :latest do
   context "when invalid comment" do
     let!(:user) { create(:user, :with_profile, :with_mewst_web_access_token) }
-    let!(:profile) { user.profiles.first }
+    let!(:profile) { user.profile }
     let!(:oauth_access_token) { user.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
@@ -32,7 +32,7 @@ RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_vers
 
   context "when valid input data" do
     let!(:user) { create(:user, :with_profile, :with_mewst_web_access_token) }
-    let!(:profile) { user.profiles.first }
+    let!(:profile) { user.profile }
     let!(:oauth_access_token) { user.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
