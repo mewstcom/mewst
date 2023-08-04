@@ -8,6 +8,16 @@ class Latest::ApplicationController < ActionController::API
 
   private
 
+  sig { returns(T.nilable(Profile)) }
+  def current_profile
+    @current_profile ||= T.let(doorkeeper_token&.profile, T.nilable(Profile))
+  end
+
+  sig { returns(Profile) }
+  def current_profile!
+    T.cast(current_profile, Profile)
+  end
+
   sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||= T.let(doorkeeper_token&.user, T.nilable(User))

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Forms::Repost do
-  let!(:profile) { create(:profile, :with_member) }
+  let!(:profile) { create(:profile, :for_user) }
 
   context "when invalid" do
     context "when post is blank" do

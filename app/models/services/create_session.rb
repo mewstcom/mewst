@@ -32,7 +32,7 @@ class Services::CreateSession < Services::Base
 
   sig { returns(Profile) }
   def profile
-    user.profile
+    user.profile!
   end
 
   sig { returns(OauthAccessToken) }

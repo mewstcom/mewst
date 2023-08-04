@@ -12,6 +12,11 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  sig { returns(Profile) }
+  def profile!
+    T.must(profile)
+  end
+
   sig { returns(T::Boolean) }
   def track_sign_in
     old_current, new_current = current_signed_in_at, Time.current

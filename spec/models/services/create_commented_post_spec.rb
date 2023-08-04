@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Services::CreateCommentedPost do
-  let!(:profile) { create(:profile, :with_member) }
+  let!(:profile) { create(:profile, :for_user) }
   let!(:form) { Forms::CommentedPost.new(profile:, comment: "hello") }
   let!(:command) { Services::CreateCommentedPost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
