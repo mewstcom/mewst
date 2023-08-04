@@ -234,47 +234,23 @@ class User
   end
 
   module GeneratedAssociationMethods
-    sig { returns(T::Array[T.untyped]) }
-    def oauth_access_token_ids; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def build_profile(*args, &blk); end
 
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def oauth_access_token_ids=(ids); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile(*args, &blk); end
 
-    # This method is created by ActiveRecord on the `User` class because it declared `has_many :oauth_access_tokens`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
-    sig { returns(::OauthAccessToken::PrivateCollectionProxy) }
-    def oauth_access_tokens; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile!(*args, &blk); end
 
-    sig { params(value: T::Enumerable[::OauthAccessToken]).void }
-    def oauth_access_tokens=(value); end
+    sig { returns(T.nilable(::Profile)) }
+    def profile; end
 
-    sig { returns(T::Array[T.untyped]) }
-    def profile_ids; end
+    sig { params(value: T.nilable(::Profile)).void }
+    def profile=(value); end
 
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def profile_ids=(ids); end
-
-    sig { returns(T::Array[T.untyped]) }
-    def profile_member_ids; end
-
-    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-    def profile_member_ids=(ids); end
-
-    # This method is created by ActiveRecord on the `User` class because it declared `has_many :profile_members`.
-    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
-    sig { returns(::ProfileMember::PrivateCollectionProxy) }
-    def profile_members; end
-
-    sig { params(value: T::Enumerable[::ProfileMember]).void }
-    def profile_members=(value); end
-
-    # This method is created by ActiveRecord on the `User` class because it declared `has_many :profiles, through: :profile_members`.
-    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
-    sig { returns(::Profile::PrivateCollectionProxy) }
-    def profiles; end
-
-    sig { params(value: T::Enumerable[::Profile]).void }
-    def profiles=(value); end
+    sig { returns(T.nilable(::Profile)) }
+    def reload_profile; end
   end
 
   module GeneratedAssociationRelationMethods

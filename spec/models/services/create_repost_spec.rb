@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Services::CreateRepost do
-  let!(:profile) { create(:profile, :with_member) }
+  let!(:profile) { create(:profile, :for_user) }
   let!(:commented_post_form) { Forms::CommentedPost.new(profile:, comment: "hello") }
   let!(:target_post) { Services::CreateCommentedPost.new(form: commented_post_form).call.post }
   let!(:form) { Forms::Repost.new(profile:, post_id: target_post.id) }

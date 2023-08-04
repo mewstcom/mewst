@@ -6,7 +6,7 @@ class Latest::CommentedPosts::CreateController < Latest::ApplicationController
     form = Forms::CommentedPost.new(
       comment: params[:comment]
     )
-    form.profile = current_user!.profiles.find_by!(atname: params[:atname])
+    form.profile = current_profile!
 
     if form.invalid?
       return render(

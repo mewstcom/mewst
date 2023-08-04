@@ -5,9 +5,10 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
   context "when incorrect password" do
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
+    let!(:user) { create(:user, email:, password:) }
 
     before do
-      create(:user, :with_profile, email:, password:)
+      create(:profile, :for_user, profileable: user)
     end
 
     it "responses 422" do
@@ -36,9 +37,9 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
   context "when correct email/password" do
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
-    let!(:user) { create(:user, :with_profile, :with_mewst_web_access_token, email:, password:) }
-    let!(:profile) { user.profiles.first }
-    let!(:oauth_access_token) { user.oauth_access_tokens.first }
+    let!(:user) { create(:user, email:, password:) }
+    let!(:profile) { create(:profile, :for_user, :with_access_token_for_web, profileable: user) }
+    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
 
     it "responses 201" do
       expect(user.sign_in_count).to eq(0)

@@ -128,6 +128,7 @@ CREATE TABLE public.follows (
 CREATE TABLE public.oauth_access_grants (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     resource_owner_id uuid NOT NULL,
+    user_id uuid NOT NULL,
     application_id uuid NOT NULL,
     token character varying NOT NULL,
     expires_in integer NOT NULL,
@@ -145,6 +146,7 @@ CREATE TABLE public.oauth_access_grants (
 CREATE TABLE public.oauth_access_tokens (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     resource_owner_id uuid,
+    user_id uuid NOT NULL,
     application_id uuid NOT NULL,
     token character varying NOT NULL,
     refresh_token character varying,
@@ -189,25 +191,13 @@ CREATE TABLE public.posts (
 
 
 --
--- Name: profile_members; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.profile_members (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    user_id uuid NOT NULL,
-    profile_id uuid NOT NULL,
-    joined_at timestamp without time zone NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: profiles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profileable_type character varying NOT NULL,
+    profileable_id uuid NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -332,14 +322,6 @@ ALTER TABLE ONLY public.posts
 
 
 --
--- Name: profile_members profile_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.profile_members
-    ADD CONSTRAINT profile_members_pkey PRIMARY KEY (id);
-
-
---
 -- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -428,6 +410,13 @@ CREATE UNIQUE INDEX index_oauth_access_grants_on_token ON public.oauth_access_gr
 
 
 --
+-- Name: index_oauth_access_grants_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_grants_on_user_id ON public.oauth_access_grants USING btree (user_id);
+
+
+--
 -- Name: index_oauth_access_tokens_on_application_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -456,6 +445,13 @@ CREATE UNIQUE INDEX index_oauth_access_tokens_on_token ON public.oauth_access_to
 
 
 --
+-- Name: index_oauth_access_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_tokens_on_user_id ON public.oauth_access_tokens USING btree (user_id);
+
+
+--
 -- Name: index_oauth_applications_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -477,31 +473,17 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 
 
 --
--- Name: index_profile_members_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_profile_members_on_profile_id ON public.profile_members USING btree (profile_id);
-
-
---
--- Name: index_profile_members_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_profile_members_on_user_id ON public.profile_members USING btree (user_id);
-
-
---
--- Name: index_profile_members_on_user_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_profile_members_on_user_id_and_profile_id ON public.profile_members USING btree (user_id, profile_id);
-
-
---
 -- Name: index_profiles_on_atname; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atname);
+
+
+--
+-- Name: index_profiles_on_profileable_type_and_profileable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON public.profiles USING btree (profileable_type, profileable_id);
 
 
 --
@@ -516,15 +498,7 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 --
 
 ALTER TABLE ONLY public.oauth_access_grants
-    ADD CONSTRAINT fk_rails_330c32d8d9 FOREIGN KEY (resource_owner_id) REFERENCES public.users(id);
-
-
---
--- Name: profile_members fk_rails_5a8b59bd8b; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.profile_members
-    ADD CONSTRAINT fk_rails_5a8b59bd8b FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+    ADD CONSTRAINT fk_rails_330c32d8d9 FOREIGN KEY (resource_owner_id) REFERENCES public.profiles(id);
 
 
 --
@@ -544,11 +518,11 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
--- Name: profile_members fk_rails_87765715d2; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_access_tokens fk_rails_76012a03dc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.profile_members
-    ADD CONSTRAINT fk_rails_87765715d2 FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE ONLY public.oauth_access_tokens
+    ADD CONSTRAINT fk_rails_76012a03dc FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -580,7 +554,15 @@ ALTER TABLE ONLY public.posts
 --
 
 ALTER TABLE ONLY public.oauth_access_tokens
-    ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: oauth_access_grants fk_rails_f4d63eb352; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_grants
+    ADD CONSTRAINT fk_rails_f4d63eb352 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

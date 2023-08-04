@@ -16,31 +16,7 @@ servers:
   - description: Development server
     url: http://localhost:3000/latest
 paths:
-  "/@{atname}/timeline":
-    get:
-      description: ""
-      parameters:
-        - "$ref": "#/components/parameters/atname"
-        - "$ref": "#/components/parameters/pagination-after"
-        - "$ref": "#/components/parameters/pagination-before"
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                additionalProperties: false
-                properties:
-                  posts:
-                    items:
-                      "$ref": "#/components/schemas/post"
-                    type: array
-                  page_info:
-                    "$ref": "#/components/schemas/page-info"
-          description: Response
-      summary: Get posts on home timeline
-      tags:
-        - posts
-  "/@{atname}/commented_posts":
+  "/commented_posts":
     post:
       description: ""
       parameters:
@@ -71,6 +47,30 @@ paths:
         '422':
           "$ref": "#/components/responses/validation_failed"
       summary: ""
+      tags:
+        - posts
+  "/timeline":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/pagination-after"
+        - "$ref": "#/components/parameters/pagination-before"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  posts:
+                    items:
+                      "$ref": "#/components/schemas/post"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: Get posts on home timeline
       tags:
         - posts
 components:
