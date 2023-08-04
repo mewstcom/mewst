@@ -16,6 +16,7 @@ class Profile < ApplicationRecord
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
   has_many :reposts, through: :posts, source: :postable, source_type: "Repost"
+  has_many :stamps, dependent: :restrict_with_exception
 
   delegated_type :profileable, types: Profileable::TYPES, dependent: :destroy
 

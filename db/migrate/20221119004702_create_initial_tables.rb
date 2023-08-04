@@ -116,6 +116,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.text :comment, null: false
       t.integer :reposts_count, default: 0, null: false
+      t.integer :stamps_count, default: 0, null: false
       t.timestamps
     end
 
@@ -132,7 +133,18 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :repostable_id, null: false
       t.text :comment, null: false
       t.integer :reposts_count, default: 0, null: false
+      t.integer :stamps_count, default: 0, null: false
       t.timestamps
+    end
+
+    create_table :stamps, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :profile, foreign_key: true, null: false, type: :uuid
+      t.string :stampable_type, null: false
+      t.uuid :stampable_id, null: false
+      t.timestamps
+
+      t.index %i[profile_id stampable_type stampable_id], unique: true
     end
   end
 end

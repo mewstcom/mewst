@@ -72,6 +72,7 @@ CREATE TABLE public.commented_posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     comment text NOT NULL,
     reposts_count integer DEFAULT 0 NOT NULL,
+    stamps_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -87,6 +88,7 @@ CREATE TABLE public.commented_reposts (
     repostable_id uuid NOT NULL,
     comment text NOT NULL,
     reposts_count integer DEFAULT 0 NOT NULL,
+    stamps_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -232,6 +234,20 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: stamps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stamps (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    stampable_type character varying NOT NULL,
+    stampable_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -343,6 +359,14 @@ ALTER TABLE ONLY public.reposts
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: stamps stamps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT stamps_pkey PRIMARY KEY (id);
 
 
 --
@@ -487,10 +511,32 @@ CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON pub
 
 
 --
+-- Name: index_stamps_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stamps_on_profile_id ON public.stamps USING btree (profile_id);
+
+
+--
+-- Name: index_stamps_on_profile_id_and_stampable_type_and_stampable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_stamps_on_profile_id_and_stampable_type_and_stampable_id ON public.stamps USING btree (profile_id, stampable_type, stampable_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: stamps fk_rails_27da15755d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT fk_rails_27da15755d FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --

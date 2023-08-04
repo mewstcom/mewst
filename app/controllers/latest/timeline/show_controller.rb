@@ -8,6 +8,7 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
       after: params[:after].presence,
       limit: 5
     )
+    posts = Post.with_viewer_states(posts:, viewer: current_profile!)
 
     json = Alba.serialize do
       attribute :posts do

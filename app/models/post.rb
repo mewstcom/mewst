@@ -4,11 +4,24 @@
 class Post < ApplicationRecord
   belongs_to :profile
 
+  attribute :viewer_has_stamped, :boolean, default: false
+
   delegated_type :postable, types: Postable::TYPES, dependent: :destroy
 
   delegate :comment, to: :postable
 
   validates :postable_type, inclusion: {in: Postable::TYPES}
+
+  sig { params(posts: ActiveRecord::Relation, viewer: Profile).returns(T::Array[Post]) }
+  def self.with_viewer_states(posts:, viewer:)
+    stamps = viewer.stamps.where(stampable: posts.map(&:postable))
+    stamped_posts = stamps.map(&:post)
+
+    posts.map do |post|
+      post.viewer_has_stamped = stamped_posts.include?(post)
+      post
+    end
+  end
 
   sig { returns(Profile) }
   def profile!
@@ -19,6 +32,15 @@ class Post < ApplicationRecord
   def reposts_count
     if commented_post?
       postable.reposts_count
+    else
+      fail
+    end
+  end
+
+  sig { returns(Integer) }
+  def stamps_count
+    if commented_post?
+      postable.stamps_count
     else
       fail
     end
