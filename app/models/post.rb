@@ -14,11 +14,10 @@ class Post < ApplicationRecord
 
   sig { params(posts: ActiveRecord::Relation, viewer: Profile).returns(T::Array[Post]) }
   def self.with_viewer_states(posts:, viewer:)
-    stamps = viewer.stamps.where(stampable: posts.map(&:postable))
-    stamped_posts = stamps.map(&:post)
+    stamped_post_ids = viewer.stamps.where(post: posts).pluck(:post_id)
 
     posts.map do |post|
-      post.viewer_has_stamped = stamped_posts.include?(post)
+      post.viewer_has_stamped = stamped_post_ids.include?(post.id)
       post
     end
   end

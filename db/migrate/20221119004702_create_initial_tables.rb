@@ -140,11 +140,12 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :stamps, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
+      t.references :post, foreign_key: true, null: false, type: :uuid
       t.string :stampable_type, null: false
       t.uuid :stampable_id, null: false
       t.timestamps
 
-      t.index %i[profile_id stampable_type stampable_id], unique: true
+      t.index %i[profile_id post_id], unique: true
     end
   end
 end

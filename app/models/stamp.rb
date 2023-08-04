@@ -6,12 +6,8 @@ class Stamp < ApplicationRecord
 
   counter_culture :stampable, column_name: "stamps_count"
 
+  belongs_to :post
   belongs_to :profile
 
   validates :stampable_type, inclusion: {in: Stampable::TYPES}
-
-  sig { returns(Post) }
-  def post
-    stampable.post
-  end
 end

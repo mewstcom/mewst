@@ -240,6 +240,7 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.stamps (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
+    post_id uuid NOT NULL,
     stampable_type character varying NOT NULL,
     stampable_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -511,6 +512,13 @@ CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON pub
 
 
 --
+-- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stamps_on_post_id ON public.stamps USING btree (post_id);
+
+
+--
 -- Name: index_stamps_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -518,10 +526,10 @@ CREATE INDEX index_stamps_on_profile_id ON public.stamps USING btree (profile_id
 
 
 --
--- Name: index_stamps_on_profile_id_and_stampable_type_and_stampable_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_stamps_on_profile_id_and_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_stamps_on_profile_id_and_stampable_type_and_stampable_id ON public.stamps USING btree (profile_id, stampable_type, stampable_id);
+CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USING btree (profile_id, post_id);
 
 
 --
@@ -553,6 +561,14 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_5e22b9865a FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: stamps fk_rails_6933333714; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT fk_rails_6933333714 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --
