@@ -26,14 +26,14 @@ module Alba
 
     # Disable inference for key and resource name
     #
-    # @deprecated Use {#inflector=} instead
+    # @deprecated Use {.inflector=} instead
     #
     # source://alba//lib/alba.rb#79
     def disable_inference!; end
 
     # Enable inference for key and resource name
     #
-    # @deprecated Use {#inflector=} instead
+    # @deprecated Use {.inflector=} instead
     # @param with [Symbol, Class, Module] inflector
     #   When it's a Symbol, it sets inflector with given name
     #   When it's a Class or a Module, it sets given object to inflector
@@ -74,7 +74,7 @@ module Alba
     # source://alba//lib/alba.rb#113
     def infer_resource_class(name, nesting: T.unsafe(nil)); end
 
-    # @deprecated Use {#inflector} instead
+    # @deprecated Use {.inflector} instead
     # @return [Boolean] whether inference is enabled or not
     #
     # source://alba//lib/alba.rb#87
@@ -100,13 +100,13 @@ module Alba
     # @param key [String, Symbol, nil]
     # @return [Symbol, String, nil]
     #
-    # source://alba//lib/alba.rb#135
+    # source://alba//lib/alba.rb#139
     def regularize_key(key); end
 
     # Reset config variables
     # Useful for test cleanup
     #
-    # source://alba//lib/alba.rb#143
+    # source://alba//lib/alba.rb#147
     def reset!; end
 
     # @param block [Block] resource body
@@ -128,154 +128,182 @@ module Alba
 
     # Configure Alba to stringify (not symbolize) keys
     #
-    # source://alba//lib/alba.rb#126
+    # source://alba//lib/alba.rb#130
     def stringify_keys!; end
 
     # Configure Alba to symbolize keys
     #
-    # source://alba//lib/alba.rb#121
+    # source://alba//lib/alba.rb#125
     def symbolize_keys!; end
 
     private
 
-    # source://alba//lib/alba.rb#205
+    # source://alba//lib/alba.rb#209
     def default_encoder; end
 
-    # source://alba//lib/alba.rb#159
+    # source://alba//lib/alba.rb#163
     def inflector_from(name_or_module); end
 
     # This method could be part of public API, but for now it's private
     #
-    # source://alba//lib/alba.rb#153
+    # source://alba//lib/alba.rb#157
     def resource_with(object, &block); end
 
-    # source://alba//lib/alba.rb#172
+    # source://alba//lib/alba.rb#176
     def set_encoder_from_backend; end
 
-    # source://alba//lib/alba.rb#197
+    # source://alba//lib/alba.rb#201
     def try_active_support; end
 
-    # source://alba//lib/alba.rb#184
+    # source://alba//lib/alba.rb#188
     def try_oj(mode: T.unsafe(nil)); end
 
-    # source://alba//lib/alba.rb#211
+    # source://alba//lib/alba.rb#215
     def validate_inflector(inflector); end
   end
 end
 
 # Representing association
 #
-# source://alba//lib/alba/association.rb#3
+# @api private
+#
+# source://alba//lib/alba/association.rb#4
 class Alba::Association
+  # @api private
   # @param name [Symbol, String] name of the method to fetch association
   # @param condition [Proc, nil] a proc filtering data
   # @param resource [Class<Alba::Resource>, nil] a resource class for the association
   # @param params [Hash] params override for the association
-  # @param nesting [String] a namespace where source class is inferred with
   # @param key_transformation [Symbol] key transformation type
+  # @param helper [Module] helper module to include
   # @param block [Block] used to define resource when resource arg is absent
+  # @param nesting [String] a namespace where source class is inferred with
   # @return [Association] a new instance of Association
   #
-  # source://alba//lib/alba/association.rb#18
-  def initialize(name:, condition: T.unsafe(nil), resource: T.unsafe(nil), params: T.unsafe(nil), nesting: T.unsafe(nil), key_transformation: T.unsafe(nil), &block); end
+  # source://alba//lib/alba/association.rb#21
+  def initialize(name:, condition: T.unsafe(nil), resource: T.unsafe(nil), params: T.unsafe(nil), nesting: T.unsafe(nil), key_transformation: T.unsafe(nil), helper: T.unsafe(nil), &block); end
 
-  # Returns the value of attribute name.
+  # @api private
   #
-  # source://alba//lib/alba/association.rb#9
+  # source://alba//lib/alba/association.rb#11
   def name; end
 
-  # Returns the value of attribute object.
+  # @api private
   #
-  # source://alba//lib/alba/association.rb#9
+  # source://alba//lib/alba/association.rb#11
   def object; end
 
   # Recursively converts an object into a Hash
   #
+  # @api private
   # @param target [Object] the object having an association method
   # @param within [Hash] determines what associations to be serialized. If not set, it serializes all associations.
   # @param params [Hash] user-given Hash for arbitrary data
   # @return [Hash]
   #
-  # source://alba//lib/alba/association.rb#34
+  # source://alba//lib/alba/association.rb#37
   def to_h(target, within: T.unsafe(nil), params: T.unsafe(nil)); end
 
   private
 
-  # source://alba//lib/alba/association.rb#62
-  def assign_resource(nesting, key_transformation, block); end
+  # @api private
+  #
+  # source://alba//lib/alba/association.rb#65
+  def assign_resource(nesting, key_transformation, block, helper); end
 
-  # source://alba//lib/alba/association.rb#51
+  # @api private
+  #
+  # source://alba//lib/alba/association.rb#54
   def constantize(resource); end
 
-  # source://alba//lib/alba/association.rb#81
+  # @api private
+  #
+  # source://alba//lib/alba/association.rb#85
   def to_h_with_constantize_resource(within, params); end
 
-  # source://alba//lib/alba/association.rb#75
+  # @api private
+  #
+  # source://alba//lib/alba/association.rb#79
   def to_h_with_each_resource(within, params); end
 
   class << self
-    # Returns the value of attribute const_cache.
+    # cache for `const_get`
     #
-    # source://alba//lib/alba/association.rb#6
+    # @api private
+    #
+    # source://alba//lib/alba/association.rb#8
     def const_cache; end
   end
 end
 
 # Represents attribute with `if` option
 #
-# source://alba//lib/alba/conditional_attribute.rb#6
+# @api private
+#
+# source://alba//lib/alba/conditional_attribute.rb#7
 class Alba::ConditionalAttribute
+  # @api private
   # @param body [Symbol, Proc, Alba::Association, Alba::TypedAttribute] real attribute wrapped with condition
   # @param condition [Symbol, Proc] condition to check
   # @return [ConditionalAttribute] a new instance of ConditionalAttribute
   #
-  # source://alba//lib/alba/conditional_attribute.rb#9
+  # source://alba//lib/alba/conditional_attribute.rb#10
   def initialize(body:, condition:); end
 
   # Returns attribute body if condition passes
   #
+  # @api private
   # @param resource [Alba::Resource]
   # @param object [Object] needed for collection, each object from collection
   # @return [Alba::REMOVE_KEY, Object] REMOVE_KEY if condition is unmet, fetched attribute otherwise
   #
-  # source://alba//lib/alba/conditional_attribute.rb#19
+  # source://alba//lib/alba/conditional_attribute.rb#20
   def with_passing_condition(resource:, object: T.unsafe(nil)); end
 
   private
 
-  # source://alba//lib/alba/conditional_attribute.rb#50
+  # @api private
+  #
+  # source://alba//lib/alba/conditional_attribute.rb#51
   def attribute_from_association_body_or(fetched_attribute); end
 
+  # @api private
   # @return [Boolean]
   #
-  # source://alba//lib/alba/conditional_attribute.rb#32
+  # source://alba//lib/alba/conditional_attribute.rb#33
   def condition_passes?(resource, object); end
 
-  # source://alba//lib/alba/conditional_attribute.rb#46
+  # @api private
+  #
+  # source://alba//lib/alba/conditional_attribute.rb#47
   def with_two_arity_proc_condition; end
 end
 
 # Module for printing deprecation warning
 #
-# source://alba//lib/alba/deprecation.rb#3
+# @api private
+#
+# source://alba//lib/alba/deprecation.rb#4
 module Alba::Deprecation
   private
 
-  # Similar to {Kernel.warn} but prints caller as well
+  # Similar to {#warn} but prints caller as well
   #
+  # @api private
   # @param message [String] main message to print
   # @return void
   #
-  # source://alba//lib/alba/deprecation.rb#8
+  # source://alba//lib/alba/deprecation.rb#9
   def warn(message); end
 
   class << self
-    # Similar to {Kernel.warn} but prints caller as well
+    # Similar to {#warn} but prints caller as well
     #
+    # @api private
     # @param message [String] main message to print
     # @return void
     #
-    # source://alba//lib/alba/deprecation.rb#8
+    # source://alba//lib/alba/deprecation.rb#9
     def warn(message); end
   end
 end
@@ -287,15 +315,18 @@ class Alba::Error < ::StandardError; end
 
 # Layout serialization
 #
-# source://alba//lib/alba/layout.rb#6
+# @api private
+#
+# source://alba//lib/alba/layout.rb#7
 class Alba::Layout
   extend ::Forwardable
 
+  # @api private
   # @param file [String] name of the layout file
   # @param inline [Proc] a proc returning JSON string or a Hash representing JSON
   # @return [Layout] a new instance of Layout
   #
-  # source://alba//lib/alba/layout.rb#13
+  # source://alba//lib/alba/layout.rb#14
   def initialize(file:, inline:); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -309,11 +340,12 @@ class Alba::Layout
 
   # Serialize within layout
   #
+  # @api private
   # @param resource [Alba::Resource] the original resource calling this layout
   # @param serialized_json [String] JSON string for embedding
   # @param binding [Binding] context for serialization
   #
-  # source://alba//lib/alba/layout.rb#32
+  # source://alba//lib/alba/layout.rb#33
   def serialize(resource:, serialized_json:, binding:); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -324,37 +356,47 @@ class Alba::Layout
   # This methods exists here instead of delegation because
   # `Alba::Resource#encode` is private and it prints warning if we use `def_delegators`
   #
-  # source://alba//lib/alba/layout.rb#63
+  # @api private
+  #
+  # source://alba//lib/alba/layout.rb#64
   def encode(hash); end
 
-  # source://alba//lib/alba/layout.rb#51
+  # @api private
+  #
+  # source://alba//lib/alba/layout.rb#52
   def serialize_within_inline_layout; end
 
-  # source://alba//lib/alba/layout.rb#47
+  # @api private
+  #
+  # source://alba//lib/alba/layout.rb#48
   def serialize_within_string_layout(bnd); end
 
-  # Returns the value of attribute serialized_json.
+  # @api private
   #
-  # source://alba//lib/alba/layout.rb#45
+  # source://alba//lib/alba/layout.rb#46
   def serialized_json; end
 end
 
 # Representing nested attribute
 #
-# source://alba//lib/alba/nested_attribute.rb#3
+# @api private
+#
+# source://alba//lib/alba/nested_attribute.rb#4
 class Alba::NestedAttribute
+  # @api private
   # @param key_transformation [Symbol] determines how to transform keys
   # @param block [Proc] class body
   # @return [NestedAttribute] a new instance of NestedAttribute
   #
-  # source://alba//lib/alba/nested_attribute.rb#6
+  # source://alba//lib/alba/nested_attribute.rb#7
   def initialize(key_transformation: T.unsafe(nil), &block); end
 
+  # @api private
   # @param object [Object] the object being serialized
   # @param params [Hash] params Hash inherited from Resource
   # @return [Hash] hash serialized from running the class body in the object
   #
-  # source://alba//lib/alba/nested_attribute.rb#14
+  # source://alba//lib/alba/nested_attribute.rb#15
   def value(object:, params:); end
 end
 
@@ -388,39 +430,42 @@ end
 
 # Class methods
 #
-# source://alba//lib/alba/resource.rb#304
+# source://alba//lib/alba/resource.rb#314
 module Alba::Resource::ClassMethods
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _attributes; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _collection_key; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
+  def _helper; end
+
+  # source://alba//lib/alba/resource.rb#315
   def _key; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _key_for_collection; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _key_transformation_cascade; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _layout; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _meta; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _on_error; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _on_nil; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _transform_type; end
 
-  # source://alba//lib/alba/resource.rb#305
+  # source://alba//lib/alba/resource.rb#315
   def _transforming_root_key; end
 
   # Set association
@@ -436,7 +481,7 @@ module Alba::Resource::ClassMethods
   # @return [void]
   # @see Alba::Association#initialize
   #
-  # source://alba//lib/alba/resource.rb#374
+  # source://alba//lib/alba/resource.rb#384
   def association(name, condition = T.unsafe(nil), resource: T.unsafe(nil), key: T.unsafe(nil), params: T.unsafe(nil), **options, &block); end
 
   # Set an attribute with the given block
@@ -448,7 +493,7 @@ module Alba::Resource::ClassMethods
   # @raise [ArgumentError] if block is absent
   # @return [void]
   #
-  # source://alba//lib/alba/resource.rb#356
+  # source://alba//lib/alba/resource.rb#366
   def attribute(name, **options, &block); end
 
   # Set multiple attributes at once
@@ -458,14 +503,14 @@ module Alba::Resource::ClassMethods
   # @param attrs_with_types [Hash<[Symbol, String], [Array<Symbol, Proc>, Symbol]>] attributes with name in its key and type and optional type converter in its value
   # @return [void]
   #
-  # source://alba//lib/alba/resource.rb#322
+  # source://alba//lib/alba/resource.rb#332
   def attributes(*attrs, if: T.unsafe(nil), **attrs_with_types); end
 
   # Sets key for collection serialization
   #
   # @param key [String, Symbol]
   #
-  # source://alba//lib/alba/resource.rb#473
+  # source://alba//lib/alba/resource.rb#482
   def collection_key(key); end
 
   # Set association
@@ -481,7 +526,7 @@ module Alba::Resource::ClassMethods
   # @return [void]
   # @see Alba::Association#initialize
   #
-  # source://alba//lib/alba/resource.rb#374
+  # source://alba//lib/alba/resource.rb#384
   def has_many(name, condition = T.unsafe(nil), resource: T.unsafe(nil), key: T.unsafe(nil), params: T.unsafe(nil), **options, &block); end
 
   # Set association
@@ -497,12 +542,19 @@ module Alba::Resource::ClassMethods
   # @return [void]
   # @see Alba::Association#initialize
   #
-  # source://alba//lib/alba/resource.rb#374
+  # source://alba//lib/alba/resource.rb#384
   def has_one(name, condition = T.unsafe(nil), resource: T.unsafe(nil), key: T.unsafe(nil), params: T.unsafe(nil), **options, &block); end
+
+  # Define helper methods
+  #
+  # @param mod [Module] a module to extend
+  #
+  # source://alba//lib/alba/resource.rb#519
+  def helper(mod = T.unsafe(nil), &block); end
 
   # @private
   #
-  # source://alba//lib/alba/resource.rb#308
+  # source://alba//lib/alba/resource.rb#318
   def inherited(subclass); end
 
   # Set layout
@@ -510,7 +562,7 @@ module Alba::Resource::ClassMethods
   # @param file [String] name of the layout file
   # @param inline [Proc] a proc returning JSON string or a Hash representing JSON
   #
-  # source://alba//lib/alba/resource.rb#447
+  # source://alba//lib/alba/resource.rb#456
   def layout(file: T.unsafe(nil), inline: T.unsafe(nil)); end
 
   # Set association
@@ -526,12 +578,12 @@ module Alba::Resource::ClassMethods
   # @return [void]
   # @see Alba::Association#initialize
   #
-  # source://alba//lib/alba/resource.rb#374
+  # source://alba//lib/alba/resource.rb#384
   def many(name, condition = T.unsafe(nil), resource: T.unsafe(nil), key: T.unsafe(nil), params: T.unsafe(nil), **options, &block); end
 
   # Set metadata
   #
-  # source://alba//lib/alba/resource.rb#439
+  # source://alba//lib/alba/resource.rb#448
   def meta(&block); end
 
   # Set a nested attribute with the given block
@@ -543,7 +595,7 @@ module Alba::Resource::ClassMethods
   # @raise [ArgumentError] if block is absent
   # @return [void]
   #
-  # source://alba//lib/alba/resource.rb#404
+  # source://alba//lib/alba/resource.rb#413
   def nested(name, **options, &block); end
 
   # Set a nested attribute with the given block
@@ -555,7 +607,7 @@ module Alba::Resource::ClassMethods
   # @raise [ArgumentError] if block is absent
   # @return [void]
   #
-  # source://alba//lib/alba/resource.rb#404
+  # source://alba//lib/alba/resource.rb#413
   def nested_attribute(name, **options, &block); end
 
   # Set error handler
@@ -565,14 +617,14 @@ module Alba::Resource::ClassMethods
   # @param block [Block]
   # @raise [ArgumentError]
   #
-  # source://alba//lib/alba/resource.rb#482
+  # source://alba//lib/alba/resource.rb#491
   def on_error(handler = T.unsafe(nil), &block); end
 
   # Set nil handler
   #
   # @param block [Block]
   #
-  # source://alba//lib/alba/resource.rb#503
+  # source://alba//lib/alba/resource.rb#512
   def on_nil(&block); end
 
   # Set association
@@ -588,8 +640,18 @@ module Alba::Resource::ClassMethods
   # @return [void]
   # @see Alba::Association#initialize
   #
-  # source://alba//lib/alba/resource.rb#374
+  # source://alba//lib/alba/resource.rb#384
   def one(name, condition = T.unsafe(nil), resource: T.unsafe(nil), key: T.unsafe(nil), params: T.unsafe(nil), **options, &block); end
+
+  # DSL for alias, purely for readability
+  #
+  # source://alba//lib/alba/resource.rb#531
+  def prefer_object_method!; end
+
+  # DSL for alias, purely for readability
+  #
+  # source://alba//lib/alba/resource.rb#526
+  def prefer_resource_method!; end
 
   # Set root key
   #
@@ -597,12 +659,12 @@ module Alba::Resource::ClassMethods
   # @param key_for_collection [String, Symbol]
   # @raise [NoMethodError] when key doesn't respond to `to_sym` method
   #
-  # source://alba//lib/alba/resource.rb#418
+  # source://alba//lib/alba/resource.rb#427
   def root_key(key, key_for_collection = T.unsafe(nil)); end
 
   # Set root key to true
   #
-  # source://alba//lib/alba/resource.rb#433
+  # source://alba//lib/alba/resource.rb#442
   def root_key!; end
 
   # Set root key for collection
@@ -610,7 +672,7 @@ module Alba::Resource::ClassMethods
   # @param key [String, Symbol]
   # @raise [NoMethodError] when key doesn't respond to `to_sym` method
   #
-  # source://alba//lib/alba/resource.rb#427
+  # source://alba//lib/alba/resource.rb#436
   def root_key_for_collection(key); end
 
   # Transform keys as specified type
@@ -621,21 +683,21 @@ module Alba::Resource::ClassMethods
   #   Default is true but can be set false for old (v1) behavior
   # @raise [Alba::Error] when type is not supported
   #
-  # source://alba//lib/alba/resource.rb#458
+  # source://alba//lib/alba/resource.rb#467
   def transform_keys(type, root: T.unsafe(nil), cascade: T.unsafe(nil)); end
 
   private
 
-  # source://alba//lib/alba/resource.rb#328
+  # source://alba//lib/alba/resource.rb#338
   def assign_attributes(attrs, if_value); end
 
-  # source://alba//lib/alba/resource.rb#337
+  # source://alba//lib/alba/resource.rb#347
   def assign_attributes_with_types(attrs_with_types, if_value); end
 
-  # source://alba//lib/alba/resource.rb#387
+  # source://alba//lib/alba/resource.rb#396
   def nesting; end
 
-  # source://alba//lib/alba/resource.rb#489
+  # source://alba//lib/alba/resource.rb#498
   def validated_error_handler(handler); end
 end
 
@@ -653,7 +715,7 @@ module Alba::Resource::InstanceMethods
   # source://alba//lib/alba/resource.rb#46
   def initialize(object, params: T.unsafe(nil), within: T.unsafe(nil)); end
 
-  # Returns a Hash correspondng {Resource#serialize}
+  # Returns a Hash correspondng {#serialize}
   #
   # @param root_key [Symbol, nil, true]
   # @param meta [Hash] metadata for this seialization
@@ -706,6 +768,12 @@ module Alba::Resource::InstanceMethods
 
   private
 
+  # source://alba//lib/alba/resource.rb#273
+  def _fetch_attribute_from_object_first(obj, attribute); end
+
+  # source://alba//lib/alba/resource.rb#279
+  def _fetch_attribute_from_resource_first(obj, attribute); end
+
   # source://alba//lib/alba/resource.rb#159
   def _key; end
 
@@ -727,7 +795,7 @@ module Alba::Resource::InstanceMethods
   # source://alba//lib/alba/resource.rb#194
   def attributes_to_hash(obj, hash); end
 
-  # source://alba//lib/alba/resource.rb#284
+  # source://alba//lib/alba/resource.rb#294
   def check_within(association_name); end
 
   # Detect if object is a collection or not.
@@ -735,7 +803,7 @@ module Alba::Resource::InstanceMethods
   #
   # @return [Boolean]
   #
-  # source://alba//lib/alba/resource.rb#298
+  # source://alba//lib/alba/resource.rb#308
   def collection?; end
 
   # source://alba//lib/alba/resource.rb#185
@@ -747,6 +815,8 @@ module Alba::Resource::InstanceMethods
   # source://alba//lib/alba/resource.rb#255
   def fetch_attribute(obj, key, attribute); end
 
+  # TODO: from version 3, `_fetch_attribute_from_resource_first` is default
+  #
   # source://alba//lib/alba/resource.rb#269
   def fetch_attribute_from_object_and_resource(obj, attribute); end
 
@@ -761,7 +831,7 @@ module Alba::Resource::InstanceMethods
   # source://alba//lib/alba/resource.rb#128
   def hash_with_metadata(hash, meta); end
 
-  # source://alba//lib/alba/resource.rb#275
+  # source://alba//lib/alba/resource.rb#285
   def nil_handler; end
 
   # @raise [Alba::Error]
@@ -794,7 +864,7 @@ module Alba::Resource::InstanceMethods
   # source://alba//lib/alba/resource.rb#175
   def transforming_root_key?; end
 
-  # source://alba//lib/alba/resource.rb#279
+  # source://alba//lib/alba/resource.rb#289
   def yield_if_within(association_name); end
 end
 
@@ -803,34 +873,46 @@ Alba::Resource::WITHIN_DEFAULT = T.let(T.unsafe(nil), Object)
 
 # Representing typed attributes to encapsulate logic about types
 #
-# source://alba//lib/alba/typed_attribute.rb#3
+# @api private
+#
+# source://alba//lib/alba/typed_attribute.rb#4
 class Alba::TypedAttribute
+  # @api private
   # @param name [Symbol, String]
   # @param type [Symbol, Class]
   # @param converter [Proc]
   # @return [TypedAttribute] a new instance of TypedAttribute
   #
-  # source://alba//lib/alba/typed_attribute.rb#7
+  # source://alba//lib/alba/typed_attribute.rb#8
   def initialize(name:, type:, converter:); end
 
+  # @api private
   # @param object [Object] target to check and convert type with
   # @return [String, Integer, Boolean] type-checked or type-converted object
   #
-  # source://alba//lib/alba/typed_attribute.rb#19
+  # source://alba//lib/alba/typed_attribute.rb#20
   def value(object); end
 
   private
 
-  # source://alba//lib/alba/typed_attribute.rb#28
+  # @api private
+  #
+  # source://alba//lib/alba/typed_attribute.rb#29
   def check(object); end
 
-  # source://alba//lib/alba/typed_attribute.rb#40
+  # @api private
+  #
+  # source://alba//lib/alba/typed_attribute.rb#41
   def default_converter; end
 
-  # source://alba//lib/alba/typed_attribute.rb#57
+  # @api private
+  #
+  # source://alba//lib/alba/typed_attribute.rb#58
   def display_value_for(value); end
 
-  # source://alba//lib/alba/typed_attribute.rb#53
+  # @api private
+  #
+  # source://alba//lib/alba/typed_attribute.rb#54
   def null_converter; end
 end
 
