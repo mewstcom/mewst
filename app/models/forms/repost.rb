@@ -13,6 +13,8 @@ class Forms::Repost < Forms::Base
 
   sig { returns(T.nilable(Follow)) }
   def original_follow
+    return if target_post.nil?
+
     profile!.follows.find_by(target_profile_id: target_post!.original_post.profile_id)
   end
 

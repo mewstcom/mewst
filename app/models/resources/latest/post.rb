@@ -4,19 +4,14 @@
 class Resources::Latest::Post < Resources::Latest::Base
   root_key :post, :posts
 
-  attributes :id, :published_at, :reposts_count
+  attributes :id, :kind, :published_at, :reposts_count
 
-  one :postable, resource: ->(record) {
-    case record
-    when CommentedPost
-      Resources::Latest::CommentedPost
+  attribute :postable do |post|
+    if post.kind_comment_post?
+      Resources::Latest::CommentPost.new(post.comment_post!).to_h
     else
       fail
     end
-  }
-
-  attribute :postable_type do |post|
-    post.postable_type.underscore
   end
 
   one :profile, resource: Resources::Latest::Profile

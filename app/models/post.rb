@@ -9,7 +9,7 @@ class Post < ApplicationRecord
   has_one :comment_post, dependent: :restrict_with_exception
   has_one :repost, dependent: :restrict_with_exception
 
-  enumerize :kind, in: %i[comment_post repost], predicates: { prefix: true }
+  enumerize :kind, in: %i[comment_post repost], predicates: {prefix: true}
 
   sig { returns(Profile) }
   def profile!
