@@ -113,7 +113,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    create_table :statuses, id: false do |t|
+    create_table :comment_posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :post, foreign_key: true, null: false, type: :uuid
       t.text :comment, null: false

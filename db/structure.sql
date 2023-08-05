@@ -65,6 +65,19 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: comment_posts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.comment_posts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    post_id uuid NOT NULL,
+    comment text NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: email_confirmations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -223,19 +236,6 @@ CREATE TABLE public.stamps (
 
 
 --
--- Name: statuses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.statuses (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    post_id uuid NOT NULL,
-    comment text NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -259,6 +259,14 @@ CREATE TABLE public.users (
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: comment_posts comment_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_posts
+    ADD CONSTRAINT comment_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -342,19 +350,18 @@ ALTER TABLE ONLY public.stamps
 
 
 --
--- Name: statuses statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.statuses
-    ADD CONSTRAINT statuses_pkey PRIMARY KEY (id);
-
-
---
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_comment_posts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_comment_posts_on_post_id ON public.comment_posts USING btree (post_id);
 
 
 --
@@ -554,25 +561,10 @@ CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USIN
 
 
 --
--- Name: index_statuses_on_post_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_statuses_on_post_id ON public.statuses USING btree (post_id);
-
-
---
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
-
-
---
--- Name: statuses fk_rails_0d55d58d02; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.statuses
-    ADD CONSTRAINT fk_rails_0d55d58d02 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --
@@ -589,6 +581,14 @@ ALTER TABLE ONLY public.stamps
 
 ALTER TABLE ONLY public.oauth_access_grants
     ADD CONSTRAINT fk_rails_330c32d8d9 FOREIGN KEY (resource_owner_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: comment_posts fk_rails_3c00337d07; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_posts
+    ADD CONSTRAINT fk_rails_3c00337d07 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --
