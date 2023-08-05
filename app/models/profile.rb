@@ -22,7 +22,7 @@ class Profile < ApplicationRecord
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
-  delegate :create_commented_post, :create_repost, :delete_post, to: :postability
+  delegate :create_comment_post, :create_repost, :delete_post, to: :postability
 
   sig { returns(String) }
   def name_or_atname

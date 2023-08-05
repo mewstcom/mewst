@@ -3,8 +3,8 @@
 
 RSpec.describe Services::CreateRepost do
   let!(:profile) { create(:profile, :for_user) }
-  let!(:commented_post_form) { Forms::CommentedPost.new(profile:, comment: "hello") }
-  let!(:target_post) { Services::CreateCommentedPost.new(form: commented_post_form).call.post }
+  let!(:comment_post_form) { Forms::CommentPost.new(profile:, comment: "hello") }
+  let!(:target_post) { Services::CreateCommentedPost.new(form: comment_post_form).call.post }
   let!(:form) { Forms::Repost.new(profile:, post_id: target_post.id) }
   let!(:command) { Services::CreateRepost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
@@ -16,7 +16,7 @@ RSpec.describe Services::CreateRepost do
     allow(FanoutPostJob).to receive(:perform_async)
   end
 
-  it "creates a new commented post" do
+  it "creates a new comment post" do
     expect(Repost.count).to eq(0)
     expect(Post.count).to eq(1)
 

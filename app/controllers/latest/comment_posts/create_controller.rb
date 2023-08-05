@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Latest::CommentedPosts::CreateController < Latest::ApplicationController
+class Latest::CommentPosts::CreateController < Latest::ApplicationController
   def call
     form = Forms::CommentedPost.new(
       comment: params[:comment]

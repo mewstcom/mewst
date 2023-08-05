@@ -7,7 +7,6 @@
 class Post
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
-  include GeneratedDelegatedTypeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -220,8 +219,26 @@ class Post
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
+    def build_comment_post(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Repost) }
+    def build_repost(*args, &blk); end
+
+    sig { returns(T.nilable(::CommentPost)) }
+    def comment_post; end
+
+    sig { params(value: T.nilable(::CommentPost)).void }
+    def comment_post=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
+    def create_comment_post(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
+    def create_comment_post!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile(*args, &blk); end
@@ -229,11 +246,11 @@ class Post
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile!(*args, &blk); end
 
-    sig { returns(T.untyped) }
-    def postable; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Repost) }
+    def create_repost(*args, &blk); end
 
-    sig { params(value: T.untyped).void }
-    def postable=(value); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Repost) }
+    def create_repost!(*args, &blk); end
 
     sig { returns(T.nilable(::Profile)) }
     def profile; end
@@ -241,11 +258,20 @@ class Post
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
 
-    sig { returns(T.untyped) }
-    def reload_postable; end
+    sig { returns(T.nilable(::CommentPost)) }
+    def reload_comment_post; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_profile; end
+
+    sig { returns(T.nilable(::Repost)) }
+    def reload_repost; end
+
+    sig { returns(T.nilable(::Repost)) }
+    def repost; end
+
+    sig { params(value: T.nilable(::Repost)).void }
+    def repost=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -257,12 +283,6 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def annotate(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def commented_posts(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def commented_reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
@@ -384,9 +404,6 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def reorder(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def reselect(*args, &blk); end
@@ -529,94 +546,49 @@ class Post
     def id_will_change!; end
 
     sig { returns(T.untyped) }
-    def postable_id; end
+    def kind; end
 
     sig { params(value: T.untyped).returns(T.untyped) }
-    def postable_id=(value); end
+    def kind=(value); end
 
     sig { returns(T::Boolean) }
-    def postable_id?; end
+    def kind?; end
 
     sig { returns(T.untyped) }
-    def postable_id_before_last_save; end
+    def kind_before_last_save; end
 
     sig { returns(T.untyped) }
-    def postable_id_before_type_cast; end
+    def kind_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def postable_id_came_from_user?; end
+    def kind_came_from_user?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def postable_id_change; end
+    def kind_change; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def postable_id_change_to_be_saved; end
+    def kind_change_to_be_saved; end
 
     sig { returns(T::Boolean) }
-    def postable_id_changed?; end
+    def kind_changed?; end
 
     sig { returns(T.untyped) }
-    def postable_id_in_database; end
+    def kind_in_database; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def postable_id_previous_change; end
+    def kind_previous_change; end
 
     sig { returns(T::Boolean) }
-    def postable_id_previously_changed?; end
+    def kind_previously_changed?; end
 
     sig { returns(T.untyped) }
-    def postable_id_previously_was; end
+    def kind_previously_was; end
 
     sig { returns(T.untyped) }
-    def postable_id_was; end
+    def kind_was; end
 
     sig { void }
-    def postable_id_will_change!; end
-
-    sig { returns(::String) }
-    def postable_type; end
-
-    sig { params(value: ::String).returns(::String) }
-    def postable_type=(value); end
-
-    sig { returns(T::Boolean) }
-    def postable_type?; end
-
-    sig { returns(T.nilable(::String)) }
-    def postable_type_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def postable_type_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def postable_type_came_from_user?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def postable_type_change; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def postable_type_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def postable_type_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def postable_type_in_database; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def postable_type_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def postable_type_previously_changed?; end
-
-    sig { returns(T.nilable(::String)) }
-    def postable_type_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def postable_type_was; end
-
-    sig { void }
-    def postable_type_will_change!; end
+    def kind_will_change!; end
 
     sig { returns(T.untyped) }
     def profile_id; end
@@ -708,6 +680,51 @@ class Post
     sig { void }
     def published_at_will_change!; end
 
+    sig { returns(::Integer) }
+    def reposts_count; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def reposts_count=(value); end
+
+    sig { returns(T::Boolean) }
+    def reposts_count?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def reposts_count_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def reposts_count_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def reposts_count_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def reposts_count_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def reposts_count_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def reposts_count_changed?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def reposts_count_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def reposts_count_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def reposts_count_previously_changed?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def reposts_count_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def reposts_count_was; end
+
+    sig { void }
+    def reposts_count_will_change!; end
+
     sig { void }
     def restore_created_at!; end
 
@@ -715,16 +732,19 @@ class Post
     def restore_id!; end
 
     sig { void }
-    def restore_postable_id!; end
-
-    sig { void }
-    def restore_postable_type!; end
+    def restore_kind!; end
 
     sig { void }
     def restore_profile_id!; end
 
     sig { void }
     def restore_published_at!; end
+
+    sig { void }
+    def restore_reposts_count!; end
+
+    sig { void }
+    def restore_stamps_count!; end
 
     sig { void }
     def restore_updated_at!; end
@@ -742,16 +762,10 @@ class Post
     def saved_change_to_id?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_postable_id; end
+    def saved_change_to_kind; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_postable_id?; end
-
-    sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_postable_type; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_postable_type?; end
+    def saved_change_to_kind?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_profile_id; end
@@ -765,11 +779,68 @@ class Post
     sig { returns(T::Boolean) }
     def saved_change_to_published_at?; end
 
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_reposts_count; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_reposts_count?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_stamps_count; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_stamps_count?; end
+
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_updated_at?; end
+
+    sig { returns(::Integer) }
+    def stamps_count; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def stamps_count=(value); end
+
+    sig { returns(T::Boolean) }
+    def stamps_count?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def stamps_count_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def stamps_count_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def stamps_count_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def stamps_count_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def stamps_count_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def stamps_count_changed?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def stamps_count_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def stamps_count_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def stamps_count_previously_changed?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def stamps_count_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def stamps_count_was; end
+
+    sig { void }
+    def stamps_count_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
@@ -823,10 +894,7 @@ class Post
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_postable_id?; end
-
-    sig { returns(T::Boolean) }
-    def will_save_change_to_postable_type?; end
+    def will_save_change_to_kind?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_profile_id?; end
@@ -835,45 +903,13 @@ class Post
     def will_save_change_to_published_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_reposts_count?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_stamps_count?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
-  end
-
-  module GeneratedDelegatedTypeMethods
-    sig { params(args: T.untyped).returns(T.any(CommentedPost, CommentedRepost, Repost)) }
-    def build_postable(*args); end
-
-    sig { returns(T.nilable(CommentedPost)) }
-    def commented_post; end
-
-    sig { returns(T::Boolean) }
-    def commented_post?; end
-
-    sig { returns(T.untyped) }
-    def commented_post_id; end
-
-    sig { returns(T.nilable(CommentedRepost)) }
-    def commented_repost; end
-
-    sig { returns(T::Boolean) }
-    def commented_repost?; end
-
-    sig { returns(T.untyped) }
-    def commented_repost_id; end
-
-    sig { returns(T::Class[T.anything]) }
-    def postable_class; end
-
-    sig { returns(ActiveSupport::StringInquirer) }
-    def postable_name; end
-
-    sig { returns(T.nilable(Repost)) }
-    def repost; end
-
-    sig { returns(T::Boolean) }
-    def repost?; end
-
-    sig { returns(T.untyped) }
-    def repost_id; end
   end
 
   module GeneratedRelationMethods
@@ -885,12 +921,6 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def annotate(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def commented_posts(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def commented_reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
@@ -978,9 +1008,6 @@ class Post
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def reorder(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def reposts(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def reselect(*args, &blk); end

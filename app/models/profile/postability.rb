@@ -10,7 +10,7 @@ class Profile::Postability
   end
 
   sig { params(target_post: Post, comment: String).returns(Post) }
-  def create_commented_repost(target_post:, comment:)
+  def create_comment_repost(target_post:, comment:)
     unless target_post.repostable?
       fail "Cannot repost: #{target_post.inspect}"
     end

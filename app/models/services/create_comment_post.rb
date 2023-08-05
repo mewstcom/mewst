@@ -1,20 +1,20 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Services::CreateCommentedPost < Services::Base
+class Services::CreateCommentPost < Services::Base
   class Result < T::Struct
     const :post, Post
   end
 
-  sig { params(form: Forms::CommentedPost).void }
+  sig { params(form: Forms::CommentPost).void }
   def initialize(form:)
     @form = form
   end
 
   sig { returns(Result) }
   def call
-    commented_post = CommentedPost.create!(comment: form.comment)
-    post = form.profile!.posts.create!(postable: commented_post, published_at: Time.current)
+    post = form.profile!.posts.create!(kind: :comment_post, published_at: Time.current)
+    post.create_comment_post!(comment: form.comment)
 
     form.profile!.home_timeline.add_post(post:)
     FanoutPostJob.perform_async(post_id: post.id)
@@ -24,6 +24,6 @@ class Services::CreateCommentedPost < Services::Base
 
   private
 
-  sig { returns(Forms::CommentedPost) }
+  sig { returns(Forms::CommentPost) }
   attr_reader :form
 end

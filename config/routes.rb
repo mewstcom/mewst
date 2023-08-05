@@ -14,6 +14,6 @@ Rails.application.routes.draw do
   match "/internal/sessions",                                             via: :post,  as: :internal_session_list,                           to: "internal/sessions/create#call"
   match "/internal/tasks/send_email_confirmation_mail",                   via: :post,  as: :internal_tasks_send_email_confirmation_mail,     to: "internal/tasks/send_email_confirmation_mail#call"
   match "/latest/timeline",                                               via: :get,   as: :latest_timeline,                                 to: "latest/timeline/show#call"
-  match "/latest/commented_posts",                                        via: :post,  as: :latest_commented_post_list,                      to: "latest/commented_posts/create#call"
+  match "/latest/comment_posts",                                          via: :post,  as: :latest_comment_post_list,                        to: "latest/comment_posts/create#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 end

@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Forms::CommentedPost < Forms::Base
+class Forms::CommentPost < Forms::Base
   sig { returns(T.nilable(Profile)) }
   attr_accessor :profile
 

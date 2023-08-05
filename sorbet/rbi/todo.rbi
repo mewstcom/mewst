@@ -4,6 +4,11 @@
 
 # typed: false
 
+module ::CommentedPost; end
+module Forms::CommentedPost; end
 module Forms::SignUp; end
 module Google::Protobuf::EnumDescriptor; end
+module Resources::Latest::CommentedPost; end
+module Resources::Latest::Post::CommentedPost; end
+module Services::CreateCommentedPost; end
 module Services::SignUp; end
