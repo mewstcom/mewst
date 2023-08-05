@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Repost < ApplicationRecord
-  counter_culture :post, proc {|repost| repost.special? ? "reposts_count" : nil }
+  counter_culture :original_comment_post, column_name: "reposts_count"
 
   belongs_to :original_follow, class_name: "Follow", foreign_key: "original_follow_id"
   belongs_to :original_post, class_name: "Post", foreign_key: "original_post_id"
@@ -10,6 +10,15 @@ class Repost < ApplicationRecord
   belongs_to :post
   belongs_to :target_post, class_name: "Post", foreign_key: "target_post_id", optional: true
   belongs_to :target_profile, class_name: "Profile", foreign_key: "target_profile_id", optional: true
+  has_one :original_comment_post, source: :comment_post, through: :original_post
 
-  validates :comment, exclusion: { in: [nil] }, length: {maximum: Commentable::MAXIMUM_COMMENT_LENGTH}
+  sig { returns(Post) }
+  def original_post!
+    T.must(original_post)
+  end
+
+  sig { returns(CommentPost) }
+  def original_comment_post!
+    original_post!.comment_post!
+  end
 end

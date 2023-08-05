@@ -29,6 +29,8 @@ RSpec.describe Services::CreateRepost do
     post = Post.where.not(id: target_post.id).first
     expect(post.kind).to eq(:repost)
 
+    expect(target_post.reload.reposts_count).to eq(1)
+
     expect(Repost.count).to eq(1)
     repost = Repost.first
     expect(repost.post).to eq(post)

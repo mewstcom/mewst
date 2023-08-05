@@ -11,11 +11,6 @@ class Forms::Repost < Forms::Base
   validates :target_post, presence: true
   validates :original_follow, presence: true
 
-  sig { returns(String) }
-  def comment
-    ""
-  end
-
   sig { returns(T.nilable(Follow)) }
   def original_follow
     profile!.follows.find_by(target_profile_id: target_post!.original_post.profile_id)

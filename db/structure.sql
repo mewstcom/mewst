@@ -72,6 +72,8 @@ CREATE TABLE public.comment_posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     post_id uuid NOT NULL,
     comment text NOT NULL,
+    reposts_count integer DEFAULT 0 NOT NULL,
+    stamps_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -169,8 +171,6 @@ CREATE TABLE public.posts (
     profile_id uuid NOT NULL,
     kind character varying NOT NULL,
     published_at timestamp without time zone NOT NULL,
-    reposts_count integer DEFAULT 0 NOT NULL,
-    stamps_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -207,7 +207,6 @@ CREATE TABLE public.reposts (
     original_post_id uuid NOT NULL,
     original_profile_id uuid NOT NULL,
     original_follow_id uuid NOT NULL,
-    comment text DEFAULT ''::text NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );

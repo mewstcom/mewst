@@ -16,6 +16,11 @@ class Post < ApplicationRecord
     T.cast(profile, Profile)
   end
 
+  sig { returns(CommentPost) }
+  def comment_post!
+    T.must(comment_post)
+  end
+
   sig { returns(Repost) }
   def repost!
     T.must(repost)
@@ -26,6 +31,11 @@ class Post < ApplicationRecord
     return self if kind_comment_post?
 
     T.cast(repost!.original_post, Post)
+  end
+
+  sig { returns(Integer) }
+  def reposts_count
+    original_post.comment_post!.reposts_count
   end
 
   sig { returns(String) }

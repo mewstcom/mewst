@@ -19,8 +19,7 @@ class Services::CreateRepost < Services::Base
       target_post: form.target_post!,
       target_profile: form.target_post!.profile!,
       original_post: form.original_post,
-      original_profile: form.original_post.profile!,
-      comment: form.comment
+      original_profile: form.original_post.profile!
     )
 
     form.profile!.home_timeline.add_post(post:)

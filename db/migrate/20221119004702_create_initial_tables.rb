@@ -108,8 +108,6 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.references :profile, foreign_key: true, null: false, type: :uuid
       t.string :kind, null: false
       t.timestamp :published_at, null: false
-      t.integer :reposts_count, default: 0, null: false
-      t.integer :stamps_count, default: 0, null: false
       t.timestamps
     end
 
@@ -117,6 +115,8 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :post, foreign_key: true, null: false, type: :uuid
       t.text :comment, null: false
+      t.integer :reposts_count, default: 0, null: false
+      t.integer :stamps_count, default: 0, null: false
       t.timestamps
     end
 
@@ -128,7 +128,6 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.references :original_post, foreign_key: {to_table: :posts}, null: false, type: :uuid
       t.references :original_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
       t.references :original_follow, foreign_key: {to_table: :follows}, null: false, type: :uuid
-      t.text :comment, default: "", null: false
       t.timestamps
     end
 
