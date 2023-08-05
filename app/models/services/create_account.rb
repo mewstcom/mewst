@@ -43,8 +43,7 @@ class Services::CreateAccount < Services::Base
     Result.new(oauth_access_token:, profile:, user:)
   end
 
-  private
-
   sig { returns(Forms::Account) }
   attr_reader :form
+  private :form
 end

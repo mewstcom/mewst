@@ -23,8 +23,7 @@ class Services::SendEmailConfirmationCode < Services::Base
     Result.new(email_confirmation:)
   end
 
-  private
-
   sig { returns(Forms::EmailConfirmation) }
   attr_reader :form
+  private :form
 end

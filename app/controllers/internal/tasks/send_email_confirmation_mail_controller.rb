@@ -18,10 +18,8 @@ class Internal::Tasks::SendEmailConfirmationMailController < ApplicationControll
     head :no_content
   end
 
-  private
-
   sig { returns(ActionController::Parameters) }
-  def payload_params
+  private def payload_params
     T.cast(params.require(:send_email_confirmation_mail), ActionController::Parameters).permit(:email_confirmation_id, :locale)
   end
 end

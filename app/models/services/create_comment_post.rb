@@ -22,8 +22,7 @@ class Services::CreateCommentPost < Services::Base
     Result.new(post:)
   end
 
-  private
-
   sig { returns(Forms::CommentPost) }
   attr_reader :form
+  private :form
 end

@@ -19,10 +19,8 @@ class Forms::Profile < Forms::Base
     T.cast(profile, Profile)
   end
 
-  private
-
   sig { void }
-  def atname_uniqueness
+  private def atname_uniqueness
     if Profile.where.not(id: profile!.id).find_by(atname:)
       errors.add(:atname, :atname_uniqueness)
     end

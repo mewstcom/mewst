@@ -79,23 +79,22 @@ class Profile::HomeTimeline
     self
   end
 
-  private
-
   sig { returns(Profile) }
   attr_reader :profile
+  private :profile
 
   sig { returns(Redis) }
-  def redis_client
+  private def redis_client
     T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client, Redis)
   end
 
   sig { params(post_ids: T::Array[String], limit: Integer).returns(T::Boolean) }
-  def has_page(post_ids:, limit:)
+  private def has_page(post_ids:, limit:)
     post_ids.length == (limit + 1)
   end
 
   sig { params(has_next_page: T::Boolean, post_ids: T::Array[String]).returns(T.nilable(String)) }
-  def cursor(has_next_page:, post_ids:)
+  private def cursor(has_next_page:, post_ids:)
     has_next_page ? post_ids[-2] : post_ids.last
   end
 end

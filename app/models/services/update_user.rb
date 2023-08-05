@@ -18,8 +18,7 @@ class Services::UpdateUser < Services::Base
     Result.new(user: form.user!)
   end
 
-  private
-
   sig { returns(Forms::User) }
   attr_reader :form
+  private :form
 end

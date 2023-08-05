@@ -49,13 +49,12 @@ class Mewst::CloudTasks
     Rails.logger.debug "Created task: #{response.name}"
   end
 
-  private
-
   sig { returns(Symbol) }
   attr_reader :priority
+  private :priority
 
   sig { returns(Google::Cloud::Tasks::V2::CloudTasks::Client) }
-  def client
+  private def client
     Google::Cloud::Tasks.configure do |config|
       config.credentials = Google::Cloud::Tasks::V2::CloudTasks::Credentials.new(
         Rails.configuration.mewst["google_cloud_credentials"]
@@ -66,7 +65,7 @@ class Mewst::CloudTasks
   end
 
   sig { returns(String) }
-  def queue_id
+  private def queue_id
     Rails.configuration.mewst["google_cloud_tasks_queue_id_default"]
   end
 end

@@ -27,11 +27,11 @@ class Mewst::CloudPubsub
     Google::Cloud::PubSub.new(project_id:, credentials:)
   end
 
-  private
-
   sig { returns(String) }
   attr_reader :project_id
+  private :project_id
 
   sig { returns(Google::Cloud::PubSub::Credentials) }
   attr_reader :credentials
+  private :credentials
 end

@@ -28,8 +28,7 @@ class Services::CreateRepost < Services::Base
     Result.new(post:)
   end
 
-  private
-
   sig { returns(Forms::Repost) }
   attr_reader :form
+  private :form
 end

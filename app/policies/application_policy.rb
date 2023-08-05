@@ -65,12 +65,12 @@ class ApplicationPolicy
       raise NotImplementedError, "You must define #resolve in #{self.class}"
     end
 
-    private
-
     sig { returns(Profile) }
     attr_reader :profile
+    private :profile
 
     T::Sig::WithoutRuntime.sig { returns(ActiveRecord::Relation) }
     attr_reader :scope
+    private :scope
   end
 end

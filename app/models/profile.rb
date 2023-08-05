@@ -49,15 +49,13 @@ class Profile < ApplicationRecord
     atname == target_profile.atname
   end
 
-  private
-
   sig { returns(Profile::Followability) }
-  def followability
+  private def followability
     Profile::Followability.new(source_profile: self)
   end
 
   sig { returns(Profile::Postability) }
-  def postability
+  private def postability
     Profile::Postability.new(profile: self)
   end
 end

@@ -16,8 +16,7 @@ class Services::ConfirmEmail < Services::Base
     Result.new
   end
 
-  private
-
   sig { returns(Forms::EmailConfirmationChallenge) }
   attr_reader :form
+  private :form
 end

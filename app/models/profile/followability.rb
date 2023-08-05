@@ -29,8 +29,7 @@ class Profile::Followability
     source_profile
   end
 
-  private
-
   sig { returns(Profile) }
   attr_reader :source_profile
+  private :source_profile
 end

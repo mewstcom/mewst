@@ -12,15 +12,13 @@ class Forms::EmailConfirmationChallenge < Forms::Base
     T.cast(EmailConfirmation.find_by(id: email_confirmation_id), EmailConfirmation)
   end
 
-  private
-
   sig { returns(T.nilable(EmailConfirmation)) }
-  def active_email_confirmation
+  private def active_email_confirmation
     @active_email_confirmation ||= T.let(EmailConfirmation.active.find_by(id: email_confirmation_id), T.nilable(EmailConfirmation))
   end
 
   sig { void }
-  def valid_confirmation_code
+  private def valid_confirmation_code
     return if confirmation_code == active_email_confirmation&.code
 
     errors.add(:confirmation_code, :incorrect_or_expired)

@@ -17,8 +17,7 @@ class Profile::Postability
     end
   end
 
-  private
-
   sig { returns(Profile) }
   attr_reader :profile
+  private :profile
 end

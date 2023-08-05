@@ -18,8 +18,7 @@ class Services::UpdateProfile < Services::Base
     Result.new(profile: form.profile!)
   end
 
-  private
-
   sig { returns(Forms::Profile) }
   attr_reader :form
+  private :form
 end

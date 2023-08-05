@@ -28,13 +28,12 @@ class Timeline
     redis_client.zrange(timeline_ownable.timeline_key, "(#{start}", "(#{stop}", by_score: true, rev:, limit: [0, limit])
   end
 
-  private
-
   sig { returns(TimelineOwnable) }
   attr_reader :timeline_ownable
+  private :timeline_ownable
 
   sig { returns(Redis) }
-  def redis_client
+  private def redis_client
     T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client, Redis)
   end
 end
