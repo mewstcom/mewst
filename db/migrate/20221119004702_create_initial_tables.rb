@@ -106,33 +106,38 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.string :postable_type, null: false
-      t.uuid :postable_id, null: false
+      t.string :kind, null: false
       t.timestamp :published_at, null: false
       t.timestamps
     end
 
-    create_table :commented_posts, id: false do |t|
+    create_table :comment_posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :post, foreign_key: true, null: false, type: :uuid
       t.text :comment, null: false
       t.integer :reposts_count, default: 0, null: false
+      t.integer :stamps_count, default: 0, null: false
       t.timestamps
     end
 
     create_table :reposts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.string :repostable_type, null: false
-      t.uuid :repostable_id, null: false
+      t.references :post, foreign_key: true, null: false, type: :uuid
+      t.references :target_post, foreign_key: {to_table: :posts}, type: :uuid
+      t.references :target_profile, foreign_key: {to_table: :profiles}, type: :uuid
+      t.references :original_post, foreign_key: {to_table: :posts}, null: false, type: :uuid
+      t.references :original_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
+      t.references :original_follow, foreign_key: {to_table: :follows}, null: false, type: :uuid
       t.timestamps
     end
 
-    create_table :commented_reposts, id: false do |t|
+    create_table :stamps, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.string :repostable_type, null: false
-      t.uuid :repostable_id, null: false
-      t.text :comment, null: false
-      t.integer :reposts_count, default: 0, null: false
+      t.references :profile, foreign_key: true, null: false, type: :uuid
+      t.references :post, foreign_key: true, null: false, type: :uuid
       t.timestamps
+
+      t.index %i[profile_id post_id], unique: true
     end
   end
 end

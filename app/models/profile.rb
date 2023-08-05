@@ -15,14 +15,14 @@ class Profile < ApplicationRecord
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
-  has_many :reposts, through: :posts, source: :postable, source_type: "Repost"
+  has_many :reposts, through: :posts
 
   delegated_type :profileable, types: Profileable::TYPES, dependent: :destroy
 
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
-  delegate :create_commented_post, :create_repost, :delete_post, to: :postability
+  delegate :create_comment_post, :create_repost, :delete_post, to: :postability
 
   sig { returns(String) }
   def name_or_atname
@@ -47,11 +47,6 @@ class Profile < ApplicationRecord
   sig { params(target_profile: Profile).returns(T::Boolean) }
   def me?(target_profile:)
     atname == target_profile.atname
-  end
-
-  sig { params(target_post: Post).returns(T::Boolean) }
-  def repost?(target_post:)
-    reposts.exists?(repostable: target_post.postable)
   end
 
   private

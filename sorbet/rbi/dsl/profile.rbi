@@ -321,10 +321,10 @@ class Profile
 
     # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :reposts, through: :posts`.
     # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
-    sig { returns(ActiveRecord::Associations::CollectionProxy) }
+    sig { returns(::Repost::PrivateCollectionProxy) }
     def reposts; end
 
-    sig { params(value: T::Enumerable[T.untyped]).void }
+    sig { params(value: T::Enumerable[::Repost]).void }
     def reposts=(value); end
   end
 

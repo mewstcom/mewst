@@ -10,7 +10,7 @@ RSpec.describe Forms::Repost do
 
       it "is invalid" do
         expect(form.invalid?).to be(true)
-        expect(form.errors.where(:post, :blank)).to be_present
+        expect(form.errors.where(:target_post, :blank)).to be_present
       end
     end
   end

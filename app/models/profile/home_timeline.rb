@@ -37,7 +37,7 @@ class Profile::HomeTimeline
       )
     end
 
-    posts = Post.where(id: T.must(post_ids).first(limit)).preload(:profile, :postable).order(id: :desc)
+    posts = Post.where(id: T.must(post_ids).first(limit)).preload(:profile).order(id: :desc)
 
     page_info = if before_post.nil? && after_post.nil?
       has_next_page = has_page(post_ids: T.must(post_ids), limit:)

@@ -1,14 +1,14 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_version: :latest do
+RSpec.describe "POST /latest/comment_posts", type: :request, api_version: :latest do
   context "when invalid comment" do
     let!(:profile) { create(:profile, :for_user, :with_access_token_for_web) }
     let!(:oauth_access_token) { profile.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 422" do
-      post("/latest/commented_posts", headers:, params: {
+      post("/latest/comment_posts", headers:, params: {
         comment: "a" * 501
       })
       expect(response).to have_http_status(:unprocessable_entity)
@@ -36,24 +36,24 @@ RSpec.describe "POST /latest/@:atname/commented_posts", type: :request, api_vers
 
     it "responses 201" do
       expect(Post.count).to eq(0)
-      expect(CommentedPost.count).to eq(0)
+      expect(CommentPost.count).to eq(0)
 
-      post("/latest/commented_posts", headers:, params: {
+      post("/latest/comment_posts", headers:, params: {
         comment: "Hello"
       })
       expect(response).to have_http_status(:created)
 
       expect(Post.count).to eq(1)
-      expect(CommentedPost.count).to eq(1)
+      expect(CommentPost.count).to eq(1)
       post = Post.first
 
       expected = {
         post: {
           id: post.id,
+          kind: "comment_post",
           postable: {
             comment: "Hello"
           },
-          postable_type: "commented_post",
           profile: {
             atname: profile.atname,
             avatar_url: profile.avatar_url,

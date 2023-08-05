@@ -2,26 +2,40 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
+  extend Enumerize
+
   belongs_to :profile
 
-  delegated_type :postable, types: Postable::TYPES, dependent: :destroy
+  has_one :comment_post, dependent: :restrict_with_exception
+  has_one :repost, dependent: :restrict_with_exception
 
-  delegate :comment, to: :postable
-
-  validates :postable_type, inclusion: {in: Postable::TYPES}
+  enumerize :kind, in: %i[comment_post repost], predicates: {prefix: true}
 
   sig { returns(Profile) }
   def profile!
     T.cast(profile, Profile)
   end
 
+  sig { returns(CommentPost) }
+  def comment_post!
+    T.must(comment_post)
+  end
+
+  sig { returns(Repost) }
+  def repost!
+    T.must(repost)
+  end
+
+  sig { returns(Post) }
+  def original_post
+    return self if kind_comment_post?
+
+    T.cast(repost!.original_post, Post)
+  end
+
   sig { returns(Integer) }
   def reposts_count
-    if commented_post?
-      postable.reposts_count
-    else
-      fail
-    end
+    original_post.comment_post!.reposts_count
   end
 
   sig { returns(String) }
@@ -37,10 +51,5 @@ class Post < ApplicationRecord
     followers.find_each do |follower|
       topic.publish_async({profile_id: follower.id, post_id: id}.to_json)
     end
-  end
-
-  sig { returns(T::Boolean) }
-  def repostable?
-    postable_type.in?(Repostable::TYPES)
   end
 end

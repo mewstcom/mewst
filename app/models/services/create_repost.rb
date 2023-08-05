@@ -13,17 +13,19 @@ class Services::CreateRepost < Services::Base
 
   sig { returns(Result) }
   def call
-    new_post = ActiveRecord::Base.transaction do
-      repost = Repost.create!(repostable: form.post!.postable)
-      post = form.profile!.posts.create!(postable: repost, published_at: Time.current)
+    post = form.profile!.posts.create!(kind: :repost, published_at: Time.current)
+    post.create_repost!(
+      original_follow: form.original_follow!,
+      target_post: form.target_post!,
+      target_profile: form.target_post!.profile!,
+      original_post: form.original_post,
+      original_profile: form.original_post.profile!
+    )
 
-      post
-    end
+    form.profile!.home_timeline.add_post(post:)
+    FanoutPostJob.perform_async(post_id: post.id)
 
-    form.profile!.home_timeline.add_post(post: new_post)
-    FanoutPostJob.perform_async(post_id: new_post.id)
-
-    Result.new(post: new_post)
+    Result.new(post:)
   end
 
   private

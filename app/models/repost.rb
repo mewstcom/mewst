@@ -2,16 +2,23 @@
 # frozen_string_literal: true
 
 class Repost < ApplicationRecord
-  delegated_type :repostable, types: Repostable::TYPES, dependent: :destroy
+  counter_culture :original_comment_post, column_name: "reposts_count"
 
-  counter_culture :repostable, column_name: "reposts_count"
+  belongs_to :original_follow, class_name: "Follow", foreign_key: "original_follow_id"
+  belongs_to :original_post, class_name: "Post", foreign_key: "original_post_id"
+  belongs_to :original_profile, class_name: "Profile", foreign_key: "original_profile_id"
+  belongs_to :post
+  belongs_to :target_post, class_name: "Post", foreign_key: "target_post_id", optional: true
+  belongs_to :target_profile, class_name: "Profile", foreign_key: "target_profile_id", optional: true
+  has_one :original_comment_post, source: :comment_post, through: :original_post
 
-  has_one :post, as: :postable, dependent: :restrict_with_exception, touch: true
+  sig { returns(Post) }
+  def original_post!
+    T.must(original_post)
+  end
 
-  validates :repostable_type, inclusion: {in: Repostable::TYPES}
-
-  sig { returns(Integer) }
-  def reposts_count
-    0
+  sig { returns(CommentPost) }
+  def original_comment_post!
+    original_post!.comment_post!
   end
 end

@@ -65,28 +65,15 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: commented_posts; Type: TABLE; Schema: public; Owner: -
+-- Name: comment_posts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.commented_posts (
+CREATE TABLE public.comment_posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
+    post_id uuid NOT NULL,
     comment text NOT NULL,
     reposts_count integer DEFAULT 0 NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: commented_reposts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.commented_reposts (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    repostable_type character varying NOT NULL,
-    repostable_id uuid NOT NULL,
-    comment text NOT NULL,
-    reposts_count integer DEFAULT 0 NOT NULL,
+    stamps_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -182,8 +169,7 @@ CREATE TABLE public.oauth_applications (
 CREATE TABLE public.posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
-    postable_type character varying NOT NULL,
-    postable_id uuid NOT NULL,
+    kind character varying NOT NULL,
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
@@ -215,8 +201,12 @@ CREATE TABLE public.profiles (
 
 CREATE TABLE public.reposts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    repostable_type character varying NOT NULL,
-    repostable_id uuid NOT NULL,
+    post_id uuid NOT NULL,
+    target_post_id uuid,
+    target_profile_id uuid,
+    original_post_id uuid NOT NULL,
+    original_profile_id uuid NOT NULL,
+    original_follow_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -228,6 +218,19 @@ CREATE TABLE public.reposts (
 
 CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
+);
+
+
+--
+-- Name: stamps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stamps (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    post_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -258,19 +261,11 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
--- Name: commented_posts commented_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: comment_posts comment_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.commented_posts
-    ADD CONSTRAINT commented_posts_pkey PRIMARY KEY (id);
-
-
---
--- Name: commented_reposts commented_reposts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.commented_reposts
-    ADD CONSTRAINT commented_reposts_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.comment_posts
+    ADD CONSTRAINT comment_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -346,11 +341,26 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: stamps stamps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT stamps_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_comment_posts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_comment_posts_on_post_id ON public.comment_posts USING btree (post_id);
 
 
 --
@@ -487,10 +497,81 @@ CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON pub
 
 
 --
+-- Name: index_reposts_on_original_follow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_original_follow_id ON public.reposts USING btree (original_follow_id);
+
+
+--
+-- Name: index_reposts_on_original_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_original_post_id ON public.reposts USING btree (original_post_id);
+
+
+--
+-- Name: index_reposts_on_original_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_original_profile_id ON public.reposts USING btree (original_profile_id);
+
+
+--
+-- Name: index_reposts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_post_id ON public.reposts USING btree (post_id);
+
+
+--
+-- Name: index_reposts_on_target_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_target_post_id ON public.reposts USING btree (target_post_id);
+
+
+--
+-- Name: index_reposts_on_target_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_target_profile_id ON public.reposts USING btree (target_profile_id);
+
+
+--
+-- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stamps_on_post_id ON public.stamps USING btree (post_id);
+
+
+--
+-- Name: index_stamps_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stamps_on_profile_id ON public.stamps USING btree (profile_id);
+
+
+--
+-- Name: index_stamps_on_profile_id_and_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USING btree (profile_id, post_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: stamps fk_rails_27da15755d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT fk_rails_27da15755d FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --
@@ -502,11 +583,35 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 
 --
+-- Name: comment_posts fk_rails_3c00337d07; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_posts
+    ADD CONSTRAINT fk_rails_3c00337d07 FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: reposts fk_rails_4767b02358; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_4767b02358 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: follows fk_rails_5e22b9865a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_5e22b9865a FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: stamps fk_rails_6933333714; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT fk_rails_6933333714 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --
@@ -523,6 +628,30 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_76012a03dc FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: reposts fk_rails_7d2083c2a4; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_7d2083c2a4 FOREIGN KEY (original_profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: reposts fk_rails_959790a263; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_959790a263 FOREIGN KEY (target_post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: reposts fk_rails_a8d6bd32dd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_a8d6bd32dd FOREIGN KEY (original_follow_id) REFERENCES public.follows(id);
 
 
 --
@@ -547,6 +676,22 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: reposts fk_rails_df949c8017; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_df949c8017 FOREIGN KEY (original_post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: reposts fk_rails_e9f75e0f73; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_e9f75e0f73 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --

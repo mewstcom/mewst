@@ -16,7 +16,7 @@ servers:
   - description: Development server
     url: http://localhost:3000/latest
 paths:
-  "/commented_posts":
+  "/comment_posts":
     post:
       description: ""
       parameters:
@@ -110,9 +110,9 @@ components:
                   "$ref": "#/components/schemas/validation-error"
                 type: array
   schemas:
-    commented-post:
+    comment-post:
       additionalProperties: false
-      title: Commented Post
+      title: Comment Post
       description: ""
       type: object
       properties:
@@ -120,21 +120,6 @@ components:
           type: string
       required:
         - comment
-    commented-repost:
-      additionalProperties: false
-      title: Commented Repost
-      description: ""
-      type: object
-      properties:
-        comment:
-          type: string
-        repostable:
-          anyOf:
-            - $ref: "#/components/schemas/commented-post"
-            - $ref: "#/components/schemas/commented-repost"
-      required:
-        - comment
-        - repostable
     error:
       additionalProperties: false
       title: Error
@@ -152,12 +137,23 @@ components:
       additionalProperties: false
       description: ""
       properties:
-        repostable:
-          anyOf:
-            - $ref: "#/components/schemas/commented-post"
-            - $ref: "#/components/schemas/commented-repost"
+        target_post:
+          allOf:
+            - $ref: "#/components/schemas/post"
+          nullable: true
+        target_profile:
+          allOf:
+            - $ref: "#/components/schemas/profile"
+          nullable: true
+        original_post:
+          $ref: "#/components/schemas/post"
+        original_profile:
+          $ref: "#/components/schemas/profile"
       required:
-        - repostable
+        - target_post
+        - target_profile
+        - original_post
+        - original_profile
       title: Repost
       type: object
     page-info:
@@ -205,17 +201,15 @@ components:
       properties:
         id:
           type: string
-        postable:
-          anyOf:
-            - $ref: "#/components/schemas/commented-post"
-            - $ref: "#/components/schemas/commented-repost"
-            - $ref: "#/components/schemas/repost"
-        postable_type:
+        kind:
           enum:
-            - commented_post
-            - commented_repost
+            - comment_post
             - repost
           type: string
+        postable:
+          anyOf:
+            - $ref: "#/components/schemas/comment-post"
+            - $ref: "#/components/schemas/repost"
         profile:
           $ref: "#/components/schemas/profile"
         published_at:
@@ -225,6 +219,7 @@ components:
           type: integer
       required:
         - id
+        - kind
         - postable
         - profile
         - published_at

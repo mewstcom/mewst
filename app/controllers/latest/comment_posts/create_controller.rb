@@ -1,9 +1,9 @@
 # typed: true
 # frozen_string_literal: true
 
-class Latest::CommentedPosts::CreateController < Latest::ApplicationController
+class Latest::CommentPosts::CreateController < Latest::ApplicationController
   def call
-    form = Forms::CommentedPost.new(
+    form = Forms::CommentPost.new(
       comment: params[:comment]
     )
     form.profile = current_profile!
@@ -16,7 +16,7 @@ class Latest::CommentedPosts::CreateController < Latest::ApplicationController
     end
 
     result = ActiveRecord::Base.transaction do
-      Services::CreateCommentedPost.new(form:).call
+      Services::CreateCommentPost.new(form:).call
     end
 
     render(
