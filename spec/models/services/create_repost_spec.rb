@@ -2,15 +2,18 @@
 # frozen_string_literal: true
 
 RSpec.describe Services::CreateRepost do
-  let!(:profile) { create(:profile, :for_user) }
-  let!(:comment_post_form) { Forms::CommentPost.new(profile:, comment: "hello") }
-  let!(:target_post) { Services::CreateCommentedPost.new(form: comment_post_form).call.post }
-  let!(:form) { Forms::Repost.new(profile:, post_id: target_post.id) }
-  let!(:command) { Services::CreateRepost.new(form:) }
+  let!(:profile_1) { create(:profile, :for_user) }
+  let!(:profile_2) { create(:profile, :for_user) }
+  let!(:comment_post_form) { Forms::CommentPost.new(profile: profile_1, comment: "hello") }
+  let!(:target_post) { Services::CreateCommentPost.new(form: comment_post_form).call.post }
+  let!(:form) { Forms::Repost.new(profile: profile_2, post_id: target_post.id) }
+  let!(:service) { Services::CreateRepost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
-    allow(profile).to receive(:home_timeline).and_return(home_timeline)
+    profile_2.follow(target_profile: profile_1)
+
+    allow(profile_2).to receive(:home_timeline).and_return(home_timeline)
     allow(home_timeline).to receive(:add_post)
 
     allow(FanoutPostJob).to receive(:perform_async)
@@ -20,15 +23,19 @@ RSpec.describe Services::CreateRepost do
     expect(Repost.count).to eq(0)
     expect(Post.count).to eq(1)
 
-    result = command.call
-
-    expect(Repost.count).to eq(1)
-    repost = Repost.first
-    expect(repost.repostable).to eq(target_post.postable)
+    result = service.call
 
     expect(Post.count).to eq(2)
     post = Post.where.not(id: target_post.id).first
-    expect(post.postable).to eq(repost)
+    expect(post.kind).to eq(:repost)
+
+    expect(Repost.count).to eq(1)
+    repost = Repost.first
+    expect(repost.post).to eq(post)
+    expect(repost.target_post).to eq(target_post)
+    expect(repost.target_profile).to eq(profile_1)
+    expect(repost.original_post).to eq(target_post)
+    expect(repost.original_profile).to eq(profile_1)
 
     expect(home_timeline).to have_received(:add_post).exactly(1).time
     expect(FanoutPostJob).to have_received(:perform_async).exactly(1).time

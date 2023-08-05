@@ -9,11 +9,23 @@ class Post < ApplicationRecord
   has_one :comment_post, dependent: :restrict_with_exception
   has_one :repost, dependent: :restrict_with_exception
 
-  enumerize :kind, in: %i[comment_post repost]
+  enumerize :kind, in: %i[comment_post repost], predicates: { prefix: true }
 
   sig { returns(Profile) }
   def profile!
     T.cast(profile, Profile)
+  end
+
+  sig { returns(Repost) }
+  def repost!
+    T.must(repost)
+  end
+
+  sig { returns(Post) }
+  def original_post
+    return self if kind_comment_post?
+
+    T.cast(repost!.original_post, Post)
   end
 
   sig { returns(String) }
