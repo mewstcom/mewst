@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Forms::Repost::Errors
+class Latest::RepostFormErrors
   extend T::Sig
 
   sig { params(errors: ActiveModel::Errors).void }

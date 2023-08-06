@@ -9,16 +9,6 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
       limit: 5
     )
 
-    json = Alba.serialize do
-      attribute :posts do
-        Resources::Latest::Post.new(posts).to_h
-      end
-
-      attribute :page_info do
-        Resources::Latest::PageInfo.new(page_info).to_h
-      end
-    end
-
-    render(json:)
+    render(json: Latest::Presenters::Timeline.new(posts:, page_info:))
   end
 end
