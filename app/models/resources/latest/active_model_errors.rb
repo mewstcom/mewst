@@ -5,7 +5,7 @@ class Resources::Latest::ActiveModelErrors < Resources::Latest::Base
   root_key :error, :errors
 
   attribute :code do
-    Resources::Latest::Base::ErrorCode::InvalidInputData.serialize
+    Latest::ResponseErrorCode::InvalidInputData.serialize
   end
 
   attribute :message, &:full_message

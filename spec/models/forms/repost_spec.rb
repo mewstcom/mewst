@@ -6,7 +6,7 @@ RSpec.describe Forms::Repost do
 
   context "when invalid" do
     context "when post is blank" do
-      let!(:form) { Forms::Repost.new(profile:, post_id: "unknown") }
+      let!(:form) { Forms::Repost.new(profile:, target_post_id: "unknown") }
 
       it "is invalid" do
         expect(form.invalid?).to be(true)

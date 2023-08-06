@@ -6,7 +6,7 @@ RSpec.describe Services::CreateRepost do
   let!(:profile_2) { create(:profile, :for_user) }
   let!(:comment_post_form) { Forms::CommentPost.new(profile: profile_1, comment: "hello") }
   let!(:target_post) { Services::CreateCommentPost.new(form: comment_post_form).call.post }
-  let!(:form) { Forms::Repost.new(profile: profile_2, post_id: target_post.id) }
+  let!(:form) { Forms::Repost.new(profile: profile_2, target_post_id: target_post.id) }
   let!(:service) { Services::CreateRepost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 

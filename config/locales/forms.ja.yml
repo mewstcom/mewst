@@ -1,8 +1,0 @@
-ja:
-  forms:
-    errors:
-      models:
-        follow_form:
-          attributes:
-            base:
-              target_profile_difference: 自身をフォローすることはできません

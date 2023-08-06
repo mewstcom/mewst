@@ -1,5 +1,9 @@
 ja:
   activemodel:
+    attributes:
+      forms/repost:
+        original_follow: リポスト
+        target_post: ポスト
     errors:
       models:
         forms/email_confirmation_challenge:
@@ -10,5 +14,11 @@ ja:
           attributes:
             atname:
               atname_uniqueness: はすでに存在します
+        forms/repost:
+          attributes:
+            original_follow:
+              blank: はオリジナルの投稿者をフォローしていないと行えません
+            target_post:
+              blank: が見つかりませんでした
         forms/session:
           unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています

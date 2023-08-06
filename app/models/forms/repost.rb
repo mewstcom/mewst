@@ -5,7 +5,7 @@ class Forms::Repost < Forms::Base
   sig { returns(T.nilable(Profile)) }
   attr_accessor :profile
 
-  attribute :post_id, :string
+  attribute :target_post_id, :string
 
   validates :profile, presence: true
   validates :target_post, presence: true
@@ -35,7 +35,7 @@ class Forms::Repost < Forms::Base
 
   sig { returns(T.nilable(Post)) }
   def target_post
-    Post.find_by(id: post_id)
+    Post.find_by(id: target_post_id)
   end
 
   sig { returns(Post) }

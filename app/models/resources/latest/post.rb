@@ -9,6 +9,8 @@ class Resources::Latest::Post < Resources::Latest::Base
   attribute :postable do |post|
     if post.kind_comment_post?
       Resources::Latest::CommentPost.new(post.comment_post!).to_h
+    elsif post.kind_repost?
+      Resources::Latest::Repost.new(post.repost!).to_h
     else
       fail
     end
