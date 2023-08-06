@@ -6,8 +6,8 @@
 
 class Forms::Repost
   sig { returns(T.nilable(::String)) }
-  def post_id; end
+  def target_post_id; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def post_id=(value); end
+  def target_post_id=(value); end
 end

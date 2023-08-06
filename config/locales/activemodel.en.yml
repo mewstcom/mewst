@@ -1,5 +1,9 @@
 en:
   activemodel:
+    attributes:
+      forms/repost:
+        original_follow: Repost
+        target_post: Post
     errors:
       models:
         forms/email_confirmation_challenge:
@@ -10,5 +14,11 @@ en:
           attributes:
             atname:
               atname_uniqueness: is already taken
+        forms/repost:
+          attributes:
+            original_follow:
+              blank: can not be done because you do not follow the original poster
+            target_post:
+              blank: not found
         forms/session:
           unauthenticated: Login failed. Email or password is incorrect

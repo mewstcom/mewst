@@ -49,6 +49,27 @@ paths:
       summary: ""
       tags:
         - posts
+  "/posts/{post_id}/reposts":
+    post:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - reposts
   "/timeline":
     get:
       description: ""
@@ -94,6 +115,13 @@ components:
       in: query
       name: before
       required: false
+      schema:
+        type: string
+    post-id:
+      name: post_id
+      description: ""
+      in: path
+      required: true
       schema:
         type: string
   responses:
@@ -233,6 +261,7 @@ components:
           additionalProperties: false
           properties:
             field:
+              nullable: true
               type: string
           required:
             - field

@@ -1,8 +1,0 @@
-en:
-  forms:
-    errors:
-      models:
-        follow_form:
-          attributes:
-            base:
-              target_profile_difference: Can not follow oneself.
