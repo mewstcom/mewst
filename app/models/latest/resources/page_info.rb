@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Resources::Latest::PageInfo < Resources::Latest::Base
+class Latest::Resources::PageInfo < Latest::Resources::Base
   root_key :page_info
 
   attributes :end_cursor
