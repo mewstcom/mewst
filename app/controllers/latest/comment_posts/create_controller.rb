@@ -22,7 +22,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
     end
 
     render(
-      json: Latest::Resources::Post.new(result.post),
+      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post)),
       status: :created
     )
   end

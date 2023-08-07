@@ -22,7 +22,7 @@ class Latest::Reposts::CreateController < Latest::ApplicationController
     end
 
     render(
-      json: Latest::Presenters::Repost.new(post: result.post),
+      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post)),
       status: :created
     )
   end

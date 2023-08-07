@@ -6,11 +6,12 @@ class Latest::Resources::Post < Latest::Resources::Base
 
   attributes :id, :kind, :published_at, :reposts_count
 
-  attribute :postable do |post|
-    if post.kind_comment_post?
-      Latest::Resources::CommentPost.new(post.comment_post!).to_h
-    elsif post.kind_repost?
-      Latest::Resources::Repost.new(post.repost!).to_h
+  one :postable, resource: ->(model) do
+    case model
+    when Latest::Entities::CommentPost
+      Latest::Resources::CommentPost
+    when Latest::Entities::Repost
+      Latest::Resources::Repost
     else
       fail
     end
