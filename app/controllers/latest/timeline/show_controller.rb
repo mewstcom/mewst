@@ -9,6 +9,10 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
       limit: 5
     )
 
-    render(json: Latest::Presenters::Timeline.new(posts:, page_info:))
+    post_entities = posts.map { |post| Latest::Entities::Post.new(post:) }
+    render(json: {
+      posts: Latest::Resources::Post.new(post_entities).to_h,
+      page_info: Latest::Resources::PageInfo.new(page_info).to_h
+    })
   end
 end

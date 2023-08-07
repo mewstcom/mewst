@@ -17,8 +17,23 @@ class Repost < ApplicationRecord
     T.must(original_post)
   end
 
+  sig { returns(Profile) }
+  def original_profile!
+    T.must(original_profile)
+  end
+
   sig { returns(CommentPost) }
   def original_comment_post!
     original_post!.comment_post!
+  end
+
+  sig { returns(Post) }
+  def target_post!
+    T.must(target_post)
+  end
+
+  sig { returns(Profile) }
+  def target_profile!
+    T.must(target_profile)
   end
 end

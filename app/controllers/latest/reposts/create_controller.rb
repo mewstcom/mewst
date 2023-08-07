@@ -9,8 +9,10 @@ class Latest::Reposts::CreateController < Latest::ApplicationController
     )
 
     if form.invalid?
+      resource_errors = Latest::Entities::RepostFormError.build_from_errors(errors: form.errors)
+
       return render(
-        json: Latest::Presenters::RepostFormErrors.new(errors: form.errors),
+        json: Latest::Resources::ResponseError.new(resource_errors),
         status: :unprocessable_entity
       )
     end
@@ -20,7 +22,7 @@ class Latest::Reposts::CreateController < Latest::ApplicationController
     end
 
     render(
-      json: Latest::Presenters::Repost.new(post: result.post),
+      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post)),
       status: :created
     )
   end

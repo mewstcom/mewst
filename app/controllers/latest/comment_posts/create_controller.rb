@@ -9,8 +9,10 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
     form.profile = current_profile!
 
     if form.invalid?
+      resource_errors = Latest::Entities::FormError.build_from_errors(errors: form.errors)
+
       return render(
-        json: Latest::Presenters::CommentPostFormErrors.new(errors: form.errors),
+        json: Latest::Resources::ResponseError.new(resource_errors),
         status: :unprocessable_entity
       )
     end
@@ -20,7 +22,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
     end
 
     render(
-      json: Latest::Resources::Post.new(result.post),
+      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post)),
       status: :created
     )
   end
