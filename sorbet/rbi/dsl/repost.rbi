@@ -220,130 +220,40 @@ class Repost
 
   module GeneratedAssociationMethods
     sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def build_original_comment_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Follow) }
-    def build_original_follow(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def build_original_post(*args, &blk); end
+    def build_comment_post(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def build_original_profile(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def build_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def build_target_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def build_target_profile(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def create_original_comment_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def create_original_comment_post!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Follow) }
-    def create_original_follow(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Follow) }
-    def create_original_follow!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_original_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_original_post!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_original_profile(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_original_profile!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_post!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_target_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
-    def create_target_post!(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_target_profile(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
-    def create_target_profile!(*args, &blk); end
+    def build_profile(*args, &blk); end
 
     sig { returns(T.nilable(::CommentPost)) }
-    def original_comment_post; end
+    def comment_post; end
 
     sig { params(value: T.nilable(::CommentPost)).void }
-    def original_comment_post=(value); end
+    def comment_post=(value); end
 
-    sig { returns(T.nilable(::Follow)) }
-    def original_follow; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
+    def create_comment_post(*args, &blk); end
 
-    sig { params(value: T.nilable(::Follow)).void }
-    def original_follow=(value); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
+    def create_comment_post!(*args, &blk); end
 
-    sig { returns(T.nilable(::Post)) }
-    def original_post; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile(*args, &blk); end
 
-    sig { params(value: T.nilable(::Post)).void }
-    def original_post=(value); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
+    def create_profile!(*args, &blk); end
 
     sig { returns(T.nilable(::Profile)) }
-    def original_profile; end
+    def profile; end
 
     sig { params(value: T.nilable(::Profile)).void }
-    def original_profile=(value); end
-
-    sig { returns(T.nilable(::Post)) }
-    def post; end
-
-    sig { params(value: T.nilable(::Post)).void }
-    def post=(value); end
+    def profile=(value); end
 
     sig { returns(T.nilable(::CommentPost)) }
-    def reload_original_comment_post; end
-
-    sig { returns(T.nilable(::Follow)) }
-    def reload_original_follow; end
-
-    sig { returns(T.nilable(::Post)) }
-    def reload_original_post; end
+    def reload_comment_post; end
 
     sig { returns(T.nilable(::Profile)) }
-    def reload_original_profile; end
-
-    sig { returns(T.nilable(::Post)) }
-    def reload_post; end
-
-    sig { returns(T.nilable(::Post)) }
-    def reload_target_post; end
-
-    sig { returns(T.nilable(::Profile)) }
-    def reload_target_profile; end
-
-    sig { returns(T.nilable(::Post)) }
-    def target_post; end
-
-    sig { params(value: T.nilable(::Post)).void }
-    def target_post=(value); end
-
-    sig { returns(T.nilable(::Profile)) }
-    def target_profile; end
-
-    sig { params(value: T.nilable(::Profile)).void }
-    def target_profile=(value); end
+    def reload_profile; end
   end
 
   module GeneratedAssociationRelationMethods

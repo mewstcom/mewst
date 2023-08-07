@@ -122,12 +122,10 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
 
     create_table :reposts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :post, foreign_key: true, null: false, type: :uuid
-      t.references :target_post, foreign_key: {to_table: :posts}, type: :uuid
-      t.references :target_profile, foreign_key: {to_table: :profiles}, type: :uuid
-      t.references :original_post, foreign_key: {to_table: :posts}, null: false, type: :uuid
-      t.references :original_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
-      t.references :original_follow, foreign_key: {to_table: :follows}, null: false, type: :uuid
+      t.references :profile, foreign_key: true, null: false, type: :uuid
+      t.references :follow, foreign_key: true, null: false, type: :uuid
+      t.references :comment_post, foreign_key: true, null: false, type: :uuid
+      t.timestamp :repost_at, null: false
       t.timestamps
     end
 

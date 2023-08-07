@@ -15,11 +15,9 @@ class Services::CreateRepost < Services::Base
   def call
     post = form.profile!.posts.create!(kind: :repost, published_at: Time.current)
     post.create_repost!(
-      original_follow: form.original_follow!,
-      target_post: form.target_post!,
-      target_profile: form.target_post!.profile!,
-      original_post: form.original_post,
-      original_profile: form.original_post.profile!
+      comment_post: form.target_post!.comment_post!,
+      profile: form.viewer!,
+      follow: form.follow!
     )
 
     form.profile!.home_timeline.add_post(post:)

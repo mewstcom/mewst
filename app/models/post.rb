@@ -30,7 +30,7 @@ class Post < ApplicationRecord
   def original_post
     return self if kind_comment_post?
 
-    T.cast(repost!.original_post, Post)
+    repost!.original_post
   end
 
   sig { returns(Integer) }
