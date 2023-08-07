@@ -11,8 +11,8 @@ class Latest::Presenters::Timeline < Latest::Presenters::Base
   sig { params(args: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
   def as_json(*args)
     {
-      posts: Resources::Latest::Post.new(posts).to_h,
-      page_info: Resources::Latest::PageInfo.new(page_info).to_h
+      posts: Latest::Resources::Post.new(posts).to_h,
+      page_info: Latest::Resources::PageInfo.new(page_info).to_h
     }
   end
 

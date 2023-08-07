@@ -10,7 +10,7 @@ class Latest::Presenters::CommentPostFormErrors < Latest::Presenters::Base
   sig { params(args: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
   def as_json(*args)
     {
-      errors: Resources::Latest::ResponseError.new(build_response_errors).to_h
+      errors: Latest::Resources::ResponseError.new(build_response_errors).to_h
     }
   end
 

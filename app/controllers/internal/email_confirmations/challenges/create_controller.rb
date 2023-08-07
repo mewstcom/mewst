@@ -10,7 +10,7 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
 
     if form.invalid?
       return render(
-        json: Resources::Internal::ActiveModelErrors.new(form.errors),
+        json: Internal::Resources::ActiveModelErrors.new(form.errors),
         status: :unprocessable_entity
       )
     end

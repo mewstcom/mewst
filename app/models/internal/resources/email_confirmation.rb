@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Resources::Internal::EmailConfirmation < Resources::Internal::Base
+class Internal::Resources::EmailConfirmation < Internal::Resources::Base
   root_key :email_confirmation, :email_confirmations
 
   attributes :email, :id, :succeeded_at

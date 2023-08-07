@@ -10,7 +10,7 @@ class Latest::Presenters::Repost < Latest::Presenters::Base
   sig { params(args: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
   def as_json(*args)
     {
-      post: Resources::Latest::Post.new(post).to_h
+      post: Latest::Resources::Post.new(post).to_h
     }
   end
 

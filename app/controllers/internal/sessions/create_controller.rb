@@ -10,7 +10,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
 
     if form.invalid?
       return render(
-        json: Resources::Internal::ActiveModelErrors.new(form.errors),
+        json: Internal::Resources::ActiveModelErrors.new(form.errors),
         status: :unprocessable_entity
       )
     end
@@ -20,7 +20,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
     end
 
     render(
-      json: Resources::Internal::Account.new(result),
+      json: Internal::Resources::Account.new(result),
       status: :created
     )
   end
