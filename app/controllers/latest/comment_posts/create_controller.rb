@@ -10,7 +10,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
 
     if form.invalid?
       return render(
-        json: Resources::Latest::ActiveModelErrors.new(form.errors),
+        json: Latest::Presenters::CommentPostFormErrors.new(errors: form.errors),
         status: :unprocessable_entity
       )
     end
