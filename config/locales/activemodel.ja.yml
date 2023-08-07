@@ -4,6 +4,8 @@ ja:
       forms/repost:
         original_follow: リポスト
         target_post: ポスト
+      forms/stamp:
+        target_post: ポスト
     errors:
       models:
         forms/email_confirmation_challenge:
@@ -18,6 +20,10 @@ ja:
           attributes:
             original_follow:
               blank: はオリジナルの投稿者をフォローしていないと行えません
+            target_post:
+              blank: が見つかりませんでした
+        forms/stamp:
+          attributes:
             target_post:
               blank: が見つかりませんでした
         forms/session:

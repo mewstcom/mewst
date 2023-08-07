@@ -29,7 +29,9 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
               name: profile.name
             },
             published_at: post.published_at.iso8601(3),
-            reposts_count: 0
+            reposts_count: 0,
+            stamps_count: 0,
+            viewer_has_stamped: false
           }
         ],
         page_info: {

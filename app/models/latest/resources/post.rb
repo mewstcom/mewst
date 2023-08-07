@@ -4,7 +4,7 @@
 class Latest::Resources::Post < Latest::Resources::Base
   root_key :post, :posts
 
-  attributes :id, :kind, :published_at, :reposts_count
+  attributes :id, :kind, :published_at, :reposts_count, :stamps_count, :viewer_has_stamped
 
   one :postable, resource: ->(model) do
     case model

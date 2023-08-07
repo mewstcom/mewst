@@ -36,6 +36,9 @@ module GeneratedUrlHelpersModule
   def latest_comment_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_post_stamp_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_repost_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

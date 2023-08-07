@@ -134,10 +134,11 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :stamps, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :post, foreign_key: true, null: false, type: :uuid
+      t.references :comment_post, foreign_key: true, null: false, type: :uuid
+      t.timestamp :stamped_at, null: false
       t.timestamps
 
-      t.index %i[profile_id post_id], unique: true
+      t.index %i[profile_id comment_post_id], unique: true
     end
   end
 end
