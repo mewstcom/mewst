@@ -2,7 +2,7 @@ ja:
   activemodel:
     attributes:
       forms/repost:
-        original_follow: リポスト
+        follow: リポスト
         target_post: ポスト
       forms/stamp:
         target_post: ポスト
@@ -18,7 +18,7 @@ ja:
               atname_uniqueness: はすでに存在します
         forms/repost:
           attributes:
-            original_follow:
+            follow:
               blank: はオリジナルの投稿者をフォローしていないと行えません
             target_post:
               blank: が見つかりませんでした

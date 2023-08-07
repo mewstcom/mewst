@@ -201,10 +201,10 @@ CREATE TABLE public.profiles (
 
 CREATE TABLE public.reposts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
+    post_id uuid NOT NULL,
     profile_id uuid NOT NULL,
     follow_id uuid NOT NULL,
     comment_post_id uuid NOT NULL,
-    repost_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -510,6 +510,13 @@ CREATE INDEX index_reposts_on_follow_id ON public.reposts USING btree (follow_id
 
 
 --
+-- Name: index_reposts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reposts_on_post_id ON public.reposts USING btree (post_id);
+
+
+--
 -- Name: index_reposts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -646,6 +653,14 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: reposts fk_rails_e9f75e0f73; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_e9f75e0f73 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --

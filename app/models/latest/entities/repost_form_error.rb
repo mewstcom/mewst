@@ -7,7 +7,7 @@ class Latest::Entities::RepostFormError < Latest::Entities::FormError
     case error.attribute
     when :target_post
       "post_id"
-    when :original_follow
+    when :follow
       nil
     else
       error.attribute.to_s

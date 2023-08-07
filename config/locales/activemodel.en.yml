@@ -2,7 +2,7 @@ en:
   activemodel:
     attributes:
       forms/repost:
-        original_follow: Repost
+        follow: Repost
         target_post: Post
       forms/stamp:
         target_post: Post
@@ -18,7 +18,7 @@ en:
               atname_uniqueness: is already taken
         forms/repost:
           attributes:
-            original_follow:
+            follow:
               blank: can not be done because you do not follow the original poster
             target_post:
               blank: not found

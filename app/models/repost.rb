@@ -6,6 +6,7 @@ class Repost < ApplicationRecord
 
   belongs_to :comment_post
   belongs_to :follow
+  belongs_to :post
   belongs_to :profile
 
   sig { returns(CommentPost) }
@@ -16,6 +17,11 @@ class Repost < ApplicationRecord
   sig { returns(Follow) }
   def follow!
     T.must(follow)
+  end
+
+  sig { returns(Post) }
+  def post!
+    T.must(post)
   end
 
   sig { returns(Profile) }

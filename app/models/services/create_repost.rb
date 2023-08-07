@@ -13,14 +13,14 @@ class Services::CreateRepost < Services::Base
 
   sig { returns(Result) }
   def call
-    post = form.profile!.posts.create!(kind: :repost, published_at: Time.current)
+    post = form.viewer!.posts.create!(kind: :repost, published_at: Time.current)
     post.create_repost!(
       comment_post: form.target_post!.comment_post!,
       profile: form.viewer!,
       follow: form.follow!
     )
 
-    form.profile!.home_timeline.add_post(post:)
+    form.viewer!.home_timeline.add_post(post:)
     FanoutPostJob.perform_async(post_id: post.id)
 
     Result.new(post:)
