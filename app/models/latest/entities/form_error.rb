@@ -14,9 +14,9 @@ class Latest::Entities::FormError < Latest::Entities::Base
     @error = error
   end
 
-  sig { overridable.returns(Latest::ResponseErrorCode) }
+  sig { overridable.returns(Latest::Entities::ResponseErrorCode) }
   def code
-    Latest::ResponseErrorCode::InvalidInputData
+    Latest::Entities::ResponseErrorCode::InvalidInputData
   end
 
   sig { overridable.returns(T.nilable(String)) }
