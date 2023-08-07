@@ -4,7 +4,7 @@
 class Latest::Reposts::CreateController < Latest::ApplicationController
   def call
     form = Forms::Repost.new(
-      profile: current_profile!,
+      viewer: current_profile!,
       target_post_id: params[:post_id]
     )
 
@@ -17,13 +17,10 @@ class Latest::Reposts::CreateController < Latest::ApplicationController
       )
     end
 
-    result = ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do
       Services::CreateRepost.new(form:).call
     end
 
-    render(
-      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post, viewer: current_profile!)),
-      status: :created
-    )
+    head :no_content
   end
 end

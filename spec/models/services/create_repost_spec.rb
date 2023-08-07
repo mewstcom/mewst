@@ -6,7 +6,7 @@ RSpec.describe Services::CreateRepost do
   let!(:profile_2) { create(:profile, :for_user) }
   let!(:comment_post_form) { Forms::CommentPost.new(profile: profile_1, comment: "hello") }
   let!(:target_post) { Services::CreateCommentPost.new(form: comment_post_form).call.post }
-  let!(:form) { Forms::Repost.new(profile: profile_2, target_post_id: target_post.id) }
+  let!(:form) { Forms::Repost.new(viewer: profile_2, target_post_id: target_post.id) }
   let!(:service) { Services::CreateRepost.new(form:) }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
@@ -34,10 +34,9 @@ RSpec.describe Services::CreateRepost do
     expect(Repost.count).to eq(1)
     repost = Repost.first
     expect(repost.post).to eq(post)
-    expect(repost.target_post).to eq(target_post)
-    expect(repost.target_profile).to eq(profile_1)
+    expect(repost.comment_post).to eq(target_post.comment_post)
+    expect(repost.profile).to eq(profile_2)
     expect(repost.original_post).to eq(target_post)
-    expect(repost.original_profile).to eq(profile_1)
 
     expect(home_timeline).to have_received(:add_post).exactly(1).time
     expect(FanoutPostJob).to have_received(:perform_async).exactly(1).time

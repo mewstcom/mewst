@@ -49,75 +49,12 @@ RSpec.describe "POST /latest/posts/:post_id/reposts", type: :request, api_versio
       expect(Repost.count).to eq(0)
 
       post("/latest/posts/#{target_post.id}/reposts", headers:)
-      expect(response).to have_http_status(:created)
+      expect(response).to have_http_status(:no_content)
 
       expect(Post.count).to eq(2)
       expect(CommentPost.count).to eq(1)
-      post = Post.where.not(id: target_post.id).first
 
-      expected = {
-        post: {
-          id: post.id,
-          kind: "repost",
-          postable: {
-            original_post: {
-              id: target_post.id,
-              kind: "comment_post",
-              postable: {
-                comment: target_post.comment_post!.comment
-              },
-              profile: {
-                atname: profile_2.atname,
-                avatar_url: profile_2.avatar_url,
-                name: profile_2.name
-              },
-              published_at: target_post.published_at.iso8601(3),
-              reposts_count: 1,
-              stamps_count: 0,
-              viewer_has_stamped: false
-            },
-            original_profile: {
-              atname: profile_2.atname,
-              avatar_url: profile_2.avatar_url,
-              name: profile_2.name
-            },
-            target_post: {
-              id: target_post.id,
-              kind: "comment_post",
-              postable: {
-                comment: target_post.comment_post!.comment
-              },
-              profile: {
-                atname: profile_2.atname,
-                avatar_url: profile_2.avatar_url,
-                name: profile_2.name
-              },
-              published_at: target_post.published_at.iso8601(3),
-              reposts_count: 1,
-              stamps_count: 0,
-              viewer_has_stamped: false
-            },
-            target_profile: {
-              atname: profile_2.atname,
-              avatar_url: profile_2.avatar_url,
-              name: profile_2.name
-            }
-          },
-          profile: {
-            atname: profile_1.atname,
-            avatar_url: profile_1.avatar_url,
-            name: profile_1.name
-          },
-          published_at: post.published_at.iso8601(3),
-          reposts_count: 1,
-          stamps_count: 0,
-          viewer_has_stamped: false
-        }
-      }
-      actual = JSON.parse(response.body)
-      expect(actual).to include(expected.deep_stringify_keys)
-
-      assert_response_schema_confirm(201)
+      assert_response_schema_confirm(204)
     end
   end
 end

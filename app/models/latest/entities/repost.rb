@@ -8,24 +8,14 @@ class Latest::Entities::Repost < Latest::Entities::Base
     @viewer = viewer
   end
 
-  sig { returns(Latest::Entities::Post) }
-  def target_post
-    Latest::Entities::Post.new(post: repost.target_post!, viewer:)
-  end
-
   sig { returns(Latest::Entities::Profile) }
-  def target_profile
-    Latest::Entities::Profile.new(profile: repost.target_profile!)
+  def profile
+    Latest::Entities::Profile.new(profile: repost.profile!)
   end
 
   sig { returns(Latest::Entities::Post) }
   def original_post
-    Latest::Entities::Post.new(post: repost.original_post!, viewer:)
-  end
-
-  sig { returns(Latest::Entities::Profile) }
-  def original_profile
-    Latest::Entities::Profile.new(profile: repost.original_profile!)
+    Latest::Entities::Post.new(post: repost.original_post, viewer:)
   end
 
   sig { returns(Repost) }

@@ -202,11 +202,9 @@ CREATE TABLE public.profiles (
 CREATE TABLE public.reposts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     post_id uuid NOT NULL,
-    target_post_id uuid,
-    target_profile_id uuid,
-    original_post_id uuid NOT NULL,
-    original_profile_id uuid NOT NULL,
-    original_follow_id uuid NOT NULL,
+    profile_id uuid NOT NULL,
+    follow_id uuid NOT NULL,
+    comment_post_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -498,24 +496,17 @@ CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON pub
 
 
 --
--- Name: index_reposts_on_original_follow_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_reposts_on_comment_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_reposts_on_original_follow_id ON public.reposts USING btree (original_follow_id);
-
-
---
--- Name: index_reposts_on_original_post_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_reposts_on_original_post_id ON public.reposts USING btree (original_post_id);
+CREATE INDEX index_reposts_on_comment_post_id ON public.reposts USING btree (comment_post_id);
 
 
 --
--- Name: index_reposts_on_original_profile_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_reposts_on_follow_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_reposts_on_original_profile_id ON public.reposts USING btree (original_profile_id);
+CREATE INDEX index_reposts_on_follow_id ON public.reposts USING btree (follow_id);
 
 
 --
@@ -526,17 +517,10 @@ CREATE INDEX index_reposts_on_post_id ON public.reposts USING btree (post_id);
 
 
 --
--- Name: index_reposts_on_target_post_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_reposts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_reposts_on_target_post_id ON public.reposts USING btree (target_post_id);
-
-
---
--- Name: index_reposts_on_target_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_reposts_on_target_profile_id ON public.reposts USING btree (target_profile_id);
+CREATE INDEX index_reposts_on_profile_id ON public.reposts USING btree (profile_id);
 
 
 --
@@ -568,6 +552,14 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
+-- Name: reposts fk_rails_0063d9ed2a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT fk_rails_0063d9ed2a FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: stamps fk_rails_27da15755d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -592,11 +584,11 @@ ALTER TABLE ONLY public.comment_posts
 
 
 --
--- Name: reposts fk_rails_4767b02358; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: reposts fk_rails_5dbeb23937; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reposts
-    ADD CONSTRAINT fk_rails_4767b02358 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+    ADD CONSTRAINT fk_rails_5dbeb23937 FOREIGN KEY (comment_post_id) REFERENCES public.comment_posts(id);
 
 
 --
@@ -624,22 +616,6 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
--- Name: reposts fk_rails_7d2083c2a4; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reposts
-    ADD CONSTRAINT fk_rails_7d2083c2a4 FOREIGN KEY (original_profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: reposts fk_rails_959790a263; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reposts
-    ADD CONSTRAINT fk_rails_959790a263 FOREIGN KEY (target_post_id) REFERENCES public.posts(id);
-
-
---
 -- Name: stamps fk_rails_9dee51665a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -648,11 +624,11 @@ ALTER TABLE ONLY public.stamps
 
 
 --
--- Name: reposts fk_rails_a8d6bd32dd; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: reposts fk_rails_9f623b101a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reposts
-    ADD CONSTRAINT fk_rails_a8d6bd32dd FOREIGN KEY (original_follow_id) REFERENCES public.follows(id);
+    ADD CONSTRAINT fk_rails_9f623b101a FOREIGN KEY (follow_id) REFERENCES public.follows(id);
 
 
 --
@@ -677,14 +653,6 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: reposts fk_rails_df949c8017; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reposts
-    ADD CONSTRAINT fk_rails_df949c8017 FOREIGN KEY (original_post_id) REFERENCES public.posts(id);
 
 
 --
