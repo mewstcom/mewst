@@ -38,6 +38,11 @@ class Post < ApplicationRecord
     original_post.comment_post!.reposts_count
   end
 
+  sig { returns(Integer) }
+  def stamps_count
+    original_post.comment_post!.stamps_count
+  end
+
   sig { returns(String) }
   def timeline_score
     published_at.strftime("%s%L")

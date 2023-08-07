@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::Entities::Post < Latest::Entities::Base
-  delegate :id, :kind, :published_at, :reposts_count, to: :post
+  delegate :id, :kind, :published_at, :reposts_count, :stamps_count, to: :post
 
-  sig { params(post: Post).void }
-  def initialize(post:)
+  sig { params(post: Post, viewer: Profile).void }
+  def initialize(post:, viewer:)
     @post = post
+    @viewer = viewer
   end
 
   sig { returns(T.any(Latest::Entities::CommentPost, Latest::Entities::Repost)) }
@@ -25,7 +26,16 @@ class Latest::Entities::Post < Latest::Entities::Base
     Latest::Entities::Profile.new(profile: post.profile!)
   end
 
+  sig { returns(T::Boolean) }
+  def viewer_has_stamped
+    viewer.stamps.exists?(comment_post: post.original_post.comment_post!)
+  end
+
   sig { returns(Post) }
   attr_reader :post
   private :post
+
+  sig { returns(Profile) }
+  attr_reader :viewer
+  private :viewer
 end

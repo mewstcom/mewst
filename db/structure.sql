@@ -228,7 +228,8 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.stamps (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
-    post_id uuid NOT NULL,
+    comment_post_id uuid NOT NULL,
+    stamped_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -539,10 +540,10 @@ CREATE INDEX index_reposts_on_target_profile_id ON public.reposts USING btree (t
 
 
 --
--- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_stamps_on_comment_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_stamps_on_post_id ON public.stamps USING btree (post_id);
+CREATE INDEX index_stamps_on_comment_post_id ON public.stamps USING btree (comment_post_id);
 
 
 --
@@ -553,10 +554,10 @@ CREATE INDEX index_stamps_on_profile_id ON public.stamps USING btree (profile_id
 
 
 --
--- Name: index_stamps_on_profile_id_and_post_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_stamps_on_profile_id_and_comment_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USING btree (profile_id, post_id);
+CREATE UNIQUE INDEX index_stamps_on_profile_id_and_comment_post_id ON public.stamps USING btree (profile_id, comment_post_id);
 
 
 --
@@ -607,14 +608,6 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: stamps fk_rails_6933333714; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.stamps
-    ADD CONSTRAINT fk_rails_6933333714 FOREIGN KEY (post_id) REFERENCES public.posts(id);
-
-
---
 -- Name: oauth_access_tokens fk_rails_732cb83ab7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -644,6 +637,14 @@ ALTER TABLE ONLY public.reposts
 
 ALTER TABLE ONLY public.reposts
     ADD CONSTRAINT fk_rails_959790a263 FOREIGN KEY (target_post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: stamps fk_rails_9dee51665a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamps
+    ADD CONSTRAINT fk_rails_9dee51665a FOREIGN KEY (comment_post_id) REFERENCES public.comment_posts(id);
 
 
 --

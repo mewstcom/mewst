@@ -70,6 +70,19 @@ paths:
       summary: ""
       tags:
         - reposts
+  "/posts/{post_id}/stamp":
+    post:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - stamps
   "/timeline":
     get:
       description: ""
@@ -245,6 +258,10 @@ components:
           format: date-time
         reposts_count:
           type: integer
+        stamps_count:
+          type: integer
+        viewer_has_stamped:
+          type: boolean
       required:
         - id
         - kind
@@ -252,6 +269,8 @@ components:
         - profile
         - published_at
         - reposts_count
+        - stamps_count
+        - viewer_has_stamped
     validation-error:
       description: ""
       title: Validation Error
