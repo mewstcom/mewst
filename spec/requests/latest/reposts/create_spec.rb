@@ -72,7 +72,9 @@ RSpec.describe "POST /latest/posts/:post_id/reposts", type: :request, api_versio
                 name: profile_2.name
               },
               published_at: target_post.published_at.iso8601(3),
-              reposts_count: 1
+              reposts_count: 1,
+              stamps_count: 0,
+              viewer_has_stamped: false
             },
             original_profile: {
               atname: profile_2.atname,
@@ -91,7 +93,9 @@ RSpec.describe "POST /latest/posts/:post_id/reposts", type: :request, api_versio
                 name: profile_2.name
               },
               published_at: target_post.published_at.iso8601(3),
-              reposts_count: 1
+              reposts_count: 1,
+              stamps_count: 0,
+              viewer_has_stamped: false
             },
             target_profile: {
               atname: profile_2.atname,
@@ -105,7 +109,9 @@ RSpec.describe "POST /latest/posts/:post_id/reposts", type: :request, api_versio
             name: profile_1.name
           },
           published_at: post.published_at.iso8601(3),
-          reposts_count: 1
+          reposts_count: 1,
+          stamps_count: 0,
+          viewer_has_stamped: false
         }
       }
       actual = JSON.parse(response.body)

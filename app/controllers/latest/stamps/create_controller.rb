@@ -16,7 +16,7 @@ class Latest::Stamps::CreateController < Latest::ApplicationController
       )
     end
 
-    result = ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do
       Services::CreateStamp.new(form:).call
     end
 

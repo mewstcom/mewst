@@ -60,7 +60,9 @@ RSpec.describe "POST /latest/comment_posts", type: :request, api_version: :lates
             name: profile.name
           },
           published_at: post.published_at.iso8601(3),
-          reposts_count: 0
+          reposts_count: 0,
+          stamps_count: 0,
+          viewer_has_stamped: false
         }
       }
       actual = JSON.parse(response.body)

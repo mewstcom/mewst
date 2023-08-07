@@ -2,14 +2,15 @@
 # frozen_string_literal: true
 
 class Latest::Entities::Repost < Latest::Entities::Base
-  sig { params(repost: Repost).void }
-  def initialize(repost:)
+  sig { params(repost: Repost, viewer: Profile).void }
+  def initialize(repost:, viewer:)
     @repost = repost
+    @viewer = viewer
   end
 
   sig { returns(Latest::Entities::Post) }
   def target_post
-    Latest::Entities::Post.new(post: repost.target_post!)
+    Latest::Entities::Post.new(post: repost.target_post!, viewer:)
   end
 
   sig { returns(Latest::Entities::Profile) }
@@ -19,7 +20,7 @@ class Latest::Entities::Repost < Latest::Entities::Base
 
   sig { returns(Latest::Entities::Post) }
   def original_post
-    Latest::Entities::Post.new(post: repost.original_post!)
+    Latest::Entities::Post.new(post: repost.original_post!, viewer:)
   end
 
   sig { returns(Latest::Entities::Profile) }
@@ -30,4 +31,8 @@ class Latest::Entities::Repost < Latest::Entities::Base
   sig { returns(Repost) }
   attr_reader :repost
   private :repost
+
+  sig { returns(Profile) }
+  attr_reader :viewer
+  private :viewer
 end

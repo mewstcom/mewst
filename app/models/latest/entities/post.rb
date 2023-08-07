@@ -15,7 +15,7 @@ class Latest::Entities::Post < Latest::Entities::Base
     if post.kind_comment_post?
       Latest::Entities::CommentPost.new(comment_post: post.comment_post!)
     elsif post.kind_repost?
-      Latest::Entities::Repost.new(repost: post.repost!)
+      Latest::Entities::Repost.new(repost: post.repost!, viewer:)
     else
       fail
     end
