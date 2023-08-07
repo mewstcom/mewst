@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Resources::Internal::Base
+class Internal::Resources::Base
   extend T::Sig
 
   include Alba::Resource
@@ -14,7 +14,7 @@ class Resources::Internal::Base
   end
 
   class Error < T::Struct
-    const :code, Resources::Internal::Base::ErrorCode
+    const :code, Internal::Resources::Base::ErrorCode
     const :message, String
   end
 end

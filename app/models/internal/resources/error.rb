@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Resources::Internal::Error < Resources::Internal::Base
+class Internal::Resources::Error < Internal::Resources::Base
   root_key :error, :errors
 
   attributes :code, :message
