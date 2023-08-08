@@ -200,7 +200,7 @@ components:
             properties:
               errors:
                 items:
-                  "$ref": "#/components/schemas/validation-error"
+                  "$ref": "#/components/schemas/error"
                 type: array
   schemas:
     email-confirmation:
@@ -226,14 +226,8 @@ components:
       properties:
         message:
           type: string
-        code:
-          type: string
-          enum:
-            - invalid_input_data
-            - not_found
       required:
         - message
-        - code
       type: object
     oauth-access-token:
       additionalProperties: false
@@ -293,16 +287,3 @@ components:
       required:
         - id
         - locale
-    validation-error:
-      description: ""
-      title: Validation Error
-      allOf:
-        - "$ref": "#/components/schemas/error"
-        - type: object
-          additionalProperties: false
-          properties:
-            field:
-              type: string
-          required:
-            - field
-      type: object
