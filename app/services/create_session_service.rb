@@ -2,41 +2,33 @@
 # frozen_string_literal: true
 
 class CreateSessionService < ApplicationService
+  class Input < T::Struct
+    const :user, User
+
+    sig { params(form: Internal::SessionForm).returns(Input) }
+    def self.from_internal_form(form)
+      new(
+        user: form.user!
+      )
+    end
+  end
+
   class Result < T::Struct
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile
     const :user, User
   end
 
-  sig { params(form: Forms::Session).void }
-  def initialize(form:)
-    @form = form
-  end
+  sig { params(input: Input).returns(Result) }
+  def call(input:)
+    user = input.user
 
-  sig { returns(Result) }
-  def call
     user.track_sign_in
 
-    Result.new(oauth_access_token:, profile:, user:)
-  end
-
-  private
-
-  sig { returns(Forms::Session) }
-  attr_reader :form
-
-  sig { returns(User) }
-  def user
-    form.user!
-  end
-
-  sig { returns(Profile) }
-  def profile
-    user.profile!
-  end
-
-  sig { returns(OauthAccessToken) }
-  def oauth_access_token
-    T.cast(OauthAccessToken.matching_token_for(OauthApplication.mewst_web, profile, "", include_expired: false), OauthAccessToken)
+    Result.new(
+      oauth_access_token: T.must(profile.active_access_token),
+      profile: user.profile!,
+      user:
+    )
   end
 end

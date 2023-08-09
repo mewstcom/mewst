@@ -3,19 +3,25 @@
 
 class Internal::EmailConfirmations::CreateController < Internal::ApplicationController
   def call
-    form = Forms::EmailConfirmation.new(email: params[:email], locale: I18n.locale)
+    form = Internal::EmailConfirmationForm.new(email: params[:email], locale: I18n.locale)
 
     if form.invalid?
+      resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
       return render(
-        json: Internal::Resources::ActiveModelErrors.new(form.errors),
+        json: Panko::Response.new(
+          errors: Panko::ArraySerializer.new(resources, each_serializer: Internal::ResponseErrorSerializer)
+        ),
         status: :unprocessable_entity
       )
     end
 
-    result = Services::SendEmailConfirmationCode.new(form:).call
+    result = CreateEmailConfirmationService.new(form:).call
 
+    resource = Internal::EmailConfirmationResource.new(email_confirmation: result.email_confirmation)
     render(
-      json: Internal::Resources::EmailConfirmation.new(result.email_confirmation),
+      json: Panko::Response.new(
+        email_confirmation: Internal::EmailConfirmationSerializer.new.serialize(resource)
+      ),
       status: :created
     )
   end

@@ -2,21 +2,19 @@
 # frozen_string_literal: true
 
 class ConfirmEmailService < ApplicationService
-  class Result < T::Struct; end
+  class Input < T::Struct
+    extend T::Sig
 
-  sig { params(form: Forms::EmailConfirmationChallenge).void }
-  def initialize(form:)
-    @form = form
+    const :email_confirmation, EmailConfirmation
+
+    sig { params(form: Internal::EmailConfirmationChallengeForm).returns(Input) }
+    def self.from_internal_form(form:)
+      new(email_confirmation: form.email_confirmation!)
+    end
   end
 
-  sig { returns(Result) }
-  def call
-    form.email_confirmation!.success
-
-    Result.new
+  sig { params(input: Input).void }
+  def call(form:)
+    input.email_confirmation.success
   end
-
-  sig { returns(Forms::EmailConfirmationChallenge) }
-  attr_reader :form
-  private :form
 end
