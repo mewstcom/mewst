@@ -14,7 +14,7 @@ class ConfirmEmailService < ApplicationService
   end
 
   sig { params(input: Input).void }
-  def call(form:)
+  def call(input:)
     input.email_confirmation.success
   end
 end

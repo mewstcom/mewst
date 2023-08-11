@@ -2,23 +2,28 @@
 # frozen_string_literal: true
 
 class UpdateUserService < ApplicationService
+  class Input < T::Struct
+    const :user, User
+
+    sig { params(form: Latest::UserForm).returns(Input) }
+    def self.from_latest_form(form:)
+      new(
+        user: form.user!,
+        locale: form.locale
+      )
+    end
+  end
+
   class Result < T::Struct
     const :user, User
   end
 
-  sig { params(form: Forms::User).void }
-  def initialize(form:)
-    @form = form
+  sig { params(input: Input).returns(Result) }
+  def call(input:)
+    form.user!.update!(
+      locale: input.locale
+    )
+
+    Result.new(user: input.user)
   end
-
-  sig { returns(Result) }
-  def call
-    form.user!.update!(form.attributes)
-
-    Result.new(user: form.user!)
-  end
-
-  sig { returns(Forms::User) }
-  attr_reader :form
-  private :form
 end
