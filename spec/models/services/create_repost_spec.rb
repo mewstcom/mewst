@@ -1,13 +1,15 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Services::CreateRepost do
+RSpec.describe CreateRepostService do
   let!(:profile_1) { create(:profile, :for_user) }
   let!(:profile_2) { create(:profile, :for_user) }
-  let!(:comment_post_form) { Forms::CommentPost.new(profile: profile_1, comment: "hello") }
-  let!(:target_post) { Services::CreateCommentPost.new(form: comment_post_form).call.post }
-  let!(:form) { Forms::Repost.new(viewer: profile_2, target_post_id: target_post.id) }
-  let!(:service) { Services::CreateRepost.new(form:) }
+  let!(:comment_post_form) { Latest::CommentPostForm.new(profile: profile_1, comment: "hello") }
+  let!(:comment_post_input) { CreateCommentPostService::Input.from_latest_form(form: comment_post_form) }
+  let!(:target_post) { CreateCommentPostService.new.call(input: comment_post_input).post }
+  let!(:form) { Latest::RepostForm.new(viewer: profile_2, target_post_id: target_post.id) }
+  let!(:input) { CreateRepostService::Input.from_latest_form(form:) }
+  let!(:service) { CreateRepostService.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
@@ -23,7 +25,7 @@ RSpec.describe Services::CreateRepost do
     expect(Repost.count).to eq(0)
     expect(Post.count).to eq(1)
 
-    result = service.call
+    result = service.call(input:)
 
     expect(Post.count).to eq(2)
     post = Post.where.not(id: target_post.id).first

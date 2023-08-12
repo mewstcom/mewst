@@ -1,10 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Services::CreateCommentPost do
+RSpec.describe CreateCommentPostService do
   let!(:profile) { create(:profile, :for_user) }
-  let!(:form) { Forms::CommentPost.new(profile:, comment: "hello") }
-  let!(:command) { Services::CreateCommentPost.new(form:) }
+  let!(:form) { Latest::CommentPostForm.new(profile:, comment: "hello") }
+  let!(:input) { CreateCommentPostService::Input.from_latest_form(form:) }
+  let!(:service) { CreateCommentPostService.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
@@ -18,7 +19,7 @@ RSpec.describe Services::CreateCommentPost do
     expect(CommentPost.count).to eq(0)
     expect(Post.count).to eq(0)
 
-    result = command.call
+    result = service.call(input:)
 
     expect(CommentPost.count).to eq(1)
     comment_post = CommentPost.first

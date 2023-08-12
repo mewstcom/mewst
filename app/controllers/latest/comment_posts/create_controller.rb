@@ -2,27 +2,28 @@
 # frozen_string_literal: true
 
 class Latest::CommentPosts::CreateController < Latest::ApplicationController
+  include Latest::FormErrorable
+
   def call
-    form = Forms::CommentPost.new(
+    form = Latest::CommentPostForm.new(
       comment: params[:comment]
     )
     form.profile = current_profile!
 
     if form.invalid?
-      resource_errors = Latest::Entities::FormError.build_from_errors(errors: form.errors)
-
-      return render(
-        json: Latest::Resources::ResponseError.new(resource_errors),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
+    input = CreateCommentPostService::Input.from_latest_form(form:)
     result = ActiveRecord::Base.transaction do
-      Services::CreateCommentPost.new(form:).call
+      CreateCommentPostService.new.call(input:)
     end
 
+    resource = Latest::PostResource.new(post: result.post, viewer: current_profile!)
     render(
-      json: Latest::Resources::Post.new(Latest::Entities::Post.new(post: result.post, viewer: current_profile!)),
+      json: Panko::Response.new(
+        post: Latest::PostSerializer.new.serialize(resource)
+      ),
       status: :created
     )
   end

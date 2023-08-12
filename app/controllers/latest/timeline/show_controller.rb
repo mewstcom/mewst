@@ -9,10 +9,12 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
       limit: 5
     )
 
-    post_entities = posts.map { |post| Latest::Entities::Post.new(post:, viewer: current_profile!) }
-    render(json: {
-      posts: Latest::Resources::Post.new(post_entities).to_h,
-      page_info: Latest::Resources::PageInfo.new(page_info).to_h
-    })
+    resources = posts.map { |post| Latest::PostResource.new(post:, viewer: current_profile!) }
+    render(
+      json: Panko::Response.new(
+        posts: Panko::ArraySerializer.new(resources, each_serializer: Latest::PostSerializer),
+        page_info: Latest::PageInfoSerializer.new.serialize(page_info)
+      )
+    )
   end
 end

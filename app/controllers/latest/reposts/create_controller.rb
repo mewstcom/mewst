@@ -3,22 +3,18 @@
 
 class Latest::Reposts::CreateController < Latest::ApplicationController
   def call
-    form = Forms::Repost.new(
+    form = Latest::RepostForm.new(
       viewer: current_profile!,
       target_post_id: params[:post_id]
     )
 
     if form.invalid?
-      resource_errors = Latest::Entities::RepostFormError.build_from_errors(errors: form.errors)
-
-      return render(
-        json: Latest::Resources::ResponseError.new(resource_errors),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::RepostFormErrorResource, errors: form.errors)
     end
 
     ActiveRecord::Base.transaction do
-      Services::CreateRepost.new(form:).call
+      input = CreateRepostService::Input.from_latest_form(form:)
+      CreateRepostService.new.call(input:)
     end
 
     head :no_content
