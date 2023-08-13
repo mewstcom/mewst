@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class EmailConfirmationMailer < ApplicationMailer
-  sig { params(email_confirmation_id: String, locale: String).void }
+  sig { params(email_confirmation_id: T::Mewst::DatabaseId, locale: String).void }
   def email_confirmation(email_confirmation_id:, locale:)
     email_confirmation = EmailConfirmation.active.find(email_confirmation_id)
 
