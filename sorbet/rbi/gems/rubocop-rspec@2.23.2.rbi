@@ -5639,7 +5639,7 @@ class RuboCop::Cop::RSpec::ReceiveMessages < ::RuboCop::Cop::RSpec::Base
   # @return [Boolean]
   #
   # source://rubocop-rspec//lib/rubocop/cop/rspec/receive_messages.rb#150
-  def heredoc?(node); end
+  def heredoc_or_splat?(node); end
 
   # source://rubocop-rspec//lib/rubocop/cop/rspec/receive_messages.rb#146
   def item_range_by_whole_lines(item); end
@@ -5664,7 +5664,7 @@ class RuboCop::Cop::RSpec::ReceiveMessages < ::RuboCop::Cop::RSpec::Base
 
   # @return [Boolean]
   #
-  # source://rubocop-rspec//lib/rubocop/cop/rspec/receive_messages.rb#154
+  # source://rubocop-rspec//lib/rubocop/cop/rspec/receive_messages.rb#155
   def requires_quotes?(value); end
 
   # source://rubocop-rspec//lib/rubocop/cop/rspec/receive_messages.rb#91

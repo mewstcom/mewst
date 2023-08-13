@@ -11655,7 +11655,7 @@ class ActiveSupport::TimeWithZone
   #   now + 24.hours      # => Mon, 03 Nov 2014 00:26:28.725182881 EST -05:00
   #   now + 1.day         # => Mon, 03 Nov 2014 01:26:28.725182881 EST -05:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#328
+  # source://activesupport//lib/active_support/time_with_zone.rb#335
   def +(other); end
 
   # Subtracts an interval of time and returns a new TimeWithZone object unless
@@ -11681,19 +11681,19 @@ class ActiveSupport::TimeWithZone
   #
   #   Time.zone.now - 1.day.ago # => 86399.999967
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#362
+  # source://activesupport//lib/active_support/time_with_zone.rb#369
   def -(other); end
 
   # Use the time in UTC for comparisons.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#261
+  # source://activesupport//lib/active_support/time_with_zone.rb#268
   def <=>(other); end
 
   # So that +self+ <tt>acts_like?(:time)</tt>.
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#523
+  # source://activesupport//lib/active_support/time_with_zone.rb#530
   def acts_like_time?; end
 
   # Uses Date to provide precise Time calculations for years, months, and days
@@ -11718,7 +11718,7 @@ class ActiveSupport::TimeWithZone
   #   now.advance(months: 1)  # => Tue, 02 Dec 2014 01:26:28.558049687 EST -05:00
   #   now.advance(years: 1)   # => Mon, 02 Nov 2015 01:26:28.558049687 EST -05:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#451
+  # source://activesupport//lib/active_support/time_with_zone.rb#458
   def advance(options); end
 
   def after?(_arg0); end
@@ -11741,7 +11741,7 @@ class ActiveSupport::TimeWithZone
   #   now.ago(24.hours)   # => Sun, 02 Nov 2014 01:26:28.725182881 EDT -04:00
   #   now.ago(1.day)      # => Sun, 02 Nov 2014 00:26:28.725182881 EDT -04:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#390
+  # source://activesupport//lib/active_support/time_with_zone.rb#397
   def ago(other); end
 
   # Coerces time to a string for JSON encoding. The default format is ISO 8601.
@@ -11767,14 +11767,14 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#269
+  # source://activesupport//lib/active_support/time_with_zone.rb#276
   def between?(min, max); end
 
   # An instance of ActiveSupport::TimeWithZone is never blank
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#534
+  # source://activesupport//lib/active_support/time_with_zone.rb#541
   def blank?; end
 
   # Returns a new +ActiveSupport::TimeWithZone+ where one or more of the elements have
@@ -11795,7 +11795,7 @@ class ActiveSupport::TimeWithZone
   #   t.change(offset: "-10:00") # => Fri, 14 Apr 2017 11:45:15.116992711 HST -10:00
   #   t.change(zone: "Hawaii")   # => Fri, 14 Apr 2017 11:45:15.116992711 HST -10:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#411
+  # source://activesupport//lib/active_support/time_with_zone.rb#418
   def change(options); end
 
   # Returns a <tt>Time</tt> instance of the simultaneous time in the UTC timezone.
@@ -11803,7 +11803,7 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#73
   def comparable_time; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def day; end
 
   # Returns true if the current time is within Daylight Savings Time for the
@@ -11825,7 +11825,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#304
+  # source://activesupport//lib/active_support/time_with_zone.rb#311
   def eql?(other); end
 
   # Returns a formatted string of the offset from UTC, or an alternative
@@ -11840,14 +11840,14 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#135
   def formatted_offset(colon = T.unsafe(nil), alternate_utc_string = T.unsafe(nil)); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#538
+  # source://activesupport//lib/active_support/time_with_zone.rb#545
   def freeze; end
 
   # Returns true if the current object's time is in the future.
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#299
+  # source://activesupport//lib/active_support/time_with_zone.rb#306
   def future?; end
 
   # Returns a <tt>Time</tt> instance of the simultaneous time in the UTC timezone.
@@ -11892,10 +11892,10 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#121
   def gmtoff; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#308
+  # source://activesupport//lib/active_support/time_with_zone.rb#315
   def hash; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def hour; end
 
   # Returns a string of the object's date and time in the format used by
@@ -11923,7 +11923,7 @@ class ActiveSupport::TimeWithZone
   #   now + 24.hours      # => Mon, 03 Nov 2014 00:26:28.725182881 EST -05:00
   #   now + 1.day         # => Mon, 03 Nov 2014 01:26:28.725182881 EST -05:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#328
+  # source://activesupport//lib/active_support/time_with_zone.rb#335
   def in(other); end
 
   # Returns the simultaneous time in <tt>Time.zone</tt>, or the specified zone.
@@ -11945,7 +11945,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#528
+  # source://activesupport//lib/active_support/time_with_zone.rb#535
   def is_a?(klass); end
 
   # Returns true if the current time is within Daylight Savings Time for the
@@ -11972,7 +11972,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#528
+  # source://activesupport//lib/active_support/time_with_zone.rb#535
   def kind_of?(klass); end
 
   # Returns a <tt>Time</tt> instance of the simultaneous time in the system timezone.
@@ -11980,28 +11980,28 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#93
   def localtime(utc_offset = T.unsafe(nil)); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#544
+  # source://activesupport//lib/active_support/time_with_zone.rb#551
   def marshal_dump; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#548
+  # source://activesupport//lib/active_support/time_with_zone.rb#555
   def marshal_load(variables); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def mday; end
 
   # Send the missing method to +time+ instance, and wrap result in a new
   # TimeWithZone with the existing +time_zone+.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#569
+  # source://activesupport//lib/active_support/time_with_zone.rb#576
   def method_missing(*_arg0, **_arg1, &_arg2); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def min; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def mon; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def month; end
 
   # Returns true if the current object's time falls within
@@ -12009,17 +12009,17 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#286
+  # source://activesupport//lib/active_support/time_with_zone.rb#293
   def next_day?; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def nsec; end
 
   # Returns true if the current object's time is in the past.
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#274
+  # source://activesupport//lib/active_support/time_with_zone.rb#281
   def past?; end
 
   # Returns the underlying <tt>TZInfo::TimezonePeriod</tt>.
@@ -12032,7 +12032,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#293
+  # source://activesupport//lib/active_support/time_with_zone.rb#300
   def prev_day?; end
 
   # respond_to_missing? is not called in some cases, such as when type conversion is
@@ -12040,7 +12040,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#554
+  # source://activesupport//lib/active_support/time_with_zone.rb#561
   def respond_to?(sym, include_priv = T.unsafe(nil)); end
 
   # Returns a string of the object's date and time in the RFC 2822 standard
@@ -12067,7 +12067,7 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#204
   def rfc822; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def sec; end
 
   # Adds an interval of time to the current object's time and returns that
@@ -12087,13 +12087,13 @@ class ActiveSupport::TimeWithZone
   #   now + 24.hours      # => Mon, 03 Nov 2014 00:26:28.725182881 EST -05:00
   #   now + 1.day         # => Mon, 03 Nov 2014 01:26:28.725182881 EST -05:00
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#328
+  # source://activesupport//lib/active_support/time_with_zone.rb#335
   def since(other); end
 
   # Replaces <tt>%Z</tt> directive with +zone before passing to Time#strftime,
   # so that zone information is correct.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#255
+  # source://activesupport//lib/active_support/time_with_zone.rb#262
   def strftime(format); end
 
   # Returns a <tt>Time</tt> instance that represents the time in +time_zone+.
@@ -12112,10 +12112,10 @@ class ActiveSupport::TimeWithZone
   #   now = Time.zone.now     # => Tue, 18 Aug 2015 02:29:27.485278555 UTC +00:00
   #   now.to_a                # => [27, 29, 2, 18, 8, 2015, 2, 230, false, "UTC"]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#474
+  # source://activesupport//lib/active_support/time_with_zone.rb#481
   def to_a; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def to_date; end
 
   # Returns an instance of DateTime with the timezone's UTC offset
@@ -12123,7 +12123,7 @@ class ActiveSupport::TimeWithZone
   #   Time.zone.now.to_datetime                         # => Tue, 18 Aug 2015 02:32:20 +0000
   #   Time.current.in_time_zone('Hawaii').to_datetime   # => Mon, 17 Aug 2015 16:32:20 -1000
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#507
+  # source://activesupport//lib/active_support/time_with_zone.rb#514
   def to_datetime; end
 
   # Returns the object's date and time as a floating-point number of seconds
@@ -12131,7 +12131,7 @@ class ActiveSupport::TimeWithZone
   #
   #   Time.zone.now.to_f # => 1417709320.285418
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#482
+  # source://activesupport//lib/active_support/time_with_zone.rb#489
   def to_f; end
 
   # Returns a string of the object's date and time.
@@ -12143,7 +12143,7 @@ class ActiveSupport::TimeWithZone
   # * <tt>:db</tt> - format outputs time in UTC :db time. See Time#to_fs(:db).
   # * Any key in <tt>Time::DATE_FORMATS</tt> can be used. See active_support/core_ext/time/conversions.rb.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#241
+  # source://activesupport//lib/active_support/time_with_zone.rb#248
   def to_formatted_s(format = T.unsafe(nil)); end
 
   # Returns a string of the object's date and time.
@@ -12155,7 +12155,7 @@ class ActiveSupport::TimeWithZone
   # * <tt>:db</tt> - format outputs time in UTC :db time. See Time#to_fs(:db).
   # * Any key in <tt>Time::DATE_FORMATS</tt> can be used. See active_support/core_ext/time/conversions.rb.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#241
+  # source://activesupport//lib/active_support/time_with_zone.rb#248
   def to_fs(format = T.unsafe(nil)); end
 
   # Returns the object's date and time as an integer number of seconds
@@ -12163,7 +12163,7 @@ class ActiveSupport::TimeWithZone
   #
   #   Time.zone.now.to_i # => 1417709320
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#490
+  # source://activesupport//lib/active_support/time_with_zone.rb#497
   def to_i; end
 
   # Returns the object's date and time as a rational number of seconds
@@ -12171,7 +12171,7 @@ class ActiveSupport::TimeWithZone
   #
   #   Time.zone.now.to_r # => (708854548642709/500000)
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#499
+  # source://activesupport//lib/active_support/time_with_zone.rb#506
   def to_r; end
 
   # Returns a string of the object's date and time.
@@ -12183,7 +12183,7 @@ class ActiveSupport::TimeWithZone
   # as +self+ or in the local system timezone depending on the setting
   # of +ActiveSupport.to_time_preserves_timezone+.
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#514
+  # source://activesupport//lib/active_support/time_with_zone.rb#521
   def to_time; end
 
   # Returns true if the current object's time falls within
@@ -12191,7 +12191,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#280
+  # source://activesupport//lib/active_support/time_with_zone.rb#287
   def today?; end
 
   # Returns true if the current object's time falls within
@@ -12199,7 +12199,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#286
+  # source://activesupport//lib/active_support/time_with_zone.rb#293
   def tomorrow?; end
 
   # Returns the object's date and time as an integer number of seconds
@@ -12207,10 +12207,10 @@ class ActiveSupport::TimeWithZone
   #
   #   Time.zone.now.to_i # => 1417709320
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#490
+  # source://activesupport//lib/active_support/time_with_zone.rb#497
   def tv_sec; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def usec; end
 
   # Returns a <tt>Time</tt> instance of the simultaneous time in the UTC timezone.
@@ -12235,7 +12235,7 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#121
   def utc_offset; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def wday; end
 
   # Returns a string of the object's date and time in the ISO 8601 standard
@@ -12246,10 +12246,10 @@ class ActiveSupport::TimeWithZone
   # source://activesupport//lib/active_support/time_with_zone.rb#158
   def xmlschema(fraction_digits = T.unsafe(nil)); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def yday; end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#463
+  # source://activesupport//lib/active_support/time_with_zone.rb#470
   def year; end
 
   # Returns true if the current object's time falls within
@@ -12257,7 +12257,7 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#293
+  # source://activesupport//lib/active_support/time_with_zone.rb#300
   def yesterday?; end
 
   # Returns the time zone abbreviation.
@@ -12272,13 +12272,13 @@ class ActiveSupport::TimeWithZone
 
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#605
+  # source://activesupport//lib/active_support/time_with_zone.rb#612
   def duration_of_variable_length?(obj); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#586
+  # source://activesupport//lib/active_support/time_with_zone.rb#593
   def get_period_and_ensure_valid_local_time(period); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#578
+  # source://activesupport//lib/active_support/time_with_zone.rb#585
   def incorporate_utc_offset(time, offset); end
 
   # Ensure proxy class responds to all methods that underlying time instance
@@ -12286,13 +12286,13 @@ class ActiveSupport::TimeWithZone
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/time_with_zone.rb#562
+  # source://activesupport//lib/active_support/time_with_zone.rb#569
   def respond_to_missing?(sym, include_priv); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#599
+  # source://activesupport//lib/active_support/time_with_zone.rb#606
   def transfer_time_values_to_utc_constructor(time); end
 
-  # source://activesupport//lib/active_support/time_with_zone.rb#609
+  # source://activesupport//lib/active_support/time_with_zone.rb#616
   def wrap_with_time_zone(time); end
 
   class << self
@@ -12309,7 +12309,7 @@ ActiveSupport::TimeWithZone::NOT_SET = T.let(T.unsafe(nil), Object)
 # source://activesupport//lib/active_support/time_with_zone.rb#55
 ActiveSupport::TimeWithZone::PRECISIONS = T.let(T.unsafe(nil), Hash)
 
-# source://activesupport//lib/active_support/time_with_zone.rb#576
+# source://activesupport//lib/active_support/time_with_zone.rb#583
 ActiveSupport::TimeWithZone::SECONDS_PER_DAY = T.let(T.unsafe(nil), Integer)
 
 # The TimeZone class serves as a wrapper around <tt>TZInfo::Timezone</tt> instances.
@@ -12949,7 +12949,7 @@ class Array
   #   a.compact_blank!
   #   # =>  [1, 2, true]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#325
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#330
   def compact_blank!; end
 
   # Returns a deep copy of array.
@@ -13119,7 +13119,7 @@ class Array
   # source://activesupport//lib/active_support/core_ext/array/grouping.rb#93
   def split(value = T.unsafe(nil), &block); end
 
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#310
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#315
   def sum(init = T.unsafe(nil), &block); end
 
   # Equal to <tt>self[2]</tt>.
@@ -15021,7 +15021,7 @@ module Enumerable
   #   { a: "", b: 1, c: nil, d: [], e: false, f: true }.compact_blank
   #   # => { b: 1, f: true }
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#235
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#240
   def compact_blank; end
 
   # The negative of the <tt>Enumerable#include?</tt>. Returns +true+ if the
@@ -15029,7 +15029,7 @@ module Enumerable
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#169
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#174
   def exclude?(object); end
 
   # Returns a copy of the enumerable excluding the specified elements.
@@ -15043,7 +15043,7 @@ module Enumerable
   #   {foo: 1, bar: 2, baz: 3}.excluding :bar
   #   # => {foo: 1, baz: 3}
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#183
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#188
   def excluding(*elements); end
 
   # Returns a new +Array+ where the order has been set to that provided in the +series+, based on the +key+ of the
@@ -15055,7 +15055,7 @@ module Enumerable
   # If the +series+ include keys that have no corresponding element in the Enumerable, these are ignored.
   # If the Enumerable has additional elements that aren't named in the +series+, these are not included in the result.
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#247
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#252
   def in_order_of(key, series); end
 
   # Returns a new array that includes the passed elements.
@@ -15066,7 +15066,7 @@ module Enumerable
   #   ["David", "Rafael"].including %w[ Aaron Todd ]
   #   # => ["David", "Rafael", "Aaron", "Todd"]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#163
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#168
   def including(*elements); end
 
   # Convert an enumerable to a hash, using the block result as the key and the
@@ -15078,7 +15078,7 @@ module Enumerable
   #   people.index_by { |person| "#{person.first_name} #{person.last_name}" }
   #   # => { "Chade- Fowlersburg-e" => <Person ...>, "David Heinemeier Hansson" => <Person ...>, ...}
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#103
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#108
   def index_by; end
 
   # Convert an enumerable to a hash, using the element as the key and the block
@@ -15095,7 +15095,7 @@ module Enumerable
   #   %i( created_at updated_at ).index_with(Time.now)
   #   # => { created_at: 2020-03-09 22:31:47, updated_at: 2020-03-09 22:31:47 }
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#126
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#131
   def index_with(default = T.unsafe(nil)); end
 
   # Returns +true+ if the enumerable has more than 1 element. Functionally
@@ -15105,7 +15105,7 @@ module Enumerable
   #
   # @return [Boolean]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#144
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#149
   def many?; end
 
   # Calculates the maximum from the extracted elements.
@@ -15132,7 +15132,7 @@ module Enumerable
   #   [{ id: 1, name: "David" }, { id: 2, name: "Rafael" }].pick(:id, :name)
   #   # => [1, "David"]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#212
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#217
   def pick(*keys); end
 
   # Extract the given key from each element in the enumerable.
@@ -15143,7 +15143,7 @@ module Enumerable
   #   [{ id: 1, name: "David" }, { id: 2, name: "Rafael" }].pluck(:id, :name)
   #   # => [[1, "David"], [2, "Rafael"]]
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#196
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#201
   def pluck(*keys); end
 
   # Returns the sole item in the enumerable. If there are no items, or more
@@ -15153,7 +15153,7 @@ module Enumerable
   #   Set.new.sole        # => Enumerable::SoleItemExpectedError: no item found
   #   { a: 1, b: 2 }.sole # => Enumerable::SoleItemExpectedError: multiple items found
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#257
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#262
   def sole; end
 
   # Calculates a sum from the elements.
@@ -15189,7 +15189,7 @@ module Enumerable
   #   {foo: 1, bar: 2, baz: 3}.excluding :bar
   #   # => {foo: 1, baz: 3}
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#183
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#188
   def without(*elements); end
 end
 
@@ -15287,7 +15287,7 @@ class Hash
 
   # Hash#reject has its own definition, so this needs one too.
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#268
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#273
   def compact_blank; end
 
   # Removes all blank values from the +Hash+ in place and returns self.
@@ -15297,7 +15297,7 @@ class Hash
   #   h.compact_blank!
   #   # => { b: 1, f: true }
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#278
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#283
   def compact_blank!; end
 
   # Returns a deep copy of hash.
@@ -17824,7 +17824,7 @@ class Range
   # Optimize range sum to use arithmetic progression if a block is not given and
   # we have a range of numeric values.
   #
-  # source://activesupport//lib/active_support/core_ext/enumerable.rb#287
+  # source://activesupport//lib/active_support/core_ext/enumerable.rb#292
   def sum(identity = T.unsafe(nil)); end
 end
 

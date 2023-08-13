@@ -3935,7 +3935,7 @@ end
 
 # source://activemodel//lib/active_model/type/helpers/mutable.rb#6
 module ActiveModel::Type::Helpers::Mutable
-  # source://activemodel//lib/active_model/type/helpers/mutable.rb#11
+  # source://activemodel//lib/active_model/type/helpers/mutable.rb#7
   def cast(value); end
 
   # +raw_old_value+ will be the `_before_type_cast` version of the
@@ -3944,11 +3944,13 @@ module ActiveModel::Type::Helpers::Mutable
   #
   # @return [Boolean]
   #
-  # source://activemodel//lib/active_model/type/helpers/mutable.rb#18
+  # source://activemodel//lib/active_model/type/helpers/mutable.rb#14
   def changed_in_place?(raw_old_value, new_value); end
 
-  # source://activemodel//lib/active_model/type/helpers/mutable.rb#7
-  def immutable_value(value); end
+  # @return [Boolean]
+  #
+  # source://activemodel//lib/active_model/type/helpers/mutable.rb#18
+  def mutable?; end
 end
 
 # source://activemodel//lib/active_model/type/helpers/numeric.rb#6
@@ -4244,9 +4246,6 @@ class ActiveModel::Type::Value
   # source://activemodel//lib/active_model/type/value.rb#117
   def hash; end
 
-  # source://activemodel//lib/active_model/type/value.rb#124
-  def immutable_value(value); end
-
   # Returns the value of attribute limit.
   #
   # source://activemodel//lib/active_model/type/value.rb#6
@@ -4256,6 +4255,11 @@ class ActiveModel::Type::Value
   #
   # source://activemodel//lib/active_model/type/value.rb#105
   def map(value); end
+
+  # @return [Boolean]
+  #
+  # source://activemodel//lib/active_model/type/value.rb#128
+  def mutable?; end
 
   # Returns the value of attribute precision.
   #
@@ -4285,6 +4289,11 @@ class ActiveModel::Type::Value
   # source://activemodel//lib/active_model/type/value.rb#53
   def serialize(value); end
 
+  # @return [Boolean]
+  #
+  # source://activemodel//lib/active_model/type/value.rb#124
+  def serialized?; end
+
   # source://activemodel//lib/active_model/type/value.rb#22
   def type; end
 
@@ -4305,7 +4314,7 @@ class ActiveModel::Type::Value
   # behavior for user and database inputs. Called by Value#cast for
   # values except +nil+.
   #
-  # source://activemodel//lib/active_model/type/value.rb#132
+  # source://activemodel//lib/active_model/type/value.rb#136
   def cast_value(value); end
 end
 
