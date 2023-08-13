@@ -14,6 +14,26 @@ class Internal::AccountForm < Internal::ApplicationForm
   validate :atname_uniqueness
   validate :email_uniqueness
 
+  sig { returns(String) }
+  def atname!
+    T.must(atname)
+  end
+
+  sig { returns(String) }
+  def email!
+    T.must(email)
+  end
+
+  sig { returns(String) }
+  def locale!
+    T.must(locale)
+  end
+
+  sig { returns(String) }
+  def password!
+    T.must(password)
+  end
+
   sig { void }
   private def atname_uniqueness
     if Profile.find_by(atname:)

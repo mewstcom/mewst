@@ -14,4 +14,9 @@ class Latest::CommentPostForm < Latest::ApplicationForm
   def profile!
     T.cast(profile, Profile)
   end
+
+  sig { returns(String) }
+  def comment!
+    T.must(comment)
+  end
 end

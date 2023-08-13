@@ -5,5 +5,3 @@
 # typed: false
 
 module Google::Protobuf::EnumDescriptor; end
-module Latest::Entities::Post; end
-module Latest::Entities::Profile; end

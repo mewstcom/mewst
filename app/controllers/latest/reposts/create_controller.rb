@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Latest::Reposts::CreateController < Latest::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Latest::RepostForm.new(
       viewer: current_profile!,

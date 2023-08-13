@@ -5,14 +5,12 @@ module Latest::FormErrorable
   extend T::Sig
   extend ActiveSupport::Concern
 
-  sig { params(resource_class: T.class_of(Latest::FormErrorResource)).returns(T.untyped) }
+  sig { params(resource_class: T.class_of(Latest::FormErrorResource), errors: ActiveModel::Errors).void }
   def response_form_errors(resource_class:, errors:)
-    resource_errors = resource_class.build_from_errors(errors: form.errors)
+    resource_errors = resource_class.build_from_errors(errors: errors)
 
     render(
-      json: Panko::Response.new(
-        errors: Panko::ArraySerializer.new(resource_errors, each_serializer: Latest::ResponseErrorSerializer)
-      ),
+      json: Latest::ResponseErrorSerializer.new(resource_errors),
       status: :unprocessable_entity
     )
   end

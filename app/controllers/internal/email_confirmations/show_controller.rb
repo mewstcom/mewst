@@ -8,18 +8,14 @@ class Internal::EmailConfirmations::ShowController < Internal::ApplicationContro
     unless email_confirmation
       resource = Internal::ResponseErrorResource.new(message: "Not found")
       return render(
-        json: Panko::Response.new(
-          errors: Panko::ArraySerializer.new([resource], each_serializer: Internal::ResponseErrorSerializer)
-        ),
+        json: Internal::ResponseErrorSerializer.new(resource),
         status: :not_found
       )
     end
 
     resource = Internal::EmailConfirmationResource.new(email_confirmation:)
     render(
-      json: Panko::Response.new(
-        email_confirmation: Internal::EmailConfirmationSerializer.new.serialize(resource)
-      ),
+      json: Internal::EmailConfirmationSerializer.new(resource)
     )
   end
 end

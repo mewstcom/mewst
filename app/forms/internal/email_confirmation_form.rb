@@ -7,4 +7,14 @@ class Internal::EmailConfirmationForm < Internal::ApplicationForm
 
   validates :email, email: true, presence: true
   validates :locale, inclusion: {in: Locale.values.map(&:serialize)}, presence: true
+
+  sig { returns(String) }
+  def email!
+    T.must(email)
+  end
+
+  sig { returns(String) }
+  def locale!
+    T.must(locale)
+  end
 end

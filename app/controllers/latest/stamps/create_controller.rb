@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Latest::Stamps::CreateController < Latest::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Latest::StampForm.new(
       profile: current_profile!,

@@ -3,6 +3,8 @@
 
 class CreateRepostService < ApplicationService
   class Input < T::Struct
+    extend T::Sig
+
     const :target_post, Post
     const :viewer, Profile
     const :follow, Follow
@@ -11,7 +13,7 @@ class CreateRepostService < ApplicationService
     def self.from_latest_form(form:)
       new(
         target_post: form.target_post!,
-        viewer: form.profile!,
+        viewer: form.viewer!,
         follow: form.follow!
       )
     end
@@ -22,7 +24,7 @@ class CreateRepostService < ApplicationService
   end
 
   sig { params(input: Input).returns(Result) }
-  def call
+  def call(input:)
     post = input.viewer.posts.create!(kind: :repost, published_at: Time.current)
     post.create_repost!(
       comment_post: input.target_post.comment_post!,
@@ -30,7 +32,7 @@ class CreateRepostService < ApplicationService
       follow: input.follow
     )
 
-    input.viewer!.home_timeline.add_post(post:)
+    input.viewer.home_timeline.add_post(post:)
     FanoutPostJob.perform_async(post_id: post.id)
 
     Result.new(post:)

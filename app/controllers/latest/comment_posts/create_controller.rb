@@ -21,9 +21,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
 
     resource = Latest::PostResource.new(post: result.post, viewer: current_profile!)
     render(
-      json: Panko::Response.new(
-        post: Latest::PostSerializer.new.serialize(resource)
-      ),
+      json: Latest::PostSerializer.new(resource),
       status: :created
     )
   end

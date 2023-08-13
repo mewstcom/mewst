@@ -3,14 +3,16 @@
 
 class CreateEmailConfirmationService < ApplicationService
   class Input < T::Struct
+    extend T::Sig
+
     const :email, String
     const :locale, String
 
     sig { params(form: Internal::EmailConfirmationForm).returns(Input) }
     def self.from_internal_form(form:)
       new(
-        email: form.email,
-        locale: form.locale
+        email: form.email!,
+        locale: form.locale!
       )
     end
   end
@@ -20,13 +22,13 @@ class CreateEmailConfirmationService < ApplicationService
   end
 
   sig { params(input: Input).returns(Result) }
-  def call
+  def call(input:)
     email_confirmation = EmailConfirmation.create!(
       email: input.email,
       code: EmailConfirmation.generate_code,
       event: EmailConfirmation::EVENT_SIGN_UP
     )
-    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: T.must(input.locale))
+    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: input.locale)
 
     Result.new(email_confirmation:)
   end

@@ -13,19 +13,16 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     if form.invalid?
       resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
       return render(
-        json: Panko::Response.new(
-          errors: Panko::ArraySerializer.new(resources, each_serializer: Internal::ResponseErrorSerializer)
-        ),
+        json: Internal::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity
       )
     end
 
     input = CreateAccountService::Input.from_internal_form(form:)
-
     result = ActiveRecord::Base.transaction do
-      result = CreateAccountService.new.call(input:)
-      result.oauth_access_token.user!.track_sign_in
-      result
+      r = CreateAccountService.new.call(input:)
+      r.oauth_access_token.user!.track_sign_in
+      r
     end
 
     resource = Internal::AccountResource.new(
@@ -34,9 +31,7 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
       user: result.user
     )
     render(
-      json: Panko::Response.new(
-        account: Internal::AccountSerializer.new.serialize(resource)
-      ),
+      json: Internal::AccountSerializer.new(resource),
       status: :created
     )
   end

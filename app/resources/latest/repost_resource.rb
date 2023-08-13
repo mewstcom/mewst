@@ -8,14 +8,14 @@ class Latest::RepostResource < Latest::ApplicationResource
     @viewer = viewer
   end
 
-  sig { returns(Latest::Entities::Profile) }
+  sig { returns(Latest::ProfileResource) }
   def profile
-    Latest::Entities::Profile.new(profile: repost.profile!)
+    Latest::ProfileResource.new(profile: repost.profile!)
   end
 
-  sig { returns(Latest::Entities::Post) }
+  sig { returns(Latest::PostResource) }
   def original_post
-    Latest::Entities::Post.new(post: repost.original_post, viewer:)
+    Latest::PostResource.new(post: repost.original_post, viewer:)
   end
 
   sig { returns(Repost) }

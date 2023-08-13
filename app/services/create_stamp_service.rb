@@ -3,6 +3,8 @@
 
 class CreateStampService < ApplicationService
   class Input < T::Struct
+    extend T::Sig
+
     const :original_post, Post
     const :profile, Profile
     const :target_post, Post
@@ -11,8 +13,8 @@ class CreateStampService < ApplicationService
     def self.from_latest_form(form:)
       new(
         original_post: form.original_post,
-        viewer: form.profile,
-        follow: form.follow
+        profile: form.profile!,
+        target_post: form.target_post!
       )
     end
   end
@@ -22,7 +24,7 @@ class CreateStampService < ApplicationService
   end
 
   sig { params(input: Input).returns(Result) }
-  def call
+  def call(input:)
     comment_post = input.original_post.comment_post!
     input.profile.stamps.where(comment_post:).first_or_create!(stamped_at: Time.current)
 

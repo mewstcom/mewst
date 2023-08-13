@@ -3,6 +3,8 @@
 
 class UpdateProfileService < ApplicationService
   class Input < T::Struct
+    extend T::Sig
+
     const :profile, Profile
     const :atname, String
     const :avatar_url, String
@@ -13,10 +15,10 @@ class UpdateProfileService < ApplicationService
     def self.from_latest_form(form)
       new(
         profile: form.profile!,
-        atname: form.atname,
-        avatar_url: form.avatar_url,
-        description: form.description,
-        name: form.name
+        atname: form.atname!,
+        avatar_url: form.avatar_url!,
+        description: form.description!,
+        name: form.name!
       )
     end
   end
@@ -26,14 +28,14 @@ class UpdateProfileService < ApplicationService
   end
 
   sig { params(input: Input).returns(Result) }
-  def call
-    input.profile!.update!(
+  def call(input:)
+    input.profile.update!(
       atname: input.atname,
       avatar_url: input.avatar_url,
       description: input.description,
       name: input.name
     )
 
-    Result.new(profile: input.profile!)
+    Result.new(profile: input.profile)
   end
 end

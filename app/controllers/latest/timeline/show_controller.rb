@@ -11,10 +11,10 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
 
     resources = posts.map { |post| Latest::PostResource.new(post:, viewer: current_profile!) }
     render(
-      json: Panko::Response.new(
-        posts: Panko::ArraySerializer.new(resources, each_serializer: Latest::PostSerializer),
-        page_info: Latest::PageInfoSerializer.new.serialize(page_info)
-      )
+      json: {
+        posts: Latest::PostSerializer.new(resources).to_h,
+        page_info: Latest::PageInfoSerializer.new(page_info).to_h
+      }
     )
   end
 end

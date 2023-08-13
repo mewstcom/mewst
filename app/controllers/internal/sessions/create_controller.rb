@@ -11,15 +11,13 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
     if form.invalid?
       resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
       return render(
-        json: Panko::Response.new(
-          errors: Panko::ArraySerializer.new(resources, each_serializer: Internal::ResponseErrorSerializer)
-        ),
+        json: Internal::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity
       )
     end
 
+    input = CreateSessionService::Input.from_internal_form(form:)
     result = ApplicationRecord.transaction do
-      input = CreateSessionService::Input.from_internal_form(form:)
       CreateSessionService.new.call(input:)
     end
 
@@ -29,9 +27,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
       user: result.user
     )
     render(
-      json: Panko::Response.new(
-        account: Internal::AccountSerializer.new.serialize(resource)
-      ),
+      json: Internal::AccountSerializer.new(resource),
       status: :created
     )
   end

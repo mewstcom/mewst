@@ -3,6 +3,8 @@
 
 class CreateCommentPostService < ApplicationService
   class Input < T::Struct
+    extend T::Sig
+
     const :profile, Profile
     const :comment, String
 
@@ -10,7 +12,7 @@ class CreateCommentPostService < ApplicationService
     def self.from_latest_form(form:)
       new(
         profile: form.profile!,
-        comment: form.comment
+        comment: form.comment!
       )
     end
   end
@@ -20,7 +22,7 @@ class CreateCommentPostService < ApplicationService
   end
 
   sig { params(input: Input).returns(Result) }
-  def call
+  def call(input:)
     post = input.profile.posts.create!(kind: :comment_post, published_at: Time.current)
     post.create_comment_post!(comment: input.comment)
 

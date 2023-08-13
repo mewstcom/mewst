@@ -8,20 +8,17 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
     if form.invalid?
       resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
       return render(
-        json: Panko::Response.new(
-          errors: Panko::ArraySerializer.new(resources, each_serializer: Internal::ResponseErrorSerializer)
-        ),
+        json: Internal::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity
       )
     end
 
-    result = CreateEmailConfirmationService.new(form:).call
+    input = CreateEmailConfirmationService::Input.from_internal_form(form:)
+    result = CreateEmailConfirmationService.new.call(input:)
 
     resource = Internal::EmailConfirmationResource.new(email_confirmation: result.email_confirmation)
     render(
-      json: Panko::Response.new(
-        email_confirmation: Internal::EmailConfirmationSerializer.new.serialize(resource)
-      ),
+      json: Internal::EmailConfirmationSerializer.new(resource),
       status: :created
     )
   end
