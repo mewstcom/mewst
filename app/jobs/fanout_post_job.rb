@@ -8,7 +8,7 @@ class FanoutPostJob
 
   include SuckerPunch::Job
 
-  sig { params(post_id: String).void }
+  sig { params(post_id: T::Mewst::DatabaseId).void }
   def perform(post_id:)
     topic.publish_async({post_id:}.to_json)
   end

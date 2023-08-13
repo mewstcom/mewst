@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class SendEmailConfirmationMailJob < ApplicationJob
-  sig { params(email_confirmation_id: String, locale: String).void }
+  sig { params(email_confirmation_id: T::Mewst::DatabaseId, locale: String).void }
   def perform(email_confirmation_id:, locale:)
     tasks = Mewst::CloudTasks.new
     tasks.create_task(
