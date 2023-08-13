@@ -1,0 +1,30 @@
+en:
+  forms:
+    attributes:
+      latest/repost_form:
+        follow: Repost
+        target_post: Post
+      latest/stamp_form:
+        target_post: Post
+    errors:
+      models:
+        internal/email_confirmation_challenge_form:
+          attributes:
+            confirmation_code:
+              incorrect_or_expired: is incorrect or expired
+        internal/session_form:
+          unauthenticated: Login failed. Email or password is incorrect
+        latest/profile_form:
+          attributes:
+            atname:
+              atname_uniqueness: is already taken
+        latest/repost_form:
+          attributes:
+            follow:
+              blank: can not be done because you do not follow the original poster
+            target_post:
+              blank: not found
+        latest/stamp_form:
+          attributes:
+            target_post:
+              blank: not found

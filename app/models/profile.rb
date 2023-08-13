@@ -40,6 +40,14 @@ class Profile < ApplicationRecord
     "timeline:profile:#{id}"
   end
 
+  sig do
+    params(application: OauthApplication, scopes: T.any(String, Doorkeeper::OAuth::Scopes))
+      .returns(T.nilable(OauthAccessToken))
+  end
+  def active_access_token(application: OauthApplication.mewst_web, scopes: "")
+    OauthAccessToken.matching_token_for(application, self, scopes, include_expired: false)
+  end
+
   sig { params(target_profile: Profile).returns(T::Boolean) }
   def following?(target_profile:)
     follows.exists?(target_profile:)

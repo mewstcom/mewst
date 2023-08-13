@@ -1,0 +1,30 @@
+ja:
+  forms:
+    attributes:
+      latest/repost_form:
+        follow: リポスト
+        target_post: ポスト
+      latest/stamp_form:
+        target_post: ポスト
+    errors:
+      models:
+        internal/email_confirmation_challenge_form:
+          attributes:
+            confirmation_code:
+              incorrect_or_expired: が間違っているか古くなっています
+        internal/session_form:
+          unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています
+        latest/profile_form:
+          attributes:
+            atname:
+              atname_uniqueness: はすでに存在します
+        latest/repost_form:
+          attributes:
+            follow:
+              blank: はオリジナルの投稿者をフォローしていないと行えません
+            target_post:
+              blank: が見つかりませんでした
+        latest/stamp_form:
+          attributes:
+            target_post:
+              blank: が見つかりませんでした

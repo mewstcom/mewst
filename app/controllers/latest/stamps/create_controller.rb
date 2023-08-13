@@ -2,22 +2,21 @@
 # frozen_string_literal: true
 
 class Latest::Stamps::CreateController < Latest::ApplicationController
+  include Latest::FormErrorable
+
   def call
-    form = Forms::Stamp.new(
+    form = Latest::StampForm.new(
       profile: current_profile!,
       target_post_id: params[:post_id]
     )
 
     if form.invalid?
-      resource_errors = Latest::Entities::StampFormError.build_from_errors(errors: form.errors)
-      return render(
-        json: Latest::Resources::ResponseError.new(resource_errors),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::StampFormErrorResource, errors: form.errors)
     end
 
     ActiveRecord::Base.transaction do
-      Services::CreateStamp.new(form:).call
+      input = CreateStampService::Input.from_latest_form(form:)
+      CreateStampService.new.call(input:)
     end
 
     head :no_content

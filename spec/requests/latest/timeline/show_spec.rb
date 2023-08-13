@@ -6,8 +6,9 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
     let!(:profile) { create(:profile, :for_user, :with_access_token_for_web) }
     let!(:oauth_access_token) { profile.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
-    let!(:form) { Forms::CommentPost.new(comment: "Hello", profile:) }
-    let!(:post) { Services::CreateCommentPost.new(form:).call.post }
+    let!(:form) { Latest::CommentPostForm.new(comment: "Hello", profile:) }
+    let!(:input) { CreateCommentPostService::Input.from_latest_form(form:) }
+    let!(:post) { CreateCommentPostService.new.call(input:).post }
 
     it "returns posts on timeline" do
       get("/latest/timeline", headers:)
@@ -28,7 +29,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
               avatar_url: profile.avatar_url,
               name: profile.name
             },
-            published_at: post.published_at.iso8601(3),
+            published_at: post.published_at.iso8601,
             reposts_count: 0,
             stamps_count: 0,
             viewer_has_stamped: false

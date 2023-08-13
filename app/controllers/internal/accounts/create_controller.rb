@@ -3,7 +3,7 @@
 
 class Internal::Accounts::CreateController < Internal::ApplicationController
   def call
-    form = Forms::Account.new(
+    form = Internal::AccountForm.new(
       atname: params[:atname],
       email: params[:email],
       locale: I18n.locale,
@@ -11,17 +11,27 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     )
 
     if form.invalid?
+      resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
       return render(
-        json: Internal::Resources::ActiveModelErrors.new(form.errors),
+        json: Internal::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity
       )
     end
 
-    result = Services::CreateAccount.new(form:).call
-    result.oauth_access_token.user!.track_sign_in
+    input = CreateAccountService::Input.from_internal_form(form:)
+    result = ActiveRecord::Base.transaction do
+      r = CreateAccountService.new.call(input:)
+      r.oauth_access_token.user!.track_sign_in
+      r
+    end
 
+    resource = Internal::AccountResource.new(
+      oauth_access_token: result.oauth_access_token,
+      profile: result.profile,
+      user: result.user
+    )
     render(
-      json: Internal::Resources::Account.new(result),
+      json: Internal::AccountSerializer.new(resource),
       status: :created
     )
   end

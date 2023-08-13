@@ -13,17 +13,20 @@ OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
   ["user3@example.com", "ja", "user3", "password", ""]
 ].each do |(email, locale, atname, password, avatar_url)|
   ActiveRecord::Base.transaction do
-    form = Forms::EmailConfirmation.new(email:, locale:)
-    result = Services::SendEmailConfirmationCode.new(form:).call
+    form = Internal::EmailConfirmationForm.new(email:, locale:)
+    input = CreateEmailConfirmationService::Input.from_internal_form(form:)
+    result = CreateEmailConfirmationService.new.call(input:)
 
-    form = Forms::EmailConfirmationChallenge.new(
+    form = Internal::EmailConfirmationChallengeForm.new(
       email_confirmation_id: result.email_confirmation.id,
       confirmation_code: result.email_confirmation.code
     )
-    Services::ConfirmEmail.new(form:).call
+    input = ConfirmEmailService::Input.from_internal_form(form:)
+    ConfirmEmailService.new.call(input:)
 
-    form = Forms::SignUp.new(atname:, email:, locale:, password:)
-    result = Services::SignUp.new(form:).call
+    form = Internal::AccountForm.new(atname:, email:, locale:, password:)
+    input = CreateAccountService::Input.from_internal_form(form:)
+    result = CreateAccountService.new.call(input:)
 
     if avatar_url.present?
       result.profile.update!(avatar_url:)

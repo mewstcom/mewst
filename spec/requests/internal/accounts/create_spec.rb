@@ -14,8 +14,6 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
       expected = {
         errors: [
           {
-            code: "invalid_input_data",
-            field: "atname",
             message: "Atname is too long (maximum is 30 characters)"
           }
         ]
