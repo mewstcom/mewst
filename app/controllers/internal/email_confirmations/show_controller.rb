@@ -8,7 +8,7 @@ class Internal::EmailConfirmations::ShowController < Internal::ApplicationContro
     unless email_confirmation
       resource = Internal::ResponseErrorResource.new(message: "Not found")
       return render(
-        json: Internal::ResponseErrorSerializer.new(resource),
+        json: Internal::ResponseErrorSerializer.new([resource]),
         status: :not_found
       )
     end

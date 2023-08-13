@@ -31,6 +31,11 @@ class Latest::PostResource < Latest::ApplicationResource
     viewer.stamps.exists?(comment_post: post.original_post.comment_post!)
   end
 
+  sig { returns(String) }
+  def published_at
+    post.published_at.iso8601
+  end
+
   sig { returns(Post) }
   attr_reader :post
   private :post

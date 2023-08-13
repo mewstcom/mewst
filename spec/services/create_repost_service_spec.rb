@@ -8,7 +8,6 @@ RSpec.describe CreateRepostService do
   let!(:comment_post_input) { CreateCommentPostService::Input.from_latest_form(form: comment_post_form) }
   let!(:target_post) { CreateCommentPostService.new.call(input: comment_post_input).post }
   let!(:form) { Latest::RepostForm.new(viewer: profile_2, target_post_id: target_post.id) }
-  let!(:input) { CreateRepostService::Input.from_latest_form(form:) }
   let!(:service) { CreateRepostService.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
@@ -25,6 +24,7 @@ RSpec.describe CreateRepostService do
     expect(Repost.count).to eq(0)
     expect(Post.count).to eq(1)
 
+    input = CreateRepostService::Input.from_latest_form(form:)
     result = service.call(input:)
 
     expect(Post.count).to eq(2)

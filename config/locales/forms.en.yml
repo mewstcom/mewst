@@ -1,30 +1,30 @@
 en:
-  activemodel:
+  forms:
     attributes:
-      forms/repost:
+      latest/repost_form:
         follow: Repost
         target_post: Post
-      forms/stamp:
+      latest/stamp_form:
         target_post: Post
     errors:
       models:
-        forms/email_confirmation_challenge:
+        internal/email_confirmation_challenge_form:
           attributes:
             confirmation_code:
               incorrect_or_expired: is incorrect or expired
-        forms/profile:
+        internal/session_form:
+          unauthenticated: Login failed. Email or password is incorrect
+        latest/profile_form:
           attributes:
             atname:
               atname_uniqueness: is already taken
-        forms/repost:
+        latest/repost_form:
           attributes:
             follow:
               blank: can not be done because you do not follow the original poster
             target_post:
               blank: not found
-        forms/stamp:
+        latest/stamp_form:
           attributes:
             target_post:
               blank: not found
-        forms/session:
-          unauthenticated: Login failed. Email or password is incorrect

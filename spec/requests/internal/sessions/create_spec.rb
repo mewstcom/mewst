@@ -20,8 +20,6 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
       expected = {
         errors: [
           {
-            code: "invalid_input_data",
-            field: "base",
             message: "Login failed. Email or password is incorrect"
           }
         ]
