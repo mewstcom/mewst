@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::PostResource < Latest::ApplicationResource
-  delegate :id, :kind, :published_at, :reposts_count, :stamps_count, to: :post
+  delegate :id, :kind, :reposts_count, :stamps_count, to: :post
 
   sig { params(post: Post, viewer: Profile).void }
   def initialize(post:, viewer:)

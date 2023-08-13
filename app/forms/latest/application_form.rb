@@ -8,6 +8,7 @@ class Latest::ApplicationForm
   include ActiveModel::Attributes
 
   # @overload
+  sig { returns(Symbol) }
   def self.i18n_scope
     :forms
   end
