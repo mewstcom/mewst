@@ -10,20 +10,20 @@ class Latest::PostResource < Latest::ApplicationResource
     @viewer = viewer
   end
 
-  sig { returns(T.any(Latest::Entities::CommentPost, Latest::Entities::Repost)) }
+  sig { returns(T.any(Latest::CommentPostResource, Latest::RepostResource)) }
   def postable
     if post.kind_comment_post?
-      Latest::Entities::CommentPost.new(comment_post: post.comment_post!)
+      Latest::CommentPostResource.new(comment_post: post.comment_post!)
     elsif post.kind_repost?
-      Latest::Entities::Repost.new(repost: post.repost!, viewer:)
+      Latest::RepostResource.new(repost: post.repost!, viewer:)
     else
       fail
     end
   end
 
-  sig { returns(Latest::Entities::Profile) }
+  sig { returns(Latest::ProfileResource) }
   def profile
-    Latest::Entities::Profile.new(profile: post.profile!)
+    Latest::ProfileResource.new(profile: post.profile!)
   end
 
   sig { returns(T::Boolean) }
