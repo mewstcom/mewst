@@ -1,4 +1,5 @@
-# typed: true
+# typed: strict
+# frozen_string_literal: true
 
 module T::Mewst
   extend T::Sig
