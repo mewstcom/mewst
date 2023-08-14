@@ -9,28 +9,8 @@ class Repost < ApplicationRecord
   belongs_to :post
   belongs_to :profile
 
-  sig { returns(CommentPost) }
-  def comment_post!
-    T.must(comment_post)
-  end
-
-  sig { returns(Follow) }
-  def follow!
-    T.must(follow)
-  end
-
-  sig { returns(Post) }
-  def post!
-    T.must(post)
-  end
-
-  sig { returns(Profile) }
-  def profile!
-    T.must(profile)
-  end
-
   sig { returns(Post) }
   def original_post
-    comment_post!.post!
+    comment_post.not_nil!.post.not_nil!
   end
 end

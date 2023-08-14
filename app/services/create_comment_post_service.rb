@@ -11,8 +11,8 @@ class CreateCommentPostService < ApplicationService
     sig { params(form: Latest::CommentPostForm).returns(Input) }
     def self.from_latest_form(form:)
       new(
-        profile: form.profile!,
-        comment: form.comment!
+        profile: form.profile.not_nil!,
+        comment: form.comment.not_nil!
       )
     end
   end

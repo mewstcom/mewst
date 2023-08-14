@@ -14,34 +14,9 @@ class Latest::ProfileForm < Latest::ApplicationForm
   validates :profile, presence: true
   validate :atname_uniqueness
 
-  sig { returns(String) }
-  def atname!
-    T.must(atname)
-  end
-
-  sig { returns(String) }
-  def avatar_url!
-    T.must(avatar_url)
-  end
-
-  sig { returns(String) }
-  def description!
-    T.must(description)
-  end
-
-  sig { returns(String) }
-  def name!
-    T.must(name)
-  end
-
-  sig { returns(Profile) }
-  def profile!
-    T.must(profile)
-  end
-
   sig { void }
   private def atname_uniqueness
-    if Profile.where.not(id: profile!.id).find_by(atname:)
+    if Profile.where.not(id: profile.not_nil!.id).find_by(atname:)
       errors.add(:atname, :atname_uniqueness)
     end
   end

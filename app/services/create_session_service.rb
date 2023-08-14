@@ -10,7 +10,7 @@ class CreateSessionService < ApplicationService
     sig { params(form: Internal::SessionForm).returns(Input) }
     def self.from_internal_form(form:)
       new(
-        user: form.user!
+        user: form.user.not_nil!
       )
     end
   end
@@ -24,12 +24,12 @@ class CreateSessionService < ApplicationService
   sig { params(input: Input).returns(Result) }
   def call(input:)
     user = input.user
-    profile = user.profile!
+    profile = user.profile.not_nil!
 
     user.track_sign_in
 
     Result.new(
-      oauth_access_token: T.must(profile.active_access_token),
+      oauth_access_token: profile.active_access_token.not_nil!,
       profile:,
       user:
     )

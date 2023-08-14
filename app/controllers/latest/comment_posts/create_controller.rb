@@ -8,7 +8,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
     form = Latest::CommentPostForm.new(
       comment: params[:comment]
     )
-    form.profile = current_profile!
+    form.profile = current_profile.not_nil!
 
     if form.invalid?
       return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
@@ -19,7 +19,7 @@ class Latest::CommentPosts::CreateController < Latest::ApplicationController
       CreateCommentPostService.new.call(input:)
     end
 
-    resource = Latest::PostResource.new(post: result.post, viewer: current_profile!)
+    resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
     render(
       json: Latest::PostSerializer.new(resource),
       status: :created

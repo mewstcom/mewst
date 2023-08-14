@@ -8,9 +8,4 @@ class OauthAccessToken < Doorkeeper::AccessToken
   belongs_to :user
 
   alias_attribute :profile, :resource_owner
-
-  sig { returns(User) }
-  def user!
-    T.must(user)
-  end
 end

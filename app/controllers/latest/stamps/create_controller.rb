@@ -6,7 +6,7 @@ class Latest::Stamps::CreateController < Latest::ApplicationController
 
   def call
     form = Latest::StampForm.new(
-      profile: current_profile!,
+      profile: current_profile.not_nil!,
       target_post_id: params[:post_id]
     )
 

@@ -27,7 +27,7 @@ RSpec.describe CreateCommentPostService do
 
     expect(Post.count).to eq(1)
     post = Post.first
-    expect(post.comment_post!).to eq(comment_post)
+    expect(post.comment_post.not_nil!).to eq(comment_post)
 
     expect(home_timeline).to have_received(:add_post).exactly(1).time
     expect(FanoutPostJob).to have_received(:perform_async).exactly(1).time

@@ -9,7 +9,7 @@ class ConfirmEmailService < ApplicationService
 
     sig { params(form: Internal::EmailConfirmationChallengeForm).returns(Input) }
     def self.from_internal_form(form:)
-      new(email_confirmation: form.email_confirmation!)
+      new(email_confirmation: form.email_confirmation.not_nil!)
     end
   end
 

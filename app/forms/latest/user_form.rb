@@ -8,14 +8,4 @@ class Latest::UserForm < Latest::ApplicationForm
   attr_accessor :user
 
   validates :locale, presence: true
-
-  sig { returns(String) }
-  def locale!
-    T.must(locale)
-  end
-
-  sig { returns(User) }
-  def user!
-    T.cast(user, User)
-  end
 end

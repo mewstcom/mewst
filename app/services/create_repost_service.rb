@@ -12,9 +12,9 @@ class CreateRepostService < ApplicationService
     sig { params(form: Latest::RepostForm).returns(Input) }
     def self.from_latest_form(form:)
       new(
-        target_post: form.target_post!,
-        viewer: form.viewer!,
-        follow: form.follow!
+        target_post: form.target_post.not_nil!,
+        viewer: form.viewer.not_nil!,
+        follow: form.follow.not_nil!
       )
     end
   end
@@ -27,7 +27,7 @@ class CreateRepostService < ApplicationService
   def call(input:)
     post = input.viewer.posts.create!(kind: :repost, published_at: Time.current)
     post.create_repost!(
-      comment_post: input.target_post.comment_post!,
+      comment_post: input.target_post.comment_post.not_nil!,
       profile: input.viewer,
       follow: input.follow
     )

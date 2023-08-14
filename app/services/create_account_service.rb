@@ -13,10 +13,10 @@ class CreateAccountService < ApplicationService
     sig { params(form: Internal::AccountForm).returns(Input) }
     def self.from_internal_form(form:)
       new(
-        atname: form.atname!,
-        email: form.email!,
-        locale: form.locale!,
-        password: form.password!
+        atname: form.atname.not_nil!,
+        email: form.email.not_nil!,
+        locale: form.locale.not_nil!,
+        password: form.password.not_nil!
       )
     end
   end

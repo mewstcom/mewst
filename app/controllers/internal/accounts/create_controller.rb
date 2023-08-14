@@ -21,7 +21,7 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     input = CreateAccountService::Input.from_internal_form(form:)
     result = ActiveRecord::Base.transaction do
       r = CreateAccountService.new.call(input:)
-      r.oauth_access_token.user!.track_sign_in
+      r.oauth_access_token.user.not_nil!.track_sign_in
       r
     end
 

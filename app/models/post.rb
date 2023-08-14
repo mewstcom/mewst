@@ -11,36 +11,21 @@ class Post < ApplicationRecord
 
   enumerize :kind, in: %i[comment_post repost], predicates: {prefix: true}
 
-  sig { returns(Profile) }
-  def profile!
-    T.cast(profile, Profile)
-  end
-
-  sig { returns(CommentPost) }
-  def comment_post!
-    T.must(comment_post)
-  end
-
-  sig { returns(Repost) }
-  def repost!
-    T.must(repost)
-  end
-
   sig { returns(Post) }
   def original_post
     return self if kind_comment_post?
 
-    repost!.original_post
+    repost.not_nil!.original_post
   end
 
   sig { returns(Integer) }
   def reposts_count
-    original_post.comment_post!.reposts_count
+    original_post.comment_post.not_nil!.reposts_count
   end
 
   sig { returns(Integer) }
   def stamps_count
-    original_post.comment_post!.stamps_count
+    original_post.comment_post.not_nil!.stamps_count
   end
 
   sig { returns(String) }
@@ -50,7 +35,7 @@ class Post < ApplicationRecord
 
   sig { void }
   def add_to_followers_home_timeline
-    followers = profile!.followers
+    followers = profile.not_nil!.followers
     topic = Mewst::CloudPubsub.client.topic(Rails.configuration.mewst["pubsub_topic_name_add_post_to_home_timeline"])
 
     followers.find_each do |follower|

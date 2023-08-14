@@ -10,7 +10,7 @@ class Latest::RepostResource < Latest::ApplicationResource
 
   sig { returns(Latest::ProfileResource) }
   def profile
-    Latest::ProfileResource.new(profile: repost.profile!)
+    Latest::ProfileResource.new(profile: repost.profile.not_nil!)
   end
 
   sig { returns(Latest::PostResource) }
