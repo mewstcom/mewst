@@ -232,6 +232,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.3-x86_64-linux)
       racc (~> 1.4)
+    oj (3.15.1)
     openapi_parser (1.0.0)
     os (1.1.4)
     pagy (6.0.4)
@@ -445,6 +446,7 @@ DEPENDENCIES
   google-cloud-pubsub
   google-cloud-tasks
   http_accept_language
+  oj
   pagy
   pg
   puma
