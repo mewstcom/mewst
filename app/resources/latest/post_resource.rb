@@ -13,9 +13,9 @@ class Latest::PostResource < Latest::ApplicationResource
   sig { returns(T.any(Latest::CommentPostResource, Latest::RepostResource)) }
   def postable
     if post.kind_comment_post?
-      Latest::CommentPostResource.new(comment_post: post.comment_post!)
+      Latest::CommentPostResource.new(comment_post: post.comment_post.not_nil!)
     elsif post.kind_repost?
-      Latest::RepostResource.new(repost: post.repost!, viewer:)
+      Latest::RepostResource.new(repost: post.repost.not_nil!, viewer:)
     else
       fail
     end
@@ -23,12 +23,12 @@ class Latest::PostResource < Latest::ApplicationResource
 
   sig { returns(Latest::ProfileResource) }
   def profile
-    Latest::ProfileResource.new(profile: post.profile!)
+    Latest::ProfileResource.new(profile: post.profile.not_nil!)
   end
 
   sig { returns(T::Boolean) }
   def viewer_has_stamped
-    viewer.stamps.exists?(comment_post: post.original_post.comment_post!)
+    viewer.stamps.exists?(comment_post: post.original_post.comment_post.not_nil!)
   end
 
   sig { returns(String) }

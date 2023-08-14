@@ -11,35 +11,20 @@ class Latest::RepostForm < Latest::ApplicationForm
   validates :target_post, presence: true
   validates :follow, presence: true
 
-  sig { returns(Post) }
-  def target_post!
-    T.must(target_post)
-  end
-
-  sig { returns(Follow) }
-  def follow!
-    T.must(follow)
-  end
-
-  sig { returns(Profile) }
-  def viewer!
-    T.must(viewer)
-  end
-
   sig { returns(T.nilable(Post)) }
-  private def target_post
+  def target_post
     Post.find_by(id: target_post_id)
+  end
+
+  sig { returns(T.nilable(Follow)) }
+  def follow
+    return if target_post.nil?
+
+    viewer.not_nil!.follows.find_by(target_profile_id: original_post.profile_id)
   end
 
   sig { returns(Post) }
   private def original_post
-    target_post!.original_post
-  end
-
-  sig { returns(T.nilable(Follow)) }
-  private def follow
-    return if target_post.nil?
-
-    viewer!.follows.find_by(target_profile_id: original_post.profile_id)
+    target_post.not_nil!.original_post
   end
 end

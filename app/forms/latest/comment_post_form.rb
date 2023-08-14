@@ -9,14 +9,4 @@ class Latest::CommentPostForm < Latest::ApplicationForm
 
   validates :comment, length: {maximum: Commentable::MAXIMUM_COMMENT_LENGTH}, presence: true
   validates :profile, presence: true
-
-  sig { returns(Profile) }
-  def profile!
-    T.cast(profile, Profile)
-  end
-
-  sig { returns(String) }
-  def comment!
-    T.must(comment)
-  end
 end

@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 module Authorizable
-  def current_profile!; end
+  def current_profile; end
 end

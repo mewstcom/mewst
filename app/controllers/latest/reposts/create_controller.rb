@@ -6,7 +6,7 @@ class Latest::Reposts::CreateController < Latest::ApplicationController
 
   def call
     form = Latest::RepostForm.new(
-      viewer: current_profile!,
+      viewer: current_profile.not_nil!,
       target_post_id: params[:post_id]
     )
 

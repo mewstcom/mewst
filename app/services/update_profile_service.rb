@@ -14,11 +14,11 @@ class UpdateProfileService < ApplicationService
     sig { params(form: Latest::ProfileForm).returns(Input) }
     def self.from_latest_form(form)
       new(
-        profile: form.profile!,
-        atname: form.atname!,
-        avatar_url: form.avatar_url!,
-        description: form.description!,
-        name: form.name!
+        profile: form.profile.not_nil!,
+        atname: form.atname.not_nil!,
+        avatar_url: form.avatar_url.not_nil!,
+        description: form.description.not_nil!,
+        name: form.name.not_nil!
       )
     end
   end

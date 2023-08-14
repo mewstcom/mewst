@@ -11,8 +11,8 @@ class CreateEmailConfirmationService < ApplicationService
     sig { params(form: Internal::EmailConfirmationForm).returns(Input) }
     def self.from_internal_form(form:)
       new(
-        email: form.email!,
-        locale: form.locale!
+        email: form.email.not_nil!,
+        locale: form.locale.not_nil!
       )
     end
   end

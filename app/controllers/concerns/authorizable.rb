@@ -9,6 +9,6 @@ module Authorizable
 
   sig { returns(Profile) }
   def pundit_user
-    current_profile!
+    current_profile.not_nil!
   end
 end

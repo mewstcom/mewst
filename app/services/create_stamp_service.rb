@@ -13,8 +13,8 @@ class CreateStampService < ApplicationService
     def self.from_latest_form(form:)
       new(
         original_post: form.original_post,
-        profile: form.profile!,
-        target_post: form.target_post!
+        profile: form.profile.not_nil!,
+        target_post: form.target_post.not_nil!
       )
     end
   end
@@ -25,7 +25,7 @@ class CreateStampService < ApplicationService
 
   sig { params(input: Input).returns(Result) }
   def call(input:)
-    comment_post = input.original_post.comment_post!
+    comment_post = input.original_post.comment_post.not_nil!
     input.profile.stamps.where(comment_post:).first_or_create!(stamped_at: Time.current)
 
     Result.new(post: input.target_post)

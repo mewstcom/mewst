@@ -7,9 +7,9 @@ class Internal::EmailConfirmationChallengeForm < Internal::ApplicationForm
 
   validate :valid_confirmation_code
 
-  sig { returns(EmailConfirmation) }
-  def email_confirmation!
-    T.cast(EmailConfirmation.find_by(id: email_confirmation_id), EmailConfirmation)
+  sig { returns(T.nilable(EmailConfirmation)) }
+  def email_confirmation
+    EmailConfirmation.find_by(id: email_confirmation_id)
   end
 
   sig { returns(T.nilable(EmailConfirmation)) }

@@ -11,8 +11,8 @@ class UpdateUserService < ApplicationService
     sig { params(form: Latest::UserForm).returns(Input) }
     def self.from_latest_form(form:)
       new(
-        user: form.user!,
-        locale: form.locale!
+        user: form.user.not_nil!,
+        locale: form.locale.not_nil!
       )
     end
   end
