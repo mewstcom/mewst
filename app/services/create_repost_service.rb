@@ -27,7 +27,7 @@ class CreateRepostService < ApplicationService
   def call(input:)
     post = input.viewer.posts.create!(kind: :repost, published_at: Time.current)
     post.create_repost!(
-      comment_post: input.target_post.comment_post.not_nil!,
+      target_comment_post: input.target_post.comment_post.not_nil!,
       profile: input.viewer,
       follow: input.follow
     )

@@ -125,7 +125,7 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.references :post, foreign_key: true, null: false, type: :uuid
       t.references :profile, foreign_key: true, null: false, type: :uuid
       t.references :follow, foreign_key: true, null: false, type: :uuid
-      t.references :comment_post, foreign_key: true, null: false, type: :uuid
+      t.references :target_comment_post, foreign_key: {to_table: :comment_posts}, null: false, type: :uuid
       t.timestamps
     end
 

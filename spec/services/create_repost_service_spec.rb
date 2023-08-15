@@ -36,7 +36,7 @@ RSpec.describe CreateRepostService do
     expect(Repost.count).to eq(1)
     repost = Repost.first
     expect(repost.post).to eq(post)
-    expect(repost.comment_post).to eq(target_post.comment_post)
+    expect(repost.target_comment_post).to eq(target_post.comment_post)
     expect(repost.profile).to eq(profile_2)
     expect(repost.original_post).to eq(target_post)
 
