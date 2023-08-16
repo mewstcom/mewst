@@ -68,7 +68,15 @@ paths:
       parameters:
         - "$ref": "#/components/parameters/post-id"
       responses:
-        '204':
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
           description: Response
         '422':
           "$ref": "#/components/responses/validation_failed"
