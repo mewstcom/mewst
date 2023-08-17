@@ -63,6 +63,26 @@ paths:
       tags:
         - reposts
   "/posts/{post_id}/stamp":
+    delete:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - stamps
     post:
       description: ""
       parameters:
