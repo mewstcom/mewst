@@ -22,7 +22,7 @@ class Latest::Stamps::DestroyController < Latest::ApplicationController
     resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
     render(
       json: Latest::PostSerializer.new(resource),
-      status: :created
+      status: :ok
     )
   end
 end

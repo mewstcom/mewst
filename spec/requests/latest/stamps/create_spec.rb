@@ -42,13 +42,34 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
       expect(Stamp.count).to eq(0)
 
       post("/latest/posts/#{target_post.id}/stamp", headers:)
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:created)
 
       expect(Post.count).to eq(1)
       expect(CommentPost.count).to eq(1)
       expect(Stamp.count).to eq(1)
 
-      assert_response_schema_confirm(204)
+      expected = {
+        post: {
+          id: target_post.id,
+          kind: "comment_post",
+          postable: {
+            comment: target_post.comment_post.comment
+          },
+          profile: {
+            atname: profile_2.atname,
+            avatar_url: profile_2.avatar_url,
+            name: profile_2.name
+          },
+          published_at: target_post.published_at.iso8601,
+          reposts_count: 0,
+          stamps_count: 1,
+          viewer_has_stamped: true
+        }
+      }
+      actual = JSON.parse(response.body)
+      expect(actual).to include(expected.deep_stringify_keys)
+
+      assert_response_schema_confirm(201)
     end
   end
 end
