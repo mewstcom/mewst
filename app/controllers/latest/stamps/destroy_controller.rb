@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Latest::Stamps::CreateController < Latest::ApplicationController
+class Latest::Stamps::DestroyController < Latest::ApplicationController
   include Latest::FormErrorable
 
   def call
@@ -15,14 +15,14 @@ class Latest::Stamps::CreateController < Latest::ApplicationController
     end
 
     result = ActiveRecord::Base.transaction do
-      input = CreateStampService::Input.from_latest_form(form:)
-      CreateStampService.new.call(input:)
+      input = DeleteStampService::Input.from_latest_form(form:)
+      DeleteStampService.new.call(input:)
     end
 
     resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
     render(
       json: Latest::PostSerializer.new(resource),
-      status: :created
+      status: :ok
     )
   end
 end
