@@ -240,18 +240,18 @@ class Puma::Client
 
   # @return [Client] a new instance of Client
   #
-  # source://puma//lib/puma/client.rb#66
+  # source://puma//lib/puma/client.rb#67
   def initialize(io, env = T.unsafe(nil)); end
 
   # Returns the value of attribute body.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def body; end
 
   # For the hijack protocol (allows us to just put the Client object
   # into the env)
   #
-  # source://puma//lib/puma/client.rb#128
+  # source://puma//lib/puma/client.rb#129
   def call; end
 
   # Returns true if the persistent connection can be closed immediately
@@ -260,60 +260,60 @@ class Puma::Client
   # @return [Boolean]
   # @version 5.0.0
   #
-  # source://puma//lib/puma/client.rb#323
+  # source://puma//lib/puma/client.rb#324
   def can_close?; end
 
-  # source://puma//lib/puma/client.rb#187
+  # source://puma//lib/puma/client.rb#188
   def close; end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def closed?(*args, **_arg1, &block); end
 
-  # source://puma//lib/puma/client.rb#274
+  # source://puma//lib/puma/client.rb#275
   def eagerly_finish; end
 
   # Returns the value of attribute env.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def env; end
 
-  # source://puma//lib/puma/client.rb#328
+  # source://puma//lib/puma/client.rb#329
   def expect_proxy_proto=(val); end
 
-  # source://puma//lib/puma/client.rb#280
+  # source://puma//lib/puma/client.rb#281
   def finish(timeout); end
 
   # Returns the value of attribute hijacked.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def hijacked; end
 
   # Sets the attribute http_content_length_limit
   #
   # @param value the value to set the attribute http_content_length_limit to.
   #
-  # source://puma//lib/puma/client.rb#109
+  # source://puma//lib/puma/client.rb#110
   def http_content_length_limit=(_arg0); end
 
   # Returns the value of attribute http_content_length_limit_exceeded.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def http_content_length_limit_exceeded; end
 
-  # source://puma//lib/puma/client.rb#134
+  # source://puma//lib/puma/client.rb#135
   def in_data_phase; end
 
-  # source://puma//lib/puma/client.rb#122
+  # source://puma//lib/puma/client.rb#123
   def inspect; end
 
   # Returns the value of attribute io.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def io; end
 
   # Returns the value of attribute io_buffer.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def io_buffer; end
 
   # Test to see if io meets a bare minimum of functioning, @to_io needs to be
@@ -321,120 +321,120 @@ class Puma::Client
   #
   # @return [Boolean]
   #
-  # source://puma//lib/puma/client.rb#117
+  # source://puma//lib/puma/client.rb#118
   def io_ok?; end
 
   # Returns the value of attribute listener.
   #
-  # source://puma//lib/puma/client.rb#111
+  # source://puma//lib/puma/client.rb#112
   def listener; end
 
   # Sets the attribute listener
   #
   # @param value the value to set the attribute listener to.
   #
-  # source://puma//lib/puma/client.rb#111
+  # source://puma//lib/puma/client.rb#112
   def listener=(_arg0); end
 
-  # source://puma//lib/puma/client.rb#309
+  # source://puma//lib/puma/client.rb#310
   def peer_family; end
 
-  # source://puma//lib/puma/client.rb#297
+  # source://puma//lib/puma/client.rb#298
   def peerip; end
 
   # Sets the attribute peerip
   #
   # @param value the value to set the attribute peerip to.
   #
-  # source://puma//lib/puma/client.rb#109
+  # source://puma//lib/puma/client.rb#110
   def peerip=(_arg0); end
 
   # Returns the value of attribute ready.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def ready; end
 
   # Returns the value of attribute remote_addr_header.
   #
-  # source://puma//lib/puma/client.rb#111
+  # source://puma//lib/puma/client.rb#112
   def remote_addr_header; end
 
   # Sets the attribute remote_addr_header
   #
   # @param value the value to set the attribute remote_addr_header to.
   #
-  # source://puma//lib/puma/client.rb#111
+  # source://puma//lib/puma/client.rb#112
   def remote_addr_header=(_arg0); end
 
-  # source://puma//lib/puma/client.rb#147
+  # source://puma//lib/puma/client.rb#148
   def reset(fast_check = T.unsafe(nil)); end
 
-  # source://puma//lib/puma/client.rb#138
+  # source://puma//lib/puma/client.rb#139
   def set_timeout(val); end
 
   # Returns the value of attribute tempfile.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def tempfile; end
 
   # Number of seconds until the timeout elapses.
   #
-  # source://puma//lib/puma/client.rb#143
+  # source://puma//lib/puma/client.rb#144
   def timeout; end
 
   # @raise [ConnectionError]
   #
-  # source://puma//lib/puma/client.rb#285
+  # source://puma//lib/puma/client.rb#286
   def timeout!; end
 
   # Returns the value of attribute timeout_at.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def timeout_at; end
 
   # Returns the value of attribute to_io.
   #
-  # source://puma//lib/puma/client.rb#106
+  # source://puma//lib/puma/client.rb#107
   def to_io; end
 
-  # source://puma//lib/puma/client.rb#219
+  # source://puma//lib/puma/client.rb#220
   def try_to_finish; end
 
   # If necessary, read the PROXY protocol from the buffer. Returns
   # false if more data is needed.
   #
-  # source://puma//lib/puma/client.rb#197
+  # source://puma//lib/puma/client.rb#198
   def try_to_parse_proxy_protocol; end
 
-  # source://puma//lib/puma/client.rb#290
+  # source://puma//lib/puma/client.rb#291
   def write_error(status_code); end
 
   private
 
-  # source://puma//lib/puma/client.rb#620
+  # source://puma//lib/puma/client.rb#627
   def above_http_content_limit(value); end
 
-  # source://puma//lib/puma/client.rb#515
+  # source://puma//lib/puma/client.rb#516
   def decode_chunk(chunk); end
 
-  # source://puma//lib/puma/client.rb#423
+  # source://puma//lib/puma/client.rb#424
   def read_body; end
 
-  # source://puma//lib/puma/client.rb#468
+  # source://puma//lib/puma/client.rb#469
   def read_chunked_body; end
 
-  # source://puma//lib/puma/client.rb#612
+  # source://puma//lib/puma/client.rb#619
   def set_ready; end
 
-  # source://puma//lib/puma/client.rb#341
+  # source://puma//lib/puma/client.rb#342
   def setup_body; end
 
-  # source://puma//lib/puma/client.rb#493
+  # source://puma//lib/puma/client.rb#494
   def setup_chunked_body(body); end
 
   # @version 5.0.0
   #
-  # source://puma//lib/puma/client.rb#511
+  # source://puma//lib/puma/client.rb#512
   def write_chunk(str); end
 end
 
@@ -451,18 +451,21 @@ Puma::Client::CHUNK_SIZE_INVALID = T.let(T.unsafe(nil), Regexp)
 # source://puma//lib/puma/client.rb#52
 Puma::Client::CHUNK_VALID_ENDING = T.let(T.unsafe(nil), String)
 
+# source://puma//lib/puma/client.rb#53
+Puma::Client::CHUNK_VALID_ENDING_SIZE = T.let(T.unsafe(nil), Integer)
+
 # Content-Length header value validation
 #
-# source://puma//lib/puma/client.rb#55
+# source://puma//lib/puma/client.rb#56
 Puma::Client::CONTENT_LENGTH_VALUE_INVALID = T.let(T.unsafe(nil), Regexp)
 
 # The object used for a request with no body. All requests with
 # no body share this one object since it has no state.
 #
-# source://puma//lib/puma/client.rb#61
+# source://puma//lib/puma/client.rb#62
 Puma::Client::EmptyBody = T.let(T.unsafe(nil), Puma::NullIO)
 
-# source://puma//lib/puma/client.rb#57
+# source://puma//lib/puma/client.rb#58
 Puma::Client::TE_ERR_MSG = T.let(T.unsafe(nil), String)
 
 # This class is instantiated by the `Puma::Launcher` and used
