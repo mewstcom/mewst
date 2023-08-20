@@ -5,6 +5,8 @@ ja:
         target_atname: atname
       latest/stamp_form:
         target_post: ポスト
+      latest/unfollow_form:
+        target_profile: atname
     errors:
       models:
         internal/email_confirmation_challenge_form:
@@ -24,4 +26,8 @@ ja:
         latest/stamp_form:
           attributes:
             target_post:
+              blank: が見つかりませんでした
+        latest/unfollow_form:
+          attributes:
+            target_profile:
               blank: が見つかりませんでした
