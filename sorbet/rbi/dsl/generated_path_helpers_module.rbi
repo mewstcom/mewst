@@ -33,6 +33,9 @@ module GeneratedPathHelpersModule
   def internal_tasks_send_email_confirmation_mail_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_follow_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

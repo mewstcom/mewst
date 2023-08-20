@@ -36,7 +36,8 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
           profile: {
             atname: profile_2.atname,
             avatar_url: profile_2.avatar_url,
-            name: profile_2.name
+            name: profile_2.name,
+            viewer_has_followed: false
           },
           published_at: post.published_at.iso8601,
           stamps_count: 0,

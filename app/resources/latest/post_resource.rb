@@ -12,7 +12,7 @@ class Latest::PostResource < Latest::ApplicationResource
 
   sig { returns(Latest::ProfileResource) }
   def profile
-    Latest::ProfileResource.new(profile: post.profile.not_nil!)
+    Latest::ProfileResource.new(profile: post.profile.not_nil!, viewer:)
   end
 
   sig { returns(T::Boolean) }

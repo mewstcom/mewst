@@ -18,7 +18,7 @@ class Latest::FollowForm < Latest::ApplicationForm
 
   sig { void }
   private def target_profile_is_not_me
-    return unless viewer.me?(target_profile: target_profile.not_nil!)
+    return unless viewer.not_nil!.me?(target_profile: target_profile.not_nil!)
 
     errors.add(:target_atname, :cannot_follow_myself)
   end
