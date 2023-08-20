@@ -9,6 +9,8 @@ class Profile < ApplicationRecord
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
+  enumerize :actor_type, in: %i[user]
+
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
   has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
@@ -16,8 +18,7 @@ class Profile < ApplicationRecord
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
   has_many :stamps, dependent: :restrict_with_exception
-
-  delegated_type :profileable, types: Profileable::TYPES, dependent: :destroy
+  has_one :user, dependent: :restrict_with_exception
 
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 

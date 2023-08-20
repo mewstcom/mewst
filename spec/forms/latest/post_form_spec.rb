@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Latest::PostForm do
-  let!(:profile) { create(:profile, :for_user) }
+  let!(:user) { create(:user) }
+  let!(:profile) { user.profile }
 
   context "when invalid" do
     context "when comment is blank" do

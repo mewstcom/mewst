@@ -168,8 +168,7 @@ CREATE TABLE public.posts (
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profileable_type character varying NOT NULL,
-    profileable_id uuid NOT NULL,
+    actor_type character varying NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -210,6 +209,7 @@ CREATE TABLE public.stamps (
 
 CREATE TABLE public.users (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
     email character varying NOT NULL,
     password_digest character varying NOT NULL,
     locale character varying NOT NULL,
@@ -437,13 +437,6 @@ CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atn
 
 
 --
--- Name: index_profiles_on_profileable_type_and_profileable_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_profiles_on_profileable_type_and_profileable_id ON public.profiles USING btree (profileable_type, profileable_id);
-
-
---
 -- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -469,6 +462,13 @@ CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USIN
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: index_users_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_profile_id ON public.users USING btree (profile_id);
 
 
 --
@@ -517,6 +517,14 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_76012a03dc FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: users fk_rails_a8794354f0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_a8794354f0 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
 
 
 --

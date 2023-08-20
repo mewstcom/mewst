@@ -3,8 +3,10 @@
 
 RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_version: :latest do
   context "when valid input data" do
-    let!(:profile_1) { create(:profile, :for_user, :with_access_token_for_web) }
-    let!(:profile_2) { create(:profile, :for_user) }
+    let!(:user_1) { create(:user, :with_access_token_for_web) }
+    let!(:profile_1) { user_1.profile }
+    let!(:user_2) { create(:user) }
+    let!(:profile_2) { user_2.profile }
     let!(:oauth_access_token) { profile_1.oauth_access_tokens.first }
     let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
     let!(:post_input) { CreatePostService::Input.from_latest_form(form: post_form) }

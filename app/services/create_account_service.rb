@@ -31,16 +31,17 @@ class CreateAccountService < ApplicationService
   def call(input:)
     current_time = Time.current
 
-    user = User.create!(
+    profile = Profile.create!(
+      actor_type: :user,
+      atname: input.atname,
+      joined_at: current_time
+    )
+
+    user = profile.create_user!(
       email: input.email,
       locale: input.locale,
       password: input.password,
       signed_up_at: current_time
-    )
-
-    profile = user.create_profile!(
-      atname: input.atname,
-      joined_at: current_time
     )
 
     oauth_access_token = OauthAccessToken.find_or_create_for(
