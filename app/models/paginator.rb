@@ -58,7 +58,7 @@ class Paginator
 
     Result.new(
       records: records.where(id: record_ids.first(limit)).order(id: :desc),
-      page_info:
+      page_info: page_info.not_nil!
     )
   end
 
