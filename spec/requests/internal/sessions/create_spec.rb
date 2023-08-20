@@ -5,7 +5,10 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
   context "when incorrect password" do
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
-    let!(:user) { create(:user, email:, password:) }
+
+    before do
+      create(:user, email:, password:)
+    end
 
     it "responses 422" do
       post("/internal/sessions", params: {
