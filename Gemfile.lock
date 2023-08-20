@@ -235,7 +235,6 @@ GEM
     oj (3.16.0)
     openapi_parser (1.0.0)
     os (1.1.4)
-    pagy (6.0.4)
     parallel (1.23.0)
     parser (3.2.2.3)
       ast (~> 2.4.1)
@@ -449,7 +448,6 @@ DEPENDENCIES
   google-cloud-tasks
   http_accept_language
   oj
-  pagy
   pg
   puma
   pundit

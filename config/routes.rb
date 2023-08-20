@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   match "/internal/pubsub/fanout_post",                                   via: :post,   as: :internal_pubsub_fanout_post,                     to: "internal/pubsub/fanout_post#call"
   match "/internal/sessions",                                             via: :post,   as: :internal_session_list,                           to: "internal/sessions/create#call"
   match "/internal/tasks/send_email_confirmation_mail",                   via: :post,   as: :internal_tasks_send_email_confirmation_mail,     to: "internal/tasks/send_email_confirmation_mail#call"
+  match "/latest/@:atname",                                               via: :get,    as: :latest_profile,                                  to: "latest/profiles/show#call",                           atname: ROUTING_USERNAME_FORMAT
   match "/latest/@:atname/follow",                                        via: :delete, as: :latest_follow,                                   to: "latest/follows/destroy#call",                         atname: ROUTING_USERNAME_FORMAT
   match "/latest/@:atname/follow",                                        via: :post,                                                         to: "latest/follows/create#call",                          atname: ROUTING_USERNAME_FORMAT
   match "/latest/timeline",                                               via: :get,    as: :latest_timeline,                                 to: "latest/timeline/show#call"

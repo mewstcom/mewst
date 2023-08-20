@@ -16,6 +16,32 @@ servers:
   - description: Development server
     url: http://localhost:3000/latest
 paths:
+  "/@{atname}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/pagination-after"
+        - "$ref": "#/components/parameters/pagination-before"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/profile"
+                  posts:
+                    items:
+                      "$ref": "#/components/schemas/post"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: Get profile and posts
+      tags:
+        - profiles
   "/@{atname}/follow":
     delete:
       description: ""
@@ -239,6 +265,8 @@ components:
           type: string
         avatar_url:
           type: string
+        description:
+          type: string
         name:
           type: string
         viewer_has_followed:
@@ -246,6 +274,7 @@ components:
       required:
         - atname
         - avatar_url
+        - description
         - name
         - viewer_has_followed
       title: Profile

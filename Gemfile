@@ -21,7 +21,6 @@ gem "google-cloud-pubsub"
 gem "google-cloud-tasks"
 gem "http_accept_language"
 gem "oj" # Used by `alba`
-gem "pagy"
 gem "pg"
 gem "puma"
 gem "pundit"

@@ -45,6 +45,7 @@ RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :lat
         profile: {
           atname: target_profile.atname,
           avatar_url: target_profile.avatar_url,
+          description: target_profile.description,
           name: target_profile.name,
           viewer_has_followed: true
         }

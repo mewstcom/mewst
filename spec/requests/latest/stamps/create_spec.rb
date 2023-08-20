@@ -56,6 +56,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
           profile: {
             atname: profile_2.atname,
             avatar_url: profile_2.avatar_url,
+            description: profile_2.description,
             name: profile_2.name,
             viewer_has_followed: false
           },
