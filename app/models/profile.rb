@@ -22,7 +22,6 @@ class Profile < ApplicationRecord
 
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
-  delegate :follow, :unfollow, to: :followability
   delegate :delete_post, to: :postability
 
   sig { returns(String) }
@@ -56,11 +55,6 @@ class Profile < ApplicationRecord
   sig { params(target_profile: Profile).returns(T::Boolean) }
   def me?(target_profile:)
     atname == target_profile.atname
-  end
-
-  sig { returns(Profile::Followability) }
-  private def followability
-    Profile::Followability.new(source_profile: self)
   end
 
   sig { returns(Profile::Postability) }
