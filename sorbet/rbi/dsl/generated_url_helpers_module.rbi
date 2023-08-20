@@ -33,10 +33,7 @@ module GeneratedUrlHelpersModule
   def internal_tasks_send_email_confirmation_mail_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def latest_comment_post_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_post_repost_list_url(*args); end
+  def latest_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_post_stamp_url(*args); end

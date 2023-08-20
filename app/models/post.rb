@@ -4,29 +4,12 @@
 class Post < ApplicationRecord
   extend Enumerize
 
+  MAXIMUM_COMMENT_LENGTH = 500
+
   belongs_to :profile
+  has_many :stamps, dependent: :restrict_with_exception
 
-  has_one :comment_post, dependent: :restrict_with_exception
-  has_one :repost, dependent: :restrict_with_exception
-
-  enumerize :kind, in: %i[comment_post repost], predicates: {prefix: true}
-
-  sig { returns(Post) }
-  def original_post
-    return self if kind_comment_post?
-
-    repost.not_nil!.original_post
-  end
-
-  sig { returns(Integer) }
-  def reposts_count
-    original_post.comment_post.not_nil!.reposts_count
-  end
-
-  sig { returns(Integer) }
-  def stamps_count
-    original_post.comment_post.not_nil!.stamps_count
-  end
+  validates :comment, length: {maximum: MAXIMUM_COMMENT_LENGTH}, presence: true
 
   sig { returns(String) }
   def timeline_score

@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class Stamp < ApplicationRecord
-  counter_culture :comment_post
+  counter_culture :post
 
-  belongs_to :comment_post
+  belongs_to :post
   belongs_to :profile
 end
