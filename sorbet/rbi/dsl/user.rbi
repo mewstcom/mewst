@@ -749,6 +749,51 @@ class User
     sig { void }
     def password_digest_will_change!; end
 
+    sig { returns(T.untyped) }
+    def profile_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def profile_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def profile_id?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profile_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profile_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def profile_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def profile_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def profile_id_was; end
+
+    sig { void }
+    def profile_id_will_change!; end
+
     sig { void }
     def restore_created_at!; end
 
@@ -769,6 +814,9 @@ class User
 
     sig { void }
     def restore_password_digest!; end
+
+    sig { void }
+    def restore_profile_id!; end
 
     sig { void }
     def restore_sign_in_count!; end
@@ -820,6 +868,12 @@ class User
 
     sig { returns(T::Boolean) }
     def saved_change_to_password_digest?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_profile_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profile_id?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_sign_in_count; end
@@ -994,6 +1048,9 @@ class User
 
     sig { returns(T::Boolean) }
     def will_save_change_to_password_digest?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_profile_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_sign_in_count?; end

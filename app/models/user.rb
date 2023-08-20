@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   enumerize :locale, in: I18n.available_locales
 
-  has_one :profile, as: :profileable, dependent: :restrict_with_exception
+  belongs_to :profile
 
   has_secure_password
 

@@ -14,8 +14,21 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.index %i[email code], unique: true
     end
 
+    create_table :profiles, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.string :actor_type, null: false
+      t.citext :atname, index: {unique: true}, null: false
+      t.string :name, default: "", null: false
+      t.string :description, default: "", null: false
+      t.string :avatar_url, default: "", null: false
+      t.timestamp :deleted_at
+      t.timestamp :joined_at, null: false
+      t.timestamps
+    end
+
     create_table :users, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
+      t.references :profile, foreign_key: true, index: {unique: true}, null: false, type: :uuid
       t.string :email, index: {unique: true}, null: false
       t.string :password_digest, null: false
       t.string :locale, null: false
@@ -24,21 +37,6 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
       t.timestamp :last_signed_in_at
       t.timestamp :signed_up_at, null: false
       t.timestamps
-    end
-
-    create_table :profiles, id: false do |t|
-      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.string :profileable_type, null: false
-      t.uuid :profileable_id, null: false
-      t.citext :atname, index: {unique: true}, null: false
-      t.string :name, default: "", null: false
-      t.string :description, default: "", null: false
-      t.string :avatar_url, default: "", null: false
-      t.timestamp :deleted_at
-      t.timestamp :joined_at, null: false
-      t.timestamps
-
-      t.index %i[profileable_type profileable_id], unique: true
     end
 
     create_table :oauth_applications, id: false do |t|
