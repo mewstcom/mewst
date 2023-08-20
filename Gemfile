@@ -29,6 +29,7 @@ gem "rails-i18n"
 gem "rails_autolink"
 gem "redis"
 gem "sorbet-runtime"
+gem "strong_migrations"
 gem "sucker_punch"
 
 group :development, :test do

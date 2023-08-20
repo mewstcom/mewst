@@ -386,6 +386,8 @@ GEM
     standard-sorbet (0.0.2)
       lint_roller (~> 1.1)
       rubocop-sorbet (~> 0.7.0)
+    strong_migrations (1.6.1)
+      activerecord (>= 5.2)
     sucker_punch (3.1.0)
       concurrent-ruby (~> 1.0)
     syntax_tree (6.1.1)
@@ -463,6 +465,7 @@ DEPENDENCIES
   standard
   standard-rails
   standard-sorbet
+  strong_migrations
   sucker_punch
   tapioca (>= 0.10.5)
   web-console
