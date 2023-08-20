@@ -1,8 +1,12 @@
 en:
   forms:
     attributes:
+      latest/follow_form:
+        target_atname: atname
       latest/stamp_form:
         target_post: Post
+      latest/unfollow_form:
+        target_profile: atname
     errors:
       models:
         internal/email_confirmation_challenge_form:
@@ -11,6 +15,10 @@ en:
               incorrect_or_expired: is incorrect or expired
         internal/session_form:
           unauthenticated: Login failed. Email or password is incorrect
+        latest/follow_form:
+          attributes:
+            target_atname:
+              cannot_follow_myself: is myself. Cannot follow myself
         latest/profile_form:
           attributes:
             atname:
@@ -18,4 +26,8 @@ en:
         latest/stamp_form:
           attributes:
             target_post:
+              blank: not found
+        latest/unfollow_form:
+          attributes:
+            target_profile:
               blank: not found
