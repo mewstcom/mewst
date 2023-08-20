@@ -1,6 +1,8 @@
 ja:
   forms:
     attributes:
+      latest/follow_form:
+        target_atname: atname
       latest/stamp_form:
         target_post: ポスト
     errors:
@@ -11,6 +13,10 @@ ja:
               incorrect_or_expired: が間違っているか古くなっています
         internal/session_form:
           unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています
+        latest/follow_form:
+          attributes:
+            target_atname:
+              cannot_follow_myself: は自分自身です。自身をフォローすることはできません
         latest/profile_form:
           attributes:
             atname:

@@ -10,16 +10,6 @@ class Profile::Followability
   end
 
   sig { params(target_profile: Profile).returns(Profile) }
-  def follow(target_profile:)
-    return source_profile if source_profile.me?(target_profile:)
-
-    follow = source_profile.follows.where(target_profile:).first_or_initialize(followed_at: Time.current)
-    follow.save!
-
-    source_profile
-  end
-
-  sig { params(target_profile: Profile).returns(Profile) }
   def unfollow(target_profile:)
     return source_profile if source_profile.me?(target_profile:)
 
