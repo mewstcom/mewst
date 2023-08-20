@@ -249,6 +249,8 @@ components:
           type: string
         avatar_url:
           type: string
+        description:
+          type: string
         id:
           type: string
         name:
@@ -256,6 +258,7 @@ components:
       required:
         - atname
         - avatar_url
+        - description
         - id
         - name
     account:

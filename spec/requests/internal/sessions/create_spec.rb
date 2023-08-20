@@ -57,6 +57,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
           profile: {
             atname: profile.atname,
             avatar_url: profile.avatar_url,
+            description: profile.description,
             id: profile.id,
             name: profile.name
           },
