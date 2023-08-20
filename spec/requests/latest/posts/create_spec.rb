@@ -55,6 +55,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
             atname: profile.atname,
             avatar_url: profile.avatar_url,
             name: profile.name,
+            description: profile.description,
             viewer_has_followed: false
           },
           published_at: post.published_at.iso8601,

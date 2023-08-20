@@ -265,6 +265,8 @@ components:
           type: string
         avatar_url:
           type: string
+        description:
+          type: string
         name:
           type: string
         viewer_has_followed:
@@ -272,6 +274,7 @@ components:
       required:
         - atname
         - avatar_url
+        - description
         - name
         - viewer_has_followed
       title: Profile

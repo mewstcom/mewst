@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::ProfileResource < Latest::ApplicationResource
-  delegate :atname, :avatar_url, :name, to: :profile
+  delegate :atname, :avatar_url, :description, :name, to: :profile
 
   sig { params(profile: Profile, viewer: Profile).void }
   def initialize(profile:, viewer:)

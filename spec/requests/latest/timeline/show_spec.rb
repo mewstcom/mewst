@@ -25,6 +25,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
             profile: {
               atname: profile.atname,
               avatar_url: profile.avatar_url,
+              description: profile.description,
               name: profile.name,
               viewer_has_followed: false
             },
