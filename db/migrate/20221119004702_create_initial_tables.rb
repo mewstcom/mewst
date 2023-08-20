@@ -106,37 +106,20 @@ class CreateInitialTables < ActiveRecord::Migration[7.0]
     create_table :posts, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.string :kind, null: false
-      t.timestamp :published_at, null: false
-      t.timestamps
-    end
-
-    create_table :comment_posts, id: false do |t|
-      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :post, foreign_key: true, null: false, type: :uuid
       t.text :comment, null: false
-      t.integer :reposts_count, default: 0, null: false
       t.integer :stamps_count, default: 0, null: false
-      t.timestamps
-    end
-
-    create_table :reposts, id: false do |t|
-      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :post, foreign_key: true, null: false, type: :uuid
-      t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :follow, foreign_key: true, null: false, type: :uuid
-      t.references :target_comment_post, foreign_key: {to_table: :comment_posts}, null: false, type: :uuid
+      t.timestamp :published_at, null: false
       t.timestamps
     end
 
     create_table :stamps, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :comment_post, foreign_key: true, null: false, type: :uuid
+      t.references :post, foreign_key: true, null: false, type: :uuid
       t.timestamp :stamped_at, null: false
       t.timestamps
 
-      t.index %i[profile_id comment_post_id], unique: true
+      t.index %i[profile_id post_id], unique: true
     end
   end
 end

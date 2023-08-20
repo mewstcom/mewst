@@ -16,7 +16,7 @@ servers:
   - description: Development server
     url: http://localhost:3000/latest
 paths:
-  "/comment_posts":
+  "/posts":
     post:
       description: ""
       parameters:
@@ -49,19 +49,6 @@ paths:
       summary: ""
       tags:
         - posts
-  "/posts/{post_id}/reposts":
-    post:
-      description: ""
-      parameters:
-        - "$ref": "#/components/parameters/post-id"
-      responses:
-        '204':
-          description: Response
-        '422':
-          "$ref": "#/components/responses/validation_failed"
-      summary: ""
-      tags:
-        - reposts
   "/posts/{post_id}/stamp":
     delete:
       description: ""
@@ -171,16 +158,6 @@ components:
                   "$ref": "#/components/schemas/validation-error"
                 type: array
   schemas:
-    comment-post:
-      additionalProperties: false
-      title: Comment Post
-      description: ""
-      type: object
-      properties:
-        comment:
-          type: string
-      required:
-        - comment
     error:
       additionalProperties: false
       title: Error
@@ -194,29 +171,6 @@ components:
       required:
         - code
         - message
-    repost:
-      additionalProperties: false
-      description: ""
-      properties:
-        target_post:
-          allOf:
-            - $ref: "#/components/schemas/post"
-          nullable: true
-        target_profile:
-          allOf:
-            - $ref: "#/components/schemas/profile"
-          nullable: true
-        original_post:
-          $ref: "#/components/schemas/post"
-        original_profile:
-          $ref: "#/components/schemas/profile"
-      required:
-        - target_post
-        - target_profile
-        - original_post
-        - original_profile
-      title: Repost
-      type: object
     page-info:
       additionalProperties: false
       description: ""
@@ -262,33 +216,22 @@ components:
       properties:
         id:
           type: string
-        kind:
-          enum:
-            - comment_post
-            - repost
+        comment:
           type: string
-        postable:
-          anyOf:
-            - $ref: "#/components/schemas/comment-post"
-            - $ref: "#/components/schemas/repost"
         profile:
           $ref: "#/components/schemas/profile"
         published_at:
           type: string
           format: date-time
-        reposts_count:
-          type: integer
         stamps_count:
           type: integer
         viewer_has_stamped:
           type: boolean
       required:
         - id
-        - kind
-        - postable
+        - comment
         - profile
         - published_at
-        - reposts_count
         - stamps_count
         - viewer_has_stamped
     validation-error:

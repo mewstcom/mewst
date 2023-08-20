@@ -219,23 +219,17 @@ class Stamp
   end
 
   module GeneratedAssociationMethods
-    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def build_comment_post(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
+    def build_post(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
 
-    sig { returns(T.nilable(::CommentPost)) }
-    def comment_post; end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
+    def create_post(*args, &blk); end
 
-    sig { params(value: T.nilable(::CommentPost)).void }
-    def comment_post=(value); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def create_comment_post(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::CommentPost) }
-    def create_comment_post!(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
+    def create_post!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile(*args, &blk); end
@@ -243,14 +237,20 @@ class Stamp
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile!(*args, &blk); end
 
+    sig { returns(T.nilable(::Post)) }
+    def post; end
+
+    sig { params(value: T.nilable(::Post)).void }
+    def post=(value); end
+
     sig { returns(T.nilable(::Profile)) }
     def profile; end
 
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
 
-    sig { returns(T.nilable(::CommentPost)) }
-    def reload_comment_post; end
+    sig { returns(T.nilable(::Post)) }
+    def reload_post; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_profile; end
@@ -437,51 +437,6 @@ class Stamp
   end
 
   module GeneratedAttributeMethods
-    sig { returns(T.untyped) }
-    def comment_post_id; end
-
-    sig { params(value: T.untyped).returns(T.untyped) }
-    def comment_post_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def comment_post_id?; end
-
-    sig { returns(T.untyped) }
-    def comment_post_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def comment_post_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def comment_post_id_came_from_user?; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def comment_post_id_change; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def comment_post_id_change_to_be_saved; end
-
-    sig { returns(T::Boolean) }
-    def comment_post_id_changed?; end
-
-    sig { returns(T.untyped) }
-    def comment_post_id_in_database; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def comment_post_id_previous_change; end
-
-    sig { returns(T::Boolean) }
-    def comment_post_id_previously_changed?; end
-
-    sig { returns(T.untyped) }
-    def comment_post_id_previously_was; end
-
-    sig { returns(T.untyped) }
-    def comment_post_id_was; end
-
-    sig { void }
-    def comment_post_id_will_change!; end
-
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
 
@@ -573,6 +528,51 @@ class Stamp
     def id_will_change!; end
 
     sig { returns(T.untyped) }
+    def post_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def post_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def post_id?; end
+
+    sig { returns(T.untyped) }
+    def post_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def post_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def post_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def post_id_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def post_id_change_to_be_saved; end
+
+    sig { returns(T::Boolean) }
+    def post_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def post_id_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def post_id_previous_change; end
+
+    sig { returns(T::Boolean) }
+    def post_id_previously_changed?; end
+
+    sig { returns(T.untyped) }
+    def post_id_previously_was; end
+
+    sig { returns(T.untyped) }
+    def post_id_was; end
+
+    sig { void }
+    def post_id_will_change!; end
+
+    sig { returns(T.untyped) }
     def profile_id; end
 
     sig { params(value: T.untyped).returns(T.untyped) }
@@ -618,13 +618,13 @@ class Stamp
     def profile_id_will_change!; end
 
     sig { void }
-    def restore_comment_post_id!; end
-
-    sig { void }
     def restore_created_at!; end
 
     sig { void }
     def restore_id!; end
+
+    sig { void }
+    def restore_post_id!; end
 
     sig { void }
     def restore_profile_id!; end
@@ -634,12 +634,6 @@ class Stamp
 
     sig { void }
     def restore_updated_at!; end
-
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_comment_post_id; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_comment_post_id?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -652,6 +646,12 @@ class Stamp
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_post_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_post_id?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_profile_id; end
@@ -762,13 +762,13 @@ class Stamp
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_comment_post_id?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_post_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_profile_id?; end

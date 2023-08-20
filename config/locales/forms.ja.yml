@@ -1,9 +1,6 @@
 ja:
   forms:
     attributes:
-      latest/repost_form:
-        follow: リポスト
-        target_post: ポスト
       latest/stamp_form:
         target_post: ポスト
     errors:
@@ -18,12 +15,6 @@ ja:
           attributes:
             atname:
               atname_uniqueness: はすでに存在します
-        latest/repost_form:
-          attributes:
-            follow:
-              blank: はオリジナルの投稿者をフォローしていないと行えません
-            target_post:
-              blank: が見つかりませんでした
         latest/stamp_form:
           attributes:
             target_post:

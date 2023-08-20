@@ -15,7 +15,6 @@ class Profile < ApplicationRecord
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
   has_many :posts, dependent: :restrict_with_exception
-  has_many :reposts, through: :posts
   has_many :stamps, dependent: :restrict_with_exception
 
   delegated_type :profileable, types: Profileable::TYPES, dependent: :destroy
@@ -23,7 +22,7 @@ class Profile < ApplicationRecord
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
   delegate :follow, :unfollow, to: :followability
-  delegate :create_comment_post, :create_repost, :delete_post, to: :postability
+  delegate :delete_post, to: :postability
 
   sig { returns(String) }
   def name_or_atname

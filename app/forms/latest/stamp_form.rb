@@ -10,11 +10,6 @@ class Latest::StampForm < Latest::ApplicationForm
   validates :profile, presence: true
   validates :target_post, presence: true
 
-  sig { returns(Post) }
-  def original_post
-    target_post.not_nil!.original_post
-  end
-
   sig { returns(T.nilable(Post)) }
   def target_post
     Post.find_by(id: target_post_id)

@@ -1,9 +1,6 @@
 en:
   forms:
     attributes:
-      latest/repost_form:
-        follow: Repost
-        target_post: Post
       latest/stamp_form:
         target_post: Post
     errors:
@@ -18,12 +15,6 @@ en:
           attributes:
             atname:
               atname_uniqueness: is already taken
-        latest/repost_form:
-          attributes:
-            follow:
-              blank: can not be done because you do not follow the original poster
-            target_post:
-              blank: not found
         latest/stamp_form:
           attributes:
             target_post:

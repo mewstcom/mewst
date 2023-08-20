@@ -31,37 +31,31 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
     let!(:profile_1) { create(:profile, :for_user, :with_access_token_for_web) }
     let!(:profile_2) { create(:profile, :for_user) }
     let!(:oauth_access_token) { profile_1.oauth_access_tokens.first }
-    let!(:comment_post_form) { Latest::CommentPostForm.new(profile: profile_2, comment: "hello") }
-    let!(:input) { CreateCommentPostService::Input.from_latest_form(form: comment_post_form) }
-    let!(:target_post) { CreateCommentPostService.new.call(input:).post }
+    let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
+    let!(:input) { CreatePostService::Input.from_latest_form(form: post_form) }
+    let!(:target_post) { CreatePostService.new.call(input:).post }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 204" do
       expect(Post.count).to eq(1)
-      expect(CommentPost.count).to eq(1)
       expect(Stamp.count).to eq(0)
 
       post("/latest/posts/#{target_post.id}/stamp", headers:)
       expect(response).to have_http_status(:created)
 
       expect(Post.count).to eq(1)
-      expect(CommentPost.count).to eq(1)
       expect(Stamp.count).to eq(1)
 
       expected = {
         post: {
           id: target_post.id,
-          kind: "comment_post",
-          postable: {
-            comment: target_post.comment_post.comment
-          },
+          comment: target_post.comment,
           profile: {
             atname: profile_2.atname,
             avatar_url: profile_2.avatar_url,
             name: profile_2.name
           },
           published_at: target_post.published_at.iso8601,
-          reposts_count: 0,
           stamps_count: 1,
           viewer_has_stamped: true
         }

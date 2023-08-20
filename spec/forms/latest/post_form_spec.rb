@@ -1,12 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Latest::CommentPostForm do
+RSpec.describe Latest::PostForm do
   let!(:profile) { create(:profile, :for_user) }
 
   context "when invalid" do
     context "when comment is blank" do
-      let!(:form) { Latest::CommentPostForm.new(profile:, comment: "") }
+      let!(:form) { Latest::PostForm.new(profile:, comment: "") }
 
       it "is invalid" do
         expect(form.invalid?).to be(true)
@@ -15,8 +15,8 @@ RSpec.describe Latest::CommentPostForm do
     end
 
     context "when comment length is too long" do
-      let!(:long_comment) { "a" * (Commentable::MAXIMUM_COMMENT_LENGTH + 1) }
-      let!(:form) { Latest::CommentPostForm.new(profile:, comment: long_comment) }
+      let!(:long_comment) { "a" * (Post::MAXIMUM_COMMENT_LENGTH + 1) }
+      let!(:form) { Latest::PostForm.new(profile:, comment: long_comment) }
 
       it "is invalid" do
         expect(form.invalid?).to be(true)
