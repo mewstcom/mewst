@@ -7,10 +7,6 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
     let!(:password) { "correct_password" }
     let!(:user) { create(:user, email:, password:) }
 
-    before do
-      create(:profile, :for_user, profileable: user)
-    end
-
     it "responses 422" do
       post("/internal/sessions", params: {
         email:,
@@ -35,8 +31,8 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
   context "when correct email/password" do
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
-    let!(:user) { create(:user, email:, password:) }
-    let!(:profile) { create(:profile, :for_user, :with_access_token_for_web, profileable: user) }
+    let!(:user) { create(:user, :with_access_token_for_web, email:, password:) }
+    let!(:profile) { user.profile }
     let!(:oauth_access_token) { profile.oauth_access_tokens.first }
 
     it "responses 201" do

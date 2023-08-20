@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 RSpec.describe CreatePostService do
-  let!(:profile) { create(:profile, :for_user) }
+  let!(:user) { create(:user) }
+  let!(:profile) { user.profile }
   let!(:form) { Latest::PostForm.new(profile:, comment: "hello") }
   let!(:input) { CreatePostService::Input.from_latest_form(form:) }
   let!(:service) { CreatePostService.new }
