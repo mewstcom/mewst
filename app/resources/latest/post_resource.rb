@@ -4,7 +4,7 @@
 class Latest::PostResource < Latest::ApplicationResource
   delegate :id, :comment, :stamps_count, to: :post
 
-  sig { params(post: Post, viewer: Profile).void }
+  sig { params(post: Post, viewer: T.nilable(Profile)).void }
   def initialize(post:, viewer:)
     @post = post
     @viewer = viewer
@@ -17,7 +17,9 @@ class Latest::PostResource < Latest::ApplicationResource
 
   sig { returns(T::Boolean) }
   def viewer_has_stamped
-    viewer.stamps.exists?(post:)
+    return false if viewer.nil?
+
+    viewer.not_nil!.stamps.exists?(post:)
   end
 
   sig { returns(String) }
@@ -29,7 +31,7 @@ class Latest::PostResource < Latest::ApplicationResource
   attr_reader :post
   private :post
 
-  sig { returns(Profile) }
+  sig { returns(T.nilable(Profile)) }
   attr_reader :viewer
   private :viewer
 end

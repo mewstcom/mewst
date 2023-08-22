@@ -4,7 +4,7 @@
 class Latest::ProfileResource < Latest::ApplicationResource
   delegate :atname, :avatar_url, :description, :name, to: :profile
 
-  sig { params(profile: Profile, viewer: Profile).void }
+  sig { params(profile: Profile, viewer: T.nilable(Profile)).void }
   def initialize(profile:, viewer:)
     @profile = profile
     @viewer = viewer
@@ -12,14 +12,16 @@ class Latest::ProfileResource < Latest::ApplicationResource
 
   sig { returns(T::Boolean) }
   def viewer_has_followed
-    viewer.following?(target_profile: profile)
+    return false if viewer.nil?
+
+    viewer.not_nil!.following?(target_profile: profile)
   end
 
   sig { returns(Profile) }
   attr_reader :profile
   private :profile
 
-  sig { returns(Profile) }
+  sig { returns(T.nilable(Profile)) }
   attr_reader :viewer
   private :viewer
 end
