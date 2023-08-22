@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /latest/@:atname", type: :request, api_version: :latest do
+RSpec.describe "GET /latest/@:atname/posts", type: :request, api_version: :latest do
   context "when success" do
     let!(:profile) { create(:user, :with_access_token_for_web).profile }
     let!(:oauth_access_token) { profile.oauth_access_tokens.first }
@@ -11,7 +11,7 @@ RSpec.describe "GET /latest/@:atname", type: :request, api_version: :latest do
     let!(:post) { CreatePostService.new.call(input:).post }
 
     it "returns posts with profile" do
-      get("/latest/@#{profile.atname}", headers:)
+      get("/latest/@#{profile.atname}/posts", headers:)
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)

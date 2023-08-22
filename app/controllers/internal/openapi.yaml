@@ -13,6 +13,32 @@ servers:
   - description: Development server
     url: http://localhost:3000/internal
 paths:
+  "/@{atname}/posts":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/pagination-after"
+        - "$ref": "#/components/parameters/pagination-before"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/latest_profile"
+                  posts:
+                    items:
+                      "$ref": "#/components/schemas/post"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: Get profile and posts
+      tags:
+        - posts
   "/email_confirmations":
     post:
       description: ""
@@ -170,6 +196,27 @@ paths:
         - sessions
 components:
   parameters:
+    atname:
+      description: The handle for the Mewst account profile.
+      in: path
+      name: atname
+      required: true
+      schema:
+        type: string
+    pagination-after:
+      description: ""
+      in: query
+      name: after
+      required: false
+      schema:
+        type: string
+    pagination-before:
+      description: ""
+      in: query
+      name: before
+      required: false
+      schema:
+        type: string
     email-confirmation-id:
       name: email_confirmation_id
       description: ""
@@ -203,6 +250,22 @@ components:
                   "$ref": "#/components/schemas/error"
                 type: array
   schemas:
+    account:
+      additionalProperties: false
+      title: Account
+      description: ""
+      type: object
+      properties:
+        oauth_access_token:
+          "$ref": "#/components/schemas/oauth-access-token"
+        profile:
+          "$ref": "#/components/schemas/profile"
+        user:
+          "$ref": "#/components/schemas/user"
+      required:
+        - oauth_access_token
+        - profile
+        - user
     email-confirmation:
       additionalProperties: false
       title: Email Confirmation
@@ -229,6 +292,28 @@ components:
       required:
         - message
       type: object
+    latest_profile:
+      additionalProperties: false
+      description: ""
+      properties:
+        atname:
+          type: string
+        avatar_url:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        viewer_has_followed:
+          type: boolean
+      required:
+        - atname
+        - avatar_url
+        - description
+        - name
+        - viewer_has_followed
+      title: Profile
+      type: object
     oauth-access-token:
       additionalProperties: false
       title: OAuth Access Token
@@ -239,6 +324,53 @@ components:
           type: string
       required:
         - token
+    page-info:
+      additionalProperties: false
+      description: ""
+      properties:
+        end_cursor:
+          type: string
+          nullable: true
+        has_next_page:
+          type: boolean
+        has_previous_page:
+          type: boolean
+        start_cursor:
+          type: string
+          nullable: true
+      required:
+        - end_cursor
+        - has_next_page
+        - has_previous_page
+        - start_cursor
+      title: Page Info
+      type: object
+    post:
+      additionalProperties: false
+      title: Post
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        comment:
+          type: string
+        profile:
+          $ref: "#/components/schemas/profile"
+        published_at:
+          type: string
+          format: date-time
+        stamps_count:
+          type: integer
+        viewer_has_stamped:
+          type: boolean
+      required:
+        - id
+        - comment
+        - profile
+        - published_at
+        - stamps_count
+        - viewer_has_stamped
     profile:
       additionalProperties: false
       title: Profile
@@ -261,22 +393,6 @@ components:
         - description
         - id
         - name
-    account:
-      additionalProperties: false
-      title: Account
-      description: ""
-      type: object
-      properties:
-        oauth_access_token:
-          "$ref": "#/components/schemas/oauth-access-token"
-        profile:
-          "$ref": "#/components/schemas/profile"
-        user:
-          "$ref": "#/components/schemas/user"
-      required:
-        - oauth_access_token
-        - profile
-        - user
     user:
       additionalProperties: false
       title: User

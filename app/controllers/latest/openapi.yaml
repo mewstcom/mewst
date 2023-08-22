@@ -16,32 +16,6 @@ servers:
   - description: Development server
     url: http://localhost:3000/latest
 paths:
-  "/@{atname}":
-    get:
-      description: ""
-      parameters:
-        - "$ref": "#/components/parameters/atname"
-        - "$ref": "#/components/parameters/pagination-after"
-        - "$ref": "#/components/parameters/pagination-before"
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                additionalProperties: false
-                properties:
-                  profile:
-                    "$ref": "#/components/schemas/profile"
-                  posts:
-                    items:
-                      "$ref": "#/components/schemas/post"
-                    type: array
-                  page_info:
-                    "$ref": "#/components/schemas/page-info"
-          description: Response
-      summary: Get profile and posts
-      tags:
-        - profiles
   "/@{atname}/follow":
     delete:
       description: ""
@@ -83,6 +57,32 @@ paths:
       summary: ""
       tags:
         - follows
+  "/@{atname}/posts":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/pagination-after"
+        - "$ref": "#/components/parameters/pagination-before"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/profile"
+                  posts:
+                    items:
+                      "$ref": "#/components/schemas/post"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: Get profile and posts
+      tags:
+        - posts
   "/posts":
     post:
       description: ""
