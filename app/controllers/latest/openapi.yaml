@@ -83,6 +83,22 @@ paths:
       summary: Get profile and posts
       tags:
         - posts
+  "/me":
+    get:
+      description: ""
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/profile"
+          description: Response
+      summary: Get profile
+      tags:
+        - profiles
   "/posts":
     post:
       description: ""
