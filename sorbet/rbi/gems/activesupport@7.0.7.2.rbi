@@ -4848,27 +4848,27 @@ class ActiveSupport::EncryptedFile
 
   # @raise [InvalidKeyLengthError]
   #
-  # source://activesupport//lib/active_support/encrypted_file.rb#125
+  # source://activesupport//lib/active_support/encrypted_file.rb#124
   def check_key_length; end
 
-  # source://activesupport//lib/active_support/encrypted_file.rb#103
+  # source://activesupport//lib/active_support/encrypted_file.rb#102
   def decrypt(contents); end
 
-  # source://activesupport//lib/active_support/encrypted_file.rb#98
+  # source://activesupport//lib/active_support/encrypted_file.rb#97
   def encrypt(contents); end
 
-  # source://activesupport//lib/active_support/encrypted_file.rb#107
+  # source://activesupport//lib/active_support/encrypted_file.rb#106
   def encryptor; end
 
   # @raise [MissingKeyError]
   #
-  # source://activesupport//lib/active_support/encrypted_file.rb#121
+  # source://activesupport//lib/active_support/encrypted_file.rb#120
   def handle_missing_key; end
 
-  # source://activesupport//lib/active_support/encrypted_file.rb#112
+  # source://activesupport//lib/active_support/encrypted_file.rb#111
   def read_env_key; end
 
-  # source://activesupport//lib/active_support/encrypted_file.rb#116
+  # source://activesupport//lib/active_support/encrypted_file.rb#115
   def read_key_file; end
 
   # source://activesupport//lib/active_support/encrypted_file.rb#83
@@ -12674,7 +12674,7 @@ ActiveSupport::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
 ActiveSupport::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
 
 # source://activesupport//lib/active_support/gem_version.rb#13
-ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), T.untyped)
+ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), String)
 
 # source://activesupport//lib/active_support/gem_version.rb#15
 ActiveSupport::VERSION::STRING = T.let(T.unsafe(nil), String)
@@ -17870,8 +17870,6 @@ class Regexp
   # source://activesupport//lib/active_support/core_ext/regexp.rb#11
   def multiline?; end
 end
-
-class Regexp::TimeoutError < ::RegexpError; end
 
 # source://activesupport//lib/active_support/core_ext/object/duplicable.rb#53
 module Singleton
