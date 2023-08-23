@@ -12,7 +12,7 @@ class UpdateProfileService < ApplicationService
     const :name, String
 
     sig { params(form: Latest::ProfileForm).returns(Input) }
-    def self.from_latest_form(form)
+    def self.from_latest_form(form:)
       new(
         profile: form.profile.not_nil!,
         atname: form.atname.not_nil!,
