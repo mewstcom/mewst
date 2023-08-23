@@ -433,6 +433,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-session_store
+  addressable
   alba
   bcrypt
   bootsnap
