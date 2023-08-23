@@ -11,6 +11,7 @@ class Latest::ProfileForm < Latest::ApplicationForm
   attr_accessor :profile
 
   validates :atname, format: {with: Profile::ATNAME_FORMAT}, length: {maximum: 30}, presence: true
+  validates :avatar_url, url: {allow_blank: true}
   validates :profile, presence: true
   validate :atname_uniqueness
 

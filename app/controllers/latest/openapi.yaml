@@ -83,6 +83,64 @@ paths:
       summary: Get profile and posts
       tags:
         - posts
+  "/me":
+    get:
+      description: ""
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/profile"
+          description: Response
+      summary: Get profile
+      tags:
+        - profiles
+    patch:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                atname:
+                  type: string
+                  description: ""
+                avatar_url:
+                  type: string
+                  description: ""
+                description:
+                  type: string
+                  description: ""
+                name:
+                  type: string
+                  description: ""
+              required:
+                - atname
+                - avatar_url
+                - description
+                - name
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  profile:
+                    "$ref": "#/components/schemas/profile"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - profiles
   "/posts":
     post:
       description: ""
