@@ -5,7 +5,8 @@ class CreateGoodJobs < ActiveRecord::Migration[7.0]
     # Uncomment for Postgres v12 or earlier to enable gen_random_uuid() support
     # enable_extension 'pgcrypto'
 
-    create_table :good_jobs, id: :uuid do |t|
+    create_table :good_jobs, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.text :queue_name
       t.integer :priority
       t.jsonb :serialized_params
@@ -31,7 +32,8 @@ class CreateGoodJobs < ActiveRecord::Migration[7.0]
       t.integer :error_event, limit: 2
     end
 
-    create_table :good_job_batches, id: :uuid do |t|
+    create_table :good_job_batches, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.timestamps
       t.text :description
       t.jsonb :serialized_properties
@@ -45,7 +47,8 @@ class CreateGoodJobs < ActiveRecord::Migration[7.0]
       t.datetime :finished_at
     end
 
-    create_table :good_job_executions, id: :uuid do |t|
+    create_table :good_job_executions, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.timestamps
 
       t.uuid :active_job_id, null: false
@@ -58,12 +61,14 @@ class CreateGoodJobs < ActiveRecord::Migration[7.0]
       t.integer :error_event, limit: 2
     end
 
-    create_table :good_job_processes, id: :uuid do |t|
+    create_table :good_job_processes, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.timestamps
       t.jsonb :state
     end
 
-    create_table :good_job_settings, id: :uuid do |t|
+    create_table :good_job_settings, id: false do |t|
+      t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.timestamps
       t.text :key
       t.jsonb :value
