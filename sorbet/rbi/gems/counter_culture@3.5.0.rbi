@@ -402,48 +402,48 @@ class CounterCulture::Reconciler::Reconciliation
 
   private
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#202
+  # source://counter_culture//lib/counter_culture/reconciler.rb#206
   def count_select; end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#228
+  # source://counter_culture//lib/counter_culture/reconciler.rb#232
   def join_clauses(where); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#175
+  # source://counter_culture//lib/counter_culture/reconciler.rb#179
   def log(message); end
 
   # @return [Boolean]
   #
-  # source://counter_culture//lib/counter_culture/reconciler.rb#187
+  # source://counter_culture//lib/counter_culture/reconciler.rb#191
   def log?; end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#181
+  # source://counter_culture//lib/counter_culture/reconciler.rb#185
   def log_without_newline(message); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#314
+  # source://counter_culture//lib/counter_culture/reconciler.rb#318
   def parameterize(string); end
 
   # This is only needed in relatively unusal cases, for example if you are
   # using Postgres with schema-namespaced tables. But then it's required,
   # and otherwise it's just a no-op, so why not do it?
   #
-  # source://counter_culture//lib/counter_culture/reconciler.rb#310
+  # source://counter_culture//lib/counter_culture/reconciler.rb#314
   def quote_table_name(table_name); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#217
+  # source://counter_culture//lib/counter_culture/reconciler.rb#221
   def self_table_name; end
 
   # keep track of what we fixed, e.g. for a notification email
   #
-  # source://counter_culture//lib/counter_culture/reconciler.rb#192
+  # source://counter_culture//lib/counter_culture/reconciler.rb#196
   def track_change(record, column_name, count); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#143
+  # source://counter_culture//lib/counter_culture/reconciler.rb#147
   def update_count_for_batch(column_name, records); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#322
+  # source://counter_culture//lib/counter_culture/reconciler.rb#326
   def with_reading_db_connection(&block); end
 
-  # source://counter_culture//lib/counter_culture/reconciler.rb#330
+  # source://counter_culture//lib/counter_culture/reconciler.rb#334
   def with_writing_db_connection(&block); end
 end
 
