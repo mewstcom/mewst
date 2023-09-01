@@ -24,12 +24,6 @@ module GeneratedPathHelpersModule
   def internal_profile_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_pubsub_add_post_to_home_timeline_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_pubsub_fanout_post_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def internal_session_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
