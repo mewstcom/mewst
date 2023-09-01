@@ -28,7 +28,11 @@ class CreateEmailConfirmationService < ApplicationService
       code: EmailConfirmation.generate_code,
       event: EmailConfirmation::EVENT_SIGN_UP
     )
-    SendEmailConfirmationMailJob.perform_later(email_confirmation_id: email_confirmation.id, locale: input.locale)
+
+    EmailConfirmationMailer.email_confirmation(
+      email_confirmation_id: email_confirmation.id,
+      locale: input.locale
+    ).deliver_later
 
     Result.new(email_confirmation:)
   end

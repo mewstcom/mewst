@@ -18,8 +18,7 @@ gem "doorkeeper"
 gem "email_validator"
 gem "enumerize"
 gem "faraday"
-gem "google-cloud-pubsub"
-gem "google-cloud-tasks"
+gem "good_job"
 gem "http_accept_language"
 gem "oj" # Used by `alba`
 gem "pg"
@@ -30,7 +29,6 @@ gem "rails_autolink"
 gem "redis"
 gem "sorbet-runtime"
 gem "strong_migrations"
-gem "sucker_punch"
 
 group :development, :test do
   gem "committee"

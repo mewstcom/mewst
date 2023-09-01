@@ -13,7 +13,7 @@ RSpec.describe CreatePostService do
     allow(profile).to receive(:home_timeline).and_return(home_timeline)
     allow(home_timeline).to receive(:add_post)
 
-    allow(FanoutPostJob).to receive(:perform_async)
+    allow(FanoutPostJob).to receive(:perform_later)
   end
 
   it "creates a new comment post" do
@@ -26,7 +26,7 @@ RSpec.describe CreatePostService do
     expect(post.comment).to eq("hello")
 
     expect(home_timeline).to have_received(:add_post).exactly(1).time
-    expect(FanoutPostJob).to have_received(:perform_async).exactly(1).time
+    expect(FanoutPostJob).to have_received(:perform_later).exactly(1).time
 
     expect(result.post).to eq(post)
   end

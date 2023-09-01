@@ -4,4 +4,5 @@
 
 # typed: false
 
-module Google::Protobuf::EnumDescriptor; end
+module ::SuckerPunch::Job; end
+module ::SuckerPunch::Job::ClassMethods; end

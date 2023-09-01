@@ -26,7 +26,7 @@ class CreatePostService < ApplicationService
     post = input.profile.posts.create!(comment: input.comment, published_at: Time.current)
 
     input.profile.home_timeline.add_post(post:)
-    FanoutPostJob.perform_async(post_id: post.id)
+    FanoutPostJob.perform_later(post_id: post.id)
 
     Result.new(post:)
   end
