@@ -4,7 +4,7 @@ default: &default
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  url: <%= ENV.fetch("MEWST_DATABASE_URL") %>
+  url: <%= ENV.fetch("DATABASE_URL") %>
 
 development:
   <<: *default
