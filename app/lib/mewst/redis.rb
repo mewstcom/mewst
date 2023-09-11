@@ -11,7 +11,7 @@ class Mewst::Redis
 
   sig { returns(T.any(ConnectionPool::Wrapper, Redis)) }
   def self.unevictable_client
-    new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client
+    new(url: Rails.configuration.mewst["redis_url"]).client
   end
 
   sig { returns(T.any(ConnectionPool::Wrapper, Redis)) }

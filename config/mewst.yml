@@ -1,4 +1,4 @@
 shared:
-  redis_unevictable_cache_url: <%= ENV["MEWST_REDIS_UNEVICTABLE_CACHE_URL"] %>
-  url: <%= ENV["MEWST_URL"] %>
+  redis_url: <%= ENV["REDIS_URL"] %>
+  api_url: <%= ENV["MEWST_API_URL"] %>
   web_url: <%= ENV["MEWST_WEB_URL"] %>

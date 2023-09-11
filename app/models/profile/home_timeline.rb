@@ -85,7 +85,7 @@ class Profile::HomeTimeline
 
   sig { returns(Redis) }
   private def redis_client
-    T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_unevictable_cache_url"]).client, Redis)
+    T.cast(Mewst::Redis.new(url: Rails.configuration.mewst["redis_url"]).client, Redis)
   end
 
   sig { params(post_ids: T::Array[String], limit: Integer).returns(T::Boolean) }
