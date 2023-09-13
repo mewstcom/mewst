@@ -4,5 +4,5 @@
 class ApplicationMailer < ActionMailer::Base
   extend T::Sig
 
-  default from: "Mewst <no-reply@mewst.com>"
+  default from: "Mewst <no-reply@#{Rails.configuration.mewst["email_domain"]}>"
 end
