@@ -51,3 +51,7 @@ group :development do
   gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"
 end
+
+group :production do
+  gem "lograge"
+end
