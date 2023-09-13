@@ -290,6 +290,11 @@ GEM
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    sentry-rails (5.11.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.11.0)
+    sentry-ruby (5.11.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sorbet (0.5.10993)
       sorbet-static (= 0.5.10993)
     sorbet-runtime (0.5.10993)
@@ -394,6 +399,8 @@ DEPENDENCIES
   rspec-rails
   rubocop-factory_bot
   rubocop-rspec
+  sentry-rails
+  sentry-ruby
   sorbet
   sorbet-runtime
   standard

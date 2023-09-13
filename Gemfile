@@ -27,6 +27,8 @@ gem "pundit"
 gem "rails-i18n"
 gem "rails_autolink"
 gem "redis"
+gem "sentry-rails"
+gem "sentry-ruby"
 gem "sorbet-runtime"
 gem "strong_migrations"
 
