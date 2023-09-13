@@ -1,5 +1,6 @@
 shared:
   api_url: <%= ENV["MEWST_API_URL"] %>
   redis_url: <%= ENV["REDIS_URL"] %>
+  resend_api_key: <%= ENV["MEWST_RESEND_API_KEY"] %>
   sentry_dsn: <%= ENV["MEWST_SENTRY_DSN"] %>
   web_url: <%= ENV["MEWST_WEB_URL"] %>
