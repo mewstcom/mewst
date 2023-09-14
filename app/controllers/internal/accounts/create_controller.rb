@@ -18,12 +18,13 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
       )
     end
 
-    input = CreateAccountService::Input.from_internal_form(form:)
-    result = ActiveRecord::Base.transaction do
-      r = CreateAccountService.new.call(input:)
-      r.oauth_access_token.user.not_nil!.track_sign_in
-      r
-    end
+    result = CreateAccountUseCase.new.call(
+      atname: form.atname.not_nil!,
+      email: form.email.not_nil!,
+      locale: form.locale.not_nil!,
+      password: form.password.not_nil!
+    )
+    result.user.track_sign_in
 
     resource = Internal::AccountResource.new(
       oauth_access_token: result.oauth_access_token,

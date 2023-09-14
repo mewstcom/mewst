@@ -24,8 +24,12 @@ OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
     ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)
 
     form = Internal::AccountForm.new(atname:, email:, locale:, password:)
-    input = CreateAccountService::Input.from_internal_form(form:)
-    result = CreateAccountService.new.call(input:)
+    result = CreateAccountUseCase.new.call(
+      atname: form.atname.not_nil!,
+      email: form.email.not_nil!,
+      locale: form.locale.not_nil!,
+      password: form.password.not_nil!
+    )
 
     if avatar_url.present?
       result.profile.update!(avatar_url:)
