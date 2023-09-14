@@ -16,8 +16,7 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
       )
     end
 
-    input = ConfirmEmailService::Input.from_internal_form(form:)
-    ConfirmEmailService.new.call(input:)
+    ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)
 
     head :no_content
   end

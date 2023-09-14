@@ -21,8 +21,7 @@ OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
       email_confirmation_id: result.email_confirmation.id,
       confirmation_code: result.email_confirmation.code
     )
-    input = ConfirmEmailService::Input.from_internal_form(form:)
-    ConfirmEmailService.new.call(input:)
+    ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)
 
     form = Internal::AccountForm.new(atname:, email:, locale:, password:)
     input = CreateAccountService::Input.from_internal_form(form:)
