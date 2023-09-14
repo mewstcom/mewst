@@ -906,6 +906,7 @@ class GoodJob::Batch
 
     def enqueue(active_jobs = T.unsafe(nil), **properties, &block); end
     def find(id); end
+    def primary_key; end
     def within_thread(batch_id: T.unsafe(nil), batch_callback_id: T.unsafe(nil)); end
   end
 end
