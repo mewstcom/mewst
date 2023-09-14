@@ -13,8 +13,10 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
       )
     end
 
-    input = CreateEmailConfirmationService::Input.from_internal_form(form:)
-    result = CreateEmailConfirmationService.new.call(input:)
+    result = CreateEmailConfirmationUseCase.new.call(
+      email: form.email.not_nil!,
+      locale: form.locale.not_nil!
+    )
 
     resource = Internal::EmailConfirmationResource.new(email_confirmation: result.email_confirmation)
     render(

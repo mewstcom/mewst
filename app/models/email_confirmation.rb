@@ -26,6 +26,17 @@ class EmailConfirmation < ApplicationRecord
     !succeeded_at.nil?
   end
 
+  sig { params(locale: String).void }
+  def send_sign_up_email!(locale:)
+    self.code = EmailConfirmation.generate_code
+    self.event = EmailConfirmation::EVENT_SIGN_UP
+    save!
+
+    EmailConfirmationMailer.email_confirmation(email_confirmation_id: id, locale:).deliver_later
+
+    nil
+  end
+
   sig { returns(T::Boolean) }
   def success
     update!(succeeded_at: Time.current) unless succeeded?
