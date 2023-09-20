@@ -11,11 +11,13 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
     let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
     let!(:post) { CreatePostUseCase.new.call(profile: form.profile.not_nil!, comment: form.comment.not_nil!).post }
     let!(:stamp_form) { Latest::StampForm.new(profile: profile_1, target_post_id: post.id) }
-    let!(:stamp_input) { CreateStampService::Input.from_latest_form(form: stamp_form) }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     before do
-      CreateStampService.new.call(input: stamp_input)
+      CreateStampUseCase.new.call(
+        profile: stamp_form.profile.not_nil!,
+        target_post: stamp_form.target_post.not_nil!
+      )
     end
 
     it "responses 200" do

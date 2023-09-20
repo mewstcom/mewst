@@ -14,10 +14,10 @@ class Latest::Stamps::CreateController < Latest::ApplicationController
       return response_form_errors(resource_class: Latest::StampFormErrorResource, errors: form.errors)
     end
 
-    result = ActiveRecord::Base.transaction do
-      input = CreateStampService::Input.from_latest_form(form:)
-      CreateStampService.new.call(input:)
-    end
+    result = CreateStampUseCase.new.call(
+      profile: form.profile.not_nil!,
+      target_post: form.target_post.not_nil!
+    )
 
     resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
     render(
