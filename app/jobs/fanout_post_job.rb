@@ -6,7 +6,6 @@ class FanoutPostJob < ApplicationJob
 
   sig { params(post_id: T::Mewst::DatabaseId).void }
   def perform(post_id:)
-    input = FanoutPostService::Input.new(post_id:)
-    FanoutPostService.new.call(input:)
+    FanoutPostUseCase.new.call(post_id:)
   end
 end

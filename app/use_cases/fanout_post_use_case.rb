@@ -1,20 +1,14 @@
 # typed: strict
 # frozen_string_literal: true
 
-class FanoutPostService < ApplicationService
-  class Input < T::Struct
-    extend T::Sig
-
-    const :post_id, T::Mewst::DatabaseId
-  end
-
+class FanoutPostUseCase < ApplicationUseCase
   class Result < T::Struct
     const :post, Post
   end
 
-  sig { params(input: Input).returns(Result) }
-  def call(input:)
-    post = Post.find(input.post_id)
+  sig { params(post_id: T::Mewst::DatabaseId).returns(Result) }
+  def call(post_id:)
+    post = Post.find(post_id)
     followers = post.profile.followers
 
     batch = GoodJob::Batch.new

@@ -1,12 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe CreatePostService do
+RSpec.describe CreatePostUseCase do
   let!(:user) { create(:user) }
   let!(:profile) { user.profile }
   let!(:form) { Latest::PostForm.new(profile:, comment: "hello") }
-  let!(:input) { CreatePostService::Input.from_latest_form(form:) }
-  let!(:service) { CreatePostService.new }
+  let!(:use_case) { CreatePostUseCase.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
@@ -19,7 +18,7 @@ RSpec.describe CreatePostService do
   it "creates a new comment post" do
     expect(Post.count).to eq(0)
 
-    result = service.call(input:)
+    result = use_case.call(profile:, comment: form.comment.not_nil!)
 
     expect(Post.count).to eq(1)
     post = Post.first

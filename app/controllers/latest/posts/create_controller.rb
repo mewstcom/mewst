@@ -14,10 +14,10 @@ class Latest::Posts::CreateController < Latest::ApplicationController
       return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
-    input = CreatePostService::Input.from_latest_form(form:)
-    result = ActiveRecord::Base.transaction do
-      CreatePostService.new.call(input:)
-    end
+    result = CreatePostUseCase.new.call(
+      profile: form.profile.not_nil!,
+      comment: form.comment.not_nil!
+    )
 
     resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
     render(

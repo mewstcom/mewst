@@ -35,8 +35,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
     let!(:profile_2) { user_2.profile }
     let!(:oauth_access_token) { profile_1.oauth_access_tokens.first }
     let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
-    let!(:input) { CreatePostService::Input.from_latest_form(form: post_form) }
-    let!(:target_post) { CreatePostService.new.call(input:).post }
+    let!(:target_post) { CreatePostUseCase.new.call(profile: post_form.profile.not_nil!, comment: post_form.comment.not_nil!).post }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 204" do

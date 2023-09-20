@@ -5,8 +5,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
   context "when success" do
     let!(:profile) { create(:user, :with_access_token_for_web).profile }
     let!(:form) { Latest::PostForm.new(comment: "Hello", profile:) }
-    let!(:input) { CreatePostService::Input.from_latest_form(form:) }
-    let!(:post) { CreatePostService.new.call(input:).post }
+    let!(:post) { CreatePostUseCase.new.call(profile:, comment: form.comment.not_nil!).post }
 
     it "returns posts with profile" do
       get("/internal/@#{profile.atname}/posts")
