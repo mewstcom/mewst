@@ -31,12 +31,14 @@ RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :l
     let!(:viewer) { create(:user, :with_access_token_for_web).profile }
     let!(:target_profile) { create(:user).profile }
     let!(:form) { Latest::FollowForm.new(viewer:, target_atname: target_profile.atname) }
-    let!(:input) { FollowProfileService::Input.from_latest_form(form:) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     before do
-      FollowProfileService.new.call(input:)
+      FollowProfileUseCase.new.call(
+        viewer: form.viewer.not_nil!,
+        target_profile: form.target_profile.not_nil!
+      )
     end
 
     it "responses 200" do
