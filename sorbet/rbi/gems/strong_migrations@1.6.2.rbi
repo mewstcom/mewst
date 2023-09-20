@@ -466,7 +466,7 @@ class StrongMigrations::Checker
 
   # @return [Checker] a new instance of Checker
   #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#8
+  # source://strong_migrations//lib/strong_migrations/checker.rb#12
   def initialize(migration); end
 
   # Returns the value of attribute direction.
@@ -481,14 +481,11 @@ class StrongMigrations::Checker
   # source://strong_migrations//lib/strong_migrations/checker.rb#6
   def direction=(_arg0); end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#27
+  # source://strong_migrations//lib/strong_migrations/checker.rb#30
   def perform(method, *args); end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#107
+  # source://strong_migrations//lib/strong_migrations/checker.rb#110
   def retry_lock_timeouts(check_committed: T.unsafe(nil)); end
-
-  # source://strong_migrations//lib/strong_migrations/checker.rb#17
-  def safety_assured; end
 
   # Returns the value of attribute timeouts_set.
   #
@@ -516,38 +513,55 @@ class StrongMigrations::Checker
 
   private
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#174
+  # source://strong_migrations//lib/strong_migrations/checker.rb#177
   def adapter; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#152
+  # source://strong_migrations//lib/strong_migrations/checker.rb#155
   def check_lock_timeout; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#125
+  # source://strong_migrations//lib/strong_migrations/checker.rb#128
   def check_version_supported; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#194
+  # source://strong_migrations//lib/strong_migrations/checker.rb#197
   def connection; end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#198
+  # source://strong_migrations//lib/strong_migrations/checker.rb#201
   def retry_lock_timeouts?(method); end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#162
+  # source://strong_migrations//lib/strong_migrations/checker.rb#165
   def safe?; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#139
+  # source://strong_migrations//lib/strong_migrations/checker.rb#142
   def set_timeouts; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#170
+  # source://strong_migrations//lib/strong_migrations/checker.rb#173
   def version; end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#166
+  # source://strong_migrations//lib/strong_migrations/checker.rb#169
   def version_safe?; end
+
+  class << self
+    # Returns the value of attribute safe.
+    #
+    # source://strong_migrations//lib/strong_migrations/checker.rb#9
+    def safe; end
+
+    # Sets the attribute safe
+    #
+    # @param value the value to set the attribute safe to.
+    #
+    # source://strong_migrations//lib/strong_migrations/checker.rb#9
+    def safe=(_arg0); end
+
+    # source://strong_migrations//lib/strong_migrations/checker.rb#20
+    def safety_assured; end
+  end
 end
 
 # source://strong_migrations//lib/strong_migrations/checks.rb#3
@@ -723,18 +737,18 @@ module StrongMigrations::SafeMethods
   # hard to commit at right time when reverting
   # so just commit at start
   #
-  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#117
+  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#118
   def disable_transaction; end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#124
+  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#125
   def in_transaction?; end
 
-  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#69
+  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#70
   def safe_add_check_constraint(table, expression, *args, add_options, validate_options); end
 
-  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#46
+  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#47
   def safe_add_foreign_key(from_table, to_table, *args, **options); end
 
   # TODO check if invalid index with expected name exists and remove if needed
@@ -750,7 +764,7 @@ module StrongMigrations::SafeMethods
   # source://strong_migrations//lib/strong_migrations/safe_methods.rb#3
   def safe_by_default_method?(method); end
 
-  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#82
+  # source://strong_migrations//lib/strong_migrations/safe_methods.rb#83
   def safe_change_column_null(add_code, validate_code, change_args, remove_code, default); end
 
   # source://strong_migrations//lib/strong_migrations/safe_methods.rb#13
@@ -782,11 +796,11 @@ class StrongMigrations::WrappedConnection
   # source://strong_migrations//lib/strong_migrations/schema_dumper.rb#17
   def columns(*args, **options); end
 
-  # source://activesupport/7.0.7/lib/active_support/core_ext/module/delegation.rb#302
+  # source://activesupport/7.0.8/lib/active_support/core_ext/module/delegation.rb#302
   def method_missing(method, *args, **_arg2, &block); end
 
   private
 
-  # source://activesupport/7.0.7/lib/active_support/core_ext/module/delegation.rb#294
+  # source://activesupport/7.0.8/lib/active_support/core_ext/module/delegation.rb#294
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
 end
