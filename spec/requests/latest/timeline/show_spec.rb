@@ -8,8 +8,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
     let!(:oauth_access_token) { profile.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:form) { Latest::PostForm.new(comment: "Hello", profile:) }
-    let!(:input) { CreatePostService::Input.from_latest_form(form:) }
-    let!(:post) { CreatePostService.new.call(input:).post }
+    let!(:post) { CreatePostUseCase.new.call(profile:, comment: form.comment.not_nil!).post }
 
     it "returns posts on timeline" do
       get("/latest/timeline", headers:)
