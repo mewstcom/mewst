@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class CreateSessionUseCase < ApplicationService
+class CreateSessionUseCase < ApplicationUseCase
   class Result < T::Struct
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile

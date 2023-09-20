@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class CreatePostUseCase < ApplicationService
+class CreatePostUseCase < ApplicationUseCase
   class Result < T::Struct
     const :post, Post
   end
