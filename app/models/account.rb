@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Account
+  extend T::Sig
+
   sig { returns(Profile) }
   attr_reader :profile
 
