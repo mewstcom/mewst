@@ -18,10 +18,13 @@ class Latest::Me::UpdateController < Latest::ApplicationController
       return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
-    input = UpdateProfileService::Input.from_latest_form(form:)
-    result = ActiveRecord::Base.transaction do
-      UpdateProfileService.new.call(input:)
-    end
+    result = UpdateProfileUseCase.new.call(
+      profile: form.profile.not_nil!,
+      atname: form.atname.not_nil!,
+      avatar_url: form.avatar_url.not_nil!,
+      description: form.description.not_nil!,
+      name: form.name.not_nil!
+    )
 
     profile_resource = Latest::ProfileResource.new(profile: result.profile, viewer: profile)
     render(
