@@ -16,10 +16,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
       )
     end
 
-    input = CreateSessionService::Input.from_internal_form(form:)
-    result = ApplicationRecord.transaction do
-      CreateSessionService.new.call(input:)
-    end
+    result = CreateSessionService.new.call(user: form.user.not_nil!)
 
     resource = Internal::AccountResource.new(
       oauth_access_token: result.oauth_access_token,
