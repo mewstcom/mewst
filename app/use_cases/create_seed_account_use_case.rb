@@ -10,6 +10,7 @@ class CreateSeedAccountUseCase < ApplicationUseCase
     ActiveRecord::Base.transaction do
       email_confirmation.send_sign_up_email!(locale:)
       email_confirmation.success
+
       account.save!
 
       if avatar_url.present?

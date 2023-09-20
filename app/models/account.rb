@@ -4,13 +4,13 @@
 class Account
   extend T::Sig
 
-  sig { returns(Profile) }
+  sig { returns(T.nilable(Profile)) }
   attr_reader :profile
 
-  sig { returns(User) }
+  sig { returns(T.nilable(User)) }
   attr_reader :user
 
-  sig { returns(OauthAccessToken) }
+  sig { returns(T.nilable(OauthAccessToken)) }
   attr_reader :oauth_access_token
 
   sig { params(atname: String, email: String, locale: String, password: String, current_time: ActiveSupport::TimeWithZone).void }
@@ -20,6 +20,9 @@ class Account
     @locale = locale
     @password = password
     @current_time = current_time
+    @profile = T.let(nil, T.nilable(Profile))
+    @user = T.let(nil, T.nilable(User))
+    @oauth_access_token = T.let(nil, T.nilable(OauthAccessToken))
   end
 
   sig { void }
@@ -30,7 +33,7 @@ class Account
       joined_at: current_time
     )
 
-    @user = profile.create_user!(
+    @user = profile.not_nil!.create_user!(
       email:,
       locale:,
       password:,

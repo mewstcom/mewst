@@ -14,12 +14,12 @@ class CreateAccountUseCase < ApplicationUseCase
 
     ActiveRecord::Base.transaction do
       account.save!
-    end
 
-    Result.new(
-      oauth_access_token: account.oauth_access_token.not_nil!,
-      profile: account.profile.not_nil!,
-      user: account.user.not_nil!
-    )
+      Result.new(
+        oauth_access_token: account.oauth_access_token.not_nil!,
+        profile: account.profile.not_nil!,
+        user: account.user.not_nil!
+      )
+    end
   end
 end

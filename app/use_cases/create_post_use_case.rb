@@ -6,7 +6,7 @@ class CreatePostUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(profile, Profile, comment, String).returns(Result) }
+  sig { params(profile: Profile, comment: String).returns(Result) }
   def call(profile:, comment:)
     post = profile.posts.new(comment:, published_at: Time.current)
 

@@ -8,7 +8,7 @@ class CreateSessionUseCase < ApplicationUseCase
     const :user, User
   end
 
-  sig { params(user, User).returns(Result) }
+  sig { params(user: User).returns(Result) }
   def call(user:)
     profile = user.profile.not_nil!
 
