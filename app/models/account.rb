@@ -28,7 +28,7 @@ class Account
   sig { void }
   def save!
     @profile = Profile.create!(
-      actor_type: :user,
+      profileable_type: :user,
       atname:,
       joined_at: current_time
     )
