@@ -3,19 +3,18 @@
 
 RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_version: :latest do
   context "when valid input data" do
-    let!(:user_1) { create(:user, :with_access_token_for_web) }
-    let!(:profile_1) { user_1.profile }
-    let!(:user_2) { create(:user) }
-    let!(:profile_2) { user_2.profile }
-    let!(:oauth_access_token) { profile_1.oauth_access_tokens.first }
-    let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
-    let!(:post) { CreatePostUseCase.new.call(profile: post_form.profile.not_nil!, comment: post_form.comment.not_nil!).post }
-    let!(:stamp_form) { Latest::StampForm.new(profile: profile_1, target_post_id: post.id) }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:target_actor) { create(:actor) }
+    let!(:target_profile) { target_actor.profile }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
+    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, comment: "hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer: target_actor, comment: post_form.comment.not_nil!).post }
+    let!(:stamp_form) { Latest::StampForm.new(viewer:, target_post_id: post.id) }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     before do
       CreateStampUseCase.new.call(
-        profile: stamp_form.profile.not_nil!,
+        viewer:,
         target_post: stamp_form.target_post.not_nil!
       )
     end
@@ -35,10 +34,10 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
           id: post.id,
           comment: post.comment,
           profile: {
-            atname: profile_2.atname,
-            avatar_url: profile_2.avatar_url,
-            description: profile_2.description,
-            name: profile_2.name,
+            atname: target_profile.atname,
+            avatar_url: target_profile.avatar_url,
+            description: target_profile.description,
+            name: target_profile.name,
             viewer_has_followed: false
           },
           published_at: post.published_at.iso8601,

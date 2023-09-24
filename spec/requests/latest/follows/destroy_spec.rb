@@ -3,7 +3,7 @@
 
 RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :latest do
   context "when invalid atname" do
-    let!(:viewer) { create(:user, :with_access_token_for_web).profile }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
@@ -28,7 +28,7 @@ RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :l
   end
 
   context "when valid input data" do
-    let!(:viewer) { create(:user, :with_access_token_for_web).profile }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_profile) { create(:user).profile }
     let!(:form) { Latest::FollowForm.new(viewer:, target_atname: target_profile.atname) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }

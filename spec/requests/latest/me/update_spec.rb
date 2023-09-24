@@ -3,9 +3,8 @@
 
 RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
   context "when invalid atname" do
-    let!(:user) { create(:user, :with_access_token_for_web) }
-    let!(:profile) { user.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 422" do
@@ -34,9 +33,9 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
   end
 
   context "when valid input data" do
-    let!(:user) { create(:user, :with_access_token_for_web) }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { user.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     before do

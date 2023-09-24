@@ -2,14 +2,13 @@
 # frozen_string_literal: true
 
 RSpec.describe CreatePostUseCase do
-  let!(:user) { create(:user) }
-  let!(:profile) { user.profile }
-  let!(:form) { Latest::PostForm.new(profile:, comment: "hello") }
+  let!(:viewer) { create(:actor) }
+  let!(:form) { Latest::PostForm.new(viewer:, comment: "hello") }
   let!(:use_case) { CreatePostUseCase.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
-    allow(profile).to receive(:home_timeline).and_return(home_timeline)
+    allow(viewer).to receive(:home_timeline).and_return(home_timeline)
     allow(home_timeline).to receive(:add_post)
 
     allow(FanoutPostJob).to receive(:perform_later)
@@ -18,7 +17,7 @@ RSpec.describe CreatePostUseCase do
   it "creates a new comment post" do
     expect(Post.count).to eq(0)
 
-    result = use_case.call(profile:, comment: form.comment.not_nil!)
+    result = use_case.call(viewer:, comment: form.comment.not_nil!)
 
     expect(Post.count).to eq(1)
     post = Post.first

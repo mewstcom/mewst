@@ -3,12 +3,13 @@
 
 RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :latest do
   context "when invalid atname" do
-    let!(:viewer) { create(:user, :with_access_token_for_web).profile }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 422" do
-      post("/latest/@#{viewer.atname}/follow", headers:)
+      post("/latest/@#{profile.atname}/follow", headers:)
       expect(response).to have_http_status(:unprocessable_entity)
 
       expected = {
@@ -28,7 +29,7 @@ RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :lat
   end
 
   context "when valid input data" do
-    let!(:viewer) { create(:user, :with_access_token_for_web).profile }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_profile) { create(:user).profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }

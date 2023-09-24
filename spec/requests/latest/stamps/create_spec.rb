@@ -3,9 +3,8 @@
 
 RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version: :latest do
   context "when invalid post_id" do
-    let!(:user) { create(:user, :with_access_token_for_web) }
-    let!(:profile) { user.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 422" do
@@ -29,13 +28,12 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
   end
 
   context "when valid input data" do
-    let!(:user_1) { create(:user, :with_access_token_for_web) }
-    let!(:user_2) { create(:user) }
-    let!(:profile_1) { user_1.profile }
-    let!(:profile_2) { user_2.profile }
-    let!(:oauth_access_token) { profile_1.oauth_access_tokens.first }
-    let!(:post_form) { Latest::PostForm.new(profile: profile_2, comment: "hello") }
-    let!(:target_post) { CreatePostUseCase.new.call(profile: post_form.profile.not_nil!, comment: post_form.comment.not_nil!).post }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:target_actor) { create(:actor) }
+    let!(:target_profile) { target_actor.profile }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
+    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, comment: "hello") }
+    let!(:target_post) { CreatePostUseCase.new.call(viewer: target_actor, comment: post_form.comment.not_nil!).post }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 204" do
@@ -53,10 +51,10 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
           id: target_post.id,
           comment: target_post.comment,
           profile: {
-            atname: profile_2.atname,
-            avatar_url: profile_2.avatar_url,
-            description: profile_2.description,
-            name: profile_2.name,
+            atname: target_profile.atname,
+            avatar_url: target_profile.avatar_url,
+            description: target_profile.description,
+            name: target_profile.name,
             viewer_has_followed: false
           },
           published_at: target_post.published_at.iso8601,

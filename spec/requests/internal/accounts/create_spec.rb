@@ -34,6 +34,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
     it "responses 201" do
       expect(User.count).to eq(0)
       expect(Profile.count).to eq(0)
+      expect(Actor.count).to eq(0)
       expect(OauthAccessToken.count).to eq(0)
 
       post("/internal/accounts", params: {
@@ -45,6 +46,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
 
       expect(User.count).to eq(1)
       expect(Profile.count).to eq(1)
+      expect(Actor.count).to eq(1)
       expect(OauthAccessToken.count).to eq(1)
       user = User.first
       profile = user.profile
