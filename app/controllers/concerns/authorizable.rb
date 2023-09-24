@@ -9,6 +9,6 @@ module Authorizable
 
   sig { returns(Actor) }
   def pundit_user
-    current_actor!
+    current_viewer!
   end
 end

@@ -13,7 +13,7 @@ class CreatePostUseCase < ApplicationUseCase
     ActiveRecord::Base.transaction do
       post.save!
 
-      profile.home_timeline.add_post(post:)
+      viewer.home_timeline.add_post(post:)
       FanoutPostJob.perform_later(post_id: post.id)
     end
 
