@@ -473,8 +473,8 @@ class EmailConfirmation
     sig { returns(T.nilable([::String, ::String])) }
     def code_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def code_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def code_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def code_in_database; end
@@ -482,8 +482,8 @@ class EmailConfirmation
     sig { returns(T.nilable([::String, ::String])) }
     def code_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def code_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def code_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def code_previously_was; end
@@ -518,8 +518,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def created_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
@@ -527,8 +527,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def created_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_previously_was; end
@@ -563,8 +563,8 @@ class EmailConfirmation
     sig { returns(T.nilable([::String, ::String])) }
     def email_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def email_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def email_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def email_in_database; end
@@ -572,8 +572,8 @@ class EmailConfirmation
     sig { returns(T.nilable([::String, ::String])) }
     def email_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def email_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def email_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def email_previously_was; end
@@ -608,8 +608,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def event_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def event_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def event_in_database; end
@@ -617,8 +617,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def event_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def event_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def event_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def event_previously_was; end
@@ -653,8 +653,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_in_database; end
@@ -662,8 +662,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_previously_was; end
@@ -761,8 +761,13 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def succeeded_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def succeeded_at_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def succeeded_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def succeeded_at_in_database; end
@@ -770,8 +775,13 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def succeeded_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def succeeded_at_previously_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def succeeded_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def succeeded_at_previously_was; end
@@ -806,8 +816,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
@@ -815,8 +825,8 @@ class EmailConfirmation
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_previously_was; end

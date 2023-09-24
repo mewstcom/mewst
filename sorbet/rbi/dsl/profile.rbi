@@ -219,6 +219,20 @@ class Profile
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def actor_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def actor_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :actors`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Actor::PrivateCollectionProxy) }
+    def actors; end
+
+    sig { params(value: T::Enumerable[::Actor]).void }
+    def actors=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
 
@@ -523,16 +537,16 @@ class Profile
   end
 
   module GeneratedAttributeMethods
-    sig { returns(T.untyped) }
+    sig { returns(::String) }
     def actor_type; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def actor_type=(value); end
 
     sig { returns(T::Boolean) }
     def actor_type?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def actor_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -541,28 +555,28 @@ class Profile
     sig { returns(T::Boolean) }
     def actor_type_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def actor_type_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def actor_type_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def actor_type_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def actor_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def actor_type_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def actor_type_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def actor_type_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def actor_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def actor_type_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def actor_type_was; end
 
     sig { void }
@@ -592,8 +606,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def atname_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def atname_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def atname_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def atname_in_database; end
@@ -601,8 +615,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def atname_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def atname_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def atname_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def atname_previously_was; end
@@ -637,8 +651,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def avatar_url_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def avatar_url_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def avatar_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def avatar_url_in_database; end
@@ -646,8 +660,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def avatar_url_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def avatar_url_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def avatar_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def avatar_url_previously_was; end
@@ -682,8 +696,8 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def created_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
@@ -691,8 +705,8 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def created_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_previously_was; end
@@ -727,8 +741,13 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def deleted_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def deleted_at_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def deleted_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def deleted_at_in_database; end
@@ -736,8 +755,13 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def deleted_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def deleted_at_previously_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def deleted_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def deleted_at_previously_was; end
@@ -772,8 +796,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def description_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def description_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def description_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def description_in_database; end
@@ -781,8 +805,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def description_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def description_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def description_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def description_previously_was; end
@@ -817,8 +841,8 @@ class Profile
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_in_database; end
@@ -826,8 +850,8 @@ class Profile
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_previously_was; end
@@ -862,8 +886,8 @@ class Profile
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def joined_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def joined_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def joined_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def joined_at_in_database; end
@@ -871,8 +895,8 @@ class Profile
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def joined_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def joined_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def joined_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def joined_at_previously_was; end
@@ -907,8 +931,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def name_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def name_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def name_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def name_in_database; end
@@ -916,8 +940,8 @@ class Profile
     sig { returns(T.nilable([::String, ::String])) }
     def name_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def name_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def name_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def name_previously_was; end
@@ -927,6 +951,51 @@ class Profile
 
     sig { void }
     def name_will_change!; end
+
+    sig { returns(T.untyped) }
+    def profileable_type; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def profileable_type=(value); end
+
+    sig { returns(T::Boolean) }
+    def profileable_type?; end
+
+    sig { returns(T.untyped) }
+    def profileable_type_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def profileable_type_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def profileable_type_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_type_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_type_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def profileable_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def profileable_type_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def profileable_type_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def profileable_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def profileable_type_previously_was; end
+
+    sig { returns(T.untyped) }
+    def profileable_type_was; end
+
+    sig { void }
+    def profileable_type_will_change!; end
 
     sig { void }
     def restore_actor_type!; end
@@ -956,9 +1025,12 @@ class Profile
     def restore_name!; end
 
     sig { void }
+    def restore_profileable_type!; end
+
+    sig { void }
     def restore_updated_at!; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_actor_type; end
 
     sig { returns(T::Boolean) }
@@ -1012,6 +1084,12 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_name?; end
 
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_profileable_type; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_profileable_type?; end
+
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
 
@@ -1042,8 +1120,8 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
@@ -1051,8 +1129,8 @@ class Profile
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_previously_was; end
@@ -1089,6 +1167,9 @@ class Profile
 
     sig { returns(T::Boolean) }
     def will_save_change_to_name?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_profileable_type?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end

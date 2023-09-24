@@ -457,8 +457,8 @@ class Post
     sig { returns(T.nilable([::String, ::String])) }
     def comment_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def comment_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def comment_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def comment_in_database; end
@@ -466,8 +466,8 @@ class Post
     sig { returns(T.nilable([::String, ::String])) }
     def comment_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def comment_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def comment_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def comment_previously_was; end
@@ -502,8 +502,8 @@ class Post
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def created_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
@@ -511,8 +511,8 @@ class Post
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def created_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_previously_was; end
@@ -547,8 +547,8 @@ class Post
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_in_database; end
@@ -556,8 +556,8 @@ class Post
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_previously_was; end
@@ -592,8 +592,8 @@ class Post
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profile_id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def profile_id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def profile_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def profile_id_in_database; end
@@ -601,8 +601,8 @@ class Post
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def profile_id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def profile_id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def profile_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def profile_id_previously_was; end
@@ -637,8 +637,8 @@ class Post
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def published_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def published_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def published_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def published_at_in_database; end
@@ -646,8 +646,8 @@ class Post
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def published_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def published_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def published_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def published_at_previously_was; end
@@ -745,8 +745,8 @@ class Post
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def stamps_count_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def stamps_count_changed?; end
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def stamps_count_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
     def stamps_count_in_database; end
@@ -754,8 +754,8 @@ class Post
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def stamps_count_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def stamps_count_previously_changed?; end
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def stamps_count_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
     def stamps_count_previously_was; end
@@ -790,8 +790,8 @@ class Post
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
@@ -799,8 +799,8 @@ class Post
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def updated_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def updated_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def updated_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_previously_was; end
