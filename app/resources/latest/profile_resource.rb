@@ -5,7 +5,7 @@ class Latest::ProfileResource < Latest::ApplicationResource
   delegate :atname, :avatar_url, :description, :name, to: :profile
 
   sig { params(viewer: T.nilable(Actor), profile: Profile).void }
-  def initialize(profile:, viewer:)
+  def initialize(viewer:, profile:)
     @viewer = viewer
     @profile = profile
   end
