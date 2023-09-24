@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::Follows::DestroyController < Latest::ApplicationController
-  include Authenticatable
+  include Latest::Authenticatable
   include Latest::FormErrorable
 
   def call

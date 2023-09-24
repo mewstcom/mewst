@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::Timeline::ShowController < Latest::ApplicationController
-  include Authenticatable
+  include Latest::Authenticatable
 
   def call
     posts, page_info = current_viewer!.home_timeline.posts_with_page_info(

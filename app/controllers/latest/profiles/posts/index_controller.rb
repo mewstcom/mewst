@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::Profiles::Posts::IndexController < Latest::ApplicationController
-  include Authenticatable
+  include Latest::Authenticatable
 
   def call
     profile = Profile.find_by!(atname: params[:atname])

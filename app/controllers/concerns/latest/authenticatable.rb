@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Authenticatable
+module Latest::Authenticatable
   extend T::Sig
   extend ActiveSupport::Concern
 
