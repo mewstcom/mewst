@@ -240,6 +240,20 @@ class User
   end
 
   module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def actor_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def actor_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :actors`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Actor::PrivateCollectionProxy) }
+    def actors; end
+
+    sig { params(value: T::Enumerable[::Actor]).void }
+    def actors=(value); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
 

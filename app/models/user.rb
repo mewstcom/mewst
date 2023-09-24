@@ -7,10 +7,16 @@ class User < ApplicationRecord
   enumerize :locale, in: I18n.available_locales
 
   belongs_to :profile
+  has_many :actors, dependent: :restrict_with_exception
 
   has_secure_password
 
   validates :email, presence: true, uniqueness: true
+
+  sig { returns(Actor) }
+  def first_actor
+    actors.find_by!(profile:)
+  end
 
   sig { returns(T::Boolean) }
   def track_sign_in
