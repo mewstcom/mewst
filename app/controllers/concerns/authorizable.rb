@@ -7,8 +7,8 @@ module Authorizable
 
   include Pundit::Authorization
 
-  sig { returns(Profile) }
+  sig { returns(Actor) }
   def pundit_user
-    current_profile.not_nil!
+    current_actor!
   end
 end

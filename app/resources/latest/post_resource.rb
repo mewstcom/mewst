@@ -4,7 +4,7 @@
 class Latest::PostResource < Latest::ApplicationResource
   delegate :id, :comment, :stamps_count, to: :post
 
-  sig { params(post: Post, viewer: T.nilable(Profile)).void }
+  sig { params(post: Post, viewer: T.nilable(Actor)).void }
   def initialize(post:, viewer:)
     @post = post
     @viewer = viewer
@@ -31,7 +31,7 @@ class Latest::PostResource < Latest::ApplicationResource
   attr_reader :post
   private :post
 
-  sig { returns(T.nilable(Profile)) }
+  sig { returns(T.nilable(Actor)) }
   attr_reader :viewer
   private :viewer
 end

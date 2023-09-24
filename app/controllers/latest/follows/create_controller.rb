@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::Follows::CreateController < Latest::ApplicationController
+  include Authenticatable
   include Latest::FormErrorable
 
   def call
     form = Latest::FollowForm.new(
-      viewer: current_profile.not_nil!,
+      viewer: current_viewer!,
       target_atname: params[:atname]
     )
 
@@ -19,7 +20,7 @@ class Latest::Follows::CreateController < Latest::ApplicationController
       target_profile: form.target_profile.not_nil!
     )
 
-    resource = Latest::ProfileResource.new(profile: result.target_profile, viewer: current_profile.not_nil!)
+    resource = Latest::ProfileResource.new(profile: result.target_profile, viewer: current_viewer!)
     render(
       json: Latest::ProfileSerializer.new(resource),
       status: :created

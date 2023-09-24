@@ -2,14 +2,16 @@
 # frozen_string_literal: true
 
 class Latest::Timeline::ShowController < Latest::ApplicationController
+  include Authenticatable
+
   def call
-    posts, page_info = current_profile.not_nil!.home_timeline.posts_with_page_info(
+    posts, page_info = current_viewer!.home_timeline.posts_with_page_info(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 5
     )
 
-    resources = posts.map { |post| Latest::PostResource.new(post:, viewer: current_profile.not_nil!) }
+    resources = posts.map { |post| Latest::PostResource.new(post:, viewer: current_viewer!) }
     render(
       json: {
         posts: Latest::PostSerializer.new(resources).to_h,

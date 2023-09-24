@@ -40,9 +40,11 @@ class Account
       signed_up_at: current_time
     )
 
+    actor = @profile.actors.create!(user: @user)
+
     @oauth_access_token = OauthAccessToken.find_or_create_for(
       application: OauthApplication.mewst_web,
-      resource_owner: profile,
+      resource_owner: actor,
       scopes: "",
       user:
     )

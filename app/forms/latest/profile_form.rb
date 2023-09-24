@@ -7,17 +7,17 @@ class Latest::ProfileForm < Latest::ApplicationForm
   attribute :description, :string
   attribute :name, :string
 
-  sig { returns(T.nilable(Profile)) }
-  attr_accessor :profile
+  sig { returns(T.nilable(Actor)) }
+  attr_accessor :viewer
 
   validates :atname, format: {with: Profile::ATNAME_FORMAT}, length: {maximum: 30}, presence: true
   validates :avatar_url, url: {allow_blank: true}
-  validates :profile, presence: true
+  validates :viewer, presence: true
   validate :atname_uniqueness
 
   sig { void }
   private def atname_uniqueness
-    if Profile.where.not(id: profile.not_nil!.id).find_by(atname:)
+    if Profile.where.not(id: viewer.not_nil!.profile_id).find_by(atname:)
       errors.add(:atname, :atname_uniqueness)
     end
   end

@@ -2,9 +2,10 @@
 # frozen_string_literal: true
 
 class Latest::Me::ShowController < Latest::ApplicationController
+  include Authenticatable
+
   def call
-    profile = current_profile.not_nil!
-    profile_resource = Latest::ProfileResource.new(profile:, viewer: profile)
+    profile_resource = Latest::ProfileResource.new(profile: current_viewer!.profile, viewer: current_viewer!)
 
     render(
       json: {

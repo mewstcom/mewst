@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::UnfollowForm < Latest::ApplicationForm
-  sig { returns(T.nilable(Profile)) }
+  sig { returns(T.nilable(Actor)) }
   attr_accessor :viewer
 
   attribute :target_atname, :string
