@@ -34,7 +34,7 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
 
   context "when valid input data" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { user.profile }
+    let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 

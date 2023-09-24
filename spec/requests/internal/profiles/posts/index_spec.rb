@@ -3,7 +3,7 @@
 
 RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :internal do
   context "when success" do
-    let!(:actor) { create(:actor, :with_access_token_for_web).profile }
+    let!(:actor) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { actor.profile }
     let!(:form) { Latest::PostForm.new(viewer: actor, comment: "Hello") }
     let!(:post) { CreatePostUseCase.new.call(viewer: actor, comment: form.comment.not_nil!).post }

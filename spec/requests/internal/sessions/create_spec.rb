@@ -38,7 +38,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
     let!(:user) { create(:user, email:, password:) }
     let!(:actor) { create(:actor, :with_access_token_for_web, user:) }
     let!(:profile) { actor.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:oauth_access_token) { actor.oauth_access_tokens.first }
 
     it "responses 201" do
       expect(user.sign_in_count).to eq(0)
