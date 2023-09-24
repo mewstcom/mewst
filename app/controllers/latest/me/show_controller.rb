@@ -5,7 +5,7 @@ class Latest::Me::ShowController < Latest::ApplicationController
   include Latest::Authenticatable
 
   def call
-    profile_resource = Latest::ProfileResource.new(profile: current_viewer!.profile, viewer: current_viewer!)
+    profile_resource = Latest::ProfileResource.new(viewer: current_viewer!, profile: current_viewer!.profile)
 
     render(
       json: {
