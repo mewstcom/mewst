@@ -7,4 +7,5 @@ class Internal::AccountSerializer < Internal::ApplicationSerializer
   one :oauth_access_token, resource: Internal::OauthAccessTokenSerializer
   one :profile, resource: Internal::ProfileSerializer
   one :user, resource: Internal::UserSerializer
+  one :actor, resource: Internal::ActorSerializer
 end

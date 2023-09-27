@@ -13,6 +13,9 @@ class Account
   sig { returns(T.nilable(OauthAccessToken)) }
   attr_reader :oauth_access_token
 
+  sig { returns(T.nilable(Actor)) }
+  attr_reader :actor
+
   sig { params(atname: String, email: String, locale: String, password: String, current_time: ActiveSupport::TimeWithZone).void }
   def initialize(atname:, email:, locale:, password:, current_time: Time.current)
     @atname = atname
@@ -23,6 +26,7 @@ class Account
     @profile = T.let(nil, T.nilable(Profile))
     @user = T.let(nil, T.nilable(User))
     @oauth_access_token = T.let(nil, T.nilable(OauthAccessToken))
+    @actor = T.let(nil, T.nilable(Actor))
   end
 
   sig { void }
@@ -40,7 +44,7 @@ class Account
       signed_up_at: current_time
     )
 
-    actor = @profile.actors.create!(user: @user)
+    @actor = @profile.actors.create!(user: @user)
 
     @oauth_access_token = OauthAccessToken.find_or_create_for(
       application: OauthApplication.mewst_web,

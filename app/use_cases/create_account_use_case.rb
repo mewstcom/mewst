@@ -6,6 +6,7 @@ class CreateAccountUseCase < ApplicationUseCase
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile
     const :user, User
+    const :actor, Actor
   end
 
   sig { params(atname: String, email: String, locale: String, password: String).returns(Result) }
@@ -18,7 +19,8 @@ class CreateAccountUseCase < ApplicationUseCase
       Result.new(
         oauth_access_token: account.oauth_access_token.not_nil!,
         profile: account.profile.not_nil!,
-        user: account.user.not_nil!
+        user: account.user.not_nil!,
+        actor: account.actor.not_nil!
       )
     end
   end

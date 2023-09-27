@@ -29,7 +29,8 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     resource = Internal::AccountResource.new(
       oauth_access_token: result.oauth_access_token,
       profile: result.profile,
-      user: result.user
+      user: result.user,
+      actor: result.actor
     )
     render(
       json: Internal::AccountSerializer.new(resource),
