@@ -6,20 +6,18 @@ class CreateSessionUseCase < ApplicationUseCase
     const :oauth_access_token, OauthAccessToken
     const :profile, Profile
     const :user, User
-    const :actor, Actor
   end
 
   sig { params(user: User).returns(Result) }
   def call(user:)
-    actor = user.first_actor
+    profile = user.profile.not_nil!
 
     user.track_sign_in
 
     Result.new(
       oauth_access_token: user.first_actor.active_access_token.not_nil!,
-      profile: actor.profile.not_nil!,
-      user:,
-      actor:
+      profile:,
+      user:
     )
   end
 end

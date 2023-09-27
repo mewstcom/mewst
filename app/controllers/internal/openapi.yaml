@@ -262,23 +262,10 @@ components:
           "$ref": "#/components/schemas/profile"
         user:
           "$ref": "#/components/schemas/user"
-        actor:
-          "$ref": "#/components/schemas/actor"
       required:
         - oauth_access_token
         - profile
         - user
-        - actor
-    actor:
-      additionalProperties: false
-      title: Actor
-      description: ""
-      type: object
-      properties:
-        id:
-          type: string
-      required:
-        - id
     email-confirmation:
       additionalProperties: false
       title: Email Confirmation
