@@ -16,6 +16,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
 
       expected = {
         profile: {
+          id: profile.id,
           atname: profile.atname,
           avatar_url: profile.avatar_url,
           description: profile.description,
@@ -27,6 +28,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
             id: post.id,
             comment: "Hello",
             profile: {
+              id: profile.id,
               atname: profile.atname,
               avatar_url: profile.avatar_url,
               name: profile.name,

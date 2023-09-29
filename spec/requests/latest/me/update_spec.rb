@@ -65,13 +65,7 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
       expect(profile.name).to eq("John")
 
       expected = {
-        profile: {
-          atname: profile.atname,
-          avatar_url: profile.avatar_url,
-          name: profile.name,
-          description: profile.description,
-          viewer_has_followed: false
-        }
+        profile: profile_resource(profile:, viewer_has_followed: false)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
