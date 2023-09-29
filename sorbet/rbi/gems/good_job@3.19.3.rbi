@@ -3054,13 +3054,13 @@ class GoodJob::LogSubscriber < ::ActiveSupport::LogSubscriber
   # source://good_job//lib/good_job/log_subscriber.rb#62
   def cron_manager_start(event); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def debug(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def error(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def fatal(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
   # Responds to the +finished_job_task.good_job+ notification.
@@ -3079,7 +3079,7 @@ class GoodJob::LogSubscriber < ::ActiveSupport::LogSubscriber
   # source://good_job//lib/good_job/log_subscriber.rb#31
   def finished_timer_task(event); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def info(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
   # Get the logger associated with this {LogSubscriber} instance.
@@ -3180,10 +3180,10 @@ class GoodJob::LogSubscriber < ::ActiveSupport::LogSubscriber
   # source://good_job//lib/good_job/log_subscriber.rb#165
   def systemd_watchdog_start(event); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def unknown(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
-  # source://good_job//lib/good_job/log_subscriber.rb#265
+  # source://good_job//lib/good_job/log_subscriber.rb#267
   def warn(progname = T.unsafe(nil), tags: T.unsafe(nil), &block); end
 
   private
@@ -3195,7 +3195,7 @@ class GoodJob::LogSubscriber < ::ActiveSupport::LogSubscriber
   # @return [void]
   # @yield [void]
   #
-  # source://good_job//lib/good_job/log_subscriber.rb#236
+  # source://good_job//lib/good_job/log_subscriber.rb#238
   def tag_logger(*tags, &block); end
 
   class << self
@@ -3230,7 +3230,7 @@ class GoodJob::LogSubscriber < ::ActiveSupport::LogSubscriber
     #
     # @return [void]
     #
-    # source://good_job//lib/good_job/log_subscriber.rb#224
+    # source://good_job//lib/good_job/log_subscriber.rb#226
     def reset_logger; end
   end
 end
