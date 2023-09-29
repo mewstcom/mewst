@@ -319,6 +319,8 @@ components:
       additionalProperties: false
       description: ""
       properties:
+        id:
+          type: string
         atname:
           type: string
         avatar_url:
@@ -330,6 +332,7 @@ components:
         viewer_has_followed:
           type: boolean
       required:
+        - id
         - atname
         - avatar_url
         - description

@@ -4,5 +4,5 @@
 class Internal::ProfileSerializer < Internal::ApplicationSerializer
   root_key :profile, :profiles
 
-  attributes :atname, :avatar_url, :description, :id, :name
+  attributes :id, :atname, :name, :description, :avatar_url
 end

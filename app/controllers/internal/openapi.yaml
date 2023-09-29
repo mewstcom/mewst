@@ -377,22 +377,22 @@ components:
       description: ""
       type: object
       properties:
-        atname:
-          type: string
-        avatar_url:
-          type: string
-        description:
-          type: string
         id:
+          type: string
+        atname:
           type: string
         name:
           type: string
+        description:
+          type: string
+        avatar_url:
+          type: string
       required:
-        - atname
-        - avatar_url
-        - description
         - id
+        - atname
         - name
+        - description
+        - avatar_url
     user:
       additionalProperties: false
       title: User
