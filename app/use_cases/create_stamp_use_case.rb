@@ -6,9 +6,9 @@ class CreateStampUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(profile: Profile, target_post: Post).returns(Result) }
-  def call(profile:, target_post:)
-    profile.stamps.where(post: target_post).first_or_create!(stamped_at: Time.current)
+  sig { params(viewer: Actor, target_post: Post).returns(Result) }
+  def call(viewer:, target_post:)
+    viewer.stamps.where(post: target_post).first_or_create!(stamped_at: Time.current)
 
     Result.new(post: target_post.reload)
   end

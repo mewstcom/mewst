@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::Stamps::DestroyController < Latest::ApplicationController
+  include Latest::Authenticatable
   include Latest::FormErrorable
 
   def call
     form = Latest::StampForm.new(
-      profile: current_profile.not_nil!,
+      viewer: current_viewer!,
       target_post_id: params[:post_id]
     )
 
@@ -15,11 +16,11 @@ class Latest::Stamps::DestroyController < Latest::ApplicationController
     end
 
     result = DeleteStampUseCase.new.call(
-      profile: form.profile.not_nil!,
+      viewer: form.viewer.not_nil!,
       target_post: form.target_post.not_nil!
     )
 
-    resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
+    resource = Latest::PostResource.new(post: result.post, viewer: current_viewer!)
     render(
       json: Latest::PostSerializer.new(resource),
       status: :ok

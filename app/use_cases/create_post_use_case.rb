@@ -6,14 +6,14 @@ class CreatePostUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(profile: Profile, comment: String).returns(Result) }
-  def call(profile:, comment:)
-    post = profile.posts.new(comment:, published_at: Time.current)
+  sig { params(viewer: Actor, comment: String).returns(Result) }
+  def call(viewer:, comment:)
+    post = viewer.posts.new(comment:, published_at: Time.current)
 
     ActiveRecord::Base.transaction do
       post.save!
 
-      profile.home_timeline.add_post(post:)
+      viewer.home_timeline.add_post(post:)
       FanoutPostJob.perform_later(post_id: post.id)
     end
 

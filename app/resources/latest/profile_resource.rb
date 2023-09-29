@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::ProfileResource < Latest::ApplicationResource
-  delegate :atname, :avatar_url, :description, :name, to: :profile
+  delegate :id, :atname, :name, :description, :avatar_url, to: :profile
 
-  sig { params(profile: Profile, viewer: T.nilable(Profile)).void }
-  def initialize(profile:, viewer:)
-    @profile = profile
+  sig { params(viewer: T.nilable(Actor), profile: Profile).void }
+  def initialize(viewer:, profile:)
     @viewer = viewer
+    @profile = profile
   end
 
   sig { returns(T::Boolean) }
@@ -17,11 +17,11 @@ class Latest::ProfileResource < Latest::ApplicationResource
     viewer.not_nil!.following?(target_profile: profile)
   end
 
+  sig { returns(T.nilable(Actor)) }
+  attr_reader :viewer
+  private :viewer
+
   sig { returns(Profile) }
   attr_reader :profile
   private :profile
-
-  sig { returns(T.nilable(Profile)) }
-  attr_reader :viewer
-  private :viewer
 end

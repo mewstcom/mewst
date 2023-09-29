@@ -504,8 +504,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def application_id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def application_id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def application_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def application_id_in_database; end
@@ -513,8 +513,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def application_id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def application_id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def application_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def application_id_previously_was; end
@@ -549,8 +549,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def created_at_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
@@ -558,8 +558,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def created_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def created_at_previously_changed?; end
+    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_previously_was; end
@@ -594,8 +594,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def expires_in_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def expires_in_changed?; end
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def expires_in_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
     def expires_in_in_database; end
@@ -603,8 +603,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def expires_in_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def expires_in_previously_changed?; end
+    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    def expires_in_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
     def expires_in_previously_was; end
@@ -639,8 +639,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_in_database; end
@@ -648,8 +648,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def id_previously_was; end
@@ -684,8 +684,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def redirect_uri_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def redirect_uri_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def redirect_uri_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def redirect_uri_in_database; end
@@ -693,8 +693,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def redirect_uri_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def redirect_uri_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def redirect_uri_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def redirect_uri_previously_was; end
@@ -729,8 +729,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def resource_owner_id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def resource_owner_id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def resource_owner_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def resource_owner_id_in_database; end
@@ -738,8 +738,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def resource_owner_id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def resource_owner_id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def resource_owner_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def resource_owner_id_previously_was; end
@@ -804,8 +804,13 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def revoked_at_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def revoked_at_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def revoked_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def revoked_at_in_database; end
@@ -813,8 +818,13 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def revoked_at_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def revoked_at_previously_changed?; end
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::TimeWithZone),
+        to: T.nilable(::ActiveSupport::TimeWithZone)
+      ).returns(T::Boolean)
+    end
+    def revoked_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def revoked_at_previously_was; end
@@ -909,8 +919,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def scopes_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def scopes_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def scopes_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def scopes_in_database; end
@@ -918,8 +928,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def scopes_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def scopes_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def scopes_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def scopes_previously_was; end
@@ -954,8 +964,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def token_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def token_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def token_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def token_in_database; end
@@ -963,8 +973,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([::String, ::String])) }
     def token_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def token_previously_changed?; end
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def token_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def token_previously_was; end
@@ -999,8 +1009,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def user_id_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def user_id_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def user_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def user_id_in_database; end
@@ -1008,8 +1018,8 @@ class Doorkeeper::AccessGrant
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def user_id_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def user_id_previously_changed?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def user_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
     def user_id_previously_was; end

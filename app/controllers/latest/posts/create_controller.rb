@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::Posts::CreateController < Latest::ApplicationController
+  include Latest::Authenticatable
   include Latest::FormErrorable
 
   def call
     form = Latest::PostForm.new(
-      profile: current_profile.not_nil!,
+      viewer: current_viewer!,
       comment: params[:comment]
     )
 
@@ -15,11 +16,11 @@ class Latest::Posts::CreateController < Latest::ApplicationController
     end
 
     result = CreatePostUseCase.new.call(
-      profile: form.profile.not_nil!,
+      viewer: form.viewer.not_nil!,
       comment: form.comment.not_nil!
     )
 
-    resource = Latest::PostResource.new(post: result.post, viewer: current_profile.not_nil!)
+    resource = Latest::PostResource.new(post: result.post, viewer: current_viewer!)
     render(
       json: Latest::PostSerializer.new(resource),
       status: :created

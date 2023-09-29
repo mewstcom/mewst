@@ -15,7 +15,7 @@ class CreateSessionUseCase < ApplicationUseCase
     user.track_sign_in
 
     Result.new(
-      oauth_access_token: profile.active_access_token.not_nil!,
+      oauth_access_token: user.first_actor.active_access_token.not_nil!,
       profile:,
       user:
     )

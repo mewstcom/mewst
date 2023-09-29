@@ -3,9 +3,8 @@
 
 RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
   context "when invalid comment" do
-    let!(:user) { create(:user, :with_access_token_for_web) }
-    let!(:profile) { user.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 422" do
@@ -31,9 +30,9 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
   end
 
   context "when valid input data" do
-    let!(:user) { create(:user, :with_access_token_for_web) }
-    let!(:profile) { user.profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:profile) { viewer.profile }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "responses 201" do
@@ -51,13 +50,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
         post: {
           id: post.id,
           comment: "Hello",
-          profile: {
-            atname: profile.atname,
-            avatar_url: profile.avatar_url,
-            name: profile.name,
-            description: profile.description,
-            viewer_has_followed: false
-          },
+          profile: profile_resource(profile:, viewer_has_followed: false),
           published_at: post.published_at.iso8601,
           stamps_count: 0,
           viewer_has_stamped: false

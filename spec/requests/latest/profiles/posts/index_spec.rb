@@ -3,11 +3,12 @@
 
 RSpec.describe "GET /latest/@:atname/posts", type: :request, api_version: :latest do
   context "when success" do
-    let!(:profile) { create(:user, :with_access_token_for_web).profile }
-    let!(:oauth_access_token) { profile.oauth_access_tokens.first }
+    let!(:viewer) { create(:actor, :with_access_token_for_web) }
+    let!(:profile) { viewer.profile }
+    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
-    let!(:form) { Latest::PostForm.new(comment: "Hello", profile:) }
-    let!(:post) { CreatePostUseCase.new.call(profile:, comment: form.comment.not_nil!).post }
+    let!(:form) { Latest::PostForm.new(viewer:, comment: "Hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer:, comment: form.comment.not_nil!).post }
 
     it "returns posts with profile" do
       get("/latest/@#{profile.atname}/posts", headers:)
@@ -16,24 +17,12 @@ RSpec.describe "GET /latest/@:atname/posts", type: :request, api_version: :lates
       assert_response_schema_confirm(200)
 
       expected = {
-        profile: {
-          atname: profile.atname,
-          avatar_url: profile.avatar_url,
-          description: profile.description,
-          name: profile.name,
-          viewer_has_followed: false
-        },
+        profile: profile_resource(profile:, viewer_has_followed: false),
         posts: [
           {
             id: post.id,
             comment: "Hello",
-            profile: {
-              atname: profile.atname,
-              avatar_url: profile.avatar_url,
-              name: profile.name,
-              description: profile.description,
-              viewer_has_followed: false
-            },
+            profile: profile_resource(profile:, viewer_has_followed: false),
             published_at: post.published_at.iso8601,
             stamps_count: 0,
             viewer_has_stamped: false

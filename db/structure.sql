@@ -53,6 +53,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: actors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.actors (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    user_id uuid NOT NULL,
+    profile_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -212,7 +225,6 @@ CREATE TABLE public.oauth_access_grants (
 CREATE TABLE public.oauth_access_tokens (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     resource_owner_id uuid,
-    user_id uuid NOT NULL,
     application_id uuid NOT NULL,
     token character varying NOT NULL,
     refresh_token character varying,
@@ -262,7 +274,7 @@ CREATE TABLE public.posts (
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    actor_type character varying NOT NULL,
+    profileable_type character varying NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -314,6 +326,14 @@ CREATE TABLE public.users (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
+
+
+--
+-- Name: actors actors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT actors_pkey PRIMARY KEY (id);
 
 
 --
@@ -442,6 +462,27 @@ ALTER TABLE ONLY public.stamps
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_actors_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_actors_on_profile_id ON public.actors USING btree (profile_id);
+
+
+--
+-- Name: index_actors_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_actors_on_user_id ON public.actors USING btree (user_id);
+
+
+--
+-- Name: index_actors_on_user_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_actors_on_user_id_and_profile_id ON public.actors USING btree (user_id, profile_id);
 
 
 --
@@ -627,13 +668,6 @@ CREATE UNIQUE INDEX index_oauth_access_tokens_on_token ON public.oauth_access_to
 
 
 --
--- Name: index_oauth_access_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_oauth_access_tokens_on_user_id ON public.oauth_access_tokens USING btree (user_id);
-
-
---
 -- Name: index_oauth_applications_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -713,6 +747,22 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 
 --
+-- Name: actors fk_rails_477d25671f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT fk_rails_477d25671f FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: actors fk_rails_541f6b56e7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT fk_rails_541f6b56e7 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: follows fk_rails_5e22b9865a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -734,14 +784,6 @@ ALTER TABLE ONLY public.stamps
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_732cb83ab7 FOREIGN KEY (application_id) REFERENCES public.oauth_applications(id);
-
-
---
--- Name: oauth_access_tokens fk_rails_76012a03dc; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.oauth_access_tokens
-    ADD CONSTRAINT fk_rails_76012a03dc FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -781,7 +823,7 @@ ALTER TABLE ONLY public.posts
 --
 
 ALTER TABLE ONLY public.oauth_access_tokens
-    ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.profiles(id);
+    ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.actors(id);
 
 
 --

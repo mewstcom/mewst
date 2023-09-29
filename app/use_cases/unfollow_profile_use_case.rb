@@ -6,7 +6,7 @@ class UnfollowProfileUseCase < ApplicationUseCase
     const :target_profile, Profile
   end
 
-  sig { params(viewer: Profile, target_profile: Profile).returns(Result) }
+  sig { params(viewer: Actor, target_profile: Profile).returns(Result) }
   def call(viewer:, target_profile:)
     follow = viewer.follows.find_by(target_profile: target_profile)
 

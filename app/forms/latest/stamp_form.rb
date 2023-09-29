@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::StampForm < Latest::ApplicationForm
-  sig { returns(T.nilable(Profile)) }
-  attr_accessor :profile
+  sig { returns(T.nilable(Actor)) }
+  attr_accessor :viewer
 
   attribute :target_post_id, :string
 
-  validates :profile, presence: true
+  validates :viewer, presence: true
   validates :target_post, presence: true
 
   sig { returns(T.nilable(Post)) }

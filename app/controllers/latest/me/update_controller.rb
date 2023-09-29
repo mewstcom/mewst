@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 class Latest::Me::UpdateController < Latest::ApplicationController
+  include Latest::Authenticatable
   include Latest::FormErrorable
 
   def call
-    profile = current_profile.not_nil!
     form = Latest::ProfileForm.new(
-      profile:,
+      viewer: current_viewer!,
       atname: params[:atname],
       avatar_url: params[:avatar_url],
       description: params[:description],
@@ -19,14 +19,14 @@ class Latest::Me::UpdateController < Latest::ApplicationController
     end
 
     result = UpdateProfileUseCase.new.call(
-      profile: form.profile.not_nil!,
+      viewer: form.viewer.not_nil!,
       atname: form.atname.not_nil!,
       avatar_url: form.avatar_url.not_nil!,
       description: form.description.not_nil!,
       name: form.name.not_nil!
     )
 
-    profile_resource = Latest::ProfileResource.new(profile: result.profile, viewer: profile)
+    profile_resource = Latest::ProfileResource.new(profile: result.profile, viewer: current_viewer!)
     render(
       json: {
         profile: Latest::ProfileSerializer.new(profile_resource).to_h

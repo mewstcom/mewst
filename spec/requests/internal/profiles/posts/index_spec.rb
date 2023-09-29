@@ -3,9 +3,10 @@
 
 RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :internal do
   context "when success" do
-    let!(:profile) { create(:user, :with_access_token_for_web).profile }
-    let!(:form) { Latest::PostForm.new(comment: "Hello", profile:) }
-    let!(:post) { CreatePostUseCase.new.call(profile:, comment: form.comment.not_nil!).post }
+    let!(:actor) { create(:actor, :with_access_token_for_web) }
+    let!(:profile) { actor.profile }
+    let!(:form) { Latest::PostForm.new(viewer: actor, comment: "Hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer: actor, comment: form.comment.not_nil!).post }
 
     it "returns posts with profile" do
       get("/internal/@#{profile.atname}/posts")
@@ -15,6 +16,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
 
       expected = {
         profile: {
+          id: profile.id,
           atname: profile.atname,
           avatar_url: profile.avatar_url,
           description: profile.description,
@@ -26,6 +28,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
             id: post.id,
             comment: "Hello",
             profile: {
+              id: profile.id,
               atname: profile.atname,
               avatar_url: profile.avatar_url,
               name: profile.name,
