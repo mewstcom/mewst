@@ -83,6 +83,27 @@ paths:
       summary: Get profile and posts
       tags:
         - posts
+  "/@{atname}/posts/{post_id}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
+          description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
+      summary: Get a post
+      tags:
+        - posts
   "/me":
     get:
       description: ""
@@ -268,6 +289,18 @@ components:
       schema:
         type: string
   responses:
+    not_found:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/error"
+                type: array
     validation_failed:
       description: ""
       content:

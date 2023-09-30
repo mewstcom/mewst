@@ -21,6 +21,9 @@ module GeneratedUrlHelpersModule
   def internal_email_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def internal_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def internal_profile_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -37,6 +40,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def latest_post_stamp_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def latest_post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_profile_post_list_url(*args); end
