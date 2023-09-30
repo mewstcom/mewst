@@ -10,7 +10,7 @@ module Latest::FormErrorable
     resource_errors = resource_class.from_errors(errors: errors)
 
     render(
-      json: Latest::ResponseErrorSerializer.new(resource_errors),
+      json: Latest::FormErrorSerializer.new(resource_errors),
       status: :unprocessable_entity
     )
   end

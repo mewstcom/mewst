@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Internal::EmailConfirmations::Challenges::CreateController < Internal::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Internal::EmailConfirmationChallengeForm.new(
       email_confirmation_id: params[:email_confirmation_id],
@@ -9,11 +11,7 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
     )
 
     if form.invalid?
-      resources = Latest::FormErrorResource.from_errors(errors: form.errors)
-      return render(
-        json: Latest::ResponseErrorSerializer.new(resources),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
     ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)

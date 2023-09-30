@@ -4,5 +4,5 @@
 class Latest::ResponseErrorSerializer < Latest::ApplicationSerializer
   root_key :error, :errors
 
-  attributes :code, :field, :message
+  attributes :code, :message
 end

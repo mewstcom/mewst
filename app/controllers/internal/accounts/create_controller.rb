@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Internal::Accounts::CreateController < Internal::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Internal::AccountForm.new(
       atname: params[:atname],
@@ -11,11 +13,7 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     )
 
     if form.invalid?
-      resources = Latest::FormErrorResource.from_errors(errors: form.errors)
-      return render(
-        json: Latest::ResponseErrorSerializer.new(resources),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
     result = CreateAccountUseCase.new.call(
