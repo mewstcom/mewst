@@ -11,6 +11,8 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
       expected = {
         errors: [
           {
+            code: "invalid_input_data",
+            field: "email",
             message: "Email is invalid"
           }
         ]

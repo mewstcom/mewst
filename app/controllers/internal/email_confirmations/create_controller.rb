@@ -2,15 +2,13 @@
 # frozen_string_literal: true
 
 class Internal::EmailConfirmations::CreateController < Internal::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Internal::EmailConfirmationForm.new(email: params[:email], locale: I18n.locale)
 
     if form.invalid?
-      resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
-      return render(
-        json: Internal::ResponseErrorSerializer.new(resources),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
     result = CreateEmailConfirmationUseCase.new.call(

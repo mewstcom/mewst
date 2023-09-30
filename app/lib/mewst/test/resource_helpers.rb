@@ -1,11 +1,11 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Mewst::Test::Latest::ResourceHelpers
+module Mewst::Test::ResourceHelpers
   extend T::Sig
 
   sig { params(profile: Profile, viewer_has_followed: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
-  def profile_resource(profile:, viewer_has_followed:)
+  def build_profile_resource(profile:, viewer_has_followed:)
     {
       id: profile.id,
       atname: profile.atname,

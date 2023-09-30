@@ -11,6 +11,7 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
       expected = {
         errors: [
           {
+            code: "not_found",
             message: "Not found"
           }
         ]

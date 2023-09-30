@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Internal::Sessions::CreateController < Internal::ApplicationController
+  include Latest::FormErrorable
+
   def call
     form = Internal::SessionForm.new(
       email: params[:email],
@@ -9,11 +11,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
     )
 
     if form.invalid?
-      resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
-      return render(
-        json: Internal::ResponseErrorSerializer.new(resources),
-        status: :unprocessable_entity
-      )
+      return response_form_errors(resource_class: Internal::SessionFormErrorResource, errors: form.errors)
     end
 
     result = CreateSessionUseCase.new.call(user: form.user.not_nil!)

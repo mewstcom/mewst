@@ -50,7 +50,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
         post: {
           id: target_post.id,
           comment: target_post.comment,
-          profile: profile_resource(profile: target_profile, viewer_has_followed: false),
+          profile: build_profile_resource(profile: target_profile, viewer_has_followed: false),
           published_at: target_post.published_at.iso8601,
           stamps_count: 1,
           viewer_has_stamped: true

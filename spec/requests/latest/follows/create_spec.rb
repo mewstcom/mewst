@@ -43,7 +43,7 @@ RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :lat
       expect(Follow.count).to eq(1)
 
       expected = {
-        profile: profile_resource(profile: target_profile, viewer_has_followed: true)
+        profile: build_profile_resource(profile: target_profile, viewer_has_followed: true)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
