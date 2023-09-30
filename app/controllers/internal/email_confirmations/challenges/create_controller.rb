@@ -9,9 +9,9 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
     )
 
     if form.invalid?
-      resources = Internal::FormErrorResource.build_from_errors(errors: form.errors)
+      resources = Latest::FormErrorResource.from_errors(errors: form.errors)
       return render(
-        json: Internal::ResponseErrorSerializer.new(resources),
+        json: Latest::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity
       )
     end

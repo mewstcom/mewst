@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Internal::ResponseErrorResource < Internal::ApplicationResource
+class Latest::ResponseErrorResource < Latest::ApplicationResource
   sig { returns(String) }
   attr_reader :message
 

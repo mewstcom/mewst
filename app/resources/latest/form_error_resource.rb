@@ -3,7 +3,7 @@
 
 class Latest::FormErrorResource < Latest::ApplicationResource
   sig { params(errors: ActiveModel::Errors).returns(T::Array[T.attached_class]) }
-  def self.build_from_errors(errors:)
+  def self.from_errors(errors:)
     errors.map do |error|
       new(error:)
     end
