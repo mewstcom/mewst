@@ -5,7 +5,7 @@ class Latest::UserResource < Latest::ApplicationResource
   delegate :id, :locale, to: :user
 
   sig { params(user: User).void }
-  def initialize(viewer:, profile:)
+  def initialize(user:)
     @user = user
   end
 
