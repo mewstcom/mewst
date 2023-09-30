@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /internal/@:atname/posts/:post_id", type: :request, api_version: :internal do
-  context "when a request failed" do
+  context "ポストが存在しないとき" do
     let!(:post) { create(:post) }
 
-    it "responses 404" do
+    it "`404` を返すこと" do
       get("/internal/@#{post.profile.atname}/posts/unknown_post_id")
 
       expect(response).to have_http_status(:not_found)
@@ -24,10 +24,10 @@ RSpec.describe "GET /internal/@:atname/posts/:post_id", type: :request, api_vers
     end
   end
 
-  context "when a request success" do
+  context "リクエストが正常なとき" do
     let!(:post) { create(:post) }
 
-    it "returns a post" do
+    it "ポストを返すこと" do
       get("/internal/@#{post.profile.atname}/posts/#{post.id}")
 
       expect(response).to have_http_status(:ok)

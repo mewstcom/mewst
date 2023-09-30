@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :latest do
-  context "when invalid atname" do
+  context "アットネームが正しくないとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       post("/latest/@#{profile.atname}/follow", headers:)
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -28,13 +28,13 @@ RSpec.describe "POST /latest/@:atname/follow", type: :request, api_version: :lat
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_profile) { create(:user).profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 201" do
+    it "`201` を返すこと" do
       expect(Follow.count).to eq(0)
 
       post("/latest/@#{target_profile.atname}/follow", headers:)

@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
-  context "when invalid atname" do
+  context "アットネームが不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       patch("/latest/me", headers:, params: {
         atname: "invalid.atname",
         avatar_url: "https://example.com/avatar.png",
@@ -32,7 +32,7 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
@@ -42,7 +42,7 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
       profile.update!(atname: "before_update")
     end
 
-    it "responses 200" do
+    it "`200` を返すこと" do
       expect(profile.atname).to eq("before_update")
       expect(profile.avatar_url).to eq("")
       expect(profile.description).to eq("")

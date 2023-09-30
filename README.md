@@ -1,10 +1,8 @@
-# Mewst
+# mewst-api
 
-## Running the app
+[Mewst](https://www.mewst.com)のバックエンドです。
 
-```
-$ gcloud components install pubsub-emulator
-```
+## 開発環境のセットアップ
 
 ```
 $ git clone git@github.com:mewsted/mewst.git

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_version: :latest do
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_actor) { create(:actor) }
     let!(:target_profile) { target_actor.profile }
@@ -19,7 +19,7 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
       )
     end
 
-    it "responses 200" do
+    it "`200` を返すこと" do
       expect(Post.count).to eq(1)
       expect(Stamp.count).to eq(1)
 

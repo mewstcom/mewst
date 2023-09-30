@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
-  context "when success" do
+  context "正常系" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
@@ -10,7 +10,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
     let!(:form) { Latest::PostForm.new(viewer:, comment: "Hello") }
     let!(:post) { CreatePostUseCase.new.call(viewer:, comment: form.comment.not_nil!).post }
 
-    it "returns posts on timeline" do
+    it "タイムラインの投稿を返すこと" do
       get("/latest/timeline", headers:)
 
       expect(response).to have_http_status(:ok)

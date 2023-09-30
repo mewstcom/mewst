@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type: :request, api_version: :internal do
-  context "when unknown email_confirmation_id" do
+  context "`email_confirmation_id` が不正なとき" do
     let!(:email_confirmation_id) { "unknown" }
 
-    it "responses 404" do
+    it "`404` を返すこと" do
       get "/internal/email_confirmations/#{email_confirmation_id}"
 
       expected = {
@@ -24,11 +24,11 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
     end
   end
 
-  context "when existing email_confirmation_id" do
+  context "`email_confirmation_id` が正しいとき" do
     let!(:email_confirmation) { create(:email_confirmation) }
     let!(:email_confirmation_id) { email_confirmation.id }
 
-    it "responses 200" do
+    it "`200` を返すこと" do
       get "/internal/email_confirmations/#{email_confirmation_id}"
 
       expected = {

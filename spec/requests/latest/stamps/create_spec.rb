@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version: :latest do
-  context "when invalid post_id" do
+  context "ポストIDが不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       post("/latest/posts/invalid_post_id/stamp", headers:)
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -27,7 +27,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_actor) { create(:actor) }
     let!(:target_profile) { target_actor.profile }
@@ -36,7 +36,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
     let!(:target_post) { CreatePostUseCase.new.call(viewer: target_actor, comment: post_form.comment.not_nil!).post }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 204" do
+    it "`204` を返すこと" do
       expect(Post.count).to eq(1)
       expect(Stamp.count).to eq(0)
 

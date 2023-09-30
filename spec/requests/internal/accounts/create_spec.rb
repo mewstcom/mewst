@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal do
-  context "when invalid atname" do
-    it "responses 422" do
+  context "`atname` が不正なとき" do
+    it "`422` を返すこと" do
       post("/internal/accounts", params: {
         atname: "a" * 31,
         email: "test@example.com",
@@ -28,12 +28,12 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     before do
       create(:oauth_application, :mewst_web)
     end
 
-    it "responses 201" do
+    it "`201` を返すこと" do
       expect(User.count).to eq(0)
       expect(Profile.count).to eq(0)
       expect(Actor.count).to eq(0)
