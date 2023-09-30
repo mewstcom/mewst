@@ -6,6 +6,7 @@ ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
 Rails.application.routes.draw do
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/internal/@:atname/posts",                                       via: :get,    as: :internal_profile_post_list,                      to: "internal/profiles/posts/index#call",                  atname: ROUTING_USERNAME_FORMAT
+  match "/internal/@:atname/posts/:post_id",                              via: :get,    as: :internal_post,                                   to: "internal/profiles/posts/show#call",                   atname: ROUTING_USERNAME_FORMAT
   match "/internal/accounts",                                             via: :post,   as: :internal_account_list,                           to: "internal/accounts/create#call"
   match "/internal/email_confirmations",                                  via: :post,   as: :internal_email_confirmation_list,                to: "internal/email_confirmations/create#call"
   match "/internal/email_confirmations/:email_confirmation_id",           via: :get,    as: :internal_email_confirmation,                     to: "internal/email_confirmations/show#call"

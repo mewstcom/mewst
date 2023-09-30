@@ -99,6 +99,8 @@ paths:
                   post:
                     "$ref": "#/components/schemas/post"
           description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
       summary: Get a post
       tags:
         - posts
@@ -287,6 +289,18 @@ components:
       schema:
         type: string
   responses:
+    not_found:
+      description: ""
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              errors:
+                items:
+                  "$ref": "#/components/schemas/error"
+                type: array
     validation_failed:
       description: ""
       content:

@@ -39,6 +39,27 @@ paths:
       summary: Get profile and posts
       tags:
         - posts
+  "/@{atname}/posts/{post_id}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
+          description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
+      summary: Get a post
+      tags:
+        - posts
   "/email_confirmations":
     post:
       description: ""
@@ -203,6 +224,13 @@ components:
       required: true
       schema:
         type: string
+    email-confirmation-id:
+      name: email_confirmation_id
+      description: ""
+      in: path
+      required: true
+      schema:
+        type: string
     pagination-after:
       description: ""
       in: query
@@ -217,8 +245,8 @@ components:
       required: false
       schema:
         type: string
-    email-confirmation-id:
-      name: email_confirmation_id
+    post-id:
+      name: post_id
       description: ""
       in: path
       required: true

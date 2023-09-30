@@ -1,15 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /latest/@:atname/posts/:post_id", type: :request, api_version: :latest do
+RSpec.describe "GET /internal/@:atname/posts/:post_id", type: :request, api_version: :internal do
   context "when a request failed" do
-    let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
-    let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:post) { create(:post) }
 
     it "responses 404" do
-      get("/latest/@#{post.profile.atname}/posts/unknown_post_id", headers:)
+      get("/internal/@#{post.profile.atname}/posts/unknown_post_id")
 
       expect(response).to have_http_status(:not_found)
       assert_response_schema_confirm(404)
@@ -28,13 +25,10 @@ RSpec.describe "GET /latest/@:atname/posts/:post_id", type: :request, api_versio
   end
 
   context "when a request success" do
-    let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
-    let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:post) { create(:post) }
 
     it "returns a post" do
-      get("/latest/@#{post.profile.atname}/posts/#{post.id}", headers:)
+      get("/internal/@#{post.profile.atname}/posts/#{post.id}")
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)
