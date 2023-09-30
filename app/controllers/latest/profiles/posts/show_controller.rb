@@ -18,7 +18,7 @@ class Latest::Profiles::Posts::ShowController < Latest::ApplicationController
 
     resource = Latest::PostResource.new(post:, viewer: current_viewer!)
     render(
-      json: Latest::PostSerializer.new(resource),
+      json: Latest::PostSerializer.new(resource)
     )
   end
 end

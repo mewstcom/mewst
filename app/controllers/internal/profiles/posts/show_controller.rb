@@ -16,7 +16,7 @@ class Internal::Profiles::Posts::ShowController < Internal::ApplicationControlle
 
     resource = Latest::PostResource.new(post:, viewer: nil)
     render(
-      json: Latest::PostSerializer.new(resource),
+      json: Latest::PostSerializer.new(resource)
     )
   end
 end

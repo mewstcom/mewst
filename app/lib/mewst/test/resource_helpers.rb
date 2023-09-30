@@ -19,7 +19,7 @@ module Mewst::Test::ResourceHelpers
   sig { params(post: Post, viewer_has_followed: T::Boolean, viewer_has_stamped: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
   def build_post_resource(post:, viewer_has_followed:, viewer_has_stamped:)
     {
-      profile: build_profile_resource(profile: post.profile, viewer_has_followed:),
+      profile: build_profile_resource(profile: post.profile.not_nil!, viewer_has_followed:),
       id: post.id,
       comment: post.comment,
       published_at: post.published_at.iso8601,
