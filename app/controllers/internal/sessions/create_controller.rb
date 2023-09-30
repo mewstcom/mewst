@@ -11,7 +11,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
     )
 
     if form.invalid?
-      return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
+      return response_form_errors(resource_class: Internal::SessionFormErrorResource, errors: form.errors)
     end
 
     result = CreateSessionUseCase.new.call(user: form.user.not_nil!)

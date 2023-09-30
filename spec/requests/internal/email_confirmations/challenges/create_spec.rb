@@ -13,6 +13,8 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
       expected = {
         errors: [
           {
+            code: "invalid_input_data",
+            field: "confirmation_code",
             message: "Confirmation code is incorrect or expired"
           }
         ]
