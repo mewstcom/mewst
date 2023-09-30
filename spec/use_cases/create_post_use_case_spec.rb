@@ -14,7 +14,7 @@ RSpec.describe CreatePostUseCase do
     allow(FanoutPostJob).to receive(:perform_later)
   end
 
-  it "creates a new comment post" do
+  it "投稿が作れること" do
     expect(Post.count).to eq(0)
 
     result = use_case.call(viewer:, comment: form.comment.not_nil!)

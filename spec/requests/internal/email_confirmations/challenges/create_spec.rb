@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challenge", type: :request, api_version: :internal do
-  context "when invalid code" do
+  context "確認コードが不正なとき" do
     let!(:email_confirmation) { create(:email_confirmation) }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       post("/internal/email_confirmations/#{email_confirmation.id}/challenge", params: {
         confirmation_code: "invalid_code"
       })
@@ -27,10 +27,10 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
     end
   end
 
-  context "when valid code" do
+  context "確認コードが正しいとき" do
     let!(:email_confirmation) { create(:email_confirmation) }
 
-    it "responses 201" do
+    it "`201` を返すこと" do
       expect(EmailConfirmation.count).to eq(1)
       expect(email_confirmation.succeeded_at).to be_nil
 

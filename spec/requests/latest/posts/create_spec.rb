@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
-  context "when invalid comment" do
+  context "投稿内容が不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       post("/latest/posts", headers:, params: {
         comment: "a" * 501
       })
@@ -29,13 +29,13 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 201" do
+    it "`201` を返すこと" do
       expect(Post.count).to eq(0)
 
       post("/latest/posts", headers:, params: {

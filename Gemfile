@@ -10,9 +10,9 @@ gem "rails", "~> 7.0.8"
 gem "activerecord-session_store"
 gem "addressable"
 gem "alba"
-gem "bcrypt" # Used by `has_secure_password`
+gem "bcrypt" # `has_secure_password` で使っている
 gem "bootsnap", require: false
-gem "connection_pool" # Used by Redis
+gem "connection_pool" # Redisで使っている
 gem "counter_culture"
 gem "doorkeeper"
 gem "email_validator"
@@ -20,7 +20,7 @@ gem "enumerize"
 gem "faraday"
 gem "good_job"
 gem "http_accept_language"
-gem "oj" # Used by `alba`
+gem "oj" # `alba` で使っている
 gem "pg"
 gem "puma"
 gem "pundit"

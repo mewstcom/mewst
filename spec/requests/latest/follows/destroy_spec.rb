@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :latest do
-  context "when invalid atname" do
+  context "アットネームが不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
-    it "responses 422" do
+    it "`422` を返すこと" do
       delete("/latest/@unknown/follow", headers:)
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -27,7 +27,7 @@ RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :l
     end
   end
 
-  context "when valid input data" do
+  context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_profile) { create(:user).profile }
     let!(:form) { Latest::FollowForm.new(viewer:, target_atname: target_profile.atname) }
@@ -41,7 +41,7 @@ RSpec.describe "DELETE /latest/@:atname/follow", type: :request, api_version: :l
       )
     end
 
-    it "responses 200" do
+    it "`200` を返すこと" do
       expect(Follow.count).to eq(1)
 
       delete("/latest/@#{target_profile.atname}/follow", headers:)

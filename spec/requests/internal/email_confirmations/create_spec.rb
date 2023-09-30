@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /internal/email_confirmations", type: :request, api_version: :internal do
-  context "when invalid email" do
-    it "responses 422" do
+  context "メールアドレスが不正なとき" do
+    it "`422` を返すこと" do
       post("/internal/email_confirmations", params: {
         email: "invalidemail.com"
       })
@@ -25,8 +25,8 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
     end
   end
 
-  context "when valid" do
-    it "responses 201" do
+  context "入力データが正しいとき" do
+    it "`201` を返すこと" do
       expect(EmailConfirmation.count).to eq(0)
 
       post("/internal/email_confirmations", params: {

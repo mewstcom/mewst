@@ -2,6 +2,10 @@ require:
   - rubocop-factory_bot
   - rubocop-rspec
 
+# https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspeccontextwording
+RSpec/ContextWording:
+  Enabled: false
+
 # https://docs.rubocop.org/rubocop-rspec/cops_rspec.html#rspecdescribedclass
 RSpec/DescribedClass:
   Enabled: false

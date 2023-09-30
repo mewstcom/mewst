@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :internal do
-  context "when success" do
+  context "正常系" do
     let!(:actor) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { actor.profile }
     let!(:form) { Latest::PostForm.new(viewer: actor, comment: "Hello") }
     let!(:post) { CreatePostUseCase.new.call(viewer: actor, comment: form.comment.not_nil!).post }
 
-    it "returns posts with profile" do
+    it "プロフィールと投稿一覧が返ること" do
       get("/internal/@#{profile.atname}/posts")
 
       expect(response).to have_http_status(:ok)
