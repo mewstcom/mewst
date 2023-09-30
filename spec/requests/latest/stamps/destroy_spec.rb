@@ -33,7 +33,7 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
         post: {
           id: post.id,
           comment: post.comment,
-          profile: profile_resource(profile: target_profile, viewer_has_followed: false),
+          profile: build_profile_resource(profile: target_profile, viewer_has_followed: false),
           published_at: post.published_at.iso8601,
           stamps_count: 0,
           viewer_has_stamped: false

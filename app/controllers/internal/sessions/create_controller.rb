@@ -9,7 +9,7 @@ class Internal::Sessions::CreateController < Internal::ApplicationController
     )
 
     if form.invalid?
-      resources = Latest::FormErrorResource.from_errors(errors: form.errors)
+      resources = Internal::SessionFormErrorResource.from_errors(errors: form.errors)
       return render(
         json: Latest::ResponseErrorSerializer.new(resources),
         status: :unprocessable_entity

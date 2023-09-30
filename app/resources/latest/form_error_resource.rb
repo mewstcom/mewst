@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Latest::FormErrorResource < Latest::ApplicationResource
+  include Resource::ErrorResponsable
+
   sig { params(errors: ActiveModel::Errors).returns(T::Array[T.attached_class]) }
   def self.from_errors(errors:)
     errors.map do |error|
@@ -14,7 +16,7 @@ class Latest::FormErrorResource < Latest::ApplicationResource
     @error = error
   end
 
-  sig { overridable.returns(Latest::ResponseErrorCode) }
+  sig { override.returns(Latest::ResponseErrorCode) }
   def code
     Latest::ResponseErrorCode::InvalidInputData
   end
@@ -24,7 +26,7 @@ class Latest::FormErrorResource < Latest::ApplicationResource
     error.attribute.to_s
   end
 
-  sig { overridable.returns(String) }
+  sig { override.returns(String) }
   def message
     error.full_message
   end

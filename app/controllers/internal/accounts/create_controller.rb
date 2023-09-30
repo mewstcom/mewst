@@ -27,9 +27,9 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     result.user.track_sign_in
 
     resource = Internal::AccountResource.new(
-      oauth_access_token: result.oauth_access_token,
+      user: result.user,
       profile: result.profile,
-      user: result.user
+      oauth_access_token: result.oauth_access_token
     )
     render(
       json: Internal::AccountSerializer.new(resource),

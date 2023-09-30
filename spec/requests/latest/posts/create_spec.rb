@@ -50,7 +50,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
         post: {
           id: post.id,
           comment: "Hello",
-          profile: profile_resource(profile:, viewer_has_followed: false),
+          profile: build_profile_resource(profile:, viewer_has_followed: false),
           published_at: post.published_at.iso8601,
           stamps_count: 0,
           viewer_has_stamped: false

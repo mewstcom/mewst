@@ -247,7 +247,7 @@ components:
             properties:
               errors:
                 items:
-                  "$ref": "#/components/schemas/error"
+                  "$ref": "#/components/schemas/validation-error"
                 type: array
   schemas:
     account:
@@ -284,14 +284,17 @@ components:
         - succeeded_at
     error:
       additionalProperties: false
-      description: ""
       title: Error
+      description: ""
+      type: object
       properties:
+        code:
+          type: string
         message:
           type: string
       required:
+        - code
         - message
-      type: object
     latest_profile:
       additionalProperties: false
       description: ""
@@ -381,18 +384,21 @@ components:
           type: string
         atname:
           type: string
-        name:
+        avatar_url:
           type: string
         description:
           type: string
-        avatar_url:
+        name:
           type: string
+        viewer_has_followed:
+          type: boolean
       required:
         - id
         - atname
-        - name
-        - description
         - avatar_url
+        - description
+        - name
+        - viewer_has_followed
     user:
       additionalProperties: false
       title: User
@@ -406,3 +412,17 @@ components:
       required:
         - id
         - locale
+    validation-error:
+      description: ""
+      title: Validation Error
+      allOf:
+        - "$ref": "#/components/schemas/error"
+        - type: object
+          additionalProperties: false
+          properties:
+            field:
+              nullable: true
+              type: string
+          required:
+            - field
+      type: object

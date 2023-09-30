@@ -20,6 +20,8 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
       expected = {
         errors: [
           {
+            code: "invalid_input_data",
+            field: "email_or_password",
             message: "Login failed. Email or password is incorrect"
           }
         ]
@@ -56,13 +58,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
           oauth_access_token: {
             token: oauth_access_token.token
           },
-          profile: {
-            atname: profile.atname,
-            avatar_url: profile.avatar_url,
-            description: profile.description,
-            id: profile.id,
-            name: profile.name
-          },
+          profile: build_profile_resource(profile:, viewer_has_followed: false),
           user: {
             id: user.id,
             locale: user.locale
