@@ -15,4 +15,16 @@ module Mewst::Test::ResourceHelpers
       viewer_has_followed:
     }
   end
+
+  sig { params(post: Post, viewer_has_followed: T::Boolean, viewer_has_stamped: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
+  def build_post_resource(post:, viewer_has_followed:, viewer_has_stamped:)
+    {
+      profile: build_profile_resource(profile: post.profile, viewer_has_followed:),
+      id: post.id,
+      comment: post.comment,
+      published_at: post.published_at.iso8601,
+      stamps_count: post.stamps_count,
+      viewer_has_stamped:
+    }
+  end
 end

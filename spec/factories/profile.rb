@@ -4,6 +4,7 @@
 FactoryBot.define do
   factory :profile do
     sequence(:atname) { |n| "test_#{n}" }
+    profileable_type { :user }
     joined_at { Time.current }
   end
 end

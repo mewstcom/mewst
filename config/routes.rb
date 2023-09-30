@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   match "/latest/@:atname/follow",                                        via: :delete, as: :latest_follow,                                   to: "latest/follows/destroy#call",                         atname: ROUTING_USERNAME_FORMAT
   match "/latest/@:atname/follow",                                        via: :post,                                                         to: "latest/follows/create#call",                          atname: ROUTING_USERNAME_FORMAT
   match "/latest/@:atname/posts",                                         via: :get,    as: :latest_profile_post_list,                        to: "latest/profiles/posts/index#call",                    atname: ROUTING_USERNAME_FORMAT
+  match "/latest/@:atname/posts/:post_id",                                via: :get,    as: :latest_post,                                     to: "latest/profiles/posts/show#call",                     atname: ROUTING_USERNAME_FORMAT
   match "/latest/me",                                                     via: :get,    as: :latest_me,                                       to: "latest/me/show#call"
   match "/latest/me",                                                     via: :patch,                                                        to: "latest/me/update#call"
   match "/latest/posts",                                                  via: :post,   as: :latest_post_list,                                to: "latest/posts/create#call"
