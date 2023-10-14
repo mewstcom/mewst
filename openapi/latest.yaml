@@ -274,6 +274,36 @@ paths:
       summary: Get user
       tags:
         - users
+    patch:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locale:
+                  type: string
+                  description: ""
+              required:
+                - locale
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/user"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - users
 components:
   parameters:
     atname:
