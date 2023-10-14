@@ -385,19 +385,19 @@ module GoodJob::ActiveJobExtensions::Concurrency
   # @raise [TypeError]
   # @return [Object] concurrency key
   #
-  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#92
+  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#98
   def _good_job_concurrency_key; end
 
   # Existing or dynamically generated concurrency key
   #
   # @return [Object] concurrency key
   #
-  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#86
+  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#92
   def good_job_concurrency_key; end
 
   private
 
-  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#104
+  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#110
   def good_job_enqueue_concurrency_check(job, on_abort:, on_enqueue:); end
 
   module GeneratedClassMethods
@@ -411,7 +411,7 @@ end
 
 # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#0
 module GoodJob::ActiveJobExtensions::Concurrency::ClassMethods
-  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#79
+  # source://good_job//lib/good_job/active_job_extensions/concurrency.rb#85
   def good_job_control_concurrency_with(config); end
 end
 
