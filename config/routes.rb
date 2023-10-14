@@ -22,5 +22,7 @@ Rails.application.routes.draw do
   match "/latest/posts/:post_id/stamp",                                   via: :delete, as: :latest_post_stamp,                               to: "latest/stamps/destroy#call"
   match "/latest/posts/:post_id/stamp",                                   via: :post,                                                         to: "latest/stamps/create#call"
   match "/latest/timeline",                                               via: :get,    as: :latest_timeline,                                 to: "latest/timeline/show#call"
+  match "/latest/users/me",                                               via: :get,    as: :latest_users_me,                                 to: "latest/users/me/show#call"
+  match "/latest/users/me",                                               via: :patch,                                                        to: "latest/users/me/update#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 end

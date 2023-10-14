@@ -258,6 +258,52 @@ paths:
       summary: Get posts on home timeline
       tags:
         - posts
+  "/users/me":
+    get:
+      description: ""
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/user"
+          description: Response
+      summary: Get user
+      tags:
+        - users
+    patch:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locale:
+                  type: string
+                  description: ""
+              required:
+                - locale
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/user"
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - users
 components:
   parameters:
     atname:
@@ -399,6 +445,19 @@ components:
         - published_at
         - stamps_count
         - viewer_has_stamped
+    user:
+      additionalProperties: false
+      description: ""
+      properties:
+        id:
+          type: string
+        locale:
+          type: string
+      required:
+        - id
+        - locale
+      title: User
+      type: object
     validation-error:
       description: ""
       title: Validation Error

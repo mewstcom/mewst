@@ -27,4 +27,12 @@ module Mewst::Test::ResourceHelpers
       viewer_has_stamped:
     }
   end
+
+  sig { params(user: User).returns(T::Hash[Symbol, T.untyped]) }
+  def build_user_resource(user:)
+    {
+      id: user.id,
+      locale: user.locale
+    }
+  end
 end
