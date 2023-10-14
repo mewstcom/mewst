@@ -9,7 +9,7 @@ RSpec.describe "PATCH /latest/users/me", type: :request, api_version: :latest do
 
     it "`422` を返すこと" do
       patch("/latest/users/me", headers:, params: {
-        locale: "unknown-locale",
+        locale: "unknown-locale"
       })
       expect(response).to have_http_status(:unprocessable_entity)
 
