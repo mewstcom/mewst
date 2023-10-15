@@ -865,6 +865,9 @@ class User
     def restore_signed_up_at!; end
 
     sig { void }
+    def restore_time_zone!; end
+
+    sig { void }
     def restore_updated_at!; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
@@ -926,6 +929,12 @@ class User
 
     sig { returns(T::Boolean) }
     def saved_change_to_signed_up_at?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_time_zone; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_time_zone?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -1023,6 +1032,51 @@ class User
     sig { void }
     def signed_up_at_will_change!; end
 
+    sig { returns(::String) }
+    def time_zone; end
+
+    sig { params(value: ::String).returns(::String) }
+    def time_zone=(value); end
+
+    sig { returns(T::Boolean) }
+    def time_zone?; end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def time_zone_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def time_zone_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def time_zone_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def time_zone_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def time_zone_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def time_zone_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def time_zone_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def time_zone_was; end
+
+    sig { void }
+    def time_zone_will_change!; end
+
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
 
@@ -1097,6 +1151,9 @@ class User
 
     sig { returns(T::Boolean) }
     def will_save_change_to_signed_up_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_time_zone?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
