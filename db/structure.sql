@@ -324,7 +324,8 @@ CREATE TABLE public.users (
     last_signed_in_at timestamp without time zone,
     signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    time_zone character varying DEFAULT 'UTC'::character varying NOT NULL
 );
 
 
@@ -843,6 +844,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20220000000001'),
 ('20221119004702'),
-('20230830155958');
+('20230830155958'),
+('20231015050126');
 
 

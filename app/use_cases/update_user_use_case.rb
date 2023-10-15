@@ -6,9 +6,9 @@ class UpdateUserUseCase < ApplicationUseCase
     const :user, User
   end
 
-  sig { params(user: User, locale: String).returns(Result) }
-  def call(user:, locale:)
-    user.update!(locale:)
+  sig { params(user: User, locale: String, time_zone: String).returns(Result) }
+  def call(user:, locale:, time_zone:)
+    user.update!(locale:, time_zone:)
 
     Result.new(user:)
   end

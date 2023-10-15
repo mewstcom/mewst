@@ -59,10 +59,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
             token: oauth_access_token.token
           },
           profile: build_profile_resource(profile:, viewer_has_followed: false),
-          user: {
-            id: user.id,
-            locale: user.locale
-          }
+          user: build_user_resource(user:)
         }
       }
       actual = JSON.parse(response.body)

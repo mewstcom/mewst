@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Latest::UserResource < Latest::ApplicationResource
-  delegate :id, :locale, to: :user
+  delegate :id, :locale, :time_zone, to: :user
 
   sig { params(user: User).void }
   def initialize(user:)

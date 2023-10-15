@@ -7,7 +7,8 @@ class Latest::Users::Me::UpdateController < Latest::ApplicationController
 
   def call
     form = Latest::UserForm.new(
-      locale: params[:locale]
+      locale: params[:locale],
+      time_zone: params[:time_zone]
     )
 
     if form.invalid?
@@ -16,7 +17,8 @@ class Latest::Users::Me::UpdateController < Latest::ApplicationController
 
     result = UpdateUserUseCase.new.call(
       user: current_viewer!.user.not_nil!,
-      locale: form.locale.not_nil!
+      locale: form.locale.not_nil!,
+      time_zone: form.time_zone.not_nil!
     )
 
     user_resource = Latest::UserResource.new(user: result.user)
