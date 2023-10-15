@@ -286,8 +286,12 @@ paths:
                 locale:
                   type: string
                   description: ""
+                time_zone:
+                  type: string
+                  description: ""
               required:
                 - locale
+                - time_zone
       responses:
         '200':
           content:
@@ -453,9 +457,12 @@ components:
           type: string
         locale:
           type: string
+        time_zone:
+          type: string
       required:
         - id
         - locale
+        - time_zone
       title: User
       type: object
     validation-error:

@@ -7,6 +7,7 @@ FactoryBot.define do
     sequence(:email) { |n| "test_#{n}@example.com" }
     password { "xxx" }
     locale { :ja }
+    time_zone { "Asia/Tokyo" }
     signed_up_at { Time.current }
   end
 end

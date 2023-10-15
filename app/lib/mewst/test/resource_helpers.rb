@@ -32,7 +32,8 @@ module Mewst::Test::ResourceHelpers
   def build_user_resource(user:)
     {
       id: user.id,
-      locale: user.locale
+      locale: user.locale,
+      time_zone: user.time_zone
     }
   end
 end
