@@ -28,9 +28,9 @@ class Paginator
     record_ids = if before_record.nil? && after_record.nil?
       records.order(id: :desc).limit(limit + 1).pluck(:id)
     elsif before_record
-      records.where("id < ?", before_record.id).order(id: :desc).limit(limit + 1).pluck(:id)
+      records.where("id > ?", before_record.id).order(id: :asc).limit(limit + 1).pluck(:id)
     elsif after_record
-      records.where("id > ?", after_record.id).order(id: :asc).limit(limit + 1).pluck(:id)
+      records.where("id < ?", after_record.id).order(id: :desc).limit(limit + 1).pluck(:id)
     end
 
     page_info = if before_record.nil? && after_record.nil?
