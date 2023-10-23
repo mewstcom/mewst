@@ -56,6 +56,9 @@ module Lograge
   # source://lograge//lib/lograge.rb#39
   def custom_options(event); end
 
+  # source://lograge//lib/lograge.rb#228
+  def deprecator; end
+
   # source://lograge//lib/lograge.rb#193
   def disable_rack_cache_verbose_output; end
 
@@ -95,7 +98,7 @@ module Lograge
   # source://lograge//lib/lograge.rb#224
   def lograge_config; end
 
-  # source://lograge//lib/lograge.rb#234
+  # source://lograge//lib/lograge.rb#238
   def notification_listeners_for(name); end
 
   # source://lograge//lib/lograge.rb#207
@@ -154,6 +157,9 @@ module Lograge
 
     # source://lograge//lib/lograge.rb#36
     def custom_options=(val); end
+
+    # source://lograge//lib/lograge.rb#228
+    def deprecator; end
 
     # source://lograge//lib/lograge.rb#193
     def disable_rack_cache_verbose_output; end
@@ -217,7 +223,7 @@ module Lograge
     # source://lograge//lib/lograge.rb#224
     def lograge_config; end
 
-    # source://lograge//lib/lograge.rb#234
+    # source://lograge//lib/lograge.rb#238
     def notification_listeners_for(name); end
 
     # source://lograge//lib/lograge.rb#109
