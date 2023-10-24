@@ -193,6 +193,19 @@ paths:
       summary: ""
       tags:
         - posts
+  "/posts/{post_id}":
+    delete:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - posts
   "/posts/{post_id}/stamp":
     delete:
       description: ""

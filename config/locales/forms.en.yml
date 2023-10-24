@@ -3,6 +3,8 @@ en:
     attributes:
       latest/follow_form:
         target_atname: atname
+      latest/post_delete_form:
+        target_post: Post
       latest/stamp_form:
         target_post: Post
       latest/unfollow_form:
@@ -23,6 +25,10 @@ en:
           attributes:
             atname:
               atname_uniqueness: is already taken
+        latest/post_delete_form:
+          attributes:
+            target_post:
+              blank: not found
         latest/stamp_form:
           attributes:
             target_post:
