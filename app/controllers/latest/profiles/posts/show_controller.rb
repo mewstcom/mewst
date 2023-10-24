@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Latest::Posts::ShowController < Latest::ApplicationController
+class Latest::Profiles::Posts::ShowController < Latest::ApplicationController
   include Latest::Authenticatable
 
   def call

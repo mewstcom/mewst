@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /latest/posts/:post_id", type: :request, api_version: :latest do
+RSpec.describe "GET /latest/@:atname/posts/:post_id", type: :request, api_version: :latest do
   context "ポストIDが存在しないとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
@@ -9,7 +9,7 @@ RSpec.describe "GET /latest/posts/:post_id", type: :request, api_version: :lates
     let!(:post) { create(:post) }
 
     it "`404` を返すこと" do
-      get("/latest/posts/unknown_post_id", headers:)
+      get("/latest/@#{post.profile.atname}/posts/unknown_post_id", headers:)
 
       expect(response).to have_http_status(:not_found)
       assert_response_schema_confirm(404)
@@ -34,7 +34,7 @@ RSpec.describe "GET /latest/posts/:post_id", type: :request, api_version: :lates
     let!(:post) { create(:post) }
 
     it "ポストを返ること" do
-      get("/latest/posts/#{post.id}", headers:)
+      get("/latest/@#{post.profile.atname}/posts/#{post.id}", headers:)
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)
