@@ -264,7 +264,8 @@ CREATE TABLE public.posts (
     stamps_count integer DEFAULT 0 NOT NULL,
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    discarded_at timestamp(6) without time zone
 );
 
 
@@ -279,10 +280,10 @@ CREATE TABLE public.profiles (
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
     avatar_url character varying DEFAULT ''::character varying NOT NULL,
-    deleted_at timestamp without time zone,
     joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    discarded_at timestamp(6) without time zone
 );
 
 
@@ -683,6 +684,13 @@ CREATE UNIQUE INDEX index_oauth_applications_on_uid ON public.oauth_applications
 
 
 --
+-- Name: index_posts_on_discarded_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_posts_on_discarded_at ON public.posts USING btree (discarded_at);
+
+
+--
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -694,6 +702,13 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 --
 
 CREATE UNIQUE INDEX index_profiles_on_atname ON public.profiles USING btree (atname);
+
+
+--
+-- Name: index_profiles_on_discarded_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_profiles_on_discarded_at ON public.profiles USING btree (discarded_at);
 
 
 --
@@ -845,6 +860,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220000000001'),
 ('20221119004702'),
 ('20230830155958'),
-('20231015050126');
+('20231015050126'),
+('20231025165318');
 
 

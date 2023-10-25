@@ -14,8 +14,8 @@ class Profile::HomeTimeline
       .returns([Post::PrivateRelation, PageInfo])
   end
   def posts_with_page_info(before: nil, after: nil, limit: 50)
-    before_post = before.nil? ? nil : Post.find(before)
-    after_post = after.nil? ? nil : Post.find(after)
+    before_post = before.nil? ? nil : Post.kept.find(before)
+    after_post = after.nil? ? nil : Post.kept.find(after)
 
     post_ids = if before_post.nil? && after_post.nil?
       ::Timeline.new(profile).post_ids(
@@ -37,7 +37,7 @@ class Profile::HomeTimeline
       )
     end
 
-    posts = Post.where(id: post_ids.not_nil!.first(limit)).preload(:profile).order(id: :desc)
+    posts = Post.kept.where(id: post_ids.not_nil!.first(limit)).preload(:profile).order(id: :desc)
 
     page_info = if before_post.nil? && after_post.nil?
       has_next_page = has_page(post_ids: post_ids.not_nil!, limit:)

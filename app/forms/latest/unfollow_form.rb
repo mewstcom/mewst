@@ -12,6 +12,6 @@ class Latest::UnfollowForm < Latest::ApplicationForm
 
   sig { returns(T.nilable(Profile)) }
   def target_profile
-    Profile.find_by(atname: target_atname)
+    Profile.kept.find_by(atname: target_atname)
   end
 end
