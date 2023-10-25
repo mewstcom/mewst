@@ -14,6 +14,7 @@ gem "bcrypt" # `has_secure_password` で使っている
 gem "bootsnap", require: false
 gem "connection_pool" # Redisで使っている
 gem "counter_culture"
+gem "discard"
 gem "doorkeeper"
 gem "email_validator"
 gem "enumerize"
