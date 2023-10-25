@@ -5,8 +5,8 @@ class Latest::Profiles::Posts::IndexController < Latest::ApplicationController
   include Latest::Authenticatable
 
   def call
-    profile = Profile.find_by!(atname: params[:atname])
-    result = Paginator.new(records: profile.posts).paginate(
+    profile = Profile.kept.find_by!(atname: params[:atname])
+    result = Paginator.new(records: profile.posts.kept).paginate(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 5

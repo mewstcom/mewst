@@ -3,8 +3,8 @@
 
 class Internal::Profiles::Posts::IndexController < Internal::ApplicationController
   def call
-    profile = Profile.find_by!(atname: params[:atname])
-    result = Paginator.new(records: profile.posts).paginate(
+    profile = Profile.kept.find_by!(atname: params[:atname])
+    result = Paginator.new(records: profile.posts.kept).paginate(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 5

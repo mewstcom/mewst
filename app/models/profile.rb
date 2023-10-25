@@ -4,7 +4,8 @@
 class Profile < ApplicationRecord
   extend Enumerize
 
-  include SoftDeletable
+  include Discard::Model
+
   include TimelineOwnable
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/

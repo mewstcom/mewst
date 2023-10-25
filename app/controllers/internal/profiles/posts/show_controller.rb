@@ -3,8 +3,8 @@
 
 class Internal::Profiles::Posts::ShowController < Internal::ApplicationController
   def call
-    profile = Profile.find_by(atname: params[:atname])
-    post = profile&.posts&.find_by(id: params[:post_id])
+    profile = Profile.kept.find_by(atname: params[:atname])
+    post = profile&.posts&.kept&.find_by(id: params[:post_id])
 
     if profile.nil? || post.nil?
       resource = Latest::ResponseErrorResource.new(code: Latest::ResponseErrorCode::NotFound, message: "Not found")
