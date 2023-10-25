@@ -511,15 +511,20 @@ class StrongMigrations::Checker
   # source://strong_migrations//lib/strong_migrations/checker.rb#6
   def transaction_disabled=(_arg0); end
 
+  # @return [Boolean]
+  #
+  # source://strong_migrations//lib/strong_migrations/checker.rb#126
+  def version_safe?; end
+
   private
 
   # source://strong_migrations//lib/strong_migrations/checker.rb#177
   def adapter; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#155
+  # source://strong_migrations//lib/strong_migrations/checker.rb#159
   def check_lock_timeout; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#128
+  # source://strong_migrations//lib/strong_migrations/checker.rb#132
   def check_version_supported; end
 
   # source://strong_migrations//lib/strong_migrations/checker.rb#197
@@ -532,19 +537,14 @@ class StrongMigrations::Checker
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#165
+  # source://strong_migrations//lib/strong_migrations/checker.rb#169
   def safe?; end
 
-  # source://strong_migrations//lib/strong_migrations/checker.rb#142
+  # source://strong_migrations//lib/strong_migrations/checker.rb#146
   def set_timeouts; end
 
   # source://strong_migrations//lib/strong_migrations/checker.rb#173
   def version; end
-
-  # @return [Boolean]
-  #
-  # source://strong_migrations//lib/strong_migrations/checker.rb#169
-  def version_safe?; end
 
   class << self
     # Returns the value of attribute safe.
@@ -710,16 +710,19 @@ module StrongMigrations::Migration
   def migrate(direction); end
 
   # source://strong_migrations//lib/strong_migrations/migration.rb#23
+  def revert(*_arg0); end
+
+  # source://strong_migrations//lib/strong_migrations/migration.rb#31
   def safety_assured; end
 
   # @raise [StrongMigrations::UnsafeMigration]
   #
-  # source://strong_migrations//lib/strong_migrations/migration.rb#29
+  # source://strong_migrations//lib/strong_migrations/migration.rb#37
   def stop!(message, header: T.unsafe(nil)); end
 
   private
 
-  # source://strong_migrations//lib/strong_migrations/migration.rb#35
+  # source://strong_migrations//lib/strong_migrations/migration.rb#43
   def strong_migrations_checker; end
 end
 

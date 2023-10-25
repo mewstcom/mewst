@@ -57,21 +57,33 @@ module Resend::ApiKeys
   end
 end
 
+# Module responsible for wrapping Batch email sending API
+#
+# source://resend//lib/resend/batch.rb#7
+module Resend::Batch
+  class << self
+    # https://resend.com/docs/api-reference/emails/send-batch-emails
+    #
+    # source://resend//lib/resend/batch.rb#10
+    def send(params = T.unsafe(nil)); end
+  end
+end
+
 # Client class.
 #
-# source://resend//lib/resend/client.rb#10
+# source://resend//lib/resend/client.rb#11
 class Resend::Client
   include ::Resend::Emails
 
   # @raise [ArgumentError]
   # @return [Client] a new instance of Client
   #
-  # source://resend//lib/resend/client.rb#15
+  # source://resend//lib/resend/client.rb#16
   def initialize(api_key); end
 
   # Returns the value of attribute api_key.
   #
-  # source://resend//lib/resend/client.rb#13
+  # source://resend//lib/resend/client.rb#14
   def api_key; end
 end
 
