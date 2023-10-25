@@ -35,12 +35,12 @@ RSpec.describe "DELETE /latest/posts/:post_id", type: :request, api_version: :la
     let!(:post) { create(:post, profile: viewer.profile) }
 
     it "`204` を返すこと" do
-      expect(Post.count).to eq(1)
+      expect(Post.kept.count).to eq(1)
 
       delete("/latest/posts/#{post.id}", headers:)
       expect(response).to have_http_status(:no_content)
 
-      expect(Post.count).to eq(0)
+      expect(Post.kept.count).to eq(0)
 
       assert_response_schema_confirm(204)
     end
