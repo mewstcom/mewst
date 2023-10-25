@@ -12,6 +12,6 @@ class Latest::PostDeleteForm < Latest::ApplicationForm
 
   sig { returns(T.nilable(Post)) }
   def target_post
-    viewer.posts.kept.find_by(id: target_post_id)
+    viewer&.posts&.kept&.find_by(id: target_post_id)
   end
 end
