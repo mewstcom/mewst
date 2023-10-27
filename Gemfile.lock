@@ -247,9 +247,9 @@ GEM
     rbi (0.1.1)
       sorbet-runtime (>= 0.5.9204)
       yarp (>= 0.11.0)
-    redis (5.0.7)
-      redis-client (>= 0.9.0)
-    redis-client (0.15.0)
+    redis (5.0.8)
+      redis-client (>= 0.17.0)
+    redis-client (0.17.1)
       connection_pool
     regexp_parser (2.8.2)
     request_store (1.5.1)
