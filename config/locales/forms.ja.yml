@@ -3,6 +3,8 @@ ja:
     attributes:
       latest/follow_form:
         target_atname: atname
+      latest/post_delete_form:
+        target_post: ポスト
       latest/stamp_form:
         target_post: ポスト
       latest/unfollow_form:
@@ -23,6 +25,10 @@ ja:
           attributes:
             atname:
               atname_uniqueness: はすでに存在します
+        latest/post_delete_form:
+          attributes:
+            target_post:
+              blank: が見つかりませんでした
         latest/stamp_form:
           attributes:
             target_post:
