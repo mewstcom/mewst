@@ -4,11 +4,11 @@
 class ApplicationJob < ActiveJob::Base
   extend T::Sig
 
-  PRIORITY = {
+  PRIORITY = T.let({
     high: 0,
     medium: 1,
     low: 2
-  }.freeze
+  }.freeze, T::Hash[Symbol, Integer])
 
   queue_as :default
 

@@ -55,6 +55,12 @@ class Object
   sig { returns(T::Boolean) }
   def blank?; end
 
+  sig { returns(T.nilable(T.self_type)) }
+  def presence; end
+
+  sig { params(another_object: T.untyped).returns(T.nilable(T.self_type)) }
+  def presence_in(another_object); end
+
   sig { returns(T::Boolean) }
   def present?; end
 end
