@@ -15,7 +15,7 @@ class Latest::Posts::DestroyController < Latest::ApplicationController
       return response_form_errors(resource_class: Latest::PostFormErrorResource, errors: form.errors)
     end
 
-    DeletePostUseCase.new.call(target_post: form.target_post.not_nil!)
+    DiscardPostUseCase.new.call(target_post: form.target_post.not_nil!)
 
     render(status: :no_content)
   end
