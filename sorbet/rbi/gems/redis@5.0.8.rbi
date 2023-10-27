@@ -95,19 +95,19 @@ class Redis
 
   private
 
-  # source://redis//lib/redis.rb#179
+  # source://redis//lib/redis.rb#164
   def _subscription(method, timeout, channels, block); end
 
   # source://redis//lib/redis.rb#134
   def initialize_client(options); end
 
-  # source://redis//lib/redis.rb#173
+  # source://redis//lib/redis.rb#158
   def send_blocking_command(command, timeout, &block); end
 
-  # source://redis//lib/redis.rb#165
+  # source://redis//lib/redis.rb#150
   def send_command(command, &block); end
 
-  # source://redis//lib/redis.rb#161
+  # source://redis//lib/redis.rb#146
   def synchronize; end
 
   class << self
@@ -169,16 +169,13 @@ class Redis::Client < ::RedisClient
   # source://redis//lib/redis/client.rb#60
   def db; end
 
-  # source://redis//lib/redis/client.rb#120
-  def disable_reconnection(&block); end
-
   # source://redis//lib/redis/client.rb#64
   def host; end
 
   # source://redis//lib/redis/client.rb#48
   def id; end
 
-  # source://redis//lib/redis/client.rb#124
+  # source://redis//lib/redis/client.rb#120
   def inherit_socket!; end
 
   # source://redis//lib/redis/client.rb#114
@@ -1090,20 +1087,20 @@ module Redis::Commands::Lists
   # Remove the first/last element in a list and append/prepend it
   # to another list and return it, or block until one is available.
   #
-  # @example Without timeout
-  #   element = redis.blmove("foo", "bar", "LEFT", "RIGHT")
-  #   # => "element"
   # @example With timeout
   #   element = redis.blmove("foo", "bar", "LEFT", "RIGHT", timeout: 5)
   #   # => nil on timeout
   #   # => "element" on success
+  # @example Without timeout
+  #   element = redis.blmove("foo", "bar", "LEFT", "RIGHT")
+  #   # => "element"
+  # @param source [String] source key
   # @param destination [String] destination key
+  # @param where_source [String, Symbol] from where to remove the element from the source list
+  #   e.g. 'LEFT' - from head, 'RIGHT' - from tail
   # @param where_destination [String, Symbol] where to push the element to the source list
   #   e.g. 'LEFT' - to head, 'RIGHT' - to tail
   # @param options [Hash] - `:timeout => [Float, Integer]`: timeout in seconds, defaults to no timeout
-  # @param where_source [String, Symbol] from where to remove the element from the source list
-  #   e.g. 'LEFT' - from head, 'RIGHT' - from tail
-  # @param source [String] source key
   # @return [nil, String] the element, or nil when the source key does not exist or the timeout expired
   #
   # source://redis//lib/redis/commands/lists.rb#55
@@ -1378,6 +1375,22 @@ module Redis::Commands::Pubsub
   # source://redis//lib/redis/commands/pubsub.rb#43
   def punsubscribe(*channels); end
 
+  # Post a message to a channel in a shard.
+  #
+  # source://redis//lib/redis/commands/pubsub.rb#54
+  def spublish(channel, message); end
+
+  # Listen for messages published to the given channels in a shard.
+  #
+  # source://redis//lib/redis/commands/pubsub.rb#59
+  def ssubscribe(*channels, &block); end
+
+  # Listen for messages published to the given channels in a shard.
+  # Throw a timeout error if there is no messages for a timeout period.
+  #
+  # source://redis//lib/redis/commands/pubsub.rb#65
+  def ssubscribe_with_timeout(timeout, *channels, &block); end
+
   # Listen for messages published to the given channels.
   #
   # source://redis//lib/redis/commands/pubsub.rb#16
@@ -1394,6 +1407,11 @@ module Redis::Commands::Pubsub
   # source://redis//lib/redis/commands/pubsub.rb#11
   def subscribed?; end
 
+  # Stop listening for messages posted to the given channels in a shard.
+  #
+  # source://redis//lib/redis/commands/pubsub.rb#70
+  def sunsubscribe(*channels); end
+
   # Stop listening for messages posted to the given channels.
   #
   # source://redis//lib/redis/commands/pubsub.rb#27
@@ -1404,17 +1422,17 @@ end
 module Redis::Commands::Scripting
   # Evaluate Lua script.
   #
-  # @example EVAL with KEYS and ARGV as array arguments
-  #   redis.eval("return { KEYS, ARGV }", ["k1", "k2"], ["a1", "a2"])
-  #   # => [["k1", "k2"], ["a1", "a2"]]
   # @example EVAL without KEYS nor ARGV
   #   redis.eval("return 1")
   #   # => 1
+  # @example EVAL with KEYS and ARGV as array arguments
+  #   redis.eval("return { KEYS, ARGV }", ["k1", "k2"], ["a1", "a2"])
+  #   # => [["k1", "k2"], ["a1", "a2"]]
   # @example EVAL with KEYS and ARGV in a hash argument
   #   redis.eval("return { KEYS, ARGV }", :keys => ["k1", "k2"], :argv => ["a1", "a2"])
   #   # => [["k1", "k2"], ["a1", "a2"]]
-  # @param argv [Array<String>] optional array with arguments to pass to the script
   # @param keys [Array<String>] optional array with keys to pass to the script
+  # @param argv [Array<String>] optional array with arguments to pass to the script
   # @param options [Hash] - `:keys => Array<String>`: optional array with keys to pass to the script
   #   - `:argv => Array<String>`: optional array with arguments to pass to the script
   # @return depends on the script
@@ -1426,17 +1444,17 @@ module Redis::Commands::Scripting
 
   # Evaluate Lua script by its SHA.
   #
-  # @example EVALSHA with KEYS and ARGV as array arguments
-  #   redis.evalsha(sha, ["k1", "k2"], ["a1", "a2"])
-  #   # => <depends on script>
   # @example EVALSHA without KEYS nor ARGV
   #   redis.evalsha(sha)
+  #   # => <depends on script>
+  # @example EVALSHA with KEYS and ARGV as array arguments
+  #   redis.evalsha(sha, ["k1", "k2"], ["a1", "a2"])
   #   # => <depends on script>
   # @example EVALSHA with KEYS and ARGV in a hash argument
   #   redis.evalsha(sha, :keys => ["k1", "k2"], :argv => ["a1", "a2"])
   #   # => <depends on script>
-  # @param argv [Array<String>] optional array with arguments to pass to the script
   # @param keys [Array<String>] optional array with keys to pass to the script
+  # @param argv [Array<String>] optional array with arguments to pass to the script
   # @param options [Hash] - `:keys => Array<String>`: optional array with keys to pass to the script
   #   - `:argv => Array<String>`: optional array with arguments to pass to the script
   # @return depends on the script
@@ -2114,20 +2132,20 @@ module Redis::Commands::SortedSets
   # @example Retrieve members with score `>= 5` and `< 100`
   #   redis.zrangebyscore("zset", "5", "(100")
   #   # => ["a", "b"]
-  # @example Retrieve members and their scores with scores `> 5`
-  #   redis.zrangebyscore("zset", "(5", "+inf", :with_scores => true)
-  #   # => [["a", 32.0], ["b", 64.0]]
   # @example Retrieve the first 2 members with score `>= 0`
   #   redis.zrangebyscore("zset", "0", "+inf", :limit => [0, 2])
   #   # => ["a", "b"]
+  # @example Retrieve members and their scores with scores `> 5`
+  #   redis.zrangebyscore("zset", "(5", "+inf", :with_scores => true)
+  #   # => [["a", 32.0], ["b", 64.0]]
+  # @param key [String]
+  # @param min [String] - inclusive minimum score is specified verbatim
+  #   - exclusive minimum score is specified by prefixing `(`
+  # @param max [String] - inclusive maximum score is specified verbatim
+  #   - exclusive maximum score is specified by prefixing `(`
   # @param options [Hash] - `:with_scores => true`: include scores in output
   #   - `:limit => [offset, count]`: skip `offset` members, return a maximum of
   #   `count` members
-  # @param min [String] - inclusive minimum score is specified verbatim
-  #   - exclusive minimum score is specified by prefixing `(`
-  # @param key [String]
-  # @param max [String] - inclusive maximum score is specified verbatim
-  #   - exclusive maximum score is specified by prefixing `(`
   # @return [Array<String>, Array<[String, Float]>] - when `:with_scores` is not specified, an array of members
   #   - when `:with_scores` is specified, an array with `[member, score]` pairs
   #
@@ -2364,10 +2382,10 @@ module Redis::Commands::Streams
 
   # Add new entry to the stream.
   #
-  # @example With options
-  #   redis.xadd('mystream', { f1: 'v1', f2: 'v2' }, id: '0-0', maxlen: 1000, approximate: true, nomkstream: true)
   # @example Without options
   #   redis.xadd('mystream', f1: 'v1', f2: 'v2')
+  # @example With options
+  #   redis.xadd('mystream', { f1: 'v1', f2: 'v2' }, id: '0-0', maxlen: 1000, approximate: true, nomkstream: true)
   # @option opts
   # @option opts
   # @option opts
@@ -2382,22 +2400,22 @@ module Redis::Commands::Streams
 
   # Transfers ownership of pending stream entries that match the specified criteria.
   #
-  # @example Claim next pending message after this id stuck > 5 minutes and mark as retry
-  #   redis.xautoclaim('mystream', 'mygroup', 'consumer1', 3600000, '1641321233-0')
+  # @example Claim next pending message stuck > 5 minutes and mark as retry
+  #   redis.xautoclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-0')
   # @example Claim 50 next pending messages stuck > 5 minutes and mark as retry
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-0', count: 50)
   # @example Claim next pending message stuck > 5 minutes and don't mark as retry
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-0', justid: true)
-  # @example Claim next pending message stuck > 5 minutes and mark as retry
-  #   redis.xautoclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-0')
+  # @example Claim next pending message after this id stuck > 5 minutes and mark as retry
+  #   redis.xautoclaim('mystream', 'mygroup', 'consumer1', 3600000, '1641321233-0')
+  # @param key [String] the stream key
+  # @param group [String] the consumer group name
+  # @param consumer [String] the consumer name
+  # @param min_idle_time [Integer] the number of milliseconds
   # @param start [String] entry id to start scanning from or 0-0 for everything
   # @param count [Integer] number of messages to claim (default 1)
   # @param justid [Boolean] whether to fetch just an array of entry ids or not.
   #   Does not increment retry count when true
-  # @param consumer [String] the consumer name
-  # @param key [String] the stream key
-  # @param group [String] the consumer group name
-  # @param min_idle_time [Integer] the number of milliseconds
   # @return [Hash{String => Hash}] the entries successfully claimed
   # @return [Array<String>] the entry ids successfully claimed if justid option is `true`
   #
@@ -2406,14 +2424,14 @@ module Redis::Commands::Streams
 
   # Changes the ownership of a pending entry
   #
+  # @example With splatted entry ids
+  #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-1', '0-2')
   # @example With arrayed entry ids
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, %w[0-1 0-2])
   # @example With idle option
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, %w[0-1 0-2], idle: 1000)
   # @example With time option
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, %w[0-1 0-2], time: 1542866959000)
-  # @example With splatted entry ids
-  #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, '0-1', '0-2')
   # @example With retrycount option
   #   redis.xclaim('mystream', 'mygroup', 'consumer1', 3600000, %w[0-1 0-2], retrycount: 10)
   # @example With force option
@@ -2454,18 +2472,18 @@ module Redis::Commands::Streams
   #
   # @example With `create` subcommand
   #   redis.xgroup(:create, 'mystream', 'mygroup', '$')
+  # @example With `setid` subcommand
+  #   redis.xgroup(:setid, 'mystream', 'mygroup', '$')
   # @example With `destroy` subcommand
   #   redis.xgroup(:destroy, 'mystream', 'mygroup')
   # @example With `delconsumer` subcommand
   #   redis.xgroup(:delconsumer, 'mystream', 'mygroup', 'consumer1')
-  # @example With `setid` subcommand
-  #   redis.xgroup(:setid, 'mystream', 'mygroup', '$')
-  # @param mkstream [Boolean] whether to create an empty stream automatically or not
-  # @param key [String] the stream key
   # @param subcommand [String] `create` `setid` `destroy` `delconsumer`
+  # @param key [String] the stream key
   # @param group [String] the consumer group name
   # @param id_or_consumer [String] * the entry id or `$`, required if subcommand is `create` or `setid`
   #   * the consumer name, required if subcommand is `delconsumer`
+  # @param mkstream [Boolean] whether to create an empty stream automatically or not
   # @return [String] `OK` if subcommand is `create` or `setid`
   # @return [Integer] effected count if subcommand is `destroy` or `delconsumer`
   #
@@ -2474,14 +2492,14 @@ module Redis::Commands::Streams
 
   # Returns the stream information each subcommand.
   #
-  # @example groups
-  #   redis.xinfo(:groups, 'mystream')
   # @example stream
   #   redis.xinfo(:stream, 'mystream')
+  # @example groups
+  #   redis.xinfo(:groups, 'mystream')
   # @example consumers
   #   redis.xinfo(:consumers, 'mystream', 'mygroup')
-  # @param key [String] the stream key
   # @param subcommand [String] e.g. `stream` `groups` `consumers`
+  # @param key [String] the stream key
   # @param group [String] the consumer group name, required if subcommand is `consumers`
   # @return [Hash] information of the stream if subcommand is `stream`
   # @return [Array<Hash>] information of the consumer groups if subcommand is `groups`
@@ -2504,20 +2522,20 @@ module Redis::Commands::Streams
   #
   # @example With key and group
   #   redis.xpending('mystream', 'mygroup')
-  # @example With range and consumer options
-  #   redis.xpending('mystream', 'mygroup', '-', '+', 10, 'consumer1')
   # @example With range options
   #   redis.xpending('mystream', 'mygroup', '-', '+', 10)
   # @example With range and idle time options
   #   redis.xpending('mystream', 'mygroup', '-', '+', 10, idle: 9000)
+  # @example With range and consumer options
+  #   redis.xpending('mystream', 'mygroup', '-', '+', 10, 'consumer1')
   # @option opts
-  # @param consumer [String] the consumer name
-  # @param opts [Hash] a customizable set of options
-  # @param start [String] start first entry id of range
   # @param key [String] the stream key
   # @param group [String] the consumer group name
+  # @param start [String] start first entry id of range
   # @param end [String] end   last entry id of range
   # @param count [Integer] count the number of entries as limit
+  # @param consumer [String] the consumer name
+  # @param opts [Hash] a customizable set of options
   # @return [Hash] the summary of pending entries
   # @return [Array<Hash>] the pending entries details if options were specified
   #
@@ -2565,12 +2583,12 @@ module Redis::Commands::Streams
   # Fetches a subset of the entries from one or multiple streams related with the consumer group.
   # Optionally blocking.
   #
+  # @example With a key
+  #   redis.xreadgroup('mygroup', 'consumer1', 'mystream', '>')
   # @example With multiple keys
   #   redis.xreadgroup('mygroup', 'consumer1', %w[mystream1 mystream2], %w[> >])
   # @example With count option
   #   redis.xreadgroup('mygroup', 'consumer1', 'mystream', '>', count: 2)
-  # @example With a key
-  #   redis.xreadgroup('mygroup', 'consumer1', 'mystream', '>')
   # @example With block option
   #   redis.xreadgroup('mygroup', 'consumer1', 'mystream', '>', block: 1000)
   # @example With noack option
@@ -4153,7 +4171,7 @@ class Redis::SubscribedClient
   # source://redis//lib/redis/subscribe.rb#10
   def call_v(command); end
 
-  # source://redis//lib/redis/subscribe.rb#40
+  # source://redis//lib/redis/subscribe.rb#52
   def close; end
 
   # source://redis//lib/redis/subscribe.rb#24
@@ -4162,8 +4180,14 @@ class Redis::SubscribedClient
   # source://redis//lib/redis/subscribe.rb#28
   def psubscribe_with_timeout(timeout, *channels, &block); end
 
-  # source://redis//lib/redis/subscribe.rb#36
+  # source://redis//lib/redis/subscribe.rb#44
   def punsubscribe(*channels); end
+
+  # source://redis//lib/redis/subscribe.rb#32
+  def ssubscribe(*channels, &block); end
+
+  # source://redis//lib/redis/subscribe.rb#36
+  def ssubscribe_with_timeout(timeout, *channels, &block); end
 
   # source://redis//lib/redis/subscribe.rb#16
   def subscribe(*channels, &block); end
@@ -4171,45 +4195,57 @@ class Redis::SubscribedClient
   # source://redis//lib/redis/subscribe.rb#20
   def subscribe_with_timeout(timeout, *channels, &block); end
 
-  # source://redis//lib/redis/subscribe.rb#32
+  # source://redis//lib/redis/subscribe.rb#48
+  def sunsubscribe(*channels); end
+
+  # source://redis//lib/redis/subscribe.rb#40
   def unsubscribe(*channels); end
 
   protected
 
-  # source://redis//lib/redis/subscribe.rb#46
+  # source://redis//lib/redis/subscribe.rb#58
   def subscription(start, stop, channels, block, timeout = T.unsafe(nil)); end
 end
 
-# source://redis//lib/redis/subscribe.rb#66
+# source://redis//lib/redis/subscribe.rb#82
 class Redis::Subscription
   # @return [Subscription] a new instance of Subscription
   # @yield [_self]
   # @yieldparam _self [Redis::Subscription] the object that the method was called on
   #
-  # source://redis//lib/redis/subscribe.rb#69
+  # source://redis//lib/redis/subscribe.rb#85
   def initialize; end
 
   # Returns the value of attribute callbacks.
   #
-  # source://redis//lib/redis/subscribe.rb#67
+  # source://redis//lib/redis/subscribe.rb#83
   def callbacks; end
 
-  # source://redis//lib/redis/subscribe.rb#82
+  # source://redis//lib/redis/subscribe.rb#98
   def message(&block); end
 
-  # source://redis//lib/redis/subscribe.rb#94
+  # source://redis//lib/redis/subscribe.rb#110
   def pmessage(&block); end
 
-  # source://redis//lib/redis/subscribe.rb#86
+  # source://redis//lib/redis/subscribe.rb#102
   def psubscribe(&block); end
 
-  # source://redis//lib/redis/subscribe.rb#90
+  # source://redis//lib/redis/subscribe.rb#106
   def punsubscribe(&block); end
 
-  # source://redis//lib/redis/subscribe.rb#74
+  # source://redis//lib/redis/subscribe.rb#122
+  def smessage(&block); end
+
+  # source://redis//lib/redis/subscribe.rb#114
+  def ssubscribe(&block); end
+
+  # source://redis//lib/redis/subscribe.rb#90
   def subscribe(&block); end
 
-  # source://redis//lib/redis/subscribe.rb#78
+  # source://redis//lib/redis/subscribe.rb#118
+  def sunsubscribe(&block); end
+
+  # source://redis//lib/redis/subscribe.rb#94
   def unsubscribe(&block); end
 end
 
