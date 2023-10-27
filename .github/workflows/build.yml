@@ -15,8 +15,32 @@ jobs:
           bundler-cache: true
       - run: bin/rails zeitwerk:check
 
+  sorbet-update:
+    name: Update Sorbet types
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - run: bin/rails sorbet:update
+      - name: Commit & push
+        run: |
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.name github-actions[bot]
+          git add .
+          git commit -m "Update types"
+          git push
+
   sorbet:
     name: Sorbet
+    if: ${{ always() }} # `sorbet-update` が実行されないときも実行する
+    needs: sorbet-update
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
