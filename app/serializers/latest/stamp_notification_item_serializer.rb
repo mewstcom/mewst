@@ -3,5 +3,5 @@
 
 class Latest::StampNotificationItemSerializer < Latest::ApplicationSerializer
   one :profile, resource: Latest::ProfileSerializer
-  one :post, resource: Latest::ProfileSerializer
+  one :post, resource: Latest::PostSerializer
 end

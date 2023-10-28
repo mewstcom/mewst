@@ -11,7 +11,7 @@ class Latest::NotificationSerializer < Latest::ApplicationSerializer
     when Latest::FollowNotificationItemResource
       Latest::FollowNotificationItemSerializer
     when Latest::StampNotificationItemResource
-      Latest::FollowNotificationItemSerializer
+      Latest::StampNotificationItemSerializer
     else
       raise "Unknown resource class: #{resource.class.inspect}"
     end

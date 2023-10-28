@@ -222,7 +222,6 @@ CREATE TABLE public.notifications (
     profile_id uuid NOT NULL,
     notifiable_type character varying NOT NULL,
     notified_at timestamp without time zone NOT NULL,
-    read_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -311,7 +310,8 @@ CREATE TABLE public.profiles (
     joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    discarded_at timestamp(6) without time zone
+    discarded_at timestamp(6) without time zone,
+    notifications_count integer DEFAULT 0 NOT NULL
 );
 
 

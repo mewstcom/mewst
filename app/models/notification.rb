@@ -4,6 +4,8 @@
 class Notification < ApplicationRecord
   extend Enumerize
 
+  counter_culture :profile, column_name: :unread_notifications_count
+
   enumerize :notifiable_type, in: %i[follow stamp]
 
   belongs_to :profile

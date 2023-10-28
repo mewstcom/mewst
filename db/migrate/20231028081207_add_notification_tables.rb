@@ -7,7 +7,6 @@ class AddNotificationTables < ActiveRecord::Migration[7.0]
       t.references :profile, foreign_key: true, null: false, type: :uuid
       t.string :notifiable_type, null: false
       t.timestamp :notified_at, index: true, null: false
-      t.timestamp :read_at
       t.timestamps
     end
 
@@ -24,5 +23,7 @@ class AddNotificationTables < ActiveRecord::Migration[7.0]
       t.references :stamp, foreign_key: true, index: {unique: true}, null: false, type: :uuid
       t.timestamps
     end
+
+    add_column :profiles, :unread_notifications_count, :integer, default: 0, null: false
   end
 end
