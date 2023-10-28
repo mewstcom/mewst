@@ -8,8 +8,12 @@ class DeleteStampUseCase < ApplicationUseCase
 
   sig { params(viewer: Actor, target_post: Post).returns(Result) }
   def call(viewer:, target_post:)
-    stamp = viewer.stamps.where(post: target_post).sole
-    stamp.destroy!
+    stamp = viewer.stamps.find_by(post: target_post)
+
+    ApplicationRecord.transaction do
+      stamp&.unnotify!
+      stamp&.destroy!
+    end
 
     Result.new(post: target_post.reload)
   end

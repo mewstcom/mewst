@@ -3,6 +3,7 @@
 
 class StampNotification < ApplicationRecord
   belongs_to :notification
-  belongs_to :post
-  belongs_to :profile
+  belongs_to :stamp
+
+  delegate :post, :profile, to: :stamp
 end

@@ -9,12 +9,26 @@ class Stamp < ApplicationRecord
 
   sig { void }
   def notify!
-    follow_notification = FollowNotification.find_by(source_profile:, target_profile:)
+    stamp_notification = StampNotification.find_by(stamp: self)
 
-    return if follow_notification
+    return if stamp_notification
 
-    notification = Notification.create!(profile: target_profile, notifiable_type: :follow, notified_at: Time.current)
-    FollowNotification.create!(notification:, source_profile:, target_profile:)
+    notification = Notification.create!(profile: post.profile, notifiable_type: :stamp, notified_at: Time.current)
+    StampNotification.create!(notification:, stamp: self)
+
+    nil
+  end
+
+  sig { void }
+  def unnotify!
+    stamp_notification = StampNotification.find_by(stamp: self)
+
+    return unless stamp_notification
+
+    notification = stamp_notification.notification
+
+    stamp_notification.delete
+    notification.delete
 
     nil
   end

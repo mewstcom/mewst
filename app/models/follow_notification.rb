@@ -3,6 +3,7 @@
 
 class FollowNotification < ApplicationRecord
   belongs_to :notification
-  belongs_to :source_profile, class_name: "Profile"
-  belongs_to :target_profile, class_name: "Profile"
+  belongs_to :follow
+
+  delegate :source_profile, :target_profile, to: :follow
 end

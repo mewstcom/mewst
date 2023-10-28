@@ -10,6 +10,8 @@ class Latest::NotificationSerializer < Latest::ApplicationSerializer
     case resource
     when Latest::FollowNotificationItemResource
       Latest::FollowNotificationItemSerializer
+    when Latest::StampNotificationItemResource
+      Latest::FollowNotificationItemSerializer
     else
       raise "Unknown resource class: #{resource.class.inspect}"
     end

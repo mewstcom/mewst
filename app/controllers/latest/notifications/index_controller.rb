@@ -5,7 +5,7 @@ class Latest::Notifications::IndexController < Latest::ApplicationController
   include Latest::Authenticatable
 
   def call
-    notifications = current_viewer!.notifications
+    notifications = current_viewer!.notifications.preload(:follow_notification, :stamp_notification)
     result = Paginator.new(records: notifications).paginate(
       before: params[:before].presence,
       after: params[:after].presence,

@@ -14,21 +14,15 @@ class AddNotificationTables < ActiveRecord::Migration[7.0]
     create_table :follow_notifications, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :notification, foreign_key: true, null: false, type: :uuid
-      t.references :source_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
-      t.references :target_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
+      t.references :follow, foreign_key: true, index: {unique: true}, null: false, type: :uuid
       t.timestamps
-
-      t.index %i[source_profile_id target_profile_id], name: :index_follow_notifications_on_src_profile_id_and_tgt_profile_id, unique: true
     end
 
     create_table :stamp_notifications, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
       t.references :notification, foreign_key: true, null: false, type: :uuid
-      t.references :profile, foreign_key: true, null: false, type: :uuid
-      t.references :post, foreign_key: true, null: false, type: :uuid
+      t.references :stamp, foreign_key: true, index: {unique: true}, null: false, type: :uuid
       t.timestamps
-
-      t.index %i[profile_id post_id], unique: true
     end
   end
 end

@@ -7,19 +7,19 @@ class Follow < ApplicationRecord
 
   sig { void }
   def notify!
-    follow_notification = FollowNotification.find_by(source_profile:, target_profile:)
+    follow_notification = FollowNotification.find_by(follow: self)
 
     return if follow_notification
 
     notification = Notification.create!(profile: target_profile, notifiable_type: :follow, notified_at: Time.current)
-    FollowNotification.create!(notification:, source_profile:, target_profile:)
+    FollowNotification.create!(notification:, follow: self)
 
     nil
   end
 
   sig { void }
   def unnotify!
-    follow_notification = FollowNotification.find_by(source_profile:, target_profile:)
+    follow_notification = FollowNotification.find_by(follow: self)
 
     return unless follow_notification
 
