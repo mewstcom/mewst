@@ -162,6 +162,26 @@ paths:
       summary: ""
       tags:
         - profiles
+  "/notifications":
+    get:
+      description: ""
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  notifications:
+                    items:
+                      "$ref": "#/components/schemas/notification"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: Get notifications
+      tags:
+        - notifications
   "/posts":
     post:
       description: ""
@@ -390,6 +410,41 @@ components:
       required:
         - code
         - message
+    follow-notification-item:
+      additionalProperties: false
+      description: ""
+      properties:
+        profile:
+          $ref: "#/components/schemas/profile"
+      required:
+        - profile
+      title: Follow Notification
+      type: object
+    notification:
+      additionalProperties: false
+      description: ""
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+          enum:
+            - follow
+            - stamp
+        item:
+          oneOf:
+            - $ref: "#/components/schemas/follow-notification-item"
+            - $ref: "#/components/schemas/stamp-notification-item"
+        notified_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - kind
+        - item
+        - notified_at
+      title: Notification
+      type: object
     page-info:
       additionalProperties: false
       description: ""
@@ -462,6 +517,19 @@ components:
         - published_at
         - stamps_count
         - viewer_has_stamped
+    stamp-notification-item:
+      additionalProperties: false
+      description: ""
+      properties:
+        profile:
+          $ref: "#/components/schemas/profile"
+        post:
+          $ref: "#/components/schemas/post"
+      required:
+        - profile
+        - post
+      title: Stamp Notification
+      type: object
     user:
       additionalProperties: false
       description: ""

@@ -18,19 +18,20 @@ class Paginator
     params(
       before: T.nilable(T::Mewst::DatabaseId),
       after: T.nilable(T::Mewst::DatabaseId),
-      limit: Integer
+      limit: Integer,
+      order_by: Symbol
     ).returns(Result)
   end
-  def paginate(before: nil, after: nil, limit: 50)
+  def paginate(before: nil, after: nil, limit: 50, order_by: :id)
     before_record = before.nil? ? nil : records.find(before)
     after_record = after.nil? ? nil : records.find(after)
 
     record_ids = if before_record.nil? && after_record.nil?
-      records.order(id: :desc).limit(limit + 1).pluck(:id)
+      records.order(order_by => :desc).limit(limit + 1).pluck(:id)
     elsif before_record
-      records.where(records.arel_table[:id].gt(before_record.id)).order(id: :asc).limit(limit + 1).pluck(:id)
+      records.where(records.arel_table[:id].gt(before_record.id)).order(order_by => :asc).limit(limit + 1).pluck(:id)
     elsif after_record
-      records.where(records.arel_table[:id].lt(after_record.id)).order(id: :desc).limit(limit + 1).pluck(:id)
+      records.where(records.arel_table[:id].lt(after_record.id)).order(order_by => :desc).limit(limit + 1).pluck(:id)
     end
 
     page_info = if before_record.nil? && after_record.nil?
@@ -57,7 +58,7 @@ class Paginator
     end
 
     Result.new(
-      records: records.where(id: record_ids.first(limit)).order(id: :desc),
+      records: records.where(id: record_ids.first(limit)).order(order_by => :desc),
       page_info: page_info.not_nil!
     )
   end
