@@ -21,6 +21,6 @@ class CreateStampUseCase < ApplicationUseCase
       new_stamp.notify!
     end
 
-    Result.new(post: new_stamp.post)
+    Result.new(post: new_stamp.post.reload)
   end
 end
