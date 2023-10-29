@@ -428,13 +428,11 @@ components:
           type: string
         source_profile:
           $ref: "#/components/schemas/profile"
-        target_profile:
-          $ref: "#/components/schemas/profile"
         kind:
           type: string
           enum:
-            - follow
-            - stamp
+            - Follow
+            - Stamp
         item:
           oneOf:
             - $ref: "#/components/schemas/follow-notification-item"
@@ -444,6 +442,7 @@ components:
           format: date-time
       required:
         - id
+        - source_profile
         - kind
         - item
         - notified_at
@@ -528,9 +527,9 @@ components:
       additionalProperties: false
       description: ""
       properties:
-        profile:
+        source_profile:
           $ref: "#/components/schemas/profile"
-        post:
+        target_post:
           $ref: "#/components/schemas/post"
       required:
         - profile
