@@ -36,6 +36,9 @@ module GeneratedPathHelpersModule
   def latest_me_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_notification_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

@@ -93,6 +93,19 @@ CREATE TABLE public.email_confirmations (
 
 
 --
+-- Name: follow_notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.follow_notifications (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    notification_id uuid NOT NULL,
+    follow_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: follows; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -201,6 +214,21 @@ CREATE TABLE public.good_jobs (
 
 
 --
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notifications (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    source_profile_id uuid NOT NULL,
+    target_profile_id uuid NOT NULL,
+    notifiable_type character varying NOT NULL,
+    notified_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: oauth_access_grants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -297,6 +325,19 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: stamp_notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stamp_notifications (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    notification_id uuid NOT NULL,
+    stamp_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: stamps; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -355,6 +396,14 @@ ALTER TABLE ONLY public.email_confirmations
 
 
 --
+-- Name: follow_notifications follow_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_notifications
+    ADD CONSTRAINT follow_notifications_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: follows follows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -400,6 +449,14 @@ ALTER TABLE ONLY public.good_job_settings
 
 ALTER TABLE ONLY public.good_jobs
     ADD CONSTRAINT good_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -451,6 +508,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: stamp_notifications stamp_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamp_notifications
+    ADD CONSTRAINT stamp_notifications_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: stamps stamps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -499,6 +564,20 @@ CREATE INDEX index_email_confirmations_on_created_at ON public.email_confirmatio
 --
 
 CREATE UNIQUE INDEX index_email_confirmations_on_email_and_code ON public.email_confirmations USING btree (email, code);
+
+
+--
+-- Name: index_follow_notifications_on_follow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_follow_notifications_on_follow_id ON public.follow_notifications USING btree (follow_id);
+
+
+--
+-- Name: index_follow_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_follow_notifications_on_notification_id ON public.follow_notifications USING btree (notification_id);
 
 
 --
@@ -614,6 +693,27 @@ CREATE INDEX index_good_jobs_on_scheduled_at ON public.good_jobs USING btree (sc
 
 
 --
+-- Name: index_notifications_on_notified_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notifications_on_notified_at ON public.notifications USING btree (notified_at);
+
+
+--
+-- Name: index_notifications_on_source_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notifications_on_source_profile_id ON public.notifications USING btree (source_profile_id);
+
+
+--
+-- Name: index_notifications_on_target_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notifications_on_target_profile_id ON public.notifications USING btree (target_profile_id);
+
+
+--
 -- Name: index_oauth_access_grants_on_application_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -712,6 +812,20 @@ CREATE INDEX index_profiles_on_discarded_at ON public.profiles USING btree (disc
 
 
 --
+-- Name: index_stamp_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_stamp_notifications_on_notification_id ON public.stamp_notifications USING btree (notification_id);
+
+
+--
+-- Name: index_stamp_notifications_on_stamp_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_stamp_notifications_on_stamp_id ON public.stamp_notifications USING btree (stamp_id);
+
+
+--
 -- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -744,6 +858,14 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 --
 
 CREATE UNIQUE INDEX index_users_on_profile_id ON public.users USING btree (profile_id);
+
+
+--
+-- Name: stamp_notifications fk_rails_02057a6968; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamp_notifications
+    ADD CONSTRAINT fk_rails_02057a6968 FOREIGN KEY (stamp_id) REFERENCES public.stamps(id);
 
 
 --
@@ -787,6 +909,14 @@ ALTER TABLE ONLY public.follows
 
 
 --
+-- Name: stamp_notifications fk_rails_63530a6a31; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stamp_notifications
+    ADD CONSTRAINT fk_rails_63530a6a31 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
+
+
+--
 -- Name: stamps fk_rails_6933333714; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -800,6 +930,22 @@ ALTER TABLE ONLY public.stamps
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_732cb83ab7 FOREIGN KEY (application_id) REFERENCES public.oauth_applications(id);
+
+
+--
+-- Name: notifications fk_rails_7faaf3b8f2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_7faaf3b8f2 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: follow_notifications fk_rails_882bddd994; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_notifications
+    ADD CONSTRAINT fk_rails_882bddd994 FOREIGN KEY (follow_id) REFERENCES public.follows(id);
 
 
 --
@@ -819,6 +965,14 @@ ALTER TABLE ONLY public.follows
 
 
 --
+-- Name: follow_notifications fk_rails_b2df4597e6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.follow_notifications
+    ADD CONSTRAINT fk_rails_b2df4597e6 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
+
+
+--
 -- Name: oauth_access_grants fk_rails_b4b53e07b8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -832,6 +986,14 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: notifications fk_rails_e4b5c723c6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_e4b5c723c6 FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
 
 
 --
@@ -861,6 +1023,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221119004702'),
 ('20230830155958'),
 ('20231015050126'),
-('20231025165318');
+('20231025165318'),
+('20231028081207');
 
 

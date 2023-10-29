@@ -8,10 +8,19 @@ class FollowProfileUseCase < ApplicationUseCase
 
   sig { params(viewer: Actor, target_profile: Profile).returns(Result) }
   def call(viewer:, target_profile:)
-    follow = viewer.follows.where(target_profile: target_profile).first_or_initialize(followed_at: Time.current)
+    follow = viewer.follows.find_by(target_profile: target_profile)
 
-    follow.save!
+    if follow
+      return Result.new(target_profile: follow.target_profile)
+    end
 
-    Result.new(target_profile: follow.target_profile)
+    new_follow = viewer.follows.new(target_profile: target_profile, followed_at: Time.current)
+
+    ApplicationRecord.transaction do
+      new_follow.save!
+      new_follow.notify!
+    end
+
+    Result.new(target_profile: new_follow.target_profile)
   end
 end

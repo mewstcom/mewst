@@ -10,7 +10,10 @@ class UnfollowProfileUseCase < ApplicationUseCase
   def call(viewer:, target_profile:)
     follow = viewer.follows.find_by(target_profile: target_profile)
 
-    follow&.destroy!
+    ApplicationRecord.transaction do
+      follow&.unnotify!
+      follow&.destroy!
+    end
 
     Result.new(target_profile: target_profile.reload)
   end
