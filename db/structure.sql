@@ -219,7 +219,8 @@ CREATE TABLE public.good_jobs (
 
 CREATE TABLE public.notifications (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profile_id uuid NOT NULL,
+    source_profile_id uuid NOT NULL,
+    target_profile_id uuid NOT NULL,
     notifiable_type character varying NOT NULL,
     notified_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -311,7 +312,7 @@ CREATE TABLE public.profiles (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     discarded_at timestamp(6) without time zone,
-    notifications_count integer DEFAULT 0 NOT NULL
+    unread_notifications_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -700,10 +701,17 @@ CREATE INDEX index_notifications_on_notified_at ON public.notifications USING bt
 
 
 --
--- Name: index_notifications_on_profile_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_notifications_on_source_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_notifications_on_profile_id ON public.notifications USING btree (profile_id);
+CREATE INDEX index_notifications_on_source_profile_id ON public.notifications USING btree (source_profile_id);
+
+
+--
+-- Name: index_notifications_on_target_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notifications_on_target_profile_id ON public.notifications USING btree (target_profile_id);
 
 
 --
@@ -926,6 +934,14 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
+-- Name: notifications fk_rails_7faaf3b8f2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_7faaf3b8f2 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: follow_notifications fk_rails_882bddd994; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -974,11 +990,11 @@ ALTER TABLE ONLY public.posts
 
 
 --
--- Name: notifications fk_rails_e251e4b22b; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: notifications fk_rails_e4b5c723c6; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT fk_rails_e251e4b22b FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+    ADD CONSTRAINT fk_rails_e4b5c723c6 FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
 
 
 --

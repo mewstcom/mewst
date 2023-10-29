@@ -10,6 +10,11 @@ class Latest::NotificationResource < Latest::ApplicationResource
     @viewer = viewer
   end
 
+  sig { returns(Latest::ProfileResource) }
+  def source_profile
+    Latest::ProfileResource.new(profile: notification.source_profile.not_nil!, viewer:)
+  end
+
   sig { returns(String) }
   def kind
     notification.notifiable_type.to_s
@@ -18,9 +23,9 @@ class Latest::NotificationResource < Latest::ApplicationResource
   sig { returns(T.any(Latest::FollowNotificationItemResource, Latest::StampNotificationItemResource)) }
   def item
     case kind
-    when "follow"
+    when NotifiableType::Follow.serialize
       Latest::FollowNotificationItemResource.new(follow_notification: notification.follow_notification, viewer:)
-    when "stamp"
+    when NotifiableType::Stamp.serialize
       Latest::StampNotificationItemResource.new(stamp_notification: notification.stamp_notification, viewer:)
     else
       raise "Unknown notification kind: #{kind.inspect}"

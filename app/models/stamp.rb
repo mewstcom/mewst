@@ -13,7 +13,12 @@ class Stamp < ApplicationRecord
 
     return if stamp_notification
 
-    notification = Notification.create!(profile: post.profile, notifiable_type: :stamp, notified_at: Time.current)
+    notification = Notification.create!(
+      source_profile: profile,
+      target_profile: post.profile,
+      notifiable_type: NotifiableType::Stamp.serialize,
+      notified_at: Time.current
+    )
     StampNotification.create!(notification:, stamp: self)
 
     nil

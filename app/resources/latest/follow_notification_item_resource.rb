@@ -9,7 +9,7 @@ class Latest::FollowNotificationItemResource < Latest::ApplicationResource
   end
 
   sig { returns(Latest::ProfileResource) }
-  def profile
+  def source_profile
     Latest::ProfileResource.new(profile: follow_notification.source_profile, viewer:)
   end
 

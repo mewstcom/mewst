@@ -4,7 +4,8 @@ class AddNotificationTables < ActiveRecord::Migration[7.0]
   def change
     create_table :notifications, id: false do |t|
       t.uuid :id, default: "generate_ulid()", null: false, primary_key: true
-      t.references :profile, foreign_key: true, null: false, type: :uuid
+      t.references :source_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
+      t.references :target_profile, foreign_key: {to_table: :profiles}, null: false, type: :uuid
       t.string :notifiable_type, null: false
       t.timestamp :notified_at, index: true, null: false
       t.timestamps

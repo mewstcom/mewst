@@ -426,6 +426,10 @@ components:
       properties:
         id:
           type: string
+        source_profile:
+          $ref: "#/components/schemas/profile"
+        target_profile:
+          $ref: "#/components/schemas/profile"
         kind:
           type: string
           enum:

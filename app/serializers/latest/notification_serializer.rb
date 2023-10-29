@@ -6,6 +6,8 @@ class Latest::NotificationSerializer < Latest::ApplicationSerializer
 
   attributes :id, :kind, :notified_at
 
+  one :source_profile, resource: Latest::ProfileSerializer
+
   one :item, resource: ->(resource) {
     case resource
     when Latest::FollowNotificationItemResource

@@ -9,12 +9,12 @@ class Latest::StampNotificationItemResource < Latest::ApplicationResource
   end
 
   sig { returns(Latest::ProfileResource) }
-  def profile
+  def source_profile
     Latest::ProfileResource.new(profile: stamp_notification.profile, viewer:)
   end
 
   sig { returns(Latest::PostResource) }
-  def post
+  def target_post
     Latest::PostResource.new(post: stamp_notification.post, viewer:)
   end
 

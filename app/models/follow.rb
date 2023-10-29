@@ -11,7 +11,12 @@ class Follow < ApplicationRecord
 
     return if follow_notification
 
-    notification = Notification.create!(profile: target_profile, notifiable_type: :follow, notified_at: Time.current)
+    notification = Notification.create!(
+      source_profile:,
+      target_profile:,
+      notifiable_type: NotifiableType::Follow.serialize,
+      notified_at: Time.current
+    )
     FollowNotification.create!(notification:, follow: self)
 
     nil
