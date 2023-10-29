@@ -28,7 +28,7 @@ class Follow < ApplicationRecord
 
     return unless follow_notification
 
-    notification = follow_notification.notification
+    notification = follow_notification.notification.not_nil!
 
     follow_notification.delete
     notification.delete

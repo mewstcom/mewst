@@ -24,9 +24,9 @@ class Latest::NotificationResource < Latest::ApplicationResource
   def item
     case kind
     when NotifiableType::Follow.serialize
-      Latest::FollowNotificationItemResource.new(follow_notification: notification.follow_notification, viewer:)
+      Latest::FollowNotificationItemResource.new(follow_notification: notification.follow_notification.not_nil!, viewer:)
     when NotifiableType::Stamp.serialize
-      Latest::StampNotificationItemResource.new(stamp_notification: notification.stamp_notification, viewer:)
+      Latest::StampNotificationItemResource.new(stamp_notification: notification.stamp_notification.not_nil!, viewer:)
     else
       raise "Unknown notification kind: #{kind.inspect}"
     end

@@ -4,8 +4,6 @@
 class Notification < ApplicationRecord
   extend Enumerize
 
-  counter_culture :target_profile, column_name: :unread_notifications_count
-
   enumerize :notifiable_type, in: NotifiableType.values.map(&:serialize)
 
   belongs_to :source_profile, class_name: "Profile"

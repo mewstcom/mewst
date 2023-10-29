@@ -15,7 +15,7 @@ class Stamp < ApplicationRecord
 
     notification = Notification.create!(
       source_profile: profile,
-      target_profile: post.profile,
+      target_profile: post.not_nil!.profile,
       notifiable_type: NotifiableType::Stamp.serialize,
       notified_at: Time.current
     )
@@ -30,7 +30,7 @@ class Stamp < ApplicationRecord
 
     return unless stamp_notification
 
-    notification = stamp_notification.notification
+    notification = stamp_notification.notification.not_nil!
 
     stamp_notification.delete
     notification.delete

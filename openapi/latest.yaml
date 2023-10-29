@@ -485,8 +485,6 @@ components:
           type: string
         viewer_has_followed:
           type: boolean
-        unread_notifications_count:
-          type: integer
       required:
         - id
         - atname
@@ -494,7 +492,6 @@ components:
         - description
         - name
         - viewer_has_followed
-        - unread_notifications_count
       title: Profile
       type: object
     post:

@@ -36,6 +36,9 @@ module GeneratedUrlHelpersModule
   def latest_me_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_notification_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

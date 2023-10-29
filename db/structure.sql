@@ -311,8 +311,7 @@ CREATE TABLE public.profiles (
     joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    discarded_at timestamp(6) without time zone,
-    unread_notifications_count integer DEFAULT 0 NOT NULL
+    discarded_at timestamp(6) without time zone
 );
 
 

@@ -12,8 +12,7 @@ module Mewst::Test::ResourceHelpers
       name: profile.name,
       description: profile.description,
       avatar_url: profile.avatar_url,
-      viewer_has_followed:,
-      unread_notifications_count: profile.unread_notifications_count
+      viewer_has_followed:
     }
   end
 
