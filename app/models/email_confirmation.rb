@@ -32,7 +32,7 @@ class EmailConfirmation < ApplicationRecord
     self.event = EmailConfirmation::EVENT_SIGN_UP
     save!
 
-    EmailConfirmationMailer.email_confirmation(email_confirmation_id: id, locale:).deliver_later
+    EmailConfirmationMailer.email_confirmation(email_confirmation_id: id.not_nil!, locale:).deliver_later
 
     nil
   end
