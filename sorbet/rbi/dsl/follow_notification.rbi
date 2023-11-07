@@ -543,16 +543,16 @@ class FollowNotification
     sig { void }
     def created_at_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(::String) }
     def follow_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def follow_id=(value); end
 
     sig { returns(T::Boolean) }
     def follow_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def follow_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -561,43 +561,43 @@ class FollowNotification
     sig { returns(T::Boolean) }
     def follow_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def follow_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def follow_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def follow_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def follow_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def follow_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def follow_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def follow_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def follow_id_was; end
 
     sig { void }
     def follow_id_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def id=(value); end
 
     sig { returns(T::Boolean) }
     def id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -606,43 +606,43 @@ class FollowNotification
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_was; end
 
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(::String) }
     def notification_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def notification_id=(value); end
 
     sig { returns(T::Boolean) }
     def notification_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notification_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -651,28 +651,28 @@ class FollowNotification
     sig { returns(T::Boolean) }
     def notification_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notification_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notification_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def notification_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notification_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notification_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def notification_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notification_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notification_id_was; end
 
     sig { void }
@@ -699,19 +699,19 @@ class FollowNotification
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_follow_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_follow_id?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_notification_id; end
 
     sig { returns(T::Boolean) }

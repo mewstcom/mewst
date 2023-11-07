@@ -486,16 +486,16 @@ class GoodJob::BaseExecution
   end
 
   module GeneratedAttributeMethods
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def active_job_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
     def active_job_id=(value); end
 
     sig { returns(T::Boolean) }
     def active_job_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def active_job_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -504,43 +504,43 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def active_job_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def active_job_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def active_job_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def active_job_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def active_job_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def active_job_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def active_job_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def active_job_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def active_job_id_was; end
 
     sig { void }
     def active_job_id_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_callback_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
     def batch_callback_id=(value); end
 
     sig { returns(T::Boolean) }
     def batch_callback_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_callback_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -549,43 +549,43 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def batch_callback_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_callback_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_callback_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def batch_callback_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_callback_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_callback_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def batch_callback_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_callback_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_callback_id_was; end
 
     sig { void }
     def batch_callback_id_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
     def batch_id=(value); end
 
     sig { returns(T::Boolean) }
     def batch_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -594,28 +594,28 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def batch_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def batch_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def batch_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def batch_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def batch_id_was; end
 
     sig { void }
@@ -1001,16 +1001,16 @@ class GoodJob::BaseExecution
     sig { void }
     def finished_at_will_change!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def id=(value); end
 
     sig { returns(T::Boolean) }
     def id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -1019,28 +1019,28 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def id_was; end
 
     sig { void }
@@ -1344,16 +1344,16 @@ class GoodJob::BaseExecution
     sig { void }
     def restore_updated_at!; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def retried_good_job_id; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
     def retried_good_job_id=(value); end
 
     sig { returns(T::Boolean) }
     def retried_good_job_id?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def retried_good_job_id_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -1362,46 +1362,46 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def retried_good_job_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def retried_good_job_id_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def retried_good_job_id_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def retried_good_job_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def retried_good_job_id_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def retried_good_job_id_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def retried_good_job_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def retried_good_job_id_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def retried_good_job_id_was; end
 
     sig { void }
     def retried_good_job_id_will_change!; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_active_job_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_active_job_id?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_batch_callback_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_batch_callback_id?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_batch_id; end
 
     sig { returns(T::Boolean) }
@@ -1455,7 +1455,7 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def saved_change_to_finished_at?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
@@ -1491,7 +1491,7 @@ class GoodJob::BaseExecution
     sig { returns(T::Boolean) }
     def saved_change_to_queue_name?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_retried_good_job_id; end
 
     sig { returns(T::Boolean) }
