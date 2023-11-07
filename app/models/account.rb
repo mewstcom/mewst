@@ -28,7 +28,7 @@ class Account
   sig { void }
   def save!
     @profile = Profile.create!(
-      profileable_type: :user,
+      profileable_type: ProfileableType::User.serialize,
       atname:,
       joined_at: current_time
     )

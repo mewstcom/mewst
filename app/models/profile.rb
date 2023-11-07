@@ -10,7 +10,7 @@ class Profile < ApplicationRecord
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
 
-  enumerize :profileable_type, in: %i[user]
+  enumerize :profileable_type, in: ProfileableType.values.map(&:serialize)
 
   has_many :actors, dependent: :restrict_with_exception
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
