@@ -6,8 +6,8 @@
 
 class Latest::PostForm
   sig { returns(T.nilable(::String)) }
-  def comment; end
+  def content; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def comment=(value); end
+  def content=(value); end
 end

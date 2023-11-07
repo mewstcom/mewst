@@ -8,7 +8,7 @@ class Latest::Posts::CreateController < Latest::ApplicationController
   def call
     form = Latest::PostForm.new(
       viewer: current_viewer!,
-      comment: params[:comment]
+      content: params[:content]
     )
 
     if form.invalid?
@@ -17,7 +17,7 @@ class Latest::Posts::CreateController < Latest::ApplicationController
 
     result = CreatePostUseCase.new.call(
       viewer: form.viewer.not_nil!,
-      comment: form.comment.not_nil!
+      content: form.content.not_nil!
     )
 
     resource = Latest::PostResource.new(post: result.post, viewer: current_viewer!)

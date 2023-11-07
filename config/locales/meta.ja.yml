@@ -10,7 +10,7 @@ ja:
       passwords:
         new: パスワードリセット
       posts:
-        show: "%{name} (@%{atname}): %{comment}"
+        show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
       settings:

@@ -5,8 +5,8 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
   context "正常系" do
     let!(:actor) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { actor.profile }
-    let!(:form) { Latest::PostForm.new(viewer: actor, comment: "Hello") }
-    let!(:post) { CreatePostUseCase.new.call(viewer: actor, comment: form.comment.not_nil!).post }
+    let!(:form) { Latest::PostForm.new(viewer: actor, content: "Hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer: actor, content: form.content.not_nil!).post }
 
     it "プロフィールと投稿一覧が返ること" do
       get("/internal/@#{profile.atname}/posts")
@@ -26,7 +26,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
         posts: [
           {
             id: post.id,
-            comment: "Hello",
+            content: "Hello",
             profile: {
               id: profile.id,
               atname: profile.atname,

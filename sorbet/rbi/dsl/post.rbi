@@ -446,49 +446,49 @@ class Post
 
   module GeneratedAttributeMethods
     sig { returns(::String) }
-    def comment; end
+    def content; end
 
     sig { params(value: ::String).returns(::String) }
-    def comment=(value); end
+    def content=(value); end
 
     sig { returns(T::Boolean) }
-    def comment?; end
+    def content?; end
 
     sig { returns(T.nilable(::String)) }
-    def comment_before_last_save; end
+    def content_before_last_save; end
 
     sig { returns(T.untyped) }
-    def comment_before_type_cast; end
+    def content_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def comment_came_from_user?; end
+    def content_came_from_user?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def comment_change; end
+    def content_change; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def comment_change_to_be_saved; end
+    def content_change_to_be_saved; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def comment_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def content_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def comment_in_database; end
+    def content_in_database; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def comment_previous_change; end
+    def content_previous_change; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def comment_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def content_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def comment_previously_was; end
+    def content_previously_was; end
 
     sig { returns(T.nilable(::String)) }
-    def comment_was; end
+    def content_was; end
 
     sig { void }
-    def comment_will_change!; end
+    def content_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
@@ -726,7 +726,7 @@ class Post
     def published_at_will_change!; end
 
     sig { void }
-    def restore_comment!; end
+    def restore_content!; end
 
     sig { void }
     def restore_created_at!; end
@@ -750,10 +750,10 @@ class Post
     def restore_updated_at!; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_comment; end
+    def saved_change_to_content; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_comment?; end
+    def saved_change_to_content?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -888,7 +888,7 @@ class Post
     def updated_at_will_change!; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_comment?; end
+    def will_save_change_to_content?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end

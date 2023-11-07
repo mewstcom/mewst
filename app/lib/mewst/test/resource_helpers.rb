@@ -21,7 +21,7 @@ module Mewst::Test::ResourceHelpers
     {
       profile: build_profile_resource(profile: post.profile.not_nil!, viewer_has_followed:),
       id: post.id,
-      comment: post.comment,
+      content: post.content,
       published_at: post.published_at.iso8601,
       stamps_count: post.stamps_count,
       viewer_has_stamped:

@@ -32,8 +32,8 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
     let!(:target_actor) { create(:actor) }
     let!(:target_profile) { target_actor.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
-    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, comment: "hello") }
-    let!(:target_post) { CreatePostUseCase.new.call(viewer: target_actor, comment: post_form.comment.not_nil!).post }
+    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, content: "hello") }
+    let!(:target_post) { CreatePostUseCase.new.call(viewer: target_actor, content: post_form.content.not_nil!).post }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "`204` を返すこと" do
@@ -49,7 +49,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
       expected = {
         post: {
           id: target_post.id,
-          comment: target_post.comment,
+          content: target_post.content,
           profile: build_profile_resource(profile: target_profile, viewer_has_followed: false),
           published_at: target_post.published_at.iso8601,
           stamps_count: 1,

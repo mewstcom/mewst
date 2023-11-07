@@ -6,14 +6,14 @@ class Post < ApplicationRecord
 
   include Discard::Model
 
-  MAXIMUM_COMMENT_LENGTH = 500
+  MAXIMUM_CONTENT_LENGTH = 500
 
   belongs_to :profile
   has_many :stamps, dependent: :restrict_with_exception
 
   scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }
 
-  validates :comment, length: {maximum: MAXIMUM_COMMENT_LENGTH}, presence: true
+  validates :content, length: {maximum: MAXIMUM_CONTENT_LENGTH}, presence: true
 
   sig { returns(String) }
   def timeline_score

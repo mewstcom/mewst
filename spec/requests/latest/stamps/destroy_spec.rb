@@ -7,8 +7,8 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
     let!(:target_actor) { create(:actor) }
     let!(:target_profile) { target_actor.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
-    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, comment: "hello") }
-    let!(:post) { CreatePostUseCase.new.call(viewer: target_actor, comment: post_form.comment.not_nil!).post }
+    let!(:post_form) { Latest::PostForm.new(viewer: target_actor, content: "hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer: target_actor, content: post_form.content.not_nil!).post }
     let!(:stamp_form) { Latest::StampForm.new(viewer:, target_post_id: post.id) }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
@@ -32,7 +32,7 @@ RSpec.describe "DELETE /latest/posts/:post_id/stamp", type: :request, api_versio
       expected = {
         post: {
           id: post.id,
-          comment: post.comment,
+          content: post.content,
           profile: build_profile_resource(profile: target_profile.reload, viewer_has_followed: false),
           published_at: post.published_at.iso8601,
           stamps_count: 0,

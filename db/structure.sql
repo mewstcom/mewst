@@ -288,7 +288,7 @@ CREATE TABLE public.oauth_applications (
 CREATE TABLE public.posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
-    comment text NOT NULL,
+    content text NOT NULL,
     stamps_count integer DEFAULT 0 NOT NULL,
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
@@ -1024,6 +1024,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230830155958'),
 ('20231015050126'),
 ('20231025165318'),
-('20231028081207');
+('20231028081207'),
+('20231107174301');
 
 

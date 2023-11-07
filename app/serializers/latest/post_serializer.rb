@@ -4,7 +4,7 @@
 class Latest::PostSerializer < Latest::ApplicationSerializer
   root_key :post, :posts
 
-  attributes :id, :comment, :published_at, :stamps_count, :viewer_has_stamped
+  attributes :id, :content, :published_at, :stamps_count, :viewer_has_stamped
 
   one :profile, resource: Latest::ProfileSerializer
 end

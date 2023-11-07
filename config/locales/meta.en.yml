@@ -10,7 +10,7 @@ en:
       passwords:
         new: Password reset
       posts:
-        show: "%{name} (@%{atname}): %{comment}"
+        show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname})'s profile"
       settings:

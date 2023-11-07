@@ -4,7 +4,7 @@
 FactoryBot.define do
   factory :post do
     profile
-    sequence(:comment) { |n| "test_#{n}" }
+    sequence(:content) { |n| "test_#{n}" }
     published_at { Time.current }
   end
 end

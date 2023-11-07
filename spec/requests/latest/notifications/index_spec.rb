@@ -7,7 +7,7 @@ RSpec.describe "GET /latest/notifications", type: :request, api_version: :latest
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:other_actor) { create(:actor) }
-    let!(:post) { CreatePostUseCase.new.call(viewer:, comment: "Hello").post }
+    let!(:post) { CreatePostUseCase.new.call(viewer:, content: "Hello").post }
 
     before do
       FollowProfileUseCase.new.call(viewer: other_actor, target_profile: viewer.profile)

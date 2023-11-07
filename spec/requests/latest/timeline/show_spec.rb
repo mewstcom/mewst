@@ -7,8 +7,8 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
     let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
-    let!(:form) { Latest::PostForm.new(viewer:, comment: "Hello") }
-    let!(:post) { CreatePostUseCase.new.call(viewer:, comment: form.comment.not_nil!).post }
+    let!(:form) { Latest::PostForm.new(viewer:, content: "Hello") }
+    let!(:post) { CreatePostUseCase.new.call(viewer:, content: form.content.not_nil!).post }
 
     it "タイムラインの投稿を返すこと" do
       get("/latest/timeline", headers:)
@@ -20,7 +20,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
         posts: [
           {
             id: post.id,
-            comment: "Hello",
+            content: "Hello",
             profile: build_profile_resource(profile:, viewer_has_followed: false),
             published_at: post.published_at.iso8601,
             stamps_count: 0,

@@ -5,8 +5,8 @@ class Latest::PostForm < Latest::ApplicationForm
   sig { returns(T.nilable(Actor)) }
   attr_accessor :viewer
 
-  attribute :comment, :string
+  attribute :content, :string
 
-  validates :comment, length: {maximum: Post::MAXIMUM_COMMENT_LENGTH}, presence: true
+  validates :content, length: {maximum: Post::MAXIMUM_CONTENT_LENGTH}, presence: true
   validates :viewer, presence: true
 end

@@ -6,21 +6,21 @@ RSpec.describe Latest::PostForm do
 
   context "入力データが不正なとき" do
     context "投稿内容が空白のとき" do
-      let!(:form) { Latest::PostForm.new(viewer:, comment: "") }
+      let!(:form) { Latest::PostForm.new(viewer:, content: "") }
 
       it "不正なデータとすること" do
         expect(form.invalid?).to be(true)
-        expect(form.errors.where(:comment, :blank)).to be_present
+        expect(form.errors.where(:content, :blank)).to be_present
       end
     end
 
     context "投稿内容が長すぎるとき" do
-      let!(:long_comment) { "a" * (Post::MAXIMUM_COMMENT_LENGTH + 1) }
-      let!(:form) { Latest::PostForm.new(viewer:, comment: long_comment) }
+      let!(:long_content) { "a" * (Post::MAXIMUM_CONTENT_LENGTH + 1) }
+      let!(:form) { Latest::PostForm.new(viewer:, content: long_content) }
 
       it "不正なデータとすること" do
         expect(form.invalid?).to be(true)
-        expect(form.errors.where(:comment, :too_long)).to be_present
+        expect(form.errors.where(:content, :too_long)).to be_present
       end
     end
   end

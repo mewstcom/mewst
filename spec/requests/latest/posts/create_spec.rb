@@ -9,7 +9,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
 
     it "`422` を返すこと" do
       post("/latest/posts", headers:, params: {
-        comment: "a" * 501
+        content: "a" * 501
       })
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -17,8 +17,8 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
         errors: [
           {
             code: "invalid_input_data",
-            field: "comment",
-            message: "Comment is too long (maximum is 500 characters)"
+            field: "content",
+            message: "Content is too long (maximum is 500 characters)"
           }
         ]
       }
@@ -39,7 +39,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
       expect(Post.count).to eq(0)
 
       post("/latest/posts", headers:, params: {
-        comment: "Hello"
+        content: "Hello"
       })
       expect(response).to have_http_status(:created)
 
@@ -49,7 +49,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
       expected = {
         post: {
           id: post.id,
-          comment: "Hello",
+          content: "Hello",
           profile: build_profile_resource(profile:, viewer_has_followed: false),
           published_at: post.published_at.iso8601,
           stamps_count: 0,

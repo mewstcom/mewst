@@ -192,11 +192,11 @@ paths:
             schema:
               type: object
               properties:
-                comment:
+                content:
                   type: string
                   description: ""
               required:
-                - comment
+                - content
       responses:
         '201':
           content:
@@ -502,7 +502,7 @@ components:
       properties:
         id:
           type: string
-        comment:
+        content:
           type: string
         profile:
           $ref: "#/components/schemas/profile"
@@ -515,7 +515,7 @@ components:
           type: boolean
       required:
         - id
-        - comment
+        - content
         - profile
         - published_at
         - stamps_count
