@@ -58,17 +58,12 @@ end
 # source://bootsnap//lib/bootsnap/compile_cache.rb#4
 module Bootsnap::CompileCache
   class << self
-    # @raise [PermissionError]
-    #
-    # source://bootsnap//lib/bootsnap/compile_cache.rb#46
-    def permission_error(path); end
-
-    # source://bootsnap//lib/bootsnap/compile_cache.rb#13
+    # source://bootsnap//lib/bootsnap/compile_cache.rb#12
     def setup(cache_dir:, iseq:, yaml:, json:, readonly: T.unsafe(nil)); end
 
     # @return [Boolean]
     #
-    # source://bootsnap//lib/bootsnap/compile_cache.rb#55
+    # source://bootsnap//lib/bootsnap/compile_cache.rb#45
     def supported?; end
   end
 end
@@ -87,35 +82,40 @@ module Bootsnap::CompileCache::ISeq
     # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#12
     def cache_dir=(cache_dir); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#101
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#103
     def compile_option_updated; end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#59
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#63
     def fetch(path, cache_dir: T.unsafe(nil)); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#76
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#80
     def input_to_output(_data, _kwargs); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#41
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#45
     def input_to_storage(_, path); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#108
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#110
     def install!(cache_dir); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#68
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#72
     def precompile(path); end
 
-    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#48
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#52
     def storage_to_output(binary, _args); end
+
+    # @return [Boolean]
+    #
+    # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#16
+    def supported?; end
   end
 end
 
-# source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#80
+# source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#84
 module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
-  # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#95
+  # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#97
   def compile_option=(hash); end
 
-  # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#81
+  # source://bootsnap//lib/bootsnap/compile_cache/iseq.rb#85
   def load_iseq(path); end
 end
 
@@ -205,9 +205,6 @@ module Bootsnap::CompileCache::Native
   end
 end
 
-# source://bootsnap//lib/bootsnap/compile_cache.rb#11
-class Bootsnap::CompileCache::PermissionError < ::Bootsnap::CompileCache::Error; end
-
 # source://bootsnap//lib/bootsnap/compile_cache.rb#5
 Bootsnap::CompileCache::UNCOMPILABLE = T.let(T.unsafe(nil), BasicObject)
 
@@ -283,26 +280,26 @@ class Bootsnap::CompileCache::YAML::NoTagsVisitor < ::Psych::Visitors::NoAliasRu
   def visit(target); end
 end
 
-# source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#272
+# source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#264
 module Bootsnap::CompileCache::YAML::Psych3
   extend ::Bootsnap::CompileCache::YAML::Psych3
 
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#297
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#289
   def input_to_output(data, kwargs); end
 
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#275
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#267
   def input_to_storage(contents, _); end
 
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#287
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#279
   def storage_to_output(data, kwargs); end
 end
 
-# source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#301
+# source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#293
 module Bootsnap::CompileCache::YAML::Psych3::Patch
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#302
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#294
   def load_file(path, *args, **_arg2); end
 
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#326
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#314
   def unsafe_load_file(path, *args, **_arg2); end
 end
 
@@ -319,7 +316,7 @@ module Bootsnap::CompileCache::YAML::Psych4::Patch
   # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#222
   def load_file(path, *args, **_arg2); end
 
-  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#246
+  # source://bootsnap//lib/bootsnap/compile_cache/yaml.rb#242
   def unsafe_load_file(path, *args, **_arg2); end
 end
 
@@ -440,7 +437,7 @@ class Bootsnap::LoadPathCache::Cache
   # Try to resolve this feature to an absolute path without traversing the
   # loadpath.
   #
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#48
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#56
   def find(feature); end
 
   # What is the path item that contains the dir as child?
@@ -450,49 +447,49 @@ class Bootsnap::LoadPathCache::Cache
   # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#22
   def load_dir(dir); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#108
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#116
   def push_paths(sender, *paths); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#114
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#122
   def reinitialize(path_obj = T.unsafe(nil)); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#102
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#110
   def unshift_paths(sender, *paths); end
 
   private
 
   # @return [Boolean]
   #
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#127
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#135
   def dir_changed?; end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#172
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#180
   def expand_path(feature); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#203
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#211
   def maybe_append_extension(feature); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#180
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#188
   def now; end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#137
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#145
   def push_paths_locked(*paths); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#199
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#207
   def search_index(feature); end
 
   # @return [Boolean]
   #
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#176
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#184
   def stale?; end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#231
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#239
   def try_ext(feature); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#211
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#219
   def try_index(feature); end
 
-  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#155
+  # source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#163
   def unshift_paths_locked(*paths); end
 end
 
@@ -503,16 +500,19 @@ Bootsnap::LoadPathCache::Cache::AGE_THRESHOLD = T.let(T.unsafe(nil), Integer)
 
 # { 'enumerator' => nil, 'enumerator.so' => nil, ... }
 #
-# source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#28
+# source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#32
 Bootsnap::LoadPathCache::Cache::BUILTIN_FEATURES = T.let(T.unsafe(nil), Hash)
+
+# source://bootsnap//lib/bootsnap/load_path_cache/cache.rb#27
+Bootsnap::LoadPathCache::Cache::TRUFFLERUBY_LIB_DIR_PREFIX = T.let(T.unsafe(nil), T.untyped)
 
 # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#5
 module Bootsnap::LoadPathCache::ChangeObserver
   class << self
-    # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#59
+    # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#65
     def register(arr, observer); end
 
-    # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#68
+    # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#74
     def unregister(arr); end
   end
 end
@@ -535,6 +535,9 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
   # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#51
   def clear(*args, &block); end
 
+  # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#58
+  def clone; end
+
   # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#51
   def collect!(*args, &block); end
 
@@ -552,6 +555,9 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
 
   # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#51
   def delete_if(*args, &block); end
+
+  # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#58
+  def dup; end
 
   # source://bootsnap//lib/bootsnap/load_path_cache/change_observer.rb#51
   def fill(*args, &block); end
@@ -860,7 +866,7 @@ Bootsnap::LoadPathCache::PathScanner::ALTERNATIVE_NATIVE_EXTENSIONS_PATTERN = T.
 Bootsnap::LoadPathCache::PathScanner::BUNDLE_PATH = T.let(T.unsafe(nil), String)
 
 # source://bootsnap//lib/bootsnap/load_path_cache/path_scanner.rb#9
-Bootsnap::LoadPathCache::PathScanner::NORMALIZE_NATIVE_EXTENSIONS = T.let(T.unsafe(nil), TrueClass)
+Bootsnap::LoadPathCache::PathScanner::NORMALIZE_NATIVE_EXTENSIONS = T.let(T.unsafe(nil), FalseClass)
 
 # source://bootsnap//lib/bootsnap/load_path_cache/path_scanner.rb#8
 Bootsnap::LoadPathCache::PathScanner::REQUIRABLE_EXTENSIONS = T.let(T.unsafe(nil), Array)
