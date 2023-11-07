@@ -7,7 +7,7 @@ jobs:
     name: Zeitwerk
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
@@ -43,7 +43,7 @@ jobs:
     needs: sorbet-update
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
@@ -55,7 +55,7 @@ jobs:
     name: Standard
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
@@ -95,7 +95,7 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
