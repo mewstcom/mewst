@@ -2204,94 +2204,94 @@ end
 class Tapioca::Gemfile::GemSpec
   include ::Tapioca::GemHelper
 
-  # source://tapioca//lib/tapioca/gemfile.rb#135
+  # source://tapioca//lib/tapioca/gemfile.rb#136
   sig { params(spec: T.any(::Bundler::StubSpecification, ::Gem::Specification)).void }
   def initialize(spec); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#145
+  # source://tapioca//lib/tapioca/gemfile.rb#146
   sig { params(other: ::BasicObject).returns(T::Boolean) }
   def ==(other); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#170
+  # source://tapioca//lib/tapioca/gemfile.rb#171
   sig { params(path: ::String).returns(T::Boolean) }
   def contains_path?(path); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#160
+  # source://tapioca//lib/tapioca/gemfile.rb#161
   sig { returns(T::Array[::Gem::Dependency]) }
   def dependencies; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#189
+  # source://tapioca//lib/tapioca/gemfile.rb#190
   sig { returns(T::Boolean) }
   def export_rbi_files?; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#184
+  # source://tapioca//lib/tapioca/gemfile.rb#185
   sig { returns(T::Array[::String]) }
   def exported_rbi_files; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#194
+  # source://tapioca//lib/tapioca/gemfile.rb#195
   sig { returns(::RBI::MergeTree) }
   def exported_rbi_tree; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#132
+  # source://tapioca//lib/tapioca/gemfile.rb#133
   sig { returns(T::Array[::Pathname]) }
   def files; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#129
+  # source://tapioca//lib/tapioca/gemfile.rb#130
   sig { returns(::String) }
   def full_gem_path; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#150
+  # source://tapioca//lib/tapioca/gemfile.rb#151
   sig { params(gemfile_dir: ::String).returns(T::Boolean) }
   def ignore?(gemfile_dir); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#155
+  # source://tapioca//lib/tapioca/gemfile.rb#156
   sig { returns(::String) }
   def name; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#179
+  # source://tapioca//lib/tapioca/gemfile.rb#180
   sig { void }
   def parse_yard_docs; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#165
+  # source://tapioca//lib/tapioca/gemfile.rb#166
   sig { returns(::String) }
   def rbi_file_name; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#206
+  # source://tapioca//lib/tapioca/gemfile.rb#207
   sig { params(file: ::Pathname).returns(::Pathname) }
   def relative_path_for(file); end
 
   # @return [String]
   #
-  # source://tapioca//lib/tapioca/gemfile.rb#129
+  # source://tapioca//lib/tapioca/gemfile.rb#130
   def version; end
 
   private
 
-  # source://tapioca//lib/tapioca/gemfile.rb#217
+  # source://tapioca//lib/tapioca/gemfile.rb#218
   sig { returns(T::Array[::Pathname]) }
   def collect_files; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#232
+  # source://tapioca//lib/tapioca/gemfile.rb#233
   sig { returns(T.nilable(T::Boolean)) }
   def default_gem?; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#291
+  # source://tapioca//lib/tapioca/gemfile.rb#292
   sig { returns(T::Boolean) }
   def gem_ignored?; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#270
+  # source://tapioca//lib/tapioca/gemfile.rb#271
   sig { params(path: ::String).returns(T::Boolean) }
   def has_parent_gemspec?(path); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#237
+  # source://tapioca//lib/tapioca/gemfile.rb#238
   sig { returns(::Regexp) }
   def require_paths_prefix_matcher; end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#249
+  # source://tapioca//lib/tapioca/gemfile.rb#250
   sig { params(file: ::String).returns(::Pathname) }
   def resolve_to_ruby_lib_dir(file); end
 
-  # source://tapioca//lib/tapioca/gemfile.rb#263
+  # source://tapioca//lib/tapioca/gemfile.rb#264
   sig { returns(::String) }
   def version_string; end
 
