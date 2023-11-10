@@ -14,19 +14,21 @@ FileList = Rake::FileList
 # --
 # This a FileUtils extension that defines several additional commands to be
 # added to the FileUtils utility functions.
+#
+# source://rake//lib/rake/file_utils.rb#8
 module FileUtils
   # Run a Ruby interpreter with the given arguments.
   #
   # Example:
   #   ruby %{-pe '$_.upcase!' <README}
   #
-  # source://rake//lib/rake/file_utils.rb#100
+  # source://rake//lib/rake/file_utils.rb#98
   def ruby(*args, **options, &block); end
 
   # Attempt to do a normal file link, but fall back to a copy if the link
   #  fails.
   #
-  # source://rake//lib/rake/file_utils.rb#112
+  # source://rake//lib/rake/file_utils.rb#110
   def safe_ln(*args, **options); end
 
   # Run the system command +cmd+.  If multiple arguments are given the command
@@ -65,7 +67,7 @@ module FileUtils
   # Example:
   #   split_all("a/b/c") =>  ['a', 'b', 'c']
   #
-  # source://rake//lib/rake/file_utils.rb#128
+  # source://rake//lib/rake/file_utils.rb#126
   def split_all(path); end
 
   private
@@ -73,14 +75,14 @@ module FileUtils
   # source://rake//lib/rake/file_utils.rb#61
   def create_shell_runner(cmd); end
 
-  # source://rake//lib/rake/file_utils.rb#86
+  # source://rake//lib/rake/file_utils.rb#84
   def set_verbose_option(options); end
 
-  # source://rake//lib/rake/file_utils.rb#73
+  # source://rake//lib/rake/file_utils.rb#71
   def sh_show_command(cmd); end
 end
 
-# source://rake//lib/rake/file_utils.rb#108
+# source://rake//lib/rake/file_utils.rb#106
 FileUtils::LN_SUPPORTED = T.let(T.unsafe(nil), Array)
 
 # Path to the currently running Ruby program
@@ -88,9 +90,8 @@ FileUtils::LN_SUPPORTED = T.let(T.unsafe(nil), Array)
 # source://rake//lib/rake/file_utils.rb#10
 FileUtils::RUBY = T.let(T.unsafe(nil), String)
 
+# source://rake//lib/rake/ext/core.rb#2
 class Module
-  include ::Module::Concerning
-
   # Check for an existing method in the current class before extending.  If
   # the method already exists, then a warning is printed and the extension is
   # not added.  Otherwise the block is yielded and any definitions in the
@@ -110,17 +111,7 @@ class Module
   def rake_extension(method); end
 end
 
-# source://activesupport/7.0.4/lib/active_support/core_ext/module/delegation.rb#13
-Module::DELEGATION_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
-
-# source://activesupport/7.0.4/lib/active_support/core_ext/module/delegation.rb#14
-Module::DELEGATION_RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
-
-class Module::DelegationError < ::NoMethodError; end
-
-# source://activesupport/7.0.4/lib/active_support/core_ext/module/delegation.rb#10
-Module::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
-
+# source://rake//lib/rake.rb#24
 module Rake
   extend ::FileUtils::StreamUtils_
   extend ::FileUtils
@@ -189,6 +180,8 @@ end
 
 # Rake main application object.  When invoking +rake+ from the
 # command line, a Rake::Application object is created and run.
+#
+# source://rake//lib/rake/application.rb#19
 class Rake::Application
   include ::Rake::TaskManager
   include ::Rake::TraceOutput
@@ -202,13 +195,13 @@ class Rake::Application
 
   # Add a file to the list of files to be imported.
   #
-  # source://rake//lib/rake/application.rb#777
+  # source://rake//lib/rake/application.rb#801
   def add_import(fn); end
 
   # Add a loader to handle imported files ending in the extension
   # +ext+.
   #
-  # source://rake//lib/rake/application.rb#139
+  # source://rake//lib/rake/application.rb#161
   def add_loader(ext, loader); end
 
   # Collect the list of tasks on the command line.  If no tasks are
@@ -220,13 +213,13 @@ class Rake::Application
   # recognised command-line options, which OptionParser.parse will
   # have taken care of already.
   #
-  # source://rake//lib/rake/application.rb#758
+  # source://rake//lib/rake/application.rb#782
   def collect_command_line_tasks(args); end
 
   # Default task name ("default").
   # (May be overridden by subclasses)
   #
-  # source://rake//lib/rake/application.rb#772
+  # source://rake//lib/rake/application.rb#796
   def default_task_name; end
 
   # Warn about deprecated usage.
@@ -234,75 +227,75 @@ class Rake::Application
   # Example:
   #    Rake.application.deprecate("import", "Rake.import", caller.first)
   #
-  # source://rake//lib/rake/application.rb#258
+  # source://rake//lib/rake/application.rb#282
   def deprecate(old_usage, new_usage, call_site); end
 
-  # source://rake//lib/rake/application.rb#222
+  # source://rake//lib/rake/application.rb#244
   def display_cause_details(ex); end
 
   # Display the error message that caused the exception.
   #
-  # source://rake//lib/rake/application.rb#206
+  # source://sentry-ruby/5.12.0/lib/sentry/rake.rb#10
   def display_error_message(ex); end
 
-  # source://rake//lib/rake/application.rb#245
+  # source://rake//lib/rake/application.rb#269
   def display_exception_backtrace(ex); end
 
-  # source://rake//lib/rake/application.rb#214
+  # source://rake//lib/rake/application.rb#236
   def display_exception_details(ex); end
 
-  # source://rake//lib/rake/application.rb#229
+  # source://rake//lib/rake/application.rb#251
   def display_exception_details_seen; end
 
-  # source://rake//lib/rake/application.rb#237
+  # source://rake//lib/rake/application.rb#259
   def display_exception_message_details(ex); end
 
   # Display the tasks and prerequisites
   #
-  # source://rake//lib/rake/application.rb#381
+  # source://rake//lib/rake/application.rb#405
   def display_prerequisites; end
 
   # Display the tasks and comments.
   #
-  # source://rake//lib/rake/application.rb#298
+  # source://rake//lib/rake/application.rb#322
   def display_tasks_and_comments; end
 
   # Calculate the dynamic width of the
   #
-  # source://rake//lib/rake/application.rb#349
+  # source://rake//lib/rake/application.rb#373
   def dynamic_width; end
 
-  # source://rake//lib/rake/application.rb#353
+  # source://rake//lib/rake/application.rb#377
   def dynamic_width_stty; end
 
-  # source://rake//lib/rake/application.rb#357
+  # source://rake//lib/rake/application.rb#381
   def dynamic_width_tput; end
 
   # Exit the program because of an unhandled exception.
   # (may be overridden by subclasses)
   #
-  # source://rake//lib/rake/application.rb#201
+  # source://rake//lib/rake/application.rb#223
   def exit_because_of_exception(ex); end
 
-  # source://rake//lib/rake/application.rb#678
+  # source://rake//lib/rake/application.rb#702
   def find_rakefile_location; end
 
   # Read and handle the command line options.  Returns the command line
   # arguments that we didn't understand, which should (in theory) be just
   # task names and env vars.
   #
-  # source://rake//lib/rake/application.rb#644
+  # source://rake//lib/rake/application.rb#668
   def handle_options(argv); end
 
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#233
+  # source://rake//lib/rake/application.rb#255
   def has_cause?(ex); end
 
   # True if one of the files in RAKEFILES is in the current directory.
   # If a match is found, it is copied into @rakefile.
   #
-  # source://rake//lib/rake/application.rb#274
+  # source://rake//lib/rake/application.rb#298
   def have_rakefile; end
 
   # Initialize the command line parameters and app name.
@@ -312,17 +305,17 @@ class Rake::Application
 
   # Invokes a task with arguments that are extracted from +task_string+
   #
-  # source://rake//lib/rake/application.rb#157
+  # source://rake//lib/rake/application.rb#179
   def invoke_task(task_string); end
 
   # Load the pending list of imported files.
   #
-  # source://rake//lib/rake/application.rb#782
+  # source://rake//lib/rake/application.rb#806
   def load_imports; end
 
   # Find the rakefile and then load it and any pending imports.
   #
-  # source://rake//lib/rake/application.rb#102
+  # source://rake//lib/rake/application.rb#124
   def load_rakefile; end
 
   # The name of the application (typically 'rake')
@@ -332,7 +325,7 @@ class Rake::Application
 
   # Application options from the command line
   #
-  # source://rake//lib/rake/application.rb#145
+  # source://rake//lib/rake/application.rb#167
   def options; end
 
   # The original directory where rake was invoked.
@@ -340,16 +333,16 @@ class Rake::Application
   # source://rake//lib/rake/application.rb#27
   def original_dir; end
 
-  # source://rake//lib/rake/application.rb#163
+  # source://rake//lib/rake/application.rb#185
   def parse_task_string(string); end
 
-  # source://rake//lib/rake/application.rb#690
+  # source://rake//lib/rake/application.rb#714
   def print_rakefile_directory(location); end
 
   # Similar to the regular Ruby +require+ command, but will check
   # for *.rake files in addition to *.rb files.
   #
-  # source://rake//lib/rake/application.rb#664
+  # source://rake//lib/rake/application.rb#688
   def rake_require(file_name, paths = T.unsafe(nil), loaded = T.unsafe(nil)); end
 
   # Name of the actual rakefile used.
@@ -357,10 +350,10 @@ class Rake::Application
   # source://rake//lib/rake/application.rb#30
   def rakefile; end
 
-  # source://rake//lib/rake/application.rb#798
+  # source://rake//lib/rake/application.rb#822
   def rakefile_location(backtrace = T.unsafe(nil)); end
 
-  # source://rake//lib/rake/application.rb#695
+  # source://rake//lib/rake/application.rb#719
   def raw_load_rakefile; end
 
   # Run the Rake application.  The run method performs the following
@@ -379,26 +372,26 @@ class Rake::Application
 
   # Run the given block with the thread startup and shutdown.
   #
-  # source://rake//lib/rake/application.rb#122
+  # source://rake//lib/rake/application.rb#144
   def run_with_threads; end
 
-  # source://rake//lib/rake/application.rb#807
+  # source://rake//lib/rake/application.rb#831
   def set_default_options; end
 
   # Provide standard exception handling for the given block.
   #
-  # source://rake//lib/rake/application.rb#185
+  # source://rake//lib/rake/application.rb#207
   def standard_exception_handling; end
 
   # A list of all the standard options used in rake, suitable for
   # passing to OptionParser.
   #
-  # source://rake//lib/rake/application.rb#402
+  # source://rake//lib/rake/application.rb#426
   def standard_rake_options; end
 
   # The directory path containing the system wide rakefiles.
   #
-  # source://rake//lib/rake/application.rb#727
+  # source://rake//lib/rake/application.rb#751
   def system_dir; end
 
   # Number of columns on the terminal
@@ -411,17 +404,17 @@ class Rake::Application
   # source://rake//lib/rake/application.rb#33
   def terminal_columns=(_arg0); end
 
-  # source://rake//lib/rake/application.rb#337
+  # source://rake//lib/rake/application.rb#361
   def terminal_width; end
 
   # Return the thread pool used for multithreaded processing.
   #
-  # source://rake//lib/rake/application.rb#150
+  # source://rake//lib/rake/application.rb#172
   def thread_pool; end
 
   # Run the top level tasks of a Rake application.
   #
-  # source://rake//lib/rake/application.rb#109
+  # source://rake//lib/rake/application.rb#131
   def top_level; end
 
   # List of the top level task names (task names from the command line).
@@ -429,10 +422,10 @@ class Rake::Application
   # source://rake//lib/rake/application.rb#36
   def top_level_tasks; end
 
-  # source://rake//lib/rake/application.rb#388
+  # source://rake//lib/rake/application.rb#412
   def trace(*strings); end
 
-  # source://rake//lib/rake/application.rb#370
+  # source://rake//lib/rake/application.rb#394
   def truncate(string, width); end
 
   # We will truncate output if we are outputting to a TTY or if we've been
@@ -440,7 +433,7 @@ class Rake::Application
   #
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#293
+  # source://rake//lib/rake/application.rb#317
   def truncate_output?; end
 
   # Override the detected TTY output state (mostly for testing)
@@ -452,47 +445,51 @@ class Rake::Application
   #
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#287
+  # source://rake//lib/rake/application.rb#311
   def tty_output?; end
 
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#361
+  # source://rake//lib/rake/application.rb#385
   def unix?; end
 
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#366
+  # source://rake//lib/rake/application.rb#390
   def windows?; end
 
   private
 
-  # source://rake//lib/rake/application.rb#721
+  # source://rake//lib/rake/application.rb#745
   def glob(path, &block); end
 
   # Does the exception have a task invocation chain?
   #
   # @return [Boolean]
   #
-  # source://rake//lib/rake/application.rb#267
+  # source://rake//lib/rake/application.rb#291
   def has_chain?(exception); end
 
-  # source://rake//lib/rake/application.rb#620
+  # source://rake//lib/rake/application.rb#102
+  def load_debug_at_stop_feature; end
+
+  # source://rake//lib/rake/application.rb#644
   def select_tasks_to_show(options, show_tasks, value); end
 
-  # source://rake//lib/rake/application.rb#627
+  # source://rake//lib/rake/application.rb#651
   def select_trace_output(options, trace_option, value); end
 
-  # source://rake//lib/rake/application.rb#393
+  # source://rake//lib/rake/application.rb#417
   def sort_options(options); end
 
-  # source://rake//lib/rake/application.rb#744
+  # source://rake//lib/rake/application.rb#768
   def standard_system_dir; end
 end
 
 # source://rake//lib/rake/application.rb#41
 Rake::Application::DEFAULT_RAKEFILES = T.let(T.unsafe(nil), Array)
 
+# source://rake//lib/rake/backtrace.rb#3
 module Rake::Backtrace
   class << self
     # source://rake//lib/rake/backtrace.rb#18
@@ -516,6 +513,8 @@ Rake::Backtrace::SYS_KEYS = T.let(T.unsafe(nil), Array)
 Rake::Backtrace::SYS_PATHS = T.let(T.unsafe(nil), Array)
 
 # Mixin for creating easily cloned objects.
+#
+# source://rake//lib/rake/cloneable.rb#6
 module Rake::Cloneable
   private
 
@@ -525,10 +524,13 @@ module Rake::Cloneable
   def initialize_copy(source); end
 end
 
+# source://rake//lib/rake/application.rb#13
 class Rake::CommandLineOptionError < ::StandardError; end
 
 # Based on a script at:
 #   http://stackoverflow.com/questions/891537/ruby-detect-number-of-cpus-installed
+#
+# source://rake//lib/rake/cpu_counter.rb#6
 class Rake::CpuCounter
   # source://rake//lib/rake/cpu_counter.rb#22
   def count; end
@@ -547,6 +549,8 @@ end
 #
 # For a Rakefile you run from the command line this module is automatically
 # included.
+#
+# source://rake//lib/rake/dsl_definition.rb#14
 module Rake::DSL
   include ::FileUtils::StreamUtils_
   include ::FileUtils
@@ -554,13 +558,43 @@ module Rake::DSL
 
   private
 
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def cd(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def chdir(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def chmod(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def chmod_R(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def chown(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def chown_R(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def copy(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def cp(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def cp_lr(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def cp_r(*args, **options, &block); end
+
   # Describes the next rake task.  Duplicate descriptions are discarded.
   # Descriptions are shown with <code>rake -T</code> (up to the first
   # sentence) and <code>rake -D</code> (the entire description).
   #
   # Example:
   #   desc "Run the Unit Tests"
-  #   task test: [:build]
+  #   task test: [:build] do
   #     # ... run tests
   #   end
   #
@@ -615,6 +649,39 @@ module Rake::DSL
   # source://rake//lib/rake/dsl_definition.rb#183
   def import(*fns); end
 
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def install(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def link(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_s(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_sf(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_sr(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def makedirs(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def mkdir(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def mkdir_p(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def mkpath(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def move(*args, **options, &block); end
+
   # Declare a task that performs its prerequisites in
   # parallel. Multitasks does *not* guarantee that its prerequisites
   # will execute in any given order (which is obvious when you think
@@ -625,6 +692,9 @@ module Rake::DSL
   #
   # source://rake//lib/rake/dsl_definition.rb#112
   def multitask(*args, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def mv(*args, **options, &block); end
 
   # Create a new rake namespace and use it for evaluating the given
   # block.  Returns a NameSpace object that can be used to lookup
@@ -648,6 +718,39 @@ module Rake::DSL
   # source://rake//lib/rake/dsl_definition.rb#135
   def namespace(name = T.unsafe(nil), &block); end
 
+  # source://rake//lib/rake/file_utils_ext.rb#77
+  def nowrite(value = T.unsafe(nil)); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#123
+  def rake_check_options(options, *optdecl); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#116
+  def rake_output_message(message); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def remove(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rm(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rm_f(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rm_r(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rm_rf(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rmdir(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def rmtree(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils.rb#98
+  def ruby(*args, **options, &block); end
+
   # Declare a rule for auto-tasks.
   #
   # Example:
@@ -657,6 +760,21 @@ module Rake::DSL
   #
   # source://rake//lib/rake/dsl_definition.rb#151
   def rule(*args, &block); end
+
+  # source://rake//lib/rake/file_utils.rb#110
+  def safe_ln(*args, **options); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def safe_unlink(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils.rb#43
+  def sh(*cmd, &block); end
+
+  # source://rake//lib/rake/file_utils.rb#126
+  def split_all(path); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def symlink(*args, **options, &block); end
 
   # :call-seq:
   #   task(task_name)
@@ -691,9 +809,20 @@ module Rake::DSL
   #
   # source://rake//lib/rake/dsl_definition.rb#59
   def task(*args, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def touch(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#53
+  def verbose(value = T.unsafe(nil)); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#107
+  def when_writing(msg = T.unsafe(nil)); end
 end
 
 # Default Rakefile loader used by +import+.
+#
+# source://rake//lib/rake/default_loader.rb#5
 class Rake::DefaultLoader
   # Loads a rakefile into the current application from +fn+
   #
@@ -708,6 +837,8 @@ Rake::EARLY = T.let(T.unsafe(nil), Rake::EarlyTime)
 Rake::EMPTY_TASK_ARGS = T.let(T.unsafe(nil), Rake::TaskArguments)
 
 # EarlyTime is a fake timestamp that occurs _before_ any other time value.
+#
+# source://rake//lib/rake/early_time.rb#5
 class Rake::EarlyTime
   include ::Comparable
   include ::Singleton
@@ -720,12 +851,21 @@ class Rake::EarlyTime
 
   # source://rake//lib/rake/early_time.rb#16
   def to_s; end
+
+  class << self
+    private
+
+    def allocate; end
+    def new(*_arg0); end
+  end
 end
 
 # A FileCreationTask is a file task that when used as a dependency will be
 # needed if and only if the file has not been created.  Once created, it is
 # not re-triggered if any of its dependencies are newer, nor does trigger
 # any rebuilds of tasks that depend on it whenever it is updated.
+#
+# source://rake//lib/rake/file_creation_task.rb#12
 class Rake::FileCreationTask < ::Rake::FileTask
   # Is this file task needed?  Yes if it doesn't exist.
   #
@@ -753,6 +893,8 @@ end
 # actually used.  The key is that the first time an element of the
 # FileList/Array is requested, the pending patterns are resolved into a real
 # list of file names.
+#
+# source://rake//lib/rake/file_list.rb#22
 class Rake::FileList
   include ::Rake::Cloneable
 
@@ -1521,6 +1663,8 @@ Rake::FileList::SPECIAL_RETURN = T.let(T.unsafe(nil), Array)
 # FileTask's prerequisites have a timestamp that is later than the file
 # represented by this task, then the file must be rebuilt (using the
 # supplied actions).
+#
+# source://rake//lib/rake/file_task.rb#12
 class Rake::FileTask < ::Rake::Task
   # Is this file task needed?  Yes if it doesn't exist, or if its time stamp
   # is out of date.
@@ -1532,7 +1676,7 @@ class Rake::FileTask < ::Rake::Task
 
   # Time stamp for file task.
   #
-  # source://rake//lib/rake/file_task.rb#21
+  # source://rake//lib/rake/file_task.rb#25
   def timestamp; end
 
   private
@@ -1541,14 +1685,14 @@ class Rake::FileTask < ::Rake::Task
   #
   # @return [Boolean]
   #
-  # source://rake//lib/rake/file_task.rb#32
+  # source://rake//lib/rake/file_task.rb#36
   def out_of_date?(stamp); end
 
   class << self
     # Apply the scope to the task name according to the rules for this kind
     # of task.  File based tasks ignore the scope when creating the name.
     #
-    # source://rake//lib/rake/file_task.rb#49
+    # source://rake//lib/rake/file_task.rb#53
     def scope_name(scope, task_name); end
   end
 end
@@ -1556,6 +1700,8 @@ end
 # FileUtilsExt provides a custom version of the FileUtils methods
 # that respond to the <tt>verbose</tt> and <tt>nowrite</tt>
 # commands.
+#
+# source://rake//lib/rake/file_utils_ext.rb#10
 module Rake::FileUtilsExt
   include ::FileUtils::StreamUtils_
   include ::FileUtils
@@ -1607,6 +1753,9 @@ module Rake::FileUtilsExt
 
   # source://rake//lib/rake/file_utils_ext.rb#34
   def ln_sf(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_sr(*args, **options, &block); end
 
   # source://rake//lib/rake/file_utils_ext.rb#34
   def makedirs(*args, **options, &block); end
@@ -1752,6 +1901,8 @@ Rake::FileUtilsExt::DEFAULT = T.let(T.unsafe(nil), Object)
 
 # InvocationChain tracks the chain of task invocations to detect
 # circular dependencies.
+#
+# source://rake//lib/rake/invocation_chain.rb#6
 class Rake::InvocationChain < ::Rake::LinkedList
   # Append an invocation to the chain of invocations. It is an error
   # if the invocation already listed.
@@ -1788,6 +1939,8 @@ end
 Rake::InvocationChain::EMPTY = T.let(T.unsafe(nil), Rake::InvocationChain::EmptyInvocationChain)
 
 # Null object for an empty chain.
+#
+# source://rake//lib/rake/invocation_chain.rb#39
 class Rake::InvocationChain::EmptyInvocationChain < ::Rake::LinkedList::EmptyLinkedList
   # source://rake//lib/rake/invocation_chain.rb#46
   def append(invocation); end
@@ -1801,6 +1954,7 @@ class Rake::InvocationChain::EmptyInvocationChain < ::Rake::LinkedList::EmptyLin
   def to_s; end
 end
 
+# source://rake//lib/rake/invocation_exception_mixin.rb#3
 module Rake::InvocationExceptionMixin
   # Return the invocation chain (list of Rake tasks) that were in
   # effect when this exception was detected by rake.  May be null if
@@ -1820,6 +1974,8 @@ end
 Rake::LATE = T.let(T.unsafe(nil), Rake::LateTime)
 
 # LateTime is a fake timestamp that occurs _after_ any other time value.
+#
+# source://rake//lib/rake/late_time.rb#4
 class Rake::LateTime
   include ::Comparable
   include ::Singleton
@@ -1830,10 +1986,19 @@ class Rake::LateTime
 
   # source://rake//lib/rake/late_time.rb#12
   def to_s; end
+
+  class << self
+    private
+
+    def allocate; end
+    def new(*_arg0); end
+  end
 end
 
 # Polylithic linked list structure used to implement several data
 # structures in Rake.
+#
+# source://rake//lib/rake/linked_list.rb#6
 class Rake::LinkedList
   include ::Enumerable
 
@@ -1916,6 +2081,8 @@ Rake::LinkedList::EMPTY = T.let(T.unsafe(nil), Rake::LinkedList::EmptyLinkedList
 # a type specific Empty class as well. Make sure you set the class
 # instance variable @parent to the associated list class (this
 # allows conj, cons and make to work polymorphically).
+#
+# source://rake//lib/rake/linked_list.rb#95
 class Rake::LinkedList::EmptyLinkedList < ::Rake::LinkedList
   # @return [EmptyLinkedList] a new instance of EmptyLinkedList
   #
@@ -1935,6 +2102,8 @@ end
 
 # Same as a regular task, but the immediate prerequisites are done in
 # parallel using Ruby threads.
+#
+# source://rake//lib/rake/multi_task.rb#7
 class Rake::MultiTask < ::Rake::Task
   private
 
@@ -1944,6 +2113,8 @@ end
 
 # The NameSpace class will lookup task names in the scope defined by a
 # +namespace+ command.
+#
+# source://rake//lib/rake/name_space.rb#6
 class Rake::NameSpace
   # Create a namespace lookup object using the given task manager
   # and the list of scopes.
@@ -1970,6 +2141,8 @@ class Rake::NameSpace
 end
 
 # Include PrivateReader to use +private_reader+.
+#
+# source://rake//lib/rake/private_reader.rb#5
 module Rake::PrivateReader
   mixes_in_class_methods ::Rake::PrivateReader::ClassMethods
 
@@ -1979,6 +2152,7 @@ module Rake::PrivateReader
   end
 end
 
+# source://rake//lib/rake/private_reader.rb#11
 module Rake::PrivateReader::ClassMethods
   # Declare a list of private accessors
   #
@@ -1992,6 +2166,8 @@ end
 # the promised chore.
 #
 # Used by ThreadPool.
+#
+# source://rake//lib/rake/promise.rb#11
 class Rake::Promise
   # Create a promise to do the chore specified by the block.
   #
@@ -2062,6 +2238,8 @@ end
 Rake::Promise::NOT_SET = T.let(T.unsafe(nil), Object)
 
 # Exit status class for times the system just gives us a nil.
+#
+# source://rake//lib/rake/pseudo_status.rb#6
 class Rake::PseudoStatus
   # @return [PseudoStatus] a new instance of PseudoStatus
   #
@@ -2089,6 +2267,8 @@ class Rake::PseudoStatus
 end
 
 # Error indicating a recursion overflow error in task selection.
+#
+# source://rake//lib/rake/rule_recursion_overflow_error.rb#5
 class Rake::RuleRecursionOverflowError < ::StandardError
   # @return [RuleRecursionOverflowError] a new instance of RuleRecursionOverflowError
   #
@@ -2102,6 +2282,7 @@ class Rake::RuleRecursionOverflowError < ::StandardError
   def message; end
 end
 
+# source://rake//lib/rake/scope.rb#3
 class Rake::Scope < ::Rake::LinkedList
   # Path for the scope.
   #
@@ -2127,6 +2308,8 @@ Rake::Scope::EMPTY = T.let(T.unsafe(nil), Rake::Scope::EmptyScope)
 
 # Scope lists always end with an EmptyScope object. See Null
 # Object Pattern)
+#
+# source://rake//lib/rake/scope.rb#28
 class Rake::Scope::EmptyScope < ::Rake::LinkedList::EmptyLinkedList
   # source://rake//lib/rake/scope.rb#31
   def path; end
@@ -2142,6 +2325,8 @@ end
 #
 # Tasks are not usually created directly using the new method, but rather
 # use the +file+ and +task+ convenience methods.
+#
+# source://rake//lib/rake/task.rb#15
 class Rake::Task
   # Create a task named +task_name+ with no actions or prerequisites. Use
   # +enhance+ to add actions and prerequisites.
@@ -2236,7 +2421,7 @@ class Rake::Task
 
   # Execute the actions associated with this task.
   #
-  # source://rake//lib/rake/task.rb#270
+  # source://sentry-ruby/5.12.0/lib/sentry/rake.rb#23
   def execute(args = T.unsafe(nil)); end
 
   # Full collection of comments. Multiple comments are separated by
@@ -2457,9 +2642,13 @@ class Rake::Task
 end
 
 # Error indicating an ill-formed task declaration.
+#
+# source://rake//lib/rake/task_argument_error.rb#5
 class Rake::TaskArgumentError < ::ArgumentError; end
 
 # TaskArguments manage the arguments passed to a task.
+#
+# source://rake//lib/rake/task_arguments.rb#7
 class Rake::TaskArguments
   include ::Enumerable
 
@@ -2554,6 +2743,8 @@ class Rake::TaskArguments
 end
 
 # Base class for Task Libraries.
+#
+# source://rake//lib/rake/tasklib.rb#7
 class Rake::TaskLib
   include ::Rake::Cloneable
   include ::FileUtils::StreamUtils_
@@ -2563,6 +2754,8 @@ class Rake::TaskLib
 end
 
 # The TaskManager module is a mixin for managing tasks.
+#
+# source://rake//lib/rake/task_manager.rb#5
 module Rake::TaskManager
   # source://rake//lib/rake/task_manager.rb#9
   def initialize; end
@@ -2729,6 +2922,7 @@ module Rake::TaskManager
   end
 end
 
+# source://rake//lib/rake/thread_history_display.rb#6
 class Rake::ThreadHistoryDisplay
   include ::Rake::PrivateReader
   extend ::Rake::PrivateReader::ClassMethods
@@ -2756,13 +2950,14 @@ class Rake::ThreadHistoryDisplay
   def threads; end
 end
 
+# source://rake//lib/rake/thread_pool.rb#8
 class Rake::ThreadPool
   # Creates a ThreadPool object.  The +thread_count+ parameter is the size
   # of the pool.
   #
   # @return [ThreadPool] a new instance of ThreadPool
   #
-  # source://rake//lib/rake/thread_pool.rb#11
+  # source://rake//lib/rake/thread_pool.rb#12
   def initialize(thread_count); end
 
   # Creates a future executed by the +ThreadPool+.
@@ -2824,6 +3019,7 @@ class Rake::ThreadPool
   def stat(event, data = T.unsafe(nil)); end
 end
 
+# source://rake//lib/rake/trace_output.rb#3
 module Rake::TraceOutput
   # Write trace output to output stream +out+.
   #
@@ -2838,6 +3034,7 @@ end
 # source://rake//lib/rake/version.rb#3
 Rake::VERSION = T.let(T.unsafe(nil), String)
 
+# source://rake//lib/rake/version.rb#5
 module Rake::Version; end
 
 # source://rake//lib/rake/version.rb#6
@@ -2857,6 +3054,8 @@ Rake::Version::OTHER = T.let(T.unsafe(nil), Array)
 
 # Win 32 interface methods for Rake. Windows specific functionality
 # will be placed here to collect that knowledge in one spot.
+#
+# source://rake//lib/rake/win32.rb#7
 module Rake::Win32
   class << self
     # Normalize a win32 path so that the slashes are all forward slashes.
@@ -2891,14 +3090,16 @@ end
 
 # Error indicating a problem in locating the home directory on a
 # Win32 system.
+#
+# source://rake//lib/rake/win32.rb#11
 class Rake::Win32::Win32HomeError < ::RuntimeError; end
 
 # source://rake//lib/rake.rb#71
 RakeFileUtils = Rake::FileUtilsExt
 
+# source://rake//lib/rake/ext/string.rb#4
 class String
   include ::Comparable
-  include ::MessagePack::CoreExt
 
   # source://rake//lib/rake/ext/string.rb#14
   def ext(newext = T.unsafe(nil)); end
@@ -2917,9 +3118,3 @@ class String
   # source://rake//lib/rake/ext/string.rb#59
   def pathmap_replace(patterns, &block); end
 end
-
-# source://activesupport/7.0.4/lib/active_support/core_ext/object/blank.rb#104
-String::BLANK_RE = T.let(T.unsafe(nil), Regexp)
-
-# source://activesupport/7.0.4/lib/active_support/core_ext/object/blank.rb#105
-String::ENCODED_BLANKS = T.let(T.unsafe(nil), Concurrent::Map)
