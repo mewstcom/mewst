@@ -79,7 +79,7 @@ end
 
 # source://fugit//lib/fugit/cron.rb#5
 class Fugit::Cron
-  # source://fugit//lib/fugit/cron.rb#433
+  # source://fugit//lib/fugit/cron.rb#431
   def ==(o); end
 
   # Mostly used as a #next_time sanity check.
@@ -90,23 +90,23 @@ class Fugit::Cron
   #
   # Nota bene: cron with seconds are not supported.
   #
-  # source://fugit//lib/fugit/cron.rb#331
+  # source://fugit//lib/fugit/cron.rb#329
   def brute_frequency(year = T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#200
+  # source://fugit//lib/fugit/cron.rb#198
   def day_match?(nt); end
 
-  # source://fugit//lib/fugit/cron.rb#433
+  # source://fugit//lib/fugit/cron.rb#431
   def eql?(o); end
 
-  # source://fugit//lib/fugit/cron.rb#439
+  # source://fugit//lib/fugit/cron.rb#437
   def hash; end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#153
+  # source://fugit//lib/fugit/cron.rb#151
   def hour_match?(nt); end
 
   # Returns the value of attribute hours.
@@ -116,12 +116,12 @@ class Fugit::Cron
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#230
+  # source://fugit//lib/fugit/cron.rb#228
   def match?(t); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#154
+  # source://fugit//lib/fugit/cron.rb#152
   def min_match?(nt); end
 
   # Returns the value of attribute minutes.
@@ -131,12 +131,12 @@ class Fugit::Cron
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#152
+  # source://fugit//lib/fugit/cron.rb#150
   def month_match?(nt); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#189
+  # source://fugit//lib/fugit/cron.rb#187
   def monthday_match?(nt); end
 
   # Returns the value of attribute monthdays.
@@ -156,7 +156,7 @@ class Fugit::Cron
   # gh-18 and noticing some > 1024 for some experiments. 2048 should
   # be ok.
   #
-  # source://fugit//lib/fugit/cron.rb#247
+  # source://fugit//lib/fugit/cron.rb#245
   def next_time(from = T.unsafe(nil)); end
 
   # Returns the value of attribute original.
@@ -164,15 +164,15 @@ class Fugit::Cron
   # source://fugit//lib/fugit/cron.rb#20
   def original; end
 
-  # source://fugit//lib/fugit/cron.rb#297
+  # source://fugit//lib/fugit/cron.rb#295
   def previous_time(from = T.unsafe(nil)); end
 
-  # source://fugit//lib/fugit/cron.rb#361
+  # source://fugit//lib/fugit/cron.rb#359
   def rough_frequency; end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#155
+  # source://fugit//lib/fugit/cron.rb#153
   def sec_match?(nt); end
 
   # Returns the value of attribute seconds.
@@ -185,28 +185,28 @@ class Fugit::Cron
   # source://fugit//lib/fugit/cron.rb#22
   def timezone; end
 
-  # source://fugit//lib/fugit/cron.rb#418
+  # source://fugit//lib/fugit/cron.rb#416
   def to_a; end
 
-  # source://fugit//lib/fugit/cron.rb#55
+  # source://fugit//lib/fugit/cron.rb#53
   def to_cron_s; end
 
-  # source://fugit//lib/fugit/cron.rb#423
+  # source://fugit//lib/fugit/cron.rb#421
   def to_h; end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#157
+  # source://fugit//lib/fugit/cron.rb#155
   def weekday_hash_match?(nt, hsh); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#173
+  # source://fugit//lib/fugit/cron.rb#171
   def weekday_match?(nt); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#168
+  # source://fugit//lib/fugit/cron.rb#166
   def weekday_modulo_match?(nt, mod); end
 
   # Returns the value of attribute weekdays.
@@ -221,50 +221,50 @@ class Fugit::Cron
 
   protected
 
-  # source://fugit//lib/fugit/cron.rb#566
-  def compact(key); end
-
-  # source://fugit//lib/fugit/cron.rb#446
+  # source://fugit//lib/fugit/cron.rb#444
   def compact_month_days; end
 
-  # source://fugit//lib/fugit/cron.rb#587
+  # source://fugit//lib/fugit/cron.rb#595
   def determine_hours(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#582
+  # source://fugit//lib/fugit/cron.rb#591
   def determine_minutes(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#594
+  # source://fugit//lib/fugit/cron.rb#599
   def determine_monthdays(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#599
+  # source://fugit//lib/fugit/cron.rb#603
   def determine_months(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#577
+  # source://fugit//lib/fugit/cron.rb#587
   def determine_seconds(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#629
+  # source://fugit//lib/fugit/cron.rb#634
   def determine_timezone(z); end
 
-  # source://fugit//lib/fugit/cron.rb#604
+  # source://fugit//lib/fugit/cron.rb#607
   def determine_weekdays(arr); end
 
-  # source://fugit//lib/fugit/cron.rb#508
+  # source://fugit//lib/fugit/cron.rb#570
+  def do_determine(key, arr, min, max); end
+
+  # source://fugit//lib/fugit/cron.rb#510
   def expand(min, max, r); end
 
-  # source://fugit//lib/fugit/cron.rb#489
+  # source://fugit//lib/fugit/cron.rb#487
   def init(original, h); end
 
-  # source://fugit//lib/fugit/cron.rb#524
+  # source://fugit//lib/fugit/cron.rb#528
   def range(min, max, sta, edn, sla); end
 
-  # source://fugit//lib/fugit/cron.rb#462
+  # source://fugit//lib/fugit/cron.rb#460
   def rough_days; end
 
-  # source://fugit//lib/fugit/cron.rb#634
+  # source://fugit//lib/fugit/cron.rb#641
   def weekdays_to_cron_s; end
 
   class << self
-    # source://fugit//lib/fugit/cron.rb#48
+    # source://fugit//lib/fugit/cron.rb#46
     def do_parse(s); end
 
     # source://fugit//lib/fugit/cron.rb#27
@@ -275,381 +275,381 @@ class Fugit::Cron
   end
 end
 
-# source://fugit//lib/fugit/cron.rb#487
+# source://fugit//lib/fugit/cron.rb#485
 Fugit::Cron::FREQUENCY_CACHE = T.let(T.unsafe(nil), Hash)
 
-# source://fugit//lib/fugit/cron.rb#390
+# source://fugit//lib/fugit/cron.rb#388
 class Fugit::Cron::Frequency
   # @return [Frequency] a new instance of Frequency
   #
-  # source://fugit//lib/fugit/cron.rb#395
+  # source://fugit//lib/fugit/cron.rb#393
   def initialize(deltas, span); end
 
   # Returns the value of attribute delta_max.
   #
-  # source://fugit//lib/fugit/cron.rb#392
+  # source://fugit//lib/fugit/cron.rb#390
   def delta_max; end
 
   # Returns the value of attribute delta_min.
   #
-  # source://fugit//lib/fugit/cron.rb#392
+  # source://fugit//lib/fugit/cron.rb#390
   def delta_min; end
 
   # Returns the value of attribute occurrences.
   #
-  # source://fugit//lib/fugit/cron.rb#392
+  # source://fugit//lib/fugit/cron.rb#390
   def occurrences; end
 
   # Returns the value of attribute span.
   #
-  # source://fugit//lib/fugit/cron.rb#392
+  # source://fugit//lib/fugit/cron.rb#390
   def span; end
 
   # Returns the value of attribute span_years.
   #
-  # source://fugit//lib/fugit/cron.rb#393
+  # source://fugit//lib/fugit/cron.rb#391
   def span_years; end
 
-  # source://fugit//lib/fugit/cron.rb#405
+  # source://fugit//lib/fugit/cron.rb#403
   def to_debug_s; end
 
   # Returns the value of attribute yearly_occurrences.
   #
-  # source://fugit//lib/fugit/cron.rb#393
+  # source://fugit//lib/fugit/cron.rb#391
   def yearly_occurrences; end
 end
 
 # source://fugit//lib/fugit/cron.rb#17
 Fugit::Cron::MAXDAYS = T.let(T.unsafe(nil), Array)
 
-# source://fugit//lib/fugit/cron.rb#238
+# source://fugit//lib/fugit/cron.rb#236
 Fugit::Cron::MAX_ITERATION_COUNT = T.let(T.unsafe(nil), Integer)
 
-# source://fugit//lib/fugit/cron.rb#652
+# source://fugit//lib/fugit/cron.rb#659
 module Fugit::Cron::Parser
   include ::Raabro
   extend ::Raabro::ModuleMethods
   extend ::Raabro
   extend ::Fugit::Cron::Parser
 
-  # source://fugit//lib/fugit/cron.rb#688
+  # source://fugit//lib/fugit/cron.rb#695
   def _dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#690
+  # source://fugit//lib/fugit/cron.rb#697
   def _dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#687
+  # source://fugit//lib/fugit/cron.rb#694
   def _hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#689
+  # source://fugit//lib/fugit/cron.rb#696
   def _mon(i); end
 
-  # source://fugit//lib/fugit/cron.rb#686
+  # source://fugit//lib/fugit/cron.rb#693
   def _mos(i); end
 
-  # source://fugit//lib/fugit/cron.rb#747
+  # source://fugit//lib/fugit/cron.rb#754
   def _tz(i); end
 
-  # source://fugit//lib/fugit/cron.rb#744
+  # source://fugit//lib/fugit/cron.rb#751
   def _tz_delta(i); end
 
-  # source://fugit//lib/fugit/cron.rb#741
+  # source://fugit//lib/fugit/cron.rb#748
   def _tz_name(i); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#674
+  # source://fugit//lib/fugit/cron.rb#681
   def and?(i); end
 
-  # source://fugit//lib/fugit/cron.rb#749
+  # source://fugit//lib/fugit/cron.rb#756
   def classic_cron(i); end
 
-  # source://fugit//lib/fugit/cron.rb#672
+  # source://fugit//lib/fugit/cron.rb#679
   def comma(i); end
 
   # @return [Boolean]
   #
-  # source://fugit//lib/fugit/cron.rb#673
+  # source://fugit//lib/fugit/cron.rb#680
   def comma?(i); end
 
-  # source://fugit//lib/fugit/cron.rb#758
+  # source://fugit//lib/fugit/cron.rb#765
   def cron(i); end
 
-  # source://fugit//lib/fugit/cron.rb#680
+  # source://fugit//lib/fugit/cron.rb#687
   def dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#716
+  # source://fugit//lib/fugit/cron.rb#723
   def dom_elt(i); end
 
-  # source://fugit//lib/fugit/cron.rb#682
+  # source://fugit//lib/fugit/cron.rb#689
   def dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#718
+  # source://fugit//lib/fugit/cron.rb#725
   def dow_elt(i); end
 
-  # source://fugit//lib/fugit/cron.rb#725
+  # source://fugit//lib/fugit/cron.rb#732
   def dow_elt_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#684
+  # source://fugit//lib/fugit/cron.rb#691
   def dow_hash(i); end
 
-  # source://fugit//lib/fugit/cron.rb#723
+  # source://fugit//lib/fugit/cron.rb#730
   def h_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#679
+  # source://fugit//lib/fugit/cron.rb#686
   def hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#715
+  # source://fugit//lib/fugit/cron.rb#722
   def hou_elt(i); end
 
-  # source://fugit//lib/fugit/cron.rb#671
+  # source://fugit//lib/fugit/cron.rb#678
   def hyphen(i); end
 
-  # source://fugit//lib/fugit/cron.rb#737
+  # source://fugit//lib/fugit/cron.rb#744
   def ldom_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#739
+  # source://fugit//lib/fugit/cron.rb#746
   def ldow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#736
+  # source://fugit//lib/fugit/cron.rb#743
   def lhou_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#730
+  # source://fugit//lib/fugit/cron.rb#737
   def list_dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#732
+  # source://fugit//lib/fugit/cron.rb#739
   def list_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#729
+  # source://fugit//lib/fugit/cron.rb#736
   def list_hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#728
+  # source://fugit//lib/fugit/cron.rb#735
   def list_min(i); end
 
-  # source://fugit//lib/fugit/cron.rb#731
+  # source://fugit//lib/fugit/cron.rb#738
   def list_mon(i); end
 
-  # source://fugit//lib/fugit/cron.rb#727
+  # source://fugit//lib/fugit/cron.rb#734
   def list_sec(i); end
 
-  # source://fugit//lib/fugit/cron.rb#735
+  # source://fugit//lib/fugit/cron.rb#742
   def lmin_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#738
+  # source://fugit//lib/fugit/cron.rb#745
   def lmon_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#734
+  # source://fugit//lib/fugit/cron.rb#741
   def lsec_(i); end
 
-  # source://fugit//lib/fugit/cron.rb#720
+  # source://fugit//lib/fugit/cron.rb#727
   def mod(i); end
 
-  # source://fugit//lib/fugit/cron.rb#722
+  # source://fugit//lib/fugit/cron.rb#729
   def mod_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#681
+  # source://fugit//lib/fugit/cron.rb#688
   def mon(i); end
 
-  # source://fugit//lib/fugit/cron.rb#717
+  # source://fugit//lib/fugit/cron.rb#724
   def mon_elt(i); end
 
   # min or sec
   #
-  # source://fugit//lib/fugit/cron.rb#678
+  # source://fugit//lib/fugit/cron.rb#685
   def mos(i); end
 
   # ssws: slash or sorws
   #
-  # source://fugit//lib/fugit/cron.rb#714
+  # source://fugit//lib/fugit/cron.rb#721
   def mos_elt(i); end
 
-  # source://fugit//lib/fugit/cron.rb#695
+  # source://fugit//lib/fugit/cron.rb#702
   def r_dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#697
+  # source://fugit//lib/fugit/cron.rb#704
   def r_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#694
+  # source://fugit//lib/fugit/cron.rb#701
   def r_hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#696
+  # source://fugit//lib/fugit/cron.rb#703
   def r_mon(i); end
 
   # r: range
   #
-  # source://fugit//lib/fugit/cron.rb#693
+  # source://fugit//lib/fugit/cron.rb#700
   def r_mos(i); end
 
   # rewriting the parsed tree
   #
-  # source://fugit//lib/fugit/cron.rb#764
+  # source://fugit//lib/fugit/cron.rb#771
   def rewrite_bound(k, t); end
 
-  # source://fugit//lib/fugit/cron.rb#825
+  # source://fugit//lib/fugit/cron.rb#832
   def rewrite_cron(t); end
 
-  # source://fugit//lib/fugit/cron.rb#782
+  # source://fugit//lib/fugit/cron.rb#789
   def rewrite_elt(k, t); end
 
-  # source://fugit//lib/fugit/cron.rb#810
+  # source://fugit//lib/fugit/cron.rb#817
   def rewrite_entry(t); end
 
-  # source://fugit//lib/fugit/cron.rb#774
+  # source://fugit//lib/fugit/cron.rb#781
   def rewrite_mod(k, t); end
 
-  # source://fugit//lib/fugit/cron.rb#817
+  # source://fugit//lib/fugit/cron.rb#824
   def rewrite_tz(t); end
 
   # piece parsers bottom to top
   #
-  # source://fugit//lib/fugit/cron.rb#669
+  # source://fugit//lib/fugit/cron.rb#676
   def s(i); end
 
-  # source://fugit//lib/fugit/cron.rb#753
+  # source://fugit//lib/fugit/cron.rb#760
   def second_cron(i); end
 
-  # source://fugit//lib/fugit/cron.rb#676
+  # source://fugit//lib/fugit/cron.rb#683
   def slash(i); end
 
-  # source://fugit//lib/fugit/cron.rb#702
+  # source://fugit//lib/fugit/cron.rb#709
   def sor_dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#704
+  # source://fugit//lib/fugit/cron.rb#711
   def sor_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#701
+  # source://fugit//lib/fugit/cron.rb#708
   def sor_hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#703
+  # source://fugit//lib/fugit/cron.rb#710
   def sor_mon(i); end
 
   # sor: star or range
   #
-  # source://fugit//lib/fugit/cron.rb#700
+  # source://fugit//lib/fugit/cron.rb#707
   def sor_mos(i); end
 
-  # source://fugit//lib/fugit/cron.rb#709
+  # source://fugit//lib/fugit/cron.rb#716
   def sorws_dom(i); end
 
-  # source://fugit//lib/fugit/cron.rb#711
+  # source://fugit//lib/fugit/cron.rb#718
   def sorws_dow(i); end
 
-  # source://fugit//lib/fugit/cron.rb#708
+  # source://fugit//lib/fugit/cron.rb#715
   def sorws_hou(i); end
 
-  # source://fugit//lib/fugit/cron.rb#710
+  # source://fugit//lib/fugit/cron.rb#717
   def sorws_mon(i); end
 
   # sorws: star or range with[out] slash
   #
-  # source://fugit//lib/fugit/cron.rb#707
+  # source://fugit//lib/fugit/cron.rb#714
   def sorws_mos(i); end
 
-  # source://fugit//lib/fugit/cron.rb#670
+  # source://fugit//lib/fugit/cron.rb#677
   def star(i); end
 end
 
-# source://fugit//lib/fugit/cron.rb#659
+# source://fugit//lib/fugit/cron.rb#666
 Fugit::Cron::Parser::DOW_REX = T.let(T.unsafe(nil), Regexp)
 
-# source://fugit//lib/fugit/cron.rb#662
+# source://fugit//lib/fugit/cron.rb#669
 Fugit::Cron::Parser::MONTHS = T.let(T.unsafe(nil), Array)
 
-# source://fugit//lib/fugit/cron.rb#664
+# source://fugit//lib/fugit/cron.rb#671
 Fugit::Cron::Parser::MONTH_REX = T.let(T.unsafe(nil), Regexp)
 
-# source://fugit//lib/fugit/cron.rb#654
+# source://fugit//lib/fugit/cron.rb#661
 Fugit::Cron::Parser::WEEKDAYS = T.let(T.unsafe(nil), Array)
 
-# source://fugit//lib/fugit/cron.rb#657
+# source://fugit//lib/fugit/cron.rb#664
 Fugit::Cron::Parser::WEEKDS = T.let(T.unsafe(nil), Array)
 
-# source://fugit//lib/fugit/cron.rb#355
+# source://fugit//lib/fugit/cron.rb#353
 Fugit::Cron::SLOTS = T.let(T.unsafe(nil), Array)
 
 # source://fugit//lib/fugit/cron.rb#7
 Fugit::Cron::SPECIALS = T.let(T.unsafe(nil), Hash)
 
-# source://fugit//lib/fugit/cron.rb#68
+# source://fugit//lib/fugit/cron.rb#66
 class Fugit::Cron::TimeCursor
   # @return [TimeCursor] a new instance of TimeCursor
   #
-  # source://fugit//lib/fugit/cron.rb#70
+  # source://fugit//lib/fugit/cron.rb#68
   def initialize(cron, t); end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def day; end
 
-  # source://fugit//lib/fugit/cron.rb#85
+  # source://fugit//lib/fugit/cron.rb#83
   def dec(i); end
 
-  # source://fugit//lib/fugit/cron.rb#134
+  # source://fugit//lib/fugit/cron.rb#132
   def dec_day; end
 
-  # source://fugit//lib/fugit/cron.rb#137
+  # source://fugit//lib/fugit/cron.rb#135
   def dec_hour; end
 
-  # source://fugit//lib/fugit/cron.rb#140
+  # source://fugit//lib/fugit/cron.rb#138
   def dec_min; end
 
-  # source://fugit//lib/fugit/cron.rb#130
+  # source://fugit//lib/fugit/cron.rb#128
   def dec_month; end
 
-  # source://fugit//lib/fugit/cron.rb#144
+  # source://fugit//lib/fugit/cron.rb#142
   def dec_sec; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def hour; end
 
-  # source://fugit//lib/fugit/cron.rb#84
+  # source://fugit//lib/fugit/cron.rb#82
   def inc(i); end
 
-  # source://fugit//lib/fugit/cron.rb#98
+  # source://fugit//lib/fugit/cron.rb#96
   def inc_day; end
 
-  # source://fugit//lib/fugit/cron.rb#115
+  # source://fugit//lib/fugit/cron.rb#113
   def inc_hour; end
 
-  # source://fugit//lib/fugit/cron.rb#118
+  # source://fugit//lib/fugit/cron.rb#116
   def inc_min; end
 
-  # source://fugit//lib/fugit/cron.rb#87
+  # source://fugit//lib/fugit/cron.rb#85
   def inc_month; end
 
-  # source://fugit//lib/fugit/cron.rb#122
+  # source://fugit//lib/fugit/cron.rb#120
   def inc_sec; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def min; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def month; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def rday; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def rweek; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def sec; end
 
-  # source://fugit//lib/fugit/cron.rb#76
+  # source://fugit//lib/fugit/cron.rb#74
   def time; end
 
-  # source://fugit//lib/fugit/cron.rb#79
+  # source://fugit//lib/fugit/cron.rb#77
   def to_i; end
 
-  # source://fugit//lib/fugit/cron.rb#77
+  # source://fugit//lib/fugit/cron.rb#75
   def to_t; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def wday; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def wday_in_month; end
 
-  # source://fugit//lib/fugit/cron.rb#82
+  # source://fugit//lib/fugit/cron.rb#80
   def year; end
 end
 
@@ -1414,9 +1414,20 @@ class Fugit::Nat::SlotGroup
   def make_slot(key, data0, data1 = T.unsafe(nil)); end
 
   # source://fugit//lib/fugit/nat.rb#681
-  def parse_cron(hm); end
+  def parse_cron(hm, opts); end
 
-  # source://fugit//lib/fugit/nat.rb#701
+  # Return nil if the cron is "not strict"
+  #
+  # For example, "0 0/17 * * *" (gh-86) is a perfectly valid
+  # cron string, but makes not much sense when derived via `.parse_nat`
+  # from "every 17 hours".
+  #
+  # It happens here because it's nat being strict, not cron.
+  #
+  # source://fugit//lib/fugit/nat.rb#718
+  def restrict(a, cron); end
+
+  # source://fugit//lib/fugit/nat.rb#729
   def slot(key, default); end
 end
 
