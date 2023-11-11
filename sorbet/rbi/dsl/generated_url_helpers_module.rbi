@@ -33,9 +33,6 @@ module GeneratedUrlHelpersModule
   def latest_follow_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def latest_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def latest_notification_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -48,10 +45,19 @@ module GeneratedUrlHelpersModule
   def latest_post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_profile_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_profile_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_profiles_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_timeline_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def latest_user_me_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_users_me_url(*args); end

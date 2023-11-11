@@ -1,14 +1,14 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
+RSpec.describe "PATCH /latest/profiles/me", type: :request, api_version: :latest do
   context "アットネームが不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "`422` を返すこと" do
-      patch("/latest/me", headers:, params: {
+      patch("/latest/profiles/me", headers:, params: {
         atname: "invalid.atname",
         avatar_url: "https://example.com/avatar.png",
         description: "Hello",
@@ -48,7 +48,7 @@ RSpec.describe "PATCH /latest/me", type: :request, api_version: :latest do
       expect(profile.description).to eq("")
       expect(profile.name).to eq("")
 
-      patch("/latest/me", headers:, params: {
+      patch("/latest/profiles/me", headers:, params: {
         atname: "after_atname",
         avatar_url: "https://example.com/avatar.png",
         description: "Hello",
