@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class Latest::Me::UpdateController < Latest::ApplicationController
+class Latest::Profiles::Me::UpdateController < Latest::ApplicationController
   include Latest::Authenticatable
   include Latest::FormErrorable
 

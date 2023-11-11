@@ -33,9 +33,6 @@ module GeneratedPathHelpersModule
   def latest_follow_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def latest_me_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def latest_notification_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -48,13 +45,19 @@ module GeneratedPathHelpersModule
   def latest_post_stamp_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_profile_me_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_profile_post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def latest_profile_post_path(*args); end
+  def latest_profiles_me_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_timeline_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def latest_user_me_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def latest_users_me_path(*args); end

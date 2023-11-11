@@ -1,12 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
-class Internal::Profiles::Posts::ShowController < Internal::ApplicationController
+class Internal::Posts::ShowController < Internal::ApplicationController
   def call
-    profile = Profile.kept.find_by(atname: params[:atname])
-    post = profile&.posts&.kept&.find_by(id: params[:post_id])
+    post = Post.kept.find_by(id: params[:post_id])
 
-    if profile.nil? || post.nil?
+    if post.nil?
       resource = Latest::ResponseErrorResource.new(code: Latest::ResponseErrorCode::NotFound, message: "Not found")
       return render(
         json: Latest::ResponseErrorSerializer.new([resource]),
