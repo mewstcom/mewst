@@ -1,12 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /internal/@:atname/posts/:post_id", type: :request, api_version: :internal do
+RSpec.describe "GET /internal/posts/:post_id", type: :request, api_version: :internal do
   context "ポストが存在しないとき" do
-    let!(:post) { create(:post) }
-
     it "`404` を返すこと" do
-      get("/internal/@#{post.profile.atname}/posts/unknown_post_id")
+      get("/internal/posts/unknown_post_id")
 
       expect(response).to have_http_status(:not_found)
       assert_response_schema_confirm(404)
@@ -28,7 +26,7 @@ RSpec.describe "GET /internal/@:atname/posts/:post_id", type: :request, api_vers
     let!(:post) { create(:post) }
 
     it "ポストを返すこと" do
-      get("/internal/@#{post.profile.atname}/posts/#{post.id}")
+      get("/internal/posts/#{post.id}")
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)

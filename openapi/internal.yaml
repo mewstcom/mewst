@@ -39,27 +39,6 @@ paths:
       summary: Get profile and posts
       tags:
         - posts
-  "/@{atname}/posts/{post_id}":
-    get:
-      description: ""
-      parameters:
-        - "$ref": "#/components/parameters/atname"
-        - "$ref": "#/components/parameters/post-id"
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                additionalProperties: false
-                properties:
-                  post:
-                    "$ref": "#/components/schemas/post"
-          description: Response
-        '404':
-          "$ref": "#/components/responses/not_found"
-      summary: Get a post
-      tags:
-        - posts
   "/email_confirmations":
     post:
       description: ""
@@ -180,6 +159,26 @@ paths:
       summary: ""
       tags:
         - accounts
+  "/posts/{post_id}":
+    get:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/post-id"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  post:
+                    "$ref": "#/components/schemas/post"
+          description: Response
+        '404':
+          "$ref": "#/components/responses/not_found"
+      summary: Get a post
+      tags:
+        - posts
   "/sessions":
     post:
       description: ""
