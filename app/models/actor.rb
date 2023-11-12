@@ -6,7 +6,8 @@ class Actor < ApplicationRecord
   belongs_to :profile
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
 
-  delegate :atname, :following?, :follows, :home_timeline, :me?, :notifications, :posts, :stamps, :suggested_followees,
+  delegate :atname, :following?, :follows, :home_timeline, :me?, :notifications, :posts, :stamps,
+    :suggested_follows, :suggested_followees,
     to: :profile
 
   sig do

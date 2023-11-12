@@ -7,6 +7,8 @@ ja:
         target_post: ポスト
       latest/stamp_form:
         target_post: ポスト
+      latest/suggested_follow_form:
+        target_profile: atname
       latest/unfollow_form:
         target_profile: atname
     errors:
@@ -32,6 +34,10 @@ ja:
         latest/stamp_form:
           attributes:
             target_post:
+              blank: が見つかりませんでした
+        latest/suggested_follow_form:
+          attributes:
+            target_profile:
               blank: が見つかりませんでした
         latest/unfollow_form:
           attributes:

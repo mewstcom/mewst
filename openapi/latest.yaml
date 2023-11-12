@@ -285,6 +285,19 @@ paths:
       summary: おすすめプロフィール
       tags:
         - profiles
+  "/suggested_profiles/@{atname}/check":
+    post:
+      description: ""
+      parameters:
+        - "$ref": "#/components/parameters/atname"
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: おすすめプロフィールを非表示にする
+      tags:
+        - profiles
   "/timeline":
     get:
       description: ""
