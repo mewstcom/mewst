@@ -311,7 +311,8 @@ CREATE TABLE public.profiles (
     joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    discarded_at timestamp(6) without time zone
+    discarded_at timestamp(6) without time zone,
+    last_post_at timestamp(6) without time zone
 );
 
 
@@ -812,6 +813,13 @@ CREATE INDEX index_profiles_on_discarded_at ON public.profiles USING btree (disc
 
 
 --
+-- Name: index_profiles_on_last_post_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_profiles_on_last_post_at ON public.profiles USING btree (last_post_at);
+
+
+--
 -- Name: index_stamp_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1025,6 +1033,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231015050126'),
 ('20231025165318'),
 ('20231028081207'),
-('20231107174301');
+('20231107174301'),
+('20231112022226');
 
 

@@ -22,6 +22,7 @@ RSpec.describe CreatePostUseCase do
     expect(Post.count).to eq(1)
     post = Post.first
     expect(post.content).to eq("hello")
+    expect(viewer.profile.last_post_at).to eq(post.published_at)
 
     expect(home_timeline).to have_received(:add_post).exactly(1).time
     expect(FanoutPostJob).to have_received(:perform_later).exactly(1).time
