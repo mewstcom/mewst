@@ -9,7 +9,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
 
     it "`422` を返すこと" do
       post("/latest/posts", headers:, params: {
-        content: "a" * 501
+        content: "a" * (Post::MAXIMUM_CONTENT_LENGTH + 1)
       })
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -18,7 +18,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
           {
             code: "invalid_input_data",
             field: "content",
-            message: "Content is too long (maximum is 500 characters)"
+            message: "Content is too long (maximum is #{Post::MAXIMUM_CONTENT_LENGTH} characters)"
           }
         ]
       }
