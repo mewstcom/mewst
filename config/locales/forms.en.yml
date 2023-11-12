@@ -7,6 +7,8 @@ en:
         target_post: Post
       latest/stamp_form:
         target_post: Post
+      latest/suggested_follow_form:
+        target_profile: atname
       latest/unfollow_form:
         target_profile: atname
     errors:
@@ -32,6 +34,10 @@ en:
         latest/stamp_form:
           attributes:
             target_post:
+              blank: not found
+        latest/suggested_follow_form:
+          attributes:
+            target_profile:
               blank: not found
         latest/unfollow_form:
           attributes:

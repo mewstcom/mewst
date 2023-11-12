@@ -54,6 +54,12 @@ module GeneratedPathHelpersModule
   def latest_profiles_me_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_suggested_profile_check_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def latest_suggested_profile_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_timeline_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

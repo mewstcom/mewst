@@ -12,6 +12,7 @@ class CreatePostUseCase < ApplicationUseCase
 
     ActiveRecord::Base.transaction do
       post.save!
+      viewer.profile.not_nil!.update!(last_post_at: post.published_at)
 
       viewer.home_timeline.add_post(post:)
       FanoutPostJob.perform_later(post_id: post.id)

@@ -43,7 +43,7 @@ RSpec.describe "GET /latest/notifications", type: :request, api_version: :latest
             item: {
               source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false)
             },
-            notified_at: notification_1.notified_at.iso8601
+            notified_at: notification_2.notified_at.iso8601
           }
         ],
         page_info: {

@@ -54,6 +54,12 @@ module GeneratedUrlHelpersModule
   def latest_profiles_me_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def latest_suggested_profile_check_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def latest_suggested_profile_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def latest_timeline_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

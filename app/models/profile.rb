@@ -20,7 +20,11 @@ class Profile < ApplicationRecord
   has_many :notifications, dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
   has_many :posts, dependent: :restrict_with_exception
   has_many :stamps, dependent: :restrict_with_exception
+  has_many :suggested_follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
+  has_many :suggested_followees, class_name: "Profile", source: :target_profile, through: :suggested_follows
   has_one :user, dependent: :restrict_with_exception
+
+  scope :sort_by_latest_post, -> { order("last_post_at DESC NULLS LAST") }
 
   validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
 
@@ -49,6 +53,22 @@ class Profile < ApplicationRecord
   sig { params(target_profile: Profile).returns(T::Boolean) }
   def me?(target_profile:)
     atname == target_profile.atname
+  end
+
+  # おすすめプロフィール (自分がフォローしている人がフォローしている人) を作成する
+  sig { void }
+  def create_suggested_follows!
+    # おすすめプロフィールを作りすぎないように制限する
+    return if suggested_follows.not_checked.size >= 30 # Note: この数値に深い意味はない
+
+    # Note: 各limitに指定している数値に深い意味はない
+    followees.kept.sort_by_latest_post.limit(10).each do |source_followee|
+      source_followee.followees.kept.sort_by_latest_post.limit(10).each do |target_profile|
+        if !me?(target_profile:) && !following?(target_profile:)
+          suggested_follows.where(target_profile:).first_or_create!
+        end
+      end
+    end
   end
 
   sig { returns(Profile::Postability) }
