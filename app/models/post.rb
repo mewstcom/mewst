@@ -6,7 +6,11 @@ class Post < ApplicationRecord
 
   include Discard::Model
 
-  MAXIMUM_CONTENT_LENGTH = 500
+  # ref: https://techcrunchjapan.com/2009/07/06/20090704short-is-sweet-postcards-begat-sms-begat-twitter/
+  # Note: なぜ140文字ではないのか？
+  #   1. SMSに送ることは想定していないので、20文字を削る必要がないため
+  #   2. URLが含まれると140文字だと心もとないため
+  MAXIMUM_CONTENT_LENGTH = 160
 
   belongs_to :profile
   has_many :stamps, dependent: :restrict_with_exception
