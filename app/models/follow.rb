@@ -35,4 +35,9 @@ class Follow < ApplicationRecord
 
     nil
   end
+
+  sig { void }
+  def check_suggested!
+    SuggestedFollow.find_by(source_profile:, target_profile:)&.touch(:checked_at)
+  end
 end
