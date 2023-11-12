@@ -73,4 +73,7 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def suggested_profile_list_url(*args); end
 end

@@ -343,6 +343,34 @@ class Profile
     sig { params(value: T::Enumerable[::Stamp]).void }
     def stamps=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def suggested_follow_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def suggested_follow_ids=(ids); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def suggested_followee_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def suggested_followee_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :suggested_followees, through: :suggested_follows`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Profile::PrivateCollectionProxy) }
+    def suggested_followees; end
+
+    sig { params(value: T::Enumerable[::Profile]).void }
+    def suggested_followees=(value); end
+
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :suggested_follows`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::SuggestedFollow::PrivateCollectionProxy) }
+    def suggested_follows; end
+
+    sig { params(value: T::Enumerable[::SuggestedFollow]).void }
+    def suggested_follows=(value); end
+
     sig { returns(T.nilable(::User)) }
     def user; end
 
@@ -498,6 +526,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def select(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def sort_by_latest_post(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def strict_loading(*args, &blk); end
@@ -1305,6 +1336,9 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def select(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def sort_by_latest_post(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def strict_loading(*args, &blk); end

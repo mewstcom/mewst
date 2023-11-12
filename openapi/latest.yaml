@@ -265,6 +265,26 @@ paths:
       summary: ""
       tags:
         - profiles
+  "/suggested_profiles":
+    get:
+      description: ""
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  profiles:
+                    items:
+                      "$ref": "#/components/schemas/profile"
+                    type: array
+                  page_info:
+                    "$ref": "#/components/schemas/page-info"
+          description: Response
+      summary: おすすめプロフィール
+      tags:
+        - profiles
   "/timeline":
     get:
       description: ""

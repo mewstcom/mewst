@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   match "/latest/posts/:post_id/stamp",                                   via: :post,                                                         to: "latest/stamps/create#call"
   match "/latest/profiles/me",                                            via: :get,    as: :latest_profile_me,                               to: "latest/profiles/me/show#call"
   match "/latest/profiles/me",                                            via: :patch,                                                        to: "latest/profiles/me/update#call"
+  match "/latest/suggested_profiles",                                     via: :get,    as: :suggested_profile_list,                          to: "latest/suggested_profiles/index#call"
   match "/latest/timeline",                                               via: :get,    as: :latest_timeline,                                 to: "latest/timeline/show#call"
   match "/latest/users/me",                                               via: :get,    as: :latest_user_me,                                  to: "latest/users/me/show#call"
   match "/latest/users/me",                                               via: :patch,                                                        to: "latest/users/me/update#call"

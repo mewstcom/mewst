@@ -73,4 +73,7 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def suggested_profile_list_path(*args); end
 end

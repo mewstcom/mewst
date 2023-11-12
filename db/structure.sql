@@ -353,6 +353,20 @@ CREATE TABLE public.stamps (
 
 
 --
+-- Name: suggested_follows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggested_follows (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    source_profile_id uuid NOT NULL,
+    target_profile_id uuid NOT NULL,
+    checked_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -522,6 +536,14 @@ ALTER TABLE ONLY public.stamp_notifications
 
 ALTER TABLE ONLY public.stamps
     ADD CONSTRAINT stamps_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggested_follows suggested_follows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggested_follows
+    ADD CONSTRAINT suggested_follows_pkey PRIMARY KEY (id);
 
 
 --
@@ -855,6 +877,27 @@ CREATE UNIQUE INDEX index_stamps_on_profile_id_and_post_id ON public.stamps USIN
 
 
 --
+-- Name: index_suggested_follows_on_source_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_suggested_follows_on_source_profile_id ON public.suggested_follows USING btree (source_profile_id);
+
+
+--
+-- Name: index_suggested_follows_on_src_profile_id_and_tgt_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_suggested_follows_on_src_profile_id_and_tgt_profile_id ON public.suggested_follows USING btree (source_profile_id, target_profile_id);
+
+
+--
+-- Name: index_suggested_follows_on_target_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_suggested_follows_on_target_profile_id ON public.suggested_follows USING btree (target_profile_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -989,11 +1032,27 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 
 --
+-- Name: suggested_follows fk_rails_bd90e469ff; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggested_follows
+    ADD CONSTRAINT fk_rails_bd90e469ff FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: posts fk_rails_cd61a4aa45; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT fk_rails_cd61a4aa45 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
+-- Name: suggested_follows fk_rails_e2a5ef0a46; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggested_follows
+    ADD CONSTRAINT fk_rails_e2a5ef0a46 FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
 
 
 --
@@ -1034,6 +1093,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231025165318'),
 ('20231028081207'),
 ('20231107174301'),
-('20231112022226');
+('20231112022226'),
+('20231112024413');
 
 
