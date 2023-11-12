@@ -27,13 +27,7 @@ RSpec.describe "GET /latest/suggested_profiles", type: :request, api_version: :l
       expected = {
         profiles: [
           build_profile_resource(profile: suggested_profile, viewer_has_followed: false)
-        ],
-        page_info: {
-          has_next_page: false,
-          has_previous_page: false,
-          start_cursor: nil,
-          end_cursor: suggested_profile.id
-        }
+        ]
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)

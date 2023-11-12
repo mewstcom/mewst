@@ -279,8 +279,6 @@ paths:
                     items:
                       "$ref": "#/components/schemas/profile"
                     type: array
-                  page_info:
-                    "$ref": "#/components/schemas/page-info"
           description: Response
       summary: おすすめプロフィール
       tags:
