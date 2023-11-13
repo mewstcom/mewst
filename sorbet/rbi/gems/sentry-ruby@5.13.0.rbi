@@ -18,186 +18,189 @@ end
 class Rake::Application
   include ::Sentry::Rake::Application
 
-  # source://rake/13.0.6/lib/rake/application.rb#49
+  # source://rake/13.1.0/lib/rake/application.rb#49
   def initialize; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#777
+  # source://rake/13.1.0/lib/rake/application.rb#801
   def add_import(fn); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#139
+  # source://rake/13.1.0/lib/rake/application.rb#161
   def add_loader(ext, loader); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#758
+  # source://rake/13.1.0/lib/rake/application.rb#782
   def collect_command_line_tasks(args); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#772
+  # source://rake/13.1.0/lib/rake/application.rb#796
   def default_task_name; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#258
+  # source://rake/13.1.0/lib/rake/application.rb#282
   def deprecate(old_usage, new_usage, call_site); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#222
+  # source://rake/13.1.0/lib/rake/application.rb#244
   def display_cause_details(ex); end
 
   # source://sentry-ruby//lib/sentry/rake.rb#10
   def display_error_message(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#245
+  # source://rake/13.1.0/lib/rake/application.rb#269
   def display_exception_backtrace(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#214
+  # source://rake/13.1.0/lib/rake/application.rb#236
   def display_exception_details(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#229
+  # source://rake/13.1.0/lib/rake/application.rb#251
   def display_exception_details_seen; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#237
+  # source://rake/13.1.0/lib/rake/application.rb#259
   def display_exception_message_details(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#381
+  # source://rake/13.1.0/lib/rake/application.rb#405
   def display_prerequisites; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#298
+  # source://rake/13.1.0/lib/rake/application.rb#322
   def display_tasks_and_comments; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#349
+  # source://rake/13.1.0/lib/rake/application.rb#373
   def dynamic_width; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#353
+  # source://rake/13.1.0/lib/rake/application.rb#377
   def dynamic_width_stty; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#357
+  # source://rake/13.1.0/lib/rake/application.rb#381
   def dynamic_width_tput; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#201
+  # source://rake/13.1.0/lib/rake/application.rb#223
   def exit_because_of_exception(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#678
+  # source://rake/13.1.0/lib/rake/application.rb#702
   def find_rakefile_location; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#644
+  # source://rake/13.1.0/lib/rake/application.rb#668
   def handle_options(argv); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#233
+  # source://rake/13.1.0/lib/rake/application.rb#255
   def has_cause?(ex); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#274
+  # source://rake/13.1.0/lib/rake/application.rb#298
   def have_rakefile; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#88
+  # source://rake/13.1.0/lib/rake/application.rb#88
   def init(app_name = T.unsafe(nil), argv = T.unsafe(nil)); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#157
+  # source://rake/13.1.0/lib/rake/application.rb#179
   def invoke_task(task_string); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#782
+  # source://rake/13.1.0/lib/rake/application.rb#806
   def load_imports; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#102
+  # source://rake/13.1.0/lib/rake/application.rb#124
   def load_rakefile; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#24
+  # source://rake/13.1.0/lib/rake/application.rb#24
   def name; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#145
+  # source://rake/13.1.0/lib/rake/application.rb#167
   def options; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#27
+  # source://rake/13.1.0/lib/rake/application.rb#27
   def original_dir; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#163
+  # source://rake/13.1.0/lib/rake/application.rb#185
   def parse_task_string(string); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#690
+  # source://rake/13.1.0/lib/rake/application.rb#714
   def print_rakefile_directory(location); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#664
+  # source://rake/13.1.0/lib/rake/application.rb#688
   def rake_require(file_name, paths = T.unsafe(nil), loaded = T.unsafe(nil)); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#30
+  # source://rake/13.1.0/lib/rake/application.rb#30
   def rakefile; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#798
+  # source://rake/13.1.0/lib/rake/application.rb#822
   def rakefile_location(backtrace = T.unsafe(nil)); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#695
+  # source://rake/13.1.0/lib/rake/application.rb#719
   def raw_load_rakefile; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#79
+  # source://rake/13.1.0/lib/rake/application.rb#79
   def run(argv = T.unsafe(nil)); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#122
+  # source://rake/13.1.0/lib/rake/application.rb#144
   def run_with_threads; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#807
+  # source://rake/13.1.0/lib/rake/application.rb#831
   def set_default_options; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#185
+  # source://rake/13.1.0/lib/rake/application.rb#207
   def standard_exception_handling; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#402
+  # source://rake/13.1.0/lib/rake/application.rb#426
   def standard_rake_options; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#727
+  # source://rake/13.1.0/lib/rake/application.rb#751
   def system_dir; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#33
+  # source://rake/13.1.0/lib/rake/application.rb#33
   def terminal_columns; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#33
+  # source://rake/13.1.0/lib/rake/application.rb#33
   def terminal_columns=(_arg0); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#337
+  # source://rake/13.1.0/lib/rake/application.rb#361
   def terminal_width; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#150
+  # source://rake/13.1.0/lib/rake/application.rb#172
   def thread_pool; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#109
+  # source://rake/13.1.0/lib/rake/application.rb#131
   def top_level; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#36
+  # source://rake/13.1.0/lib/rake/application.rb#36
   def top_level_tasks; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#388
+  # source://rake/13.1.0/lib/rake/application.rb#412
   def trace(*strings); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#370
+  # source://rake/13.1.0/lib/rake/application.rb#394
   def truncate(string, width); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#293
+  # source://rake/13.1.0/lib/rake/application.rb#317
   def truncate_output?; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#39
+  # source://rake/13.1.0/lib/rake/application.rb#39
   def tty_output=(_arg0); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#287
+  # source://rake/13.1.0/lib/rake/application.rb#311
   def tty_output?; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#361
+  # source://rake/13.1.0/lib/rake/application.rb#385
   def unix?; end
 
-  # source://rake/13.0.6/lib/rake/application.rb#366
+  # source://rake/13.1.0/lib/rake/application.rb#390
   def windows?; end
 
   private
 
-  # source://rake/13.0.6/lib/rake/application.rb#721
+  # source://rake/13.1.0/lib/rake/application.rb#745
   def glob(path, &block); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#267
+  # source://rake/13.1.0/lib/rake/application.rb#291
   def has_chain?(exception); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#620
+  # source://rake/13.1.0/lib/rake/application.rb#102
+  def load_debug_at_stop_feature; end
+
+  # source://rake/13.1.0/lib/rake/application.rb#644
   def select_tasks_to_show(options, show_tasks, value); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#627
+  # source://rake/13.1.0/lib/rake/application.rb#651
   def select_trace_output(options, trace_option, value); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#393
+  # source://rake/13.1.0/lib/rake/application.rb#417
   def sort_options(options); end
 
-  # source://rake/13.0.6/lib/rake/application.rb#744
+  # source://rake/13.1.0/lib/rake/application.rb#768
   def standard_system_dir; end
 end
 
@@ -207,186 +210,182 @@ end
 class Rake::Task
   include ::Sentry::Rake::Task
 
-  # source://rake/13.0.6/lib/rake/task.rb#99
+  # source://rake/13.1.0/lib/rake/task.rb#99
   def initialize(task_name, app); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#24
+  # source://rake/13.1.0/lib/rake/task.rb#24
   def actions; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#298
+  # source://rake/13.1.0/lib/rake/task.rb#298
   def add_description(description); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#77
+  # source://rake/13.1.0/lib/rake/task.rb#77
   def all_prerequisite_tasks; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#39
+  # source://rake/13.1.0/lib/rake/task.rb#39
   def already_invoked; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#27
+  # source://rake/13.1.0/lib/rake/task.rb#27
   def application; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#27
+  # source://rake/13.1.0/lib/rake/task.rb#27
   def application=(_arg0); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#136
+  # source://rake/13.1.0/lib/rake/task.rb#136
   def arg_description; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#141
+  # source://rake/13.1.0/lib/rake/task.rb#141
   def arg_names; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#153
+  # source://rake/13.1.0/lib/rake/task.rb#153
   def clear; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#168
+  # source://rake/13.1.0/lib/rake/task.rb#168
   def clear_actions; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#180
+  # source://rake/13.1.0/lib/rake/task.rb#180
   def clear_args; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#174
+  # source://rake/13.1.0/lib/rake/task.rb#174
   def clear_comments; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#162
+  # source://rake/13.1.0/lib/rake/task.rb#162
   def clear_prerequisites; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#322
+  # source://rake/13.1.0/lib/rake/task.rb#322
   def comment; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#304
+  # source://rake/13.1.0/lib/rake/task.rb#304
   def comment=(comment); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#115
+  # source://rake/13.1.0/lib/rake/task.rb#115
   def enhance(deps = T.unsafe(nil), &block); end
 
   # source://sentry-ruby//lib/sentry/rake.rb#23
   def execute(args = T.unsafe(nil)); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#316
+  # source://rake/13.1.0/lib/rake/task.rb#316
   def full_comment; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#46
+  # source://rake/13.1.0/lib/rake/task.rb#46
   def inspect; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#354
+  # source://rake/13.1.0/lib/rake/task.rb#354
   def investigation; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#186
+  # source://rake/13.1.0/lib/rake/task.rb#186
   def invoke(*args); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#237
+  # source://rake/13.1.0/lib/rake/task.rb#237
   def invoke_prerequisites(task_args, invocation_chain); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#249
+  # source://rake/13.1.0/lib/rake/task.rb#249
   def invoke_prerequisites_concurrently(task_args, invocation_chain); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#35
+  # source://rake/13.1.0/lib/rake/task.rb#35
   def locations; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#122
+  # source://rake/13.1.0/lib/rake/task.rb#122
   def name; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#127
+  # source://rake/13.1.0/lib/rake/task.rb#127
   def name_with_args; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#286
+  # source://rake/13.1.0/lib/rake/task.rb#286
   def needed?; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#21
+  # source://rake/13.1.0/lib/rake/task.rb#21
   def order_only_prerequisites; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#17
+  # source://rake/13.1.0/lib/rake/task.rb#17
   def prereqs; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#61
+  # source://rake/13.1.0/lib/rake/task.rb#61
   def prerequisite_tasks; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#17
+  # source://rake/13.1.0/lib/rake/task.rb#17
   def prerequisites; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#147
+  # source://rake/13.1.0/lib/rake/task.rb#147
   def reenable; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#30
+  # source://rake/13.1.0/lib/rake/task.rb#30
   def scope; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#348
+  # source://rake/13.1.0/lib/rake/task.rb#348
   def set_arg_names(args); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#93
+  # source://rake/13.1.0/lib/rake/task.rb#93
   def source; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#52
+  # source://rake/13.1.0/lib/rake/task.rb#52
   def sources; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#51
+  # source://rake/13.1.0/lib/rake/task.rb#51
   def sources=(_arg0); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#292
+  # source://rake/13.1.0/lib/rake/task.rb#292
   def timestamp; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#42
+  # source://rake/13.1.0/lib/rake/task.rb#42
   def to_s; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#379
+  # source://rake/13.1.0/lib/rake/task.rb#379
   def |(deps); end
 
   protected
 
-  # source://rake/13.0.6/lib/rake/task.rb#83
+  # source://rake/13.1.0/lib/rake/task.rb#83
   def collect_prerequisites(seen); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#197
+  # source://rake/13.1.0/lib/rake/task.rb#197
   def invoke_with_call_chain(task_args, invocation_chain); end
 
   private
 
-  # source://rake/13.0.6/lib/rake/task.rb#229
+  # source://rake/13.1.0/lib/rake/task.rb#229
   def add_chain_to(exception, new_chain); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#308
+  # source://rake/13.1.0/lib/rake/task.rb#308
   def add_comment(comment); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#341
+  # source://rake/13.1.0/lib/rake/task.rb#341
   def first_sentence(string); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#261
+  # source://rake/13.1.0/lib/rake/task.rb#261
   def format_trace_flags; end
 
-  # source://rake/13.0.6/lib/rake/task.rb#65
+  # source://rake/13.1.0/lib/rake/task.rb#65
   def lookup_prerequisite(prerequisite_name); end
 
-  # source://rake/13.0.6/lib/rake/task.rb#328
+  # source://rake/13.1.0/lib/rake/task.rb#328
   def transform_comments(separator, &block); end
 
   class << self
-    # source://rake/13.0.6/lib/rake/task.rb#404
+    # source://rake/13.1.0/lib/rake/task.rb#404
     def [](task_name); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#391
+    # source://rake/13.1.0/lib/rake/task.rb#391
     def clear; end
 
-    # source://rake/13.0.6/lib/rake/task.rb#421
+    # source://rake/13.1.0/lib/rake/task.rb#421
     def create_rule(*args, &block); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#416
+    # source://rake/13.1.0/lib/rake/task.rb#416
     def define_task(*args, &block); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#373
+    # source://rake/13.1.0/lib/rake/task.rb#373
     def format_deps(deps); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#428
+    # source://rake/13.1.0/lib/rake/task.rb#428
     def scope_name(scope, task_name); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#409
+    # source://rake/13.1.0/lib/rake/task.rb#409
     def task_defined?(task_name); end
 
-    # source://rake/13.0.6/lib/rake/task.rb#396
+    # source://rake/13.1.0/lib/rake/task.rb#396
     def tasks; end
   end
-end
-
-class RedisClient::Middlewares < ::RedisClient::BasicMiddleware
-  include ::Sentry::Redis::GlobalRedisInstrumentation
 end
 
 # Based on ActionDispatch::RemoteIp. All security-related precautions from that
@@ -439,8 +438,8 @@ module Sentry
     # @option options
     # @option options
     # @option options
-    # @param status [Symbol] status of this check-in, one of {CheckInEvent::VALID_STATUSES}
     # @param slug [String] identifier of this monitor
+    # @param status [Symbol] status of this check-in, one of {CheckInEvent::VALID_STATUSES}
     # @param options [Hash] extra check-in options
     # @return [String, nil] The {CheckInEvent#check_in_id} to use for later updates on the same slug
     # @yieldparam scope [Scope]
@@ -637,7 +636,7 @@ module Sentry
     def register_integration(name, version); end
 
     # source://sentry-ruby//lib/sentry-ruby.rb#78
-    def register_patch(patch = T.unsafe(nil), target = T.unsafe(nil), &block); end
+    def register_patch(key, patch = T.unsafe(nil), target = T.unsafe(nil), &block); end
 
     # source://sentry-ruby//lib/sentry-ruby.rb#100
     def registered_patches; end
@@ -1065,10 +1064,11 @@ class Sentry::Breadcrumb
   # source://sentry-ruby//lib/sentry/breadcrumb.rb#12
   def level; end
 
-  # @return [String, nil]
+  # @param level [String]
+  # @return [void]
   #
-  # source://sentry-ruby//lib/sentry/breadcrumb.rb#12
-  def level=(_arg0); end
+  # source://sentry-ruby//lib/sentry/breadcrumb.rb#55
+  def level=(level); end
 
   # @return [String, nil]
   #
@@ -1108,7 +1108,7 @@ class Sentry::Breadcrumb
 
   private
 
-  # source://sentry-ruby//lib/sentry/breadcrumb.rb#55
+  # source://sentry-ruby//lib/sentry/breadcrumb.rb#61
   def serialized_data; end
 end
 
@@ -1390,7 +1390,7 @@ class Sentry::Configuration
 
   # @return [Configuration] a new instance of Configuration
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#313
+  # source://sentry-ruby//lib/sentry/configuration.rb#320
   def initialize; end
 
   # Directories to be recognized as part of your app. e.g. if you
@@ -1420,7 +1420,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#31
   def async; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#368
+  # source://sentry-ruby//lib/sentry/configuration.rb#376
   def async=(value); end
 
   # Track sessions in request/response cycles automatically
@@ -1499,7 +1499,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#61
   def before_breadcrumb; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#409
+  # source://sentry-ruby//lib/sentry/configuration.rb#417
   def before_breadcrumb=(value); end
 
   # Optional Proc, called before sending an event to the server
@@ -1519,7 +1519,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#75
   def before_send; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#397
+  # source://sentry-ruby//lib/sentry/configuration.rb#405
   def before_send=(value); end
 
   # Optional Proc, called before sending an event to the server
@@ -1538,7 +1538,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#88
   def before_send_transaction; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#403
+  # source://sentry-ruby//lib/sentry/configuration.rb#411
   def before_send_transaction=(value); end
 
   # An array of breadcrumbs loggers to be used. Available options are:
@@ -1555,7 +1555,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#100
   def breadcrumbs_logger; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#384
+  # source://sentry-ruby//lib/sentry/configuration.rb#392
   def breadcrumbs_logger=(logger); end
 
   # Whether to capture local variables from the raised exception's frame. Default is false.
@@ -1587,7 +1587,7 @@ class Sentry::Configuration
 
   # @return [String, nil]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#490
+  # source://sentry-ruby//lib/sentry/configuration.rb#498
   def csp_report_uri; end
 
   # Whether the SDK should run in the debugging mode. Default is false.
@@ -1608,7 +1608,7 @@ class Sentry::Configuration
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#511
+  # source://sentry-ruby//lib/sentry/configuration.rb#519
   def detect_release; end
 
   # the dsn value, whether it's set via `config.dsn=` or `ENV["SENTRY_DSN"]`
@@ -1618,7 +1618,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#121
   def dsn; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#356
+  # source://sentry-ruby//lib/sentry/configuration.rb#364
   def dsn=(value); end
 
   # Easier way to use performance tracing
@@ -1629,7 +1629,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#235
   def enable_tracing; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#423
+  # source://sentry-ruby//lib/sentry/configuration.rb#431
   def enable_tracing=(enable_tracing); end
 
   # Whitelist of enabled_environments that will send notifications to Sentry. Array of Strings.
@@ -1648,8 +1648,24 @@ class Sentry::Configuration
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#468
+  # source://sentry-ruby//lib/sentry/configuration.rb#476
   def enabled_in_current_env?; end
+
+  # Array of patches to apply.
+  # Default is {DEFAULT_PATCHES}
+  #
+  # @return [Array<Symbol>]
+  #
+  # source://sentry-ruby//lib/sentry/configuration.rb#264
+  def enabled_patches; end
+
+  # Array of patches to apply.
+  # Default is {DEFAULT_PATCHES}
+  #
+  # @return [Array<Symbol>]
+  #
+  # source://sentry-ruby//lib/sentry/configuration.rb#264
+  def enabled_patches=(_arg0); end
 
   # RACK_ENV by default.
   #
@@ -1658,22 +1674,22 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#112
   def environment; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#415
+  # source://sentry-ruby//lib/sentry/configuration.rb#423
   def environment=(environment); end
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#524
+  # source://sentry-ruby//lib/sentry/configuration.rb#532
   def error_messages; end
 
   # these are not config options
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#263
+  # source://sentry-ruby//lib/sentry/configuration.rb#268
   def errors; end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#455
+  # source://sentry-ruby//lib/sentry/configuration.rb#463
   def exception_class_allowed?(exc); end
 
   # Logger 'progname's to exclude from breadcrumbs
@@ -1708,7 +1724,7 @@ class Sentry::Configuration
 
   # these are not config options
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#263
+  # source://sentry-ruby//lib/sentry/configuration.rb#268
   def gem_specs; end
 
   # Whether to capture local variables from the raised exception's frame. Default is false.
@@ -1753,12 +1769,12 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#253
   def instrumenter; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#419
+  # source://sentry-ruby//lib/sentry/configuration.rb#427
   def instrumenter=(instrumenter); end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#428
+  # source://sentry-ruby//lib/sentry/configuration.rb#436
   def is_numeric_or_nil?(value); end
 
   # You may provide your own LineCache for matching paths with source files.
@@ -1820,12 +1836,12 @@ class Sentry::Configuration
 
   # @raise [ArgumentError]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#437
+  # source://sentry-ruby//lib/sentry/configuration.rb#445
   def profiles_sample_rate=(profiles_sample_rate); end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#483
+  # source://sentry-ruby//lib/sentry/configuration.rb#491
   def profiling_enabled?; end
 
   # Project directory root for in_app detection. Could be Rails root, etc.
@@ -1872,7 +1888,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#179
   def rack_env_whitelist=(_arg0); end
 
-  # source://sentry-rails/5.12.0/lib/sentry/rails/configuration.rb#8
+  # source://sentry-rails/5.13.0/lib/sentry/rails/configuration.rb#8
   def rails; end
 
   # Release tag to be passed with every event sent to Sentry.
@@ -1883,12 +1899,12 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#184
   def release; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#362
+  # source://sentry-ruby//lib/sentry/configuration.rb#370
   def release=(value); end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#449
+  # source://sentry-ruby//lib/sentry/configuration.rb#457
   def sample_allowed?; end
 
   # The sampling factor to apply to events. A value of 0.0 will not send
@@ -1963,10 +1979,10 @@ class Sentry::Configuration
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#443
+  # source://sentry-ruby//lib/sentry/configuration.rb#451
   def sending_allowed?; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#356
+  # source://sentry-ruby//lib/sentry/configuration.rb#364
   def server=(value); end
 
   # @return [String]
@@ -1995,7 +2011,7 @@ class Sentry::Configuration
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#500
+  # source://sentry-ruby//lib/sentry/configuration.rb#508
   def stacktrace_builder; end
 
   # Allowlist of outgoing request targets to which sentry-trace and baggage headers are attached.
@@ -2023,7 +2039,7 @@ class Sentry::Configuration
 
   # @raise [ArgumentError]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#432
+  # source://sentry-ruby//lib/sentry/configuration.rb#440
   def traces_sample_rate=(traces_sample_rate); end
 
   # Take a Proc that controls the sample rate for every tracing event, e.g.
@@ -2054,7 +2070,7 @@ class Sentry::Configuration
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#477
+  # source://sentry-ruby//lib/sentry/configuration.rb#485
   def tracing_enabled?; end
 
   # Return a Transport::Configuration object for transport-related configurations.
@@ -2076,106 +2092,109 @@ class Sentry::Configuration
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#472
+  # source://sentry-ruby//lib/sentry/configuration.rb#480
   def valid_sample_rate?(sample_rate); end
 
   private
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#572
+  # source://sentry-ruby//lib/sentry/configuration.rb#580
   def capture_in_environment?; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#531
+  # source://sentry-ruby//lib/sentry/configuration.rb#539
   def check_callable!(name, value); end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#588
+  # source://sentry-ruby//lib/sentry/configuration.rb#596
   def environment_from_env; end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#543
+  # source://sentry-ruby//lib/sentry/configuration.rb#551
   def excluded_exception?(incoming_exception); end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#549
+  # source://sentry-ruby//lib/sentry/configuration.rb#557
   def excluded_exception_classes; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#553
+  # source://sentry-ruby//lib/sentry/configuration.rb#561
   def get_exception_class(x); end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#537
+  # source://sentry-ruby//lib/sentry/configuration.rb#545
   def init_dsn(dsn_string); end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#557
+  # source://sentry-ruby//lib/sentry/configuration.rb#565
   def matches_exception?(excluded_exception_class, incoming_exception); end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#606
+  # source://sentry-ruby//lib/sentry/configuration.rb#614
   def run_post_initialization_callbacks; end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#602
+  # source://sentry-ruby//lib/sentry/configuration.rb#610
   def running_on_heroku?; end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#565
+  # source://sentry-ruby//lib/sentry/configuration.rb#573
   def safe_const_get(x); end
 
-  # source://sentry-ruby//lib/sentry/configuration.rb#592
+  # source://sentry-ruby//lib/sentry/configuration.rb#600
   def server_name_from_env; end
 
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/configuration.rb#579
+  # source://sentry-ruby//lib/sentry/configuration.rb#587
   def valid?; end
 
   class << self
     # allow extensions to add their hooks to the Configuration class
     #
-    # source://sentry-ruby//lib/sentry/configuration.rb#308
+    # source://sentry-ruby//lib/sentry/configuration.rb#315
     def add_post_initialization_callback(&block); end
 
     # Post initialization callbacks are called at the end of initialization process
     # allowing extending the configuration of sentry-ruby by multiple extensions
     #
-    # source://sentry-ruby//lib/sentry/configuration.rb#303
+    # source://sentry-ruby//lib/sentry/configuration.rb#310
     def post_initialization_callbacks; end
   end
 end
 
-# source://sentry-ruby//lib/sentry/configuration.rb#289
+# source://sentry-ruby//lib/sentry/configuration.rb#305
+Sentry::Configuration::DEFAULT_PATCHES = T.let(T.unsafe(nil), Array)
+
+# source://sentry-ruby//lib/sentry/configuration.rb#294
 Sentry::Configuration::HEROKU_DYNO_METADATA_MESSAGE = T.let(T.unsafe(nil), String)
 
 # Most of these errors generate 4XX responses. In general, Sentry clients
 # only automatically report 5xx responses.
 #
-# source://sentry-ruby//lib/sentry/configuration.rb#276
+# source://sentry-ruby//lib/sentry/configuration.rb#281
 Sentry::Configuration::IGNORE_DEFAULT = T.let(T.unsafe(nil), Array)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#296
+# source://sentry-ruby//lib/sentry/configuration.rb#301
 Sentry::Configuration::INSTRUMENTERS = T.let(T.unsafe(nil), Array)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#292
+# source://sentry-ruby//lib/sentry/configuration.rb#297
 Sentry::Configuration::LOG_PREFIX = T.let(T.unsafe(nil), String)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#293
+# source://sentry-ruby//lib/sentry/configuration.rb#298
 Sentry::Configuration::MODULE_SEPARATOR = T.let(T.unsafe(nil), String)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#298
+# source://sentry-ruby//lib/sentry/configuration.rb#303
 Sentry::Configuration::PROPAGATION_TARGETS_MATCH_ALL = T.let(T.unsafe(nil), Regexp)
 
 # These exceptions could enter Puma's `lowlevel_error_handler` callback and the SDK's Puma integration
 # But they are mostly considered as noise and should be ignored by default
 # Please see https://github.com/getsentry/sentry-ruby/pull/2026 for more information
 #
-# source://sentry-ruby//lib/sentry/configuration.rb#268
+# source://sentry-ruby//lib/sentry/configuration.rb#273
 Sentry::Configuration::PUMA_IGNORE_DEFAULT = T.let(T.unsafe(nil), Array)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#283
+# source://sentry-ruby//lib/sentry/configuration.rb#288
 Sentry::Configuration::RACK_ENV_WHITELIST_DEFAULT = T.let(T.unsafe(nil), Array)
 
-# source://sentry-ruby//lib/sentry/configuration.rb#294
+# source://sentry-ruby//lib/sentry/configuration.rb#299
 Sentry::Configuration::SKIP_INSPECTION_ATTRIBUTES = T.let(T.unsafe(nil), Array)
 
 # source://sentry-ruby//lib/sentry/cron/monitor_schedule.rb#4
@@ -3394,14 +3413,17 @@ end
 # source://sentry-ruby//lib/sentry/propagation_context.rb#8
 Sentry::PropagationContext::SENTRY_TRACE_REGEXP = T.let(T.unsafe(nil), Regexp)
 
-# source://sentry-ruby//lib/sentry/puma.rb#4
+# source://sentry-ruby//lib/sentry/puma.rb#6
 module Sentry::Puma; end
 
-# source://sentry-ruby//lib/sentry/puma.rb#5
+# source://sentry-ruby//lib/sentry/puma.rb#7
 module Sentry::Puma::Server
-  # source://sentry-ruby//lib/sentry/puma.rb#6
+  # source://sentry-ruby//lib/sentry/puma.rb#10
   def lowlevel_error(e, env, status = T.unsafe(nil)); end
 end
+
+# source://sentry-ruby//lib/sentry/puma.rb#8
+Sentry::Puma::Server::PUMA_4_AND_PRIOR = T.let(T.unsafe(nil), FalseClass)
 
 # source://sentry-ruby//lib/sentry/rack/capture_exceptions.rb#4
 module Sentry::Rack; end
