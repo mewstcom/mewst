@@ -8,7 +8,11 @@ class CreatePostUseCase < ApplicationUseCase
 
   sig { params(viewer: Actor, content: String).returns(Result) }
   def call(viewer:, content:)
-    post = viewer.posts.new(content:, published_at: Time.current)
+    post = viewer.posts.new(
+      content:,
+      published_at: Time.current,
+      via: OauthApplication.mewst_web # TODO: Web API公開のタイミングでviaを指定できるようにする
+    )
 
     ActiveRecord::Base.transaction do
       post.save!
