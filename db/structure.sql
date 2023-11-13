@@ -293,7 +293,8 @@ CREATE TABLE public.posts (
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    discarded_at timestamp(6) without time zone
+    discarded_at timestamp(6) without time zone,
+    via_id uuid
 );
 
 
@@ -821,6 +822,13 @@ CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
 
 
 --
+-- Name: index_posts_on_via_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_posts_on_via_id ON public.posts USING btree (via_id);
+
+
+--
 -- Name: index_profiles_on_atname; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1000,6 +1008,14 @@ ALTER TABLE ONLY public.follow_notifications
 
 
 --
+-- Name: posts fk_rails_9786ee7964; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT fk_rails_9786ee7964 FOREIGN KEY (via_id) REFERENCES public.oauth_applications(id);
+
+
+--
 -- Name: users fk_rails_a8794354f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1094,6 +1110,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231028081207'),
 ('20231107174301'),
 ('20231112022226'),
-('20231112024413');
+('20231112024413'),
+('20231113161740'),
+('20231113162310');
 
 
