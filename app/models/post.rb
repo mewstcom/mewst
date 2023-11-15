@@ -13,7 +13,7 @@ class Post < ApplicationRecord
   MAXIMUM_CONTENT_LENGTH = 160
 
   belongs_to :profile
-  belongs_to :via, class_name: "OauthApplication", optional: true
+  belongs_to :oauth_application, optional: true # TODO: あとで optional: true を外す
   has_many :stamps, dependent: :restrict_with_exception
 
   scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }

@@ -294,7 +294,7 @@ CREATE TABLE public.posts (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     discarded_at timestamp(6) without time zone,
-    via_id uuid
+    oauth_application_id uuid
 );
 
 
@@ -815,17 +815,17 @@ CREATE INDEX index_posts_on_discarded_at ON public.posts USING btree (discarded_
 
 
 --
+-- Name: index_posts_on_oauth_application_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_posts_on_oauth_application_id ON public.posts USING btree (oauth_application_id);
+
+
+--
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_profile_id ON public.posts USING btree (profile_id);
-
-
---
--- Name: index_posts_on_via_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_posts_on_via_id ON public.posts USING btree (via_id);
 
 
 --
@@ -952,6 +952,14 @@ ALTER TABLE ONLY public.actors
 
 
 --
+-- Name: posts fk_rails_50749f2745; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT fk_rails_50749f2745 FOREIGN KEY (oauth_application_id) REFERENCES public.oauth_applications(id);
+
+
+--
 -- Name: actors fk_rails_541f6b56e7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1005,14 +1013,6 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.follow_notifications
     ADD CONSTRAINT fk_rails_882bddd994 FOREIGN KEY (follow_id) REFERENCES public.follows(id);
-
-
---
--- Name: posts fk_rails_9786ee7964; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.posts
-    ADD CONSTRAINT fk_rails_9786ee7964 FOREIGN KEY (via_id) REFERENCES public.oauth_applications(id);
 
 
 --

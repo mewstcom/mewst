@@ -11,7 +11,7 @@ class CreatePostUseCase < ApplicationUseCase
     post = viewer.posts.new(
       content:,
       published_at: Time.current,
-      via: OauthApplication.mewst_web # TODO: Web API公開のタイミングでviaを指定できるようにする
+      oauth_application: OauthApplication.mewst_web # TODO: Web API公開のタイミングで別のアプリを指定できるようにする
     )
 
     ActiveRecord::Base.transaction do
