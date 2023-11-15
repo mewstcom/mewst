@@ -294,7 +294,7 @@ CREATE TABLE public.posts (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     discarded_at timestamp(6) without time zone,
-    oauth_application_id uuid
+    oauth_application_id uuid NOT NULL
 );
 
 
@@ -1112,6 +1112,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231112022226'),
 ('20231112024413'),
 ('20231113161740'),
-('20231113162310');
+('20231113162310'),
+('20231115145714');
 
 

@@ -653,10 +653,10 @@ class Post
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(::String) }
     def oauth_application_id; end
 
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    sig { params(value: ::String).returns(::String) }
     def oauth_application_id=(value); end
 
     sig { returns(T::Boolean) }
@@ -671,22 +671,22 @@ class Post
     sig { returns(T::Boolean) }
     def oauth_application_id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def oauth_application_id_change; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def oauth_application_id_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def oauth_application_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def oauth_application_id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def oauth_application_id_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def oauth_application_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -839,7 +839,7 @@ class Post
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_oauth_application_id; end
 
     sig { returns(T::Boolean) }
