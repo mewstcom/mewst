@@ -15,6 +15,11 @@ class Latest::PostResource < Latest::ApplicationResource
     Latest::ProfileResource.new(profile: post.profile.not_nil!, viewer:)
   end
 
+  sig { returns(Latest::ViaResource) }
+  def via
+    Latest::ViaResource.new(oauth_application: post.oauth_application.not_nil!)
+  end
+
   sig { returns(T::Boolean) }
   def viewer_has_stamped
     return false if viewer.nil?

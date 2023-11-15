@@ -7,4 +7,5 @@ class Latest::PostSerializer < Latest::ApplicationSerializer
   attributes :id, :content, :published_at, :stamps_count, :viewer_has_stamped
 
   one :profile, resource: Latest::ProfileSerializer
+  one :via, resource: Latest::ViaSerializer
 end

@@ -542,6 +542,8 @@ components:
           type: integer
         viewer_has_stamped:
           type: boolean
+        via:
+          $ref: "#/components/schemas/via"
       required:
         - id
         - content
@@ -591,4 +593,14 @@ components:
               type: string
           required:
             - field
+      type: object
+    via:
+      additionalProperties: false
+      description: "クライアントに関する情報"
+      properties:
+        name:
+          type: string
+      required:
+        - name
+      title: Via
       type: object
