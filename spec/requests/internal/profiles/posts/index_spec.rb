@@ -24,21 +24,7 @@ RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :int
           viewer_has_followed: false
         },
         posts: [
-          {
-            id: post.id,
-            content: "Hello",
-            profile: {
-              id: profile.id,
-              atname: profile.atname,
-              avatar_url: profile.avatar_url,
-              name: profile.name,
-              description: profile.description,
-              viewer_has_followed: false
-            },
-            published_at: post.published_at.iso8601,
-            stamps_count: 0,
-            viewer_has_stamped: false
-          }
+          build_post_resource(post:, viewer_has_followed: false, viewer_has_stamped: false)
         ],
         page_info: {
           has_next_page: false,

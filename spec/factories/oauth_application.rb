@@ -10,6 +10,7 @@ FactoryBot.define do
     scopes { "read" }
 
     trait :mewst_web do
+      name { "Mewst for Web" }
       uid { OauthApplication::MEWST_WEB_UID }
     end
   end

@@ -293,7 +293,8 @@ CREATE TABLE public.posts (
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    discarded_at timestamp(6) without time zone
+    discarded_at timestamp(6) without time zone,
+    oauth_application_id uuid
 );
 
 
@@ -814,6 +815,13 @@ CREATE INDEX index_posts_on_discarded_at ON public.posts USING btree (discarded_
 
 
 --
+-- Name: index_posts_on_oauth_application_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_posts_on_oauth_application_id ON public.posts USING btree (oauth_application_id);
+
+
+--
 -- Name: index_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -941,6 +949,14 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 ALTER TABLE ONLY public.actors
     ADD CONSTRAINT fk_rails_477d25671f FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: posts fk_rails_50749f2745; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT fk_rails_50749f2745 FOREIGN KEY (oauth_application_id) REFERENCES public.oauth_applications(id);
 
 
 --
@@ -1094,6 +1110,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231028081207'),
 ('20231107174301'),
 ('20231112022226'),
-('20231112024413');
+('20231112024413'),
+('20231113161740'),
+('20231113162310');
 
 

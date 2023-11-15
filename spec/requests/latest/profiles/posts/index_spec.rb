@@ -19,14 +19,7 @@ RSpec.describe "GET /latest/@:atname/posts", type: :request, api_version: :lates
       expected = {
         profile: build_profile_resource(profile:, viewer_has_followed: false),
         posts: [
-          {
-            id: post.id,
-            content: "Hello",
-            profile: build_profile_resource(profile:, viewer_has_followed: false),
-            published_at: post.published_at.iso8601,
-            stamps_count: 0,
-            viewer_has_stamped: false
-          }
+          build_post_resource(post:, viewer_has_followed: false, viewer_has_stamped: false)
         ],
         page_info: {
           has_next_page: false,

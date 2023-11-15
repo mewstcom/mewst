@@ -8,6 +8,8 @@ RSpec.describe CreatePostUseCase do
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 
   before do
+    create(:oauth_application, :mewst_web)
+
     allow(viewer).to receive(:home_timeline).and_return(home_timeline)
     allow(home_timeline).to receive(:add_post)
 
