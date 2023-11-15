@@ -13,6 +13,8 @@ en:
         target_profile: atname
     errors:
       models:
+        internal/account_form:
+          uniqueness: is already taken
         internal/email_confirmation_challenge_form:
           attributes:
             confirmation_code:

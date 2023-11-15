@@ -17,14 +17,14 @@ class Internal::AccountForm < Internal::ApplicationForm
   sig { void }
   private def atname_uniqueness
     if Profile.find_by(atname:)
-      errors.add(:atname, :atname_uniqueness)
+      errors.add(:atname, :uniqueness)
     end
   end
 
   sig { void }
   private def email_uniqueness
     if User.find_by(email:)
-      errors.add(:email, :email_uniqueness)
+      errors.add(:email, :uniqueness)
     end
   end
 end

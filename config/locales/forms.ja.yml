@@ -13,6 +13,8 @@ ja:
         target_profile: atname
     errors:
       models:
+        internal/account_form:
+          uniqueness: はすでに存在します
         internal/email_confirmation_challenge_form:
           attributes:
             confirmation_code:

@@ -83,7 +83,7 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.email_confirmations (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    email character varying NOT NULL,
+    email public.citext NOT NULL,
     event character varying NOT NULL,
     code character varying NOT NULL,
     succeeded_at timestamp without time zone,
@@ -374,7 +374,7 @@ CREATE TABLE public.suggested_follows (
 CREATE TABLE public.users (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
-    email character varying NOT NULL,
+    email public.citext NOT NULL,
     password_digest character varying NOT NULL,
     locale character varying NOT NULL,
     sign_in_count integer DEFAULT 0 NOT NULL,
@@ -1113,6 +1113,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231112024413'),
 ('20231113161740'),
 ('20231113162310'),
-('20231115145714');
+('20231115145714'),
+('20231115172238');
 
 
