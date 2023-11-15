@@ -24,7 +24,8 @@ module Mewst::Test::ResourceHelpers
       content: post.content,
       published_at: post.published_at.iso8601,
       stamps_count: post.stamps_count,
-      viewer_has_stamped:
+      viewer_has_stamped:,
+      via: build_via_resource(oauth_application: post.oauth_application.not_nil!)
     }
   end
 
@@ -34,6 +35,13 @@ module Mewst::Test::ResourceHelpers
       id: user.id,
       locale: user.locale,
       time_zone: user.time_zone
+    }
+  end
+
+  sig { params(oauth_application: OauthApplication).returns(T::Hash[Symbol, T.untyped]) }
+  def build_via_resource(oauth_application:)
+    {
+      name: oauth_application.name
     }
   end
 end

@@ -30,7 +30,6 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
   context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_actor) { create(:actor) }
-    let!(:target_profile) { target_actor.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:post_form) { Latest::PostForm.new(viewer: target_actor, content: "hello") }
     let!(:target_post) { CreatePostUseCase.new.call(viewer: target_actor, content: post_form.content.not_nil!).post }
@@ -47,14 +46,7 @@ RSpec.describe "POST /latest/posts/:post_id/stamp", type: :request, api_version:
       expect(Stamp.count).to eq(1)
 
       expected = {
-        post: {
-          id: target_post.id,
-          content: target_post.content,
-          profile: build_profile_resource(profile: target_profile, viewer_has_followed: false),
-          published_at: target_post.published_at.iso8601,
-          stamps_count: 1,
-          viewer_has_stamped: true
-        }
+        post: build_post_resource(post: target_post.reload, viewer_has_followed: false, viewer_has_stamped: true)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)

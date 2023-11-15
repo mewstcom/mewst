@@ -4,7 +4,6 @@
 RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
   context "正常系" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:form) { Latest::PostForm.new(viewer:, content: "Hello") }
@@ -18,14 +17,7 @@ RSpec.describe "GET /latest/timeline", type: :request, api_version: :latest do
 
       expected = {
         posts: [
-          {
-            id: post.id,
-            content: "Hello",
-            profile: build_profile_resource(profile:, viewer_has_followed: false),
-            published_at: post.published_at.iso8601,
-            stamps_count: 0,
-            viewer_has_stamped: false
-          }
+          build_post_resource(post:, viewer_has_followed: false, viewer_has_stamped: false)
         ],
         page_info: {
           has_next_page: false,

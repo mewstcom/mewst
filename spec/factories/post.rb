@@ -6,5 +6,6 @@ FactoryBot.define do
     profile
     sequence(:content) { |n| "test_#{n}" }
     published_at { Time.current }
+    oauth_application
   end
 end

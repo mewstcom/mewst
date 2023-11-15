@@ -31,7 +31,6 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
 
   context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { viewer.profile }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
@@ -47,14 +46,7 @@ RSpec.describe "POST /latest/posts", type: :request, api_version: :latest do
       post = Post.first
 
       expected = {
-        post: {
-          id: post.id,
-          content: "Hello",
-          profile: build_profile_resource(profile:, viewer_has_followed: false),
-          published_at: post.published_at.iso8601,
-          stamps_count: 0,
-          viewer_has_stamped: false
-        }
+        post: build_post_resource(post:, viewer_has_followed: false, viewer_has_stamped: false)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
