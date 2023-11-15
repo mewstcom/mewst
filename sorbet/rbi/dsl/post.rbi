@@ -219,8 +219,17 @@ class Post
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
+    def build_oauth_application(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
+    def create_oauth_application(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
+    def create_oauth_application!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile(*args, &blk); end
@@ -228,11 +237,20 @@ class Post
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile!(*args, &blk); end
 
+    sig { returns(T.nilable(::OauthApplication)) }
+    def oauth_application; end
+
+    sig { params(value: T.nilable(::OauthApplication)).void }
+    def oauth_application=(value); end
+
     sig { returns(T.nilable(::Profile)) }
     def profile; end
 
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
+
+    sig { returns(T.nilable(::OauthApplication)) }
+    def reload_oauth_application; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_profile; end
@@ -635,6 +653,51 @@ class Post
     sig { void }
     def id_will_change!; end
 
+    sig { returns(T.nilable(::String)) }
+    def oauth_application_id; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def oauth_application_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def oauth_application_id?; end
+
+    sig { returns(T.nilable(::String)) }
+    def oauth_application_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def oauth_application_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def oauth_application_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def oauth_application_id_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def oauth_application_id_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def oauth_application_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def oauth_application_id_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def oauth_application_id_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def oauth_application_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def oauth_application_id_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def oauth_application_id_was; end
+
+    sig { void }
+    def oauth_application_id_will_change!; end
+
     sig { returns(::String) }
     def profile_id; end
 
@@ -738,6 +801,9 @@ class Post
     def restore_id!; end
 
     sig { void }
+    def restore_oauth_application_id!; end
+
+    sig { void }
     def restore_profile_id!; end
 
     sig { void }
@@ -772,6 +838,12 @@ class Post
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_oauth_application_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_oauth_application_id?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_profile_id; end
@@ -898,6 +970,9 @@ class Post
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_oauth_application_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_profile_id?; end
