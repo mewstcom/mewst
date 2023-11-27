@@ -1888,7 +1888,7 @@ class Sentry::Configuration
   # source://sentry-ruby//lib/sentry/configuration.rb#179
   def rack_env_whitelist=(_arg0); end
 
-  # source://sentry-rails/5.13.0/lib/sentry/rails/configuration.rb#8
+  # source://sentry-rails/5.14.0/lib/sentry/rails/configuration.rb#8
   def rails; end
 
   # Release tag to be passed with every event sent to Sentry.
@@ -2209,26 +2209,29 @@ module Sentry::Cron::MonitorCheckIns
   class << self
     # @private
     #
-    # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#56
+    # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#61
     def included(base); end
   end
 end
 
-# source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#37
+# source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#39
 module Sentry::Cron::MonitorCheckIns::ClassMethods
-  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#38
+  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#40
   def sentry_monitor_check_ins(slug: T.unsafe(nil), monitor_config: T.unsafe(nil)); end
 
-  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#49
+  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#54
   def sentry_monitor_config; end
 
-  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#45
+  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#47
   def sentry_monitor_slug; end
 end
 
 # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#4
+Sentry::Cron::MonitorCheckIns::MAX_SLUG_LENGTH = T.let(T.unsafe(nil), Integer)
+
+# source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#6
 module Sentry::Cron::MonitorCheckIns::Patch
-  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#5
+  # source://sentry-ruby//lib/sentry/cron/monitor_check_ins.rb#7
   def perform(*args); end
 end
 
@@ -2907,7 +2910,11 @@ class Sentry::HTTPTransport < ::Sentry::Transport
   # source://sentry-ruby//lib/sentry/transport/http_transport.rb#67
   def has_rate_limited_header?(headers); end
 
-  # source://sentry-ruby//lib/sentry/transport/http_transport.rb#151
+  # @param proxy [String, URI, Hash] Proxy config value passed into `config.transport`.
+  #   Accepts either a URI formatted string, URI, or a hash with the `uri`, `user`, and `password` keys.
+  # @return [Hash] Normalized proxy config that will be passed into `Net::HTTP`
+  #
+  # source://sentry-ruby//lib/sentry/transport/http_transport.rb#157
   def normalize_proxy(proxy); end
 
   # source://sentry-ruby//lib/sentry/transport/http_transport.rb#97
@@ -2918,7 +2925,7 @@ class Sentry::HTTPTransport < ::Sentry::Transport
   # source://sentry-ruby//lib/sentry/transport/http_transport.rb#125
   def should_compress?(data); end
 
-  # source://sentry-ruby//lib/sentry/transport/http_transport.rb#165
+  # source://sentry-ruby//lib/sentry/transport/http_transport.rb#171
   def ssl_configuration; end
 end
 
@@ -3168,12 +3175,12 @@ Sentry::META = T.let(T.unsafe(nil), Hash)
 
 # @api private
 #
-# source://sentry-ruby//lib/sentry/net/http.rb#7
+# source://sentry-ruby//lib/sentry/net/http.rb#8
 module Sentry::Net; end
 
 # @api private
 #
-# source://sentry-ruby//lib/sentry/net/http.rb#8
+# source://sentry-ruby//lib/sentry/net/http.rb#9
 module Sentry::Net::HTTP
   # To explain how the entire thing works, we need to know how the original Net::HTTP#request works
   # Here's part of its definition. As you can see, it usually calls itself inside a #start block
@@ -3194,47 +3201,47 @@ module Sentry::Net::HTTP
   #
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#28
+  # source://sentry-ruby//lib/sentry/net/http.rb#29
   def request(req, body = T.unsafe(nil), &block); end
 
   private
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#79
+  # source://sentry-ruby//lib/sentry/net/http.rb#80
   def extract_request_info(req); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#74
+  # source://sentry-ruby//lib/sentry/net/http.rb#75
   def from_sentry_sdk?; end
 
   # @api private
   # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#93
+  # source://sentry-ruby//lib/sentry/net/http.rb#97
   def propagate_trace?(url, configuration); end
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#59
+  # source://sentry-ruby//lib/sentry/net/http.rb#60
   def record_sentry_breadcrumb(request_info, res); end
 
   # @api private
   #
-  # source://sentry-ruby//lib/sentry/net/http.rb#55
+  # source://sentry-ruby//lib/sentry/net/http.rb#56
   def set_propagation_headers(req); end
 end
 
 # @api private
 #
-# source://sentry-ruby//lib/sentry/net/http.rb#10
+# source://sentry-ruby//lib/sentry/net/http.rb#11
 Sentry::Net::HTTP::BREADCRUMB_CATEGORY = T.let(T.unsafe(nil), String)
 
 # @api private
 #
-# source://sentry-ruby//lib/sentry/net/http.rb#9
+# source://sentry-ruby//lib/sentry/net/http.rb#10
 Sentry::Net::HTTP::OP_NAME = T.let(T.unsafe(nil), String)
 
 # source://sentry-ruby//lib/sentry/profiler.rb#6
@@ -4160,7 +4167,7 @@ class Sentry::SingleExceptionInterface < ::Sentry::Interface
   # source://sentry-ruby//lib/sentry/interfaces/single_exception.rb#14
   def thread_id; end
 
-  # source://sentry-ruby//lib/sentry/interfaces/single_exception.rb#33
+  # source://sentry-ruby//lib/sentry/interfaces/single_exception.rb#34
   def to_hash; end
 
   # Returns the value of attribute type.
@@ -4184,7 +4191,7 @@ class Sentry::SingleExceptionInterface < ::Sentry::Interface
     # patch this method if you want to change an exception's stacktrace frames
     # also see `StacktraceBuilder.build`.
     #
-    # source://sentry-ruby//lib/sentry/interfaces/single_exception.rb#41
+    # source://sentry-ruby//lib/sentry/interfaces/single_exception.rb#42
     def build_with_stacktrace(exception:, stacktrace_builder:); end
   end
 end
@@ -5134,99 +5141,179 @@ Sentry::Transport::CLIENT_REPORT_REASONS = T.let(T.unsafe(nil), Array)
 class Sentry::Transport::Configuration
   # @return [Configuration] a new instance of Configuration
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#9
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#82
   def initialize; end
 
-  # Returns the value of attribute encoding.
+  # The encoding to use to compress the request body.
+  # Default value is `Sentry::HTTPTransport::GZIP_ENCODING`.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @return [String]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#73
   def encoding; end
 
-  # Sets the attribute encoding
+  # The encoding to use to compress the request body.
+  # Default value is `Sentry::HTTPTransport::GZIP_ENCODING`.
   #
-  # @param value the value to set the attribute encoding to.
+  # @return [String]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#73
   def encoding=(_arg0); end
 
-  # Returns the value of attribute open_timeout.
+  # The timeout in seconds to read data from Sentry, in seconds.
+  # Default value is 1.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @return [Integer]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#17
   def open_timeout; end
 
-  # Sets the attribute open_timeout
+  # The timeout in seconds to read data from Sentry, in seconds.
+  # Default value is 1.
   #
-  # @param value the value to set the attribute open_timeout to.
+  # @return [Integer]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#17
   def open_timeout=(_arg0); end
 
-  # Returns the value of attribute proxy.
+  # The proxy configuration to use to connect to Sentry.
+  # Accepts either a URI formatted string, URI, or a hash with the `uri`,
+  # `user`, and `password` keys.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # If you're using the default transport (`Sentry::HTTPTransport`),
+  # proxy settings will also automatically be read from tne environment
+  # variables (`HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`).
+  #
+  # @example
+  #   # setup proxy using a string:
+  #   config.transport.proxy = "https://user:password@proxyhost:8080"
+  #
+  #   # setup proxy using a URI:
+  #   config.transport.proxy = URI("https://user:password@proxyhost:8080")
+  #
+  #   # setup proxy using a hash:
+  #   config.transport.proxy = {
+  #   uri: URI("https://proxyhost:8080"),
+  #   user: "user",
+  #   password: "password"
+  #   }
+  # @return [String, URI, Hash, nil]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#42
   def proxy; end
 
-  # Sets the attribute proxy
+  # The proxy configuration to use to connect to Sentry.
+  # Accepts either a URI formatted string, URI, or a hash with the `uri`,
+  # `user`, and `password` keys.
   #
-  # @param value the value to set the attribute proxy to.
+  # If you're using the default transport (`Sentry::HTTPTransport`),
+  # proxy settings will also automatically be read from tne environment
+  # variables (`HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`).
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @example
+  #   # setup proxy using a string:
+  #   config.transport.proxy = "https://user:password@proxyhost:8080"
+  #
+  #   # setup proxy using a URI:
+  #   config.transport.proxy = URI("https://user:password@proxyhost:8080")
+  #
+  #   # setup proxy using a hash:
+  #   config.transport.proxy = {
+  #   uri: URI("https://proxyhost:8080"),
+  #   user: "user",
+  #   password: "password"
+  #   }
+  # @return [String, URI, Hash, nil]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#42
   def proxy=(_arg0); end
 
-  # Returns the value of attribute ssl.
+  # The SSL configuration to use to connect to Sentry.
+  # You can either pass a `Hash` containing `ca_file` and `verification` keys,
+  # or you can set those options directly on the `Sentry::HTTPTransport::Configuration` object:
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @example
+  #   config.transport.ssl =  {
+  #   ca_file: "/path/to/ca_file",
+  #   verification: true
+  #   end
+  # @return [Hash, nil]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#55
   def ssl; end
 
-  # Sets the attribute ssl
+  # The SSL configuration to use to connect to Sentry.
+  # You can either pass a `Hash` containing `ca_file` and `verification` keys,
+  # or you can set those options directly on the `Sentry::HTTPTransport::Configuration` object:
   #
-  # @param value the value to set the attribute ssl to.
+  # @example
+  #   config.transport.ssl =  {
+  #   ca_file: "/path/to/ca_file",
+  #   verification: true
+  #   end
+  # @return [Hash, nil]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#55
   def ssl=(_arg0); end
 
-  # Returns the value of attribute ssl_ca_file.
+  # The path to the CA file to use to verify the SSL connection.
+  # Default value is `nil`.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @return [String, nil]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#61
   def ssl_ca_file; end
 
-  # Sets the attribute ssl_ca_file
+  # The path to the CA file to use to verify the SSL connection.
+  # Default value is `nil`.
   #
-  # @param value the value to set the attribute ssl_ca_file to.
+  # @return [String, nil]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#61
   def ssl_ca_file=(_arg0); end
 
-  # Returns the value of attribute ssl_verification.
+  # Whether to verify that the peer certificate is valid in SSL connections.
+  # Default value is `true`.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @return [Boolean]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#67
   def ssl_verification; end
 
-  # Sets the attribute ssl_verification
+  # Whether to verify that the peer certificate is valid in SSL connections.
+  # Default value is `true`.
   #
-  # @param value the value to set the attribute ssl_verification to.
+  # @return [Boolean]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#67
   def ssl_verification=(_arg0); end
 
-  # Returns the value of attribute timeout.
+  # The timeout in seconds to open a connection to Sentry, in seconds.
+  # Default value is 2.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # @return [Integer]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#11
   def timeout; end
 
-  # Sets the attribute timeout
+  # The timeout in seconds to open a connection to Sentry, in seconds.
+  # Default value is 2.
   #
-  # @param value the value to set the attribute timeout to.
+  # @return [Integer]
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#6
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#11
   def timeout=(_arg0); end
 
-  # Returns the value of attribute transport_class.
+  # The class to use as a transport to connect to Sentry.
+  # If this option not set, it will return `nil`, and Sentry will use
+  # `Sentry::HTTPTransport` by default.
   #
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#7
+  # @return [Class, nil]
+  #
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#80
   def transport_class; end
 
-  # source://sentry-ruby//lib/sentry/transport/configuration.rb#16
+  # source://sentry-ruby//lib/sentry/transport/configuration.rb#89
   def transport_class=(klass); end
 end
 
