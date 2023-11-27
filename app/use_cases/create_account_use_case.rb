@@ -8,9 +8,9 @@ class CreateAccountUseCase < ApplicationUseCase
     const :user, User
   end
 
-  sig { params(atname: String, email: String, locale: String, password: String).returns(Result) }
-  def call(atname:, email:, locale:, password:)
-    account = Account.new(atname:, email:, locale:, password:)
+  sig { params(atname: String, email: String, locale: String, password: String, time_zone: String).returns(Result) }
+  def call(atname:, email:, locale:, password:, time_zone:)
+    account = Account.new(atname:, email:, locale:, password:, time_zone:)
 
     ActiveRecord::Base.transaction do
       account.save!

@@ -8,8 +8,9 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
     form = Internal::AccountForm.new(
       atname: params[:atname],
       email: params[:email],
-      locale: I18n.locale,
-      password: params[:password]
+      password: params[:password],
+      locale: "ja", # TODO: あとでユーザの言語を指定する
+      time_zone: "Asia/Tokyo" # TODO: あとでユーザのタイムゾーンを指定する
     )
 
     if form.invalid?
@@ -20,7 +21,8 @@ class Internal::Accounts::CreateController < Internal::ApplicationController
       atname: form.atname.not_nil!,
       email: form.email.not_nil!,
       locale: form.locale.not_nil!,
-      password: form.password.not_nil!
+      password: form.password.not_nil!,
+      time_zone: form.time_zone.not_nil!
     )
     result.user.track_sign_in
 

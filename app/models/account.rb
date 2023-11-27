@@ -13,13 +13,23 @@ class Account
   sig { returns(T.nilable(OauthAccessToken)) }
   attr_reader :oauth_access_token
 
-  sig { params(atname: String, email: String, locale: String, password: String, current_time: ActiveSupport::TimeWithZone).void }
-  def initialize(atname:, email:, locale:, password:, current_time: Time.current)
+  sig do
+    params(
+      atname: String,
+      email: String,
+      locale: String,
+      password: String,
+      current_time: ActiveSupport::TimeWithZone,
+      time_zone: String
+    ).void
+  end
+  def initialize(atname:, email:, locale:, password:, current_time: Time.current, time_zone: "UTC")
     @atname = atname
     @email = email
     @locale = locale
     @password = password
     @current_time = current_time
+    @time_zone = time_zone
     @profile = T.let(nil, T.nilable(Profile))
     @user = T.let(nil, T.nilable(User))
     @oauth_access_token = T.let(nil, T.nilable(OauthAccessToken))
@@ -35,8 +45,9 @@ class Account
 
     @user = profile.not_nil!.create_user!(
       email:,
-      locale:,
       password:,
+      locale:,
+      time_zone:,
       signed_up_at: current_time
     )
 
@@ -70,4 +81,8 @@ class Account
   sig { returns(ActiveSupport::TimeWithZone) }
   attr_reader :current_time
   private :current_time
+
+  sig { returns(String) }
+  attr_reader :time_zone
+  private :time_zone
 end

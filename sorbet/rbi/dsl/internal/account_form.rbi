@@ -28,4 +28,10 @@ class Internal::AccountForm
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
   def password=(value); end
+
+  sig { returns(T.nilable(::String)) }
+  def time_zone; end
+
+  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+  def time_zone=(value); end
 end
