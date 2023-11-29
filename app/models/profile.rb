@@ -30,6 +30,11 @@ class Profile < ApplicationRecord
 
   delegate :delete_post, to: :postability
 
+  sig { returns(Post::PrivateRelation) }
+  def followee_posts
+    Post.joins(:profile).merge(followees)
+  end
+
   sig { returns(String) }
   def name_or_atname
     name.presence || atname

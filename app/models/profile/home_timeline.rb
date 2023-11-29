@@ -79,6 +79,13 @@ class Profile::HomeTimeline
     self
   end
 
+  sig { returns(T.self_type) }
+  def remove_all_posts
+    redis_client.del(profile.timeline_key)
+
+    self
+  end
+
   sig { returns(Profile) }
   attr_reader :profile
   private :profile
