@@ -9,6 +9,8 @@ class Profile < ApplicationRecord
   include TimelineOwnable
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
+  MIN_ATNAME_LENGTH = 2
+  MAX_ATNAME_LENGTH = 20
 
   enumerize :profileable_type, in: ProfileableType.values.map(&:serialize)
 
@@ -26,7 +28,11 @@ class Profile < ApplicationRecord
 
   scope :sort_by_latest_post, -> { order("last_post_at DESC NULLS LAST") }
 
-  validates :atname, format: {with: ATNAME_FORMAT}, length: {maximum: 20}, presence: true, uniqueness: true
+  validates :atname,
+    format: {with: ATNAME_FORMAT},
+    length: {in: MIN_ATNAME_LENGTH..MAX_ATNAME_LENGTH},
+    presence: true,
+    uniqueness: true
 
   delegate :delete_post, to: :postability
 

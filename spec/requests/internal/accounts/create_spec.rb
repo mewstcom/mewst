@@ -5,7 +5,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
   context "`atname` が不正なとき" do
     it "`422` を返すこと" do
       post("/internal/accounts", params: {
-        atname: "a" * 31,
+        atname: "a" * (Profile::MAX_ATNAME_LENGTH + 1),
         email: "test@example.com",
         locale: "ja",
         password: "password"
@@ -16,7 +16,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
           {
             code: "invalid_input_data",
             field: "atname",
-            message: "Atname is too long (maximum is 30 characters)"
+            message: "Atname is too long (maximum is 20 characters)"
           }
         ]
       }

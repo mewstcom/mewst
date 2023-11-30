@@ -8,10 +8,15 @@ class Internal::AccountForm < Internal::ApplicationForm
   attribute :password, :string
   attribute :time_zone, :string
 
-  validates :atname, format: {with: Profile::ATNAME_FORMAT}, length: {maximum: 30}, presence: true
+  validates :atname,
+    format: {with: Profile::ATNAME_FORMAT},
+    length: {in: Profile::MIN_ATNAME_LENGTH..Profile::MAX_ATNAME_LENGTH},
+    presence: true
   validates :email, email: true, presence: true
   validates :locale, presence: true
-  validates :password, length: {in: 6..128}, presence: true
+  validates :password,
+    length: {in: 8..ActiveModel::SecurePassword::MAX_PASSWORD_LENGTH_ALLOWED},
+    presence: true
   validates :time_zone, presence: true
   validate :atname_uniqueness
   validate :email_uniqueness
