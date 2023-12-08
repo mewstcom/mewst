@@ -4,12 +4,16 @@
 class CreateSeedAccountUseCase < ApplicationUseCase
   sig { params(atname: String, email: String, locale: String, password: String, avatar_url: String).void }
   def call(atname:, email:, locale:, password:, avatar_url:)
-    email_confirmation = EmailConfirmation.new(email:)
+    email_confirmation = EmailConfirmation.new(
+      email:,
+      event: EmailConfirmation::EVENT_SIGN_UP,
+      code: EmailConfirmation.generate_code
+    )
     account = Account.new(atname:, email:, locale:, password:)
 
     ActiveRecord::Base.transaction do
-      email_confirmation.send_sign_up_email!(locale:)
-      email_confirmation.success
+      email_confirmation.save!
+      email_confirmation.success!
 
       account.save!
 

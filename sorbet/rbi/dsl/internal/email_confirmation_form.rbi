@@ -12,6 +12,12 @@ class Internal::EmailConfirmationForm
   def email=(value); end
 
   sig { returns(T.nilable(::String)) }
+  def event; end
+
+  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+  def event=(value); end
+
+  sig { returns(T.nilable(::String)) }
   def locale; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   match "/internal/email_confirmations",                                  via: :post,   as: :internal_email_confirmation_list,                to: "internal/email_confirmations/create#call"
   match "/internal/email_confirmations/:email_confirmation_id",           via: :get,    as: :internal_email_confirmation,                     to: "internal/email_confirmations/show#call"
   match "/internal/email_confirmations/:email_confirmation_id/challenge", via: :post,   as: :internal_email_confirmation_challenge,           to: "internal/email_confirmations/challenges/create#call"
+  match "/internal/password",                                             via: :patch,  as: :internal_password,                               to: "internal/passwords/update#call"
   match "/internal/posts/:post_id",                                       via: :get,    as: :internal_post,                                   to: "internal/posts/show#call"
   match "/internal/sessions",                                             via: :post,   as: :internal_session_list,                           to: "internal/sessions/create#call"
   match "/latest/@:atname/follow",                                        via: :delete, as: :latest_follow,                                   to: "latest/follows/destroy#call",                         atname: ROUTING_USERNAME_FORMAT

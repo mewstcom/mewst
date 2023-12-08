@@ -14,8 +14,12 @@ class Internal::EmailConfirmations::Challenges::CreateController < Internal::App
       return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
     end
 
-    ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)
+    result = ConfirmEmailUseCase.new.call(email_confirmation: form.email_confirmation.not_nil!)
 
-    head :no_content
+    resource = Internal::EmailConfirmationResource.new(email_confirmation: result.email_confirmation)
+    render(
+      json: Internal::EmailConfirmationSerializer.new(resource),
+      status: :ok
+    )
   end
 end

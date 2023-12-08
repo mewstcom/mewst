@@ -5,7 +5,8 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
   context "メールアドレスが不正なとき" do
     it "`422` を返すこと" do
       post("/internal/email_confirmations", params: {
-        email: "invalidemail.com"
+        email: "invalidemail.com",
+        event: "sign_up"
       })
 
       expected = {
@@ -30,18 +31,15 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
       expect(EmailConfirmation.count).to eq(0)
 
       post("/internal/email_confirmations", params: {
-        email: "shimbaco@example.com"
+        email: "shimbaco@example.com",
+        event: "sign_up"
       })
 
       expect(EmailConfirmation.count).to eq(1)
       email_confirmation = EmailConfirmation.first
 
       expected = {
-        email_confirmation: {
-          email: email_confirmation.email,
-          id: email_confirmation.id,
-          succeeded_at: nil
-        }
+        email_confirmation: build_email_confirmation_resource(email_confirmation:)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)

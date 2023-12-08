@@ -30,7 +30,7 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
   context "確認コードが正しいとき" do
     let!(:email_confirmation) { create(:email_confirmation) }
 
-    it "`201` を返すこと" do
+    it "`200` を返すこと" do
       expect(EmailConfirmation.count).to eq(1)
       expect(email_confirmation.succeeded_at).to be_nil
 
@@ -42,8 +42,14 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
       email_confirmation = EmailConfirmation.first
       expect(email_confirmation.succeeded_at).not_to be_nil
 
-      expect(response).to have_http_status(:no_content)
-      assert_response_schema_confirm(204)
+      expected = {
+        email_confirmation: build_email_confirmation_resource(email_confirmation:)
+      }
+      actual = JSON.parse(response.body)
+      expect(actual).to include(expected.deep_stringify_keys)
+
+      expect(response).to have_http_status(:ok)
+      assert_response_schema_confirm(200)
     end
   end
 end

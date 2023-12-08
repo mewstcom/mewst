@@ -10,7 +10,7 @@ class EmailConfirmation < ApplicationRecord
 
   enumerize :event, in: [EVENT_PASSWORD_RESET, EVENT_SIGN_UP]
 
-  scope :active, -> { where("created_at > ?", EXPIRES_IN.ago) }
+  scope :active, -> { where(succeeded_at: nil).where("created_at > ?", EXPIRES_IN.ago) }
   scope :succeeded, -> { where.not(succeeded_at: nil) }
 
   validates :email, presence: true
@@ -26,19 +26,8 @@ class EmailConfirmation < ApplicationRecord
     !succeeded_at.nil?
   end
 
-  sig { params(locale: String).void }
-  def send_sign_up_email!(locale:)
-    self.code = EmailConfirmation.generate_code
-    self.event = EmailConfirmation::EVENT_SIGN_UP
-    save!
-
-    EmailConfirmationMailer.email_confirmation(email_confirmation_id: id.not_nil!, locale:).deliver_later
-
-    nil
-  end
-
   sig { returns(T::Boolean) }
-  def success
+  def success!
     update!(succeeded_at: Time.current) unless succeeded?
     true
   end

@@ -32,11 +32,7 @@ RSpec.describe "GET /internal/email_confirmations/:email_confirmation_id", type:
       get "/internal/email_confirmations/#{email_confirmation_id}"
 
       expected = {
-        email_confirmation: {
-          email: email_confirmation.email,
-          id: email_confirmation.id,
-          succeeded_at: nil
-        }
+        email_confirmation: build_email_confirmation_resource(email_confirmation:)
       }
       actual = JSON.parse(response.body)
       expect(actual).to include(expected.deep_stringify_keys)
