@@ -4,6 +4,16 @@
 module Mewst::Test::ResourceHelpers
   extend T::Sig
 
+  sig { params(email_confirmation: EmailConfirmation).returns(T::Hash[Symbol, T.untyped]) }
+  def build_email_confirmation_resource(email_confirmation:)
+    {
+      id: email_confirmation.id,
+      email: email_confirmation.email,
+      event: email_confirmation.event,
+      succeeded_at: email_confirmation.succeeded_at&.iso8601
+    }
+  end
+
   sig { params(profile: Profile, viewer_has_followed: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
   def build_profile_resource(profile:, viewer_has_followed:)
     {

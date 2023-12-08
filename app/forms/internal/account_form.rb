@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Internal::AccountForm < Internal::ApplicationForm
+  include Form::PasswordValidatable
+
   attribute :atname, :string
   attribute :email, :string
   attribute :locale, :string
@@ -14,9 +16,6 @@ class Internal::AccountForm < Internal::ApplicationForm
     presence: true
   validates :email, email: true, presence: true
   validates :locale, presence: true
-  validates :password,
-    length: {in: 8..ActiveModel::SecurePassword::MAX_PASSWORD_LENGTH_ALLOWED},
-    presence: true
   validates :time_zone, presence: true
   validate :atname_uniqueness
   validate :email_uniqueness

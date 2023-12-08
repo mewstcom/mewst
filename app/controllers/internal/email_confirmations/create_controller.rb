@@ -5,7 +5,11 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
   include Latest::FormErrorable
 
   def call
-    form = Internal::EmailConfirmationForm.new(email: params[:email], locale: I18n.locale)
+    form = Internal::EmailConfirmationForm.new(
+      email: params[:email],
+      event: params[:event],
+      locale: I18n.locale
+    )
 
     if form.invalid?
       return response_form_errors(resource_class: Latest::FormErrorResource, errors: form.errors)
@@ -13,6 +17,7 @@ class Internal::EmailConfirmations::CreateController < Internal::ApplicationCont
 
     result = CreateEmailConfirmationUseCase.new.call(
       email: form.email.not_nil!,
+      event: form.event.not_nil!,
       locale: form.locale.not_nil!
     )
 

@@ -109,7 +109,15 @@ paths:
               required:
                 - confirmation_code
       responses:
-        '204':
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  email_confirmation:
+                    "$ref": "#/components/schemas/email-confirmation"
+                type: object
           description: Response
         '422':
           "$ref": "#/components/responses/validation_failed"
@@ -159,6 +167,33 @@ paths:
       summary: ""
       tags:
         - accounts
+  "/password":
+    patch:
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: ""
+                new_password:
+                  type: string
+                  description: ""
+              required:
+                - email
+                - new_password
+      responses:
+        '204':
+          description: Response
+        '422':
+          "$ref": "#/components/responses/validation_failed"
+      summary: ""
+      tags:
+        - users
   "/posts/{post_id}":
     get:
       description: ""
@@ -299,10 +334,15 @@ components:
       description: ""
       type: object
       properties:
-        email:
-          type: string
         id:
           type: string
+        email:
+          type: string
+        event:
+          type: string
+          enum:
+            - password_reset
+            - sign_up
         succeeded_at:
           nullable: true
           type: string
