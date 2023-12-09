@@ -2,7 +2,7 @@
 
 OauthApplication.where(uid: OauthApplication::MEWST_WEB_UID).first_or_create!(
   name: "Mewst for Web",
-  redirect_uri: "#{ENV.fetch("MEWST_WEB_URL")}/callback",
+  redirect_uri: "https://example.com/callback",
   scopes: ""
 )
 
