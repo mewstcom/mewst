@@ -75,7 +75,7 @@ class Doorkeeper::AccessGrant < ::ActiveRecord::Base
   extend ::Doorkeeper::Models::ResourceOwnerable::ClassMethods
   extend ::Doorkeeper::AccessGrantMixin::ClassMethods
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_application(*args); end
 
   # source://doorkeeper//lib/doorkeeper/orm/active_record/mixins/access_grant.rb#33
@@ -87,47 +87,47 @@ class Doorkeeper::AccessGrant < ::ActiveRecord::Base
   def generate_token; end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/reflection.rb#11
+    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.4.3/lib/active_model/validations.rb#52
+    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
     def _validators; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/enum.rb#116
+    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
     def defined_enums; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/core.rb#70
+    # source://activerecord/7.0.8/lib/active_record/core.rb#70
     def strict_loading_by_default; end
   end
 end
 
 # source://doorkeeper//lib/doorkeeper/orm/active_record/access_grant.rb#0
 module Doorkeeper::AccessGrant::GeneratedAssociationMethods
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def application; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def application=(value); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
   def application_changed?; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
   def application_previously_changed?; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
   def build_application(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
   def create_application(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
   def create_application!(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
   def reload_application; end
 end
 
@@ -232,54 +232,54 @@ class Doorkeeper::AccessToken < ::ActiveRecord::Base
   extend ::Doorkeeper::Models::ExpirationTimeSqlMath::ClassMethods
   extend ::Doorkeeper::AccessTokenMixin::ClassMethods
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_application(*args); end
 
   # source://doorkeeper//lib/doorkeeper/orm/active_record/mixins/access_token.rb#22
   def use_refresh_token=(_arg0); end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/reflection.rb#11
+    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.4.3/lib/active_model/validations.rb#52
+    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
     def _validators; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/enum.rb#116
+    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
     def defined_enums; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/core.rb#70
+    # source://activerecord/7.0.8/lib/active_record/core.rb#70
     def strict_loading_by_default; end
   end
 end
 
 # source://doorkeeper//lib/doorkeeper/orm/active_record/access_token.rb#0
 module Doorkeeper::AccessToken::GeneratedAssociationMethods
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def application; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def application=(value); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
   def application_changed?; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
   def application_previously_changed?; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
   def build_application(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
   def create_application(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
   def create_application!(*args, &block); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
   def reload_application; end
 end
 
@@ -409,7 +409,7 @@ module Doorkeeper::AccessTokenMixin
   # source://doorkeeper//lib/doorkeeper/models/access_token_mixin.rb#391
   def old_refresh_token; end
 
-  # source://doorkeeper//lib/doorkeeper/models/access_token_mixin.rb#441
+  # source://doorkeeper//lib/doorkeeper/models/access_token_mixin.rb#445
   def token_generator; end
 end
 
@@ -590,16 +590,16 @@ class Doorkeeper::Application < ::ActiveRecord::Base
   # source://doorkeeper//lib/doorkeeper/orm/active_record/mixins/application.rb#88
   def authorized_for_resource_owner?(resource_owner); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_access_grants(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_access_tokens(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_authorized_applications(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_authorized_tokens(*args); end
 
   # source://doorkeeper//lib/doorkeeper/orm/active_record/mixins/application.rb#57
@@ -611,16 +611,16 @@ class Doorkeeper::Application < ::ActiveRecord::Base
   # source://doorkeeper//lib/doorkeeper/orm/active_record/mixins/application.rb#46
   def renew_secret; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_access_grants(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_access_tokens(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_authorized_applications(*args); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_authorized_tokens(*args); end
 
   private
@@ -647,71 +647,71 @@ class Doorkeeper::Application < ::ActiveRecord::Base
   def secret_generator; end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/reflection.rb#11
+    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.4.3/lib/active_model/validations.rb#52
+    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
     def _validators; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/enum.rb#116
+    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
     def defined_enums; end
 
-    # source://activerecord/7.0.4.3/lib/active_record/core.rb#70
+    # source://activerecord/7.0.8/lib/active_record/core.rb#70
     def strict_loading_by_default; end
   end
 end
 
 # source://doorkeeper//lib/doorkeeper/orm/active_record/application.rb#0
 module Doorkeeper::Application::GeneratedAssociationMethods
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
   def access_grant_ids; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
   def access_grant_ids=(ids); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def access_grants; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def access_grants=(value); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
   def access_token_ids; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
   def access_token_ids=(ids); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def access_tokens; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def access_tokens=(value); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
   def authorized_application_ids; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
   def authorized_application_ids=(ids); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def authorized_applications; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def authorized_applications=(value); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
   def authorized_token_ids; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
   def authorized_token_ids=(ids); end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
   def authorized_tokens; end
 
-  # source://activerecord/7.0.4.3/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
   def authorized_tokens=(value); end
 end
 
@@ -723,14 +723,14 @@ class Doorkeeper::ApplicationController < ::ActionController::Base
 
   private
 
-  # source://actionview/7.0.4.3/lib/action_view/layouts.rb#328
+  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -744,10 +744,10 @@ class Doorkeeper::ApplicationMetalController < ::ActionController::API
   include ::Doorkeeper::Helpers::Controller
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -833,7 +833,7 @@ class Doorkeeper::ApplicationsController < ::Doorkeeper::ApplicationController
 
   private
 
-  # source://actionview/7.0.4.3/lib/action_view/layouts.rb#328
+  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def application_params; end
@@ -841,16 +841,16 @@ class Doorkeeper::ApplicationsController < ::Doorkeeper::ApplicationController
   def set_application; end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionview/7.0.4.3/lib/action_view/layouts.rb#209
+    # source://actionview/7.0.8/lib/action_view/layouts.rb#209
     def _layout; end
 
-    # source://actionview/7.0.4.3/lib/action_view/layouts.rb#210
+    # source://actionview/7.0.8/lib/action_view/layouts.rb#210
     def _layout_conditions; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -862,7 +862,7 @@ class Doorkeeper::AuthorizationsController < ::Doorkeeper::ApplicationController
 
   private
 
-  # source://actionview/7.0.4.3/lib/action_view/layouts.rb#328
+  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def after_successful_authorization(context); end
@@ -881,10 +881,10 @@ class Doorkeeper::AuthorizationsController < ::Doorkeeper::ApplicationController
   def strategy; end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -895,14 +895,14 @@ class Doorkeeper::AuthorizedApplicationsController < ::Doorkeeper::ApplicationCo
 
   private
 
-  # source://actionview/7.0.4.3/lib/action_view/layouts.rb#328
+  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -936,7 +936,7 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def access_token_generator(*_args); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#536
+  # source://doorkeeper//lib/doorkeeper/config.rb#540
   def access_token_methods; end
 
   # Doorkeeper Access Token model class.
@@ -957,7 +957,7 @@ class Doorkeeper::Config
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#622
+  # source://doorkeeper//lib/doorkeeper/config.rb#626
   def allow_blank_redirect_uri?(application = T.unsafe(nil)); end
 
   # Allows to customize OAuth grant flows that +each+ application support.
@@ -989,7 +989,7 @@ class Doorkeeper::Config
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#630
+  # source://doorkeeper//lib/doorkeeper/config.rb#634
   def allow_grant_flow_for_client?(grant_flow, client); end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1018,10 +1018,10 @@ class Doorkeeper::Config
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#504
+  # source://doorkeeper//lib/doorkeeper/config.rb#508
   def application_secret_hashed?; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#512
+  # source://doorkeeper//lib/doorkeeper/config.rb#516
   def application_secret_strategy; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1033,10 +1033,10 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def authorization_code_expires_in(*_args); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#548
+  # source://doorkeeper//lib/doorkeeper/config.rb#552
   def authorization_response_flows; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#557
+  # source://doorkeeper//lib/doorkeeper/config.rb#561
   def authorization_response_types; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1059,25 +1059,25 @@ class Doorkeeper::Config
 
   # [NOTE]: deprecated and will be removed soon
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#593
+  # source://doorkeeper//lib/doorkeeper/config.rb#597
   def calculate_authorization_response_types; end
 
   # Calculates grant flows configured by the user in Doorkeeper
   # configuration considering registered aliases that is exposed
   # to single or multiple other flows.
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#608
+  # source://doorkeeper//lib/doorkeeper/config.rb#612
   def calculate_grant_flows; end
 
   # [NOTE]: deprecated and will be removed soon
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#598
+  # source://doorkeeper//lib/doorkeeper/config.rb#602
   def calculate_token_grant_types; end
 
   # source://doorkeeper//lib/doorkeeper/config.rb#419
   def clear_cache!; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#532
+  # source://doorkeeper//lib/doorkeeper/config.rb#536
   def client_credentials_methods; end
 
   # @return [Boolean]
@@ -1097,17 +1097,17 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def default_generator_method(*_args); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#516
+  # source://doorkeeper//lib/doorkeeper/config.rb#520
   def default_scopes; end
 
   # [NOTE]: deprecated and will be removed soon
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#576
+  # source://doorkeeper//lib/doorkeeper/config.rb#580
   def deprecated_authorization_flows; end
 
   # [NOTE]: deprecated and will be removed soon
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#566
+  # source://doorkeeper//lib/doorkeeper/config.rb#570
   def deprecated_token_grant_types_resolver; end
 
   # @return [Boolean]
@@ -1115,7 +1115,7 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config.rb#488
   def enable_application_owner?; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#544
+  # source://doorkeeper//lib/doorkeeper/config.rb#548
   def enabled_grant_flows; end
 
   # @return [Boolean]
@@ -1138,7 +1138,7 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def handle_auth_errors(*_args); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#570
+  # source://doorkeeper//lib/doorkeeper/config.rb#574
   def native_authorization_code_route; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1146,10 +1146,10 @@ class Doorkeeper::Config
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#636
+  # source://doorkeeper//lib/doorkeeper/config.rb#640
   def option_defined?(name); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#520
+  # source://doorkeeper//lib/doorkeeper/config.rb#524
   def optional_scopes; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1167,6 +1167,11 @@ class Doorkeeper::Config
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def realm(*_args); end
+
+  # @return [Boolean]
+  #
+  # source://doorkeeper//lib/doorkeeper/config.rb#504
+  def redirect_on_errors?; end
 
   # @return [Boolean]
   #
@@ -1189,10 +1194,10 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config.rb#480
   def revoke_previous_client_credentials_token?; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#524
+  # source://doorkeeper//lib/doorkeeper/config.rb#528
   def scopes; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#528
+  # source://doorkeeper//lib/doorkeeper/config.rb#532
   def scopes_by_grant_type; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1201,10 +1206,10 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
   def skip_client_authentication_for_password_grant(*_args); end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#553
+  # source://doorkeeper//lib/doorkeeper/config.rb#557
   def token_grant_flows; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#561
+  # source://doorkeeper//lib/doorkeeper/config.rb#565
   def token_grant_types; end
 
   # source://doorkeeper//lib/doorkeeper/config/option.rb#63
@@ -1218,19 +1223,19 @@ class Doorkeeper::Config
   # source://doorkeeper//lib/doorkeeper/config.rb#415
   def token_secret_fallback_strategy; end
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#508
+  # source://doorkeeper//lib/doorkeeper/config.rb#512
   def token_secret_strategy; end
 
   private
 
-  # source://doorkeeper//lib/doorkeeper/config.rb#648
+  # source://doorkeeper//lib/doorkeeper/config.rb#652
   def calculate_token_grant_flows; end
 
   # Helper to read boolearized configuration option
   #
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/config.rb#643
+  # source://doorkeeper//lib/doorkeeper/config.rb#647
   def option_set?(instance_key); end
 
   class << self
@@ -1599,13 +1604,16 @@ end
 # source://doorkeeper//lib/doorkeeper/engine.rb#4
 class Doorkeeper::Engine < ::Rails::Engine
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
   end
 end
 
 # source://doorkeeper//lib/doorkeeper/errors.rb#4
 module Doorkeeper::Errors; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#64
+class Doorkeeper::Errors::AccessDenied < ::Doorkeeper::Errors::BaseResponseError; end
 
 # source://doorkeeper//lib/doorkeeper/errors.rb#36
 class Doorkeeper::Errors::BaseResponseError < ::Doorkeeper::Errors::DoorkeeperError
@@ -1618,6 +1626,11 @@ class Doorkeeper::Errors::BaseResponseError < ::Doorkeeper::Errors::DoorkeeperEr
   #
   # source://doorkeeper//lib/doorkeeper/errors.rb#37
   def response; end
+
+  class << self
+    # source://doorkeeper//lib/doorkeeper/errors.rb#43
+    def name_for_response; end
+  end
 end
 
 # source://doorkeeper//lib/doorkeeper/errors.rb#5
@@ -1626,13 +1639,31 @@ class Doorkeeper::Errors::DoorkeeperError < ::StandardError
   def type; end
 end
 
+# source://doorkeeper//lib/doorkeeper/errors.rb#54
+class Doorkeeper::Errors::InvalidClient < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#57
+class Doorkeeper::Errors::InvalidCodeChallengeMethod < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#58
+class Doorkeeper::Errors::InvalidGrant < ::Doorkeeper::Errors::BaseResponseError; end
+
 # source://doorkeeper//lib/doorkeeper/errors.rb#11
 class Doorkeeper::Errors::InvalidGrantReuse < ::Doorkeeper::Errors::DoorkeeperError
   # source://doorkeeper//lib/doorkeeper/errors.rb#12
   def type; end
 end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#48
+# source://doorkeeper//lib/doorkeeper/errors.rb#56
+class Doorkeeper::Errors::InvalidRedirectUri < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#52
+class Doorkeeper::Errors::InvalidRequest < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#55
+class Doorkeeper::Errors::InvalidScope < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#53
 class Doorkeeper::Errors::InvalidToken < ::Doorkeeper::Errors::BaseResponseError; end
 
 # source://doorkeeper//lib/doorkeeper/errors.rb#17
@@ -1657,26 +1688,38 @@ class Doorkeeper::Errors::MissingRequiredParameter < ::Doorkeeper::Errors::Doork
   def type; end
 end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#46
+# source://doorkeeper//lib/doorkeeper/errors.rb#50
 class Doorkeeper::Errors::NoOrmCleaner < ::Doorkeeper::Errors::DoorkeeperError; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#49
+# source://doorkeeper//lib/doorkeeper/errors.rb#65
+class Doorkeeper::Errors::ServerError < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#67
 class Doorkeeper::Errors::TokenExpired < ::Doorkeeper::Errors::InvalidToken; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#52
+# source://doorkeeper//lib/doorkeeper/errors.rb#70
 class Doorkeeper::Errors::TokenForbidden < ::Doorkeeper::Errors::InvalidToken; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#45
+# source://doorkeeper//lib/doorkeeper/errors.rb#49
 class Doorkeeper::Errors::TokenGeneratorNotFound < ::Doorkeeper::Errors::DoorkeeperError; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#50
+# source://doorkeeper//lib/doorkeeper/errors.rb#68
 class Doorkeeper::Errors::TokenRevoked < ::Doorkeeper::Errors::InvalidToken; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#51
+# source://doorkeeper//lib/doorkeeper/errors.rb#69
 class Doorkeeper::Errors::TokenUnknown < ::Doorkeeper::Errors::InvalidToken; end
 
-# source://doorkeeper//lib/doorkeeper/errors.rb#44
+# source://doorkeeper//lib/doorkeeper/errors.rb#48
 class Doorkeeper::Errors::UnableToGenerateToken < ::Doorkeeper::Errors::DoorkeeperError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#60
+class Doorkeeper::Errors::UnauthorizedClient < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#62
+class Doorkeeper::Errors::UnsupportedResponseMode < ::Doorkeeper::Errors::BaseResponseError; end
+
+# source://doorkeeper//lib/doorkeeper/errors.rb#61
+class Doorkeeper::Errors::UnsupportedResponseType < ::Doorkeeper::Errors::BaseResponseError; end
 
 # source://doorkeeper//lib/doorkeeper/grant_flow/flow.rb#4
 module Doorkeeper::GrantFlow
@@ -2585,7 +2628,7 @@ class Doorkeeper::OAuth::ClientCredentials::Issuer
   def initialize(server, validator); end
 
   # source://doorkeeper//lib/doorkeeper/oauth/client_credentials/issuer.rb#14
-  def create(client, scopes, creator = T.unsafe(nil)); end
+  def create(client, scopes, attributes = T.unsafe(nil), creator = T.unsafe(nil)); end
 
   # Returns the value of attribute error.
   #
@@ -2605,7 +2648,7 @@ class Doorkeeper::OAuth::ClientCredentials::Issuer
   private
 
   # source://doorkeeper//lib/doorkeeper/oauth/client_credentials/issuer.rb#28
-  def create_token(client, scopes, creator); end
+  def create_token(client, scopes, attributes, creator); end
 end
 
 # source://doorkeeper//lib/doorkeeper/oauth/client_credentials/validator.rb#6
@@ -2638,7 +2681,7 @@ class Doorkeeper::OAuth::ClientCredentialsRequest < ::Doorkeeper::OAuth::BaseReq
   # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#12
   def initialize(server, client, parameters = T.unsafe(nil)); end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#19
+  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#20
   def access_token; end
 
   # Returns the value of attribute client.
@@ -2654,13 +2697,18 @@ class Doorkeeper::OAuth::ClientCredentialsRequest < ::Doorkeeper::OAuth::BaseReq
   # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#6
   def error_response; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#23
+  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#24
   def issuer; end
 
   # Returns the value of attribute original_scopes.
   #
   # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#6
   def original_scopes; end
+
+  # Returns the value of attribute parameters.
+  #
+  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#6
+  def parameters; end
 
   # Returns the value of attribute response.
   #
@@ -2669,9 +2717,12 @@ class Doorkeeper::OAuth::ClientCredentialsRequest < ::Doorkeeper::OAuth::BaseReq
 
   private
 
+  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#37
+  def custom_token_attributes_with_data; end
+
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#32
+  # source://doorkeeper//lib/doorkeeper/oauth/client_credentials_request.rb#33
   def valid?; end
 end
 
@@ -2780,53 +2831,53 @@ class Doorkeeper::OAuth::ErrorResponse < ::Doorkeeper::OAuth::BaseResponse
 
   # @return [ErrorResponse] a new instance of ErrorResponse
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#22
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#23
   def initialize(attributes = T.unsafe(nil)); end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#28
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#30
   def body; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#20
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#21
   def description(*_arg0, **_arg1, &_arg2); end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#56
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#58
   def headers; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#20
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#21
   def name(*_arg0, **_arg1, &_arg2); end
 
   # @raise [exception_class.new(self)]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#64
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#66
   def raise_exception!; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#48
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#50
   def redirect_uri; end
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#44
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#46
   def redirectable?; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#20
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#21
   def state(*_arg0, **_arg1, &_arg2); end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#36
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#38
   def status; end
 
   protected
 
   # @raise [NotImplementedError]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#74
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#76
   def exception_class; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#70
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#72
   def realm; end
 
   private
 
-  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#80
+  # source://doorkeeper//lib/doorkeeper/oauth/error_response.rb#83
   def authenticate_info; end
 
   class << self
@@ -3021,6 +3072,9 @@ class Doorkeeper::OAuth::InvalidRequestResponse < ::Doorkeeper::OAuth::ErrorResp
   # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#29
   def description; end
 
+  # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#38
+  def exception_class; end
+
   # Returns the value of attribute reason.
   #
   # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#6
@@ -3028,7 +3082,7 @@ class Doorkeeper::OAuth::InvalidRequestResponse < ::Doorkeeper::OAuth::ErrorResp
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#38
+  # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#42
   def redirectable?; end
 
   # source://doorkeeper//lib/doorkeeper/oauth/invalid_request_response.rb#25
@@ -3505,18 +3559,23 @@ end
 class Doorkeeper::OAuth::TokenIntrospection
   # @return [TokenIntrospection] a new instance of TokenIntrospection
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#9
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#11
   def initialize(server, token); end
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#16
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#18
   def authorized?; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#20
+  # Returns the value of attribute error.
+  #
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#9
+  def error; end
+
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#22
   def error_response; end
 
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#32
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#34
   def to_json(*_arg0); end
 
   private
@@ -3558,7 +3617,7 @@ class Doorkeeper::OAuth::TokenIntrospection
   #
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#153
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#155
   def active?; end
 
   # If the protected resource uses OAuth 2.0 client credentials to
@@ -3578,24 +3637,24 @@ class Doorkeeper::OAuth::TokenIntrospection
   #
   # @see https://www.oauth.com/oauth2-servers/token-introspection-endpoint/
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#58
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#60
   def authorize!; end
 
   # Client Authentication
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#80
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#82
   def authorized_client; end
 
   # Bearer Token Authentication
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#85
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#87
   def authorized_token; end
 
   # RFC7662 Section 2.1
   #
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#173
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#175
   def authorized_token_matches_introspected?; end
 
   # Allows to customize introspection response.
@@ -3604,13 +3663,8 @@ class Doorkeeper::OAuth::TokenIntrospection
   #
   # @see https://datatracker.ietf.org/doc/html/rfc7662#section-2.2
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#191
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#193
   def customize_response(response); end
-
-  # Returns the value of attribute error.
-  #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#39
-  def error; end
 
   # If the introspection call is properly authorized but the token is not
   # active, does not exist on this server, or the protected resource is
@@ -3623,46 +3677,46 @@ class Doorkeeper::OAuth::TokenIntrospection
   #
   # @see https://datatracker.ietf.org/doc/html/rfc7662 2.2. Introspection Response
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#112
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#114
   def failure_response; end
 
   # Returns the value of attribute invalid_request_reason.
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#39
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#41
   def invalid_request_reason; end
 
   # Returns the value of attribute server.
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#38
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#40
   def server; end
 
   # 2.2. Introspection Response
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#90
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#92
   def success_response; end
 
   # Returns the value of attribute token.
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#38
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#40
   def token; end
 
   # Config constraints for introspection in Doorkeeper.config.allow_token_introspection
   #
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#178
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#180
   def token_introspection_allowed?(auth_client: T.unsafe(nil), auth_token: T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#166
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#168
   def valid_authorized_token?; end
 
   # Token can be valid only if it is not expired or revoked.
   #
   # @return [Boolean]
   #
-  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#162
+  # source://doorkeeper//lib/doorkeeper/oauth/token_introspection.rb#164
   def valid_token?; end
 end
 
@@ -4524,7 +4578,7 @@ class Doorkeeper::TokenInfoController < ::Doorkeeper::ApplicationMetalController
   def error_to_json(error); end
 
   class << self
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
@@ -4548,10 +4602,10 @@ class Doorkeeper::TokensController < ::Doorkeeper::ApplicationMetalController
   def validate_presence_of_client; end
 
   class << self
-    # source://activesupport/7.0.4.3/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
     def __callbacks; end
 
-    # source://actionpack/7.0.4.3/lib/action_controller/metal.rb#210
+    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
     def middleware_stack; end
   end
 end
