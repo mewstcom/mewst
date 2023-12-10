@@ -7,7 +7,7 @@ module Localizable
 
   sig { params(action: Proc).returns(T.untyped) }
   def set_locale(&action)
-    I18n.with_locale(preferred_locale.serialize, &action)
+    I18n.with_locale(current_locale.serialize, &action)
   end
 
   sig { returns(Locale) }
@@ -20,5 +20,10 @@ module Localizable
   sig { returns(Locale) }
   private def default_locale
     Locale::En
+  end
+
+  sig { returns(Locale) }
+  private def current_locale
+    current_viewer&.locale.presence || preferred_locale
   end
 end

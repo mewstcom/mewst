@@ -2,7 +2,10 @@
 # frozen_string_literal: true
 
 class Internal::EmailConfirmations::Challenges::CreateController < Internal::ApplicationController
+  include Localizable
   include Latest::FormErrorable
+
+  around_action :set_locale
 
   def call
     form = Internal::EmailConfirmationChallengeForm.new(

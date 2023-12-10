@@ -1,6 +1,12 @@
 ja:
   forms:
     attributes:
+      internal/account_form:
+        atname: アットネーム
+        email: メールアドレス
+        password: パスワード
+      internal/email_confirmation_challenge_form:
+        confirmation_code: 確認用コード
       latest/follow_form:
         target_atname: atname
       latest/post_delete_form:
@@ -14,6 +20,7 @@ ja:
     errors:
       models:
         internal/account_form:
+          password_too_long: が長すぎます
           uniqueness: はすでに存在します
         internal/email_confirmation_challenge_form:
           attributes:
