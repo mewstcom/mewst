@@ -5,8 +5,13 @@ module Form::PasswordValidatable
   extend ActiveSupport::Concern
 
   included do
-    validates :password,
-      length: {in: 8..ActiveModel::SecurePassword::MAX_PASSWORD_LENGTH_ALLOWED},
-      presence: true
+    validates :password, length: {minimum: User::PASSWORD_MIN_LENGTH}, presence: true
+    validate do |record|
+      password_value = record.password
+
+      if password_value.present? && password_value.bytesize > ActiveModel::SecurePassword::MAX_PASSWORD_LENGTH_ALLOWED
+        record.errors.add(:password, :password_too_long)
+      end
+    end
   end
 end

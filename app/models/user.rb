@@ -4,6 +4,8 @@
 class User < ApplicationRecord
   extend Enumerize
 
+  PASSWORD_MIN_LENGTH = 8
+
   enumerize :locale, in: I18n.available_locales
 
   belongs_to :profile
