@@ -3,8 +3,11 @@
 
 RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal do
   context "`atname` が不正なとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
+
     it "`422` を返すこと" do
-      post("/internal/accounts", params: {
+      post("/internal/accounts", headers:, params: {
         atname: "a" * (Profile::ATNAME_MAX_LENGTH + 1),
         email: "test@example.com",
         locale: "ja",
@@ -29,6 +32,9 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
   end
 
   context "入力データが正しいとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
+
     before do
       create(:oauth_application, :mewst_web)
     end
@@ -39,7 +45,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
       expect(Actor.count).to eq(0)
       expect(OauthAccessToken.count).to eq(0)
 
-      post("/internal/accounts", params: {
+      post("/internal/accounts", headers:, params: {
         atname: "shimbaco",
         email: "shimbaco@example.com",
         locale: "ja",

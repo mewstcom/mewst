@@ -3,13 +3,15 @@
 
 RSpec.describe "GET /internal/@:atname/posts", type: :request, api_version: :internal do
   context "正常系" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:actor) { create(:actor, :with_access_token_for_web) }
     let!(:profile) { actor.profile }
     let!(:form) { Latest::PostForm.new(viewer: actor, content: "Hello") }
     let!(:post) { CreatePostUseCase.new.call(viewer: actor, content: form.content.not_nil!).post }
 
     it "プロフィールと投稿一覧が返ること" do
-      get("/internal/@#{profile.atname}/posts")
+      get("/internal/@#{profile.atname}/posts", headers:)
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)

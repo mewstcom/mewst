@@ -3,8 +3,11 @@
 
 RSpec.describe "POST /internal/email_confirmations", type: :request, api_version: :internal do
   context "メールアドレスが不正なとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
+
     it "`422` を返すこと" do
-      post("/internal/email_confirmations", params: {
+      post("/internal/email_confirmations", headers:, params: {
         email: "invalidemail.com",
         event: "sign_up"
       })
@@ -27,10 +30,13 @@ RSpec.describe "POST /internal/email_confirmations", type: :request, api_version
   end
 
   context "入力データが正しいとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
+
     it "`201` を返すこと" do
       expect(EmailConfirmation.count).to eq(0)
 
-      post("/internal/email_confirmations", params: {
+      post("/internal/email_confirmations", headers:, params: {
         email: "shimbaco@example.com",
         event: "sign_up"
       })

@@ -3,8 +3,11 @@
 
 RSpec.describe "GET /internal/posts/:post_id", type: :request, api_version: :internal do
   context "ポストが存在しないとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
+
     it "`404` を返すこと" do
-      get("/internal/posts/unknown_post_id")
+      get("/internal/posts/unknown_post_id", headers:)
 
       expect(response).to have_http_status(:not_found)
       assert_response_schema_confirm(404)
@@ -23,10 +26,12 @@ RSpec.describe "GET /internal/posts/:post_id", type: :request, api_version: :int
   end
 
   context "リクエストが正常なとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:post) { create(:post) }
 
     it "ポストを返すこと" do
-      get("/internal/posts/#{post.id}")
+      get("/internal/posts/#{post.id}", headers:)
 
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)

@@ -3,6 +3,8 @@
 
 RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal do
   context "パスワードが正しくないとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
     let!(:user) { create(:user, email:, password:) }
@@ -12,7 +14,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
     end
 
     it "`422` を返すこと" do
-      post("/internal/sessions", params: {
+      post("/internal/sessions", headers:, params: {
         email:,
         password: "incorrect_password"
       })
@@ -35,6 +37,8 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
   end
 
   context "メールアドレスとパスワードが正しいとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
     let!(:user) { create(:user, email:, password:) }
@@ -45,7 +49,7 @@ RSpec.describe "POST /internal/sessions", type: :request, api_version: :internal
     it "`201` を返すこと" do
       expect(user.sign_in_count).to eq(0)
 
-      post("/internal/sessions", params: {
+      post("/internal/sessions", headers:, params: {
         email:,
         password:
       })

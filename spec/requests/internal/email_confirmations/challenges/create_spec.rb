@@ -3,10 +3,12 @@
 
 RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challenge", type: :request, api_version: :internal do
   context "確認コードが不正なとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email_confirmation) { create(:email_confirmation) }
 
     it "`422` を返すこと" do
-      post("/internal/email_confirmations/#{email_confirmation.id}/challenge", params: {
+      post("/internal/email_confirmations/#{email_confirmation.id}/challenge", headers:, params: {
         confirmation_code: "invalid_code"
       })
 
@@ -28,13 +30,15 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
   end
 
   context "確認コードが正しいとき" do
+    let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
+    let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email_confirmation) { create(:email_confirmation) }
 
     it "`200` を返すこと" do
       expect(EmailConfirmation.count).to eq(1)
       expect(email_confirmation.succeeded_at).to be_nil
 
-      post("/internal/email_confirmations/#{email_confirmation.id}/challenge", params: {
+      post("/internal/email_confirmations/#{email_confirmation.id}/challenge", headers:, params: {
         confirmation_code: email_confirmation.code
       })
 
