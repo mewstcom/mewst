@@ -9,8 +9,8 @@ class Profile < ApplicationRecord
   include TimelineOwnable
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
-  MIN_ATNAME_LENGTH = 2
-  MAX_ATNAME_LENGTH = 20
+  ATNAME_MIN_LENGTH = 2
+  ATNAME_MAX_LENGTH = 20
 
   enumerize :profileable_type, in: ProfileableType.values.map(&:serialize)
 
@@ -30,7 +30,7 @@ class Profile < ApplicationRecord
 
   validates :atname,
     format: {with: ATNAME_FORMAT},
-    length: {in: MIN_ATNAME_LENGTH..MAX_ATNAME_LENGTH},
+    length: {in: ATNAME_MIN_LENGTH..ATNAME_MAX_LENGTH},
     presence: true,
     uniqueness: true
 

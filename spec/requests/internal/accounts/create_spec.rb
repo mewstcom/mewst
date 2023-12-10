@@ -5,7 +5,7 @@ RSpec.describe "POST /internal/accounts", type: :request, api_version: :internal
   context "`atname` が不正なとき" do
     it "`422` を返すこと" do
       post("/internal/accounts", params: {
-        atname: "a" * (Profile::MAX_ATNAME_LENGTH + 1),
+        atname: "a" * (Profile::ATNAME_MAX_LENGTH + 1),
         email: "test@example.com",
         locale: "ja",
         password: "password"

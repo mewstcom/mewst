@@ -12,7 +12,7 @@ class Internal::AccountForm < Internal::ApplicationForm
 
   validates :atname,
     format: {with: Profile::ATNAME_FORMAT},
-    length: {in: Profile::MIN_ATNAME_LENGTH..Profile::MAX_ATNAME_LENGTH},
+    length: {in: Profile::ATNAME_MIN_LENGTH..Profile::ATNAME_MAX_LENGTH},
     presence: true
   validates :email, email: true, presence: true
   validates :locale, presence: true
