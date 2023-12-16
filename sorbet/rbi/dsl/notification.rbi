@@ -265,9 +265,6 @@ class Notification
   end
 
   module GeneratedAssociationMethods
-    sig { params(args: T.untyped, blk: T.untyped).returns(::FollowNotification) }
-    def build_follow_notification(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_source_profile(*args, &blk); end
 
@@ -276,12 +273,6 @@ class Notification
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_target_profile(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::FollowNotification) }
-    def create_follow_notification(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::FollowNotification) }
-    def create_follow_notification!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_source_profile(*args, &blk); end
@@ -300,15 +291,6 @@ class Notification
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_target_profile!(*args, &blk); end
-
-    sig { returns(T.nilable(::FollowNotification)) }
-    def follow_notification; end
-
-    sig { params(value: T.nilable(::FollowNotification)).void }
-    def follow_notification=(value); end
-
-    sig { returns(T.nilable(::FollowNotification)) }
-    def reload_follow_notification; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_source_profile; end

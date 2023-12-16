@@ -439,16 +439,6 @@ components:
       required:
         - code
         - message
-    follow-notification-item:
-      additionalProperties: false
-      description: ""
-      properties:
-        profile:
-          $ref: "#/components/schemas/profile"
-      required:
-        - profile
-      title: Follow Notification
-      type: object
     notification:
       additionalProperties: false
       description: ""
@@ -460,11 +450,9 @@ components:
         kind:
           type: string
           enum:
-            - Follow
             - Stamp
         item:
           oneOf:
-            - $ref: "#/components/schemas/follow-notification-item"
             - $ref: "#/components/schemas/stamp-notification-item"
         notified_at:
           type: string

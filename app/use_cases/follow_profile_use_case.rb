@@ -18,7 +18,6 @@ class FollowProfileUseCase < ApplicationUseCase
 
     ApplicationRecord.transaction do
       new_follow.save!
-      new_follow.notify!
       new_follow.check_suggested!
     end
 

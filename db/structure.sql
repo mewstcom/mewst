@@ -93,19 +93,6 @@ CREATE TABLE public.email_confirmations (
 
 
 --
--- Name: follow_notifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.follow_notifications (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    notification_id uuid NOT NULL,
-    follow_id uuid NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: follows; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -412,14 +399,6 @@ ALTER TABLE ONLY public.email_confirmations
 
 
 --
--- Name: follow_notifications follow_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.follow_notifications
-    ADD CONSTRAINT follow_notifications_pkey PRIMARY KEY (id);
-
-
---
 -- Name: follows follows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -588,20 +567,6 @@ CREATE INDEX index_email_confirmations_on_created_at ON public.email_confirmatio
 --
 
 CREATE UNIQUE INDEX index_email_confirmations_on_email_and_code ON public.email_confirmations USING btree (email, code);
-
-
---
--- Name: index_follow_notifications_on_follow_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_follow_notifications_on_follow_id ON public.follow_notifications USING btree (follow_id);
-
-
---
--- Name: index_follow_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_follow_notifications_on_notification_id ON public.follow_notifications USING btree (notification_id);
 
 
 --
@@ -1008,14 +973,6 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: follow_notifications fk_rails_882bddd994; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.follow_notifications
-    ADD CONSTRAINT fk_rails_882bddd994 FOREIGN KEY (follow_id) REFERENCES public.follows(id);
-
-
---
 -- Name: users fk_rails_a8794354f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1029,14 +986,6 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_abf061b756 FOREIGN KEY (target_profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: follow_notifications fk_rails_b2df4597e6; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.follow_notifications
-    ADD CONSTRAINT fk_rails_b2df4597e6 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
 
 
 --
@@ -1102,18 +1051,18 @@ ALTER TABLE ONLY public.oauth_access_grants
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20220000000001'),
-('20221119004702'),
-('20230830155958'),
-('20231015050126'),
-('20231025165318'),
-('20231028081207'),
-('20231107174301'),
-('20231112022226'),
-('20231112024413'),
-('20231113161740'),
-('20231113162310'),
+('20231216042900'),
+('20231115172238'),
 ('20231115145714'),
-('20231115172238');
-
+('20231113162310'),
+('20231113161740'),
+('20231112024413'),
+('20231112022226'),
+('20231107174301'),
+('20231028081207'),
+('20231025165318'),
+('20231015050126'),
+('20230830155958'),
+('20221119004702'),
+('20220000000001');
 
