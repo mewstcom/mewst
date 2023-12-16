@@ -20,37 +20,27 @@ RSpec.describe "GET /latest/notifications", type: :request, api_version: :latest
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)
 
-      expect(viewer.notifications.count).to eq(2)
-      notification_1 = viewer.notifications.last
-      notification_2 = viewer.notifications.first
+      expect(viewer.notifications.count).to eq(1)
+      notification = viewer.notifications.first
 
       expected = {
         notifications: [
           {
-            id: notification_1.id,
+            id: notification.id,
             source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false),
             kind: "Stamp",
             item: {
               source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false),
               target_post: build_post_resource(post: post.reload, viewer_has_followed: false, viewer_has_stamped: false)
             },
-            notified_at: notification_1.notified_at.iso8601
-          },
-          {
-            id: notification_2.id,
-            source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false),
-            kind: "Follow",
-            item: {
-              source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false)
-            },
-            notified_at: notification_2.notified_at.iso8601
+            notified_at: notification.notified_at.iso8601
           }
         ],
         page_info: {
           has_next_page: false,
           has_previous_page: false,
           start_cursor: nil,
-          end_cursor: notification_2.id
+          end_cursor: notification.id
         }
       }
       actual = JSON.parse(response.body)

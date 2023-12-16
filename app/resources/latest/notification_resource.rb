@@ -20,11 +20,9 @@ class Latest::NotificationResource < Latest::ApplicationResource
     notification.notifiable_type.to_s
   end
 
-  sig { returns(T.any(Latest::FollowNotificationItemResource, Latest::StampNotificationItemResource)) }
+  sig { returns(Latest::StampNotificationItemResource) }
   def item
     case kind
-    when NotifiableType::Follow.serialize
-      Latest::FollowNotificationItemResource.new(follow_notification: notification.follow_notification.not_nil!, viewer:)
     when NotifiableType::Stamp.serialize
       Latest::StampNotificationItemResource.new(stamp_notification: notification.stamp_notification.not_nil!, viewer:)
     else

@@ -8,6 +8,5 @@ class Notification < ApplicationRecord
 
   belongs_to :source_profile, class_name: "Profile"
   belongs_to :target_profile, class_name: "Profile"
-  has_one :follow_notification, dependent: :restrict_with_exception
   has_one :stamp_notification, dependent: :restrict_with_exception
 end

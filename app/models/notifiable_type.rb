@@ -3,7 +3,6 @@
 
 class NotifiableType < T::Enum
   enums do
-    Follow = new("Follow")
     Stamp = new("Stamp")
   end
 end

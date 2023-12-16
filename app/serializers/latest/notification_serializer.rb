@@ -10,8 +10,6 @@ class Latest::NotificationSerializer < Latest::ApplicationSerializer
 
   one :item, resource: ->(resource) {
     case resource
-    when Latest::FollowNotificationItemResource
-      Latest::FollowNotificationItemSerializer
     when Latest::StampNotificationItemResource
       Latest::StampNotificationItemSerializer
     else
