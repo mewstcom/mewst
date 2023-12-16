@@ -21,6 +21,7 @@ en:
       models:
         internal/account_form:
           password_too_long: is too long
+          reserved: " \"%{value}\" is reserved"
           uniqueness: is already taken
         internal/email_confirmation_challenge_form:
           attributes:

@@ -32,7 +32,8 @@ class Profile < ApplicationRecord
     format: {with: ATNAME_FORMAT},
     length: {in: ATNAME_MIN_LENGTH..ATNAME_MAX_LENGTH},
     presence: true,
-    uniqueness: true
+    uniqueness: true,
+    unreserved_atname: true
 
   delegate :delete_post, to: :postability
 

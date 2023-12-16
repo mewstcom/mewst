@@ -4,5 +4,16 @@ shared:
   internal_api_token: <%= ENV["MEWST_INTERNAL_API_TOKEN"] %>
   redis_url: <%= ENV["REDIS_URL"] %>
   resend_api_key: <%= ENV["MEWST_RESEND_API_KEY"] %>
+  reserved_atnames:
+    - admin
+    - administrator
+    - administrators
+    - admins
+    - atname
+    - example
+    - me
+    - mewst
+    - official
+    - self
   sentry_dsn: <%= ENV["MEWST_SENTRY_DSN"] %>
   web_url: <%= ENV["MEWST_WEB_URL"] %>
