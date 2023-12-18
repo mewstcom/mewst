@@ -9,7 +9,7 @@ class Latest::Profiles::Posts::IndexController < Latest::ApplicationController
     result = Paginator.new(records: profile.posts.kept).paginate(
       before: params[:before].presence,
       after: params[:after].presence,
-      limit: 5
+      limit: 15
     )
 
     profile_resource = Latest::ProfileResource.new(profile:, viewer: current_viewer)

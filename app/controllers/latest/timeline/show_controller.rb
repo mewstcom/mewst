@@ -8,7 +8,7 @@ class Latest::Timeline::ShowController < Latest::ApplicationController
     posts, page_info = current_viewer!.home_timeline.posts_with_page_info(
       before: params[:before].presence,
       after: params[:after].presence,
-      limit: 5
+      limit: 15
     )
 
     resources = posts.map { |post| Latest::PostResource.new(post:, viewer: current_viewer!) }

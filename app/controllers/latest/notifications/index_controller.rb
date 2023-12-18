@@ -9,7 +9,7 @@ class Latest::Notifications::IndexController < Latest::ApplicationController
     result = Paginator.new(records: notifications).paginate(
       before: params[:before].presence,
       after: params[:after].presence,
-      limit: 5,
+      limit: 15,
       order_by: :notified_at
     )
 
