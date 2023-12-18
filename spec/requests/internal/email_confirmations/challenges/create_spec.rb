@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challenge", type: :request, api_version: :internal do
-  context "確認コードが不正なとき" do
+  context "確認用コードが不正なとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email_confirmation) { create(:email_confirmation) }
@@ -29,7 +29,7 @@ RSpec.describe "POST /internal/email_confirmations/:email_confirmation_id/challe
     end
   end
 
-  context "確認コードが正しいとき" do
+  context "確認用コードが正しいとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email_confirmation) { create(:email_confirmation) }
