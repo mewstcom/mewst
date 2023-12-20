@@ -6,8 +6,13 @@
 
 class DeletePostJob
   class << self
-    sig { params(post_id: ::String).returns(T.any(DeletePostJob, FalseClass)) }
-    def perform_later(post_id:); end
+    sig do
+      params(
+        post_id: ::String,
+        block: T.nilable(T.proc.params(job: DeletePostJob).void)
+      ).returns(T.any(DeletePostJob, FalseClass))
+    end
+    def perform_later(post_id:, &block); end
 
     sig { params(post_id: ::String).void }
     def perform_now(post_id:); end
