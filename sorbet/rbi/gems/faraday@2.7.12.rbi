@@ -92,12 +92,12 @@ module Faraday
     # @example With an URL argument
     #   Faraday.new 'http://faraday.com'
     #   # => Faraday::Connection to http://faraday.com
+    # @example With an URL argument and an options hash
+    #   Faraday.new 'http://faraday.com', params: { page: 1 }
+    #   # => Faraday::Connection to http://faraday.com?page=1
     # @example With everything in an options hash
     #   Faraday.new url: 'http://faraday.com',
     #   params: { page: 1 }
-    #   # => Faraday::Connection to http://faraday.com?page=1
-    # @example With an URL argument and an options hash
-    #   Faraday.new 'http://faraday.com', params: { page: 1 }
     #   # => Faraday::Connection to http://faraday.com?page=1
     # @option options
     # @option options
@@ -864,7 +864,7 @@ Faraday::Connection::USER_AGENT = T.let(T.unsafe(nil), String)
 
 # A unified error for failed connections.
 #
-# source://faraday//lib/faraday/error.rb#147
+# source://faraday//lib/faraday/error.rb#151
 class Faraday::ConnectionFailed < ::Faraday::Error; end
 
 # ConnectionOptions contains the configurable properties for a Faraday
@@ -1510,11 +1510,11 @@ end
 
 # Raised by Faraday::Response::RaiseError in case of a nil status in response.
 #
-# source://faraday//lib/faraday/error.rb#139
+# source://faraday//lib/faraday/error.rb#143
 class Faraday::NilStatusError < ::Faraday::ServerError
   # @return [NilStatusError] a new instance of NilStatusError
   #
-  # source://faraday//lib/faraday/error.rb#140
+  # source://faraday//lib/faraday/error.rb#144
   def initialize(exc, response = T.unsafe(nil)); end
 end
 
@@ -1673,7 +1673,7 @@ end
 
 # Raised by middlewares that parse the response, like the JSON response middleware.
 #
-# source://faraday//lib/faraday/error.rb#155
+# source://faraday//lib/faraday/error.rb#159
 class Faraday::ParsingError < ::Faraday::Error; end
 
 # Raised by Faraday::Response::RaiseError in case of a 407 response.
@@ -2429,7 +2429,7 @@ class Faraday::Response::RaiseError < ::Faraday::Middleware
   # source://faraday//lib/faraday/response/raise_error.rb#13
   def on_complete(env); end
 
-  # source://faraday//lib/faraday/response/raise_error.rb#73
+  # source://faraday//lib/faraday/response/raise_error.rb#75
   def query_params(env); end
 
   # Returns a hash of response data with the following keys:
@@ -2441,7 +2441,7 @@ class Faraday::Response::RaiseError < ::Faraday::Middleware
   # The `request` key is omitted when the middleware is explicitly
   # configured with the option `include_request: false`.
   #
-  # source://faraday//lib/faraday/response/raise_error.rb#50
+  # source://faraday//lib/faraday/response/raise_error.rb#52
   def response_values(env); end
 end
 
@@ -2453,7 +2453,7 @@ Faraday::Response::RaiseError::ServerErrorStatuses = T.let(T.unsafe(nil), Range)
 
 # A unified client error for SSL errors.
 #
-# source://faraday//lib/faraday/error.rb#151
+# source://faraday//lib/faraday/error.rb#155
 class Faraday::SSLError < ::Faraday::Error; end
 
 # SSL-related options.
@@ -2566,18 +2566,23 @@ end
 
 # Faraday server error class. Represents 5xx status responses.
 #
-# source://faraday//lib/faraday/error.rb#128
+# source://faraday//lib/faraday/error.rb#132
 class Faraday::ServerError < ::Faraday::Error; end
 
 # A unified client error for timeouts.
 #
-# source://faraday//lib/faraday/error.rb#132
+# source://faraday//lib/faraday/error.rb#136
 class Faraday::TimeoutError < ::Faraday::ServerError
   # @return [TimeoutError] a new instance of TimeoutError
   #
-  # source://faraday//lib/faraday/error.rb#133
+  # source://faraday//lib/faraday/error.rb#137
   def initialize(exc = T.unsafe(nil), response = T.unsafe(nil)); end
 end
+
+# Raised by Faraday::Response::RaiseError in case of a 429 response.
+#
+# source://faraday//lib/faraday/error.rb#128
+class Faraday::TooManyRequestsError < ::Faraday::ClientError; end
 
 # Raised by Faraday::Response::RaiseError in case of a 401 response.
 #

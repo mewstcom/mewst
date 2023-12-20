@@ -6,8 +6,13 @@
 
 class FanoutPostJob
   class << self
-    sig { params(post_id: ::String).returns(T.any(FanoutPostJob, FalseClass)) }
-    def perform_later(post_id:); end
+    sig do
+      params(
+        post_id: ::String,
+        block: T.nilable(T.proc.params(job: FanoutPostJob).void)
+      ).returns(T.any(FanoutPostJob, FalseClass))
+    end
+    def perform_later(post_id:, &block); end
 
     sig { params(post_id: ::String).void }
     def perform_now(post_id:); end

@@ -7,18 +7,44 @@
 # source://good_job//lib/active_job/queue_adapters/good_job_adapter.rb#3
 module ActiveJob
   class << self
-    # source://activejob/7.0.8/lib/active_job/gem_version.rb#5
+    # source://activejob/7.1.2/lib/active_job/queue_adapter.rb#7
+    def adapter_name(adapter); end
+
+    # source://activejob/7.1.2/lib/active_job/deprecator.rb#4
+    def deprecator; end
+
+    # source://activejob/7.1.2/lib/active_job/gem_version.rb#5
     def gem_version; end
 
-    # source://activejob/7.0.8/lib/active_job/version.rb#7
+    # source://activejob/7.1.2/lib/active_job/enqueuing.rb#16
+    def perform_all_later(*jobs); end
+
+    # source://activejob/7.1.2/lib/active_job.rb#53
+    def use_big_decimal_serializer; end
+
+    # source://activejob/7.1.2/lib/active_job.rb#53
+    def use_big_decimal_serializer=(_arg0); end
+
+    # source://activejob/7.1.2/lib/active_job.rb#61
+    def verbose_enqueue_logs; end
+
+    # source://activejob/7.1.2/lib/active_job.rb#61
+    def verbose_enqueue_logs=(_arg0); end
+
+    # source://activejob/7.1.2/lib/active_job/version.rb#7
     def version; end
+
+    private
+
+    # source://activejob/7.1.2/lib/active_job/instrumentation.rb#6
+    def instrument_enqueue_all(queue_adapter, jobs); end
   end
 end
 
 # source://good_job//lib/active_job/queue_adapters/good_job_adapter.rb#4
 module ActiveJob::QueueAdapters
   class << self
-    # source://activejob/7.0.8/lib/active_job/queue_adapters.rb#136
+    # source://activejob/7.1.2/lib/active_job/queue_adapters.rb#137
     def lookup(name); end
   end
 end
@@ -287,13 +313,13 @@ module GoodJob
     # source://good_job//lib/good_job.rb#78
     def preserve_job_records=(val); end
 
-    # source://railties/7.0.8/lib/rails/engine.rb#405
+    # source://railties/7.1.2/lib/rails/engine.rb#405
     def railtie_helpers_paths; end
 
-    # source://railties/7.0.8/lib/rails/engine.rb#394
+    # source://railties/7.1.2/lib/rails/engine.rb#394
     def railtie_namespace; end
 
-    # source://railties/7.0.8/lib/rails/engine.rb#409
+    # source://railties/7.1.2/lib/rails/engine.rb#409
     def railtie_routes_url_helpers(include_path_helpers = T.unsafe(nil)); end
 
     # Stops and restarts executing jobs.
@@ -351,10 +377,10 @@ module GoodJob
     # source://good_job//lib/good_job.rb#148
     def shutdown?; end
 
-    # source://railties/7.0.8/lib/rails/engine.rb#397
+    # source://railties/7.1.2/lib/rails/engine.rb#397
     def table_name_prefix; end
 
-    # source://railties/7.0.8/lib/rails/engine.rb#401
+    # source://railties/7.1.2/lib/rails/engine.rb#401
     def use_relative_model_naming?; end
   end
 end
@@ -652,7 +678,7 @@ class GoodJob::AdvisoryLockable::RecordAlreadyAdvisoryLockedError < ::StandardEr
 class GoodJob::ApplicationController < ::ActionController::Base
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   def current_locale; end
@@ -661,10 +687,10 @@ class GoodJob::ApplicationController < ::ActionController::Base
   def use_original_locale; end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
   end
 end
@@ -733,13 +759,13 @@ class GoodJob::BaseExecution < ::GoodJob::BaseRecord
   def active_job_data; end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_lock(*args, **_arg1); end
 
     def advisory_lockable_column; end
@@ -749,42 +775,43 @@ class GoodJob::BaseExecution < ::GoodJob::BaseRecord
     def advisory_lockable_function=(value); end
     def advisory_lockable_function?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_locked(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_unlocked(*args, **_arg1); end
 
     def coalesce_scheduled_at_created_at; end
+    def cron_indices_migrated?; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
     def discrete_support?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def display_all(*args, **_arg1); end
 
     def error_event_migrated?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def includes_advisory_locks(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def job_class(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def joins_advisory_locks(*args, **_arg1); end
 
     def json_string(json, attr); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def owns_advisory_locked(*args, **_arg1); end
 
     def params_execution_count; end
     def params_job_class; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def search_text(*args, **_arg1); end
   end
 end
@@ -822,10 +849,10 @@ class GoodJob::BaseRecord < ::ActiveRecord::Base
   include ::GoodJob::BaseRecord::GeneratedAssociationMethods
 
   class << self
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
     def migrated?; end
@@ -853,16 +880,16 @@ class GoodJob::Batch
   def callback_queue_name=(arg); end
   def created_at(*_arg0, **_arg1, &_arg2); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def current_batch_callback_id; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def current_batch_callback_id=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def current_batch_id; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def current_batch_id=(obj); end
 
   def description(*_arg0, **_arg1, &_arg2); end
@@ -895,16 +922,16 @@ class GoodJob::Batch
   def record=(_arg0); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def current_batch_callback_id; end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def current_batch_callback_id=(obj); end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def current_batch_id; end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def current_batch_id=(obj); end
 
     def enqueue(active_jobs = T.unsafe(nil), **properties, &block); end
@@ -927,127 +954,46 @@ class GoodJob::BatchRecord < ::GoodJob::BaseRecord
   def advisory_lockable_function=(_arg0); end
   def advisory_lockable_function?; end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_callback_jobs(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_executions(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_jobs(*args); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def clear_properties_change; end
 
   def create_with_advisory_lock; end
   def create_with_advisory_lock=(_arg0); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def discarded?(*args, **_arg1); end
-
   def display_attributes; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def enqueued?(*args, **_arg1); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def finished?(*args, **_arg1); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties(*args, **_arg1); end
-
   def properties=(value); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_before_last_save; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_before_type_cast; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_came_from_user?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_change; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_change_to_be_saved; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_changed?(**options); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_for_database; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_in_database; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_previous_change; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_previously_changed?(**options); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_previously_was; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_was; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def properties_will_change!; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def restore_properties!; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_discarded?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_enqueued?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_finished?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_properties; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_properties?(**options); end
-
   def succeeded?; end
   def to_batch; end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_callback_jobs(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_executions(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_jobs(*args); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def will_save_change_to_properties?(**options); end
 
   private
 
   def take_advisory_lock(value, &block); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
+    # source://activerecord/7.1.2/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_lock(*args, **_arg1); end
 
     def advisory_lockable_column; end
@@ -1057,82 +1003,82 @@ class GoodJob::BatchRecord < ::GoodJob::BaseRecord
     def advisory_lockable_function=(value); end
     def advisory_lockable_function?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_locked(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_unlocked(*args, **_arg1); end
 
-    # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#72
+    # source://activemodel/7.1.2/lib/active_model/attribute_methods.rb#72
     def attribute_aliases; end
 
-    # source://activerecord/7.0.8/lib/active_record/attributes.rb#11
+    # source://activerecord/7.1.2/lib/active_record/attributes.rb#11
     def attributes_to_define_after_schema_loads; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def discarded(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def display_all(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def finished(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def includes_advisory_locks(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def joins_advisory_locks(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def not_discarded(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def owns_advisory_locked(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def succeeded(*args, **_arg1); end
   end
 end
 
 module GoodJob::BatchRecord::GeneratedAssociationMethods
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def callback_job_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def callback_job_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def callback_jobs; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def callback_jobs=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def execution_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def execution_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def executions; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def executions=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def job_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def job_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def jobs; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def jobs=(value); end
 end
 
@@ -1151,11 +1097,11 @@ class GoodJob::BatchesController < ::GoodJob::ApplicationController
 
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
   end
 end
@@ -1168,10 +1114,10 @@ end
 
 # source://good_job//lib/good_job/bulk.rb#6
 module GoodJob::Bulk
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def current_buffer; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def current_buffer=(obj); end
 
   class << self
@@ -1189,14 +1135,14 @@ module GoodJob::Bulk
     #
     # @return [GoodJob::Bulk::Buffer, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def current_buffer; end
 
     # Current buffer of jobs to be enqueued.
     #
     # @return [GoodJob::Bulk::Buffer, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def current_buffer=(obj); end
 
     # Capture jobs to a buffer and enqueue them all at once; or enqueue the current buffer.
@@ -1257,65 +1203,65 @@ class GoodJob::CLI < ::Thor
   #
   # @return [void]
   #
-  # source://good_job//lib/good_job/cli.rb#145
+  # source://good_job//lib/good_job/cli.rb#153
   def cleanup_preserved_jobs; end
 
-  # source://good_job//lib/good_job/cli.rb#158
+  # source://good_job//lib/good_job/cli.rb#166
   def set_up_application!; end
 
   # The +good_job start+ command. Executes queued jobs.
   #
   # @return [void]
   #
-  # source://good_job//lib/good_job/cli.rb#95
+  # source://good_job//lib/good_job/cli.rb#102
   def start; end
 
   class << self
     # @return [Boolean]
     #
-    # source://good_job//lib/good_job/cli.rb#35
+    # source://good_job//lib/good_job/cli.rb#38
     def exit_on_failure?; end
 
     # Whether to log to STDOUT
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#31
+    # source://good_job//lib/good_job/cli.rb#34
     def log_to_stdout; end
 
     # Whether to log to STDOUT
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#31
+    # source://good_job//lib/good_job/cli.rb#34
     def log_to_stdout=(_arg0); end
 
     # Whether to log to STDOUT
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#31
+    # source://good_job//lib/good_job/cli.rb#34
     def log_to_stdout?; end
 
     # Whether the CLI is running from the executable
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#26
+    # source://good_job//lib/good_job/cli.rb#29
     def within_exe; end
 
     # Whether the CLI is running from the executable
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#26
+    # source://good_job//lib/good_job/cli.rb#29
     def within_exe=(_arg0); end
 
     # Whether the CLI is running from the executable
     #
     # @return [Boolean, nil]
     #
-    # source://good_job//lib/good_job/cli.rb#26
+    # source://good_job//lib/good_job/cli.rb#29
     def within_exe?; end
   end
 end
@@ -1330,6 +1276,11 @@ GoodJob::CLI::RAILS_ENVIRONMENT_RB = T.let(T.unsafe(nil), String)
 #
 # source://good_job//lib/good_job/cli.rb#21
 GoodJob::CLI::SHUTDOWN_EVENT_TIMEOUT = T.let(T.unsafe(nil), Integer)
+
+# Number of seconds between checking shutdown conditions when idle-timeout is enabled
+#
+# source://good_job//lib/good_job/cli.rb#24
+GoodJob::CLI::SHUTDOWN_EVENT_TIMEOUT_FOR_IDLE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # An object that has case-equality to a Proc or Lambda by responding to #call.
 # This can be used to duck-type match in a case statement.
@@ -1361,8 +1312,14 @@ class GoodJob::Capsule
   # @param job_state [Hash, nil] See {GoodJob::Scheduler#create_thread}.
   # @return [Boolean, nil] Whether the thread was created.
   #
-  # source://good_job//lib/good_job/capsule.rb#83
+  # source://good_job//lib/good_job/capsule.rb#97
   def create_thread(job_state = T.unsafe(nil)); end
+
+  # @param duration [nil, Numeric] Length of idleness to check for (in seconds).
+  # @return [Boolean] Whether the capsule is idle
+  #
+  # source://good_job//lib/good_job/capsule.rb#82
+  def idle?(duration = T.unsafe(nil)); end
 
   # Shutdown and then start the capsule again.
   #
@@ -1406,7 +1363,7 @@ class GoodJob::Capsule
 
   # @return [Boolean]
   #
-  # source://good_job//lib/good_job/capsule.rb#90
+  # source://good_job//lib/good_job/capsule.rb#104
   def startable?(force: T.unsafe(nil)); end
 
   class << self
@@ -1518,7 +1475,7 @@ class GoodJob::Configuration
   #
   # @return [Boolean]
   #
-  # source://good_job//lib/good_job/configuration.rb#233
+  # source://good_job//lib/good_job/configuration.rb#243
   def cleanup_discarded_jobs?; end
 
   # Number of jobs a {Scheduler} will execute before automatically cleaning up preserved jobs.
@@ -1526,7 +1483,7 @@ class GoodJob::Configuration
   #
   # @return [Integer, Boolean, nil]
   #
-  # source://good_job//lib/good_job/configuration.rb#254
+  # source://good_job//lib/good_job/configuration.rb#264
   def cleanup_interval_jobs; end
 
   # Number of seconds a {Scheduler} will wait before automatically cleaning up preserved jobs.
@@ -1534,14 +1491,14 @@ class GoodJob::Configuration
   #
   # @return [Integer, nil]
   #
-  # source://good_job//lib/good_job/configuration.rb#288
+  # source://good_job//lib/good_job/configuration.rb#298
   def cleanup_interval_seconds; end
 
   # Number of seconds to preserve jobs before automatic destruction.
   #
   # @return [Integer]
   #
-  # source://good_job//lib/good_job/configuration.rb#242
+  # source://good_job//lib/good_job/configuration.rb#252
   def cleanup_preserved_jobs_before_seconds_ago; end
 
   # source://good_job//lib/good_job/configuration.rb#205
@@ -1554,10 +1511,10 @@ class GoodJob::Configuration
   #
   # @return [Boolean]
   #
-  # source://good_job//lib/good_job/configuration.rb#322
+  # source://good_job//lib/good_job/configuration.rb#332
   def daemonize?; end
 
-  # source://good_job//lib/good_job/configuration.rb#353
+  # source://good_job//lib/good_job/configuration.rb#363
   def dashboard_default_locale; end
 
   # Whether to run cron
@@ -1574,7 +1531,7 @@ class GoodJob::Configuration
   # source://good_job//lib/good_job/configuration.rb#193
   def enable_cron?; end
 
-  # source://good_job//lib/good_job/configuration.rb#341
+  # source://good_job//lib/good_job/configuration.rb#351
   def enable_listen_notify; end
 
   # The environment from which to read GoodJob's environment variables. By
@@ -1594,11 +1551,18 @@ class GoodJob::Configuration
   # source://good_job//lib/good_job/configuration.rb#93
   def execution_mode; end
 
+  # The number of seconds that a good_job process will idle with out running a job before exiting
+  #
+  # @return [Integer, nil] Number of seconds or nil means do not idle out.
+  #
+  # source://good_job//lib/good_job/configuration.rb#233
+  def idle_timeout; end
+
   # Whether running in a web server process.
   #
   # @return [Boolean, nil]
   #
-  # source://good_job//lib/good_job/configuration.rb#359
+  # source://good_job//lib/good_job/configuration.rb#369
   def in_webserver?; end
 
   # @return [Boolean]
@@ -1636,7 +1600,7 @@ class GoodJob::Configuration
   #
   # @return [Pathname, String]
   #
-  # source://good_job//lib/good_job/configuration.rb#328
+  # source://good_job//lib/good_job/configuration.rb#338
   def pidfile; end
 
   # The number of seconds between polls for jobs. GoodJob will execute jobs
@@ -1652,7 +1616,7 @@ class GoodJob::Configuration
   #
   # @return [nil, Integer]
   #
-  # source://good_job//lib/good_job/configuration.rb#336
+  # source://good_job//lib/good_job/configuration.rb#346
   def probe_port; end
 
   # The number of queued jobs to select when polling for a job to run.
@@ -1683,7 +1647,7 @@ class GoodJob::Configuration
   # source://good_job//lib/good_job/configuration.rb#182
   def shutdown_timeout; end
 
-  # source://good_job//lib/good_job/configuration.rb#349
+  # source://good_job//lib/good_job/configuration.rb#359
   def smaller_number_is_higher_priority; end
 
   # source://good_job//lib/good_job/configuration.rb#86
@@ -1691,7 +1655,7 @@ class GoodJob::Configuration
 
   private
 
-  # source://good_job//lib/good_job/configuration.rb#373
+  # source://good_job//lib/good_job/configuration.rb#383
   def rails_config; end
 
   class << self
@@ -1779,16 +1743,16 @@ class GoodJob::CronEntriesController < ::GoodJob::ApplicationController
 
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   def check_settings_migration!; end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
   end
 end
@@ -1801,6 +1765,7 @@ class GoodJob::CronEntry
   include ::ActiveModel::ForbiddenAttributesProtection
   include ::ActiveModel::AttributeAssignment
   include ::ActiveModel::API
+  include ::ActiveModel::Access
   include ::ActiveModel::Model
   extend ::ActiveModel::Validations::ClassMethods
   extend ::ActiveModel::Naming
@@ -1813,22 +1778,22 @@ class GoodJob::CronEntry
 
   def initialize(params = T.unsafe(nil)); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
   def __callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
   def __callbacks?; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_validate_callbacks(&block); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _validate_callbacks; end
 
-  # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+  # source://activemodel/7.1.2/lib/active_model/validations.rb#71
   def _validators; end
 
-  # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+  # source://activemodel/7.1.2/lib/active_model/validations.rb#71
   def _validators?; end
 
   def args; end
@@ -1847,15 +1812,19 @@ class GoodJob::CronEntry
   def last_job; end
   def last_job_at; end
 
-  # source://activemodel/7.0.8/lib/active_model/naming.rb#244
-  def model_name(*_arg0, **_arg1, &_arg2); end
+  # source://activemodel/7.1.2/lib/active_model/naming.rb#255
+  def model_name(&block); end
 
   def next_at(previously_at: T.unsafe(nil)); end
+
+  # source://activemodel/7.1.2/lib/active_model/conversion.rb#32
+  def param_delimiter=(_arg0); end
+
   def params; end
   def set; end
   def to_param; end
 
-  # source://activemodel/7.0.8/lib/active_model/validations.rb#48
+  # source://activemodel/7.1.2/lib/active_model/validations.rb#67
   def validation_context; end
 
   private
@@ -1868,36 +1837,45 @@ class GoodJob::CronEntry
   def kwargs_value; end
   def set_value; end
 
-  # source://activemodel/7.0.8/lib/active_model/validations.rb#48
+  # source://activemodel/7.1.2/lib/active_model/validations.rb#67
   def validation_context=(_arg0); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks=(value); end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks?; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _validate_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _validate_callbacks=(value); end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators=(value); end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators?; end
 
     def all(configuration: T.unsafe(nil)); end
     def find(key, configuration: T.unsafe(nil)); end
+
+    # source://activemodel/7.1.2/lib/active_model/conversion.rb#32
+    def param_delimiter; end
+
+    # source://activemodel/7.1.2/lib/active_model/conversion.rb#32
+    def param_delimiter=(value); end
+
+    # source://activemodel/7.1.2/lib/active_model/conversion.rb#32
+    def param_delimiter?; end
   end
 end
 
@@ -1984,52 +1962,52 @@ end
 #
 # source://good_job//lib/good_job/current_thread.rb#8
 module GoodJob::CurrentThread
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def cron_at; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def cron_at=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def cron_key; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def cron_key=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def error_on_discard; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def error_on_discard=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def error_on_retry; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def error_on_retry=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def error_on_retry_stopped; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def error_on_retry_stopped=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def execution; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def execution=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def execution_interrupted; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def execution_interrupted=(obj); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def execution_retried; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def execution_retried=(obj); end
 
   class << self
@@ -2042,104 +2020,104 @@ module GoodJob::CurrentThread
     #
     # @return [DateTime, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def cron_at; end
 
     # Cron At
     #
     # @return [DateTime, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def cron_at=(obj); end
 
     # Cron Key
     #
     # @return [String, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def cron_key; end
 
     # Cron Key
     #
     # @return [String, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def cron_key=(obj); end
 
     # Error captured by discard_on
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def error_on_discard; end
 
     # Error captured by discard_on
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def error_on_discard=(obj); end
 
     # Error captured by retry_on
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def error_on_retry; end
 
     # Error captured by retry_on
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def error_on_retry=(obj); end
 
     # Error captured by retry_stopped
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def error_on_retry_stopped; end
 
     # Error captured by retry_stopped
     #
     # @return [Exception, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def error_on_retry_stopped=(obj); end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def execution; end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def execution=(obj); end
 
     # Execution Interrupted
     #
     # @return [Boolean, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def execution_interrupted; end
 
     # Execution Interrupted
     #
     # @return [Boolean, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def execution_interrupted=(obj); end
 
     # Execution Retried
     #
     # @return [Boolean, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def execution_retried; end
 
     # Execution Retried
     #
     # @return [Boolean, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def execution_retried=(obj); end
 
     # @return [Integer] Current process ID
@@ -2258,156 +2236,96 @@ class GoodJob::DiscreteExecution < ::GoodJob::BaseRecord
   include ::GoodJob::DiscreteExecution::GeneratedAssociationMethods
   include ::GoodJob::ErrorEvents
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_execution(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_job(*args); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def clear_performed_at_change; end
 
   def display_serialized_params; end
   def last_status_at; end
   def number; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at(*args, **_arg1); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at=(value); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_before_last_save; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_before_type_cast; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_came_from_user?; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_change; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_change_to_be_saved; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_changed?(**options); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_for_database; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_in_database; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_previous_change; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_previously_changed?(**options); end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_previously_was; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_was; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def performed_at_will_change!; end
-
   def queue_latency; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def restore_performed_at!; end
-
   def runtime_latency; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_performed_at; end
-
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def saved_change_to_performed_at?(**options); end
-
   def status; end
 
-  # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#206
-  def will_save_change_to_performed_at?(**options); end
-
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
+    # source://activerecord/7.1.2/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activemodel/7.0.8/lib/active_model/attribute_methods.rb#72
+    # source://activemodel/7.1.2/lib/active_model/attribute_methods.rb#72
     def attribute_aliases; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
     def error_event_migrated?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def finished(*args, **_arg1); end
   end
 end
 
 module GoodJob::DiscreteExecution::GeneratedAssociationMethods
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_execution(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_job(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_execution(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_execution!(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_job(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_job!(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def execution; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def execution=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#145
   def execution_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#149
   def execution_previously_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def job; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def job=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#145
   def job_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#149
   def job_previously_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_execution; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_job; end
+
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#23
+  def reset_execution; end
+
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#23
+  def reset_job; end
 end
 
 module GoodJob::DiscreteExecution::GeneratedAttributeMethods; end
@@ -2417,7 +2335,7 @@ module GoodJob::DiscreteExecution::GeneratedAttributeMethods; end
 # source://good_job//lib/good_job/engine.rb#5
 class GoodJob::Engine < ::Rails::Engine
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
   end
 end
@@ -2442,25 +2360,25 @@ class GoodJob::Execution < ::GoodJob::BaseExecution
   include ::GoodJob::Execution::GeneratedAttributeMethods
   include ::GoodJob::Execution::GeneratedAssociationMethods
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _perform_callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _perform_unlocked_callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_perform_callbacks(&block); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_perform_unlocked_callbacks(&block); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_batch(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_discrete_executions(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_job(*args); end
 
   def destroy_job; end
@@ -2473,7 +2391,7 @@ class GoodJob::Execution < ::GoodJob::BaseExecution
   def running?; end
   def runtime_latency; end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_discrete_executions(*args); end
 
   private
@@ -2482,94 +2400,94 @@ class GoodJob::Execution < ::GoodJob::BaseExecution
   def reset_batch_values(&block); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _perform_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _perform_callbacks=(value); end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _perform_unlocked_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _perform_unlocked_callbacks=(value); end
 
-    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
+    # source://activerecord/7.1.2/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def active_job_id(*args, **_arg1); end
 
     def advisory_lockable_column; end
 
-    # source://activemodel/7.0.8/lib/active_model/callbacks.rb#144
+    # source://activemodel/7.1.2/lib/active_model/callbacks.rb#144
     def after_perform(*args, **options, &block); end
 
-    # source://activemodel/7.0.8/lib/active_model/callbacks.rb#144
+    # source://activemodel/7.1.2/lib/active_model/callbacks.rb#144
     def after_perform_unlocked(*args, **options, &block); end
 
-    # source://activemodel/7.0.8/lib/active_model/callbacks.rb#137
+    # source://activemodel/7.1.2/lib/active_model/callbacks.rb#137
     def around_perform(*args, **options, &block); end
 
-    # source://activemodel/7.0.8/lib/active_model/callbacks.rb#130
+    # source://activemodel/7.1.2/lib/active_model/callbacks.rb#130
     def before_perform(*args, **options, &block); end
 
     def build_for_enqueue(active_job, overrides = T.unsafe(nil)); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def creation_ordered(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def dead(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def dequeueing_ordered(*args, **_arg1); end
 
     def enqueue(active_job, scheduled_at: T.unsafe(nil), create_with_advisory_lock: T.unsafe(nil)); end
     def enqueue_args(active_job, overrides = T.unsafe(nil)); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def finished(*args, **_arg1); end
 
     def format_error(error); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def head(*args, **_arg1); end
 
     def next_scheduled_at(after: T.unsafe(nil), limit: T.unsafe(nil), now_limit: T.unsafe(nil)); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def only_scheduled(*args, **_arg1); end
 
     def perform_with_advisory_lock(parsed_queues: T.unsafe(nil), queue_select_limit: T.unsafe(nil)); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def priority_ordered(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def queue_ordered(*args, **_arg1); end
 
     def queue_parser(string); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def queue_string(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def running(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def schedule_ordered(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def unfinished(*args, **_arg1); end
   end
 end
@@ -2579,65 +2497,71 @@ GoodJob::Execution::DEFAULT_QUEUE_NAME = T.let(T.unsafe(nil), String)
 GoodJob::Execution::ERROR_MESSAGE_SEPARATOR = T.let(T.unsafe(nil), String)
 
 module GoodJob::Execution::GeneratedAssociationMethods
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def batch; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def batch=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#145
   def batch_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#149
   def batch_previously_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_batch(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_job(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_batch(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_batch!(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_job(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_job!(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def discrete_execution_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def discrete_execution_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def discrete_executions; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def discrete_executions=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def job; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def job=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#145
   def job_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#149
   def job_previously_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_batch; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_job; end
+
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#23
+  def reset_batch; end
+
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#23
+  def reset_job; end
 end
 
 module GoodJob::Execution::GeneratedAttributeMethods; end
@@ -2672,16 +2596,16 @@ class GoodJob::FrontendsController < ::ActionController::Base
 
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
     def js_modules; end
 
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
   end
 end
@@ -2755,13 +2679,13 @@ class GoodJob::Job < ::GoodJob::BaseExecution
   def _execution_id; end
   def _head?; end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_batch(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_discrete_executions(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def autosave_associated_records_for_executions(*args); end
 
   def destroy_job; end
@@ -2784,10 +2708,10 @@ class GoodJob::Job < ::GoodJob::BaseExecution
   def succeeded?; end
   def tail_execution; end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_discrete_executions(*args); end
 
-  # source://activerecord/7.0.8/lib/active_record/autosave_association.rb#160
+  # source://activerecord/7.1.2/lib/active_record/autosave_association.rb#160
   def validate_associated_records_for_executions(*args); end
 
   private
@@ -2795,51 +2719,51 @@ class GoodJob::Job < ::GoodJob::BaseExecution
   def _discard_job(message); end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activerecord/7.0.8/lib/active_record/reflection.rb#11
+    # source://activerecord/7.1.2/lib/active_record/reflection.rb#11
     def _reflections; end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
     def advisory_lockable_column; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/default.rb#19
+    # source://activerecord/7.1.2/lib/active_record/scoping/default.rb#19
     def default_scopes; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def discarded(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def finished(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def finished_before(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def queued(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def retried(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def running(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def scheduled(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def succeeded(*args, **_arg1); end
 
-    def table_name(*_arg0, **_arg1, &_arg2); end
+    def table_name(&block); end
     def table_name=(_value); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def unfinished_undiscrete(*args, **_arg1); end
   end
 end
@@ -2849,53 +2773,56 @@ class GoodJob::Job::AdapterNotGoodJobError < ::StandardError; end
 class GoodJob::Job::DiscardJobError < ::StandardError; end
 
 module GoodJob::Job::GeneratedAssociationMethods
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def batch; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def batch=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#132
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#145
   def batch_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/belongs_to.rb#136
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/belongs_to.rb#149
   def batch_previously_changed?; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#28
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#32
   def build_batch(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#36
   def create_batch(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#40
   def create_batch!(*args, &block); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def discrete_execution_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def discrete_execution_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def discrete_executions; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def discrete_executions=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#62
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#62
   def execution_ids; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/collection_association.rb#72
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/collection_association.rb#72
   def execution_ids=(ids); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#103
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#103
   def executions; end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/association.rb#111
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/association.rb#111
   def executions=(value); end
 
-  # source://activerecord/7.0.8/lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#19
   def reload_batch; end
+
+  # source://activerecord/7.1.2/lib/active_record/associations/builder/singular_association.rb#23
+  def reset_batch; end
 end
 
 module GoodJob::Job::GeneratedAttributeMethods; end
@@ -3035,28 +2962,28 @@ class GoodJob::JobPerformer::Metrics
   #
   # @return [void]
   #
-  # source://good_job//lib/good_job/job_performer/metrics.rb#67
+  # source://good_job//lib/good_job/job_performer/metrics.rb#66
   def reset; end
 
   # All metrics in a Hash.
   #
   # @return [Hash]
   #
-  # source://good_job//lib/good_job/job_performer/metrics.rb#53
+  # source://good_job//lib/good_job/job_performer/metrics.rb#52
   def to_h; end
 
   # Last time the queue was checked for jobs.
   #
   # @return [Time, nil]
   #
-  # source://good_job//lib/good_job/job_performer/metrics.rb#47
+  # source://good_job//lib/good_job/job_performer/metrics.rb#46
   def touch_check_queue_at; end
 
   # Last time a job was executed (started or finished).
   #
   # @return [Time, nil]
   #
-  # source://good_job//lib/good_job/job_performer/metrics.rb#41
+  # source://good_job//lib/good_job/job_performer/metrics.rb#40
   def touch_execution_at; end
 end
 
@@ -3072,16 +2999,16 @@ class GoodJob::JobsController < ::GoodJob::ApplicationController
 
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   def redirect_on_error(exception); end
 
   class << self
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
 
-    # source://activesupport/7.0.8/lib/active_support/rescuable.rb#13
+    # source://activesupport/7.1.2/lib/active_support/rescuable.rb#15
     def rescue_handlers; end
   end
 end
@@ -3411,28 +3338,28 @@ class GoodJob::Notifier
   # source://good_job//lib/good_job/notifier.rb#66
   def initialize(*recipients, enable_listening: T.unsafe(nil), executor: T.unsafe(nil)); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
   def __callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
   def __callbacks?; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _listen_callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_listen_callbacks(&block); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_tick_callbacks(&block); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#928
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#951
   def _run_unlisten_callbacks(&block); end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _tick_callbacks; end
 
-  # source://activesupport/7.0.8/lib/active_support/callbacks.rb#940
+  # source://activesupport/7.1.2/lib/active_support/callbacks.rb#963
   def _unlisten_callbacks; end
 
   # Tests whether the notifier is active and has acquired a dedicated database connection.
@@ -3443,10 +3370,10 @@ class GoodJob::Notifier
   # source://good_job//lib/good_job/notifier.rb#92
   def connected?(timeout: T.unsafe(nil)); end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def connection; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def connection=(obj); end
 
   # Invoked on completion of ThreadPoolExecutor task
@@ -3524,45 +3451,45 @@ class GoodJob::Notifier
   def with_connection; end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks=(value); end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks?; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _listen_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _listen_callbacks=(value); end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _tick_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _tick_callbacks=(value); end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#932
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#955
     def _unlisten_callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#936
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#959
     def _unlisten_callbacks=(value); end
 
     # ActiveRecord Connection that has been established for the Notifier.
     #
     # @return [ActiveRecord::ConnectionAdapters::AbstractAdapter, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def connection; end
 
     # ActiveRecord Connection that has been established for the Notifier.
     #
     # @return [ActiveRecord::ConnectionAdapters::AbstractAdapter, nil]
     #
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def connection=(obj); end
 
     # List of all instantiated Notifiers in the current process.
@@ -3761,10 +3688,10 @@ class GoodJob::Process < ::GoodJob::BaseRecord
   extend ::GoodJob::AdvisoryLockable::ClassMethods
   extend ::GoodJob::AssignableConnection::ClassMethods
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#56
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#74
   def _connection; end
 
-  # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#100
+  # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#116
   def _connection=(obj); end
 
   def _current_id; end
@@ -3787,13 +3714,13 @@ class GoodJob::Process < ::GoodJob::BaseRecord
   def state; end
 
   class << self
-    # source://activesupport/7.0.8/lib/active_support/callbacks.rb#68
+    # source://activesupport/7.1.2/lib/active_support/callbacks.rb#70
     def __callbacks; end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#48
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#49
     def _connection; end
 
-    # source://activesupport/7.0.8/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#92
+    # source://activesupport/7.1.2/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb#108
     def _connection=(obj); end
 
     def _current_id; end
@@ -3801,13 +3728,13 @@ class GoodJob::Process < ::GoodJob::BaseRecord
     def _pid; end
     def _pid=(val); end
 
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def active(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_lock(*args, **_arg1); end
 
     def advisory_lockable_column; end
@@ -3817,33 +3744,33 @@ class GoodJob::Process < ::GoodJob::BaseRecord
     def advisory_lockable_function=(value); end
     def advisory_lockable_function?; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_locked(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def advisory_unlocked(*args, **_arg1); end
 
     def cleanup; end
     def current_id; end
     def current_state; end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def inactive(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def includes_advisory_locks(*args, **_arg1); end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def joins_advisory_locks(*args, **_arg1); end
 
     def mutex; end
     def ns_current_id; end
     def ns_current_state; end
 
-    # source://activerecord/7.0.8/lib/active_record/scoping/named.rb#174
+    # source://activerecord/7.1.2/lib/active_record/scoping/named.rb#174
     def owns_advisory_locked(*args, **_arg1); end
 
     def register; end
@@ -3860,11 +3787,11 @@ class GoodJob::ProcessesController < ::GoodJob::ApplicationController
 
   private
 
-  # source://actionview/7.0.8/lib/action_view/layouts.rb#328
+  # source://actionview/7.1.2/lib/action_view/layouts.rb#330
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://actionpack/7.0.8/lib/action_controller/metal.rb#210
+    # source://actionpack/7.1.2/lib/action_controller/metal.rb#262
     def middleware_stack; end
   end
 end
@@ -4191,14 +4118,14 @@ class GoodJob::Setting < ::GoodJob::BaseRecord
   include ::GoodJob::Setting::GeneratedAssociationMethods
 
   class << self
-    # source://activemodel/7.0.8/lib/active_model/validations.rb#52
+    # source://activemodel/7.1.2/lib/active_model/validations.rb#71
     def _validators; end
 
     def cron_key_disable(key); end
     def cron_key_enable(key); end
     def cron_key_enabled?(key); end
 
-    # source://activerecord/7.0.8/lib/active_record/enum.rb#116
+    # source://activerecord/7.1.2/lib/active_record/enum.rb#167
     def defined_enums; end
   end
 end

@@ -54,7 +54,7 @@ class Complex < ::Numeric
   #     Complex(0.1234567, 0).to_d(4)   # => 0.1235e0
   #     Complex(Rational(22, 7), 0).to_d(3)   # => 0.314e1
   #
-  # See also BigDecimal::new.
+  # See also Kernel.BigDecimal.
   #
   # source://bigdecimal//lib/bigdecimal/util.rb#157
   def to_d(*args); end
