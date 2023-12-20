@@ -6,8 +6,14 @@
 
 class AddPostToTimelineJob
   class << self
-    sig { params(profile_id: ::String, post_id: ::String).returns(T.any(AddPostToTimelineJob, FalseClass)) }
-    def perform_later(profile_id:, post_id:); end
+    sig do
+      params(
+        profile_id: ::String,
+        post_id: ::String,
+        block: T.nilable(T.proc.params(job: AddPostToTimelineJob).void)
+      ).returns(T.any(AddPostToTimelineJob, FalseClass))
+    end
+    def perform_later(profile_id:, post_id:, &block); end
 
     sig { params(profile_id: ::String, post_id: ::String).void }
     def perform_now(profile_id:, post_id:); end
