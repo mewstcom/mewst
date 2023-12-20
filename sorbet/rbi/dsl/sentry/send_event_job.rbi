@@ -6,8 +6,14 @@
 
 class Sentry::SendEventJob
   class << self
-    sig { params(event: T.untyped, hint: T.untyped).returns(T.any(Sentry::SendEventJob, FalseClass)) }
-    def perform_later(event, hint = T.unsafe(nil)); end
+    sig do
+      params(
+        event: T.untyped,
+        hint: T.untyped,
+        block: T.nilable(T.proc.params(job: Sentry::SendEventJob).void)
+      ).returns(T.any(Sentry::SendEventJob, FalseClass))
+    end
+    def perform_later(event, hint = T.unsafe(nil), &block); end
 
     sig { params(event: T.untyped, hint: T.untyped).returns(T.untyped) }
     def perform_now(event, hint = T.unsafe(nil)); end

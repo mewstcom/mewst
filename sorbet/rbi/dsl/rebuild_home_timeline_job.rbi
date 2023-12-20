@@ -6,8 +6,14 @@
 
 class RebuildHomeTimelineJob
   class << self
-    sig { params(profile_id: ::String, posts_limit: ::Integer).returns(T.any(RebuildHomeTimelineJob, FalseClass)) }
-    def perform_later(profile_id:, posts_limit:); end
+    sig do
+      params(
+        profile_id: ::String,
+        posts_limit: ::Integer,
+        block: T.nilable(T.proc.params(job: RebuildHomeTimelineJob).void)
+      ).returns(T.any(RebuildHomeTimelineJob, FalseClass))
+    end
+    def perform_later(profile_id:, posts_limit:, &block); end
 
     sig { params(profile_id: ::String, posts_limit: ::Integer).void }
     def perform_now(profile_id:, posts_limit:); end
