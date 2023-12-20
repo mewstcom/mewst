@@ -1289,18 +1289,18 @@ end
 # source://faraday//lib/faraday/error.rb#104
 class Faraday::ForbiddenError < ::Faraday::ClientError; end
 
-# source://faraday//lib/faraday/logging/formatter.rb#6
+# source://faraday//lib/faraday/logging/formatter.rb#4
 module Faraday::Logging; end
 
 # Serves as an integration point to customize logging
 #
-# source://faraday//lib/faraday/logging/formatter.rb#8
+# source://faraday//lib/faraday/logging/formatter.rb#6
 class Faraday::Logging::Formatter
   extend ::Forwardable
 
   # @return [Formatter] a new instance of Formatter
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#14
+  # source://faraday//lib/faraday/logging/formatter.rb#12
   def initialize(logger:, options:); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -1309,22 +1309,22 @@ class Faraday::Logging::Formatter
   # source://forwardable/1.3.3/forwardable.rb#231
   def error(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#41
+  # source://faraday//lib/faraday/logging/formatter.rb#39
   def exception(exc); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def fatal(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#52
+  # source://faraday//lib/faraday/logging/formatter.rb#50
   def filter(filter_word, filter_replacement); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def info(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#25
+  # source://faraday//lib/faraday/logging/formatter.rb#23
   def request(env); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#34
+  # source://faraday//lib/faraday/logging/formatter.rb#32
   def response(env); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -1332,44 +1332,44 @@ class Faraday::Logging::Formatter
 
   private
 
-  # source://faraday//lib/faraday/logging/formatter.rb#98
+  # source://faraday//lib/faraday/logging/formatter.rb#96
   def apply_filters(output); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#64
+  # source://faraday//lib/faraday/logging/formatter.rb#62
   def dump_body(body); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#58
+  # source://faraday//lib/faraday/logging/formatter.rb#56
   def dump_headers(headers); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#113
+  # source://faraday//lib/faraday/logging/formatter.rb#111
   def log_body(type, body); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#85
+  # source://faraday//lib/faraday/logging/formatter.rb#83
   def log_body?(type); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#94
+  # source://faraday//lib/faraday/logging/formatter.rb#92
   def log_errors?; end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#109
+  # source://faraday//lib/faraday/logging/formatter.rb#107
   def log_headers(type, headers); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#76
+  # source://faraday//lib/faraday/logging/formatter.rb#74
   def log_headers?(type); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#105
+  # source://faraday//lib/faraday/logging/formatter.rb#103
   def log_level; end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#72
+  # source://faraday//lib/faraday/logging/formatter.rb#70
   def pretty_inspect(body); end
 end
 
-# source://faraday//lib/faraday/logging/formatter.rb#11
+# source://faraday//lib/faraday/logging/formatter.rb#9
 Faraday::Logging::Formatter::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 # source://faraday//lib/faraday/methods.rb#5
@@ -2171,7 +2171,7 @@ class Faraday::Request::Json < ::Faraday::Middleware
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/request/json.rb#42
+  # source://faraday//lib/faraday/request/json.rb#48
   def body?(env); end
 
   # source://faraday//lib/faraday/request/json.rb#26
@@ -2179,15 +2179,15 @@ class Faraday::Request::Json < ::Faraday::Middleware
 
   # @yield []
   #
-  # source://faraday//lib/faraday/request/json.rb#30
+  # source://faraday//lib/faraday/request/json.rb#36
   def match_content_type(env); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/request/json.rb#37
+  # source://faraday//lib/faraday/request/json.rb#43
   def process_request?(env); end
 
-  # source://faraday//lib/faraday/request/json.rb#55
+  # source://faraday//lib/faraday/request/json.rb#61
   def request_type(env); end
 end
 
@@ -2374,28 +2374,31 @@ class Faraday::Response::Json < ::Faraday::Middleware
   # source://faraday//lib/faraday/response/json.rb#9
   def initialize(app = T.unsafe(nil), parser_options: T.unsafe(nil), content_type: T.unsafe(nil), preserve_raw: T.unsafe(nil)); end
 
-  # source://faraday//lib/faraday/response/json.rb#16
+  # source://faraday//lib/faraday/response/json.rb#18
   def on_complete(env); end
 
   private
 
-  # source://faraday//lib/faraday/response/json.rb#29
+  # source://faraday//lib/faraday/response/json.rb#31
   def parse(body); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/response/json.rb#33
+  # source://faraday//lib/faraday/response/json.rb#39
   def parse_response?(env); end
 
-  # source://faraday//lib/faraday/response/json.rb#22
+  # source://faraday//lib/faraday/response/json.rb#57
+  def process_parser_options; end
+
+  # source://faraday//lib/faraday/response/json.rb#24
   def process_response(env); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/response/json.rb#38
+  # source://faraday//lib/faraday/response/json.rb#44
   def process_response_type?(env); end
 
-  # source://faraday//lib/faraday/response/json.rb#45
+  # source://faraday//lib/faraday/response/json.rb#51
   def response_type(env); end
 end
 
