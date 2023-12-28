@@ -1289,18 +1289,18 @@ end
 # source://faraday//lib/faraday/error.rb#104
 class Faraday::ForbiddenError < ::Faraday::ClientError; end
 
-# source://faraday//lib/faraday/logging/formatter.rb#4
+# source://faraday//lib/faraday/logging/formatter.rb#6
 module Faraday::Logging; end
 
 # Serves as an integration point to customize logging
 #
-# source://faraday//lib/faraday/logging/formatter.rb#6
+# source://faraday//lib/faraday/logging/formatter.rb#8
 class Faraday::Logging::Formatter
   extend ::Forwardable
 
   # @return [Formatter] a new instance of Formatter
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#12
+  # source://faraday//lib/faraday/logging/formatter.rb#14
   def initialize(logger:, options:); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -1309,22 +1309,22 @@ class Faraday::Logging::Formatter
   # source://forwardable/1.3.3/forwardable.rb#231
   def error(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#39
+  # source://faraday//lib/faraday/logging/formatter.rb#41
   def exception(exc); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def fatal(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#50
+  # source://faraday//lib/faraday/logging/formatter.rb#52
   def filter(filter_word, filter_replacement); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
   def info(*args, **_arg1, &block); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#23
+  # source://faraday//lib/faraday/logging/formatter.rb#25
   def request(env); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#32
+  # source://faraday//lib/faraday/logging/formatter.rb#34
   def response(env); end
 
   # source://forwardable/1.3.3/forwardable.rb#231
@@ -1332,44 +1332,44 @@ class Faraday::Logging::Formatter
 
   private
 
-  # source://faraday//lib/faraday/logging/formatter.rb#96
+  # source://faraday//lib/faraday/logging/formatter.rb#98
   def apply_filters(output); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#62
+  # source://faraday//lib/faraday/logging/formatter.rb#64
   def dump_body(body); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#56
+  # source://faraday//lib/faraday/logging/formatter.rb#58
   def dump_headers(headers); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#111
+  # source://faraday//lib/faraday/logging/formatter.rb#113
   def log_body(type, body); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#83
+  # source://faraday//lib/faraday/logging/formatter.rb#85
   def log_body?(type); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#92
+  # source://faraday//lib/faraday/logging/formatter.rb#94
   def log_errors?; end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#107
+  # source://faraday//lib/faraday/logging/formatter.rb#109
   def log_headers(type, headers); end
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/logging/formatter.rb#74
+  # source://faraday//lib/faraday/logging/formatter.rb#76
   def log_headers?(type); end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#103
+  # source://faraday//lib/faraday/logging/formatter.rb#105
   def log_level; end
 
-  # source://faraday//lib/faraday/logging/formatter.rb#70
+  # source://faraday//lib/faraday/logging/formatter.rb#72
   def pretty_inspect(body); end
 end
 
-# source://faraday//lib/faraday/logging/formatter.rb#9
+# source://faraday//lib/faraday/logging/formatter.rb#11
 Faraday::Logging::Formatter::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 # source://faraday//lib/faraday/methods.rb#5
