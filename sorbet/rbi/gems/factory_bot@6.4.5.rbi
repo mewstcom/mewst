@@ -74,16 +74,16 @@ module FactoryBot
     def lint(*args); end
 
     # source://factory_bot//lib/factory_bot.rb#83
-    def register_strategy(*_arg0, **_arg1, &_arg2); end
+    def register_strategy(strategy_name, strategy_class, &block); end
 
     # source://factory_bot//lib/factory_bot/reload.rb#2
     def reload; end
 
     # source://factory_bot//lib/factory_bot.rb#83
-    def rewind_sequences(*_arg0, **_arg1, &_arg2); end
+    def rewind_sequences(&block); end
 
     # source://factory_bot//lib/factory_bot.rb#83
-    def strategy_by_name(*_arg0, **_arg1, &_arg2); end
+    def strategy_by_name(name, &block); end
 
     # source://factory_bot//lib/factory_bot.rb#54
     def use_parent_strategy; end
@@ -692,21 +692,21 @@ class FactoryBot::Decorator < ::BasicObject
   # source://factory_bot//lib/factory_bot/decorator.rb#5
   def initialize(component); end
 
-  # source://factory_bot//lib/factory_bot/decorator.rb#11
+  # source://factory_bot//lib/factory_bot/decorator.rb#9
   def method_missing(*_arg0, **_arg1, &_arg2); end
 
-  # source://factory_bot//lib/factory_bot/decorator.rb#15
+  # source://factory_bot//lib/factory_bot/decorator.rb#13
   def send(*_arg0, **_arg1, &_arg2); end
 
   private
 
   # @return [Boolean]
   #
-  # source://factory_bot//lib/factory_bot/decorator.rb#29
+  # source://factory_bot//lib/factory_bot/decorator.rb#17
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
 
   class << self
-    # source://factory_bot//lib/factory_bot/decorator.rb#33
+    # source://factory_bot//lib/factory_bot/decorator.rb#21
     def const_missing(name); end
   end
 end
@@ -1082,7 +1082,7 @@ class FactoryBot::DefinitionProxy
   # Except that no globally available sequence will be defined.
   #
   # source://factory_bot//lib/factory_bot/definition_proxy.rb#122
-  def sequence(name, *args, &block); end
+  def sequence(name, *_arg1, **_arg2, &_arg3); end
 
   # @raise [FactoryBot::MethodDefinitionError]
   #
@@ -1209,25 +1209,23 @@ class FactoryBot::Enum
   def enum_values(klass); end
 end
 
-# source://factory_bot//lib/factory_bot/evaluation.rb#4
+# source://factory_bot//lib/factory_bot/evaluation.rb#2
 class FactoryBot::Evaluation
-  include ::Observable
-
   # @return [Evaluation] a new instance of Evaluation
   #
-  # source://factory_bot//lib/factory_bot/evaluation.rb#7
-  def initialize(evaluator, attribute_assigner, to_create); end
+  # source://factory_bot//lib/factory_bot/evaluation.rb#3
+  def initialize(evaluator, attribute_assigner, to_create, observer); end
 
-  # source://factory_bot//lib/factory_bot/evaluation.rb#15
+  # source://factory_bot//lib/factory_bot/evaluation.rb#12
   def create(result_instance); end
 
-  # source://factory_bot//lib/factory_bot/evaluation.rb#13
+  # source://factory_bot//lib/factory_bot/evaluation.rb#10
   def hash(*_arg0, **_arg1, &_arg2); end
 
-  # source://factory_bot//lib/factory_bot/evaluation.rb#22
+  # source://factory_bot//lib/factory_bot/evaluation.rb#19
   def notify(name, result_instance); end
 
-  # source://factory_bot//lib/factory_bot/evaluation.rb#13
+  # source://factory_bot//lib/factory_bot/evaluation.rb#10
   def object(*_arg0, **_arg1, &_arg2); end
 end
 
@@ -1243,7 +1241,7 @@ class FactoryBot::Evaluator
 
   # @api private
   #
-  # source://factory_bot//lib/factory_bot/evaluator.rb#51
+  # source://factory_bot//lib/factory_bot/evaluator.rb#50
   def __override_names__; end
 
   # @api private
@@ -1262,7 +1260,7 @@ class FactoryBot::Evaluator
 
   # @api private
   #
-  # source://factory_bot//lib/factory_bot/evaluator.rb#55
+  # source://factory_bot//lib/factory_bot/evaluator.rb#54
   def increment_sequence(sequence); end
 
   # @api private
@@ -1278,20 +1276,20 @@ class FactoryBot::Evaluator
   # @api private
   #
   # source://factory_bot//lib/factory_bot/evaluator.rb#38
-  def method_missing(method_name, *args, **_arg2, &block); end
+  def method_missing(method_name, *_arg1, **_arg2, &_arg3); end
 
   private
 
   # @api private
   # @return [Boolean]
   #
-  # source://factory_bot//lib/factory_bot/evaluator.rb#47
+  # source://factory_bot//lib/factory_bot/evaluator.rb#46
   def respond_to_missing?(method_name, _include_private = T.unsafe(nil)); end
 
   class << self
     # @api private
     #
-    # source://factory_bot//lib/factory_bot/evaluator.rb#59
+    # source://factory_bot//lib/factory_bot/evaluator.rb#58
     def attribute_list; end
 
     # source://factory_bot//lib/factory_bot/evaluator.rb#7
@@ -1305,7 +1303,7 @@ class FactoryBot::Evaluator
 
     # @api private
     #
-    # source://factory_bot//lib/factory_bot/evaluator.rb#67
+    # source://factory_bot//lib/factory_bot/evaluator.rb#66
     def define_attribute(name, &block); end
   end
 end
@@ -1966,7 +1964,7 @@ class FactoryBot::Strategy::Stub
 
   private
 
-  # source://factory_bot//lib/factory_bot/strategy/stub.rb#97
+  # source://factory_bot//lib/factory_bot/strategy/stub.rb#98
   def clear_changes_information(result_instance); end
 
   # @return [Boolean]
@@ -1976,18 +1974,18 @@ class FactoryBot::Strategy::Stub
 
   # @return [Boolean]
   #
-  # source://factory_bot//lib/factory_bot/strategy/stub.rb#113
+  # source://factory_bot//lib/factory_bot/strategy/stub.rb#114
   def missing_created_at?(result_instance); end
 
   # @return [Boolean]
   #
-  # source://factory_bot//lib/factory_bot/strategy/stub.rb#119
+  # source://factory_bot//lib/factory_bot/strategy/stub.rb#120
   def missing_updated_at?(result_instance); end
 
   # source://factory_bot//lib/factory_bot/strategy/stub.rb#50
   def next_id(result_instance); end
 
-  # source://factory_bot//lib/factory_bot/strategy/stub.rb#103
+  # source://factory_bot//lib/factory_bot/strategy/stub.rb#104
   def set_timestamps(result_instance); end
 
   # source://factory_bot//lib/factory_bot/strategy/stub.rb#58
@@ -1995,7 +1993,7 @@ class FactoryBot::Strategy::Stub
 
   # @return [Boolean]
   #
-  # source://factory_bot//lib/factory_bot/strategy/stub.rb#90
+  # source://factory_bot//lib/factory_bot/strategy/stub.rb#91
   def uuid_primary_key?(result_instance); end
 
   class << self
@@ -2113,7 +2111,7 @@ class FactoryBot::Syntax::Default::DSL
   def initialize_with(*_arg0, **_arg1, &_arg2); end
 
   # source://factory_bot//lib/factory_bot/syntax/default.rb#28
-  def sequence(name, *args, &block); end
+  def sequence(name, *_arg1, **_arg2, &_arg3); end
 
   # source://factory_bot//lib/factory_bot/syntax/default.rb#40
   def skip_create(*_arg0, **_arg1, &_arg2); end

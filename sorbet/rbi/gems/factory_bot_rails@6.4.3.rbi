@@ -41,12 +41,6 @@ class FactoryBotRails::FactoryValidator
 
   private
 
-  # source://factory_bot_rails//lib/factory_bot_rails/factory_validator.rb#31
-  def rails_5_2_support; end
-
-  # source://factory_bot_rails//lib/factory_bot_rails/factory_validator.rb#25
-  def rails_6_0_support; end
-
   # source://factory_bot_rails//lib/factory_bot_rails/factory_validator.rb#17
   def validate_compiled_factory; end
 end
@@ -132,7 +126,7 @@ end
 class FactoryBotRails::Railtie < ::Rails::Railtie
   private
 
-  # source://factory_bot_rails//lib/factory_bot_rails/railtie.rb#44
+  # source://factory_bot_rails//lib/factory_bot_rails/railtie.rb#31
   def definition_file_paths; end
 end
 
