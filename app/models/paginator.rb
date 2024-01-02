@@ -27,11 +27,11 @@ class Paginator
     after_record = after.nil? ? nil : records.find(after)
 
     record_ids = if before_record.nil? && after_record.nil?
-      records.order(order_by => :desc).limit(limit + 1).pluck(:id)
+      records.order(order_by => :desc).limit(limit + 1).ids
     elsif before_record
-      records.where(records.arel_table[:id].gt(before_record.id)).order(order_by => :asc).limit(limit + 1).pluck(:id)
+      records.where(records.arel_table[:id].gt(before_record.id)).order(order_by => :asc).limit(limit + 1).ids
     elsif after_record
-      records.where(records.arel_table[:id].lt(after_record.id)).order(order_by => :desc).limit(limit + 1).pluck(:id)
+      records.where(records.arel_table[:id].lt(after_record.id)).order(order_by => :desc).limit(limit + 1).ids
     end
 
     page_info = if before_record.nil? && after_record.nil?

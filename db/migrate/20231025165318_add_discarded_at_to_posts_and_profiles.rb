@@ -10,7 +10,7 @@ class AddDiscardedAtToPostsAndProfiles < ActiveRecord::Migration[7.0]
     end
 
     safety_assured do
-      remove_column :profiles, :deleted_at
+      remove_column :profiles, :deleted_at # standard:disable Rails/ReversibleMigration
     end
   end
 end
