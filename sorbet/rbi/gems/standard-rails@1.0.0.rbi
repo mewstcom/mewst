@@ -17,20 +17,20 @@ class Standard::Rails::Plugin < ::LintRoller::Plugin
   # source://standard-rails//lib/standard/rails/plugin.rb#6
   def initialize(config); end
 
-  # source://standard-rails//lib/standard/rails/plugin.rb#10
+  # source://standard-rails//lib/standard/rails/plugin.rb#11
   def about; end
 
-  # source://standard-rails//lib/standard/rails/plugin.rb#23
+  # source://standard-rails//lib/standard/rails/plugin.rb#24
   def rules(context); end
 
   # @return [Boolean]
   #
-  # source://standard-rails//lib/standard/rails/plugin.rb#19
+  # source://standard-rails//lib/standard/rails/plugin.rb#20
   def supported?(context); end
 
   private
 
-  # source://standard-rails//lib/standard/rails/plugin.rb#35
+  # source://standard-rails//lib/standard/rails/plugin.rb#36
   def rules_with_config_applied; end
 
   # This is not fantastic.
@@ -47,7 +47,7 @@ class Standard::Rails::Plugin < ::LintRoller::Plugin
   # meant to be mutated externally, but it's better than the `Inject` monkey
   # patching that rubocop-rails does (and many other RuboCop plugins do)
   #
-  # source://standard-rails//lib/standard/rails/plugin.rb#56
+  # source://standard-rails//lib/standard/rails/plugin.rb#60
   def trick_rubocop_into_thinking_we_required_rubocop_rails!; end
 
   # This is also not fantastic, but because loading RuboCop before loading
@@ -55,7 +55,7 @@ class Standard::Rails::Plugin < ::LintRoller::Plugin
   # methods like String#blank?, we need to suppress the warnings that are
   # emitted when we load the cops.
   #
-  # source://standard-rails//lib/standard/rails/plugin.rb#67
+  # source://standard-rails//lib/standard/rails/plugin.rb#71
   def without_warnings(&blk); end
 end
 
