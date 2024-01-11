@@ -1,6 +1,9 @@
+.DS_Store
+
 /.bundle
 /.env.*.local
 /.env.local
+/.idea
 /config/master.key
 /log/*
 /node_modules
