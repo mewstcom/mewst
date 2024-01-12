@@ -1,21 +1,38 @@
 version: "3.8"
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    depends_on:
+      - postgresql
+      - redis
+    environment:
+      BINDING: 0.0.0.0
+    ports:
+      - "3300:3000"
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+      - app_gems_data:/usr/local/bundle
+
   postgresql:
     image: postgres:15.1
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - postgresql_data:/var/lib/postgresql/data:delegated
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
 
-  redis_cache:
+  redis:
     image: redis:7.0
     ports:
-      - 16379:6379
+      - "16379:6379"
     volumes:
-      - redis_cache_data:/data
+      - redis_data:/data
 
   swagger_ui:
     image: swaggerapi/swagger-ui:latest
@@ -24,9 +41,10 @@ services:
     environment:
       SWAGGER_JSON: /openapi.yaml
     ports:
-      - 3302:8080
+      - "3302:8080"
 
 volumes:
+  app_gems_data:
   postgresql_data:
-  redis_cache_data:
+  redis_data:
   swagger_ui_data:
