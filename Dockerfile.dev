@@ -1,11 +1,9 @@
 ARG RUBY_VERSION="3.2.2"
 ARG BUNDLER_VERSION="2.4.10"
 
-FROM \
-    # SorbetがARM64に対応していなかったりするので、AMD64でビルドする
-    # https://github.com/sorbet/sorbet/issues/4119
-    --platform=linux/amd64 \
-    amd64/ruby:${RUBY_VERSION}-slim-bookworm
+# SorbetがARM64に対応していなかったりするので、AMD64でビルドする
+# https://github.com/sorbet/sorbet/issues/4119
+FROM --platform=linux/amd64 amd64/ruby:${RUBY_VERSION}-slim-bookworm
 
 RUN \
   apt update && \
