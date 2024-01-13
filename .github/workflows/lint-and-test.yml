@@ -60,7 +60,9 @@ jobs:
     name: RSpec
     runs-on: ubuntu-latest
     env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/mewst_test
       RAILS_ENV: test
+      REDIS_URL: redis://localhost:6379/0
     services:
       postgresql:
         image: postgres:14.6
