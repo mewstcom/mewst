@@ -13,9 +13,10 @@ RUN \
   apt install -y --no-install-recommends \
     build-essential \
     curl \
-    postgresql-client \
-    libpq-dev && \
-  gem install bundler -v "${BUNDLER_VERSION}"
+    # PostgreSQLの利用に必要
+    postgresql-client libpq-dev
+
+RUN gem install bundler -v "${BUNDLER_VERSION}"
 
 WORKDIR /app
 
