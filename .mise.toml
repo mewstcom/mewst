@@ -1,0 +1,5 @@
+[tools]
+ruby = "3.2.2"
+
+[plugins]
+ruby = "https://github.com/asdf-vm/asdf-ruby"
