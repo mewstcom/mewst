@@ -9,69 +9,6 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
-  def internal_account_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_email_confirmation_challenge_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_email_confirmation_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_email_confirmation_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_post_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_profile_post_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def internal_session_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_follow_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_notification_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_post_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_post_stamp_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_post_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_profile_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_profile_post_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_profiles_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_suggested_profile_check_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_suggested_profile_list_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_timeline_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_user_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def latest_users_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -82,4 +19,67 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_follow_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_account_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_email_confirmation_challenge_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_email_confirmation_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_email_confirmation_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_profile_post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_internal_session_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_notification_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_post_stamp_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_profile_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_profile_post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_profiles_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_suggested_profile_check_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_suggested_profile_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_timeline_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_user_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def v1_users_me_url(*args); end
 end

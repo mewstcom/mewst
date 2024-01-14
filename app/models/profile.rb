@@ -6,7 +6,7 @@ class Profile < ApplicationRecord
 
   include Discard::Model
 
-  include TimelineOwnable
+  include ModelConcerns::TimelineOwnable
 
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   ATNAME_MIN_LENGTH = 2

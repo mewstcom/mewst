@@ -10,17 +10,10 @@ RSpec.configure do |config|
     strict_reference_validation: true
   }
 
-  config.before :all, api_version: :internal do
+  config.before :all, api_version: :v1 do
     RSpec.configure do |config|
-      config.committee_options[:schema_path] = Rails.root.join("openapi/internal.yaml").to_s
-      config.committee_options[:prefix] = "/internal"
-    end
-  end
-
-  config.before :all, api_version: :latest do
-    RSpec.configure do |config|
-      config.committee_options[:schema_path] = Rails.root.join("openapi/latest.yaml").to_s
-      config.committee_options[:prefix] = "/latest"
+      config.committee_options[:schema_path] = Rails.root.join("openapi/v1.yaml").to_s
+      config.committee_options[:prefix] = "/v1"
     end
   end
 end

@@ -1,7 +1,7 @@
 # typed: strong
 # frozen_string_literal: true
 
-module Form::PasswordValidatable
+module FormConcerns::PasswordValidatable
   def self.validate(*args)
   end
 
