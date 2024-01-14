@@ -11,11 +11,3 @@ docker compose up
 docker compose exec app bin/setup
 docker compose exec app bin/rails server
 ```
-
-Sorbetを実行するにはローカル環境で `srb` コマンドを実行する必要があります。
-
-```
-mise trust && mise install
-bundle install
-bin/srb tc
-```

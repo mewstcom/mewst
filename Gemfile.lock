@@ -1,4 +1,14 @@
 GEM
+  remote: https://gem.fury.io/sorbet-multiarch/
+  specs:
+    sorbet (0.5.11178)
+      sorbet-static (= 0.5.11178)
+    sorbet-runtime (0.5.11178)
+    sorbet-static (0.5.11178-aarch64-linux)
+    sorbet-static (0.5.11178-universal-darwin)
+    sorbet-static (0.5.11178-x86_64-linux)
+
+GEM
   remote: https://rubygems.org/
   specs:
     actioncable (7.1.2)
@@ -198,6 +208,8 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.7.0)
+    nokogiri (1.16.0-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.16.0-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.0-x86_64-linux)
@@ -339,11 +351,6 @@ GEM
       sentry-ruby (~> 5.15.2)
     sentry-ruby (5.15.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sorbet (0.5.11178)
-      sorbet-static (= 0.5.11178)
-    sorbet-runtime (0.5.11178)
-    sorbet-static (0.5.11178-universal-darwin)
-    sorbet-static (0.5.11178-x86_64-linux)
     sorbet-static-and-runtime (0.5.11178)
       sorbet (= 0.5.11178)
       sorbet-runtime (= 0.5.11178)
@@ -406,6 +413,7 @@ GEM
     zeitwerk (2.6.12)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-21
   arm64-darwin-22
   arm64-darwin-23
@@ -447,8 +455,8 @@ DEPENDENCIES
   rubocop-rspec
   sentry-rails
   sentry-ruby
-  sorbet
-  sorbet-runtime
+  sorbet!
+  sorbet-runtime!
   standard
   standard-rails
   standard-sorbet
