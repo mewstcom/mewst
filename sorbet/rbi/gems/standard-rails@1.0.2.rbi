@@ -30,7 +30,7 @@ class Standard::Rails::Plugin < ::LintRoller::Plugin
 
   private
 
-  # source://standard-rails//lib/standard/rails/plugin.rb#36
+  # source://standard-rails//lib/standard/rails/plugin.rb#38
   def rules_with_config_applied; end
 
   # This is not fantastic.
@@ -47,15 +47,25 @@ class Standard::Rails::Plugin < ::LintRoller::Plugin
   # meant to be mutated externally, but it's better than the `Inject` monkey
   # patching that rubocop-rails does (and many other RuboCop plugins do)
   #
-  # source://standard-rails//lib/standard/rails/plugin.rb#60
+  # source://standard-rails//lib/standard/rails/plugin.rb#74
   def trick_rubocop_into_thinking_we_required_rubocop_rails!; end
+
+  # rubocop-rails adds additional options to a couple out-of-the-box cops
+  # but Standard (1) doesn't enable these to begin with and (2) doesn't
+  # allow rules' configs to be edited once they are defined, so we'll just
+  # remove them here
+  #
+  # See: https://github.com/standardrb/standard-rails/issues/25#issuecomment-1881127173
+  #
+  # source://standard-rails//lib/standard/rails/plugin.rb#55
+  def without_extended_rule_configs(rules); end
 
   # This is also not fantastic, but because loading RuboCop before loading
   # ActiveSupport will result in RuboCop redefining a number of ActiveSupport
   # methods like String#blank?, we need to suppress the warnings that are
   # emitted when we load the cops.
   #
-  # source://standard-rails//lib/standard/rails/plugin.rb#71
+  # source://standard-rails//lib/standard/rails/plugin.rb#85
   def without_warnings(&blk); end
 end
 
