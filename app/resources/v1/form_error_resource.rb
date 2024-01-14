@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::FormErrorResource < V1::ApplicationResource
-  include Resource::ErrorResponsable
+  include ResourceConcerns::ErrorResponsable
 
   sig { params(errors: ActiveModel::Errors).returns(T::Array[T.attached_class]) }
   def self.from_errors(errors:)

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Users::Me::ShowController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     user_resource = V1::UserResource.new(user: current_viewer!.user.not_nil!)

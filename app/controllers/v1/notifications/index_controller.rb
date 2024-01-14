@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Notifications::IndexController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     notifications = current_viewer!.notifications.preload(:stamp_notification)

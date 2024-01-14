@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class V1::Posts::CreateController < V1::ApplicationController
-  include PublicAuthenticatable
-  include V1::FormErrorable
+  include ControllerConcerns::PublicAuthenticatable
+  include ControllerConcerns::V1::FormErrorable
 
   def call
     form = V1::PostForm.new(

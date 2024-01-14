@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module V1::FormErrorable
+module ControllerConcerns::V1::FormErrorable
   extend T::Sig
   extend ActiveSupport::Concern
 

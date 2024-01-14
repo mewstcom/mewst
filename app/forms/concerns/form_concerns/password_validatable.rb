@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Form::PasswordValidatable
+module FormConcerns::PasswordValidatable
   extend ActiveSupport::Concern
 
   included do

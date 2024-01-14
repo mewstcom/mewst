@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class V1::Internal::Sessions::CreateController < V1::Internal::ApplicationController
-  include InternalAuthenticatable
-  include V1::FormErrorable
+  include ControllerConcerns::InternalAuthenticatable
+  include ControllerConcerns::V1::FormErrorable
 
   def call
     form = V1::SessionForm.new(

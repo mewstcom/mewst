@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::ResponseErrorResource < V1::ApplicationResource
-  include Resource::ErrorResponsable
+  include ResourceConcerns::ErrorResponsable
 
   sig { override.returns(String) }
   attr_reader :message

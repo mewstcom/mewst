@@ -1,7 +1,7 @@
 # typed: strong
 # frozen_string_literal: true
 
-module PublicAuthenticatable
+module ControllerConcerns::PublicAuthenticatable
   def self.before_action(*args)
   end
 

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Profiles::Me::ShowController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     profile_resource = V1::ProfileResource.new(viewer: current_viewer!, profile: current_viewer!.profile.not_nil!)

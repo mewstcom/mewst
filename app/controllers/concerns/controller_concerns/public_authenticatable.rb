@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module PublicAuthenticatable
+module ControllerConcerns::PublicAuthenticatable
   extend T::Sig
   extend ActiveSupport::Concern
 

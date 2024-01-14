@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module TimelineOwnable
+module ModelConcerns::TimelineOwnable
   extend T::Sig
   extend T::Helpers
 

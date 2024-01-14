@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::AccountForm < V1::ApplicationForm
-  include Form::PasswordValidatable
+  include FormConcerns::PasswordValidatable
 
   attribute :atname, :string
   attribute :email, :string

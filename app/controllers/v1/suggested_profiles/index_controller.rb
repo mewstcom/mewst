@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::SuggestedProfiles::IndexController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     profiles = current_viewer.not_nil!.suggested_followees.kept.merge(SuggestedFollow.not_checked).order(created_at: :desc).limit(30)

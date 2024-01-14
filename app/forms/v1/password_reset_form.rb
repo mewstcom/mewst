@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::PasswordResetForm < V1::ApplicationForm
-  include Form::PasswordValidatable
+  include FormConcerns::PasswordValidatable
 
   attribute :email, :string
   attribute :password, :string

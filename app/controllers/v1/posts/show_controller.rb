@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Posts::ShowController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     post = Post.kept.find_by(id: params[:post_id])

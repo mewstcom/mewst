@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Timeline::ShowController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     posts, page_info = current_viewer!.home_timeline.posts_with_page_info(

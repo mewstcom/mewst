@@ -11,7 +11,7 @@ class Timeline
     end
   end
 
-  sig { params(timeline_ownable: TimelineOwnable).void }
+  sig { params(timeline_ownable: ModelConcerns::TimelineOwnable).void }
   def initialize(timeline_ownable)
     @timeline_ownable = timeline_ownable
   end
@@ -28,7 +28,7 @@ class Timeline
     redis_client.zrange(timeline_ownable.timeline_key, "(#{start}", "(#{stop}", by_score: true, rev:, limit: [0, limit])
   end
 
-  sig { returns(TimelineOwnable) }
+  sig { returns(ModelConcerns::TimelineOwnable) }
   attr_reader :timeline_ownable
   private :timeline_ownable
 

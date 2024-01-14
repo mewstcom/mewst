@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Resource::ErrorResponsable
+module ResourceConcerns::ErrorResponsable
   extend T::Sig
   extend T::Helpers
 

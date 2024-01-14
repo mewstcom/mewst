@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-module Localizable
+module ControllerConcerns::Localizable
   extend T::Sig
   extend ActiveSupport::Concern
 

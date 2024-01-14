@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Internal::Posts::ShowController < V1::Internal::ApplicationController
-  include InternalAuthenticatable
+  include ControllerConcerns::InternalAuthenticatable
 
   def call
     post = Post.kept.find_by(id: params[:post_id])

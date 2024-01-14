@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 class V1::Internal::Accounts::CreateController < V1::Internal::ApplicationController
-  include InternalAuthenticatable
-  include Localizable
-  include V1::FormErrorable
+  include ControllerConcerns::InternalAuthenticatable
+  include ControllerConcerns::Localizable
+  include ControllerConcerns::V1::FormErrorable
 
   around_action :set_locale
 

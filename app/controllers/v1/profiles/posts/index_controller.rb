@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Profiles::Posts::IndexController < V1::ApplicationController
-  include PublicAuthenticatable
+  include ControllerConcerns::PublicAuthenticatable
 
   def call
     profile = Profile.kept.find_by!(atname: params[:atname])

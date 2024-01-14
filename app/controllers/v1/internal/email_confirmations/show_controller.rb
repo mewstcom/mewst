@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::Internal::EmailConfirmations::ShowController < V1::Internal::ApplicationController
-  include InternalAuthenticatable
+  include ControllerConcerns::InternalAuthenticatable
 
   def call
     email_confirmation = EmailConfirmation.find_by(id: params[:email_confirmation_id])
