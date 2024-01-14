@@ -1,55 +1,55 @@
 en:
   forms:
     attributes:
-      internal/account_form:
+      v1/account_form:
         atname: Atname
         email: Email
         password: Password
-      internal/email_confirmation_challenge_form:
+      v1/email_confirmation_challenge_form:
         confirmation_code: Confirmation code
-      latest/follow_form:
+      v1/follow_form:
         target_atname: atname
-      latest/post_delete_form:
+      v1/post_delete_form:
         target_post: Post
-      latest/stamp_form:
+      v1/stamp_form:
         target_post: Post
-      latest/suggested_follow_form:
+      v1/suggested_follow_form:
         target_profile: atname
-      latest/unfollow_form:
+      v1/unfollow_form:
         target_profile: atname
     errors:
       models:
-        internal/account_form:
+        v1/account_form:
           password_too_long: is too long
           reserved: " \"%{value}\" is reserved"
           uniqueness: is already taken
-        internal/email_confirmation_challenge_form:
+        v1/email_confirmation_challenge_form:
           attributes:
             confirmation_code:
               incorrect_or_expired: is incorrect or expired
-        internal/session_form:
+        v1/session_form:
           unauthenticated: Login failed. Email or password is incorrect
-        latest/follow_form:
+        v1/follow_form:
           attributes:
             target_atname:
               cannot_follow_myself: is myself. Cannot follow myself
-        latest/profile_form:
+        v1/profile_form:
           attributes:
             atname:
               atname_uniqueness: is already taken
-        latest/post_delete_form:
+        v1/post_delete_form:
           attributes:
             target_post:
               blank: not found
-        latest/stamp_form:
+        v1/stamp_form:
           attributes:
             target_post:
               blank: not found
-        latest/suggested_follow_form:
+        v1/suggested_follow_form:
           attributes:
             target_profile:
               blank: not found
-        latest/unfollow_form:
+        v1/unfollow_form:
           attributes:
             target_profile:
               blank: not found

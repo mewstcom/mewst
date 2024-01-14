@@ -1,55 +1,55 @@
 ja:
   forms:
     attributes:
-      internal/account_form:
+      v1/account_form:
         atname: アットネーム
         email: メールアドレス
         password: パスワード
-      internal/email_confirmation_challenge_form:
+      v1/email_confirmation_challenge_form:
         confirmation_code: 確認用コード
-      latest/follow_form:
+      v1/follow_form:
         target_atname: atname
-      latest/post_delete_form:
+      v1/post_delete_form:
         target_post: ポスト
-      latest/stamp_form:
+      v1/stamp_form:
         target_post: ポスト
-      latest/suggested_follow_form:
+      v1/suggested_follow_form:
         target_profile: atname
-      latest/unfollow_form:
+      v1/unfollow_form:
         target_profile: atname
     errors:
       models:
-        internal/account_form:
+        v1/account_form:
           password_too_long: が長すぎます
           reserved: " \"%{value}\" は予約されているため使用できません"
           uniqueness: はすでに存在します
-        internal/email_confirmation_challenge_form:
+        v1/email_confirmation_challenge_form:
           attributes:
             confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています
-        internal/session_form:
+        v1/session_form:
           unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています
-        latest/follow_form:
+        v1/follow_form:
           attributes:
             target_atname:
               cannot_follow_myself: は自分自身です。自身をフォローすることはできません
-        latest/profile_form:
+        v1/profile_form:
           attributes:
             atname:
               atname_uniqueness: はすでに存在します
-        latest/post_delete_form:
+        v1/post_delete_form:
           attributes:
             target_post:
               blank: が見つかりませんでした
-        latest/stamp_form:
+        v1/stamp_form:
           attributes:
             target_post:
               blank: が見つかりませんでした
-        latest/suggested_follow_form:
+        v1/suggested_follow_form:
           attributes:
             target_profile:
               blank: が見つかりませんでした
-        latest/unfollow_form:
+        v1/unfollow_form:
           attributes:
             target_profile:
               blank: が見つかりませんでした

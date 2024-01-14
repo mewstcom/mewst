@@ -7,7 +7,7 @@ module Resource::ErrorResponsable
 
   interface!
 
-  sig { abstract.returns(Latest::ResponseErrorCode) }
+  sig { abstract.returns(V1::ResponseErrorCode) }
   def code
   end
 
