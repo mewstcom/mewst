@@ -11,7 +11,7 @@ gem "activerecord-session_store"
 gem "addressable"
 gem "alba"
 gem "bcrypt" # `has_secure_password` で使っている
-gem "bigdecimal", "< 3.1.5" # bundle install でエラーが出るので一旦固定する
+gem "bigdecimal", "< 3.1.6" # bundle install でエラーが出るので一旦固定する
 gem "bootsnap", require: false
 gem "connection_pool" # Redisで使っている
 gem "counter_culture"
