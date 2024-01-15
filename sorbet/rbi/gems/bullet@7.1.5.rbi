@@ -276,10 +276,10 @@ module Bullet::ActiveJob
   end
 end
 
-# source://bullet//lib/bullet/active_record70.rb#13
+# source://bullet//lib/bullet/active_record71.rb#13
 module Bullet::ActiveRecord
   class << self
-    # source://bullet//lib/bullet/active_record70.rb#14
+    # source://bullet//lib/bullet/active_record71.rb#14
     def enable; end
   end
 end
@@ -900,9 +900,9 @@ class Bullet::Registry::Object < ::Bullet::Registry::Base
   def include?(bullet_key); end
 end
 
-# source://bullet//lib/bullet/active_record70.rb#4
+# source://bullet//lib/bullet/active_record71.rb#4
 module Bullet::SaveWithBulletSupport
-  # source://bullet//lib/bullet/active_record70.rb#5
+  # source://bullet//lib/bullet/active_record71.rb#5
   def _create_record(*_arg0); end
 end
 
