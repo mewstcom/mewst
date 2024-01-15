@@ -196,7 +196,8 @@ CREATE TABLE public.good_jobs (
     is_discrete boolean,
     executions_count integer,
     job_class text,
-    error_event smallint
+    error_event smallint,
+    labels text[]
 );
 
 
@@ -619,13 +620,6 @@ CREATE INDEX index_good_jobs_jobs_on_priority_created_at_when_unfinished ON publ
 
 
 --
--- Name: index_good_jobs_on_active_job_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_good_jobs_on_active_job_id ON public.good_jobs USING btree (active_job_id);
-
-
---
 -- Name: index_good_jobs_on_active_job_id_and_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -654,17 +648,24 @@ CREATE INDEX index_good_jobs_on_concurrency_key_when_unfinished ON public.good_j
 
 
 --
--- Name: index_good_jobs_on_cron_key_and_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_good_jobs_on_cron_key_and_created_at_cond; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_good_jobs_on_cron_key_and_created_at ON public.good_jobs USING btree (cron_key, created_at);
+CREATE INDEX index_good_jobs_on_cron_key_and_created_at_cond ON public.good_jobs USING btree (cron_key, created_at) WHERE (cron_key IS NOT NULL);
 
 
 --
--- Name: index_good_jobs_on_cron_key_and_cron_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_good_jobs_on_cron_key_and_cron_at_cond; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_good_jobs_on_cron_key_and_cron_at ON public.good_jobs USING btree (cron_key, cron_at);
+CREATE UNIQUE INDEX index_good_jobs_on_cron_key_and_cron_at_cond ON public.good_jobs USING btree (cron_key, cron_at) WHERE (cron_key IS NOT NULL);
+
+
+--
+-- Name: index_good_jobs_on_labels; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_good_jobs_on_labels ON public.good_jobs USING gin (labels) WHERE (labels IS NOT NULL);
 
 
 --
@@ -1051,6 +1052,15 @@ ALTER TABLE ONLY public.oauth_access_grants
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240115144966'),
+('20240115144965'),
+('20240115144964'),
+('20240115144963'),
+('20240115144962'),
+('20240115144961'),
+('20240115144960'),
+('20240115144959'),
+('20240115144958'),
 ('20231216042900'),
 ('20231115172238'),
 ('20231115145714'),
