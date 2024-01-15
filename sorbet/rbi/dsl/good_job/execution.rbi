@@ -1283,6 +1283,51 @@ class GoodJob::Execution
     sig { void }
     def job_class_will_change!; end
 
+    sig { returns(T.nilable(T::Array[::String])) }
+    def labels; end
+
+    sig { params(value: T.nilable(T::Array[::String])).returns(T.nilable(T::Array[::String])) }
+    def labels=(value); end
+
+    sig { returns(T::Boolean) }
+    def labels?; end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def labels_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def labels_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def labels_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def labels_change; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def labels_change_to_be_saved; end
+
+    sig { params(from: T.nilable(T::Array[::String]), to: T.nilable(T::Array[::String])).returns(T::Boolean) }
+    def labels_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def labels_in_database; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def labels_previous_change; end
+
+    sig { params(from: T.nilable(T::Array[::String]), to: T.nilable(T::Array[::String])).returns(T::Boolean) }
+    def labels_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def labels_previously_was; end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def labels_was; end
+
+    sig { void }
+    def labels_will_change!; end
+
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def performed_at; end
 
@@ -1474,6 +1519,9 @@ class GoodJob::Execution
     def restore_job_class!; end
 
     sig { void }
+    def restore_labels!; end
+
+    sig { void }
     def restore_performed_at!; end
 
     sig { void }
@@ -1628,6 +1676,12 @@ class GoodJob::Execution
 
     sig { returns(T::Boolean) }
     def saved_change_to_job_class?; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def saved_change_to_labels; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_labels?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_performed_at; end
@@ -1860,6 +1914,9 @@ class GoodJob::Execution
 
     sig { returns(T::Boolean) }
     def will_save_change_to_job_class?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_labels?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_performed_at?; end
