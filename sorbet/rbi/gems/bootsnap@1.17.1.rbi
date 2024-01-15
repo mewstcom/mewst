@@ -945,11 +945,6 @@ module Kernel
 
   # source://bootsnap//lib/bootsnap/load_path_cache/core_ext/kernel_require.rb#8
   def zeitwerk_original_require(path); end
-
-  class << self
-    # source://bootsnap//lib/bootsnap/load_path_cache/core_ext/kernel_require.rb#8
-    def zeitwerk_original_require(path); end
-  end
 end
 
 module Psych
