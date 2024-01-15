@@ -37,7 +37,7 @@ services:
   swagger_ui:
     image: swaggerapi/swagger-ui:latest
     volumes:
-      - ./openapi/latest.yaml:/openapi.yaml
+      - ./openapi/v1.yaml:/openapi.yaml
     environment:
       SWAGGER_JSON: /openapi.yaml
     ports:
