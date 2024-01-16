@@ -21,13 +21,13 @@ module Bullet
     # source://bullet//lib/bullet.rb#43
     def add_footer=(_arg0); end
 
-    # source://bullet//lib/bullet.rb#107
+    # source://bullet//lib/bullet.rb#111
     def add_safelist(options); end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def airbrake=(arg); end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def alert=(arg); end
 
     # Returns the value of attribute always_append_html_body.
@@ -44,27 +44,27 @@ module Bullet
 
     # Rails.root might be nil if `railties` is a dependency on a project that does not use Rails
     #
-    # source://bullet//lib/bullet.rb#83
+    # source://bullet//lib/bullet.rb#87
     def app_root; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def appsignal=(arg); end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def bugsnag=(arg); end
 
-    # source://bullet//lib/bullet.rb#132
+    # source://bullet//lib/bullet.rb#136
     def bullet_logger=(active); end
 
-    # source://bullet//lib/bullet.rb#128
+    # source://bullet//lib/bullet.rb#132
     def clear_safelist; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def console=(arg); end
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#248
+    # source://bullet//lib/bullet.rb#252
     def console_enabled?; end
 
     # Sets the attribute counter_cache_enable
@@ -76,52 +76,52 @@ module Bullet
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#95
+    # source://bullet//lib/bullet.rb#99
     def counter_cache_enable?; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def customized_logger=(arg); end
 
-    # source://bullet//lib/bullet.rb#142
+    # source://bullet//lib/bullet.rb#146
     def debug(title, message); end
 
-    # source://bullet//lib/bullet.rb#113
+    # source://bullet//lib/bullet.rb#117
     def delete_safelist(options); end
 
-    # source://bullet//lib/bullet.rb#61
+    # source://bullet//lib/bullet.rb#65
     def enable=(enable); end
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#76
+    # source://bullet//lib/bullet.rb#80
     def enable?; end
 
-    # source://bullet//lib/bullet.rb#61
+    # source://bullet//lib/bullet.rb#65
     def enabled=(enable); end
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#76
+    # source://bullet//lib/bullet.rb#80
     def enabled?; end
 
-    # source://bullet//lib/bullet.rb#162
+    # source://bullet//lib/bullet.rb#166
     def end_request; end
 
-    # source://bullet//lib/bullet.rb#206
+    # source://bullet//lib/bullet.rb#210
     def footer_info; end
 
-    # source://bullet//lib/bullet.rb#192
+    # source://bullet//lib/bullet.rb#196
     def gather_inline_notifications; end
 
-    # source://bullet//lib/bullet.rb#120
+    # source://bullet//lib/bullet.rb#124
     def get_safelist_associations(type, class_name); end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def honeybadger=(arg); end
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#252
+    # source://bullet//lib/bullet.rb#256
     def inject_into_page?; end
 
     # Sets the attribute n_plus_one_query_enable
@@ -133,15 +133,15 @@ module Bullet
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#87
+    # source://bullet//lib/bullet.rb#91
     def n_plus_one_query_enable?; end
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#185
+    # source://bullet//lib/bullet.rb#189
     def notification?; end
 
-    # source://bullet//lib/bullet.rb#181
+    # source://bullet//lib/bullet.rb#185
     def notification_collector; end
 
     # Returns the value of attribute orm_patches_applied.
@@ -156,22 +156,22 @@ module Bullet
     # source://bullet//lib/bullet.rb#43
     def orm_patches_applied=(_arg0); end
 
-    # source://bullet//lib/bullet.rb#198
+    # source://bullet//lib/bullet.rb#202
     def perform_out_of_channel_notifications(env = T.unsafe(nil)); end
 
-    # source://bullet//lib/bullet.rb#228
+    # source://bullet//lib/bullet.rb#232
     def profile; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def rails_logger=(arg); end
 
-    # source://bullet//lib/bullet.rb#51
+    # source://bullet//lib/bullet.rb#55
     def raise=(should_raise); end
 
-    # source://bullet//lib/bullet.rb#124
+    # source://bullet//lib/bullet.rb#128
     def reset_safelist; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def rollbar=(arg); end
 
     # Returns the value of attribute safelist.
@@ -179,7 +179,7 @@ module Bullet
     # source://bullet//lib/bullet.rb#42
     def safelist; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def sentry=(arg); end
 
     # Sets the attribute skip_html_injection
@@ -201,10 +201,22 @@ module Bullet
     # source://bullet//lib/bullet.rb#43
     def skip_http_headers=(_arg0); end
 
-    # source://bullet//lib/bullet.rb#49
+    # Returns the value of attribute skip_user_in_notification.
+    #
+    # source://bullet//lib/bullet.rb#43
+    def skip_user_in_notification; end
+
+    # Sets the attribute skip_user_in_notification
+    #
+    # @param value the value to set the attribute skip_user_in_notification to.
+    #
+    # source://bullet//lib/bullet.rb#43
+    def skip_user_in_notification=(_arg0); end
+
+    # source://bullet//lib/bullet.rb#53
     def slack=(arg); end
 
-    # source://bullet//lib/bullet.rb#103
+    # source://bullet//lib/bullet.rb#107
     def stacktrace_excludes; end
 
     # Sets the attribute stacktrace_excludes
@@ -214,7 +226,7 @@ module Bullet
     # source://bullet//lib/bullet.rb#36
     def stacktrace_excludes=(_arg0); end
 
-    # source://bullet//lib/bullet.rb#99
+    # source://bullet//lib/bullet.rb#103
     def stacktrace_includes; end
 
     # Sets the attribute stacktrace_includes
@@ -226,16 +238,16 @@ module Bullet
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#177
+    # source://bullet//lib/bullet.rb#181
     def start?; end
 
-    # source://bullet//lib/bullet.rb#146
+    # source://bullet//lib/bullet.rb#150
     def start_request; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def terminal_notifier=(arg); end
 
-    # source://bullet//lib/bullet.rb#212
+    # source://bullet//lib/bullet.rb#216
     def text_notifications; end
 
     # Sets the attribute unused_eager_loading_enable
@@ -247,21 +259,21 @@ module Bullet
 
     # @return [Boolean]
     #
-    # source://bullet//lib/bullet.rb#91
+    # source://bullet//lib/bullet.rb#95
     def unused_eager_loading_enable?; end
 
-    # source://bullet//lib/bullet.rb#220
+    # source://bullet//lib/bullet.rb#224
     def warnings; end
 
-    # source://bullet//lib/bullet.rb#49
+    # source://bullet//lib/bullet.rb#53
     def xmpp=(arg); end
 
     private
 
-    # source://bullet//lib/bullet.rb#269
+    # source://bullet//lib/bullet.rb#273
     def build_request_uri(env); end
 
-    # source://bullet//lib/bullet.rb#260
+    # source://bullet//lib/bullet.rb#264
     def for_each_active_notifier_with_notification; end
   end
 end
@@ -276,10 +288,10 @@ module Bullet::ActiveJob
   end
 end
 
-# source://bullet//lib/bullet/active_record70.rb#13
+# source://bullet//lib/bullet/active_record71.rb#13
 module Bullet::ActiveRecord
   class << self
-    # source://bullet//lib/bullet/active_record70.rb#14
+    # source://bullet//lib/bullet/active_record71.rb#14
     def enable; end
   end
 end
@@ -620,13 +632,13 @@ class Bullet::Notification::Base
 
   # @return [Boolean]
   #
-  # source://bullet//lib/bullet/notification/base.rb#61
+  # source://bullet//lib/bullet/notification/base.rb#72
   def eql?(other); end
 
-  # source://bullet//lib/bullet/notification/base.rb#65
+  # source://bullet//lib/bullet/notification/base.rb#76
   def hash; end
 
-  # source://bullet//lib/bullet/notification/base.rb#57
+  # source://bullet//lib/bullet/notification/base.rb#63
   def notification_data; end
 
   # Returns the value of attribute notifier.
@@ -677,10 +689,10 @@ class Bullet::Notification::Base
 
   protected
 
-  # source://bullet//lib/bullet/notification/base.rb#75
+  # source://bullet//lib/bullet/notification/base.rb#86
   def associations_str; end
 
-  # source://bullet//lib/bullet/notification/base.rb#71
+  # source://bullet//lib/bullet/notification/base.rb#82
   def klazz_associations_str; end
 end
 
@@ -900,9 +912,9 @@ class Bullet::Registry::Object < ::Bullet::Registry::Base
   def include?(bullet_key); end
 end
 
-# source://bullet//lib/bullet/active_record70.rb#4
+# source://bullet//lib/bullet/active_record71.rb#4
 module Bullet::SaveWithBulletSupport
-  # source://bullet//lib/bullet/active_record70.rb#5
+  # source://bullet//lib/bullet/active_record71.rb#5
   def _create_record(*_arg0); end
 end
 
