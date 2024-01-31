@@ -1,33 +1,43 @@
 # typed: strict
 # frozen_string_literal: true
 
-ROUTING_USERNAME_FORMAT = T.let(/[A-Za-z0-9_]+/, Regexp)
-
 Rails.application.routes.draw do
+  draw :api
+
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
-  match "/v1/internal/@:atname/posts",                                       via: :get,    as: :v1_internal_profile_post_list,            to: "v1/internal/profiles/posts/index#call",                  atname: ROUTING_USERNAME_FORMAT
-  match "/v1/internal/accounts",                                             via: :post,   as: :v1_internal_account_list,                 to: "v1/internal/accounts/create#call"
-  match "/v1/internal/email_confirmations",                                  via: :post,   as: :v1_internal_email_confirmation_list,      to: "v1/internal/email_confirmations/create#call"
-  match "/v1/internal/email_confirmations/:email_confirmation_id",           via: :get,    as: :v1_internal_email_confirmation,           to: "v1/internal/email_confirmations/show#call"
-  match "/v1/internal/email_confirmations/:email_confirmation_id/challenge", via: :post,   as: :v1_internal_email_confirmation_challenge, to: "v1/internal/email_confirmations/challenges/create#call"
-  match "/v1/internal/password",                                             via: :patch,  as: :v1_internal_password,                     to: "v1/internal/passwords/update#call"
-  match "/v1/internal/posts/:post_id",                                       via: :get,    as: :v1_internal_post,                         to: "v1/internal/posts/show#call"
-  match "/v1/internal/sessions",                                             via: :post,   as: :v1_internal_session_list,                 to: "v1/internal/sessions/create#call"
-  match "/v1/@:atname/follow",                                               via: :delete, as: :v1_follow,                                to: "v1/follows/destroy#call",                                atname: ROUTING_USERNAME_FORMAT
-  match "/v1/@:atname/follow",                                               via: :post,                                                  to: "v1/follows/create#call",                                 atname: ROUTING_USERNAME_FORMAT
-  match "/v1/@:atname/posts",                                                via: :get,    as: :v1_profile_post_list,                     to: "v1/profiles/posts/index#call",                           atname: ROUTING_USERNAME_FORMAT
-  match "/v1/notifications",                                                 via: :get,    as: :v1_notification_list,                     to: "v1/notifications/index#call"
-  match "/v1/posts",                                                         via: :post,   as: :v1_post_list,                             to: "v1/posts/create#call"
-  match "/v1/posts/:post_id",                                                via: :delete, as: :v1_post,                                  to: "v1/posts/destroy#call"
-  match "/v1/posts/:post_id",                                                via: :get,                                                   to: "v1/posts/show#call"
-  match "/v1/posts/:post_id/stamp",                                          via: :delete, as: :v1_post_stamp,                            to: "v1/stamps/destroy#call"
-  match "/v1/posts/:post_id/stamp",                                          via: :post,                                                  to: "v1/stamps/create#call"
-  match "/v1/profiles/me",                                                   via: :get,    as: :v1_profile_me,                            to: "v1/profiles/me/show#call"
-  match "/v1/profiles/me",                                                   via: :patch,                                                 to: "v1/profiles/me/update#call"
-  match "/v1/suggested_profiles",                                            via: :get,    as: :v1_suggested_profile_list,                to: "v1/suggested_profiles/index#call"
-  match "/v1/suggested_profiles/@:atname/check",                             via: :post,   as: :v1_suggested_profile_check,               to: "v1/suggested_profiles/checks/create#call"
-  match "/v1/timeline",                                                      via: :get,    as: :v1_timeline,                              to: "v1/timeline/show#call"
-  match "/v1/users/me",                                                      via: :get,    as: :v1_user_me,                               to: "v1/users/me/show#call"
-  match "/v1/users/me",                                                      via: :patch,                                                 to: "v1/users/me/update#call"
+  match "/@:atname",                via: :get,    as: :profile,                     to: "profiles/show#call"
+  match "/@:atname/atom",           via: :get,    as: :profile_atom,                to: "profiles/atom/show#call"
+  match "/@:atname/check",          via: :post,   as: :profile_check,               to: "checks/create#call"
+  match "/@:atname/follow",         via: :delete, as: :profile_follow,              to: "follows/destroy#call"
+  match "/@:atname/follow",         via: :post,                                     to: "follows/create#call"
+  match "/@:atname/posts/:post_id", via: :get,    as: :profile_post,                to: "posts/show#call"
+  match "/accounts",                via: :post,   as: :account_list,                to: "accounts/create#call"
+  match "/accounts/new",            via: :get,    as: :new_account,                 to: "accounts/new#call"
+  match "/api/internal/following",  via: :post,   as: :internal_api_following_list, to: "api/internal/following/index#call"
+  match "/api/posts",               via: :post,   as: :api_post_list,               to: "api/posts/create#call"
+  match "/email_confirmations",     via: :post,   as: :email_confirmation_list,     to: "email_confirmations/create#call"
+  match "/email_confirmations/new", via: :get,    as: :new_email_confirmation,      to: "email_confirmations/new#call"
+  match "/home",                    via: :get,    as: :home,                        to: "home/show#call"
+  match "/notifications",           via: :get,    as: :notification_list,           to: "notifications/index#call"
+  match "/password",                via: :patch,  as: :password,                    to: "passwords/update#call"
+  match "/password/edit",           via: :get,    as: :edit_password,               to: "passwords/edit#call"
+  match "/password_reset",          via: :get,    as: :password_reset,              to: "password_resets/new#call"
+  match "/password_reset",          via: :post,                                     to: "password_resets/create#call"
+  match "/posts/:post_id",          via: :delete, as: :post,                        to: "posts/destroy#call"
+  match "/posts/:post_id/stamp",    via: :delete, as: :post_stamp,                  to: "stamps/destroy#call"
+  match "/posts/:post_id/stamp",    via: :post,                                     to: "stamps/create#call"
+  match "/search",                  via: :get,    as: :search,                      to: "search/show#call"
+  match "/settings",                via: :get,    as: :settings,                    to: "settings/index#call"
+  match "/settings/profile",        via: :get,    as: :settings_profile,            to: "settings/profiles/show#call"
+  match "/settings/profile",        via: :patch,                                    to: "settings/profiles/update#call"
+  match "/settings/user",           via: :get,    as: :settings_user,               to: "settings/users/show#call"
+  match "/settings/user",           via: :patch,                                    to: "settings/users/update#call"
+  match "/sign_in",                 via: :get,    as: :sign_in,                     to: "sign_in/new#call"
+  match "/sign_in",                 via: :post,                                     to: "sign_in/create#call"
+  match "/sign_out",                via: :get,    as: :sign_out,                    to: "sign_out/show#call"
+  match "/sign_up",                 via: :get,    as: :sign_up,                     to: "sign_up/new#call"
+  match "/sign_up",                 via: :post,                                     to: "sign_up/create#call"
+
+  root "welcome/show#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 end
