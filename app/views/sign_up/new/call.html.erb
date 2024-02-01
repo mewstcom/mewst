@@ -34,14 +34,14 @@
               :email,
               autocomplete: "username",
               autofocus: true,
-              disabled: SignUp.stopped?,
+              disabled: SignUpStopper.enabled?,
               class: "form-control",
               required: true
             ) %>
           </div>
 
           <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", disabled: SignUp.stopped?, type: :submit do %>
+            <%= f.button class: "btn btn-primary rounded-pill", disabled: SignUpStopper.enabled?, type: :submit do %>
               <%= t("verbs.submit") %>
             <% end %>
           </div>
