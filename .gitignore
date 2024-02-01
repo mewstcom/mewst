@@ -4,9 +4,11 @@
 /.env.*.local
 /.env.local
 /.idea
+/app/assets/builds/*
 /config/master.key
 /log/*
 /node_modules
 /public/uploads/*
 /tmp/*
 /vendor/bundle
+!/app/assets/builds/.keep

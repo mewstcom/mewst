@@ -1,5 +1,6 @@
 shared:
   api_url: <%= ENV["MEWST_API_URL"] %>
+  disabled_to_sign_up: <%= ENV["MEWST_DISABLED_TO_SIGN_UP"] %>
   email_domain: <%= ENV["MEWST_EMAIL_DOMAIN"] %>
   internal_api_token: <%= ENV["MEWST_INTERNAL_API_TOKEN"] %>
   redis_url: <%= ENV["REDIS_URL"] %>

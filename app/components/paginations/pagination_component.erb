@@ -1,0 +1,27 @@
+<nav>
+  <ul class="justify-content-center pagination">
+    <% if page_info.has_previous_page %>
+      <li class="page-item">
+        <%= link_to t("messages.pagination.prev_html"), previous_path, class: "page-link rounded-start-pill" %>
+      </li>
+    <% else %>
+      <li class="page-item disabled">
+        <a class="page-link rounded-start-pill">
+          <%= t("messages.pagination.prev_html") %>
+        </a>
+      </li>
+    <% end %>
+
+    <% if page_info.has_next_page %>
+      <li class="page-item">
+        <%= link_to t("messages.pagination.next_html"), next_path, class: "page-link rounded-end-pill" %>
+      </li>
+    <% else %>
+      <li class="page-item disabled">
+        <a class="page-link rounded-end-pill">
+          <%= t("messages.pagination.next_html") %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</nav>

@@ -1,0 +1,56 @@
+<form
+  class="c-post-form"
+  data-action="post-form#submit:prevent"
+  data-character-counter-max-value="<%= Post::MAXIMUM_CONTENT_LENGTH %>"
+  data-controller="character-counter post-form"
+  data-post-form-success-message-value="<%= t("messages.posts.created") %>"
+  data-post-form-timeline-outlet=".js-timeline"
+  data-post-form-blank-slate-outlet=".js-timeline-blank-slate"
+>
+  <% if from_modal %>
+    <div class="mb-3 text-end">
+      <a
+        class="text-decoration-none"
+        data-bs-dismiss="modal"
+        href="#"
+        role="button"
+        tabindex="<%= cancel_button_tabindex %>"
+      >
+        <%= t("nouns.cancel") %>
+      </a>
+    </div>
+  <% end %>
+
+  <textarea
+    autofocus
+    class="form-control rounded-4"
+    data-action="keyup->character-counter#updateCounter"
+    data-character-counter-target="textarea"
+    data-controller="autosize"
+    data-post-form-target="content"
+    data-post-modal-target="content"
+    tabindex="<%= textarea_tabindex %>"
+  ></textarea>
+
+  <div class="align-items-center gap-3 hstack justify-content-between mt-3">
+    <div class="col-1"></div>
+
+    <div class="text-center">
+      <button
+        class="btn btn-primary rounded-pill"
+        data-post-form-target="submitButton"
+        tabindex="<%= submit_button_tabindex %>"
+        type="submit"
+      >
+        <i class="bi bi-send me-1"></i>
+        <%= t("verbs.post") %>
+      </button>
+    </div>
+
+    <div class="col-1 text-end">
+      <span
+        data-character-counter-target="counter"
+      ></span>
+    </div>
+  </div>
+</form>

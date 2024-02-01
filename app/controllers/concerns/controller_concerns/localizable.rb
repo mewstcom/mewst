@@ -10,6 +10,11 @@ module ControllerConcerns::Localizable
     I18n.with_locale(current_locale.serialize, &action)
   end
 
+  sig { returns(T.nilable(Locale)) }
+  private def instant_locale
+    @instant_locale ||= T.let(Locale.try_deserialize(params[:locale]), T.nilable(Locale))
+  end
+
   sig { returns(Locale) }
   private def preferred_locale
     preferred_languages = http_accept_language.user_preferred_languages
@@ -24,6 +29,6 @@ module ControllerConcerns::Localizable
 
   sig { returns(Locale) }
   private def current_locale
-    current_viewer&.locale.presence || preferred_locale
+    instant_locale.presence || current_actor&.locale.presence || preferred_locale
   end
 end

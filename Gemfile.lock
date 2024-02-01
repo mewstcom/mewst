@@ -122,6 +122,8 @@ GEM
       activerecord (>= 4.2)
       activesupport (>= 4.2)
     crass (1.0.6)
+    cssbundling-rails (1.4.0)
+      railties (>= 6.0.0)
     date (3.3.4)
     diff-lcs (1.5.0)
     discard (1.3.0)
@@ -191,6 +193,9 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
+    meta-tags (2.20.0)
+      actionpack (>= 6.0.0, < 7.2)
+    method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.21.1)
     msgpack (1.7.2)
@@ -224,6 +229,11 @@ GEM
     pg (1.5.4)
     prettier_print (1.2.1)
     prism (0.19.0)
+    propshaft (0.8.0)
+      actionpack (>= 7.0.0)
+      activesupport (>= 7.0.0)
+      rack
+      railties (>= 7.0.0)
     psych (5.1.2)
       stringio
     public_suffix (5.0.4)
@@ -234,6 +244,7 @@ GEM
     raabro (1.4.0)
     racc (1.7.3)
     rack (3.0.8)
+    rack-rewrite (1.5.1)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -397,6 +408,10 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
     uniform_notifier (1.16.0)
+    view_component (3.10.0)
+      activesupport (>= 5.2.0, < 8.0)
+      concurrent-ruby (~> 1.0)
+      method_source (~> 1.0)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -430,6 +445,7 @@ DEPENDENCIES
   committee-rails
   connection_pool
   counter_culture
+  cssbundling-rails
   discard
   doorkeeper
   dotenv-rails
@@ -440,10 +456,13 @@ DEPENDENCIES
   good_job
   http_accept_language
   lograge
+  meta-tags
   oj
   pg
+  propshaft
   puma
   pundit
+  rack-rewrite
   rails (~> 7.1.2)
   rails-i18n
   rails_autolink
@@ -461,6 +480,7 @@ DEPENDENCIES
   standard-sorbet
   strong_migrations
   tapioca (>= 0.10.5)
+  view_component
   web-console
 
 RUBY VERSION

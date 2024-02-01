@@ -89,6 +89,5 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :resend
 
-  config.lograge.base_controller_class = "ActionController::API"
   config.lograge.enabled = true
 end

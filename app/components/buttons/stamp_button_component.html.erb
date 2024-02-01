@@ -1,0 +1,33 @@
+<% if signed_in? %>
+  <turbo-frame id="posts-<%= post.id %>-stamp">
+    <% if post.viewer_has_stamped %>
+      <%= button_to post_stamp_path(post.id), {
+        class: "btn btn-sm c-stamp-button rounded-pill u-btn-stamped",
+        method: :delete
+      } do %>
+        <%= render Icons::StampedIconComponent.new %>
+      <% end %>
+    <% else %>
+      <%= button_to post_stamp_path(post.id), {
+        class: "btn btn-sm c-stamp-button c-stamp-button--unstamped rounded-pill u-btn-outline-stamped",
+      } do %>
+        <%= render Icons::UnstampedIconComponent.new %>
+      <% end %>
+    <% end %>
+  </turbo-frame>
+<% else %>
+  <span
+    class="d-inline-block"
+    data-bs-title="<%= t("messages.components.stamp_button.sign_in_required") %>"
+    data-bs-toggle="tooltip"
+    tabindex="0"
+  >
+    <button
+      class="btn btn-sm rounded-pill btn-outline-secondary"
+      disabled
+      type="button"
+    >
+      <%= render Icons::UnstampedIconComponent.new %>
+    </button>
+  </span>
+<% end %>

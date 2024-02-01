@@ -1,0 +1,13 @@
+<div
+  class="dropdown u-cursor-pointer u-hidden-caret"
+>
+  <div aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown">
+    <i class="bi bi-three-dots fw-bold text-muted"></i>
+  </div>
+
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li>
+      <%= link_to t("nouns.rss_feed"), profile_atom_path(atname: profile.atname), class: "dropdown-item", target: "_blank" %>
+    </li>
+  </ul>
+</div>

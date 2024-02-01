@@ -1,0 +1,22 @@
+<turbo-frame id="profiles-<%= target_profile.atname %>-follow">
+  <% if target_profile.viewer_has_followed %>
+    <%= button_to profile_follow_path(target_profile.atname), {
+      class: "btn btn-outline-secondary rounded-pill text-muted",
+      method: :delete
+    } do %>
+      <i class="bi bi-check-lg"></i>
+      <span>
+        <%= t("nouns.following") %>
+      </span>
+    <% end %>
+  <% else %>
+    <%= button_to profile_follow_path(target_profile.atname), {
+      class: "btn btn-primary rounded-pill",
+    } do %>
+      <i class="bi bi-plus-lg"></i>
+      <span>
+        <%= t("verbs.follow") %>
+      </span>
+    <% end %>
+  <% end %>
+</turbo-frame>

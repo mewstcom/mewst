@@ -1,0 +1,52 @@
+<% title = t("meta.title.sign_up.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::SimpleLayoutComponent.new do %>
+  <div class="container u-flat u-narrow">
+    <div class="text-center">
+      <div class="mt-3 mt-sm-5">
+        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+          <%= render Icons::LogoIconComponent.new %>
+        <% end %>
+      </div>
+
+      <h1 class="fw-bold mt-3 mt-sm-5">
+        <%= title %>
+      </h1>
+
+      <p>
+        <%= t("messages.sign_up.description_html") %>
+      </p>
+
+      <p>
+        <%= t("messages.sign_up.already_have_an_account_html") %>
+      </p>
+    </div>
+
+    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+      <div class="card-body">
+        <%= form_with model: @form, url: sign_up_path do |f| %>
+          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+          <div class="mb-3">
+            <%= f.label :email, class: "form-label" %>
+            <%= f.email_field(
+              :email,
+              autocomplete: "username",
+              autofocus: true,
+              disabled: SignUp.stopped?,
+              class: "form-control",
+              required: true
+            ) %>
+          </div>
+
+          <div class="text-center">
+            <%= f.button class: "btn btn-primary rounded-pill", disabled: SignUp.stopped?, type: :submit do %>
+              <%= t("verbs.submit") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

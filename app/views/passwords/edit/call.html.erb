@@ -1,0 +1,37 @@
+<% title = t("meta.title.passwords.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::SimpleLayoutComponent.new do %>
+  <div class="container u-flat u-narrow">
+    <div class="text-center">
+      <div class="mt-3 mt-sm-5">
+        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+          <%= render Icons::LogoIconComponent.new %>
+        <% end %>
+      </div>
+
+      <h1 class="fw-bold mt-3 mt-sm-5">
+        <%= title %>
+      </h1>
+    </div>
+
+    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+      <div class="card-body">
+        <%= form_with method: :patch, model: @form, url: password_path do |f| %>
+          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+          <div class="mb-3">
+            <%= f.label :new_password, class: "form-label" %>
+            <%= f.password_field :new_password, autofocus: true, class: "form-control", required: true %>
+          </div>
+
+          <div class="text-center">
+            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+              <%= t("verbs.submit") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

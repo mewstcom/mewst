@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::ApplicationForm
+class ApplicationForm
   extend T::Sig
 
   include ActiveModel::Model

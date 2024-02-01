@@ -1,0 +1,7 @@
+.c-flash-toast {
+  bottom: 0;
+
+  @include media-breakpoint-down(sm) {
+    bottom: $bottom-navbar-height;
+  }
+}
