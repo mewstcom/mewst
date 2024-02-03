@@ -2,9 +2,8 @@
 # frozen_string_literal: true
 
 class Posts::ShowController < ApplicationController
-  include Authenticatable
-  include Localizable
-  include ApiRequestable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
   include ResponseErrorable
 
   around_action :set_locale

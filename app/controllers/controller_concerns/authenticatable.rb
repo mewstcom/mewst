@@ -25,10 +25,12 @@ module ControllerConcerns::Authenticatable
   def current_actor
     return unless session[:current_actor_id]
 
-    @current_actor ||= T.let(begin
-      actor = Actor.new(id: session[:current_actor_id])
-      actor.persisted? ? actor : nil
-    end, T.nilable(Actor))
+    @current_actor ||= Actor.find_by(id: session[:current_actor_id])
+  end
+
+  sig { returns(Actor) }
+  def current_actor!
+    current_actor.not_nil!
   end
 
   sig { returns(T::Boolean) }

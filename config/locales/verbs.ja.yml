@@ -2,9 +2,12 @@ ja:
   verbs:
     add: 追加する
     connect: 連携する
+    delete: 削除する
     disconnect: 連携解除する
     follow: フォローする
+    hide: 非表示にする
     post: 投稿する
     sign_in: ログインする
+    sign_up: アカウントを作成する
     submit: 送信する
     update: 更新する

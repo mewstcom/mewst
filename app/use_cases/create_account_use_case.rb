@@ -3,23 +3,20 @@
 
 class CreateAccountUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :oauth_access_token, OauthAccessToken
-    const :profile, Profile
-    const :user, User
+    const :actor, Actor
   end
 
   sig { params(atname: String, email: String, locale: String, password: String, time_zone: String).returns(Result) }
   def call(atname:, email:, locale:, password:, time_zone:)
-    account = Account.new(atname:, email:, locale:, password:, time_zone:)
+    current_time = Time.current
+    profile = Profile.new(profileable_type: ProfileableType::User.serialize, atname:, joined_at: current_time)
 
-    ActiveRecord::Base.transaction do
-      account.save!
-
-      Result.new(
-        oauth_access_token: account.oauth_access_token.not_nil!,
-        profile: account.profile.not_nil!,
-        user: account.user.not_nil!
-      )
+    actor = ActiveRecord::Base.transaction do
+      profile.save!
+      user = profile.create_user!(email:, password:, locale:, time_zone:, signed_up_at: current_time)
+      profile.actors.create!(user:)
     end
+
+    Result.new(actor:)
   end
 end

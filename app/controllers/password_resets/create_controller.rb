@@ -2,9 +2,8 @@
 # frozen_string_literal: true
 
 class PasswordResets::CreateController < ApplicationController
-  include Authenticatable
-  include Localizable
-  include ApiRequestable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
 
   around_action :set_locale
   before_action :require_no_authentication

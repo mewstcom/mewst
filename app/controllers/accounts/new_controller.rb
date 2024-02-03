@@ -2,10 +2,9 @@
 # frozen_string_literal: true
 
 class Accounts::NewController < ApplicationController
-  include Authenticatable
-  include Localizable
-  include ApiRequestable
-  include EmailConfirmationFindable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
+  include ControllerConcerns::EmailConfirmationFindable
 
   around_action :set_locale
   before_action :require_no_authentication
@@ -13,6 +12,6 @@ class Accounts::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = AccountForm.new(email: @email)
+    @form = AccountForm.new(email: @email_confirmation.email)
   end
 end

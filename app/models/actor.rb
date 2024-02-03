@@ -6,9 +6,15 @@ class Actor < ApplicationRecord
   belongs_to :profile
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
 
+  delegate :time_zone, to: :user
   delegate :atname, :following?, :follows, :home_timeline, :me?, :notifications, :posts, :stamps,
     :suggested_follows, :suggested_followees,
     to: :profile
+
+  sig { returns(Locale) }
+  def locale
+    @locale ||= Locale.deserialize(user.locale)
+  end
 
   sig do
     params(application: OauthApplication, scopes: T.any(String, Doorkeeper::OAuth::Scopes))

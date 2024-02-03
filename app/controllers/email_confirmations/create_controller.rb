@@ -2,10 +2,9 @@
 # frozen_string_literal: true
 
 class EmailConfirmations::CreateController < ApplicationController
-  include Authenticatable
-  include Localizable
-  include ApiRequestable
-  include EmailConfirmationFindable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
+  include ControllerConcerns::EmailConfirmationFindable
 
   around_action :set_locale
   before_action :require_no_authentication
@@ -19,14 +18,9 @@ class EmailConfirmations::CreateController < ApplicationController
       return render("email_confirmations/new/call", status: :unprocessable_entity)
     end
 
-    result = ConfirmEmailUseCase.new(client: v1_internal_client).call(form: @form)
+    result = ConfirmEmailUseCase.new.call(email_confirmation: @form.email_confirmation!)
 
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render("email_confirmations/new/call", status: :unprocessable_entity)
-    end
-
-    redirect_to success_path(result.email_confirmation.not_nil!)
+    redirect_to success_path(result.email_confirmation)
   end
 
   sig { returns(ActionController::Parameters) }
@@ -36,7 +30,7 @@ class EmailConfirmations::CreateController < ApplicationController
 
   sig { params(email_confirmation: EmailConfirmation).returns(String) }
   private def success_path(email_confirmation)
-    event = email_confirmation.event.not_nil!
+    event = EmailConfirmationEvent.deserialize(email_confirmation.event)
 
     case event
     when EmailConfirmationEvent::PasswordReset

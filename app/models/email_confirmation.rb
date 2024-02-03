@@ -31,4 +31,10 @@ class EmailConfirmation < ApplicationRecord
     update!(succeeded_at: Time.current) unless succeeded?
     true
   end
+
+  sig { params(locale: Locale).returns(T::Boolean) }
+  def send_mail!(locale:)
+    EmailConfirmationMailer.email_confirmation(email_confirmation_id: id.not_nil!, locale: locale.serialize).deliver_later
+    true
+  end
 end

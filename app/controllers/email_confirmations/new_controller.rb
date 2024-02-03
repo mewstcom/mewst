@@ -2,10 +2,9 @@
 # frozen_string_literal: true
 
 class EmailConfirmations::NewController < ApplicationController
-  include Authenticatable
-  include Localizable
-  include ApiRequestable
-  include EmailConfirmationFindable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
+  include ControllerConcerns::EmailConfirmationFindable
 
   around_action :set_locale
   before_action :require_no_authentication

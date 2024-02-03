@@ -1,10 +1,9 @@
 ja:
   nouns:
-    account: アカウント
     ago: 前
+    cancel: キャンセル
     connected_accounts: 連携アカウント
-    current_avatar: 現在のアバター
-    edit_account: アカウント編集
+    current_avatar: 現在のアバター画像
     edit_profile: プロフィール編集
     english: 英語
     english_native: English
@@ -16,7 +15,11 @@ ja:
     menu: メニュー
     notifications: 通知
     profile: プロフィール
+    rss_feed: RSSフィード
+    search: 検索
     settings: 設定
     sign_in: ログイン
     sign_out: ログアウト
     sign_up: アカウント作成
+    suggested_profiles: おすすめプロフィール
+    user: ユーザー

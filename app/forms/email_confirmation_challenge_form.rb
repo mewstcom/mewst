@@ -1,15 +1,15 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::EmailConfirmationChallengeForm < V1::ApplicationForm
+class EmailConfirmationChallengeForm < ApplicationForm
   attribute :email_confirmation_id, :string
   attribute :confirmation_code, :string
 
   validate :valid_confirmation_code
 
-  sig { returns(T.nilable(EmailConfirmation)) }
-  def email_confirmation
-    EmailConfirmation.find_by(id: email_confirmation_id)
+  sig { returns(EmailConfirmation) }
+  def email_confirmation!
+    EmailConfirmation.find(email_confirmation_id)
   end
 
   sig { returns(T.nilable(EmailConfirmation)) }

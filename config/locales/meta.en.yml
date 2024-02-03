@@ -1,10 +1,16 @@
 en:
   meta:
+    description:
+      default: |-
+        Mewst is a social network where you can share your current feelings and situation in 160 characters.
+        We aim to provide a service that can be used without any tension.
     title:
       accounts:
         new: Create an account
       home:
         show: Home
+      notifications:
+        index: Notifications
       password_resets:
         new: Forgot your password?
       passwords:
@@ -13,11 +19,19 @@ en:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname})'s profile"
+      search:
+        show: Search
       settings:
         index: Settings
+        profiles:
+          show: Edit profile
+        users:
+          show: Edit user
       sign_in:
         new: Sign in
       sign_up:
         new: Sign up
+      verification_challenges:
+        new: Verification
       welcome:
-        show: A microblogging service
+        show: A comforting social network

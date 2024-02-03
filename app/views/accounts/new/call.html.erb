@@ -54,16 +54,16 @@
             </div>
           </div>
 
-          <p>
-            <%= t("messages.accounts.terms_html") %>
-          </p>
-
           <div class="text-center">
             <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
               <%= t("verbs.sign_up") %>
             <% end %>
           </div>
         <% end %>
+
+        <p class="mt-4 small text-center">
+          <%= t("messages.accounts.terms_html") %>
+        </p>
       </div>
     </div>
   </div>

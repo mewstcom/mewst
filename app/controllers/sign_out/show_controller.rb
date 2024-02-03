@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 class SignOut::ShowController < ApplicationController
-  include Authenticatable
-  include Localizable
+  include ControllerConcerns::Authenticatable
+  include ControllerConcerns::Localizable
 
   around_action :set_locale
   before_action :require_authentication
