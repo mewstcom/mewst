@@ -22,6 +22,7 @@ gem "enumerize"
 gem "faraday"
 gem "good_job"
 gem "http_accept_language"
+gem "jb"
 gem "meta-tags"
 gem "oj" # `alba` で使っている
 gem "pg"

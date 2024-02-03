@@ -24,7 +24,7 @@
       data-controller="timeline"
     >
       <% @posts.each do |post| %>
-        <%= render Cards::PostCardComponent.new(post:) %>
+        <%= render Cards::PostCardComponent.new(post:, stamp_checker: @stamp_checker) %>
       <% end %>
     </div>
 

@@ -6,19 +6,19 @@ class CreatePostUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(viewer: Actor, content: String).returns(Result) }
-  def call(viewer:, content:)
-    post = viewer.posts.new(
+  sig { params(current_actor: Actor, content: String, oauth_application: OauthApplication).returns(Result) }
+  def call(current_actor:, content:, oauth_application: OauthApplication.mewst_web)
+    post = current_actor.posts.new(
       content:,
       published_at: Time.current,
-      oauth_application: OauthApplication.mewst_web # TODO: Web API公開のタイミングで別のアプリを指定できるようにする
+      oauth_application:
     )
 
     ActiveRecord::Base.transaction do
       post.save!
-      viewer.profile.not_nil!.update!(last_post_at: post.published_at)
+      current_actor.update_last_post_time!(time: post.published_at)
 
-      viewer.home_timeline.add_post(post:)
+      current_actor.home_timeline.add_post(post:)
       FanoutPostJob.perform_later(post_id: post.id)
     end
 

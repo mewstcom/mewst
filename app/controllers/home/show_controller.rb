@@ -15,5 +15,6 @@ class Home::ShowController < ApplicationController
       after: params[:after].presence,
       limit: 15
     )
+    @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: @posts)
   end
 end

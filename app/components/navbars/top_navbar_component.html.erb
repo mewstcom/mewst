@@ -28,7 +28,7 @@
               <%= t("nouns.notifications") %>
             <% end %>
 
-            <%= link_to profile_path(current_actor.atname), class: "nav-link" do %>
+            <%= link_to profile_path(current_actor!.atname), class: "nav-link" do %>
               <i class="bi bi-person-circle me-1"></i>
               <%= t("nouns.profile") %>
             <% end %>

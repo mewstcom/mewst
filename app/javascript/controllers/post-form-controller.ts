@@ -27,7 +27,7 @@ export default class extends Controller<HTMLFormElement> {
     try {
       const content = this.contentTarget.value;
 
-      const response = await fetcher.post('/api/posts', {
+      const response = await fetcher.post('/posts', {
         content,
       });
 

@@ -1,4 +1,4 @@
 <div class="c-post-card-footer align-items-center d-flex justify-content-between">
-  <%= render Buttons::StampButtonComponent.new(post:) %>
+  <%= render Buttons::StampButtonComponent.new(post:, stamp_checker:) %>
   <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
 </div>

@@ -24,4 +24,9 @@ class Post < ApplicationRecord
   def timeline_score
     published_at.strftime("%s%L")
   end
+
+  sig { params(profile: Profile).returns(T::Boolean) }
+  def stamped_by?(profile:)
+    stamps.include?(profile:)
+  end
 end

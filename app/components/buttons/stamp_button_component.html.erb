@@ -1,6 +1,6 @@
 <% if signed_in? %>
   <turbo-frame id="posts-<%= post.id %>-stamp">
-    <% if post.viewer_has_stamped %>
+    <% if stamp_checker.stamped?(post:) %>
       <%= button_to post_stamp_path(post.id), {
         class: "btn btn-sm c-stamp-button rounded-pill u-btn-stamped",
         method: :delete

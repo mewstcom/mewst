@@ -16,6 +16,11 @@ class Actor < ApplicationRecord
     @locale ||= Locale.deserialize(user.locale)
   end
 
+  sig { params(time: ActiveSupport::TimeWithZone).returns(T::Boolean) }
+  def update_last_post_time!(time:)
+    profile.not_nil!.update!(last_post_at: time)
+  end
+
   sig do
     params(application: OauthApplication, scopes: T.any(String, Doorkeeper::OAuth::Scopes))
       .returns(T.nilable(OauthAccessToken))
