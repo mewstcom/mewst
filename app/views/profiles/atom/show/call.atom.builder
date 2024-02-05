@@ -1,5 +1,5 @@
 atom_feed(root_url: profile_url(atname: @profile.atname)) do |feed|
-  feed.title("#{@profile.name_with_atname} | Mewst")
+  feed.title("#{name_with_atname(profile: @profile)} | Mewst")
 
   feed.updated(@posts[0].published_at) if @posts.size > 0
 
@@ -14,7 +14,7 @@ atom_feed(root_url: profile_url(atname: @profile.atname)) do |feed|
       feed.updated(post.published_at)
 
       entry.author do |author|
-        author.name(@profile.name_with_atname)
+        author.name(name_with_atname(profile: @profile))
       end
     end
   end

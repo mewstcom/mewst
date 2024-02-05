@@ -10,12 +10,13 @@ class Posts::DestroyController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    form = PostDeleteForm.new(post_id: params[:post_id])
+    form = PostDeleteForm.new(target_post_id: params[:post_id])
+    form.profile = current_actor!.profile.not_nil!
     form.validate!
 
-    DeletePostUseCase.new(client: v1_public_client).call(form:)
+    DeletePostUseCase.new.call(target_post: form.target_post.not_nil!)
 
     flash[:notice] = t("messages.posts.deleted")
-    redirect_back(fallback_location: root_path)
+    redirect_to home_path
   end
 end

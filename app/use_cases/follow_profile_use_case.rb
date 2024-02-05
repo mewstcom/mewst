@@ -6,21 +6,21 @@ class FollowProfileUseCase < ApplicationUseCase
     const :target_profile, Profile
   end
 
-  sig { params(viewer: Actor, target_profile: Profile).returns(Result) }
-  def call(viewer:, target_profile:)
-    follow = viewer.follows.find_by(target_profile: target_profile)
+  sig { params(profile: Profile, target_profile: Profile).returns(Result) }
+  def call(profile:, target_profile:)
+    followee = profile.followees.find_by(atname: target_profile.atname)
 
-    if follow
-      return Result.new(target_profile: follow.target_profile)
+    if followee
+      return Result.new(target_profile: followee)
     end
 
-    new_follow = viewer.follows.new(target_profile: target_profile, followed_at: Time.current)
+    follow = profile.follows.new(target_profile: target_profile, followed_at: Time.current)
 
     ApplicationRecord.transaction do
-      new_follow.save!
-      new_follow.check_suggested!
+      follow.save!
+      follow.check_suggested!
     end
 
-    Result.new(target_profile: new_follow.target_profile)
+    Result.new(target_profile: follow.target_profile)
   end
 end

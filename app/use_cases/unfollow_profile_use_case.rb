@@ -6,9 +6,9 @@ class UnfollowProfileUseCase < ApplicationUseCase
     const :target_profile, Profile
   end
 
-  sig { params(viewer: Actor, target_profile: Profile).returns(Result) }
-  def call(viewer:, target_profile:)
-    follow = viewer.follows.find_by(target_profile: target_profile)
+  sig { params(profile: Profile, target_profile: Profile).returns(Result) }
+  def call(profile:, target_profile:)
+    follow = profile.follows.find_by(target_profile: target_profile)
 
     ApplicationRecord.transaction do
       follow&.destroy!

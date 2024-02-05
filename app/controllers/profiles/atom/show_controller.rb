@@ -9,19 +9,8 @@ class Profiles::Atom::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    profile_post = ProfilePost.fetch(
-      client: v1_internal_client,
-      atname: params[:atname],
-      before: nil,
-      after: nil
-    )
-
-    if profile_post.invalid?
-      return render(status: :not_found, plain: "Not found")
-    end
-
-    @profile = profile_post.profile
-    @posts = profile_post.posts
+    @profile = Profile.kept.find_by!(atname: params[:atname])
+    @posts = @profile.posts.kept.order(published_at: :desc).limit(15)
 
     render(formats: :atom)
   end

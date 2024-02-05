@@ -6,7 +6,7 @@ module ControllerConcerns::Authenticatable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_actor!, :signed_in?
+    helper_method :current_actor, :current_actor!, :signed_in?
   end
 
   sig { params(actor: Actor).returns(T::Boolean) }

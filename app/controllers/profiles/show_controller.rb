@@ -4,24 +4,22 @@
 class Profiles::ShowController < ApplicationController
   include ControllerConcerns::Authenticatable
   include ControllerConcerns::Localizable
-  include ResponseErrorable
 
   around_action :set_locale
 
   sig { returns(T.untyped) }
   def call
-    client = signed_in? ? v1_public_client : v1_internal_client
-    profile_post = ProfilePost.fetch(
-      client:,
-      atname: params[:atname],
+    @profile = Profile.kept.find_by!(atname: params[:atname])
+    @follow_checker = FollowChecker.new(profile: current_actor&.profile, target_profiles: [@profile])
+
+    result = Paginator.new(records: @profile.posts.kept).paginate(
       before: params[:before].presence,
-      after: params[:after].presence
+      after: params[:after].presence,
+      limit: 15
     )
 
-    @profile = profile_post.profile
-    not_found! unless @profile
-
-    @posts = profile_post.posts
-    @page_info = profile_post.page_info
+    @posts = result.records
+    @page_info = result.page_info
+    @stamp_checker = StampChecker.new(profile: current_actor&.profile, posts: @posts)
   end
 end

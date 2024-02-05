@@ -10,7 +10,7 @@ class Stamps::DestroyController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = StampForm.new(post_id: params[:post_id])
+    @form = StampForm.new(target_post_id: params[:post_id])
 
     if @form.invalid?
       return render(
@@ -21,8 +21,9 @@ class Stamps::DestroyController < ApplicationController
       )
     end
 
-    result = DeleteStampUseCase.new(client: v1_public_client).call(form: @form)
-    @post = result.stamp.not_nil!.post
+    result = DeleteStampUseCase.new.call(current_actor: current_actor!, target_post: @form.target_post.not_nil!)
+    @post = result.post
+    @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: [@post])
 
     render("stamps/create/call", content_type: "text/vnd.turbo-stream.html", layout: false)
   end

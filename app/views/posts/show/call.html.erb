@@ -9,6 +9,6 @@
   </div>
 
   <div class="container mt-3 u-flat u-narrow">
-    <%= render Cards::DetailedPostCardComponent.new(post: @post) %>
+    <%= render Cards::DetailedPostCardComponent.new(post: @post, stamp_checker: @stamp_checker) %>
   </div>
 <% end %>

@@ -10,8 +10,6 @@ class Search::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    result = SuggestedProfileList.fetch(client: v1_public_client)
-
-    @profiles = result.profiles
+    @profiles = current_actor!.suggested_followees.kept.merge(SuggestedFollow.not_checked).order(created_at: :desc).limit(30)
   end
 end

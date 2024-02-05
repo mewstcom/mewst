@@ -1,5 +1,5 @@
 <turbo-frame id="profiles-<%= target_profile.atname %>-follow">
-  <% if target_profile.viewer_has_followed %>
+  <% if follow_checker.followed?(target_profile:) %>
     <%= button_to profile_follow_path(target_profile.atname), {
       class: "btn btn-outline-secondary rounded-pill text-muted",
       method: :delete

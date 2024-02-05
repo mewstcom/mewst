@@ -1,17 +1,17 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::PostDeleteForm < V1::ApplicationForm
-  sig { returns(T.nilable(Actor)) }
-  attr_accessor :viewer
+class PostDeleteForm < ApplicationForm
+  sig { returns(T.nilable(Profile)) }
+  attr_accessor :profile
 
   attribute :target_post_id, :string
 
-  validates :viewer, presence: true
+  validates :profile, presence: true
   validates :target_post, presence: true
 
   sig { returns(T.nilable(Post)) }
   def target_post
-    viewer&.posts&.kept&.find_by(id: target_post_id)
+    profile&.posts&.kept&.find_by(id: target_post_id)
   end
 end
