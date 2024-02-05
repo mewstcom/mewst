@@ -7,7 +7,7 @@
 <% else %>
   <turbo-stream action="update" target="posts-<%= @post.id %>-stamp">
     <template>
-      <%= render Buttons::StampButtonComponent.new(post: @post) %>
+      <%= render Buttons::StampButtonComponent.new(post: @post, stamp_checker: @stamp_checker) %>
     </template>
   </turbo-stream>
 <% end %>

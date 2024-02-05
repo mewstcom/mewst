@@ -6,15 +6,15 @@ class CreateStampUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(viewer: Actor, target_post: Post).returns(Result) }
-  def call(viewer:, target_post:)
-    stamp = viewer.stamps.find_by(post: target_post)
+  sig { params(current_actor: Actor, target_post: Post).returns(Result) }
+  def call(current_actor:, target_post:)
+    stamp = current_actor.stamps.find_by(post: target_post)
 
     if stamp
       return Result.new(post: stamp.post)
     end
 
-    new_stamp = viewer.stamps.new(post: target_post, stamped_at: Time.current)
+    new_stamp = current_actor.stamps.new(post: target_post, stamped_at: Time.current)
 
     ApplicationRecord.transaction do
       new_stamp.save!
