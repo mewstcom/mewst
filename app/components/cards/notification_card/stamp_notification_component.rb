@@ -2,12 +2,16 @@
 # frozen_string_literal: true
 
 class Cards::NotificationCard::StampNotificationComponent < ApplicationComponent
-  sig { params(notification_item: StampNotificationItem).void }
-  def initialize(notification_item:)
-    @notification_item = notification_item
+  sig { params(stamp_notification: StampNotification).void }
+  def initialize(stamp_notification:)
+    @stamp_notification = stamp_notification
   end
 
-  sig { returns(StampNotificationItem) }
-  attr_reader :notification_item
-  private :notification_item
+  sig { returns(StampNotification) }
+  attr_reader :stamp_notification
+  private :stamp_notification
+
+  def target_post
+    stamp_notification.post
+  end
 end
