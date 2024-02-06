@@ -16,14 +16,9 @@ class SignIn::CreateController < ApplicationController
       return render("sign_in/new/call", status: :unprocessable_entity)
     end
 
-    result = CreateSessionUseCase.new(client: v1_internal_client).call(form: @form)
+    result = CreateSessionUseCase.new.call(user: @form.user.not_nil!)
 
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render("sign_in/new/call", status: :unprocessable_entity)
-    end
-
-    sign_in(result.account.not_nil!.actor.not_nil!)
+    sign_in(result.actor)
 
     flash[:notice] = t("messages.accounts.signed_in_successfully")
     redirect_to home_path

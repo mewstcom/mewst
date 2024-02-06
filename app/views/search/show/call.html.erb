@@ -32,9 +32,9 @@
     <% if @profiles.present? %>
       <div class="gap-3 vstack">
         <% @profiles.each do |profile| %>
-          <div class="border-0 c-content-card card rounded-4 u-flat">
+          <div class="border-0 c-content-card card rounded-4 u-flat" id="suggested-profiles-<%= profile.atname %>">
             <div class="card-body">
-              <div class="gx-3 row" id="suggested-profiles-<%= profile.atname %>">
+              <div class="gx-3 row">
                 <div class="col-auto">
                   <%= link_to profile_path(profile.atname) do %>
                     <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
@@ -44,7 +44,7 @@
                 <div class="col">
                   <%= link_to profile_path(profile.atname), class: "text-body text-decoration-none" do %>
                     <div class="fw-bold">
-                      <%= profile.name_with_atname %>
+                      <%= name_with_atname(profile:) %>
                     </div>
 
                     <% if profile.description.present? %>
@@ -58,7 +58,7 @@
                 <div class="align-self-center col-12 col-sm-auto mt-3 mt-sm-0 text-end">
                   <div class="flex-sm-column text-center row">
                     <div class="col-6 col-sm-12">
-                      <%= render Buttons::FollowButtonComponent.new(target_profile: profile) %>
+                      <%= render Buttons::FollowButtonComponent.new(target_profile: profile, follow_checker: @follow_checker) %>
                     </div>
 
                     <div class="col-6 col-sm-12">

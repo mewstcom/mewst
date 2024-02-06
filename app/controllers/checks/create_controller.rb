@@ -10,21 +10,25 @@ class Checks::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = SuggestedProfileForm.new(atname: params[:atname])
+    @form = SuggestedFollowForm.new(
+      source_profile: current_actor!.profile.not_nil!,
+      target_atname: params[:atname]
+    )
 
     if @form.invalid?
       return render(content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity, layout: false)
     end
 
-    CheckSuggestedProfileUseCase.new(client: v1_public_client).call(form: @form)
+    CheckSuggestedFollowUseCase.new.call(
+      source_profile: @form.source_profile.not_nil!,
+      target_profile: @form.target_profile.not_nil!
+    )
 
-    list_result = SuggestedProfileList.fetch(client: v1_public_client)
-
-    if list_result.profiles.blank?
-      redirect_to search_path
-    else
+    if current_actor!.checkable_suggested_followees.exists?
       @atname = params[:atname]
       render(content_type: "text/vnd.turbo-stream.html", layout: false)
+    else
+      redirect_to search_path
     end
   end
 end

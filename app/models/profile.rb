@@ -42,6 +42,11 @@ class Profile < ApplicationRecord
     Post.joins(:profile).merge(followees)
   end
 
+  sig { returns(ActiveRecord::Relation) }
+  def checkable_suggested_followees
+    suggested_followees.kept.merge(SuggestedFollow.not_checked)
+  end
+
   sig { returns(String) }
   def name_or_atname
     name.presence || atname

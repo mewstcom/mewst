@@ -1,13 +1,13 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::SuggestedFollowForm < V1::ApplicationForm
-  sig { returns(T.nilable(Actor)) }
-  attr_accessor :viewer
+class SuggestedFollowForm < ApplicationForm
+  sig { returns(T.nilable(Profile)) }
+  attr_accessor :source_profile
 
   attribute :target_atname, :string
 
-  validates :viewer, presence: true
+  validates :source_profile, presence: true
   validates :target_profile, presence: true
 
   sig { returns(T.nilable(Profile)) }

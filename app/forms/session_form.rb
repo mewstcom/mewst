@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::SessionForm < V1::ApplicationForm
+class SessionForm < ApplicationForm
   attribute :email, :string
   attribute :password, :string
 
