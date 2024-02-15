@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::ProfileForm < V1::ApplicationForm
+class ProfileForm < ApplicationForm
   attribute :atname, :string
   attribute :avatar_url, :string
   attribute :description, :string

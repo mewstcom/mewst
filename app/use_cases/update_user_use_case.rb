@@ -6,10 +6,10 @@ class UpdateUserUseCase < ApplicationUseCase
     const :user, User
   end
 
-  sig { params(user: User, locale: String, time_zone: String).returns(Result) }
-  def call(user:, locale:, time_zone:)
-    user.update!(locale:, time_zone:)
+  sig { params(viewer: Actor, locale: String, time_zone: String).returns(Result) }
+  def call(viewer:, locale:, time_zone:)
+    viewer.user.update!(locale:, time_zone:)
 
-    Result.new(user:)
+    Result.new(user: viewer.user)
   end
 end

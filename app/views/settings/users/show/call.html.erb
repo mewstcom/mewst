@@ -34,7 +34,7 @@
 
           <div class="mb-3">
             <%= f.label :time_zone, class: "form-label" %>
-            <% options = options_for_select(ActiveSupport::TimeZone.all.map { |time_zone| [time_zone_name(time_zone), time_zone.tzinfo.name] }, current_actor.time_zone.tzinfo.name) %>
+            <% options = options_for_select(ActiveSupport::TimeZone.all.map { |time_zone| [time_zone_name(time_zone), time_zone.tzinfo.name] }, f.object.time_zone) %>
             <%= f.select :time_zone, options, {}, { class: "form-select" } %>
           </div>
 

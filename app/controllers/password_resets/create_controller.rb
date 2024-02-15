@@ -16,17 +16,13 @@ class PasswordResets::CreateController < ApplicationController
       return render("password_resets/new/call", status: :unprocessable_entity)
     end
 
-    result = SendEmailConfirmationCodeUseCase.new(client: v1_internal_client).call(
+    result = CreateEmailConfirmationUseCase.new.call(
       email: @form.email.not_nil!,
-      event: EmailConfirmationEvent::PasswordReset
+      event: EmailConfirmationEvent::PasswordReset,
+      locale: current_locale
     )
 
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render("password_resets/new/call", status: :unprocessable_entity)
-    end
-
-    session[:email_confirmation_id] = result.email_confirmation.not_nil!.id
+    session[:email_confirmation_id] = result.email_confirmation.id
     flash[:notice] = t("messages.email_confirmations.confirmation_mail_sent")
     redirect_to new_email_confirmation_path
   end

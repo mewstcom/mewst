@@ -11,4 +11,5 @@
 /public/uploads/*
 /tmp/*
 /vendor/bundle
+/yarn-error.log
 !/app/assets/builds/.keep

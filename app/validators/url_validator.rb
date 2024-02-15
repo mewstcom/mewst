@@ -4,7 +4,7 @@
 class UrlValidator < ActiveModel::EachValidator
   extend T::Sig
 
-  sig { params(record: V1::ApplicationForm, attribute: Symbol, value: String).void }
+  sig { params(record: ApplicationForm, attribute: Symbol, value: String).void }
   def validate_each(record, attribute, value)
     return if value.blank?
 

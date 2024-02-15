@@ -12,6 +12,6 @@ class Passwords::EditController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = EditPasswordForm.new
+    @form = PasswordResetForm.new
   end
 end

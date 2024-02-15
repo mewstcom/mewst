@@ -10,13 +10,12 @@ class Settings::Profiles::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    profile = Profile.fetch_me(client: v1_public_client)
-
     @form = ProfileForm.new(
-      atname: profile.atname,
-      avatar_url: profile.avatar_url,
-      description: profile.description,
-      name: profile.name
+      viewer: current_actor,
+      atname: current_actor!.atname,
+      avatar_url: current_actor!.avatar_url,
+      description: current_actor!.description,
+      name: current_actor!.name
     )
   end
 end

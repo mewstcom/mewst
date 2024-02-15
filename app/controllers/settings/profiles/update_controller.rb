@@ -10,18 +10,19 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = ProfileForm.new(form_params)
+    @form = ProfileForm.new(form_params.merge(viewer: current_actor))
 
     if @form.invalid?
-      return render_as_invalid
+      return render("settings/profiles/show/call", status: :unprocessable_entity)
     end
 
-    result = UpdateProfileUseCase.new(client: v1_public_client).call(form: @form, actor: current_actor.not_nil!)
-
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render_as_invalid
-    end
+    UpdateProfileUseCase.new.call(
+      viewer: current_actor!,
+      atname: @form.atname,
+      avatar_url: @form.avatar_url,
+      description: @form.description,
+      name: @form.name
+    )
 
     flash[:notice] = t("messages.profiles.updated")
     redirect_to settings_profile_path
@@ -30,9 +31,5 @@ class Settings::Profiles::UpdateController < ApplicationController
   sig { returns(ActionController::Parameters) }
   private def form_params
     T.cast(params.require(:profile_form), ActionController::Parameters).permit(:atname, :avatar_url, :description, :name)
-  end
-
-  private def render_as_invalid
-    render("settings/profiles/show/call", status: :unprocessable_entity)
   end
 end

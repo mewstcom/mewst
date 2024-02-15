@@ -5,14 +5,14 @@ ja:
         atname: アットネーム
         email: メールアドレス
         password: パスワード
-      edit_password_form:
-        new_password: 新しいパスワード
       email_confirmation_form:
         email: メールアドレス
       email_confirmation_challenge_form:
         confirmation_code: 確認用コード
       follow_form:
         target_atname: atname
+      password_reset_form:
+        password: 新しいパスワード
       post_delete_form:
         target_post: ポスト
       profile_form:

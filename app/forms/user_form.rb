@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class V1::UserForm < V1::ApplicationForm
+class UserForm < ApplicationForm
   attribute :locale, :string
   attribute :time_zone, :string
 

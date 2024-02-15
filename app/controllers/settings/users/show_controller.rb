@@ -10,10 +10,9 @@ class Settings::Users::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    user = User.fetch_me(client: v1_public_client)
-
     @form = UserForm.new(
-      locale: user.locale.not_nil!.serialize
+      locale: current_actor!.locale.serialize,
+      time_zone: current_actor!.time_zone
     )
   end
 end

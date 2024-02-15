@@ -21,8 +21,8 @@
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
           <div class="mb-3">
-            <%= f.label :new_password, class: "form-label" %>
-            <%= f.password_field :new_password, autofocus: true, class: "form-control", required: true %>
+            <%= f.label :password, class: "form-label" %>
+            <%= f.password_field :password, autofocus: true, class: "form-control", required: true %>
           </div>
 
           <div class="text-center">

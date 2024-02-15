@@ -13,15 +13,14 @@ class Settings::Users::UpdateController < ApplicationController
     @form = UserForm.new(form_params)
 
     if @form.invalid?
-      return render_as_invalid
+      return render("settings/users/show/call", status: :unprocessable_entity)
     end
 
-    result = UpdateUserUseCase.new(client: v1_public_client).call(form: @form, actor: current_actor.not_nil!)
-
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render_as_invalid
-    end
+    UpdateUserUseCase.new.call(
+      viewer: current_actor!,
+      locale: @form.locale,
+      time_zone: @form.time_zone
+    )
 
     flash[:notice] = t("messages.users.updated")
     redirect_to settings_user_path
@@ -30,9 +29,5 @@ class Settings::Users::UpdateController < ApplicationController
   sig { returns(ActionController::Parameters) }
   private def form_params
     T.cast(params.require(:user_form), ActionController::Parameters).permit(:locale, :time_zone)
-  end
-
-  private def render_as_invalid
-    render("settings/users/show/call", status: :unprocessable_entity)
   end
 end

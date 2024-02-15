@@ -12,21 +12,16 @@ class Passwords::UpdateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = EditPasswordForm.new(form_params)
+    @form = PasswordResetForm.new(form_params)
 
     if @form.invalid?
       return render("passwords/edit/call", status: :unprocessable_entity)
     end
 
-    result = UpdatePasswordUseCase.new(client: v1_internal_client).call(
-      email: @email.not_nil!,
-      new_password: @form.new_password.not_nil!
+    UpdatePasswordUseCase.new.call(
+      email: @email_confirmation.email.not_nil!,
+      password: @form.password.not_nil!
     )
-
-    if result.errors
-      @form.add_use_case_errors(result.errors.not_nil!)
-      return render("passwords/edit/call", status: :unprocessable_entity)
-    end
 
     reset_session
 
@@ -36,6 +31,6 @@ class Passwords::UpdateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:edit_password_form), ActionController::Parameters).permit(:new_password)
+    T.cast(params.require(:password_reset_form), ActionController::Parameters).permit(:password)
   end
 end

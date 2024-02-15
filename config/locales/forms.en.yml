@@ -5,14 +5,14 @@ en:
         atname: Atname
         email: Email
         password: Password
-      edit_password_form:
-        new_password: New password
       email_confirmation_form:
         email: Email
       email_confirmation_challenge_form:
         confirmation_code: Confirmation code
       follow_form:
         target_atname: atname
+      password_reset_form:
+        password: New password
       post_delete_form:
         target_post: Post
       profile_form:

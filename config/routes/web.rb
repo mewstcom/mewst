@@ -9,7 +9,6 @@ match "/@:atname/follow",         via: :post,                                   
 match "/@:atname/posts/:post_id", via: :get,    as: :profile_post,                to: "posts/show#call"
 match "/accounts",                via: :post,   as: :account_list,                to: "accounts/create#call"
 match "/accounts/new",            via: :get,    as: :new_account,                 to: "accounts/new#call"
-match "/api/internal/following",  via: :post,   as: :internal_api_following_list, to: "api/internal/following/index#call"
 match "/email_confirmations",     via: :post,   as: :email_confirmation_list,     to: "email_confirmations/create#call"
 match "/email_confirmations/new", via: :get,    as: :new_email_confirmation,      to: "email_confirmations/new#call"
 match "/home",                    via: :get,    as: :home,                        to: "home/show#call"
