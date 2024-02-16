@@ -7,7 +7,7 @@ module ControllerConcerns::Authorizable
 
   include Pundit::Authorization
 
-  sig { returns(Actor) }
+  sig(:final) { returns(Actor) }
   def pundit_user
     current_viewer!
   end

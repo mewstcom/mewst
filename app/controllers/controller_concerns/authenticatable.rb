@@ -9,19 +9,19 @@ module ControllerConcerns::Authenticatable
     helper_method :current_actor, :current_actor!, :signed_in?
   end
 
-  sig { params(actor: Actor).returns(T::Boolean) }
+  sig(:final) { params(actor: Actor).returns(T::Boolean) }
   def sign_in(actor)
     session[:current_actor_id] = actor.id
     true
   end
 
-  sig { returns(T::Boolean) }
+  sig(:final) { returns(T::Boolean) }
   def sign_out
     reset_session
     true
   end
 
-  sig { returns(T.nilable(Actor)) }
+  sig(:final) { returns(T.nilable(Actor)) }
   def current_actor
     @current_actor ||= T.let(begin
       return unless session[:current_actor_id]
@@ -29,24 +29,24 @@ module ControllerConcerns::Authenticatable
     end, T.nilable(Actor))
   end
 
-  sig { returns(Actor) }
+  sig(:final) { returns(Actor) }
   def current_actor!
     current_actor.not_nil!
   end
 
-  sig { returns(T::Boolean) }
+  sig(:final) { returns(T::Boolean) }
   def signed_in?
     !current_actor.nil?
   end
 
-  sig { returns(T.untyped) }
+  sig(:final) { returns(T.untyped) }
   def require_authentication
     unless signed_in?
       redirect_to root_path
     end
   end
 
-  sig { returns(T.untyped) }
+  sig(:final) { returns(T.untyped) }
   def require_no_authentication
     if signed_in?
       flash[:notice] = t("messages.authentication.already_signed_in")
