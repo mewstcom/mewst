@@ -16,4 +16,5 @@ shared:
     - official
     - self
   sentry_dsn: <%= ENV["MEWST_SENTRY_DSN"] %>
+  sign_up_stopper_enabled: <%= ENV["MEWST_SIGN_UP_STOPPER_ENABLED"] %>
   web_url: <%= ENV["MEWST_WEB_URL"] %>

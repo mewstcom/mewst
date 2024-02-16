@@ -1,6 +1,8 @@
 ARG RUBY_VERSION="3.2.2"
 ARG BUNDLER_VERSION="2.5.4"
+ARG NODE_VERSION="20.11.0"
 
+FROM node:${NODE_VERSION}-bookworm-slim AS node
 FROM ruby:${RUBY_VERSION}-slim-bookworm
 
 RUN \
@@ -9,8 +11,29 @@ RUN \
   apt install -y --no-install-recommends \
     build-essential \
     curl \
-    # PostgreSQLの利用に必要
-    postgresql-client libpq-dev
+    git \
+    lsb-release \
+    # PostgreSQLやYarnのインストールに必要
+    gnupg
+
+# PostgreSQLのセットアップ
+RUN \
+  curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+  echo "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+  apt update && \
+  apt install -y --no-install-recommends \
+    libpq-dev \
+    postgresql-client-15
+
+# Yarnのセットアップ
+RUN \
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+  apt update && \
+  apt install -y --no-install-recommends \
+    yarn
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
 
 RUN gem install bundler -v "${BUNDLER_VERSION}"
 

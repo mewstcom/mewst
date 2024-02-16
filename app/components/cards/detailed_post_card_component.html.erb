@@ -1,0 +1,45 @@
+<div class="border-0 c-content-card card rounded-4 u-flat">
+  <div class="card-body">
+    <div class="align-items-center gx-3 row">
+      <div class="col-auto">
+        <%= link_to profile_path(profile.atname) do %>
+          <%= render Images::AvatarImageComponent.new(profile:, width: 60) %>
+        <% end %>
+      </div>
+
+      <div class="col">
+        <%= link_to profile_path(profile.atname), class: "text-body text-decoration-none" do %>
+          <% if profile.name.present? %>
+            <div class="fw-bold">
+              <%= profile.name %>
+            </div>
+          <% end %>
+
+          <div class="small text-muted">
+            @<%= profile.atname %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="fs-3 mt-3">
+      <%= render Cards::PostCard::BodyComponent.new(post:) %>
+    </div>
+
+    <div class="mt-3">
+      <%=
+        link_to mst_absolute_time(post.published_at),
+          profile_post_path(post.profile.atname, post.id),
+          class: "small text-decoration-none text-muted"
+      %>
+
+      <span class="ms-1 small text-muted">
+        via <%= post.oauth_application.name %>
+      </span>
+    </div>
+
+    <div class="mt-3">
+      <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<% title = t("meta.title.verification_challenges.new") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::SimpleLayoutComponent.new do %>
+  <div class="container u-flat u-narrow">
+    <div class="text-center">
+      <div class="mt-3 mt-sm-5">
+        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+          <%= render Icons::LogoIconComponent.new %>
+        <% end %>
+      </div>
+
+      <h1 class="fw-bold mt-3 mt-sm-5">
+        <%= title %>
+      </h1>
+
+      <p>
+        <%= t("messages.email_confirmations.enter_code") %>
+      </p>
+    </div>
+
+    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+      <div class="card-body">
+        <%= form_with model: @form, url: email_confirmation_list_path(after: params[:after]) do |f| %>
+          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+          <div class="mb-3">
+            <%= f.label :confirmation_code, class: "form-label" %>
+            <%= f.number_field :confirmation_code, autofocus: true, class: "form-control" %>
+          </div>
+
+          <div class="text-center">
+            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+              <%= t("verbs.submit") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

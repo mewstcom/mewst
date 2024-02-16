@@ -1,0 +1,13 @@
+<% if @form.errors.any? %>
+  <turbo-stream action="after" target="posts-<%= @form.post_id %>-stamp">
+    <template>
+      <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
+    </template>
+  </turbo-stream>
+<% else %>
+  <turbo-stream action="update" target="posts-<%= @post.id %>-stamp">
+    <template>
+      <%= render Buttons::StampButtonComponent.new(post: @post, stamp_checker: @stamp_checker) %>
+    </template>
+  </turbo-stream>
+<% end %>

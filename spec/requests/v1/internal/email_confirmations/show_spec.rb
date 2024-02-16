@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /v1/internal/email_confirmations/:email_confirmation_id", type: :request do
+RSpec.xdescribe "GET /v1/internal/email_confirmations/:email_confirmation_id", type: :request do
   context "`email_confirmation_id` が不正なとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }

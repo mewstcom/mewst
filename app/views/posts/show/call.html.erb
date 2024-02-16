@@ -1,0 +1,14 @@
+<% title = t("meta.title.posts.show", atname: @profile.atname, name: @profile.name, content: @post.content) %>
+<% set_meta_tags(title: title.truncate(60)) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <div class="container d-sm-none mt-3 text-center">
+    <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <%= render Icons::LogoIconComponent.new %>
+    <% end %>
+  </div>
+
+  <div class="container mt-3 u-flat u-narrow">
+    <%= render Cards::DetailedPostCardComponent.new(post: @post, stamp_checker: @stamp_checker) %>
+  </div>
+<% end %>

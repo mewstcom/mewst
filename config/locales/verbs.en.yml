@@ -2,9 +2,12 @@ en:
   verbs:
     add: Add
     connect: Connect
+    delete: Delete
     disconnect: Disconnect
     follow: Follow
+    hide: Hide
     post: Post
     sign_in: Sign in
+    sign_up: Create account
     submit: Submit
     update: Update

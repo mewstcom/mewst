@@ -1,0 +1,9 @@
+<% if @form.errors.any? %>
+  <turbo-stream action="after" target="profiles-<%= @form.atname %>-follow">
+    <template>
+      <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
+    </template>
+  </turbo-stream>
+<% else %>
+  <turbo-stream action="remove" target="suggested-profiles-<%= @atname %>"></turbo-stream>
+<% end %>

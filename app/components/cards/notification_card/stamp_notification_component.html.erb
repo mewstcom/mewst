@@ -1,0 +1,18 @@
+<div>
+  <div>
+    <%= t("messages.components.notification_card.stamped") %>
+  </div>
+
+  <div class="mt-3">
+    <%=
+      link_to(
+        profile_post_path(target_post.profile.atname, target_post.id),
+        class: "text-decoration-none"
+      ) do
+    %>
+      <blockquote class="c-notification-quote mb-0 text-muted">
+        <%= target_post.content %>
+      </blockquote>
+    <% end %>
+  </div>
+</div>

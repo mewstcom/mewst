@@ -1,0 +1,7 @@
+.card {
+  &.u-flat {
+    @include media-breakpoint-down(sm) {
+      border-radius: 0 !important;
+    }
+  }
+}

@@ -9,6 +9,69 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def account_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_profiles_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_users_me_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def email_confirmation_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def home_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_account_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_email_confirmation_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def notification_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_reset_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_stamp_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def preview_view_component_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def preview_view_components_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_atom_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_check_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_follow_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def profile_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def rails_info_properties_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -19,6 +82,30 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_mailers_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def root_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def search_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_profile_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def settings_user_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_in_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_out_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def sign_up_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def v1_follow_url(*args); end
@@ -66,9 +153,6 @@ module GeneratedUrlHelpersModule
   def v1_profile_post_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def v1_profiles_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def v1_suggested_profile_check_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -79,7 +163,4 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def v1_user_me_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def v1_users_me_url(*args); end
 end

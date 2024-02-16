@@ -1,17 +1,32 @@
 en:
   messages:
-    _common:
-      still_under_development: This feature is still under development.
     accounts:
+      atname_hint_html: |-
+        This will be your unique name used in URLs.<br>
+        You can enter 2 to 20 characters, and use alphanumeric characters and underscores (_).
+      atname_placeholder: "e.g. atname_example"
       authentication_failed: Incorrect email or password.
-      password_reset_successfully: Password reset successfully.
+      email_hint_html: |- 
+        If you want to change it, please create an account again from the <a href="/sign_up">Sign up</a> page.
+      password_hint_html: |-
+        Please enter 8 or more characters.
       signed_in_successfully: Signed in successfully.
-      updated: Account updated.
+      signed_up_successfully: Account created successfully. Welcome!
+      terms_html: |-
+        Please create an account after agreeing to the <a href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">Terms of Service</a> and <a href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">Privacy Policy</a>.
     authentication:
       already_signed_in: Already signed in.
       signed_out_successfully: Signed out successfully.
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
+    blank_slate:
+      no_notifications: No notifications.
+      no_posts: No posts.
+    components:
+      notification_card:
+        stamped: Stamped your post.
+      stamp_button:
+        sign_in_required: Sign in required to stamp.
     connected_accounts:
       are_you_sure: Are you sure to disconnect?
       connected: Connected.
@@ -20,17 +35,44 @@ en:
       disconnected: Disconnected.
       disconnecting: Disconnecting...
       not_connected: Not connected.
+    email_confirmations:
+      confirmation_mail_sent: Confirmation mail has been sent.
+      enter_code: Enter the confirmation code in the email.
+    home:
+      lets_make_the_first_post: Let's make the first post from the form above.
+    notifications:
+      description: You will receive notifications when your posts are stamped.
     pagination:
       next_html: "Next&nbsp;&rsaquo;"
       prev_html: "&lsaquo;&nbsp;Prev"
+    password_reset:
+      enter_your_email_html: Enter your email address to reset your password.
+      reset_successfully_html: Password reset successfully. Please sign in with your new password.
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
       created: Post created.
       deleted: Post deleted.
     profiles:
       updated: Profile updated.
+    search:
+      blank: No suggested profiles.
+      suggested_profiles:
+        exists_html: Showing people followed by people you follow.
+        not_exists: Showing people followed by people you follow.
+    sign_in:
+      dont_have_an_account_html: |-
+        Don't have an account? <a href="/sign_up">Sign up</a>.
+    sign_up:
+      already_have_an_account_html: |-
+        Already have an account? <a href="/sign_in">Sign in</a>.
+      description_html: |-
+        Enter your email address.<br>
+        We will send you an email to create an account.
+    users:
+      updated: User updated.
+    whats_happening: What's happening?
     welcome:
       alpha_html: |-
         This is an alpha product.<br>
         During alpha, it is only available to the developer (<a href="/@shimbaco">@shimbaco</a>).<br>
-        Development progress will be posted on the following personal blog and Twitter.
+        Development progress will be posted on the following personal blog and Bluesky / Mastodon.

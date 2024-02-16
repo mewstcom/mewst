@@ -1,0 +1,54 @@
+<nav class="bg-body c-top-navbar d-none d-lg-block navbar navbar-expand-lg position-sticky top-0">
+  <div class="container-fluid justify-content-between">
+    <%= link_to root_path, class: "navbar-brand me-0 py-0" do %>
+      <%= render Icons::LogoIconComponent.new %>
+    <% end %>
+
+    <ul class="align-items-center mx-auto navbar-nav">
+      <% if signed_in? %>
+        <li class="nav-item">
+          <div class="hstack gap-3">
+            <%= link_to home_path, class: "nav-link" do %>
+              <i class="bi bi-house me-1"></i>
+              <%= t("nouns.home") %>
+            <% end %>
+
+            <%= link_to search_path, class: "nav-link" do %>
+              <i class="bi bi-search me-1"></i>
+              <%= t("nouns.search") %>
+            <% end %>
+
+            <a class="nav-link" data-bs-target="#postModal" data-bs-toggle="modal" href="#">
+              <i class="bi bi-pencil-square me-1"></i>
+              <%= t("verbs.post") %>
+            </a>
+
+            <%= link_to notification_list_path, class: "nav-link" do %>
+              <i class="bi bi-bell me-1"></i>
+              <%= t("nouns.notifications") %>
+            <% end %>
+
+            <%= link_to profile_path(current_actor!.atname), class: "nav-link" do %>
+              <i class="bi bi-person-circle me-1"></i>
+              <%= t("nouns.profile") %>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <% if signed_in? %>
+      <div style="width: 24px;"></div> <%# same width as brand logo %>
+    <% else %>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <%= link_to t("nouns.sign_in"), sign_in_path, class: "nav-link" %>
+        </li>
+
+        <li class="nav-item">
+          <%= link_to t("nouns.sign_up"), sign_up_path, class: "nav-link" %>
+        </li>
+      </ul>
+    <% end %>
+  </div>
+</nav>

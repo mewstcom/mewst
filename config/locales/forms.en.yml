@@ -1,55 +1,70 @@
 en:
   forms:
     attributes:
-      v1/account_form:
+      account_form:
         atname: Atname
         email: Email
         password: Password
-      v1/email_confirmation_challenge_form:
+      email_confirmation_form:
+        email: Email
+      email_confirmation_challenge_form:
         confirmation_code: Confirmation code
-      v1/follow_form:
+      follow_form:
         target_atname: atname
-      v1/post_delete_form:
+      password_reset_form:
+        password: New password
+      post_delete_form:
         target_post: Post
-      v1/stamp_form:
+      profile_form:
+        atname: Atname
+        avatar_url: Avatar URL
+        description: Description
+        name: Name
+      session_form:
+        email: Email
+        password: Password
+      stamp_form:
         target_post: Post
-      v1/suggested_follow_form:
+      suggested_follow_form:
         target_profile: atname
-      v1/unfollow_form:
+      user_form:
+        locale: Locale
+        time_zone: Time zone
+      unfollow_form:
         target_profile: atname
     errors:
       models:
-        v1/account_form:
+        account_form:
           password_too_long: is too long
           reserved: " \"%{value}\" is reserved"
           uniqueness: is already taken
-        v1/email_confirmation_challenge_form:
+        email_confirmation_challenge_form:
           attributes:
             confirmation_code:
               incorrect_or_expired: is incorrect or expired
-        v1/session_form:
+        session_form:
           unauthenticated: Login failed. Email or password is incorrect
-        v1/follow_form:
+        follow_form:
           attributes:
             target_atname:
               cannot_follow_myself: is myself. Cannot follow myself
-        v1/profile_form:
+        profile_form:
           attributes:
             atname:
               atname_uniqueness: is already taken
-        v1/post_delete_form:
+        post_delete_form:
           attributes:
             target_post:
               blank: not found
-        v1/stamp_form:
+        stamp_form:
           attributes:
             target_post:
               blank: not found
-        v1/suggested_follow_form:
+        suggested_follow_form:
           attributes:
             target_profile:
               blank: not found
-        v1/unfollow_form:
+        unfollow_form:
           attributes:
             target_profile:
               blank: not found

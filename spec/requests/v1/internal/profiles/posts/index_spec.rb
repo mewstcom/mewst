@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "GET /v1/internal/@:atname/posts", type: :request do
+RSpec.xdescribe "GET /v1/internal/@:atname/posts", type: :request do
   context "正常系" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }

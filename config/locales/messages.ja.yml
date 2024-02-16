@@ -1,17 +1,32 @@
 ja:
   messages:
-    _common:
-      still_under_development: この機能は開発中です
     accounts:
+      atname_hint_html: |-
+        URLなどに使用されるユーザー固有の名前になります<br>
+        2~20文字まで入力でき、半角英数字とアンダースコア (_) が使えます
+      atname_placeholder: "例: atname_example"
       authentication_failed: メールアドレスまたはパスワードが正しくありません
-      password_reset_successfully: パスワードをリセットしました
+      email_hint_html: |-
+        変更したい場合は再度<a href="/sign_up">アカウント作成ページ</a>からお願いします
+      password_hint_html: |-
+        8文字以上入力してください
       signed_in_successfully: ログインしました
-      updated: アカウントを更新しました
+      signed_up_successfully: アカウントを作成しました。ようこそ！
+      terms_html: |-
+        <a href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">利用規約</a>と<a href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">プライバシーポリシー</a>に同意のうえでアカウントを作成してください
     authentication:
       already_signed_in: すでにログインしています
       signed_out_successfully: ログアウトしました
       sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
+    blank_slate:
+      no_notifications: 通知はありません
+      no_posts: ポストはありません
+    components:
+      notification_card:
+        stamped: あなたのポストにスタンプを押しました
+      stamp_button:
+        sign_in_required: ログインするとスタンプが押せます
     connected_accounts:
       are_you_sure: 連携を解除しますか？
       connected: 連携しています
@@ -20,17 +35,46 @@ ja:
       disconnected: 連携解除しました
       disconnecting: 連携解除しています...
       not_connected: 連携していません
+    email_confirmations:
+      confirmation_mail_sent: 確認用のメールを送信しました
+      enter_code: メールに記載されている確認用コードを入力してください
+    home:
+      lets_make_the_first_post: ↑の投稿欄から最初のポストをしましょう
+    notifications:
+      description: スタンプされたりしたときに通知が届きます
     pagination:
       next_html: "次へ&nbsp;&rsaquo;"
       prev_html: "&lsaquo;&nbsp;前へ"
+    password_reset:
+      enter_your_email_html: パスワードをリセットするためのメールを送信します<br>アカウント作成に使用したメールアドレスを入力してください
+      reset_successfully_html: パスワードをリセットしました<br>新しいパスワードでログインしてください
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
       created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
       updated: プロフィールを更新しました
+    search:
+      suggested_profiles:
+        blank: おすすめプロフィールはありません
+        exists_html: |-
+          自分がフォローしている人がフォローしている人を表示しています<br>
+          非表示にするとおすすめプロフィールに表示されなくなります。非表示にしたことは相手には通知されません
+        not_exists: 自分がフォローしている人がフォローしている人が表示されます
+    sign_in:
+      dont_have_an_account_html: |-
+        アカウント持ってない？ <a href="/sign_up">アカウント作成</a>
+    sign_up:
+      already_have_an_account_html: |-
+        アカウント持ってる？ <a href="/sign_in">ログイン</a>
+      description_html: |-
+        お使いのメールアドレスをご入力ください<br>
+        アカウント作成用のメールを送信します
+    users:
+      updated: ユーザーを更新しました
+    whats_happening: いまなにしてる？
     welcome:
       alpha_html: |-
-        現在アルファ版です。<br>
-        アルファ版の間は開発者 (<a href="/@shimbaco">@shimbaco</a>) しか使えません。<br>
-        開発の進捗は以下の個人ブログやTwitterで行っていきます。
+        現在アルファ版です<br>
+        アルファ版の間は開発者 (<a href="/@shimbaco">@shimbaco</a>) しか使えません<br>
+        開発の進捗は以下の個人ブログやBluesky / Mastodonで公開します

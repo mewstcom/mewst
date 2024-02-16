@@ -3,21 +3,15 @@
 
 class CreateSessionUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :oauth_access_token, OauthAccessToken
-    const :profile, Profile
-    const :user, User
+    const :actor, Actor
   end
 
   sig { params(user: User).returns(Result) }
   def call(user:)
-    profile = user.profile.not_nil!
+    ActiveRecord::Base.transaction do
+      user.track_sign_in
+    end
 
-    user.track_sign_in
-
-    Result.new(
-      oauth_access_token: user.first_actor.active_access_token.not_nil!,
-      profile:,
-      user:
-    )
+    Result.new(actor: user.first_actor)
   end
 end

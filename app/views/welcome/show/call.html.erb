@@ -1,0 +1,28 @@
+<% title = t("meta.title.welcome.show") %>
+<% set_meta_tags(title:, reverse: false) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <div class="container py-5">
+    <h1 class="bg-primary d-inline-block fw-bold px-3 py-1 rounded-pill">
+      Mewst
+    </h1>
+
+    <div class="mt-3">
+      <%= t("messages.welcome.alpha_html") %>
+
+      <ul class="mt-3">
+        <li>
+          <%= link_to "shimba.co", "https://shimba.co", target: "_blank", rel: "nofollow" %>
+        </li>
+
+        <li>
+          <%= link_to "Bluesky (@shimbaco.bsky.social)", "https://bsky.app/profile/shimbaco.bsky.social", target: "_blank", rel: "nofollow" %>
+        </li>
+
+        <li>
+          <%= link_to "Mastodon (@shimbaco@mastodon.social)", "https://mastodon.social/@shimbaco", target: "_blank", rel: "nofollow" %>
+        </li>
+      </ul>
+    </div>
+  </div>
+<% end %>

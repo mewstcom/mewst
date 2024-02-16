@@ -1,0 +1,47 @@
+<% title = t("meta.title.home.show") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <div class="container mt-3 u-narrow">
+    <h1 class="h3">
+      <%= t("messages.whats_happening") %>
+    </h1>
+
+    <div class="d-none d-lg-block">
+      <%= render Forms::PostFormComponent.new %>
+    </div>
+  </div>
+
+  <div class="container u-flat u-narrow">
+    <hr>
+  </div>
+
+  <div class="container u-flat u-narrow">
+    <%# render Navs::TimelineNavComponent.new %>
+
+    <div
+      class="gap-3 js-timeline vstack"
+      data-controller="timeline"
+    >
+      <% @posts.each do |post| %>
+        <%= render Cards::PostCardComponent.new(post:, stamp_checker: @stamp_checker) %>
+      <% end %>
+    </div>
+
+    <% if @posts.present? %>
+      <div class="mt-3">
+        <%= render Paginations::PaginationComponent.new(
+          page_info: @page_info,
+          previous_path: home_path(before: @page_info.start_cursor),
+          next_path: home_path(after: @page_info.end_cursor)
+        ) %>
+      </div>
+    <% else %>
+      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts"), class_name: "js-timeline-blank-slate") do %>
+        <p class="mt-1">
+          <%= t("messages.home.lets_make_the_first_post") %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

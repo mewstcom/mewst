@@ -1,0 +1,13 @@
+<div class="c-basic-layout d-flex flex-column">
+  <%= render Navbars::TopNavbarComponent.new %>
+
+  <div class="c-basic-layout__main">
+    <%= content %>
+  </div>
+
+  <div class="c-basic-layout__footer">
+    <%= render Footers::BasicFooterComponent.new %>
+  </div>
+
+  <%= render Navbars::BottomNavbarComponent.new %>
+</div>

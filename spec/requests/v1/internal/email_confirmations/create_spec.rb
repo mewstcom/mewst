@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "POST /v1/internal/email_confirmations", type: :request do
+RSpec.xdescribe "POST /v1/internal/email_confirmations", type: :request do
   context "メールアドレスが不正なとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }

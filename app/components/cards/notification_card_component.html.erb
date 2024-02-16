@@ -1,0 +1,42 @@
+<div class="c-content-card border-0 card rounded-4 u-flat">
+  <div class="card-body">
+    <div class="gx-3 row">
+      <div class="col-auto">
+        <%= link_to profile_path(notification.source_profile.atname) do %>
+          <%= render Images::AvatarImageComponent.new(profile: notification.source_profile, width: 40) %>
+        <% end %>
+      </div>
+
+      <div class="col">
+        <div>
+          <%= link_to profile_path(notification.source_profile.atname), class: "text-body text-decoration-none" do %>
+            <span class="fw-bold">
+              <%= notification.source_profile.name %>
+            </span>
+
+            <span class="text-muted">
+              @<%= notification.source_profile.atname %>
+            </span>
+          <% end %>
+
+          <span class="text-muted">
+            ·
+          </span>
+
+          <span class="small text-muted">
+            <%= mst_time_ago_in_words(notification.notified_at) %>
+          </span>
+        </div>
+
+        <div class="mt-1">
+          <% case notification.deserialized_notifiable_type %>
+          <% when NotifiableType::Stamp %>
+            <%= render Cards::NotificationCard::StampNotificationComponent.new(
+              stamp_notification: notification.stamp_notification.not_nil!
+            ) %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,17 +6,13 @@ class CreateEmailConfirmationUseCase < ApplicationUseCase
     const :email_confirmation, EmailConfirmation
   end
 
-  sig { params(email: String, event: String, locale: String).returns(Result) }
+  sig { params(email: String, event: EmailConfirmationEvent, locale: Locale).returns(Result) }
   def call(email:, event:, locale:)
-    email_confirmation = EmailConfirmation.new(email:, event:, code: EmailConfirmation.generate_code)
+    email_confirmation = EmailConfirmation.new(email:, event: event.serialize, code: EmailConfirmation.generate_code)
 
     ActiveRecord::Base.transaction do
       email_confirmation.save!
-
-      EmailConfirmationMailer.email_confirmation(
-        email_confirmation_id: email_confirmation.id.not_nil!,
-        locale:
-      ).deliver_later
+      email_confirmation.send_mail!(locale:)
     end
 
     Result.new(email_confirmation:)

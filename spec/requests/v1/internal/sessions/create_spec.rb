@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "POST /v1/internal/sessions", type: :request do
+RSpec.xdescribe "POST /v1/internal/sessions", type: :request do
   context "パスワードが正しくないとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }

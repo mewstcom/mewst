@@ -1,10 +1,16 @@
 ja:
   meta:
+    description:
+      default: |-
+        Mewstは160文字で今の気持ちや状況を共有できるソーシャルネットワークです。
+        力まず使えるサービスを目指しています。
     title:
       accounts:
-        new: アカウント作成
+        new: アカウント情報の登録
       home:
         show: ホーム
+      notifications:
+        index: 通知
       password_resets:
         new: パスワード忘れた？
       passwords:
@@ -13,11 +19,19 @@ ja:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
+      search:
+        show: 検索
       settings:
         index: 設定
+        profiles:
+          show: プロフィールの編集
+        users:
+          show: ユーザーの編集
       sign_in:
         new: ログイン
       sign_up:
         new: アカウント作成
+      verification_challenges:
+        new: 確認用コード入力
       welcome:
-        show: A microblogging service
+        show: ほっとするソーシャルネットワーク

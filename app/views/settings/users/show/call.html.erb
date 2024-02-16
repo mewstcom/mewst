@@ -1,0 +1,50 @@
+<% title = t("meta.title.settings.users.show") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <div class="container mt-3 u-narrow">
+    <%= link_to settings_path, class: "text-decoration-none" do %>
+      <i class="bi bi-arrow-left me-1"></i>
+      <%= t("nouns.settings") %>
+    <% end %>
+
+    <h1 class="fw-bold mt-3">
+      <%= title %>
+    </h1>
+  </div>
+
+  <div class="container u-flat u-narrow">
+    <hr class="mb-0">
+  </div>
+
+  <div class="container mt-3 u-flat u-narrow">
+    <div class="c-content-card border-0 card rounded-4 u-flat">
+      <div class="card-body">
+        <%= form_with method: :patch, model: @form, url: settings_user_path do |f| %>
+          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+          <div class="mb-3">
+            <%= f.label :locale, class: "form-label" %>
+            <% options = options_for_select([
+              [lang_option_text(lang: :english), "en"],
+              [lang_option_text(lang: :japanese), "ja"]
+            ], @form.locale) %>
+            <%= f.select :locale, options, {}, { class: "form-control" } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :time_zone, class: "form-label" %>
+            <% options = options_for_select(ActiveSupport::TimeZone.all.map { |time_zone| [time_zone_name(time_zone), time_zone.tzinfo.name] }, f.object.time_zone) %>
+            <%= f.select :time_zone, options, {}, { class: "form-select" } %>
+          </div>
+
+          <div class="text-center">
+            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+              <%= t("verbs.update") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -371,7 +371,7 @@ CREATE TABLE public.users (
     signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    time_zone character varying DEFAULT 'UTC'::character varying NOT NULL
+    time_zone character varying DEFAULT 'Etc/UTC'::character varying NOT NULL
 );
 
 
