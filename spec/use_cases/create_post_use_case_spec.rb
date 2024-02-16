@@ -3,7 +3,7 @@
 
 RSpec.describe CreatePostUseCase do
   let!(:viewer) { create(:actor) }
-  let!(:form) { V1::PostForm.new(viewer:, content: "hello") }
+  let!(:form) { PostForm.new(content: "hello") }
   let!(:use_case) { CreatePostUseCase.new }
   let!(:home_timeline) { instance_spy(Profile::HomeTimeline) }
 

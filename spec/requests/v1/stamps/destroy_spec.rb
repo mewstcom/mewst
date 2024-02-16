@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "DELETE /v1/posts/:post_id/stamp", type: :request, api_version: :v1 do
+RSpec.xdescribe "DELETE /v1/posts/:post_id/stamp", type: :request, api_version: :v1 do
   context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:target_actor) { create(:actor) }

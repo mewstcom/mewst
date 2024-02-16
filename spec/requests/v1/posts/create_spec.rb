@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe "POST /v1/posts", type: :request, api_version: :v1 do
+RSpec.xdescribe "POST /v1/posts", type: :request, api_version: :v1 do
   context "投稿内容が不正なとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }

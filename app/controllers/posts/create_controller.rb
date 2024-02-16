@@ -16,7 +16,7 @@ class Posts::CreateController < ApplicationController
       return render(json: {errors: form.errors.full_messages}, status: :unprocessable_entity)
     end
 
-    result = CreatePostUseCase.new.call(current_actor: current_actor!, content: form.content)
+    result = CreatePostUseCase.new.call(viewer: current_actor!, content: form.content)
     @post = result.post
 
     render(status: :created)
