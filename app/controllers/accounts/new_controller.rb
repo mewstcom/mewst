@@ -12,6 +12,6 @@ class Accounts::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = AccountForm.new(email: @email_confirmation.email)
+    @form = AccountForm.new(email: @email_confirmation.not_nil!.email.not_nil!)
   end
 end

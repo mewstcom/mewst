@@ -4,7 +4,7 @@
 class StampChecker
   extend T::Sig
 
-  T::Sig::WithoutRuntime.sig { params(profile: T.nilable(Profile), posts: T.any(Post::PrivateRelation, T::Array[Post])).void }
+  sig { params(profile: T.nilable(Profile), posts: T.any(ActiveRecord::Relation, T::Array[Post])).void }
   def initialize(profile:, posts:)
     @profile = profile
     @posts = posts
@@ -17,14 +17,16 @@ class StampChecker
 
   sig { returns(T::Array[T::Mewst::DatabaseId]) }
   private def stamped_post_ids
-    @stamped_post_ids ||= profile.stamps.where(post: posts).pluck(:post_id)
+    return [] if profile.nil? || posts.empty?
+
+    profile.not_nil!.stamps.where(post: posts).pluck(:post_id)
   end
 
-  sig { returns(Profile) }
+  sig { returns(T.nilable(Profile)) }
   attr_reader :profile
   private :profile
 
-  T::Sig::WithoutRuntime.sig { returns(T.any(Post::PrivateRelation, T::Array[Post])) }
+  sig { returns(T.any(ActiveRecord::Relation, T::Array[Post])) }
   attr_reader :posts
   private :posts
 end

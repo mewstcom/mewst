@@ -85,3 +85,8 @@ class ActiveRecord::Base
   sig { params(args: T.untyped, options: T.untyped, block: T.nilable(T.proc.bind(T.attached_class).params(record: T.attached_class).void)).void }
   def self.after_rollback(*args, **options, &block); end
 end
+
+class ActiveRecord::Relation
+  sig { returns(T::Boolean) }
+  def blank?; end
+end

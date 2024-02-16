@@ -18,7 +18,7 @@ module ControllerConcerns::EmailConfirmationFindable
       return redirect_to(root_path)
     end
 
-    @email_confirmation = EmailConfirmation.succeeded.find_by(id: session[:email_confirmation_id])
+    @email_confirmation = T.let(EmailConfirmation.succeeded.find_by(id: session[:email_confirmation_id]), T.nilable(EmailConfirmation))
 
     unless @email_confirmation
       redirect_to root_path

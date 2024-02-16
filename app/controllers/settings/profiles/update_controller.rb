@@ -18,10 +18,10 @@ class Settings::Profiles::UpdateController < ApplicationController
 
     UpdateProfileUseCase.new.call(
       viewer: current_actor!,
-      atname: @form.atname,
-      avatar_url: @form.avatar_url,
-      description: @form.description,
-      name: @form.name
+      atname: @form.atname.not_nil!,
+      avatar_url: @form.avatar_url.not_nil!,
+      description: @form.description.not_nil!,
+      name: @form.name.not_nil!
     )
 
     flash[:notice] = t("messages.profiles.updated")

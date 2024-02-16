@@ -10,7 +10,8 @@ class Notification < ApplicationRecord
   belongs_to :target_profile, class_name: "Profile"
   has_one :stamp_notification, dependent: :restrict_with_exception
 
+  sig { returns(NotifiableType) }
   def deserialized_notifiable_type
-    @deserialized_notifiable_type ||= NotifiableType.deserialize(notifiable_type)
+    NotifiableType.deserialize(notifiable_type)
   end
 end

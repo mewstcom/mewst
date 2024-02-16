@@ -14,7 +14,7 @@ class Accounts::CreateController < ApplicationController
   def call
     @form = AccountForm.new(
       form_params.merge(
-        email: @email_confirmation.email,
+        email: @email_confirmation.not_nil!.email.not_nil!,
         locale: current_locale.serialize,
         time_zone: "Asia/Tokyo" # TODO: あとでユーザのタイムゾーンを指定する
       )

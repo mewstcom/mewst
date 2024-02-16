@@ -10,7 +10,7 @@ class Notifications::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    notifications = current_actor!.notifications.preload(:source_profile, stamp_notification: { stamp: { post: :profile } })
+    notifications = current_actor!.notifications.preload(:source_profile, stamp_notification: {stamp: {post: :profile}})
     result = Paginator.new(records: notifications).paginate(
       before: params[:before].presence,
       after: params[:after].presence,

@@ -13,7 +13,7 @@ class Actor < ApplicationRecord
 
   sig { returns(Locale) }
   def locale
-    @locale ||= Locale.deserialize(user.locale)
+    Locale.deserialize(user.not_nil!.locale)
   end
 
   sig { params(time: ActiveSupport::TimeWithZone).returns(T::Boolean) }

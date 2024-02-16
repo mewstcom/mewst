@@ -18,8 +18,8 @@ class Settings::Users::UpdateController < ApplicationController
 
     UpdateUserUseCase.new.call(
       viewer: current_actor!,
-      locale: @form.locale,
-      time_zone: @form.time_zone
+      locale: @form.locale.not_nil!,
+      time_zone: @form.time_zone.not_nil!
     )
 
     flash[:notice] = t("messages.users.updated")

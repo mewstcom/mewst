@@ -13,7 +13,7 @@ class FollowForm < ApplicationForm
 
   sig { returns(T.nilable(Profile)) }
   def target_profile
-    @target_profile ||= Profile.kept.find_by(atname: target_atname)
+    @target_profile ||= T.let(Profile.kept.find_by(atname: target_atname), T.nilable(Profile))
   end
 
   sig { void }

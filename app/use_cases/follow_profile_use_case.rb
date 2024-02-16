@@ -21,6 +21,6 @@ class FollowProfileUseCase < ApplicationUseCase
       follow.check_suggested!
     end
 
-    Result.new(target_profile: follow.target_profile)
+    Result.new(target_profile: follow.target_profile.not_nil!)
   end
 end

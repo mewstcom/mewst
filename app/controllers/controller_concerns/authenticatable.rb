@@ -23,9 +23,10 @@ module ControllerConcerns::Authenticatable
 
   sig { returns(T.nilable(Actor)) }
   def current_actor
-    return unless session[:current_actor_id]
-
-    @current_actor ||= Actor.find_by(id: session[:current_actor_id])
+    @current_actor ||= T.let(begin
+      return unless session[:current_actor_id]
+      Actor.find_by(id: session[:current_actor_id])
+    end, T.nilable(Actor))
   end
 
   sig { returns(Actor) }

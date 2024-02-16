@@ -19,7 +19,7 @@ class Passwords::UpdateController < ApplicationController
     end
 
     UpdatePasswordUseCase.new.call(
-      email: @email_confirmation.email.not_nil!,
+      email: @email_confirmation.not_nil!.email.not_nil!,
       password: @form.password.not_nil!
     )
 

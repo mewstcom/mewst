@@ -11,7 +11,8 @@ class Cards::NotificationCard::StampNotificationComponent < ApplicationComponent
   attr_reader :stamp_notification
   private :stamp_notification
 
+  sig { returns(Post) }
   def target_post
-    stamp_notification.post
+    stamp_notification.post.not_nil!
   end
 end

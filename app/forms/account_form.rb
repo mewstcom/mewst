@@ -11,10 +11,10 @@ class AccountForm < ApplicationForm
   attribute :time_zone, :string
 
   validates :atname,
-            format: {with: Profile::ATNAME_FORMAT},
-            length: {in: Profile::ATNAME_MIN_LENGTH..Profile::ATNAME_MAX_LENGTH},
-            presence: true,
-            unreserved_atname: true
+    format: {with: Profile::ATNAME_FORMAT},
+    length: {in: Profile::ATNAME_MIN_LENGTH..Profile::ATNAME_MAX_LENGTH},
+    presence: true,
+    unreserved_atname: true
   validates :email, email: true, presence: true
   validates :locale, presence: true
   validates :time_zone, presence: true

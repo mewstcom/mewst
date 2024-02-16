@@ -11,7 +11,7 @@ class Cards::PostCard::FooterComponent < ApplicationComponent
   sig { returns(Post) }
   attr_reader :post
   private :post
-  
+
   sig { returns(StampChecker) }
   attr_reader :stamp_checker
   private :stamp_checker

@@ -4,9 +4,7 @@
 class FollowChecker
   extend T::Sig
 
-  T::Sig::WithoutRuntime.sig do
-    params(profile: T.nilable(Profile), target_profiles: T.any(Profile::PrivateRelation, T::Array[Profile])).void
-  end
+  sig { params(profile: T.nilable(Profile), target_profiles: T.any(ActiveRecord::Relation, T::Array[Profile])).void }
   def initialize(profile:, target_profiles:)
     @profile = profile
     @target_profiles = target_profiles
@@ -19,14 +17,16 @@ class FollowChecker
 
   sig { returns(T::Array[T::Mewst::DatabaseId]) }
   private def followed_profile_ids
-    @followed_profile_ids ||= profile.follows.where(target_profile: target_profiles).pluck(:target_profile_id)
+    return [] if profile.nil? || target_profiles.empty?
+
+    profile.not_nil!.follows.where(target_profile: target_profiles).pluck(:target_profile_id)
   end
 
-  sig { returns(Profile) }
+  sig { returns(T.nilable(Profile)) }
   attr_reader :profile
   private :profile
 
-  T::Sig::WithoutRuntime.sig { returns(T.any(Profile::PrivateRelation, T::Array[Profile])) }
+  sig { returns(T.any(ActiveRecord::Relation, T::Array[Profile])) }
   attr_reader :target_profiles
   private :target_profiles
 end
