@@ -2,25 +2,21 @@
 <% set_meta_tags(title:, reverse: false) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container py-5">
-    <h1 class="bg-primary d-inline-block fw-bold px-3 py-1 rounded-pill">
-      Mewst
+  <div class="container mx-auto px-3 py-5">
+    <h1 class="bg-primary font-bold inline-block px-3 py-1 rounded-full">
+      <%= t("nouns.mewst_kana") %>
     </h1>
 
     <div class="mt-3">
       <%= t("messages.welcome.alpha_html") %>
 
-      <ul class="mt-3">
+      <ul class="list-disc list-inside mt-3">
         <li>
-          <%= link_to "shimba.co", "https://shimba.co", target: "_blank", rel: "nofollow" %>
+          <%= link_to "shimba.co", "https://shimba.co", class: "link", target: "_blank", rel: "nofollow" %>
         </li>
 
         <li>
-          <%= link_to "Bluesky (@shimbaco.bsky.social)", "https://bsky.app/profile/shimbaco.bsky.social", target: "_blank", rel: "nofollow" %>
-        </li>
-
-        <li>
-          <%= link_to "Mastodon (@shimbaco@mastodon.social)", "https://mastodon.social/@shimbaco", target: "_blank", rel: "nofollow" %>
+          <%= link_to "Bluesky (@shimbaco.bsky.social)", "https://bsky.app/profile/shimbaco.bsky.social", class: "link", target: "_blank", rel: "nofollow" %>
         </li>
       </ul>
     </div>

@@ -76,5 +76,5 @@ ja:
     welcome:
       alpha_html: |-
         現在アルファ版です<br>
-        アルファ版の間は開発者 (<a href="/@shimbaco">@shimbaco</a>) しか使えません<br>
-        開発の進捗は以下の個人ブログやBluesky / Mastodonで公開します
+        アルファ版の間は開発者 (<a class="link" href="/@shimbaco">@shimbaco</a>) しか使えません<br>
+        開発の進捗は以下の個人ブログやBlueskyで公開します

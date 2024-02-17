@@ -74,5 +74,5 @@ en:
     welcome:
       alpha_html: |-
         This is an alpha product.<br>
-        During alpha, it is only available to the developer (<a href="/@shimbaco">@shimbaco</a>).<br>
-        Development progress will be posted on the following personal blog and Bluesky / Mastodon.
+        During alpha, it is only available to the developer (<a class="link" href="/@shimbaco">@shimbaco</a>).<br>
+        Development progress will be posted on the following personal blog and Bluesky.
