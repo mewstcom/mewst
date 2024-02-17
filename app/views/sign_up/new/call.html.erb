@@ -2,46 +2,51 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container u-flat u-narrow">
+  <div class="container max-w-3xl mx-auto">
     <div class="text-center">
-      <div class="mt-3 mt-sm-5">
-        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <div class="mt-12">
+        <%= link_to root_path, class: "inline-block" do %>
           <%= render Icons::LogoIconComponent.new %>
         <% end %>
       </div>
 
-      <h1 class="fw-bold mt-3 mt-sm-5">
+      <h1 class="font-bold mt-8 text-3xl">
         <%= title %>
       </h1>
 
-      <p>
+      <p class="mt-4">
         <%= t("messages.sign_up.description_html") %>
       </p>
 
-      <p>
+      <p class="mt-4">
         <%= t("messages.sign_up.already_have_an_account_html") %>
       </p>
     </div>
 
-    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+    <div class="bg-neutral card mt-8">
       <div class="card-body">
         <%= form_with model: @form, url: sign_up_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-          <div class="mb-3">
-            <%= f.label :email, class: "form-label" %>
+          <%= f.label :email, class: "form-control" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.email_confirmation_form.email") %>
+              </span>
+            </div>
+
             <%= f.email_field(
               :email,
               autocomplete: "username",
               autofocus: true,
               disabled: SignUpStopper.enabled?,
-              class: "form-control",
+              class: "input input-bordered w-full",
               required: true
             ) %>
-          </div>
+          <% end %>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", disabled: SignUpStopper.enabled?, type: :submit do %>
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", disabled: SignUpStopper.enabled?, type: :submit do %>
               <%= t("verbs.submit") %>
             <% end %>
           </div>

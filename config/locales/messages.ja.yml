@@ -66,7 +66,7 @@ ja:
         アカウント持ってない？ <a class="link link-info" href="/sign_up">アカウント作成</a>
     sign_up:
       already_have_an_account_html: |-
-        アカウント持ってる？ <a href="/sign_in">ログイン</a>
+        アカウント持ってる？ <a class="link link-info" href="/sign_in">ログイン</a>
       description_html: |-
         お使いのメールアドレスをご入力ください<br>
         アカウント作成用のメールを送信します
