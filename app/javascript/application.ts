@@ -14,9 +14,9 @@ import PostFormController from './controllers/post-form-controller';
 import PostModalController from './controllers/post-modal-controller';
 import TimelineController from './controllers/timeline-controller';
 
-const application = Application.start()
-application.debug = false
-window.Stimulus = application
+const application = Application.start();
+application.debug = false;
+window.Stimulus = application;
 
 Stimulus.register('autosize', AutosizeController);
 Stimulus.register('blank-slate', BlankSlateController);
