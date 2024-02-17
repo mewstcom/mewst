@@ -41,7 +41,11 @@ export default class extends Controller {
   }
 
   hideFlashToast() {
-    this.element.classList.add('hidden');
+    this.element.classList.add('scale-90', 'opacity-0');
+
+    setTimeout(() => {
+      this.element.classList.add('hidden');
+    }, 150);
   }
 
   private get alertBgClass() {
