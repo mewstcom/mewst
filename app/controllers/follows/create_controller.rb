@@ -12,15 +12,17 @@ class Follows::CreateController < ApplicationController
   def call
     @form = FollowForm.new(profile: current_actor!.profile.not_nil!, target_atname: params[:atname])
 
-    if @form.invalid?
-      return render(content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity, layout: false)
+    respond_to do |format|
+      if @form.invalid?
+        return format.turbo_stream { render(status: :unprocessable_entity) }
+      end
+
+      result = FollowProfileUseCase.new.call(profile: @form.profile.not_nil!, target_profile: @form.target_profile.not_nil!)
+
+      @profile = result.target_profile
+      @follow_checker = FollowChecker.new(profile: current_actor.profile.not_nil!, target_profiles: [@profile])
+
+      format.turbo_stream
     end
-
-    result = FollowProfileUseCase.new.call(profile: @form.profile.not_nil!, target_profile: @form.target_profile.not_nil!)
-
-    @profile = result.target_profile
-    @follow_checker = FollowChecker.new(profile: current_actor.profile.not_nil!, target_profiles: [@profile])
-
-    render(content_type: "text/vnd.turbo-stream.html", layout: false)
   end
 end
