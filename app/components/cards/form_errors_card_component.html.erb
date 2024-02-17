@@ -1,13 +1,15 @@
-<div class="alert alert-danger mb-3 rounded-3">
-  <div class="alert-heading h4">
-    <%= t "nouns.error" %>
-  </div>
+<div class="card bg-error" role="alert">
+  <div class="card-body">
+    <div class="font-bold text-lg">
+      <%= t "nouns.error" %>
+    </div>
 
-  <ul class="mb-0">
-    <% @errors.full_messages.each do |message| %>
-      <li>
-        <%= message %>
-      </li>
-    <% end %>
-  </ul>
+    <ul class="list-disc list-inside">
+      <% @errors.full_messages.each do |message| %>
+        <li>
+          <%= message %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
 </div>
