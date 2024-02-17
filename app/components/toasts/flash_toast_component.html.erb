@@ -6,24 +6,23 @@
   data-flash-toast-message-html-value="<%= flash[flash_toast_type] %>"
 >
   <div
-    class="alert d-flex"
+    class="alert flex"
     data-flash-toast-target="alert"
   >
-    <div class="align-items-center d-flex toast-body">
-        <span
-          class="h2 mb-0 me-2"
-          data-flash-toast-target="icon"
-        ></span>
+    <div class="flex items-center toast-body">
+      <span
+        class="me-3 text-3xl"
+        data-flash-toast-target="icon"
+      ></span>
 
       <span
-        class="flex-grow-1"
+        class="grow"
         data-flash-toast-target="message"
       ></span>
     </div>
 
     <button
       aria-label="Close"
-      class=""
       data-action="flash-toast#hideFlashToast"
       type="button"
     >
