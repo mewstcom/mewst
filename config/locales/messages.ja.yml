@@ -11,9 +11,12 @@ ja:
       password_hint_html: |-
         8文字以上入力してください
       signed_in_successfully: ログインしました
-      signed_up_successfully: アカウントを作成しました。ようこそ！
+      signed_up_successfully: アカウントを作成しました。ミューストにようこそ！
       terms_html: |-
-        <a href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">利用規約</a>と<a href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">プライバシーポリシー</a>に同意のうえでアカウントを作成してください
+        <a class="link link-info" href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">利用規約</a>
+        と
+        <a class="link link-info" href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">プライバシーポリシー</a>
+        に同意のうえでアカウントを作成してください
     authentication:
       already_signed_in: すでにログインしています
       signed_out_successfully: ログアウトしました
