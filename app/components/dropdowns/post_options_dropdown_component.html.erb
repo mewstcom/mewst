@@ -2,18 +2,20 @@
   <div
     class="c-post-options-dropdown dropdown u-cursor-pointer u-hidden-caret"
   >
-    <div class="dropdown-toggle" data-bs-toggle="dropdown">
+    <a aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
       <i class="bi bi-three-dots fw-bold text-muted"></i>
+    </a>
 
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-          <%= link_to t("verbs.delete"), post_path(@post.id),
-            class: "dropdown-item",
-            data: { confirm: t("messages.posts.are_you_sure_to_delete_post") },
-            method: :delete
-          %>
-        </li>
-      </ul>
-    </div>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <%= link_to t("verbs.delete"), post_path(@post.id),
+          class: "dropdown-item",
+          data: {
+            turbo_confirm: t("messages.posts.are_you_sure_to_delete_post"),
+            turbo_method: :delete
+          }
+        %>
+      </li>
+    </ul>
   </div>
 <% end %>

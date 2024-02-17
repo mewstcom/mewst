@@ -17,6 +17,6 @@ class Posts::DestroyController < ApplicationController
     DeletePostUseCase.new.call(target_post: form.target_post.not_nil!)
 
     flash[:notice] = t("messages.posts.deleted")
-    redirect_to home_path
+    redirect_to(home_path, status: :see_other)
   end
 end
