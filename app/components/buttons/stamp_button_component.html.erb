@@ -1,5 +1,5 @@
 <% if signed_in? %>
-  <turbo-frame id="posts-<%= post.id %>-stamp">
+  <%= turbo_frame_tag "posts-#{post.id}-stamp" do %>
     <% if stamp_checker.stamped?(post:) %>
       <%= button_to post_stamp_path(post.id), {
         class: "btn btn-sm c-stamp-button rounded-pill u-btn-stamped",
@@ -14,7 +14,7 @@
         <%= render Icons::UnstampedIconComponent.new %>
       <% end %>
     <% end %>
-  </turbo-frame>
+  <% end %>
 <% else %>
   <span
     class="d-inline-block"
