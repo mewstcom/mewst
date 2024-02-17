@@ -1,32 +1,33 @@
-<div class="c-flash-toast start-50 toast-container translate-middle">
+<div
+  aria-atomic="true"
+  class="hidden toast toast-center"
+  data-controller="flash-toast"
+  data-flash-toast-type-value="<%= flash_toast_type %>"
+  data-flash-toast-message-html-value="<%= flash[flash_toast_type] %>"
+>
   <div
-    aria-atomic="true"
-    aria-live="assertive"
-    class="border-0 toast"
-    data-controller="flash-toast"
-    data-flash-toast-type-value="<%= flash_toast_type %>"
-    data-flash-toast-message-html-value="<%= flash[flash_toast_type] %>"
-    role="alert"
+    class="alert d-flex"
+    data-flash-toast-target="alert"
   >
-    <div class="d-flex">
-      <div class="align-items-center d-flex toast-body">
+    <div class="align-items-center d-flex toast-body">
         <span
           class="h2 mb-0 me-2"
           data-flash-toast-target="icon"
         ></span>
 
-        <span
-          class="flex-grow-1"
-          data-flash-toast-target="message"
-        ></span>
-      </div>
-
-      <button
-        aria-label="Close"
-        class="btn-close btn-close-white me-2 m-auto"
-        data-action="flash-toast#hideFlashToast"
-        type="button"
-      ></button>
+      <span
+        class="flex-grow-1"
+        data-flash-toast-target="message"
+      ></span>
     </div>
+
+    <button
+      aria-label="Close"
+      class=""
+      data-action="flash-toast#hideFlashToast"
+      type="button"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 </div>
