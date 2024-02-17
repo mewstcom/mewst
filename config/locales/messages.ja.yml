@@ -63,7 +63,7 @@ ja:
         not_exists: 自分がフォローしている人がフォローしている人が表示されます
     sign_in:
       dont_have_an_account_html: |-
-        アカウント持ってない？ <a href="/sign_up">アカウント作成</a>
+        アカウント持ってない？ <a class="link link-info" href="/sign_up">アカウント作成</a>
     sign_up:
       already_have_an_account_html: |-
         アカウント持ってる？ <a href="/sign_in">ログイン</a>
