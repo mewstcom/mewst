@@ -35,7 +35,9 @@ gem "rails_autolink"
 gem "redis"
 gem "sentry-rails"
 gem "sentry-ruby"
+gem "stimulus-rails"
 gem "strong_migrations"
+gem "turbo-rails"
 gem "view_component"
 
 group :development, :test do
