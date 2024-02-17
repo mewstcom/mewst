@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import * as bootstrap from 'bootstrap';
+// import * as bootstrap from 'bootstrap';
 
 export default class extends Controller {
   static targets = ['icon', 'message'];
@@ -16,12 +16,12 @@ export default class extends Controller {
 
   messageHtml!: string;
   type!: string;
-  toast!: bootstrap.Toast;
+  // toast!: bootstrap.Toast;
 
   connect() {
     this.type = this.typeValue || 'notice';
     this.messageHtml = this.messageHtmlValue || '';
-    this.toast = bootstrap.Toast.getOrCreateInstance(this.element);
+    // this.toast = bootstrap.Toast.getOrCreateInstance(this.element);
 
     if (this.type && this.messageHtml) {
       this.showFlashToast();
@@ -39,11 +39,11 @@ export default class extends Controller {
     this.element.classList.add(this.alertBgClass);
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
-    this.toast.show();
+    // this.toast.show();
   }
 
   hideFlashToast() {
-    this.toast.hide();
+    // this.toast.hide();
   }
 
   private get alertBgClass() {

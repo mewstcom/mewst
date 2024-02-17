@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import * as bootstrap from 'bootstrap';
+// import * as bootstrap from 'bootstrap';
 
 export default class extends Controller<HTMLDivElement> {
   static targets = ['content'];
@@ -7,14 +7,14 @@ export default class extends Controller<HTMLDivElement> {
   declare readonly contentTarget: HTMLTextAreaElement;
 
   connect() {
-    const modal = new bootstrap.Modal(this.element);
+    // const modal = new bootstrap.Modal(this.element);
 
     this.element.addEventListener('shown.bs.modal', () => {
       this.contentTarget.focus();
     });
 
     document.addEventListener('post-modal:hide', () => {
-      modal.hide();
+      // modal.hide();
     });
   }
 }

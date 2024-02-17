@@ -1,7 +1,6 @@
 import '@hotwired/turbo';
 
 import { Application } from '@hotwired/stimulus';
-import * as bootstrap from 'bootstrap';
 
 import AutosizeController from './controllers/autosize-controller';
 import BlankSlateController from './controllers/blank-slate-controller';
@@ -26,6 +25,3 @@ Stimulus.register('flash-toast-dispatch', FlashToastDispatchController);
 Stimulus.register('post-form', PostFormController);
 Stimulus.register('post-modal', PostModalController);
 Stimulus.register('timeline', TimelineController);
-
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-Array.from(tooltipTriggerList).map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
