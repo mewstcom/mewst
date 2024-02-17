@@ -1,7 +1,6 @@
 import '@hotwired/turbo';
 
 import { Application } from '@hotwired/stimulus';
-import ujs from '@rails/ujs';
 import * as bootstrap from 'bootstrap';
 
 import AutosizeController from './controllers/autosize-controller';
@@ -30,5 +29,3 @@ Stimulus.register('timeline', TimelineController);
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 Array.from(tooltipTriggerList).map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
-
-ujs.start();
