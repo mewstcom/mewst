@@ -1,0 +1,9 @@
+<% if @form.errors.any? %>
+  <%= turbo_stream.after "profiles-#{@form.atname}-follow" do %>
+    <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.update "profiles-#{@profile.atname}-follow" do %>
+    <%= render Buttons::FollowButtonComponent.new(target_profile: @profile, follow_checker: @follow_checker) %>
+  <% end %>
+<% end %>

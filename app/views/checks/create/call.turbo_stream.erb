@@ -1,0 +1,7 @@
+<% if @form.errors.any? %>
+  <%= turbo_stream.after "profiles-#{@form.atname}-follow" do %>
+    <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "suggested-profiles-#{@atname}" %>
+<% end %>

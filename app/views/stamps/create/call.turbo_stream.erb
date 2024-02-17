@@ -1,0 +1,9 @@
+<% if @form.errors.any? %>
+  <%= turbo_stream.after "posts-#{@form.target_post_id}-stamp" do %>
+    <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.update "posts-#{@post.id}-stamp" do %>
+    <%= render Buttons::StampButtonComponent.new(post: @post, stamp_checker: @stamp_checker) %>
+  <% end %>
+<% end %>
