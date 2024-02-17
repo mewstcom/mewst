@@ -1,5 +1,6 @@
+import '@hotwired/turbo';
+
 import { Application } from '@hotwired/stimulus';
-import * as Turbo from '@hotwired/turbo';
 import ujs from '@rails/ujs';
 import * as bootstrap from 'bootstrap';
 
@@ -13,7 +14,10 @@ import PostFormController from './controllers/post-form-controller';
 import PostModalController from './controllers/post-modal-controller';
 import TimelineController from './controllers/timeline-controller';
 
-window.Stimulus = Application.start();
+const application = Application.start();
+application.debug = false;
+window.Stimulus = application;
+
 Stimulus.register('autosize', AutosizeController);
 Stimulus.register('blank-slate', BlankSlateController);
 Stimulus.register('character-counter', CharacterCounterController);
@@ -28,4 +32,3 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 Array.from(tooltipTriggerList).map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
 
 ujs.start();
-Turbo.start();
