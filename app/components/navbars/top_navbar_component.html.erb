@@ -1,56 +1,54 @@
-<% if signed_in? %>
-  <div class="c-top-navbar navbar">
-    <div class="flex-1">
-      <%= link_to root_path, class: "navbar-brand me-0 py-0" do %>
-        <%= render Icons::LogoIconComponent.new %>
-      <% end %>
-    </div>
+<div class="hidden lg:navbar">
+  <div class="navbar-start">
+    <%= link_to root_path do %>
+      <%= render Icons::LogoIconComponent.new %>
+    <% end %>
+  </div>
 
-    <div class="flex-none">
-      <ul class="menu menu-horizontal px-1">
+  <% if signed_in? %>
+    <div class="navbar-center">
+      <ul class="menu menu-horizontal">
         <li>
-          <div class="hstack gap-3">
-            <%= link_to home_path, class: "nav-link" do %>
-              <i class="bi bi-house me-1"></i>
-              <%= t("nouns.home") %>
-            <% end %>
+          <%= link_to home_path, class: "nav-link" do %>
+            <i class="bi bi-house me-1"></i>
+            <%= t("nouns.home") %>
+          <% end %>
+        </li>
 
-            <%= link_to search_path, class: "nav-link" do %>
-              <i class="bi bi-search me-1"></i>
-              <%= t("nouns.search") %>
-            <% end %>
+        <li>
+          <%= link_to search_path, class: "nav-link" do %>
+            <i class="bi bi-search me-1"></i>
+            <%= t("nouns.search") %>
+          <% end %>
+        </li>
 
-            <a class="nav-link" data-bs-target="#postModal" data-bs-toggle="modal" href="#">
-              <i class="bi bi-pencil-square me-1"></i>
-              <%= t("verbs.post") %>
-            </a>
+        <li>
+          <a class="nav-link" data-bs-target="#postModal" data-bs-toggle="modal" href="#">
+            <i class="bi bi-pencil-square me-1"></i>
+            <%= t("verbs.post") %>
+          </a>
+        </li>
 
-            <%= link_to notification_list_path, class: "nav-link" do %>
-              <i class="bi bi-bell me-1"></i>
-              <%= t("nouns.notifications") %>
-            <% end %>
+        <li>
+          <%= link_to notification_list_path, class: "nav-link" do %>
+            <i class="bi bi-bell me-1"></i>
+            <%= t("nouns.notifications") %>
+          <% end %>
+        </li>
 
-            <%= link_to profile_path(current_actor!.atname), class: "nav-link" do %>
-              <i class="bi bi-person-circle me-1"></i>
-              <%= t("nouns.profile") %>
-            <% end %>
-          </div>
+        <li>
+          <%= link_to profile_path(current_actor!.atname), class: "nav-link" do %>
+            <i class="bi bi-person-circle me-1"></i>
+            <%= t("nouns.profile") %>
+          <% end %>
         </li>
       </ul>
     </div>
 
-    <div style="width: 24px;"></div> <%# same width as brand logo %>
-  </div>
-<% else %>
-  <div class="c-top-navbar hidden lg:navbar">
-    <div class="flex-1">
-      <%= link_to root_path do %>
-        <%= render Icons::LogoIconComponent.new %>
-      <% end %>
-    </div>
-
-    <div class="flex-none">
-      <ul class="menu menu-horizontal px-1">
+    <div class="navbar-end"><%# レイアウト調整のために必要なdiv %></div>
+  <% else %>
+    <div class="navbar-end">
+      <ul class="menu menu-horizontal">
         <li>
           <%= link_to t("nouns.sign_in"), sign_in_path, class: "link no-underline" %>
         </li>
@@ -60,5 +58,5 @@
         </li>
       </ul>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
