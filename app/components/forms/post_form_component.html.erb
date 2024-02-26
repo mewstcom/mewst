@@ -1,5 +1,4 @@
 <form
-  class="c-post-form"
   data-action="post-form#submit:prevent"
   data-character-counter-max-value="<%= Post::MAXIMUM_CONTENT_LENGTH %>"
   data-controller="character-counter post-form"
@@ -21,36 +20,39 @@
     </div>
   <% end %>
 
-  <textarea
-    autofocus
-    class="form-control rounded-4"
-    data-action="keyup->character-counter#updateCounter"
-    data-character-counter-target="textarea"
-    data-controller="autosize"
-    data-post-form-target="content"
-    data-post-modal-target="content"
-    tabindex="<%= textarea_tabindex %>"
-  ></textarea>
+  <label class="form-control">
+    <div class="label pt-0">
+      <span class="font-bold label-text">
+        <%= t("messages.whats_happening") %>
+      </span>
 
-  <div class="align-items-center gap-3 hstack justify-content-between mt-3">
-    <div class="col-1"></div>
-
-    <div class="text-center">
-      <button
-        class="btn btn-primary rounded-pill"
-        data-post-form-target="submitButton"
-        tabindex="<%= submit_button_tabindex %>"
-        type="submit"
-      >
-        <i class="bi bi-send me-1"></i>
-        <%= t("verbs.post") %>
-      </button>
-    </div>
-
-    <div class="col-1 text-end">
       <span
+        class="label-text-alt"
         data-character-counter-target="counter"
       ></span>
     </div>
+
+    <textarea
+      autofocus
+      class="textarea textarea-bordered w-full"
+      data-action="keyup->character-counter#updateCounter"
+      data-character-counter-target="textarea"
+      data-controller="autosize"
+      data-post-form-target="content"
+      data-post-modal-target="content"
+      tabindex="<%= textarea_tabindex %>"
+    ></textarea>
+  </label>
+
+  <div class="mt-4 text-center">
+    <button
+      class="btn btn-primary rounded-full"
+      data-post-form-target="submitButton"
+      tabindex="<%= submit_button_tabindex %>"
+      type="submit"
+    >
+      <i class="bi bi-send me-1"></i>
+      <%= t("verbs.post") %>
+    </button>
   </div>
 </form>

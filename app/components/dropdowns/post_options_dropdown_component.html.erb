@@ -1,21 +1,18 @@
 <% if signed_in? %>
-  <div
-    class="c-post-options-dropdown dropdown u-cursor-pointer u-hidden-caret"
-  >
-    <a aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
-      <i class="bi bi-three-dots fw-bold text-muted"></i>
-    </a>
+  <%= render Dropdowns::Base::DropdownComponent.new(class_name: "dropdown-end") do %>
+    <%= render Dropdowns::Base::DropdownButtonComponent.new(class_name: "border-neutral-400 btn btn-outline btn-sm btn-square text-neutral-400") do %>
+      <i class="bi bi-three-dots"></i>
+    <% end %>
 
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li>
-        <%= link_to t("verbs.delete"), post_path(@post.id),
-          class: "dropdown-item",
+    <%= render Dropdowns::Base::DropdownListComponent.new(class_name: "p-1 shadow z-[1] bg-base-100 rounded-box w-52") do %>
+      <%= render Dropdowns::Base::DropdownItemComponent.new do %>
+        <%= link_to t("verbs.delete"), post_path(post.id),
           data: {
             turbo_confirm: t("messages.posts.are_you_sure_to_delete_post"),
             turbo_method: :delete
           }
         %>
-      </li>
-    </ul>
-  </div>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

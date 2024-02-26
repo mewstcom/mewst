@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* https://fontawesome.com/docs/web/add-icons/svg-bare */
+.mst-fa-icon {
+    height: 1em;
+    vertical-align: -.125em;
+    width: 1em;
+}
+
+.mst-svg-icon {
+    fill: currentcolor;
+}

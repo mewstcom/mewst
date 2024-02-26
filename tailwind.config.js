@@ -1,12 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './public/*.html',
+    './app/components/**/*.erb',
+    './app/components/**/*.rb',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.ts',
-    './app/components/**/*.erb',
     './app/views/**/*.erb',
     './config/locales/*.yml',
+    './public/*.html',
   ],
   theme: {
     extend: {},
@@ -17,8 +18,9 @@ module.exports = {
       {
         mewst: {
           'base-100': '#faf0dc',
+          'base-300': '#ffffff',
           info: '#0284c7',
-          neutral: '#ffffff',
+          neutral: '#737373',
           primary: '#f4a90e',
           secondary: '#5f0f40',
         },

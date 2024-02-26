@@ -2,25 +2,19 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mt-3 u-narrow">
-    <h1 class="h3">
-      <%= t("messages.whats_happening") %>
-    </h1>
-
-    <div class="d-none d-lg-block">
+  <div class="container max-w-3xl mx-auto">
+    <div class="hidden lg:block">
       <%= render Forms::PostFormComponent.new %>
     </div>
   </div>
 
-  <div class="container u-flat u-narrow">
-    <hr>
+  <div class="container max-w-3xl mx-auto">
+    <hr class="my-6">
   </div>
 
-  <div class="container u-flat u-narrow">
-    <%# render Navs::TimelineNavComponent.new %>
-
+  <div class="container max-w-3xl mx-auto">
     <div
-      class="gap-3 js-timeline vstack"
+      class="flex flex-col gap-4 js-timeline"
       data-controller="timeline"
     >
       <% @posts.each do |post| %>

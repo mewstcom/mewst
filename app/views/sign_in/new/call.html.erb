@@ -19,7 +19,7 @@
       </p>
     </div>
 
-    <div class="bg-neutral card mt-8">
+    <div class="bg-base-300 card mt-8">
       <div class="card-body">
         <%= form_with model: @form, url: sign_in_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>

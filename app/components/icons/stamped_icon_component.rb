@@ -4,7 +4,7 @@
 class Icons::StampedIconComponent < ApplicationComponent
   erb_template <<~ERB
     <svg
-      class="u-fa-icon u-svg-icon"
+      class="mst-fa-icon mst-svg-icon"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 448 512"
     >

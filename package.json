@@ -14,7 +14,8 @@
     "@hotwired/turbo": "^8.0.2",
     "autosize": "^6.0.1",
     "esbuild": "^0.19.11",
-    "graphemesplit": "^2.4.4"
+    "graphemesplit": "^2.4.4",
+    "stimulus-use": "^0.52.2"
   },
   "devDependencies": {
     "daisyui": "^4.7.2",

@@ -6,4 +6,8 @@ class Dropdowns::PostOptionsDropdownComponent < ApplicationComponent
   def initialize(post:)
     @post = post
   end
+
+  sig { returns(Post) }
+  attr_reader :post
+  private :post
 end

@@ -1,19 +1,19 @@
-<%= link_to profile_path(profile.atname), class: "text-body text-decoration-none" do %>
-  <span class="fw-bold">
+<%= link_to profile_path(profile.atname) do %>
+  <span class="font-bold">
     <%= profile.name %>
   </span>
 
-  <span class="text-muted">
+  <span class="text-gray-500">
     @<%= profile.atname %>
   </span>
 <% end %>
 
-<span class="text-muted">
+<span class="text-gray-500">
   ·
 </span>
 
 <%= link_to(
   mst_time_ago_in_words(post.published_at),
   profile_post_path(profile.atname, post.id),
-  class: "small text-decoration-none text-muted"
+  class: "text-gray-500 text-sm"
 ) %>
