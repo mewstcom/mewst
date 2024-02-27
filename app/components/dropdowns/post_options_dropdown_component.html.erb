@@ -4,7 +4,7 @@
       <i class="bi bi-three-dots"></i>
     <% end %>
 
-    <%= render Dropdowns::Base::DropdownListComponent.new(class_name: "p-1 shadow z-[1] bg-base-100 rounded-box w-52") do %>
+    <%= render Dropdowns::Base::DropdownListComponent.new(class_name: "p-1 shadow z-[1] bg-neutral-100 rounded-box w-52") do %>
       <%= render Dropdowns::Base::DropdownItemComponent.new do %>
         <%= link_to t("verbs.delete"), post_path(post.id),
           data: {

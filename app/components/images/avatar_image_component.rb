@@ -29,7 +29,7 @@ class Images::AvatarImageComponent < ApplicationComponent
 
   sig { returns(String) }
   private def class_name
-    class_list = %w[ring ring-primary rounded-full]
+    class_list = %w[rounded-full]
     class_list << @class_name if @class_name.present?
     class_list.join(" ")
   end
