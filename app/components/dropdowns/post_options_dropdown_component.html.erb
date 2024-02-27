@@ -1,6 +1,6 @@
 <% if signed_in? %>
   <%= render Dropdowns::Base::DropdownComponent.new(class_name: "dropdown-end") do %>
-    <%= render Dropdowns::Base::DropdownButtonComponent.new(class_name: "border-neutral-400 btn btn-outline btn-sm btn-square text-neutral-400") do %>
+    <%= render Dropdowns::Base::DropdownButtonComponent.new(class_name: "btn btn-ghost btn-sm btn-square") do %>
       <i class="bi bi-three-dots"></i>
     <% end %>
 
