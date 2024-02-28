@@ -1,3 +1,0 @@
-{
-  postCardHtml: render(Cards::PostCardComponent.new(post: @post))
-}

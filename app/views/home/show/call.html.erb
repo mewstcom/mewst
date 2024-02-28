@@ -4,7 +4,9 @@
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <div class="container max-w-3xl mx-auto">
     <div class="hidden lg:block">
-      <%= render Forms::PostFormComponent.new %>
+      <turbo-frame id="post-form">
+        <%= render Forms::PostFormComponent.new(form: @form) %>
+      </turbo-frame>
     </div>
   </div>
 
@@ -13,14 +15,7 @@
   </div>
 
   <div class="container max-w-3xl mx-auto">
-    <div
-      class="flex flex-col gap-4 js-timeline"
-      data-controller="timeline"
-    >
-      <% @posts.each do |post| %>
-        <%= render Cards::PostCardComponent.new(post:, stamp_checker: @stamp_checker) %>
-      <% end %>
-    </div>
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker) %>
 
     <% if @posts.present? %>
       <div class="flex justify-center mt-4">

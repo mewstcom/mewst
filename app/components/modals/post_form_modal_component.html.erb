@@ -1,0 +1,7 @@
+<%= render Modals::Base::ModalComponent.new do %>
+  <%= render Modals::Base::ModalBoxComponent.new do %>
+    <turbo-frame id="post-form">
+      <%= render Forms::PostFormComponent.new(form:, from_modal: true) %>
+    </turbo-frame>
+  <% end %>
+<% end %>

@@ -9,8 +9,7 @@ import ComponentDataFetcherController from './controllers/component-data-fetcher
 import DropdownController from './controllers/dropdown-controller';
 import FlashToastController from './controllers/flash-toast-controller';
 import FlashToastDispatchController from './controllers/flash-toast-dispatch-controller';
-import PostFormController from './controllers/post-form-controller';
-import PostModalController from './controllers/post-modal-controller';
+import ModalController from './controllers/modal-controller';
 import TimelineController from './controllers/timeline-controller';
 
 const application = Application.start();
@@ -24,6 +23,5 @@ Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
 Stimulus.register('dropdown', DropdownController);
 Stimulus.register('flash-toast', FlashToastController);
 Stimulus.register('flash-toast-dispatch', FlashToastDispatchController);
-Stimulus.register('post-form', PostFormController);
-Stimulus.register('post-modal', PostModalController);
+Stimulus.register('modal', ModalController);
 Stimulus.register('timeline', TimelineController);

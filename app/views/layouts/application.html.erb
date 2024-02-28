@@ -21,6 +21,7 @@
     <%= yield %>
 
     <%= render Toasts::FlashToastComponent.new(flash:) %>
-    <%= render Modals::PostModalComponent.new %>
+    <turbo-frame id="modal"></turbo-frame>
+    <turbo-frame id="toast"></turbo-frame>
   </body>
 </html>

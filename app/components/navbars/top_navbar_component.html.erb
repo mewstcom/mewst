@@ -23,10 +23,10 @@
         </li>
 
         <li>
-          <a class="nav-link" data-bs-target="#postModal" data-bs-toggle="modal" href="#">
+          <%= link_to new_post_path(with_frame: true), class: "nav-link", data: { turbo_frame: "modal" } do %>
             <i class="bi bi-pencil-square me-1"></i>
             <%= t("verbs.post") %>
-          </a>
+          <% end %>
         </li>
 
         <li>

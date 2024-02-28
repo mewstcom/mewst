@@ -10,15 +10,28 @@ class Posts::CreateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    form = PostForm.new(content: params[:content])
+    @form = PostForm.new(form_params)
 
-    if form.invalid?
-      return render(json: {errors: form.errors.full_messages}, status: :unprocessable_entity)
+    if @form.invalid?
+      return render("posts/new/call", status: :unprocessable_entity)
     end
 
-    result = CreatePostUseCase.new.call(viewer: current_actor!, content: form.content.not_nil!)
-    @post = result.post
+    result = CreatePostUseCase.new.call(viewer: current_actor!, content: @form.content.not_nil!)
 
-    render(status: :created)
+    unless @form.with_frame
+      flash[:notice] = t("messages.posts.created")
+      return redirect_to(home_path)
+    end
+
+    @post = result.post
+    @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: [@post])
+    @form = PostForm.new
+
+    render(content_type: "text/vnd.turbo-stream.html", layout: false)
+  end
+
+  sig { returns(ActionController::Parameters) }
+  private def form_params
+    T.cast(params.require(:post_form), ActionController::Parameters).permit(:content, :with_frame)
   end
 end

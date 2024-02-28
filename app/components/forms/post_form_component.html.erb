@@ -1,24 +1,13 @@
-<form
-  data-action="post-form#submit:prevent"
-  data-character-counter-max-value="<%= Post::MAXIMUM_CONTENT_LENGTH %>"
-  data-controller="character-counter post-form"
-  data-post-form-success-message-value="<%= t("messages.posts.created") %>"
-  data-post-form-timeline-outlet=".js-timeline"
-  data-post-form-blank-slate-outlet=".js-timeline-blank-slate"
->
-  <% if from_modal %>
-    <div class="mb-3 text-end">
-      <a
-        class="text-decoration-none"
-        data-bs-dismiss="modal"
-        href="#"
-        role="button"
-        tabindex="<%= cancel_button_tabindex %>"
-      >
-        <%= t("nouns.cancel") %>
-      </a>
-    </div>
-  <% end %>
+<%= form_with(
+  model: form,
+  url: post_list_path,
+  data: {
+    character_counter_max_value: Post::MAXIMUM_CONTENT_LENGTH,
+    controller: "character-counter",
+    action: "turbo:submit-end->modal#close"
+  }
+) do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
   <label class="form-control">
     <div class="label pt-0">
@@ -32,27 +21,24 @@
       ></span>
     </div>
 
-    <textarea
-      autofocus
-      class="textarea textarea-bordered w-full"
-      data-action="keyup->character-counter#updateCounter"
-      data-character-counter-target="textarea"
-      data-controller="autosize"
-      data-post-form-target="content"
-      data-post-modal-target="content"
-      tabindex="<%= textarea_tabindex %>"
-    ></textarea>
+    <%= f.hidden_field :with_frame %>
+
+    <%= f.text_area(
+      :content,
+      autofocus: true,
+      class: "textarea textarea-bordered w-full",
+      data: {
+        action: "keyup->character-counter#updateCounter",
+        controller: "autosize",
+      },
+      tabindex: textarea_tabindex
+    ) %>
   </label>
 
   <div class="mt-4 text-center">
-    <button
-      class="btn btn-primary rounded-full"
-      data-post-form-target="submitButton"
-      tabindex="<%= submit_button_tabindex %>"
-      type="submit"
-    >
+    <%= f.button class: "btn btn-primary rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
       <i class="bi bi-send me-1"></i>
       <%= t("verbs.post") %>
-    </button>
+    <% end %>
   </div>
-</form>
+<% end %>
