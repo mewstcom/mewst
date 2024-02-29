@@ -2,7 +2,7 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container max-w-3xl mx-auto">
+  <div class="container max-w-2xl mx-auto">
     <div class="hidden lg:block">
       <turbo-frame id="post-form">
         <%= render Forms::PostFormComponent.new(form: @form) %>
@@ -10,11 +10,11 @@
     </div>
   </div>
 
-  <div class="container max-w-3xl mx-auto">
+  <div class="container max-w-2xl mx-auto">
     <hr class="my-6">
   </div>
 
-  <div class="container max-w-3xl mx-auto">
+  <div class="container max-w-2xl mx-auto">
     <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker) %>
 
     <% if @posts.present? %>
