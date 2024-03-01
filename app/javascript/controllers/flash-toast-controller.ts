@@ -1,8 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
-import * as bootstrap from 'bootstrap';
 
 export default class extends Controller {
-  static targets = ['icon', 'message'];
+  static targets = ['alert', 'icon', 'message'];
   static values = {
     type: String,
     messageHtml: String,
@@ -11,17 +10,16 @@ export default class extends Controller {
   declare readonly messageHtmlValue: string;
   declare readonly typeValue: string;
 
+  declare readonly alertTarget: HTMLDivElement;
   declare readonly iconTarget: HTMLSpanElement;
   declare readonly messageTarget: HTMLSpanElement;
 
   messageHtml!: string;
   type!: string;
-  toast!: bootstrap.Toast;
 
   connect() {
     this.type = this.typeValue || 'notice';
     this.messageHtml = this.messageHtmlValue || '';
-    this.toast = bootstrap.Toast.getOrCreateInstance(this.element);
 
     if (this.type && this.messageHtml) {
       this.showFlashToast();
@@ -36,24 +34,28 @@ export default class extends Controller {
   }
 
   showFlashToast() {
-    this.element.classList.add(this.alertBgClass);
+    this.alertTarget.classList.add(this.alertBgClass);
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
-    this.toast.show();
+    this.element.classList.remove('hidden');
   }
 
   hideFlashToast() {
-    this.toast.hide();
+    this.element.classList.add('scale-90', 'opacity-0');
+
+    setTimeout(() => {
+      this.element.classList.add('hidden');
+    }, 150);
   }
 
   private get alertBgClass() {
     switch (this.type) {
       case 'alert':
-        return 'text-bg-danger';
+        return 'alert-error';
       case 'notice':
-        return 'text-bg-success';
+        return 'alert-success';
       default:
-        return 'text-bg-light';
+        return 'alert-info';
     }
   }
 

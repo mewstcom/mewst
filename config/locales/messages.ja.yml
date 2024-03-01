@@ -11,9 +11,12 @@ ja:
       password_hint_html: |-
         8文字以上入力してください
       signed_in_successfully: ログインしました
-      signed_up_successfully: アカウントを作成しました。ようこそ！
+      signed_up_successfully: アカウントを作成しました。ミューストにようこそ！
       terms_html: |-
-        <a href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">利用規約</a>と<a href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">プライバシーポリシー</a>に同意のうえでアカウントを作成してください
+        <a class="link link-info" href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">利用規約</a>
+        と
+        <a class="link link-info" href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">プライバシーポリシー</a>
+        に同意のうえでアカウントを作成してください
     authentication:
       already_signed_in: すでにログインしています
       signed_out_successfully: ログアウトしました
@@ -63,10 +66,10 @@ ja:
         not_exists: 自分がフォローしている人がフォローしている人が表示されます
     sign_in:
       dont_have_an_account_html: |-
-        アカウント持ってない？ <a href="/sign_up">アカウント作成</a>
+        アカウント持ってない？ <a class="link link-info" href="/sign_up">アカウント作成</a>
     sign_up:
       already_have_an_account_html: |-
-        アカウント持ってる？ <a href="/sign_in">ログイン</a>
+        アカウント持ってる？ <a class="link link-info" href="/sign_in">ログイン</a>
       description_html: |-
         お使いのメールアドレスをご入力ください<br>
         アカウント作成用のメールを送信します
@@ -76,5 +79,5 @@ ja:
     welcome:
       alpha_html: |-
         現在アルファ版です<br>
-        アルファ版の間は開発者 (<a href="/@shimbaco">@shimbaco</a>) しか使えません<br>
-        開発の進捗は以下の個人ブログやBluesky / Mastodonで公開します
+        アルファ版の間は開発者 (<a class="link" href="/@shimbaco">@shimbaco</a>) しか使えません<br>
+        開発の進捗は以下の個人ブログやBlueskyで公開します

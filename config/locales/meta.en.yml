@@ -16,6 +16,7 @@ en:
       passwords:
         new: Password reset
       posts:
+        new: New post
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname})'s profile"

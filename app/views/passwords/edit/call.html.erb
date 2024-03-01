@@ -2,31 +2,42 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container u-flat u-narrow">
+  <div class="container max-w-2xl mx-auto">
     <div class="text-center">
-      <div class="mt-3 mt-sm-5">
-        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <div class="mt-12">
+        <%= link_to root_path, class: "inline-block" do %>
           <%= render Icons::LogoIconComponent.new %>
         <% end %>
       </div>
 
-      <h1 class="fw-bold mt-3 mt-sm-5">
+      <h1 class="font-bold mt-8 text-3xl">
         <%= title %>
       </h1>
     </div>
 
-    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+    <div class="bg-base-300 card mt-8">
       <div class="card-body">
         <%= form_with method: :patch, model: @form, url: password_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-          <div class="mb-3">
-            <%= f.label :password, class: "form-label" %>
-            <%= f.password_field :password, autofocus: true, class: "form-control", required: true %>
-          </div>
+          <%= f.label :password, class: "form-control" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.password_reset_form.password") %>
+              </span>
+            </div>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+            <%= f.password_field :password, autofocus: true, class: "input input-bordered w-full", required: true %>
+
+            <div class="label">
+              <span class="label-text-alt">
+                <%= t("messages.accounts.password_hint_html") %>
+              </span>
+            </div>
+          <% end %>
+
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", type: :submit do %>
               <%= t("verbs.submit") %>
             <% end %>
           </div>

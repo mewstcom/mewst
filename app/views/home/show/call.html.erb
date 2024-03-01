@@ -2,34 +2,23 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mt-3 u-narrow">
-    <h1 class="h3">
-      <%= t("messages.whats_happening") %>
-    </h1>
-
-    <div class="d-none d-lg-block">
-      <%= render Forms::PostFormComponent.new %>
+  <div class="container max-w-2xl mx-auto">
+    <div class="hidden lg:block">
+      <turbo-frame id="post-form">
+        <%= render Forms::PostFormComponent.new(form: @form) %>
+      </turbo-frame>
     </div>
   </div>
 
-  <div class="container u-flat u-narrow">
-    <hr>
+  <div class="container max-w-2xl mx-auto">
+    <hr class="my-6">
   </div>
 
-  <div class="container u-flat u-narrow">
-    <%# render Navs::TimelineNavComponent.new %>
-
-    <div
-      class="gap-3 js-timeline vstack"
-      data-controller="timeline"
-    >
-      <% @posts.each do |post| %>
-        <%= render Cards::PostCardComponent.new(post:, stamp_checker: @stamp_checker) %>
-      <% end %>
-    </div>
+  <div class="container max-w-2xl mx-auto">
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker) %>
 
     <% if @posts.present? %>
-      <div class="mt-3">
+      <div class="flex justify-center mt-4">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
           previous_path: home_path(before: @page_info.start_cursor),

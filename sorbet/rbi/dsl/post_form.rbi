@@ -10,4 +10,10 @@ class PostForm
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
   def content=(value); end
+
+  sig { returns(T.nilable(T::Boolean)) }
+  def with_frame; end
+
+  sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+  def with_frame=(value); end
 end

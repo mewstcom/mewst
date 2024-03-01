@@ -16,6 +16,7 @@ ja:
       passwords:
         new: パスワードリセット
       posts:
+        new: 新規投稿
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"

@@ -15,6 +15,8 @@ ja:
         password: 新しいパスワード
       post_delete_form:
         target_post: ポスト
+      post_form:
+        content: 本文
       profile_form:
         atname: アットネーム
         avatar_url: アバター画像のURL

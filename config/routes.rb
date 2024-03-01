@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   match "/posts/:post_id",                                                       via: :delete, as: :post,                                           to: "posts/destroy#call"
   match "/posts/:post_id/stamp",                                                 via: :delete, as: :post_stamp,                                     to: "stamps/destroy#call"
   match "/posts/:post_id/stamp",                                                 via: :post,                                                        to: "stamps/create#call"
+  match "/posts/new",                                                            via: :get,    as: :new_post,                                       to: "posts/new#call"
   match "/search",                                                               via: :get,    as: :search,                                         to: "search/show#call"
   match "/settings",                                                             via: :get,    as: :settings,                                       to: "settings/index#call"
   match "/settings/profile",                                                     via: :get,    as: :settings_profile,                               to: "settings/profiles/show#call"

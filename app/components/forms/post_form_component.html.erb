@@ -1,56 +1,47 @@
-<form
-  class="c-post-form"
-  data-action="post-form#submit:prevent"
-  data-character-counter-max-value="<%= Post::MAXIMUM_CONTENT_LENGTH %>"
-  data-controller="character-counter post-form"
-  data-post-form-success-message-value="<%= t("messages.posts.created") %>"
-  data-post-form-timeline-outlet=".js-timeline"
-  data-post-form-blank-slate-outlet=".js-timeline-blank-slate"
->
-  <% if from_modal %>
-    <div class="mb-3 text-end">
-      <a
-        class="text-decoration-none"
-        data-bs-dismiss="modal"
-        href="#"
-        role="button"
-        tabindex="<%= cancel_button_tabindex %>"
-      >
-        <%= t("nouns.cancel") %>
-      </a>
-    </div>
-  <% end %>
+<%= form_with(
+  model: form,
+  url: post_list_path,
+  data: {
+    character_counter_max_value: Post::MAXIMUM_CONTENT_LENGTH,
+    controller: "character-counter",
+    action: "turbo:submit-end->modal#close"
+  }
+) do |f| %>
+  <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-  <textarea
-    autofocus
-    class="form-control rounded-4"
-    data-action="keyup->character-counter#updateCounter"
-    data-character-counter-target="textarea"
-    data-controller="autosize"
-    data-post-form-target="content"
-    data-post-modal-target="content"
-    tabindex="<%= textarea_tabindex %>"
-  ></textarea>
-
-  <div class="align-items-center gap-3 hstack justify-content-between mt-3">
-    <div class="col-1"></div>
-
-    <div class="text-center">
-      <button
-        class="btn btn-primary rounded-pill"
-        data-post-form-target="submitButton"
-        tabindex="<%= submit_button_tabindex %>"
-        type="submit"
-      >
-        <i class="bi bi-send me-1"></i>
-        <%= t("verbs.post") %>
-      </button>
+  <label class="form-control pb-8">
+    <div class="label pt-0">
+      <span class="font-bold label-text">
+        <%= t("messages.whats_happening") %>
+      </span>
     </div>
 
-    <div class="col-1 text-end">
+    <%= f.hidden_field :with_frame %>
+
+    <%= f.text_area(
+      :content,
+      autofocus: true,
+      class: "pb-4 textarea textarea-bordered w-full",
+      data: {
+        action: "keyup->character-counter#updateCounter",
+        character_counter_target: "textarea",
+        controller: "autosize",
+      },
+      tabindex: textarea_tabindex
+    ) %>
+
+    <div class="mt-1 relative text-right">
       <span
+        class="text-gray-500 text-sm"
         data-character-counter-target="counter"
       ></span>
+
+      <div class="left-0 right-0 top-2 absolute text-center ml-auto mr-auto">
+        <%= f.button class: "btn btn-primary rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
+          <i class="bi bi-send me-1"></i>
+          <%= t("verbs.post") %>
+        <% end %>
+      </div>
     </div>
-  </div>
-</form>
+  </label>
+<% end %>

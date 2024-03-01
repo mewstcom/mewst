@@ -2,37 +2,40 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container u-narrow">
+  <div class="container max-w-2xl mx-auto">
     <div class="text-center">
-      <div class="mt-3 mt-sm-5">
-        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <div class="mt-12">
+        <%= link_to root_path, class: "inline-block" do %>
           <%= render Icons::LogoIconComponent.new %>
         <% end %>
       </div>
 
-      <h1 class="fw-bold mt-3 mt-sm-5">
+      <h1 class="font-bold mt-8 text-3xl">
         <%= title %>
       </h1>
 
-      <p>
+      <p class="mt-4">
         <%= t("messages.password_reset.enter_your_email_html") %>
       </p>
     </div>
-  </div>
 
-  <div class="container u-flat u-narrow">
-    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+    <div class="bg-base-300 card mt-8">
       <div class="card-body">
         <%= form_with model: @form, url: password_reset_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-          <div class="mb-3">
-            <%= f.label :email, class: "form-label" %>
-            <%= f.email_field :email, autocomplete: "username", autofocus: true, class: "form-control" %>
-          </div>
+          <%= f.label :email, class: "form-control" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.email_confirmation_form.email") %>
+              </span>
+            </div>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+            <%= f.email_field :email, autocomplete: "username", autofocus: true, class: "input input-bordered w-full" %>
+          <% end %>
+
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", type: :submit do %>
               <%= t("verbs.submit") %>
             <% end %>
           </div>

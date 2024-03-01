@@ -2,49 +2,54 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container u-flat u-narrow">
+  <div class="container max-w-2xl mx-auto">
     <div class="text-center">
-      <div class="mt-3 mt-sm-5">
-        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <div class="mt-12">
+        <%= link_to root_path, class: "inline-block" do %>
           <%= render Icons::LogoIconComponent.new %>
         <% end %>
       </div>
 
-      <h1 class="fw-bold mt-3 mt-sm-5">
+      <h1 class="font-bold mt-8 text-3xl">
         <%= title %>
       </h1>
 
-      <p>
+      <p class="mt-4">
         <%= t("messages.sign_in.dont_have_an_account_html") %>
       </p>
     </div>
 
-    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+    <div class="bg-base-300 card mt-8">
       <div class="card-body">
         <%= form_with model: @form, url: sign_in_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-          <div class="mb-3">
-            <%= f.label :email, class: "form-label" %>
-            <%= f.email_field :email, autocomplete: "username", autofocus: true, class: "form-control", tabindex: 1 %>
-          </div>
-
-          <div class="mb-3">
-            <div class="row">
-              <div class="col">
-                <%= f.label :password, class: "form-label" %>
-              </div>
-
-              <div class="col-auto">
-                <%= link_to t("meta.title.password_resets.new"), password_reset_path, class: "form-text", tabindex: 4 %>
-              </div>
+          <%= f.label :email, class: "form-control" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.session_form.email") %>
+              </span>
             </div>
 
-            <%= f.password_field :password, autocomplete: "current-password", class: "form-control", tabindex: 2 %>
-          </div>
+            <%= f.email_field :email, autocomplete: "username", autofocus: true, class: "input input-bordered w-full", tabindex: 1 %>
+          <% end %>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", tabindex: 3, type: :submit do %>
+          <%= f.label :password, class: "form-control mt-8" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.session_form.password") %>
+              </span>
+
+              <span class="label-text-alt">
+                <%= link_to t("meta.title.password_resets.new"), password_reset_path, class: "link", tabindex: 4 %>
+              </span>
+            </div>
+
+            <%= f.password_field :password, autocomplete: "current-password", class: "input input-bordered w-full", tabindex: 2 %>
+          <% end %>
+
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", tabindex: 3, type: :submit do %>
               <%= t("verbs.sign_in") %>
             <% end %>
           </div>

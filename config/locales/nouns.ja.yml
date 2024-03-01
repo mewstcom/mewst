@@ -13,6 +13,7 @@ ja:
     japanese: 日本語
     japanese_native: 日本語
     menu: メニュー
+    mewst_kana: ミュースト
     notifications: 通知
     profile: プロフィール
     rss_feed: RSSフィード
@@ -21,5 +22,6 @@ ja:
     sign_in: ログイン
     sign_out: ログアウト
     sign_up: アカウント作成
+    stamp: スタンプ
     suggested_profiles: おすすめプロフィール
     user: ユーザー

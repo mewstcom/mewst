@@ -1,0 +1,17 @@
+<turbo-stream action="update" target="post-form">
+  <template>
+    <%= render Forms::PostFormComponent.new(form: @form) %>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="prepend" target="post-card-list">
+  <template>
+    <%= render Cards::PostCardComponent.new(post: @post, stamp_checker: @stamp_checker) %>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="replace" target="flash-toast">
+  <template>
+    (^o^)b
+  </template>
+</turbo-stream>

@@ -2,66 +2,86 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container u-flat u-narrow">
+  <div class="container max-w-2xl mx-auto">
     <div class="text-center">
-      <div class="mt-3 mt-sm-5">
-        <%= link_to root_path, class: "text-body text-decoration-none" do %>
+      <div class="mt-12">
+        <%= link_to root_path, class: "inline-block" do %>
           <%= render Icons::LogoIconComponent.new %>
         <% end %>
       </div>
 
-      <h1 class="fw-bold mt-3 mt-sm-5">
+      <h1 class="font-bold mt-8 text-3xl">
         <%= title %>
       </h1>
     </div>
 
-    <div class="border-0 card mt-3 mt-sm-5 rounded-4 u-flat">
+    <div class="bg-base-300 card mt-8">
       <div class="card-body">
         <%= form_with model: @form, url: account_list_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
-          <div class="mb-3">
-            <%= f.label :email, class: "form-label" %>
-            <%= text_field_tag :email, f.object.email, class: "form-control-plaintext", readonly: true %>
-            <div class="form-text">
-              <%= t("messages.accounts.email_hint_html") %>
+          <%= f.label :email, class: "form-control" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.account_form.email") %>
+              </span>
             </div>
-          </div>
 
-          <div class="mb-3">
-            <%= f.label :atname, class: "form-label" %>
+            <%= text_field_tag :email, f.object.email, class: "input input-bordered w-full", disabled: true %>
 
-            <div class="input-group">
-              <span class="input-group-text">@</span>
-              <%= f.text_field(
-                :atname,
-                autofocus: true,
-                class: "form-control",
-                placeholder: t("messages.accounts.atname_placeholder"),
-                required: true
-              ) %>
+            <div class="label">
+              <span class="label-text-alt">
+                <%= t("messages.accounts.email_hint_html") %>
+              </span>
             </div>
-            <div class="form-text">
-              <%= t("messages.accounts.atname_hint_html") %>
-            </div>
-          </div>
+          <% end %>
 
-          <div class="mb-3">
-            <%= f.label :password, class: "form-label" %>
-            <%= f.password_field :password, autocomplete: "new-password", class: "form-control", required: true %>
-            <div class="form-text">
-              <%= t("messages.accounts.password_hint_html") %>
+          <%= f.label :atname, class: "form-control mt-4" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.account_form.atname") %>
+              </span>
             </div>
-          </div>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+            <%= f.text_field(
+              :atname,
+              autofocus: true,
+              class: "input input-bordered w-full",
+              placeholder: t("messages.accounts.atname_placeholder"),
+              required: true
+            ) %>
+
+            <div class="label">
+              <span class="label-text-alt">
+                <%= t("messages.accounts.atname_hint_html") %>
+              </span>
+            </div>
+          <% end %>
+
+          <%= f.label :password, class: "form-control mt-4" do %>
+            <div class="label">
+              <span class="label-text">
+                <%= t("forms.attributes.account_form.password") %>
+              </span>
+            </div>
+
+            <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered w-full", required: true %>
+
+            <div class="label">
+              <span class="label-text-alt">
+                <%= t("messages.accounts.password_hint_html") %>
+              </span>
+            </div>
+          <% end %>
+
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", type: :submit do %>
               <%= t("verbs.sign_up") %>
             <% end %>
           </div>
         <% end %>
 
-        <p class="mt-4 small text-center">
+        <p class="mt-8 text-center text-sm">
           <%= t("messages.accounts.terms_html") %>
         </p>
       </div>
