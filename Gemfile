@@ -35,6 +35,7 @@ gem "rails_autolink"
 gem "redis"
 gem "sentry-rails"
 gem "sentry-ruby"
+gem "sorbet-runtime"
 gem "strong_migrations"
 gem "view_component"
 
@@ -53,6 +54,7 @@ end
 
 group :development do
   gem "bullet"
+  gem "sorbet"
   gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"
 end
@@ -60,11 +62,4 @@ end
 group :production do
   gem "lograge"
   gem "resend"
-end
-
-# ARM64な環境でSorbetを使うためのワークアラウンド
-# https://github.com/sorbet/sorbet/issues/4119
-source "https://gem.fury.io/sorbet-multiarch/" do
-  gem "sorbet-runtime"
-  gem "sorbet", group: :development
 end
