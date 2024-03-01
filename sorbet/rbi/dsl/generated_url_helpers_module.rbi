@@ -33,6 +33,9 @@ module GeneratedUrlHelpersModule
   def new_email_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def new_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def notification_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

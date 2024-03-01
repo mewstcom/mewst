@@ -33,6 +33,9 @@ module GeneratedPathHelpersModule
   def new_email_confirmation_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def new_post_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def notification_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
