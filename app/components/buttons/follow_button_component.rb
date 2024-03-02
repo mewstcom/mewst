@@ -2,17 +2,12 @@
 # frozen_string_literal: true
 
 class Buttons::FollowButtonComponent < ApplicationComponent
-  sig { params(target_profile: Profile, follow_checker: FollowChecker).void }
-  def initialize(target_profile:, follow_checker:)
-    @target_profile = target_profile
-    @follow_checker = follow_checker
+  sig { params(target_profile_entity: ProfileEntity).void }
+  def initialize(target_profile_entity:)
+    @target_profile_entity = target_profile_entity
   end
 
-  sig { returns(Profile) }
-  attr_reader :target_profile
-  private :target_profile
-
-  sig { returns(FollowChecker) }
-  attr_reader :follow_checker
-  private :follow_checker
+  sig { returns(ProfileEntity) }
+  attr_reader :target_profile_entity
+  private :target_profile_entity
 end

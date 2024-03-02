@@ -1,6 +1,6 @@
-<turbo-frame id="profiles-<%= target_profile.atname %>-follow">
-  <% if follow_checker.followed?(target_profile:) %>
-    <%= button_to profile_follow_path(target_profile.atname), {
+<turbo-frame id="profiles-<%= target_profile_entity.atname %>-follow">
+  <% if target_profile_entity.viewer_has_followed %>
+    <%= button_to profile_follow_path(target_profile_entity.atname), {
       class: "btn btn-outline-secondary rounded-pill text-muted",
       method: :delete
     } do %>
@@ -10,7 +10,7 @@
       </span>
     <% end %>
   <% else %>
-    <%= button_to profile_follow_path(target_profile.atname), {
+    <%= button_to profile_follow_path(target_profile_entity.atname), {
       class: "btn btn-primary rounded-pill",
     } do %>
       <i class="bi bi-plus-lg"></i>
