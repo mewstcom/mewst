@@ -34,6 +34,16 @@ services:
     volumes:
       - redis_data:/data
 
+  chrome:
+    image: browserless/chrome:1.61.1-chrome-stable
+    ports:
+      - "3333:3333"
+    environment:
+      PORT: 3333
+      # デバッグ中にタイムアウトを起こさないようにするため時間を長くしておく
+      # https://docs.browserless.io/docs/docker.html#connection-timeout
+      CONNECTION_TIMEOUT: 600000
+
 volumes:
   app_gems_data:
   postgresql_data:

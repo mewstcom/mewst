@@ -59,6 +59,11 @@ group :development do
   gem "web-console"
 end
 
+group :test do
+  gem "cuprite"
+  gem "capybara"
+end
+
 group :production do
   gem "lograge"
   gem "resend"

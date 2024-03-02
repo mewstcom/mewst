@@ -1,7 +1,8 @@
 ARG RUBY_VERSION="3.2.2"
 ARG BUNDLER_VERSION="2.5.4"
-ARG NODE_VERSION="20.x"
+ARG NODE_VERSION="20.11.0"
 
+FROM node:${NODE_VERSION}-bookworm-slim AS node
 FROM ruby:${RUBY_VERSION}-slim-bookworm
 
 RUN \
@@ -12,8 +13,8 @@ RUN \
     curl \
     git \
     lsb-release \
-    # PostgreSQLやNode.jsのインストールに必要
-    gnupg ca-certificates
+    # PostgreSQLやYarnのインストールに必要
+    gnupg
 
 # PostgreSQLのセットアップ
 RUN \
@@ -24,14 +25,6 @@ RUN \
     libpq-dev \
     postgresql-client-15
 
-# Node.jsのセットアップ
-RUN \
-  # https://deb.nodesource.com/
-  curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
-  apt install -y --no-install-recommends \
-    nodejs \
-    npm
-
 # Yarnのセットアップ
 RUN \
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
@@ -40,10 +33,7 @@ RUN \
   apt install -y --no-install-recommends \
     yarn
 
-# Chromeをインストールする
-RUN \
-  # https://developer.chrome.com/blog/chrome-for-testing?hl=ja
-  npx @puppeteer/browsers install chrome@stable
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
 
 RUN gem install bundler -v "${BUNDLER_VERSION}"
 
