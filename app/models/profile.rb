@@ -88,6 +88,17 @@ class Profile < ApplicationRecord
     end
   end
 
+  sig { params(follow_checker: FollowChecker).returns(ProfileEntity) }
+  def to_entity(follow_checker:)
+    ProfileEntity.new(
+      atname: atname,
+      name: name,
+      description: description,
+      avatar_url: avatar_url,
+      viewer_has_followed: follow_checker.followed?(target_profile: self)
+    )
+  end
+
   sig { returns(Profile::Postability) }
   private def postability
     Profile::Postability.new(profile: self)
