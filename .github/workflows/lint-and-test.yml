@@ -99,4 +99,8 @@ jobs:
       - name: Setup Database
         run: |
           bin/rails db:schema:load
+      - name: Precompile assets
+        # E2Eテストのために実行する
+        run: |
+          bin/rails assets:precompile
       - run: bin/rspec
