@@ -25,4 +25,15 @@ class ProfileEntity < ApplicationEntity
     @avatar_url = avatar_url
     @viewer_has_followed = viewer_has_followed
   end
+
+  sig { params(profile: Profile, follow_checker: FollowChecker).returns(T.self_type) }
+  def self.from_model(profile:, follow_checker:)
+    new(
+      atname: profile.atname,
+      name: profile.name,
+      description: profile.description,
+      avatar_url: profile.avatar_url,
+      viewer_has_followed: follow_checker.followed?(target_profile: profile)
+    )
+  end
 end

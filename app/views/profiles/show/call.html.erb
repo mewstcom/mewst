@@ -47,7 +47,9 @@
                   <i class="bi bi-gear"></i>
                 <% end %>
               <% else %>
-                <%= render Buttons::FollowButtonComponent.new(target_profile_entity: @profile.to_entity(follow_checker: @follow_checker)) %>
+                <%= render Buttons::FollowButtonComponent.new(
+                  target_profile_entity: ProfileEntity.from_model(profile: @profile, follow_checker: @follow_checker)
+                ) %>
               <% end %>
             <% end %>
           </div>
