@@ -27,16 +27,14 @@ remote_chrome =
     false
   end
 
-remote_options = remote_chrome ? { url: REMOTE_CHROME_URL } : {}
+remote_options = remote_chrome ? {url: REMOTE_CHROME_URL} : {}
 
 Capybara.register_driver(:mewst_cuprite) do |app|
   Capybara::Cuprite::Driver.new(
     app,
-    **{
-      browser_options: remote_chrome ? { "no-sandbox" => nil } : {},
-      inspector: true,
-      window_size: [1200, 800]
-    }.merge(remote_options)
+    browser_options: remote_chrome ? {"no-sandbox" => nil} : {},
+    inspector: true,
+    window_size: [1200, 800], **remote_options
   )
 end
 
@@ -44,7 +42,7 @@ Capybara.default_driver = :mewst_cuprite
 Capybara.javascript_driver = :mewst_cuprite
 
 Capybara.server_host = "0.0.0.0"
-Capybara.app_host = "http://#{`hostname`.strip&.downcase || '0.0.0.0'}"
+Capybara.app_host = "http://#{`hostname`.strip&.downcase || "0.0.0.0"}"
 
 RSpec.configure do |config|
   config.prepend_before(:each, type: :system) do
