@@ -114,3 +114,9 @@ jobs:
         run: |
           bin/rails assets:precompile
       - run: bin/rspec
+      - name: Upload Capybara screenshot
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: capybara-screenshots
+          path: '**/tmp/capybara/'
