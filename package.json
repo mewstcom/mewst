@@ -2,8 +2,8 @@
   "name": "mewst-web",
   "private": "true",
   "engines": {
-    "node": ">= 18.x",
-    "yarn": ">= 1.x"
+    "node": "20.11.1",
+    "yarn": "1.22.19"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets",
