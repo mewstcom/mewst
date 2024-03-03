@@ -29,4 +29,16 @@ class Post < ApplicationRecord
   def stamped_by?(profile:)
     stamps.include?(profile:)
   end
+
+  sig { params(profile_entity: ProfileEntity, stamp_checker: StampChecker).returns(PostEntity) }
+  def to_entity(profile_entity:, stamp_checker:)
+    PostEntity.new(
+      id: id,
+      content: content,
+      viewer_has_stamped: stamp_checker.stamped?(post: self),
+      stamps_count: stamps_count,
+      published_at: published_at,
+      profile_entity:
+    )
+  end
 end

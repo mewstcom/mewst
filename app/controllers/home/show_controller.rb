@@ -16,6 +16,7 @@ class Home::ShowController < ApplicationController
       after: params[:after].presence,
       limit: 15
     )
+    @follow_checker = FollowChecker.new(profile: current_actor!.profile, target_profiles: @posts.map(&:profile))
     @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: @posts)
   end
 end

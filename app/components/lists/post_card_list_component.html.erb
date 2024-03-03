@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-4" id="post-card-list">
   <% posts.each do |post| %>
-    <%= render Cards::PostCardComponent.new(post:, stamp_checker:) %>
+    <%= render Cards::PostCardComponent.new(post_entity:, stamp_checker:) %>
   <% end %>
 </div>
