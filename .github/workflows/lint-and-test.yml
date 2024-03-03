@@ -91,6 +91,13 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install Yarn
+        run: |
+          npm install --global yarn@1.22.19
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
