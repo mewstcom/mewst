@@ -1,0 +1,4 @@
+NOTE:
+`app/assets/builds/` ディレクトリがリポジトリ上に存在しないと
+`assets:precompile` したとき `public/assets/` にファイルが出力されないことがある
+https://github.com/rails/jsbundling-rails/issues/87#issuecomment-1046365785

@@ -23,6 +23,7 @@ gem "faraday"
 gem "good_job"
 gem "http_accept_language"
 gem "jb"
+gem "jsbundling-rails"
 gem "meta-tags"
 gem "oj" # `alba` で使っている
 gem "pg"
@@ -57,6 +58,11 @@ group :development do
   gem "sorbet"
   gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"
+end
+
+group :test do
+  gem "cuprite"
+  gem "capybara"
 end
 
 group :production do

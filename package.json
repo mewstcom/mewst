@@ -2,7 +2,7 @@
   "name": "mewst-web",
   "private": "true",
   "engines": {
-    "node": "20.11.0",
+    "node": "20.11.1",
     "yarn": "1.22.19"
   },
   "scripts": {

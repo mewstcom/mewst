@@ -91,6 +91,16 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install Yarn
+        run: |
+          npm install --global yarn@1.22.19
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+      - run: chrome --version
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
@@ -99,4 +109,14 @@ jobs:
       - name: Setup Database
         run: |
           bin/rails db:schema:load
+      - name: Precompile assets
+        # E2Eテストのために実行する
+        run: |
+          bin/rails assets:precompile
       - run: bin/rspec
+      - name: Upload Capybara screenshot
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: capybara-screenshots
+          path: '**/tmp/capybara/'

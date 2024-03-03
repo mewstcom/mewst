@@ -1,9 +1,4 @@
-ARG RUBY_VERSION="3.2.2"
-ARG BUNDLER_VERSION="2.5.4"
-ARG NODE_VERSION="20.11.0"
-
-FROM node:${NODE_VERSION}-bookworm-slim AS node
-FROM ruby:${RUBY_VERSION}-slim-bookworm
+FROM ruby:3.2.2-slim-bookworm
 
 RUN \
   apt update && \
@@ -13,7 +8,7 @@ RUN \
     curl \
     git \
     lsb-release \
-    # PostgreSQLやYarnのインストールに必要
+    # PostgreSQLやNode.jsのインストールに必要
     gnupg
 
 # PostgreSQLのセットアップ
@@ -25,17 +20,16 @@ RUN \
     libpq-dev \
     postgresql-client-15
 
-# Yarnのセットアップ
+# Node.jsのセットアップ
 RUN \
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-  apt update && \
+  # https://github.com/nodesource/distributions/wiki/How-to-select-the-Node.js-version-to-install
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
   apt install -y --no-install-recommends \
-    yarn
+    nodejs=20.11.1-1nodesource1
 
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
+RUN npm install --global yarn@1.22.19
 
-RUN gem install bundler -v "${BUNDLER_VERSION}"
+RUN gem install bundler -v 2.5.4
 
 WORKDIR /app
 
