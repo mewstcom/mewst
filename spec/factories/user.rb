@@ -3,7 +3,7 @@
 
 FactoryBot.define do
   factory :user do
-    profile { association :profile, profileable_type: ProfileableType::User.serialize }
+    profile { association :profile, owner_type: ProfileOwnerType::User.serialize }
     sequence(:email) { |n| "test_#{n}@example.com" }
     password { "xxx" }
     locale { :ja }
