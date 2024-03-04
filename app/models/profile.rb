@@ -12,7 +12,7 @@ class Profile < ApplicationRecord
   ATNAME_MIN_LENGTH = 2
   ATNAME_MAX_LENGTH = 20
 
-  enumerize :profileable_type, in: ProfileableType.values.map(&:serialize)
+  enumerize :owner_type, in: ProfileOwnerType.values.map(&:serialize)
 
   has_many :actors, dependent: :restrict_with_exception
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
@@ -24,7 +24,8 @@ class Profile < ApplicationRecord
   has_many :stamps, dependent: :restrict_with_exception
   has_many :suggested_follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
   has_many :suggested_followees, class_name: "Profile", source: :target_profile, through: :suggested_follows
-  has_one :user, dependent: :restrict_with_exception
+  has_one :user_profile, dependent: :restrict_with_exception
+  has_one :user, through: :user_profile
 
   scope :sort_by_latest_post, -> { order("last_post_at DESC NULLS LAST") }
 
@@ -36,6 +37,18 @@ class Profile < ApplicationRecord
     unreserved_atname: true
 
   delegate :delete_post, to: :postability
+
+  sig { returns(User) }
+  def owner
+    profile_owner_type = ProfileOwnerType.deserialize(owner_type.value)
+
+    case profile_owner_type
+    when ProfileOwnerType::User
+      user
+    else
+      T.absurd(profile_owner_type)
+    end.not_nil!
+  end
 
   sig { returns(Post::PrivateRelation) }
   def followee_posts

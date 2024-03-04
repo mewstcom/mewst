@@ -8,8 +8,9 @@ class User < ApplicationRecord
 
   enumerize :locale, in: I18n.available_locales
 
-  belongs_to :profile
   has_many :actors, dependent: :restrict_with_exception
+  has_one :user_profile, dependent: :restrict_with_exception
+  has_one :profile, through: :user_profile
 
   has_secure_password
 

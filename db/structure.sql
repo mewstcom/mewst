@@ -292,7 +292,7 @@ CREATE TABLE public.posts (
 
 CREATE TABLE public.profiles (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profileable_type character varying NOT NULL,
+    owner_type character varying NOT NULL,
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
@@ -356,12 +356,24 @@ CREATE TABLE public.suggested_follows (
 
 
 --
+-- Name: user_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_profiles (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    user_id uuid NOT NULL,
+    profile_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
-    profile_id uuid NOT NULL,
     email public.citext NOT NULL,
     password_digest character varying NOT NULL,
     locale character varying NOT NULL,
@@ -371,7 +383,7 @@ CREATE TABLE public.users (
     signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    time_zone character varying DEFAULT 'Etc/UTC'::character varying NOT NULL
+    time_zone character varying DEFAULT 'UTC'::character varying NOT NULL
 );
 
 
@@ -528,25 +540,19 @@ ALTER TABLE ONLY public.suggested_follows
 
 
 --
+-- Name: user_profiles user_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT user_profiles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- Name: index_actors_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_actors_on_profile_id ON public.actors USING btree (profile_id);
-
-
---
--- Name: index_actors_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_actors_on_user_id ON public.actors USING btree (user_id);
 
 
 --
@@ -872,17 +878,24 @@ CREATE INDEX index_suggested_follows_on_target_profile_id ON public.suggested_fo
 
 
 --
+-- Name: index_user_profiles_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_user_profiles_on_profile_id ON public.user_profiles USING btree (profile_id);
+
+
+--
+-- Name: index_user_profiles_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_user_profiles_on_user_id ON public.user_profiles USING btree (user_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
-
-
---
--- Name: index_users_on_profile_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_users_on_profile_id ON public.users USING btree (profile_id);
 
 
 --
@@ -958,6 +971,14 @@ ALTER TABLE ONLY public.stamps
 
 
 --
+-- Name: user_profiles fk_rails_70afd642db; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT fk_rails_70afd642db FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: oauth_access_tokens fk_rails_732cb83ab7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -974,11 +995,11 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: users fk_rails_a8794354f0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_profiles fk_rails_87a6352e58; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT fk_rails_a8794354f0 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+ALTER TABLE ONLY public.user_profiles
+    ADD CONSTRAINT fk_rails_87a6352e58 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -1052,6 +1073,8 @@ ALTER TABLE ONLY public.oauth_access_grants
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240304171652'),
+('20240304164746'),
 ('20240115144966'),
 ('20240115144965'),
 ('20240115144964'),

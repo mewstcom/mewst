@@ -9,12 +9,13 @@ class CreateAccountUseCase < ApplicationUseCase
   sig { params(atname: String, email: String, locale: String, password: String, time_zone: String).returns(Result) }
   def call(atname:, email:, locale:, password:, time_zone:)
     current_time = Time.current
-    profile = Profile.new(profileable_type: ProfileableType::User.serialize, atname:, joined_at: current_time)
 
     actor = ActiveRecord::Base.transaction do
-      profile.save!
-      user = profile.create_user!(email:, password:, locale:, time_zone:, signed_up_at: current_time)
-      profile.actors.create!(user:)
+      profile = Profile.create!(owner_type: ProfileOwnerType::User.serialize, atname:, joined_at: current_time)
+      user = User.create!(email:, password:, locale:, time_zone:, signed_up_at: current_time)
+      UserProfile.create!(user:, profile:)
+
+      Actor.create!(user:, profile:)
     end
 
     Result.new(actor:)

@@ -237,11 +237,20 @@ class Profile
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserProfile) }
+    def build_user_profile(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserProfile) }
+    def create_user_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserProfile) }
+    def create_user_profile!(*args, &blk); end
 
     sig { returns(T::Array[T.untyped]) }
     def follow_ids; end
@@ -330,6 +339,9 @@ class Profile
     sig { returns(T.nilable(::User)) }
     def reload_user; end
 
+    sig { returns(T.nilable(::UserProfile)) }
+    def reload_user_profile; end
+
     sig { returns(T::Array[T.untyped]) }
     def stamp_ids; end
 
@@ -377,6 +389,12 @@ class Profile
 
     sig { params(value: T.nilable(::User)).void }
     def user=(value); end
+
+    sig { returns(T.nilable(::UserProfile)) }
+    def user_profile; end
+
+    sig { params(value: T.nilable(::UserProfile)).void }
+    def user_profile=(value); end
   end
 
   module GeneratedAssociationRelationMethods
@@ -1055,49 +1073,49 @@ class Profile
     def name_will_change!; end
 
     sig { returns(T.untyped) }
-    def profileable_type; end
+    def owner_type; end
 
     sig { params(value: T.untyped).returns(T.untyped) }
-    def profileable_type=(value); end
+    def owner_type=(value); end
 
     sig { returns(T::Boolean) }
-    def profileable_type?; end
+    def owner_type?; end
 
     sig { returns(T.untyped) }
-    def profileable_type_before_last_save; end
+    def owner_type_before_last_save; end
 
     sig { returns(T.untyped) }
-    def profileable_type_before_type_cast; end
+    def owner_type_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def profileable_type_came_from_user?; end
+    def owner_type_came_from_user?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profileable_type_change; end
+    def owner_type_change; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profileable_type_change_to_be_saved; end
+    def owner_type_change_to_be_saved; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def profileable_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def owner_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
-    def profileable_type_in_database; end
+    def owner_type_in_database; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def profileable_type_previous_change; end
+    def owner_type_previous_change; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def profileable_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def owner_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.untyped) }
-    def profileable_type_previously_was; end
+    def owner_type_previously_was; end
 
     sig { returns(T.untyped) }
-    def profileable_type_was; end
+    def owner_type_was; end
 
     sig { void }
-    def profileable_type_will_change!; end
+    def owner_type_will_change!; end
 
     sig { void }
     def restore_atname!; end
@@ -1130,7 +1148,7 @@ class Profile
     def restore_name!; end
 
     sig { void }
-    def restore_profileable_type!; end
+    def restore_owner_type!; end
 
     sig { void }
     def restore_updated_at!; end
@@ -1196,10 +1214,10 @@ class Profile
     def saved_change_to_name?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
-    def saved_change_to_profileable_type; end
+    def saved_change_to_owner_type; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_profileable_type?; end
+    def saved_change_to_owner_type?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
@@ -1283,7 +1301,7 @@ class Profile
     def will_save_change_to_name?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_profileable_type?; end
+    def will_save_change_to_owner_type?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
