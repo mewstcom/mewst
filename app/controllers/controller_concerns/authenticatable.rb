@@ -50,7 +50,7 @@ module ControllerConcerns::Authenticatable
   def require_no_authentication
     if signed_in?
       flash[:notice] = t("messages.authentication.already_signed_in")
-      redirect_to root_path
+      redirect_to home_path
     end
   end
 end
