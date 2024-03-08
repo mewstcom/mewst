@@ -2,48 +2,47 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container u-flat u-narrow">
-    <div class="border-0 card mt-sm-3 rounded-4 u-flat">
-      <div class="card-body">
-        <div class="align-items-center gx-3 row">
-          <div class="col-auto">
-            <%= link_to profile_path(@profile.atname) do %>
-              <%= render Images::AvatarImageComponent.new(profile: @profile, width: 100) %>
-            <% end %>
-          </div>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <%= render CardComponent.new do %>
+      <%= render CardBodyComponent.new do %>
+        <div class="flex gap-4 items-center">
+          <%= link_to profile_path(@profile.atname) do %>
+            <%= render Images::AvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
+          <% end %>
 
-          <div class="col">
-            <div class="fw-bold mt-2">
-              <% if @profile.name.present? %>
-                <div class="h3 mb-0">
-                  <%= @profile.name %>
-                </div>
-              <% end %>
-
-              <div class="text-muted">
-                @<%= @profile.atname %>
+          <div class="font-bold mt-2">
+            <% if @profile.name.present? %>
+              <div class="mb-0 text-lg">
+                <%= @profile.name %>
               </div>
+            <% end %>
+
+            <div class="text-gray-500">
+              @<%= @profile.atname %>
             </div>
           </div>
         </div>
 
         <% if @profile.description.present? %>
-          <div class="mt-3 text-break">
+          <div class="break-words mt-4">
             <%= render_content(@profile.description) %>
           </div>
         <% end %>
 
-        <div class="align-items-center d-flex justify-content-between mt-3">
+        <div class="flex items-center justify-between mt-4">
           <div><%# レイアウト調整のために必要なdiv %></div>
-          <div>
+          <div class="flex gap-2">
             <% if signed_in? %>
               <% if current_actor.atname == @profile.atname %>
-                <%= link_to t("nouns.edit_profile"), settings_profile_path, class: "btn btn-outline-secondary rounded-pill" %>
-                <%=
-                  link_to settings_path,
-                          class: "btn btn-outline-secondary ms-1 rounded-circle",
-                          style: "padding-right: 0.75rem; padding-left: 0.75rem;" do
-                %>
+                <%= link_to(
+                      t("nouns.edit_profile"),
+                      settings_profile_path,
+                      class: "bg-base-300 border-gray-400 btn hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 rounded-full text-gray-700"
+                ) %>
+                <%= link_to(
+                      settings_path,
+                      class: "bg-base-300 border-gray-400 btn btn-circle hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 text-gray-700 text-lg"
+                ) do %>
                   <i class="bi bi-gear"></i>
                 <% end %>
               <% else %>
@@ -55,20 +54,15 @@
             <%= render Dropdowns::ProfileOptionsDropdownComponent.new(profile: @profile) %>
           </div>
         </div>
-      </div>
+      <% end %>
+    <% end %>
+
+    <div class="mt-4">
+      <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker) %>
     </div>
 
     <% if @posts.present? %>
-      <div
-        class="gap-3 js-timeline mt-3 vstack"
-        data-controller="timeline"
-      >
-        <% @posts.each do |post| %>
-          <%= render Cards::PostCardComponent.new(post:, stamp_checker: @stamp_checker) %>
-        <% end %>
-      </div>
-
-      <div class="mt-3 text-center">
+      <div class="flex justify-center mt-4">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
           previous_path: profile_path(@profile.atname, before: @page_info.start_cursor),
@@ -76,7 +70,19 @@
         ) %>
       </div>
     <% else %>
-      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts")) %>
+      <div id="post-blank-slate">
+        <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts"), class_name: "py-8") do %>
+          <div class="mt-2">
+            <p class="hidden lg:block">
+              <%= t("messages.home.lets_make_the_first_post_pc") %>
+            </p>
+
+            <p class="lg:hidden">
+              <%= t("messages.home.lets_make_the_first_post_mobile") %>
+            </p>
+          </div>
+        <% end %>
+      </div>
     <% end %>
-  </div>
+  <% end %>
 <% end %>
