@@ -13,9 +13,6 @@ class BlankSlateComponent < ApplicationComponent
   private :message
 
   sig { returns(String) }
-  private def class_name
-    class_list = %w[c-blank-slate]
-    class_list << @class_name if @class_name.present?
-    class_list.join(" ")
-  end
+  attr_reader :class_name
+  private :class_name
 end

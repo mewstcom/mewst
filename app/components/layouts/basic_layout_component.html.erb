@@ -5,6 +5,9 @@
     <%= content %>
   </div>
 
-  <%= render Footers::BasicFooterComponent.new %>
+  <% if with_footer %>
+    <%= render Footers::BasicFooterComponent.new %>
+  <% end %>
+
   <%= render Navbars::BottomNavbarComponent.new %>
 </div>

@@ -2,14 +2,14 @@
   <turbo-frame id="posts-<%= post.id %>-stamp">
     <% if stamp_checker.stamped?(post:) %>
       <%= button_to post_stamp_path(post.id), {
-        class: "bg-orange-100 btn btn-circle btn-sm hover:bg-orange-200 text-orange-400",
+        class: "bg-orange-100 border border-orange-300 btn btn-circle btn-sm hover:bg-orange-100 hover:border-orange-200 text-primary",
         method: :delete
       } do %>
         <%= render Icons::StampedIconComponent.new %>
       <% end %>
     <% else %>
       <%= button_to post_stamp_path(post.id), {
-        class: "bg-gray-100 btn btn-circle btn-sm hover:bg-gray-200 text-gray-400",
+        class: "bg-base-300 border-gray-400 btn btn-circle btn-sm hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 text-gray-700",
       } do %>
         <%= render Icons::UnstampedIconComponent.new %>
       <% end %>
@@ -23,7 +23,7 @@
     tabindex="0"
   >
     <button
-      class="bg-gray-100 btn btn-circle btn-sm hover:bg-gray-200 text-gray-4"
+      class="bg-base-300 border-gray-400 btn btn-circle btn-sm hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 text-gray-700"
       disabled
       type="button"
     >

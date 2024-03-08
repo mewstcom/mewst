@@ -1,7 +1,7 @@
-<div class="bg-base-300 card">
-  <div class="card-body p-4">
+<%= render CardComponent.new do %>
+  <%= render CardBodyComponent.new do %>
     <div class="flex flex-row gap-2">
-      <div class="flex-none px-2">
+      <div class="flex-none">
         <%= link_to profile_path(post.profile.atname) do %>
           <%= render Images::AvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
         <% end %>
@@ -12,10 +12,10 @@
 
         <%= render Cards::PostCard::BodyComponent.new(post:) %>
 
-        <div class="mt-2">
+        <div class="mt-4">
           <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
         </div>
       </div>
     </div>
-  </div>
-</div>
+  <% end %>
+<% end %>

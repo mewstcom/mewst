@@ -1,15 +1,15 @@
-<%= tag.div(class: class_name, data: { controller: "blank-slate" }) do %>
-  <div class="py-5 text-center">
-    <div class="c-blank-slate__icon">
+<div class="<%= class_name %>">
+  <div class="py-4 text-center">
+    <div class="text-5xl">
       🐈‍⬛
     </div>
 
-    <div class="mt-1">
-      <div class="fs-3">
+    <div class="mt-4">
+      <div class="text-lg">
         <%= message %>
       </div>
 
       <%= content %>
     </div>
   </div>
-<% end %>
+</div>

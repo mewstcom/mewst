@@ -1,21 +1,17 @@
 <% title = t("meta.title.home.show") %>
 <% set_meta_tags(title:) %>
 
-<%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container max-w-2xl mx-auto">
+<%= render ::Layouts::BasicLayoutComponent.new(with_footer: false) do %>
+  <%= render Containers::BasicContainerComponent.new do %>
     <div class="hidden lg:block">
       <turbo-frame id="post-form">
         <%= render Forms::PostFormComponent.new(form: @form) %>
       </turbo-frame>
     </div>
-  </div>
 
-  <div class="container max-w-2xl mx-auto">
-    <hr class="my-6">
-  </div>
+    <hr class="hidden lg:block my-6">
 
-  <div class="container max-w-2xl mx-auto">
-    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker) %>
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4 lg:py-0") %>
 
     <% if @posts.present? %>
       <div class="flex justify-center mt-4">
@@ -26,11 +22,19 @@
         ) %>
       </div>
     <% else %>
-      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts"), class_name: "js-timeline-blank-slate") do %>
-        <p class="mt-1">
-          <%= t("messages.home.lets_make_the_first_post") %>
-        </p>
-      <% end %>
+      <div id="post-blank-slate">
+        <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts"), class_name: "py-8") do %>
+          <div class="mt-2">
+            <p class="hidden lg:block">
+              <%= t("messages.home.lets_make_the_first_post_pc") %>
+            </p>
+
+            <p class="lg:hidden">
+              <%= t("messages.home.lets_make_the_first_post_mobile") %>
+            </p>
+          </div>
+        <% end %>
+      </div>
     <% end %>
-  </div>
+  <% end %>
 <% end %>
