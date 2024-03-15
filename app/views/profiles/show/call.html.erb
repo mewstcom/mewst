@@ -10,7 +10,7 @@
             <%= render Images::AvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
           <% end %>
 
-          <div class="font-bold mt-2">
+          <div class="font-bold">
             <% if @profile.name.present? %>
               <div class="mb-0 text-lg">
                 <%= @profile.name %>
