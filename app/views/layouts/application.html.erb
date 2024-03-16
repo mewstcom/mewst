@@ -2,7 +2,15 @@
 <html lang="<%= I18n.locale %>">
   <head>
     <%= mewst_display_meta_tags %>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="viewport"
+      <%#
+        `maximum-scale=1`:
+          ポスト投稿ページ (/new) をiOSのSafariで開いたときautofocus属性の影響でズームされてしまうのを防ぐために入れている
+          ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+      %>
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    >
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
