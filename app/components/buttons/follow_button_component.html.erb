@@ -1,7 +1,7 @@
 <turbo-frame id="profiles-<%= target_profile.atname %>-follow">
   <% if follow_checker.followed?(target_profile:) %>
     <%= button_to profile_follow_path(target_profile.atname), {
-      class: "btn btn-outline-secondary rounded-pill text-muted",
+      class: "btn btn-outline rounded-full",
       method: :delete
     } do %>
       <i class="bi bi-check-lg"></i>
@@ -11,7 +11,7 @@
     <% end %>
   <% else %>
     <%= button_to profile_follow_path(target_profile.atname), {
-      class: "btn btn-primary rounded-pill",
+      class: "btn btn-primary rounded-full",
     } do %>
       <i class="bi bi-plus-lg"></i>
       <span>
