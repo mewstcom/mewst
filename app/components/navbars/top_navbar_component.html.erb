@@ -1,62 +1,11 @@
-<div class="hidden lg:navbar">
-  <div class="navbar-start">
-    <%= link_to root_path do %>
-      <%= render Icons::LogoIconComponent.new %>
-    <% end %>
-  </div>
+<div class="bg-base-100 hidden lg:block py-4 sticky top-0 z-50">
+  <%= render Containers::BasicContainerComponent.new do %>
+    <div class="flex items-center justify-between">
+      <%= link_to root_path, class: "" do %>
+        <%= render Icons::LogoIconComponent.new %>
+      <% end %>
 
-  <% if signed_in? %>
-    <div class="navbar-center">
-      <ul class="menu menu-horizontal">
-        <li>
-          <%= link_to home_path, class: "nav-link" do %>
-            <i class="bi bi-house me-1"></i>
-            <%= t("nouns.home") %>
-          <% end %>
-        </li>
-
-        <li>
-          <%= link_to search_path, class: "nav-link" do %>
-            <i class="bi bi-search me-1"></i>
-            <%= t("nouns.search") %>
-          <% end %>
-        </li>
-
-        <li>
-          <%= link_to new_post_path(with_frame: true), class: "nav-link", data: { turbo_frame: "modal" } do %>
-            <i class="bi bi-pencil-square me-1"></i>
-            <%= t("verbs.post") %>
-          <% end %>
-        </li>
-
-        <li>
-          <%= link_to notification_list_path, class: "nav-link" do %>
-            <i class="bi bi-bell me-1"></i>
-            <%= t("nouns.notifications") %>
-          <% end %>
-        </li>
-
-        <li>
-          <%= link_to profile_path(current_actor!.atname), class: "nav-link" do %>
-            <i class="bi bi-person-circle me-1"></i>
-            <%= t("nouns.profile") %>
-          <% end %>
-        </li>
-      </ul>
-    </div>
-
-    <div class="navbar-end"><%# レイアウト調整のために必要なdiv %></div>
-  <% else %>
-    <div class="navbar-end">
-      <ul class="menu menu-horizontal">
-        <li>
-          <%= link_to t("nouns.sign_in"), sign_in_path, class: "link no-underline" %>
-        </li>
-
-        <li>
-          <%= link_to t("nouns.sign_up"), sign_up_path, class: "link no-underline" %>
-        </li>
-      </ul>
+      <%= render NavbarMenuComponent.new %>
     </div>
   <% end %>
 </div>
