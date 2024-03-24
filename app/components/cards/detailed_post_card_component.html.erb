@@ -1,45 +1,43 @@
-<div class="border-0 c-content-card card rounded-4 u-flat">
-  <div class="card-body">
-    <div class="align-items-center gx-3 row">
-      <div class="col-auto">
-        <%= link_to profile_path(profile.atname) do %>
-          <%= render Images::AvatarImageComponent.new(profile:, width: 60) %>
+<%= render CardComponent.new do %>
+  <%= render CardBodyComponent.new do %>
+    <div class="flex flex-row gap-2 items-center">
+      <div class="flex-none">
+        <%= link_to profile_path(post.profile.atname) do %>
+          <%= render Images::AvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
         <% end %>
       </div>
 
-      <div class="col">
-        <%= link_to profile_path(profile.atname), class: "text-body text-decoration-none" do %>
-          <% if profile.name.present? %>
-            <div class="fw-bold">
-              <%= profile.name %>
-            </div>
-          <% end %>
-
-          <div class="small text-muted">
-            @<%= profile.atname %>
+      <%= link_to profile_path(profile.atname), class: "" do %>
+        <% if profile.name.present? %>
+          <div class="font-bold">
+            <%= profile.name %>
           </div>
         <% end %>
-      </div>
+
+        <div class="text-gray-500 text-sm">
+          @<%= profile.atname %>
+        </div>
+      <% end %>
     </div>
 
-    <div class="fs-3 mt-3">
-      <%= render Cards::PostCard::BodyComponent.new(post:) %>
+    <div class="mt-2">
+      <%= render Cards::PostCard::BodyComponent.new(post:, class_name: "text-2xl") %>
     </div>
 
-    <div class="mt-3">
-      <%=
-        link_to mst_absolute_time(post.published_at),
-          profile_post_path(post.profile.atname, post.id),
-          class: "small text-decoration-none text-muted"
-      %>
+    <div class="mt-2">
+      <%= link_to(
+        mst_absolute_time(post.published_at),
+        profile_post_path(post.profile.atname, post.id),
+        class: "text-gray-500 text-sm"
+      ) %>
 
-      <span class="ms-1 small text-muted">
+      <span class="text-gray-500 text-sm">
         via <%= post.oauth_application.name %>
       </span>
     </div>
 
-    <div class="mt-3">
+    <div class="mt-2">
       <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
     </div>
-  </div>
-</div>
+  <% end %>
+<% end %>

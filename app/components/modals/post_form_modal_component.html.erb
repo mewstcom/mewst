@@ -1,5 +1,5 @@
 <%= render Modals::Base::ModalComponent.new do %>
-  <%= render Modals::Base::ModalBoxComponent.new do %>
+  <%= render Modals::Base::ModalBoxComponent.new(class_name: "bg-base-300") do %>
     <turbo-frame id="post-form">
       <%= render Forms::PostFormComponent.new(form:, from_modal: true) %>
     </turbo-frame>

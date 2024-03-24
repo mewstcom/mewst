@@ -1,16 +1,16 @@
 <div class="grid grid-cols-2 join w-80">
   <% if page_info.has_previous_page %>
-    <%= link_to t("messages.pagination.prev_html"), previous_path, class: "border-neutral-400 btn btn-outline join-item rounded-l-full" %>
+    <%= link_to t("messages.pagination.prev_html"), previous_path, class: "border-neutral-400 btn btn-outline btn-sm join-item rounded-l-full" %>
   <% else %>
-    <a class="border-neutral-400 btn btn-outline join-item rounded-l-full" disabled="disabled">
+    <a class="border-neutral-400 btn btn-outline btn-sm join-item rounded-l-full" disabled="disabled">
       <%= t("messages.pagination.prev_html") %>
     </a>
   <% end %>
 
   <% if page_info.has_next_page %>
-    <%= link_to t("messages.pagination.next_html"), next_path, class: "border-neutral-400 btn btn-outline join-item rounded-r-full" %>
+    <%= link_to t("messages.pagination.next_html"), next_path, class: "border-neutral-400 btn btn-outline btn-sm join-item rounded-r-full" %>
   <% else %>
-    <a class="border-neutral-400 btn btn-outline join-item rounded-r-full" disabled="disabled">
+    <a class="border-neutral-400 btn btn-outline btn-sm join-item rounded-r-full" disabled="disabled">
       <%= t("messages.pagination.next_html") %>
     </a>
   <% end %>

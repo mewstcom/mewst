@@ -2,77 +2,66 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mt-3 u-narrow">
-    <h1 class="fw-bold">
+  <%= render Containers::BasicContainerComponent.new do %>
+    <h1 class="antialiased font-semibold text-2xl">
       <%= title %>
     </h1>
-  </div>
 
-  <div class="container u-flat u-narrow">
-    <hr class="mb-0">
-  </div>
+    <hr class="my-4">
 
-  <div class="container u-narrow">
-    <div class="mt-3">
-      <h2 class="fw-bold">
+    <div>
+      <h2 class="antialiased font-semibold text-lg">
         <%= t("nouns.suggested_profiles") %>
       </h2>
 
-      <p class="small text-muted">
+      <p class="mt-2 text-gray-500 text-sm">
         <% if @profiles.present? %>
           <%= t("messages.search.suggested_profiles.exists_html") %>
         <% else %>
           <%= t("messages.search.suggested_profiles.not_exists") %>
         <% end %>
       </p>
-    </div>
-  </div>
 
-  <div class="container mt-3 u-flat u-narrow">
-    <% if @profiles.present? %>
-      <div class="gap-3 vstack">
-        <% @profiles.each do |profile| %>
-          <div class="border-0 c-content-card card rounded-4 u-flat" id="suggested-profiles-<%= profile.atname %>">
-            <div class="card-body">
-              <div class="gx-3 row">
-                <div class="col-auto">
-                  <%= link_to profile_path(profile.atname) do %>
-                    <%= render Images::AvatarImageComponent.new(profile:, width: 40) %>
-                  <% end %>
-                </div>
-
-                <div class="col">
-                  <%= link_to profile_path(profile.atname), class: "text-body text-decoration-none" do %>
-                    <div class="fw-bold">
-                      <%= name_with_atname(profile:) %>
-                    </div>
-
-                    <% if profile.description.present? %>
-                      <div class="mt-1 small">
-                        <%= profile.description.truncate(100) %>
+      <div class="mt-4">
+        <% if @profiles.present? %>
+          <div class="flex flex-col gap-4">
+            <% @profiles.each do |profile| %>
+              <div id="suggested-profiles-<%= profile.atname %>">
+                <%= render CardComponent.new do %>
+                  <%= render CardBodyComponent.new do %>
+                    <div class="flex gap-2 justify-between">
+                      <div class="flex-none">
+                        <%= link_to profile_path(profile.atname) do %>
+                          <%= render Images::AvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
+                        <% end %>
                       </div>
-                    <% end %>
+
+                      <%= link_to profile_path(profile.atname), class: "grow text-body text-decoration-none" do %>
+                        <div class="font-bold">
+                          <%= name_with_atname(profile:) %>
+                        </div>
+
+                        <% if profile.description.present? %>
+                          <div class="mt-2 text-sm">
+                            <%= profile.description.truncate(100) %>
+                          </div>
+                        <% end %>
+                      <% end %>
+
+                      <div class="flex flex-col gap-2 text-center">
+                        <%= render Buttons::FollowButtonComponent.new(target_profile: profile, follow_checker: @follow_checker) %>
+                        <%= render Buttons::CheckSuggestedProfileButtonComponent.new(target_profile: profile) %>
+                      </div>
+                    </div>
                   <% end %>
-                </div>
-
-                <div class="align-self-center col-12 col-sm-auto mt-3 mt-sm-0 text-end">
-                  <div class="flex-sm-column text-center row">
-                    <div class="col-6 col-sm-12">
-                      <%= render Buttons::FollowButtonComponent.new(target_profile: profile, follow_checker: @follow_checker) %>
-                    </div>
-
-                    <div class="col-6 col-sm-12">
-                      <%= render Buttons::CheckSuggestedProfileButtonComponent.new(target_profile: profile) %>
-                    </div>
-                  </div>
-                </div>
+                <% end %>
               </div>
-            </div>
+            <% end %>
           </div>
+        <% else %>
+          <%= render BlankSlateComponent.new(message: t("messages.search.suggested_profiles.blank")) %>
         <% end %>
       </div>
-    <% else %>
-      <%= render BlankSlateComponent.new(message: t("messages.search.suggested_profiles.blank")) %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 <% end %>

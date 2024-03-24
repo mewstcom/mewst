@@ -17,12 +17,14 @@ module.exports = {
     themes: [
       {
         mewst: {
-          'base-100': '#faf0dc',
+          'base-100': '#f6f2eb',
           'base-300': '#ffffff',
+          error: '#ef4444',
           info: '#0284c7',
           neutral: '#737373',
           primary: '#f4a90e',
           secondary: '#5f0f40',
+          success: '#22c55e',
         },
       },
     ],

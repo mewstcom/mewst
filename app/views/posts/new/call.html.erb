@@ -1,16 +1,14 @@
 <% title = t("meta.title.posts.new") %>
 <% set_meta_tags(title:) %>
 
-<%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container max-w-2xl mx-auto">
-    <div class="hidden lg:block">
-      <% if @form.with_frame %>
-        <turbo-frame id="modal">
-          <%= render Modals::PostFormModalComponent.new(form: @form) %>
-        </turbo-frame>
-      <% else %>
-        <%= render Forms::PostFormComponent.new(form: @form) %>
-      <% end %>
-    </div>
-  </div>
+<%= render ::Layouts::BasicLayoutComponent.new(with_footer: false, main_class_name: "grid place-items-center") do %>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <% if @form.with_frame %>
+      <turbo-frame id="modal">
+        <%= render Modals::PostFormModalComponent.new(form: @form) %>
+      </turbo-frame>
+    <% else %>
+      <%= render Forms::PostFormComponent.new(form: @form) %>
+    <% end %>
+  <% end %>
 <% end %>

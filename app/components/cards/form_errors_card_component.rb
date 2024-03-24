@@ -2,10 +2,15 @@
 # frozen_string_literal: true
 
 class Cards::FormErrorsCardComponent < ApplicationComponent
-  sig { params(errors: ActiveModel::Errors).void }
-  def initialize(errors:)
+  sig { params(errors: ActiveModel::Errors, class_name: String).void }
+  def initialize(errors:, class_name: "")
     @errors = errors
+    @class_name = class_name
   end
+
+  sig { returns(String) }
+  attr_reader :class_name
+  private :class_name
 
   sig { returns(T::Boolean) }
   private def render?

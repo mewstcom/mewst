@@ -2,7 +2,7 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container max-w-2xl mx-auto">
+  <%= render Containers::BasicContainerComponent.new do %>
     <div class="text-center">
       <div class="mt-12">
         <%= link_to root_path, class: "inline-block" do %>
@@ -19,8 +19,8 @@
       </p>
     </div>
 
-    <div class="bg-base-300 card mt-8">
-      <div class="card-body">
+    <%= render CardComponent.new(class_name: "mt-8") do %>
+      <%= render CardBodyComponent.new do %>
         <%= form_with model: @form, url: email_confirmation_list_path(after: params[:after]) do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
@@ -40,7 +40,7 @@
             <% end %>
           </div>
         <% end %>
-      </div>
-    </div>
-  </div>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

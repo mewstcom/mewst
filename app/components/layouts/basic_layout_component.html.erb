@@ -1,10 +1,13 @@
-<div class="flex flex-col min-h-[100vh]">
+<div class="flex flex-col min-h-[100svh]">
   <%= render Navbars::TopNavbarComponent.new %>
 
-  <div class="flex-1">
+  <div class="<%= class_names("flex-1", main_class_name) %>">
     <%= content %>
   </div>
 
-  <%= render Footers::BasicFooterComponent.new %>
+  <% if with_footer %>
+    <%= render Footers::BasicFooterComponent.new %>
+  <% end %>
+
   <%= render Navbars::BottomNavbarComponent.new %>
 </div>

@@ -39,7 +39,8 @@ en:
       confirmation_mail_sent: Confirmation mail has been sent.
       enter_code: Enter the confirmation code in the email.
     home:
-      lets_make_the_first_post: Let's make the first post from the form above.
+      lets_make_the_first_post_mobile: Let's make the first post from "Post" below.
+      lets_make_the_first_post_pc: Let's make the first post from the form above.
     notifications:
       description: You will receive notifications when your posts are stamped.
     pagination:

@@ -19,12 +19,12 @@ module ControllerConcerns::Localizable
   private def preferred_locale
     preferred_languages = http_accept_language.user_preferred_languages
     # Chrome returns "ja", but Safari would return "ja-JP", not "ja".
-    (preferred_languages.any? { |lang| lang.match?(/ja/) }) ? Locale::Ja : default_locale
+    (preferred_languages.present? && preferred_languages.all? { |lang| !lang.match?(/ja/) }) ? Locale::En : default_locale
   end
 
   sig(:final) { returns(Locale) }
   private def default_locale
-    Locale::En
+    Locale::Ja
   end
 
   sig(:final) { returns(Locale) }

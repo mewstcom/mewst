@@ -2,75 +2,84 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mt-3 u-narrow">
-    <%= link_to settings_path, class: "text-decoration-none" do %>
-      <i class="bi bi-arrow-left me-1"></i>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <%= link_to settings_path, class: "link link-hover link-info" do %>
+      <i class="bi bi-arrow-left"></i>
       <%= t("nouns.settings") %>
     <% end %>
 
-    <h1 class="fw-bold mt-3">
+    <h1 class="antialiased font-semibold mt-2 text-2xl">
       <%= title %>
     </h1>
-  </div>
 
-  <div class="container u-flat u-narrow">
-    <hr class="mb-0">
-  </div>
+    <hr class="my-4">
 
-  <div class="container mt-3 u-flat u-narrow">
-    <div class="c-content-card border-0 card rounded-4 u-flat">
-      <div class="card-body">
+    <%= render CardComponent.new do %>
+      <%= render CardBodyComponent.new do %>
         <%= form_with method: :patch, model: @form, url: settings_profile_path do |f| %>
-          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+          <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors, class_name: "mb-4") %>
 
-          <div class="mb-3">
-            <%= f.label :atname, class: "form-label" %>
-            <%= f.text_field :atname, {
-              autofocus: true,
-              class: "form-control"
-            } %>
-          </div>
+          <div class="flex flex-col gap-4">
+            <%= f.label :atname, class: "form-control" do %>
+              <div class="label">
+                <span class="label-text">
+                  <%= t("forms.attributes.profile_form.atname") %>
+                </span>
+              </div>
 
-          <div class="mb-3">
-            <%= f.label :name, class: "form-label" %>
-            <%= f.text_field :name, {
-              class: "form-control"
-            } %>
-          </div>
+              <%= f.text_field :atname, autofocus: true, class: "input input-bordered" %>
+            <% end %>
 
-          <div class="mb-3">
-            <%= f.label :description, class: "form-label" %>
-            <%= f.text_area :description, {
-              class: "form-control",
-              data: { controller: "autosize" },
-              rows: 3
-            } %>
-          </div>
+            <%= f.label :name, class: "form-control" do %>
+              <div class="label">
+                <span class="label-text">
+                  <%= t("forms.attributes.profile_form.name") %>
+                </span>
+              </div>
 
-          <div class="mb-3">
-            <%= f.label :avatar_url, class: "form-label" %>
-            <%= f.text_field :avatar_url, {
-              class: "form-control"
-            } %>
-          </div>
+              <%= f.text_field :name, class: "input input-bordered" %>
+            <% end %>
 
-          <div class="mb-3">
-            <label class="form-label">
-              <%= t("nouns.current_avatar") %>
-            </label>
+            <%= f.label :description, class: "form-control" do %>
+              <div class="label">
+                <span class="label-text">
+                  <%= t("forms.attributes.profile_form.description") %>
+                </span>
+              </div>
 
-            <div>
-              <%= render Images::AvatarImageComponent.new(profile: current_actor.profile, width: 50) %>
+              <%= f.text_area :description, class: "input input-bordered", data: { controller: "autosize" }, rows: 3 %>
+            <% end %>
+
+            <%= f.label :avatar_url, class: "form-control" do %>
+              <div class="label">
+                <span class="label-text">
+                  <%= t("forms.attributes.profile_form.avatar_url") %>
+                </span>
+              </div>
+
+              <%= f.text_field :avatar_url, class: "input input-bordered" %>
+            <% end %>
+
+            <div class="form-control">
+              <div class="label">
+                <span class="label-text">
+                  <%= t("nouns.current_avatar") %>
+                </span>
+              </div>
+
+              <div>
+                <%= render Images::AvatarImageComponent.new(profile: current_actor.profile, width: 50, class_name: "w-[50px]") %>
+              </div>
             </div>
           </div>
 
-          <div class="text-center">
-            <%= f.button class: "btn btn-primary rounded-pill", type: :submit do %>
+          <div class="mt-8 text-center">
+            <%= f.button class: "btn btn-primary rounded-full", type: :submit do %>
               <%= t("verbs.update") %>
             <% end %>
           </div>
         <% end %>
-      </div>
-    </div>
-  </div>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

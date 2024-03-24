@@ -2,7 +2,7 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container max-w-2xl mx-auto">
+  <%= render Containers::BasicContainerComponent.new do %>
     <div class="text-center">
       <div class="mt-12">
         <%= link_to root_path, class: "inline-block" do %>
@@ -15,8 +15,8 @@
       </h1>
     </div>
 
-    <div class="bg-base-300 card mt-8">
-      <div class="card-body">
+    <%= render CardComponent.new(class_name: "mt-8") do %>
+      <%= render CardBodyComponent.new do %>
         <%= form_with model: @form, url: account_list_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 
@@ -84,7 +84,7 @@
         <p class="mt-8 text-center text-sm">
           <%= t("messages.accounts.terms_html") %>
         </p>
-      </div>
-    </div>
-  </div>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

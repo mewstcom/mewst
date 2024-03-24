@@ -2,29 +2,25 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mt-3 u-narrow">
-    <h1 class="fw-bold">
+  <%= render Containers::BasicContainerComponent.new do %>
+    <h1 class="antialiased font-semibold text-2xl">
       <%= title %>
     </h1>
 
-    <p class="small text-muted">
+    <p class="mt-2 text-gray-500 text-sm">
       <%= t("messages.notifications.description") %>
     </p>
-  </div>
 
-  <div class="container u-flat u-narrow">
-    <hr class="mb-0">
-  </div>
+    <hr class="my-4">
 
-  <div class="container mt-3 u-flat u-narrow">
     <% if @notifications.present? %>
-      <div class="gap-3 mt-3 vstack">
+      <div class="flex flex-col gap-4">
         <% @notifications.each do |notification| %>
           <%= render Cards::NotificationCardComponent.new(notification:) %>
         <% end %>
       </div>
 
-      <div class="mt-3">
+      <div class="flex justify-center mt-4">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
           previous_path: home_path(before: @page_info.start_cursor),
@@ -32,7 +28,7 @@
         ) %>
       </div>
     <% else %>
-      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_notifications")) %>
+      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_notifications"), class_name: "py-8") %>
     <% end %>
-  </div>
+  <% end %>
 <% end %>

@@ -42,9 +42,10 @@ ja:
       confirmation_mail_sent: 確認用のメールを送信しました
       enter_code: メールに記載されている確認用コードを入力してください
     home:
-      lets_make_the_first_post: ↑の投稿欄から最初のポストをしましょう
+      lets_make_the_first_post_mobile: ↓の「投稿する」から最初のポストをしましょう
+      lets_make_the_first_post_pc: ↑の投稿欄から最初のポストをしましょう
     notifications:
-      description: スタンプされたりしたときに通知が届きます
+      description: スタンプされたときに通知が届きます
     pagination:
       next_html: "次へ&nbsp;&rsaquo;"
       prev_html: "&lsaquo;&nbsp;前へ"

@@ -5,7 +5,7 @@ FactoryBot.define do
   factory :user do
     profile { association :profile, owner_type: ProfileOwnerType::User.serialize }
     sequence(:email) { |n| "test_#{n}@example.com" }
-    password { "xxx" }
+    password { "passw0rd" }
     locale { :ja }
     time_zone { "Asia/Tokyo" }
     signed_up_at { Time.current }

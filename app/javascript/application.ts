@@ -3,7 +3,6 @@ import '@hotwired/turbo';
 import { Application } from '@hotwired/stimulus';
 
 import AutosizeController from './controllers/autosize-controller';
-import BlankSlateController from './controllers/blank-slate-controller';
 import CharacterCounterController from './controllers/character-counter-controller';
 import ComponentDataFetcherController from './controllers/component-data-fetcher-controller';
 import DropdownController from './controllers/dropdown-controller';
@@ -17,7 +16,6 @@ application.debug = false;
 window.Stimulus = application;
 
 Stimulus.register('autosize', AutosizeController);
-Stimulus.register('blank-slate', BlankSlateController);
 Stimulus.register('character-counter', CharacterCounterController);
 Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
 Stimulus.register('dropdown', DropdownController);

@@ -1,0 +1,35 @@
+<div class="<%= class_names("bg-base-300 flex gap-4 items-center px-4 py-2 rounded-full w-fit", class_name) %>">
+  <% if signed_in? %>
+    <%= link_to home_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("house")) %>
+    <% end %>
+
+    <%= link_to search_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("search")) %>
+    <% end %>
+
+    <%= link_to new_post_path(with_frame: true), class: link_class_name, data: { turbo_frame: "modal" } do %>
+      <%= tag.i(class: icon_class_name("pencil-square")) %>
+    <% end %>
+
+    <%= link_to notification_list_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("bell")) %>
+    <% end %>
+
+    <%= link_to profile_path(current_actor!.atname), class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("person-circle")) %>
+    <% end %>
+  <% else %>
+    <%= link_to home_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("house")) %>
+    <% end %>
+
+    <%= link_to sign_up_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("rocket-takeoff")) %>
+    <% end %>
+
+    <%= link_to sign_in_path, class: link_class_name do %>
+      <%= tag.i(class: icon_class_name("box-arrow-in-right")) %>
+    <% end %>
+  <% end %>
+</div>
