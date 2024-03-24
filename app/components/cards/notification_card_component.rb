@@ -13,6 +13,6 @@ class Cards::NotificationCardComponent < ApplicationComponent
 
   sig { returns(Profile) }
   def source_profile
-    notification.source_profile
+    notification.source_profile.not_nil!
   end
 end
