@@ -15,11 +15,11 @@ class RebuildHomeTimelineUseCase < ApplicationUseCase
     profile.home_timeline.remove_all_posts
 
     profile.posts.kept.order(published_at: :desc).limit(posts_limit).find_each do |post|
-      profile.home_timeline.add_post(post:)
+      profile.home_timeline.add_post!(post:)
     end
 
     profile.followee_posts.kept.order(published_at: :desc).limit(posts_limit).find_each do |post|
-      profile.home_timeline.add_post(post:)
+      profile.home_timeline.add_post!(post:)
     end
 
     Result.new(profile:)

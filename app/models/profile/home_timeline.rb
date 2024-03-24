@@ -66,8 +66,8 @@ class Profile::HomeTimeline
   end
 
   sig { params(post: Post).returns(T.self_type) }
-  def add_post(post:)
-    redis_client.zadd(profile.timeline_key, post.timeline_score, post.id)
+  def add_post!(post:)
+    profile.home_timeline_posts.where(post:).first_or_create!(published_at: post.published_at)
 
     self
   end

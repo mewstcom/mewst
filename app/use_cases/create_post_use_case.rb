@@ -18,7 +18,7 @@ class CreatePostUseCase < ApplicationUseCase
       post.save!
       viewer.update_last_post_time!(time: post.published_at)
 
-      viewer.home_timeline.add_post(post:)
+      viewer.home_timeline.add_post!(post:)
       FanoutPostJob.perform_later(post_id: post.id)
     end
 
