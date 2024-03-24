@@ -84,7 +84,7 @@ class CounterCulture::Counter
   # source://counter_culture//lib/counter_culture/counter.rb#6
   def execute_after_commit; end
 
-  # source://counter_culture//lib/counter_culture/counter.rb#323
+  # source://counter_culture//lib/counter_culture/counter.rb#325
   def execute_now_or_after_commit(obj, &block); end
 
   # @return [Boolean]
@@ -185,7 +185,7 @@ class CounterCulture::Counter
 
   private
 
-  # source://counter_culture//lib/counter_culture/counter.rb#334
+  # source://counter_culture//lib/counter_culture/counter.rb#336
   def attribute_was(obj, attr); end
 end
 
