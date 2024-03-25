@@ -31,7 +31,7 @@ class PageInfo
     @previous_cursor = previous_cursor
   end
 
-  sig { params(page: ActiveRecordCursorPaginate::Page).returns(T.self_type)}
+  sig { params(page: ActiveRecordCursorPaginate::Page).returns(T.attached_class) }
   def self.from_cursor_paginate_page(page:)
     new(
       next_cursor: page.has_next? ? page.next_cursor : nil,

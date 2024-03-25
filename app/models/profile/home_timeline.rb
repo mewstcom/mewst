@@ -10,7 +10,7 @@ class Profile::HomeTimeline
   end
 
   T::Sig::WithoutRuntime.sig do
-    params(after: T.nilable(String), before: T.nilable(String)).returns(Post::PrivateRelation, PageInfo)
+    params(after: T.nilable(String), before: T.nilable(String), limit: Integer).returns([Post::PrivateRelation, PageInfo])
   end
   def fetch_posts(after: nil, before: nil, limit: 30)
     page = visible_posts.cursor_paginate(after:, before:, limit:, order: {published_at: :desc, id: :desc}).fetch

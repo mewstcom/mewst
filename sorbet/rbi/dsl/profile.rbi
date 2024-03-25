@@ -295,6 +295,20 @@ class Profile
     def follows=(value); end
 
     sig { returns(T::Array[T.untyped]) }
+    def home_timeline_post_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def home_timeline_post_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Profile` class because it declared `has_many :home_timeline_posts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::HomeTimelinePost::PrivateCollectionProxy) }
+    def home_timeline_posts; end
+
+    sig { params(value: T::Enumerable[::HomeTimelinePost]).void }
+    def home_timeline_posts=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
     def inverse_follow_ids; end
 
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }

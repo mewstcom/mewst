@@ -8,6 +8,7 @@ class StampChecker
   def initialize(profile:, posts:)
     @profile = profile
     @posts = posts
+    @stamped_post_ids = T.let(nil, T.nilable(T::Array[T::Mewst::DatabaseId]))
   end
 
   sig { params(post: Post).returns(T::Boolean) }
