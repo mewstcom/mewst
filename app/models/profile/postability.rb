@@ -13,7 +13,6 @@ class Profile::Postability
   def delete_post(post:)
     ActiveRecord::Base.transaction do
       post.destroy!
-      profile.home_timeline.remove_post(post:)
     end
   end
 

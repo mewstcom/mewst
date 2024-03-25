@@ -62,7 +62,6 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres@localhost:5432/mewst_test
       RAILS_ENV: test
-      REDIS_URL: redis://localhost:6379/0
     services:
       postgresql:
         image: postgres:14.6
@@ -80,15 +79,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      redis:
-        image: redis:7.0
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js

@@ -13,7 +13,6 @@ gem "addressable"
 gem "alba"
 gem "bcrypt" # `has_secure_password` で使っている
 gem "bootsnap", require: false
-gem "connection_pool" # Redisで使っている
 gem "counter_culture"
 gem "cssbundling-rails"
 gem "discard"
@@ -35,7 +34,6 @@ gem "pundit"
 gem "rack-rewrite"
 gem "rails-i18n"
 gem "rails_autolink"
-gem "redis"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sorbet-runtime"

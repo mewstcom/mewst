@@ -6,8 +6,6 @@ class Profile < ApplicationRecord
 
   include Discard::Model
 
-  include ModelConcerns::TimelineOwnable
-
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   ATNAME_MIN_LENGTH = 2
   ATNAME_MAX_LENGTH = 20
@@ -69,11 +67,6 @@ class Profile < ApplicationRecord
   sig { returns(Profile::HomeTimeline) }
   def home_timeline
     Profile::HomeTimeline.new(profile: self)
-  end
-
-  sig { override.returns(String) }
-  def timeline_key
-    "timeline:profile:#{id}"
   end
 
   sig { params(target_profile: Profile).returns(T::Boolean) }

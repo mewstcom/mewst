@@ -311,10 +311,6 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     rdoc (6.6.2)
       psych (>= 4.0.0)
-    redis (5.0.8)
-      redis-client (>= 0.17.0)
-    redis-client (0.17.1)
-      connection_pool
     regexp_parser (2.9.0)
     reline (0.4.2)
       io-console (~> 0.5)
@@ -469,7 +465,6 @@ DEPENDENCIES
   capybara
   committee
   committee-rails
-  connection_pool
   counter_culture
   cssbundling-rails
   cuprite
@@ -496,7 +491,6 @@ DEPENDENCIES
   rails (~> 7.1.2)
   rails-i18n
   rails_autolink
-  redis
   resend
   rspec-rails
   rubocop-factory_bot
