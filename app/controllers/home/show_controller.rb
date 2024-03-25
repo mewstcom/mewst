@@ -11,7 +11,7 @@ class Home::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = PostForm.new(with_frame: true)
-    @posts, @page_info = current_actor!.home_timeline.posts_with_page_info(
+    @posts, @page_info = current_actor!.home_timeline.fetch_posts(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 15
