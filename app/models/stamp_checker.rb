@@ -17,9 +17,11 @@ class StampChecker
 
   sig { returns(T::Array[T::Mewst::DatabaseId]) }
   private def stamped_post_ids
-    return [] if profile.nil? || posts.empty?
+    @stamped_post_ids ||= begin
+      return [] if profile.nil? || posts.empty?
 
-    profile.not_nil!.stamps.where(post: posts).pluck(:post_id)
+      profile.not_nil!.stamps.where(post: posts).pluck(:post_id)
+    end
   end
 
   sig { returns(T.nilable(Profile)) }
