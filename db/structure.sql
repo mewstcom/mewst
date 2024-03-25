@@ -202,6 +202,18 @@ CREATE TABLE public.good_jobs (
 
 
 --
+-- Name: home_timeline_posts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.home_timeline_posts (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    post_id uuid NOT NULL,
+    published_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -383,7 +395,7 @@ CREATE TABLE public.users (
     signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    time_zone character varying DEFAULT 'Etc/UTC'::character varying NOT NULL
+    time_zone character varying DEFAULT 'UTC'::character varying NOT NULL
 );
 
 
@@ -457,6 +469,14 @@ ALTER TABLE ONLY public.good_job_settings
 
 ALTER TABLE ONLY public.good_jobs
     ADD CONSTRAINT good_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: home_timeline_posts home_timeline_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.home_timeline_posts
+    ADD CONSTRAINT home_timeline_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -686,6 +706,34 @@ CREATE INDEX index_good_jobs_on_queue_name_and_scheduled_at ON public.good_jobs 
 --
 
 CREATE INDEX index_good_jobs_on_scheduled_at ON public.good_jobs USING btree (scheduled_at) WHERE (finished_at IS NULL);
+
+
+--
+-- Name: index_home_timeline_posts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_home_timeline_posts_on_post_id ON public.home_timeline_posts USING btree (post_id);
+
+
+--
+-- Name: index_home_timeline_posts_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_home_timeline_posts_on_profile_id ON public.home_timeline_posts USING btree (profile_id);
+
+
+--
+-- Name: index_home_timeline_posts_on_profile_id_and_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_home_timeline_posts_on_profile_id_and_post_id ON public.home_timeline_posts USING btree (profile_id, post_id);
+
+
+--
+-- Name: index_home_timeline_posts_on_published_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_home_timeline_posts_on_published_at ON public.home_timeline_posts USING btree (published_at);
 
 
 --
@@ -1027,6 +1075,14 @@ ALTER TABLE ONLY public.suggested_follows
 
 
 --
+-- Name: home_timeline_posts fk_rails_c5f63d6a07; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.home_timeline_posts
+    ADD CONSTRAINT fk_rails_c5f63d6a07 FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: posts fk_rails_cd61a4aa45; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1067,12 +1123,21 @@ ALTER TABLE ONLY public.oauth_access_grants
 
 
 --
+-- Name: home_timeline_posts fk_rails_f6a3b9e9b2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.home_timeline_posts
+    ADD CONSTRAINT fk_rails_f6a3b9e9b2 FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240324094358'),
 ('20240304164746'),
 ('20240115144966'),
 ('20240115144965'),

@@ -9,6 +9,6 @@ class AddPostToTimelineJob < ApplicationJob
     profile = Profile.kept.find(profile_id)
     post = Post.find(post_id)
 
-    profile.home_timeline.add_post(post:)
+    profile.home_timeline.add_post!(post:)
   end
 end

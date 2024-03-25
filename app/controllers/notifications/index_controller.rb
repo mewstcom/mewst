@@ -10,15 +10,17 @@ class Notifications::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    notifications = current_actor!.notifications.preload(:source_profile, stamp_notification: {stamp: {post: :profile}})
-    result = Paginator.new(records: notifications).paginate(
-      before: params[:before].presence,
-      after: params[:after].presence,
-      limit: 15,
-      order_by: :notified_at
-    )
-
-    @notifications = result.records
-    @page_info = result.page_info
+    page = current_actor!
+      .notifications
+      .preload(:source_profile, stamp_notification: {stamp: {post: :profile}})
+      .cursor_paginate(
+        after: params[:after].presence,
+        before: params[:before].presence,
+        limit: 15,
+        order: {notified_at: :desc, id: :desc}
+      )
+      .fetch
+    @notifications = page.records
+    @page_info = PageInfo.from_cursor_paginate_page(page:)
   end
 end

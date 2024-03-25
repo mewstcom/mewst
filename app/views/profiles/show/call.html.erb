@@ -65,8 +65,8 @@
       <div class="flex justify-center mt-4">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
-          previous_path: profile_path(@profile.atname, before: @page_info.start_cursor),
-          next_path: profile_path(@profile.atname, after: @page_info.end_cursor)
+          previous_path: profile_path(@profile.atname, before: @page_info.previous_cursor),
+          next_path: profile_path(@profile.atname, after: @page_info.next_cursor)
         ) %>
       </div>
     <% else %>

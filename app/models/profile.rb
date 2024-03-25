@@ -6,8 +6,6 @@ class Profile < ApplicationRecord
 
   include Discard::Model
 
-  include ModelConcerns::TimelineOwnable
-
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   ATNAME_MIN_LENGTH = 2
   ATNAME_MAX_LENGTH = 20
@@ -19,6 +17,7 @@ class Profile < ApplicationRecord
   has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
   has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
   has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
+  has_many :home_timeline_posts, dependent: :restrict_with_exception
   has_many :notifications, dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
   has_many :posts, dependent: :restrict_with_exception
   has_many :stamps, dependent: :restrict_with_exception
@@ -68,11 +67,6 @@ class Profile < ApplicationRecord
   sig { returns(Profile::HomeTimeline) }
   def home_timeline
     Profile::HomeTimeline.new(profile: self)
-  end
-
-  sig { override.returns(String) }
-  def timeline_key
-    "timeline:profile:#{id}"
   end
 
   sig { params(target_profile: Profile).returns(T::Boolean) }

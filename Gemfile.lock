@@ -66,6 +66,8 @@ GEM
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 2.0.8, < 4)
       railties (>= 6.1)
+    activerecord_cursor_paginate (0.1.0)
+      activerecord (>= 7.0)
     activestorage (7.1.2)
       actionpack (= 7.1.2)
       activejob (= 7.1.2)
@@ -309,10 +311,6 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     rdoc (6.6.2)
       psych (>= 4.0.0)
-    redis (5.0.8)
-      redis-client (>= 0.17.0)
-    redis-client (0.17.1)
-      connection_pool
     regexp_parser (2.9.0)
     reline (0.4.2)
       io-console (~> 0.5)
@@ -458,6 +456,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-session_store
+  activerecord_cursor_paginate
   addressable
   alba
   bcrypt
@@ -466,7 +465,6 @@ DEPENDENCIES
   capybara
   committee
   committee-rails
-  connection_pool
   counter_culture
   cssbundling-rails
   cuprite
@@ -493,7 +491,6 @@ DEPENDENCIES
   rails (~> 7.1.2)
   rails-i18n
   rails_autolink
-  redis
   resend
   rspec-rails
   rubocop-factory_bot

@@ -11,7 +11,7 @@ RSpec.describe CreatePostUseCase do
     create(:oauth_application, :mewst_web)
 
     allow(viewer).to receive(:home_timeline).and_return(home_timeline)
-    allow(home_timeline).to receive(:add_post)
+    allow(home_timeline).to receive(:add_post!)
 
     allow(FanoutPostJob).to receive(:perform_later)
   end
@@ -26,7 +26,7 @@ RSpec.describe CreatePostUseCase do
     expect(post.content).to eq("hello")
     expect(viewer.profile.last_post_at).to eq(post.published_at)
 
-    expect(home_timeline).to have_received(:add_post).exactly(1).time
+    expect(home_timeline).to have_received(:add_post!).exactly(1).time
     expect(FanoutPostJob).to have_received(:perform_later).exactly(1).time
 
     expect(result.post).to eq(post)
