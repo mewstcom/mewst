@@ -12,14 +12,15 @@ class Profiles::ShowController < ApplicationController
     @profile = Profile.kept.find_by!(atname: params[:atname])
     @follow_checker = FollowChecker.new(profile: current_actor&.profile, target_profiles: [@profile])
 
-    result = Paginator.new(records: @profile.posts.kept).paginate(
-      before: params[:before].presence,
+    page = @profile.posts.kept.cursor_paginate(
       after: params[:after].presence,
-      limit: 15
-    )
+      before: params[:before].presence,
+      limit: 15,
+      order: {published_at: :desc, id: :desc}
+    ).fetch
 
-    @posts = result.records
-    @page_info = result.page_info
+    @posts = page.records
+    @page_info = PageInfo.from_cursor_paginate_page(page:)
     @stamp_checker = StampChecker.new(profile: current_actor&.profile, posts: @posts)
   end
 end
