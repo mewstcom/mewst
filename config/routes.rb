@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   match "/api/v1/timeline",                                                      via: :get,    as: :v1_timeline,                                    to: "api/v1/timeline/show#call"
   match "/api/v1/users/me",                                                      via: :get,    as: :v1_user_me,                                     to: "api/v1/users/me/show#call"
   match "/api/v1/users/me",                                                      via: :patch,                                                       to: "api/v1/users/me/update#call"
+  match "/community",                                                            via: :get,    as: :community,                                      to: "communities/show#call"
   match "/email_confirmations",                                                  via: :post,   as: :email_confirmation_list,                        to: "email_confirmations/create#call"
   match "/email_confirmations/new",                                              via: :get,    as: :new_email_confirmation,                         to: "email_confirmations/new#call"
   match "/home",                                                                 via: :get,    as: :home,                                           to: "home/show#call"

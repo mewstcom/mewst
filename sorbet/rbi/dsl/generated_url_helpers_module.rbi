@@ -18,6 +18,9 @@ module GeneratedUrlHelpersModule
   def api_v1_users_me_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def community_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
