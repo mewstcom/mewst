@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   match "/posts/:post_id",                                                       via: :delete, as: :post,                                           to: "posts/destroy#call"
   match "/posts/:post_id/stamp",                                                 via: :delete, as: :post_stamp,                                     to: "stamps/destroy#call"
   match "/posts/:post_id/stamp",                                                 via: :post,                                                        to: "stamps/create#call"
+  match "/privacy",                                                              via: :get,    as: :privacy,                                        to: "privacies/show#call"
   match "/search",                                                               via: :get,    as: :search,                                         to: "search/show#call"
   match "/settings",                                                             via: :get,    as: :settings,                                       to: "settings/index#call"
   match "/settings/profile",                                                     via: :get,    as: :settings_profile,                               to: "settings/profiles/show#call"
@@ -60,6 +61,7 @@ Rails.application.routes.draw do
   match "/sign_out",                                                             via: :get,    as: :sign_out,                                       to: "sign_out/show#call"
   match "/sign_up",                                                              via: :get,    as: :sign_up,                                        to: "sign_up/new#call"
   match "/sign_up",                                                              via: :post,                                                        to: "sign_up/create#call"
+  match "/terms",                                                                via: :get,    as: :terms,                                          to: "terms/show#call"
   # standard:enable Layout/ExtraSpacing, Rails/MatchRoute
 
   root "welcome/show#call"
