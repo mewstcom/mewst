@@ -2,4 +2,5 @@
 
 Mewstに関することは以下のソーシャルメディアで発信しています。
 
-- TODO: ソーシャルメディアのリンクを貼る
+- [Bluesky](https://bsky.app/profile/mewst.com)
+- [Threads](https://www.threads.net/@mewstcom)
