@@ -4,4 +4,7 @@
 class Mewst::Application
   def self.config_for(*args)
   end
+
+  def self.send_file(*args)
+  end
 end

@@ -18,6 +18,9 @@ module GeneratedPathHelpersModule
   def api_v1_users_me_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def community_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
