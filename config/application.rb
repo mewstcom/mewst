@@ -56,7 +56,7 @@ module Mewst
 
     config.middleware.insert_before(Rack::Runtime, Rack::Rewrite) do
       maintenance_file = Rails.public_path.join("maintenance.html")
-      send_file(/(.*)$(?<!maintenance|favicons)/, maintenance_file.to_s, if: proc { |rack_env|
+      send_file(/(.*)$(?<!maintenance|favicons|community)/, maintenance_file.to_s, if: proc { |rack_env|
         ip_address = rack_env["HTTP_CF_CONNECTING_IP"]
 
         File.exist?(maintenance_file) &&
