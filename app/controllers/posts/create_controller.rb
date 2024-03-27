@@ -25,7 +25,7 @@ class Posts::CreateController < ApplicationController
 
     @post = result.post
     @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: [@post])
-    @form = PostForm.new
+    @form = PostForm.new(with_frame: true)
 
     render(content_type: "text/vnd.turbo-stream.html", layout: false)
   end
