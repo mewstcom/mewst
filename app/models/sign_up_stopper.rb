@@ -6,6 +6,6 @@ class SignUpStopper
 
   sig { returns(T::Boolean) }
   def self.enabled?
-    Rails.configuration.mewst["sign_up_stopper_enabled"] == "true"
+    Rails.configuration.mewst["sign_up_stopper_enabled"] == true
   end
 end
