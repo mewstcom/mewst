@@ -69,7 +69,7 @@ Rails.application.configure do
   # ここから独自の設定
   # -----------------------------------------------------------------------------------------
 
-  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_WEB_HOST"), port: ENV.fetch("MEWST_PORT")}
+  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_HOST"), port: ENV.fetch("MEWST_PORT")}
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     user_name: ENV.fetch("MEWST_SMTP_USERNAME"),
@@ -81,9 +81,8 @@ Rails.application.configure do
   }
 
   config.hosts += [
-    ENV.fetch("MEWST_API_HOST"),
-    ENV.fetch("MEWST_WEB_HOST"),
-    "www.#{ENV.fetch("MEWST_WEB_HOST")}"
+    ENV.fetch("MEWST_HOST"),
+    "www.#{ENV.fetch("MEWST_HOST")}"
   ]
 
   config.after_initialize do

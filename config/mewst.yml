@@ -1,8 +1,6 @@
 shared:
-  api_url: <%= ENV["MEWST_API_URL"] %>
   community_url: <%= ENV["MEWST_COMMUNITY_URL"] %>
   email_domain: <%= ENV["MEWST_EMAIL_DOMAIN"] %>
-  internal_api_token: <%= ENV["MEWST_INTERNAL_API_TOKEN"] %>
   privacy_url: <%= ENV["MEWST_PRIVACY_URL"] %>
   resend_api_key: <%= ENV["MEWST_RESEND_API_KEY"] %>
   reserved_atnames:
@@ -19,4 +17,4 @@ shared:
   sentry_dsn: <%= ENV["MEWST_SENTRY_DSN"] %>
   sign_up_stopper_enabled: <%= ENV["MEWST_SIGN_UP_STOPPER_ENABLED"] %>
   terms_url: <%= ENV["MEWST_TERMS_URL"] %>
-  web_url: <%= ENV["MEWST_WEB_URL"] %>
+  url: <%= ENV["MEWST_URL"] %>
