@@ -2,7 +2,7 @@
 <% set_meta_tags(title:, reverse: false) %>
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
-  <div class="container mx-auto px-3 py-5">
+  <%= render Containers::BasicContainerComponent.new do %>
     <h1 class="bg-primary font-bold inline-block px-3 py-1 rounded-full">
       <%= t("nouns.mewst_kana") %>
     </h1>
@@ -20,5 +20,5 @@
         </li>
       </ul>
     </div>
-  </div>
+  <% end %>
 <% end %>
