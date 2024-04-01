@@ -2,7 +2,7 @@
 <% set_meta_tags(title:) %>
 
 <%= render ::Layouts::SimpleLayoutComponent.new do %>
-  <div class="container max-w-2xl mx-auto">
+  <%= render Containers::BasicContainerComponent.new do %>
     <div class="text-center">
       <div class="mt-12">
         <%= link_to root_path, class: "inline-block" do %>
@@ -44,5 +44,5 @@
         <% end %>
       </div>
     </div>
-  </div>
+  <% end %>
 <% end %>
