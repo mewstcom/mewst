@@ -20,16 +20,28 @@
       <%= tag.i(class: icon_class_name("person-circle")) %>
     <% end %>
   <% else %>
-    <%= link_to home_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("house")) %>
+    <%= link_to home_path, class: link_with_text_class_name do %>
+      <%= tag.i(class: icon_with_text_class_name("house")) %>
+
+      <%= tag.div(class: text_class_name) do %>
+        <%= t("nouns.home") %>
+      <% end %>
     <% end %>
 
-    <%= link_to sign_up_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("rocket-takeoff")) %>
+    <%= link_to sign_up_path, class: link_with_text_class_name do %>
+      <%= tag.i(class: icon_with_text_class_name("rocket-takeoff")) %>
+
+      <%= tag.div(class: text_class_name) do %>
+        <%= t("nouns.sign_up") %>
+      <% end %>
     <% end %>
 
-    <%= link_to sign_in_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("box-arrow-in-right")) %>
+    <%= link_to sign_in_path, class: link_with_text_class_name do %>
+      <%= tag.i(class: icon_with_text_class_name("box-arrow-in-right")) %>
+
+      <%= tag.div(class: text_class_name) do %>
+        <%= t("nouns.sign_in") %>
+      <% end %>
     <% end %>
   <% end %>
 </div>
