@@ -1,21 +1,11 @@
 <%= render CardComponent.new do %>
   <%= render CardBodyComponent.new do %>
-    <div class="flex flex-row gap-2">
-      <div class="flex-none">
-        <%= link_to profile_path(post.profile.atname) do %>
-          <%= render Images::AvatarImageComponent.new(profile: post.profile, width: 36, class_name: "w-[36px]") %>
-        <% end %>
-      </div>
+    <%= render Cards::PostCard::HeaderComponent.new(post:) %>
 
-      <div class="flex-1">
-        <%= render Cards::PostCard::HeaderComponent.new(post:) %>
+    <%= render Cards::PostCard::BodyComponent.new(post:) %>
 
-        <%= render Cards::PostCard::BodyComponent.new(post:) %>
-
-        <div class="mt-4">
-          <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
-        </div>
-      </div>
+    <div class="mt-4">
+      <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
     </div>
   <% end %>
 <% end %>
