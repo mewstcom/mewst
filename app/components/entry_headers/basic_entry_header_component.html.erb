@@ -1,7 +1,7 @@
 <div class="content-start flex gap-2">
   <div class="flex-none">
-    <%= link_to profile_path(post.profile.atname) do %>
-      <%= render Images::AvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
+    <%= link_to profile_path(profile.atname) do %>
+      <%= render Images::AvatarImageComponent.new(profile:, width: 50, class_name: "w-[50px]") %>
     <% end %>
   </div>
 
@@ -15,9 +15,11 @@
     </div>
   <% end %>
 
-  <%= link_to(
-    mst_time_ago_in_words(post.published_at),
-    profile_post_path(profile.atname, post.id),
-    class: "flex-none text-gray-500 text-sm"
-  ) %>
+  <% if detail_path.nil? %>
+    <div class="flex-none text-gray-500 text-sm">
+      <%= mst_time_ago_in_words(time) %>
+    </div>
+  <% else %>
+    <%= link_to(mst_time_ago_in_words(time), detail_path, class: "flex-none text-gray-500 text-sm") %>
+  <% end %>
 </div>

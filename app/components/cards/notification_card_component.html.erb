@@ -1,44 +1,12 @@
 <%= render CardComponent.new do %>
   <%= render CardBodyComponent.new do %>
-    <div class="flex flex-row gap-2">
-      <div class="flex-none">
-        <%= link_to profile_path(source_profile.atname) do %>
-          <%= render Images::AvatarImageComponent.new(profile: source_profile, width: 40, class_name: "w-[40px]") %>
-        <% end %>
-      </div>
+    <%= render EntryHeaders::BasicEntryHeaderComponent.new(profile: source_profile, time: notification.notified_at) %>
 
-      <div class="flex-1">
-        <div>
-          <%= link_to profile_path(source_profile.atname) do %>
-            <% if source_profile.name.present? %>
-              <span class="font-bold">
-                <%= source_profile.name %>
-              </span>
-            <% end %>
-
-            <span class="text-gray-500">
-              @<%= source_profile.atname %>
-            </span>
-          <% end %>
-
-          <span class="text-gray-500">
-            ·
-          </span>
-
-          <span class="text-gray-500 text-sm">
-            <%= mst_time_ago_in_words(notification.notified_at) %>
-          </span>
-        </div>
-
-        <div class="">
-          <% case notification.deserialized_notifiable_type %>
-          <% when NotifiableType::Stamp %>
-            <%= render Cards::NotificationCard::StampNotificationComponent.new(
-              stamp_notification: notification.stamp_notification.not_nil!
-            ) %>
-          <% end %>
-        </div>
-      </div>
-    </div>
+    <% case notification.deserialized_notifiable_type %>
+    <% when NotifiableType::Stamp %>
+      <%= render Cards::NotificationCard::StampNotificationComponent.new(
+        stamp_notification: notification.stamp_notification.not_nil!
+      ) %>
+    <% end %>
   <% end %>
 <% end %>
