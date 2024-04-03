@@ -63,6 +63,9 @@ module GeneratedUrlHelpersModule
   def preview_view_components_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def privacy_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def profile_atom_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -112,6 +115,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def terms_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def v1_follow_url(*args); end

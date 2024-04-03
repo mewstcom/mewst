@@ -63,6 +63,9 @@ module GeneratedPathHelpersModule
   def preview_view_components_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def privacy_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def profile_atom_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -112,6 +115,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def terms_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def v1_follow_path(*args); end
