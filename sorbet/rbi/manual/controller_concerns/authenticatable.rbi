@@ -17,6 +17,9 @@ module ControllerConcerns::Authenticatable
   def redirect_to(*args)
   end
 
+  def request
+  end
+
   def reset_session
   end
 

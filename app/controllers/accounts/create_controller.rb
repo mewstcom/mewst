@@ -34,7 +34,7 @@ class Accounts::CreateController < ApplicationController
 
     create_session_result = CreateSessionUseCase.new.call(
       actor: create_account_result.actor,
-      ip_address: request.remote_ip,
+      ip_address: actual_remote_ip,
       user_agent: request.user_agent
     )
 
