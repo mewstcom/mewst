@@ -327,6 +327,22 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sessions (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    actor_id uuid NOT NULL,
+    token character varying NOT NULL,
+    ip_address character varying DEFAULT ''::character varying NOT NULL,
+    user_agent character varying DEFAULT ''::character varying NOT NULL,
+    signed_in_at timestamp(6) without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: stamp_notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -389,9 +405,6 @@ CREATE TABLE public.users (
     email public.citext NOT NULL,
     password_digest character varying NOT NULL,
     locale character varying NOT NULL,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_signed_in_at timestamp without time zone,
-    last_signed_in_at timestamp without time zone,
     signed_up_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
@@ -533,6 +546,14 @@ ALTER TABLE ONLY public.profiles
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
 
 
 --
@@ -870,6 +891,20 @@ CREATE INDEX index_profiles_on_last_post_at ON public.profiles USING btree (last
 
 
 --
+-- Name: index_sessions_on_actor_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sessions_on_actor_id ON public.sessions USING btree (actor_id);
+
+
+--
+-- Name: index_sessions_on_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_sessions_on_token ON public.sessions USING btree (token);
+
+
+--
 -- Name: index_stamp_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1011,6 +1046,14 @@ ALTER TABLE ONLY public.stamp_notifications
 
 
 --
+-- Name: sessions fk_rails_6473050c7b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT fk_rails_6473050c7b FOREIGN KEY (actor_id) REFERENCES public.actors(id);
+
+
+--
 -- Name: stamps fk_rails_6933333714; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1137,6 +1180,8 @@ ALTER TABLE ONLY public.home_timeline_posts
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240404162020'),
+('20240403174827'),
 ('20240324094358'),
 ('20240304164746'),
 ('20240115144966'),

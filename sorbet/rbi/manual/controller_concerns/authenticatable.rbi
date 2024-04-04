@@ -5,6 +5,9 @@ module ControllerConcerns::Authenticatable
   def self.helper_method(*args)
   end
 
+  def cookies
+  end
+
   def flash
   end
 

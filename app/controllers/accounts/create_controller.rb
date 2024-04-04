@@ -24,7 +24,7 @@ class Accounts::CreateController < ApplicationController
       return render("accounts/new/call", status: :unprocessable_entity)
     end
 
-    result = CreateAccountUseCase.new.call(
+    create_account_result = CreateAccountUseCase.new.call(
       atname: @form.atname.not_nil!,
       email: @form.email.not_nil!,
       locale: @form.locale.not_nil!,
@@ -32,8 +32,13 @@ class Accounts::CreateController < ApplicationController
       time_zone: @form.time_zone.not_nil!
     )
 
-    reset_session
-    sign_in(result.actor)
+    create_session_result = CreateSessionUseCase.new.call(
+      actor: create_account_result.actor,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent
+    )
+
+    sign_in(create_session_result.session)
 
     flash[:notice] = t("messages.accounts.signed_up_successfully")
     redirect_to home_path

@@ -7,7 +7,6 @@ ruby "3.2.2"
 
 gem "rails", "~> 7.1.2"
 
-gem "activerecord-session_store"
 gem "activerecord_cursor_paginate"
 gem "addressable"
 gem "alba"
