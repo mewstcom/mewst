@@ -8,7 +8,7 @@ class Session < ApplicationRecord
 
   belongs_to :actor
 
-  sig { params(ip_address: String, user_agent: String, signed_in_at: ActiveSupport::TimeWithZone).returns(T.self_type) }
+  sig { params(ip_address: String, user_agent: String, signed_in_at: ActiveSupport::TimeWithZone).returns(Session) }
   def self.start!(ip_address:, user_agent:, signed_in_at: Time.current)
     create!(ip_address:, user_agent:, signed_in_at:)
   end
