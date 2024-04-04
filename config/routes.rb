@@ -58,7 +58,7 @@ Rails.application.routes.draw do
   match "/settings/user",                                                        via: :patch,                                                       to: "settings/users/update#call"
   match "/sign_in",                                                              via: :get,    as: :sign_in,                                        to: "sessions/new#call"
   match "/sign_in",                                                              via: :post,                                                        to: "sessions/create#call"
-  match "/sign_out",                                                             via: :get,    as: :sign_out,                                       to: "sign_out/show#call"
+  match "/sign_out",                                                             via: :delete, as: :sign_out,                                       to: "sessions/destroy#call"
   match "/sign_up",                                                              via: :get,    as: :sign_up,                                        to: "sign_up/new#call"
   match "/sign_up",                                                              via: :post,                                                        to: "sign_up/create#call"
   match "/terms",                                                                via: :get,    as: :terms,                                          to: "terms/show#call"

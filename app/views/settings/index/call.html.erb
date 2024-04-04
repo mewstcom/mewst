@@ -30,7 +30,7 @@
         </ul>
 
         <div class="mt-3 text-center">
-          <%= link_to t("nouns.sign_out"), sign_out_path, class: "link link-info" %>
+          <%= button_to t("nouns.sign_out"), sign_out_path, class: "btn btn-link no-animation text-info", method: :delete %>
         </div>
       <% end %>
     <% end %>

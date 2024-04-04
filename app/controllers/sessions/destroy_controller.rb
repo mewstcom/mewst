@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class SignOut::ShowController < ApplicationController
+class Sessions::DestroyController < ApplicationController
   include ControllerConcerns::Authenticatable
   include ControllerConcerns::Localizable
 
