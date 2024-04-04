@@ -3,15 +3,15 @@
 
 class CreateSessionUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :actor, Actor
+    const :session, Session
   end
 
-  sig { params(user: User).returns(Result) }
-  def call(user:)
-    ActiveRecord::Base.transaction do
-      user.track_sign_in
+  sig { params(actor: Actor, ip_address: String, user_agent: String).returns(Result) }
+  def call(actor:, ip_address:, user_agent:)
+    session = ActiveRecord::Base.transaction do
+      actor.sessions.start!(ip_address:, user_agent:)
     end
 
-    Result.new(actor: user.first_actor)
+    Result.new(session:)
   end
 end

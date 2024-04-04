@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class SignIn::NewController < ApplicationController
+class Sessions::NewController < ApplicationController
   include ControllerConcerns::Authenticatable
   include ControllerConcerns::Localizable
 

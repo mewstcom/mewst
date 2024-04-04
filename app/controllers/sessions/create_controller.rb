@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-class SignIn::CreateController < ApplicationController
+class Sessions::CreateController < ApplicationController
   include ControllerConcerns::Authenticatable
   include ControllerConcerns::Localizable
 
@@ -13,12 +13,16 @@ class SignIn::CreateController < ApplicationController
     @form = SessionForm.new(form_params)
 
     if @form.invalid?
-      return render("sign_in/new/call", status: :unprocessable_entity)
+      return render("sessions/new/call", status: :unprocessable_entity)
     end
 
-    result = CreateSessionUseCase.new.call(user: @form.user.not_nil!)
+    result = CreateSessionUseCase.new.call(
+      actor: @form.user.first_actor,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent
+    )
 
-    sign_in(result.actor)
+    sign_in(result.session)
 
     flash[:notice] = t("messages.accounts.signed_in_successfully")
     redirect_to home_path

@@ -9,23 +9,27 @@ module ControllerConcerns::Authenticatable
     helper_method :current_actor, :current_actor!, :signed_in?
   end
 
-  sig(:final) { params(actor: Actor).returns(T::Boolean) }
-  def sign_in(actor)
-    session[:current_actor_id] = actor.id
+  sig(:final) { params(session: Session).returns(T::Boolean) }
+  def sign_in(session)
+    cookies.signed.permanent[Session::COOKIE_KEY] = {
+      value: session.token,
+      httponly: true,
+      same_site: :lax
+    }
     true
   end
 
   sig(:final) { returns(T::Boolean) }
   def sign_out
-    reset_session
+    cookies.delete(Session::COOKIE_KEY)
     true
   end
 
   sig(:final) { returns(T.nilable(Actor)) }
   def current_actor
     @current_actor ||= T.let(begin
-      return unless session[:current_actor_id]
-      Actor.find_by(id: session[:current_actor_id])
+      return unless cookies.signed[Session::COOKIE_KEY]
+      Session.find_by(token: cookies.signed[Session::COOKIE_KEY])&.actor
     end, T.nilable(Actor))
   end
 
