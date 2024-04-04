@@ -59,7 +59,7 @@ module ControllerConcerns::Authenticatable
   end
 
   sig(:final) { returns(T.nilable(String)) }
-  def actual_remote_ip
+  def original_remote_ip
     request.env["HTTP_CF_CONNECTING_IP"] || request.remote_ip
   end
 end

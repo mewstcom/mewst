@@ -18,7 +18,7 @@ class Sessions::CreateController < ApplicationController
 
     result = CreateSessionUseCase.new.call(
       actor: @form.user.not_nil!.first_actor,
-      ip_address: actual_remote_ip,
+      ip_address: original_remote_ip,
       user_agent: request.user_agent
     )
 
