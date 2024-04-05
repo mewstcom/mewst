@@ -54,6 +54,7 @@ end
 
 group :development do
   gem "bullet"
+  gem "letter_opener_web"
   gem "sorbet"
   gem "tapioca", ">= 0.10.5", require: false
   gem "web-console"

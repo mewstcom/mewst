@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
+
   # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                                             via: :get,    as: :profile,                                        to: "profiles/show#call"
   match "/@:atname/atom",                                                        via: :get,    as: :profile_atom,                                   to: "profiles/atom/show#call"

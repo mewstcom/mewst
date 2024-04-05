@@ -30,6 +30,9 @@ module GeneratedPathHelpersModule
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def letter_opener_web_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_account_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
