@@ -385,8 +385,8 @@
 #
 # Although IMAP4rev2[https://tools.ietf.org/html/rfc9051] is not supported
 # yet, Net::IMAP supports several extensions that have been folded into it:
-# +ENABLE+, +IDLE+, +MOVE+, +NAMESPACE+, +SASL-IR+, +UIDPLUS+, +UNSELECT+, and
-# the fetch side of +BINARY+.
+# +ENABLE+, +IDLE+, +MOVE+, +NAMESPACE+, +SASL-IR+, +UIDPLUS+, +UNSELECT+,
+# <tt>STATUS=SIZE</tt>, and the fetch side of +BINARY+.
 # Commands for these extensions are listed with the {Core IMAP
 # commands}[rdoc-ref:Net::IMAP@Core+IMAP+commands], above.
 #
@@ -394,9 +394,7 @@
 #   <em>The following are folded into +IMAP4rev2+ but are currently
 #   unsupported or incompletely supported by</em> Net::IMAP<em>: RFC4466
 #   extensions, +ESEARCH+, +SEARCHRES+, +LIST-EXTENDED+, +LIST-STATUS+,
-#   +LITERAL-+, and +SPECIAL-USE+.  The following extensions are implicitly
-#   supported, but will be updated with more direct support: RFC5530 response
-#   codes, <tt>STATUS=SIZE</tt>, and <tt>STATUS=DELETED</tt>.</em>
+#   +LITERAL-+, and +SPECIAL-USE+.</em>
 #
 # ==== RFC2087: +QUOTA+
 # - #getquota: returns the resource usage and limits for a quota root
@@ -484,6 +482,25 @@
 # ==== RFC6855: <tt>UTF8=ACCEPT</tt>, <tt>UTF8=ONLY</tt>
 #
 # - See #enable for information about support for UTF-8 string encoding.
+#
+# ==== RFC7162: +CONDSTORE+
+#
+# - Updates #enable with +CONDSTORE+ parameter.  +CONDSTORE+ will also be
+#   enabled by using any of the extension's command parameters, listed below.
+# - Updates #status with the +HIGHESTMODSEQ+ status attribute.
+# - Updates #select and #examine with the +condstore+ modifier, and adds
+#   either a +HIGHESTMODSEQ+ or +NOMODSEQ+ ResponseCode to the responses.
+# - Updates #search, #uid_search, #sort, and #uid_sort with the +MODSEQ+
+#   search criterion, and adds SearchResult#modseq to the search response.
+# - Updates #thread and #uid_thread with the +MODSEQ+ search criterion
+#   <em>(but thread responses are unchanged)</em>.
+# - Updates #fetch and #uid_fetch with the +changedsince+ modifier and
+#   +MODSEQ+ FetchData attribute.
+# - Updates #store and #uid_store with the +unchangedsince+ modifier and adds
+#   the +MODIFIED+ ResponseCode to the tagged response.
+#
+# ==== RFC8438: <tt>STATUS=SIZE</tt>
+# - Updates #status with the +SIZE+ status attribute.
 #
 # ==== RFC8474: +OBJECTID+
 # - Adds +MAILBOXID+ ResponseCode to #create tagged response.
@@ -649,6 +666,16 @@
 #   Resnick, P., Ed., Newman, C., Ed., and S. Shen, Ed.,
 #   "IMAP Support for UTF-8", RFC 6855, DOI 10.17487/RFC6855, March 2013,
 #   <https://www.rfc-editor.org/info/rfc6855>.
+# [CONDSTORE[https://tools.ietf.org/html/rfc7162]]::
+# [QRESYNC[https://tools.ietf.org/html/rfc7162]]::
+#   Melnikov, A. and D. Cridland, "IMAP Extensions: Quick Flag Changes
+#   Resynchronization (CONDSTORE) and Quick Mailbox Resynchronization
+#   (QRESYNC)", RFC 7162, DOI 10.17487/RFC7162, May 2014,
+#   <https://www.rfc-editor.org/info/rfc7162>.
+# [OBJECTID[https://tools.ietf.org/html/rfc8474]]::
+#   Gondwana, B., Ed., "IMAP Extension for Object Identifiers",
+#   RFC 8474, DOI 10.17487/RFC8474, September 2018,
+#   <https://www.rfc-editor.org/info/rfc8474>.
 #
 # === IANA registries
 # * {IMAP Capabilities}[http://www.iana.org/assignments/imap4-capabilities]
@@ -670,7 +697,7 @@
 # * {IMAP URLAUTH Access Identifiers and Prefixes}[https://www.iana.org/assignments/urlauth-access-ids/urlauth-access-ids.xhtml]
 # * {IMAP URLAUTH Authorization Mechanism Registry}[https://www.iana.org/assignments/urlauth-authorization-mechanism-registry/urlauth-authorization-mechanism-registry.xhtml]
 #
-# source://net-imap//lib/net/imap.rb#692
+# source://net-imap//lib/net/imap.rb#719
 class Net::IMAP < ::Net::Protocol
   include ::Net::IMAP::DeprecatedClientOptions
   include ::MonitorMixin
@@ -777,7 +804,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @raise [ArgumentError]
   #
-  # source://net-imap//lib/net/imap.rb#2438
+  # source://net-imap//lib/net/imap.rb#2563
   def add_response_handler(handler = T.unsafe(nil), &block); end
 
   # Sends an {APPEND command [IMAP4rev1 §6.3.11]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.11]
@@ -812,7 +839,7 @@ class Net::IMAP < ::Net::Protocol
   # TODO: add MULTIAPPEND support
   # ++
   #
-  # source://net-imap//lib/net/imap.rb#1783
+  # source://net-imap//lib/net/imap.rb#1831
   def append(mailbox, message, flags = T.unsafe(nil), date_time = T.unsafe(nil)); end
 
   # Returns whether the server supports a given SASL +mechanism+ for use with
@@ -829,7 +856,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#1000
+  # source://net-imap//lib/net/imap.rb#1027
   def auth_capable?(mechanism); end
 
   # Returns the #authenticate mechanisms that the server claims to support.
@@ -853,7 +880,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #authenticate, #auth_capable?, #capabilities
   #
-  # source://net-imap//lib/net/imap.rb#983
+  # source://net-imap//lib/net/imap.rb#1010
   def auth_mechanisms; end
 
   # :call-seq:
@@ -963,7 +990,7 @@ class Net::IMAP < ::Net::Protocol
   # completes.  If the TaggedResponse to #authenticate includes updated
   # capabilities, they will be cached.
   #
-  # source://net-imap//lib/net/imap.rb#1279
+  # source://net-imap//lib/net/imap.rb#1306
   def authenticate(mechanism, *creds, sasl_ir: T.unsafe(nil), **props, &callback); end
 
   # Returns the server capabilities.  When available, cached capabilities are
@@ -978,7 +1005,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #capable?, #auth_capable?, #auth_mechanisms, #capability, #enable
   #
-  # source://net-imap//lib/net/imap.rb#959
+  # source://net-imap//lib/net/imap.rb#986
   def capabilities; end
 
   # Returns whether capabilities have been cached.  When true, #capable? and
@@ -990,7 +1017,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#1010
+  # source://net-imap//lib/net/imap.rb#1037
   def capabilities_cached?; end
 
   # Sends a {CAPABILITY command [IMAP4rev1 §6.1.1]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.1.1]
@@ -1012,7 +1039,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #capable?, #auth_capable?, #capability, #enable
   #
-  # source://net-imap//lib/net/imap.rb#1048
+  # source://net-imap//lib/net/imap.rb#1075
   def capability; end
 
   # Returns whether the server supports a given +capability+.  When available,
@@ -1028,7 +1055,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#945
+  # source://net-imap//lib/net/imap.rb#972
   def capability?(capability); end
 
   # Returns whether the server supports a given +capability+.  When available,
@@ -1044,7 +1071,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#945
+  # source://net-imap//lib/net/imap.rb#972
   def capable?(capability); end
 
   # Sends a {CHECK command [IMAP4rev1 §6.4.1]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.1]
@@ -1054,7 +1081,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #idle, #noop
   #
-  # source://net-imap//lib/net/imap.rb#1799
+  # source://net-imap//lib/net/imap.rb#1847
   def check; end
 
   # Clears capabilities that have been remembered by the Net::IMAP client.
@@ -1067,7 +1094,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #capable?, #capability, #capabilities_cached?
   #
-  # source://net-imap//lib/net/imap.rb#1023
+  # source://net-imap//lib/net/imap.rb#1050
   def clear_cached_capabilities; end
 
   # :call-seq:
@@ -1082,10 +1109,10 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #responses, #response_handlers
   #
-  # source://net-imap//lib/net/imap.rb#2395
+  # source://net-imap//lib/net/imap.rb#2520
   def clear_responses(type = T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap.rb#898
+  # source://net-imap//lib/net/imap.rb#925
   def client_thread; end
 
   # Sends a {CLOSE command [IMAP4rev1 §6.4.2]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.2]
@@ -1095,7 +1122,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #unselect
   #
-  # source://net-imap//lib/net/imap.rb#1809
+  # source://net-imap//lib/net/imap.rb#1857
   def close; end
 
   # Sends a {COPY command [IMAP4rev1 §6.4.7]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.7]
@@ -1113,7 +1140,7 @@ class Net::IMAP < ::Net::Protocol
   # mailbox, the UID set of the source messages, and the assigned UID set of
   # the moved messages.
   #
-  # source://net-imap//lib/net/imap.rb#2044
+  # source://net-imap//lib/net/imap.rb#2162
   def copy(set, mailbox); end
 
   # Sends a {CREATE command [IMAP4rev1 §6.3.3]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.3]
@@ -1124,7 +1151,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #rename, #delete
   #
-  # source://net-imap//lib/net/imap.rb#1389
+  # source://net-imap//lib/net/imap.rb#1431
   def create(mailbox); end
 
   # Sends a {DELETE command [IMAP4rev1 §6.3.4]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.4]
@@ -1136,14 +1163,14 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #create, #rename
   #
-  # source://net-imap//lib/net/imap.rb#1401
+  # source://net-imap//lib/net/imap.rb#1443
   def delete(mailbox); end
 
   # Disconnects from the server.
   #
   # Related: #logout, #logout!
   #
-  # source://net-imap//lib/net/imap.rb#906
+  # source://net-imap//lib/net/imap.rb#933
   def disconnect; end
 
   # Returns true if disconnected from the server.
@@ -1152,7 +1179,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#931
+  # source://net-imap//lib/net/imap.rb#958
   def disconnected?; end
 
   # Sends an {ENABLE command [RFC5161 §3.2]}[https://www.rfc-editor.org/rfc/rfc5161#section-3.1]
@@ -1175,6 +1202,13 @@ class Net::IMAP < ::Net::Protocol
   # Additionally, the server capabilities must include a capability matching
   # each enabled extension (usually the same name as the enabled extension).
   # The following capabilities may be enabled:
+  #
+  # [+CONDSTORE+ {[RFC7162]}[https://www.rfc-editor.org/rfc/rfc7162.html]]
+  #
+  #   Updates various commands to return +CONDSTORE+ extension responses.  It
+  #   is not necessary to explicitly enable +CONDSTORE+—using any of the
+  #   command parameters defined by the extension will implicitly enable it.
+  #   See {[RFC7162 §3.1]}[https://www.rfc-editor.org/rfc/rfc7162.html#section-3.1].
   #
   # [+:utf8+ --- an alias for <tt>"UTF8=ACCEPT"</tt>]
   #
@@ -1221,7 +1255,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # <em>Caution is advised.</em>
   #
-  # source://net-imap//lib/net/imap.rb#2248
+  # source://net-imap//lib/net/imap.rb#2373
   def enable(*capabilities); end
 
   # Sends a {EXAMINE command [IMAP4rev1 §6.3.2]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.2]
@@ -1234,8 +1268,8 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #select
   #
-  # source://net-imap//lib/net/imap.rb#1375
-  def examine(mailbox); end
+  # source://net-imap//lib/net/imap.rb#1415
+  def examine(mailbox, condstore: T.unsafe(nil)); end
 
   # Sends an {EXPUNGE command [IMAP4rev1 §6.4.3]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.3]
   # Sends a EXPUNGE command to permanently remove from the currently
@@ -1243,9 +1277,12 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #uid_expunge
   #
-  # source://net-imap//lib/net/imap.rb#1834
+  # source://net-imap//lib/net/imap.rb#1882
   def expunge; end
 
+  # :call-seq:
+  #   fetch(set, attr, changedsince: nil) -> array of FetchData
+  #
   # Sends a {FETCH command [IMAP4rev1 §6.4.5]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.5]
   # to retrieve data associated with a message in the mailbox.
   #
@@ -1260,6 +1297,9 @@ class Net::IMAP < ::Net::Protocol
   #
   # +attr+ is a list of attributes to fetch; see the documentation
   # for FetchData for a list of valid attributes.
+  #
+  # +changedsince+ is an optional integer mod-sequence.  It limits results to
+  # messages with a mod-sequence greater than +changedsince+.
   #
   # The return value is an array of FetchData.
   #
@@ -1283,8 +1323,18 @@ class Net::IMAP < ::Net::Protocol
   #   p data.attr["UID"]
   #   #=> 98
   #
-  # source://net-imap//lib/net/imap.rb#1976
-  def fetch(set, attr, mod = T.unsafe(nil)); end
+  # ===== Capabilities
+  #
+  # Many extensions define new message +attr+ names.  See FetchData for a list
+  # of supported extension fields.
+  #
+  # The server's capabilities must include +CONDSTORE+
+  # {[RFC7162]}[https://tools.ietf.org/html/rfc7162] in order to use the
+  # +changedsince+ argument.  Using +changedsince+ implicitly enables the
+  # +CONDSTORE+ extension.
+  #
+  # source://net-imap//lib/net/imap.rb#2057
+  def fetch(set, attr, mod = T.unsafe(nil), changedsince: T.unsafe(nil)); end
 
   # Sends a {GETACL command [RFC4314 §3.3]}[https://www.rfc-editor.org/rfc/rfc4314#section-3.3]
   # along with a specified +mailbox+.  If this mailbox exists, an array
@@ -1297,7 +1347,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +ACL+
   # [RFC4314[https://tools.ietf.org/html/rfc4314]].
   #
-  # source://net-imap//lib/net/imap.rb#1669
+  # source://net-imap//lib/net/imap.rb#1711
   def getacl(mailbox); end
 
   # Sends a {GETQUOTA command [RFC2087 §4.2]}[https://www.rfc-editor.org/rfc/rfc2087#section-4.2]
@@ -1312,7 +1362,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +QUOTA+
   # [RFC2087[https://tools.ietf.org/html/rfc2087]].
   #
-  # source://net-imap//lib/net/imap.rb#1613
+  # source://net-imap//lib/net/imap.rb#1655
   def getquota(mailbox); end
 
   # Sends a {GETQUOTAROOT command [RFC2087 §4.3]}[https://www.rfc-editor.org/rfc/rfc2087#section-4.3]
@@ -1327,17 +1377,17 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +QUOTA+
   # [RFC2087[https://tools.ietf.org/html/rfc2087]].
   #
-  # source://net-imap//lib/net/imap.rb#1592
+  # source://net-imap//lib/net/imap.rb#1634
   def getquotaroot(mailbox); end
 
   # Returns the initial greeting the server, an UntaggedResponse.
   #
-  # source://net-imap//lib/net/imap.rb#738
+  # source://net-imap//lib/net/imap.rb#765
   def greeting; end
 
   # The hostname this client connected to
   #
-  # source://net-imap//lib/net/imap.rb#749
+  # source://net-imap//lib/net/imap.rb#776
   def host; end
 
   # Sends an {ID command [RFC2971 §3.1]}[https://www.rfc-editor.org/rfc/rfc2971#section-3.1]
@@ -1363,7 +1413,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +ID+
   # [RFC2971[https://tools.ietf.org/html/rfc2971]].
   #
-  # source://net-imap//lib/net/imap.rb#1077
+  # source://net-imap//lib/net/imap.rb#1104
   def id(client_id = T.unsafe(nil)); end
 
   # Sends an {IDLE command [RFC2177 §3]}[https://www.rfc-editor.org/rfc/rfc6851#section-3]
@@ -1392,19 +1442,19 @@ class Net::IMAP < ::Net::Protocol
   #
   # @raise [LocalJumpError]
   #
-  # source://net-imap//lib/net/imap.rb#2286
+  # source://net-imap//lib/net/imap.rb#2411
   def idle(timeout = T.unsafe(nil), &response_handler); end
 
   # Leaves IDLE.
   #
   # Related: #idle
   #
-  # source://net-imap//lib/net/imap.rb#2318
+  # source://net-imap//lib/net/imap.rb#2443
   def idle_done; end
 
   # Seconds to wait until an IDLE response is received.
   #
-  # source://net-imap//lib/net/imap.rb#746
+  # source://net-imap//lib/net/imap.rb#773
   def idle_response_timeout; end
 
   # Sends a {LIST command [IMAP4rev1 §6.3.8]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.8]
@@ -1438,7 +1488,7 @@ class Net::IMAP < ::Net::Protocol
   # TODO: support LIST-EXTENDED extension [RFC5258].  Needed for IMAP4rev2.
   # ++
   #
-  # source://net-imap//lib/net/imap.rb#1473
+  # source://net-imap//lib/net/imap.rb#1515
   def list(refname, mailbox); end
 
   # Sends a {LOGIN command [IMAP4rev1 §6.2.3]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.2.3]
@@ -1471,7 +1521,7 @@ class Net::IMAP < ::Net::Protocol
   # The TaggedResponse to #login may include updated capabilities in its
   # ResponseCode.
   #
-  # source://net-imap//lib/net/imap.rb#1332
+  # source://net-imap//lib/net/imap.rb#1359
   def login(user, password); end
 
   # Sends a {LOGOUT command [IMAP4rev1 §6.1.3]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.1.3]
@@ -1480,7 +1530,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #disconnect, #logout!
   #
-  # source://net-imap//lib/net/imap.rb#1105
+  # source://net-imap//lib/net/imap.rb#1132
   def logout; end
 
   # Calls #logout then, after receiving the TaggedResponse for the +LOGOUT+,
@@ -1497,7 +1547,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #logout, #disconnect
   #
-  # source://net-imap//lib/net/imap.rb#1122
+  # source://net-imap//lib/net/imap.rb#1149
   def logout!; end
 
   # Sends a {LSUB command [IMAP4rev1 §6.3.9]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.9]
@@ -1509,7 +1559,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #subscribe, #unsubscribe, #list, MailboxList
   #
-  # source://net-imap//lib/net/imap.rb#1684
+  # source://net-imap//lib/net/imap.rb#1726
   def lsub(refname, mailbox); end
 
   # Sends a {MOVE command [RFC6851 §3.1]}[https://www.rfc-editor.org/rfc/rfc6851#section-3.1]
@@ -1531,7 +1581,7 @@ class Net::IMAP < ::Net::Protocol
   # mailbox, the UID set of the source messages, and the assigned UID set of
   # the moved messages.
   #
-  # source://net-imap//lib/net/imap.rb#2080
+  # source://net-imap//lib/net/imap.rb#2198
   def move(set, mailbox); end
 
   # Sends a {NAMESPACE command [RFC2342 §5]}[https://www.rfc-editor.org/rfc/rfc2342#section-5]
@@ -1585,7 +1635,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +NAMESPACE+
   # [RFC2342[https://tools.ietf.org/html/rfc2342]].
   #
-  # source://net-imap//lib/net/imap.rb#1530
+  # source://net-imap//lib/net/imap.rb#1572
   def namespace; end
 
   # Sends a {NOOP command [IMAP4rev1 §6.1.2]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.1.2]
@@ -1601,26 +1651,26 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #idle, #check
   #
-  # source://net-imap//lib/net/imap.rb#1096
+  # source://net-imap//lib/net/imap.rb#1123
   def noop; end
 
   # Seconds to wait until a connection is opened.
   # If the IMAP object cannot open a connection within this time,
   # it raises a Net::OpenTimeout exception. The default value is 30 seconds.
   #
-  # source://net-imap//lib/net/imap.rb#743
+  # source://net-imap//lib/net/imap.rb#770
   def open_timeout; end
 
   # The port this client connected to
   #
-  # source://net-imap//lib/net/imap.rb#752
+  # source://net-imap//lib/net/imap.rb#779
   def port; end
 
   # Removes the response handler.
   #
   # Related: #add_response_handler, #response_handlers
   #
-  # source://net-imap//lib/net/imap.rb#2448
+  # source://net-imap//lib/net/imap.rb#2573
   def remove_response_handler(handler); end
 
   # Sends a {RENAME command [IMAP4rev1 §6.3.5]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.5]
@@ -1633,7 +1683,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #create, #delete
   #
-  # source://net-imap//lib/net/imap.rb#1414
+  # source://net-imap//lib/net/imap.rb#1456
   def rename(mailbox, newname); end
 
   # Returns all response handlers, including those that are added internally
@@ -1650,7 +1700,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #add_response_handler, #remove_response_handler
   #
-  # source://net-imap//lib/net/imap.rb#2421
+  # source://net-imap//lib/net/imap.rb#2546
   def response_handlers; end
 
   # :call-seq:
@@ -1700,7 +1750,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #clear_responses, #response_handlers, #greeting
   #
-  # source://net-imap//lib/net/imap.rb#2373
+  # source://net-imap//lib/net/imap.rb#2498
   def responses(type = T.unsafe(nil)); end
 
   # Sends a {SEARCH command [IMAP4rev1 §6.4.4]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.4]
@@ -1708,6 +1758,10 @@ class Net::IMAP < ::Net::Protocol
   # criteria, and returns message sequence numbers.  +keys+ can either be a
   # string holding the entire search string, or a single-dimension array of
   # search keywords and arguments.
+  #
+  # Returns a SearchResult object.  SearchResult inherits from Array (for
+  # backward compatibility) but adds SearchResult#modseq when the +CONDSTORE+
+  # capability has been enabled.
   #
   # Related: #uid_search
   #
@@ -1757,7 +1811,17 @@ class Net::IMAP < ::Net::Protocol
   #   p imap.search(["SUBJECT", "hello", "NOT", "NEW"])
   #   #=> [1, 6, 7, 8]
   #
-  # source://net-imap//lib/net/imap.rb#1927
+  # ===== Capabilities
+  #
+  # If [CONDSTORE[https://www.rfc-editor.org/rfc/rfc7162.html]] is supported
+  # and enabled for the selected mailbox, a non-empty SearchResult will
+  # include a +MODSEQ+ value.
+  #   imap.select("mbox", condstore: true)
+  #   result = imap.search(["SUBJECT", "hi there", "not", "new")
+  #   #=> Net::IMAP::SearchResult[1, 6, 7, 8, modseq: 5594]
+  #   result.modseq # => 5594
+  #
+  # source://net-imap//lib/net/imap.rb#1988
   def search(keys, charset = T.unsafe(nil)); end
 
   # Sends a {SELECT command [IMAP4rev1 §6.3.1]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.1]
@@ -1769,6 +1833,12 @@ class Net::IMAP < ::Net::Protocol
   # Note that these values can change if new messages arrive during a session
   # or when existing messages are expunged; see #add_response_handler for a
   # way to detect these events.
+  #
+  # When the +condstore+ keyword argument is true, the server is told to
+  # enable the extension.  If +mailbox+ supports persistence of mod-sequences,
+  # the +HIGHESTMODSEQ+ ResponseCode will be sent as an untagged response to
+  # #select and all `FETCH` responses will include FetchData#modseq.
+  # Otherwise, the +NOMODSEQ+ ResponseCode will be sent.
   #
   # A Net::IMAP::NoResponseError is raised if the mailbox does not
   # exist or is for some reason non-selectable.
@@ -1783,8 +1853,13 @@ class Net::IMAP < ::Net::Protocol
   # UIDs:
   #   imap.responses("NO", &:last)&.code&.name == "UIDNOTSTICKY"
   #
-  # source://net-imap//lib/net/imap.rb#1359
-  def select(mailbox); end
+  # If [CONDSTORE[https://www.rfc-editor.org/rfc/rfc7162.html]] is supported,
+  # the +condstore+ keyword parameter may be used.
+  #   imap.select("mbox", condstore: true)
+  #   modseq = imap.responses("HIGHESTMODSEQ", &:last)
+  #
+  # source://net-imap//lib/net/imap.rb#1397
+  def select(mailbox, condstore: T.unsafe(nil)); end
 
   # Sends a {SETACL command [RFC4314 §3.1]}[https://www.rfc-editor.org/rfc/rfc4314#section-3.1]
   # along with +mailbox+, +user+ and the +rights+ that user is to have on that
@@ -1798,7 +1873,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +ACL+
   # [RFC4314[https://tools.ietf.org/html/rfc4314]].
   #
-  # source://net-imap//lib/net/imap.rb#1651
+  # source://net-imap//lib/net/imap.rb#1693
   def setacl(mailbox, user, rights); end
 
   # Sends a {SETQUOTA command [RFC2087 §4.1]}[https://www.rfc-editor.org/rfc/rfc2087#section-4.1]
@@ -1813,7 +1888,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +QUOTA+
   # [RFC2087[https://tools.ietf.org/html/rfc2087]].
   #
-  # source://net-imap//lib/net/imap.rb#1631
+  # source://net-imap//lib/net/imap.rb#1673
   def setquota(mailbox, quota); end
 
   # Sends a {SORT command [RFC5256 §3]}[https://www.rfc-editor.org/rfc/rfc5256#section-3]
@@ -1839,7 +1914,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +SORT+
   # [RFC5256[https://tools.ietf.org/html/rfc5256]].
   #
-  # source://net-imap//lib/net/imap.rb#2124
+  # source://net-imap//lib/net/imap.rb#2242
   def sort(sort_keys, search_keys, charset); end
 
   # Returns the
@@ -1849,7 +1924,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Returns +nil+ for a plaintext connection.
   #
-  # source://net-imap//lib/net/imap.rb#760
+  # source://net-imap//lib/net/imap.rb#787
   def ssl_ctx; end
 
   # Returns the parameters that were sent to #ssl_ctx
@@ -1858,7 +1933,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Returns +false+ for a plaintext connection.
   #
-  # source://net-imap//lib/net/imap.rb#767
+  # source://net-imap//lib/net/imap.rb#794
   def ssl_ctx_params; end
 
   # Sends a {STARTTLS command [IMAP4rev1 §6.2.1]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.2.1]
@@ -1894,7 +1969,7 @@ class Net::IMAP < ::Net::Protocol
   # source://net-imap//lib/net/imap/deprecated_client_options.rb#104
   def starttls(*deprecated, **options); end
 
-  # Sends a {STATUS commands [IMAP4rev1 §6.3.10]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.10]
+  # Sends a {STATUS command [IMAP4rev1 §6.3.10]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.10]
   # and returns the status of the indicated +mailbox+. +attr+ is a list of one
   # or more attributes whose statuses are to be requested.
   #
@@ -1921,10 +1996,13 @@ class Net::IMAP < ::Net::Protocol
   #     The approximate size of the mailbox---must be greater than or equal to
   #     the sum of all messages' +RFC822.SIZE+ fetch item values.
   #
+  # +HIGHESTMODSEQ+::
+  #    The highest mod-sequence value of all messages in the mailbox.  See
+  #    +CONDSTORE+ {[RFC7162]}[https://www.rfc-editor.org/rfc/rfc7162.html].
+  #
   # +MAILBOXID+::
-  #     A server-allocated unique _string_ identifier for the mailbox.
-  #     See +OBJECTID+
-  #     {[RFC8474]}[https://www.rfc-editor.org/rfc/rfc8474.html#section-4].
+  #     A server-allocated unique _string_ identifier for the mailbox.  See
+  #     +OBJECTID+ {[RFC8474]}[https://www.rfc-editor.org/rfc/rfc8474.html].
   #
   # +RECENT+::
   #     The number of messages with the <tt>\Recent</tt> flag.
@@ -1946,19 +2024,38 @@ class Net::IMAP < ::Net::Protocol
   #
   # +DELETED+ requires the server's capabilities to include +IMAP4rev2+.
   #
+  # +HIGHESTMODSEQ+ requires the server's capabilities to include +CONDSTORE+
+  # {[RFC7162]}[https://www.rfc-editor.org/rfc/rfc7162.html].
+  #
   # +MAILBOXID+ requires the server's capabilities to include +OBJECTID+
   # {[RFC8474]}[https://www.rfc-editor.org/rfc/rfc8474.html].
   #
-  # source://net-imap//lib/net/imap.rb#1745
+  # source://net-imap//lib/net/imap.rb#1793
   def status(mailbox, attr); end
 
+  # :call-seq:
+  #   store(set, attr, value, unchangedsince: nil) -> array of FetchData
+  #
   # Sends a {STORE command [IMAP4rev1 §6.4.6]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.6]
   # to alter data associated with messages in the mailbox, in particular their
-  # flags. The +set+ parameter is a number, an array of numbers, or a Range
-  # object. Each number is a message sequence number.  +attr+ is the name of a
-  # data item to store: <tt>"FLAGS"</tt> will replace the message's flag list
-  # with the provided one, <tt>"+FLAGS"</tt> will add the provided flags, and
-  # <tt>"-FLAGS"</tt> will remove them.  +flags+ is a list of flags.
+  # flags.
+  #
+  # +set+ is a number, an array of numbers, or a Range object.  Each number is
+  # a message sequence number.
+  #
+  # +attr+ is the name of a data item to store.  The semantics of +value+
+  # varies based on +attr+:
+  # * When +attr+ is <tt>"FLAGS"</tt>, the flags in +value+ replace the
+  #   message's flag list.
+  # * When +attr+ is <tt>"+FLAGS"</tt>, the flags in +value+ are added to
+  #   the flags for the message.
+  # * When +attr+ is <tt>"-FLAGS"</tt>, the flags in +value+ are removed
+  #   from the message.
+  #
+  # +unchangedsince+ is an optional integer mod-sequence.  It prohibits any
+  # changes to messages with +mod-sequence+ greater than the specified
+  # +unchangedsince+ value.  A SequenceSet of any messages that fail this
+  # check will be returned in a +MODIFIED+ ResponseCode.
   #
   # The return value is an array of FetchData.
   #
@@ -1967,12 +2064,21 @@ class Net::IMAP < ::Net::Protocol
   # ===== For example:
   #
   #   p imap.store(6..8, "+FLAGS", [:Deleted])
-  #   #=> [#<Net::IMAP::FetchData seqno=6, attr={"FLAGS"=>[:Seen, :Deleted]}>, \\
-  #        #<Net::IMAP::FetchData seqno=7, attr={"FLAGS"=>[:Seen, :Deleted]}>, \\
+  #   #=> [#<Net::IMAP::FetchData seqno=6, attr={"FLAGS"=>[:Seen, :Deleted]}>,
+  #        #<Net::IMAP::FetchData seqno=7, attr={"FLAGS"=>[:Seen, :Deleted]}>,
   #        #<Net::IMAP::FetchData seqno=8, attr={"FLAGS"=>[:Seen, :Deleted]}>]
   #
-  # source://net-imap//lib/net/imap.rb#2014
-  def store(set, attr, flags); end
+  # ===== Capabilities
+  #
+  # Extensions may define new data items to be used with #store.
+  #
+  # The server's capabilities must include +CONDSTORE+
+  # {[RFC7162]}[https://tools.ietf.org/html/rfc7162] in order to use the
+  # +unchangedsince+ argument.  Using +unchangedsince+ implicitly enables the
+  # +CONDSTORE+ extension.
+  #
+  # source://net-imap//lib/net/imap.rb#2126
+  def store(set, attr, flags, unchangedsince: T.unsafe(nil)); end
 
   # Sends a {SUBSCRIBE command [IMAP4rev1 §6.3.6]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.6]
   # to add the specified +mailbox+ name to the server's set of "active" or
@@ -1983,7 +2089,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #unsubscribe, #lsub, #list
   #
-  # source://net-imap//lib/net/imap.rb#1426
+  # source://net-imap//lib/net/imap.rb#1468
   def subscribe(mailbox); end
 
   # Sends a {THREAD command [RFC5256 §3]}[https://www.rfc-editor.org/rfc/rfc5256#section-3]
@@ -2008,7 +2114,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +THREAD+
   # [RFC5256[https://tools.ietf.org/html/rfc5256]].
   #
-  # source://net-imap//lib/net/imap.rb#2164
+  # source://net-imap//lib/net/imap.rb#2282
   def thread(algorithm, search_keys, charset); end
 
   # Returns true after the TLS negotiation has completed and the remote
@@ -2017,7 +2123,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap.rb#896
+  # source://net-imap//lib/net/imap.rb#923
   def tls_verified?; end
 
   # Sends a {UID COPY command [IMAP4rev1 §6.4.8]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.8]
@@ -2030,7 +2136,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # +UIDPLUS+ affects #uid_copy the same way it affects #copy.
   #
-  # source://net-imap//lib/net/imap.rb#2057
+  # source://net-imap//lib/net/imap.rb#2175
   def uid_copy(set, mailbox); end
 
   # Sends a {UID EXPUNGE command [RFC4315 §2.1]}[https://www.rfc-editor.org/rfc/rfc4315#section-2.1]
@@ -2059,9 +2165,12 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +UIDPLUS+
   # [RFC4315[https://www.rfc-editor.org/rfc/rfc4315.html]].
   #
-  # source://net-imap//lib/net/imap.rb#1866
+  # source://net-imap//lib/net/imap.rb#1914
   def uid_expunge(uid_set); end
 
+  # :call-seq:
+  #   uid_fetch(set, attr, changedsince: nil) -> array of FetchData
+  #
   # Sends a {UID FETCH command [IMAP4rev1 §6.4.8]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.8]
   # to retrieve data associated with a message in the mailbox.
   #
@@ -2075,8 +2184,11 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #fetch, FetchData
   #
-  # source://net-imap//lib/net/imap.rb#1992
-  def uid_fetch(set, attr, mod = T.unsafe(nil)); end
+  # ===== Capabilities
+  # Same as #fetch.
+  #
+  # source://net-imap//lib/net/imap.rb#2079
+  def uid_fetch(set, attr, mod = T.unsafe(nil), changedsince: T.unsafe(nil)); end
 
   # Sends a {UID MOVE command [RFC6851 §3.2]}[https://www.rfc-editor.org/rfc/rfc6851#section-3.2]
   # {[IMAP4rev2 §6.4.9]}[https://www.rfc-editor.org/rfc/rfc9051#section-6.4.9]
@@ -2093,16 +2205,20 @@ class Net::IMAP < ::Net::Protocol
   # [RFC6851[https://tools.ietf.org/html/rfc6851]].  +UIDPLUS+ also affects
   # #uid_move the same way it affects #move.
   #
-  # source://net-imap//lib/net/imap.rb#2098
+  # source://net-imap//lib/net/imap.rb#2216
   def uid_move(set, mailbox); end
 
   # Sends a {UID SEARCH command [IMAP4rev1 §6.4.8]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.8]
   # to search the mailbox for messages that match the given searching
   # criteria, and returns unique identifiers (<tt>UID</tt>s).
   #
+  # Returns a SearchResult object.  SearchResult inherits from Array (for
+  # backward compatibility) but adds SearchResult#modseq when the +CONDSTORE+
+  # capability has been enabled.
+  #
   # See #search for documentation of search criteria.
   #
-  # source://net-imap//lib/net/imap.rb#1936
+  # source://net-imap//lib/net/imap.rb#2001
   def uid_search(keys, charset = T.unsafe(nil)); end
 
   # Sends a {UID SORT command [RFC5256 §3]}[https://www.rfc-editor.org/rfc/rfc5256#section-3]
@@ -2117,9 +2233,12 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +SORT+
   # [RFC5256[https://tools.ietf.org/html/rfc5256]].
   #
-  # source://net-imap//lib/net/imap.rb#2139
+  # source://net-imap//lib/net/imap.rb#2257
   def uid_sort(sort_keys, search_keys, charset); end
 
+  # :call-seq:
+  #   uid_store(set, attr, value, unchangedsince: nil) -> array of FetchData
+  #
   # Sends a {UID STORE command [IMAP4rev1 §6.4.8]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.4.8]
   # to alter data associated with messages in the mailbox, in particular their
   # flags.
@@ -2129,8 +2248,11 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #store
   #
-  # source://net-imap//lib/net/imap.rb#2026
-  def uid_store(set, attr, flags); end
+  # ===== Capabilities
+  # Same as #store.
+  #
+  # source://net-imap//lib/net/imap.rb#2144
+  def uid_store(set, attr, flags, unchangedsince: T.unsafe(nil)); end
 
   # Sends a {UID THREAD command [RFC5256 §3]}[https://www.rfc-editor.org/rfc/rfc5256#section-3]
   # Similar to #thread, but returns unique identifiers instead of
@@ -2143,7 +2265,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +THREAD+
   # [RFC5256[https://tools.ietf.org/html/rfc5256]].
   #
-  # source://net-imap//lib/net/imap.rb#2178
+  # source://net-imap//lib/net/imap.rb#2296
   def uid_thread(algorithm, search_keys, charset); end
 
   # Sends an {UNSELECT command [RFC3691 §2]}[https://www.rfc-editor.org/rfc/rfc3691#section-3]
@@ -2159,7 +2281,7 @@ class Net::IMAP < ::Net::Protocol
   # The server's capabilities must include +UNSELECT+
   # [RFC3691[https://tools.ietf.org/html/rfc3691]].
   #
-  # source://net-imap//lib/net/imap.rb#1825
+  # source://net-imap//lib/net/imap.rb#1873
   def unselect; end
 
   # Sends an {UNSUBSCRIBE command [IMAP4rev1 §6.3.7]}[https://www.rfc-editor.org/rfc/rfc3501#section-6.3.7]
@@ -2172,7 +2294,7 @@ class Net::IMAP < ::Net::Protocol
   #
   # Related: #subscribe, #lsub, #list
   #
-  # source://net-imap//lib/net/imap.rb#1439
+  # source://net-imap//lib/net/imap.rb#1481
   def unsubscribe(mailbox); end
 
   # Sends a XLIST command, and returns a subset of names from
@@ -2213,72 +2335,72 @@ class Net::IMAP < ::Net::Protocol
   # unless the SPECIAL-USE return option is supplied.
   # ++
   #
-  # source://net-imap//lib/net/imap.rb#1574
+  # source://net-imap//lib/net/imap.rb#1616
   def xlist(refname, mailbox); end
 
   private
 
-  # source://net-imap//lib/net/imap.rb#2787
+  # source://net-imap//lib/net/imap.rb#2915
   def build_ssl_ctx(ssl); end
 
   # NOTE: only call this for greeting, login, and authenticate
   #
-  # source://net-imap//lib/net/imap.rb#2629
+  # source://net-imap//lib/net/imap.rb#2754
   def capabilities_from_resp_code(resp); end
 
-  # source://net-imap//lib/net/imap.rb#2746
+  # source://net-imap//lib/net/imap.rb#2876
   def copy_internal(cmd, set, mailbox); end
 
-  # source://net-imap//lib/net/imap.rb#2714
-  def fetch_internal(cmd, set, attr, mod = T.unsafe(nil)); end
+  # source://net-imap//lib/net/imap.rb#2839
+  def fetch_internal(cmd, set, attr, mod = T.unsafe(nil), changedsince: T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap.rb#2678
+  # source://net-imap//lib/net/imap.rb#2803
   def generate_tag; end
 
-  # source://net-imap//lib/net/imap.rb#2592
+  # source://net-imap//lib/net/imap.rb#2717
   def get_response; end
 
   # @raise [Error]
   #
-  # source://net-imap//lib/net/imap.rb#2471
+  # source://net-imap//lib/net/imap.rb#2596
   def get_server_greeting; end
 
-  # source://net-imap//lib/net/imap.rb#2564
+  # source://net-imap//lib/net/imap.rb#2689
   def get_tagged_response(tag, cmd, timeout = T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap.rb#2776
+  # source://net-imap//lib/net/imap.rb#2904
   def normalize_searching_criteria(keys); end
 
-  # source://net-imap//lib/net/imap.rb#2683
+  # source://net-imap//lib/net/imap.rb#2808
   def put_string(str); end
 
-  # source://net-imap//lib/net/imap.rb#2497
+  # source://net-imap//lib/net/imap.rb#2622
   def receive_responses; end
 
   # store name => [..., data]
   #
-  # source://net-imap//lib/net/imap.rb#2616
+  # source://net-imap//lib/net/imap.rb#2741
   def record_untagged_response(resp); end
 
   # store code.name => [..., code.data]
   #
-  # source://net-imap//lib/net/imap.rb#2622
+  # source://net-imap//lib/net/imap.rb#2747
   def record_untagged_response_code(resp); end
 
-  # source://net-imap//lib/net/imap.rb#2816
+  # source://net-imap//lib/net/imap.rb#2944
   def sasl_adapter; end
 
-  # source://net-imap//lib/net/imap.rb#2698
+  # source://net-imap//lib/net/imap.rb#2823
   def search_internal(cmd, keys, charset); end
 
-  # source://net-imap//lib/net/imap.rb#2650
+  # source://net-imap//lib/net/imap.rb#2775
   def send_command(cmd, *args, &block); end
 
   # Calls send_command, yielding the text of each ContinuationRequest and
   # responding with each block result.  Returns TaggedResponse.  Raises
   # NoResponseError or BadResponseError.
   #
-  # source://net-imap//lib/net/imap.rb#2641
+  # source://net-imap//lib/net/imap.rb#2766
   def send_command_with_continuations(cmd, *args); end
 
   # source://net-imap//lib/net/imap/command_data.rb#33
@@ -2308,25 +2430,25 @@ class Net::IMAP < ::Net::Protocol
   # source://net-imap//lib/net/imap/command_data.rb#116
   def send_time_data(time); end
 
-  # source://net-imap//lib/net/imap.rb#2750
+  # source://net-imap//lib/net/imap.rb#2880
   def sort_internal(cmd, sort_keys, search_keys, charset); end
 
-  # source://net-imap//lib/net/imap.rb#2462
+  # source://net-imap//lib/net/imap.rb#2587
   def start_imap_connection; end
 
-  # source://net-imap//lib/net/imap.rb#2479
+  # source://net-imap//lib/net/imap.rb#2604
   def start_receiver_thread; end
 
-  # source://net-imap//lib/net/imap.rb#2802
+  # source://net-imap//lib/net/imap.rb#2930
   def start_tls_session; end
 
-  # source://net-imap//lib/net/imap.rb#2735
-  def store_internal(cmd, set, attr, flags); end
+  # source://net-imap//lib/net/imap.rb#2864
+  def store_internal(cmd, set, attr, flags, unchangedsince: T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap.rb#2488
+  # source://net-imap//lib/net/imap.rb#2613
   def tcp_socket(host, port); end
 
-  # source://net-imap//lib/net/imap.rb#2763
+  # source://net-imap//lib/net/imap.rb#2892
   def thread_internal(cmd, algorithm, search_keys, charset); end
 
   # source://net-imap//lib/net/imap/command_data.rb#12
@@ -2335,12 +2457,12 @@ class Net::IMAP < ::Net::Protocol
   class << self
     # Returns the debug mode.
     #
-    # source://net-imap//lib/net/imap.rb#712
+    # source://net-imap//lib/net/imap.rb#739
     def debug; end
 
     # Sets the debug mode.
     #
-    # source://net-imap//lib/net/imap.rb#717
+    # source://net-imap//lib/net/imap.rb#744
     def debug=(val); end
 
     # :call-seq: decode_date(string) -> Date
@@ -2390,27 +2512,27 @@ class Net::IMAP < ::Net::Protocol
 
     # The default port for IMAP connections, port 143
     #
-    # source://net-imap//lib/net/imap.rb#722
+    # source://net-imap//lib/net/imap.rb#749
     def default_imap_port; end
 
     # The default port for IMAPS connections, port 993
     #
-    # source://net-imap//lib/net/imap.rb#727
+    # source://net-imap//lib/net/imap.rb#754
     def default_imaps_port; end
 
     # The default port for IMAP connections, port 143
     #
-    # source://net-imap//lib/net/imap.rb#722
+    # source://net-imap//lib/net/imap.rb#749
     def default_port; end
 
     # The default port for IMAPS connections, port 993
     #
-    # source://net-imap//lib/net/imap.rb#727
+    # source://net-imap//lib/net/imap.rb#754
     def default_ssl_port; end
 
     # The default port for IMAPS connections, port 993
     #
-    # source://net-imap//lib/net/imap.rb#727
+    # source://net-imap//lib/net/imap.rb#754
     def default_tls_port; end
 
     # Formats +time+ as an IMAP4 date.
@@ -2500,7 +2622,7 @@ class Net::IMAP < ::Net::Protocol
     # ++
     # Delegates to Net::IMAP::StringPrep::SASLprep#saslprep.
     #
-    # source://net-imap//lib/net/imap.rb#2826
+    # source://net-imap//lib/net/imap.rb#2954
     def saslprep(string, **opts); end
   end
 end
@@ -2571,7 +2693,7 @@ end
 #                   should use BodyTypeBasic.
 # BodyTypeMultipart:: for <tt>multipart/*</tt> parts
 #
-# source://net-imap//lib/net/imap/response_data.rb#754
+# source://net-imap//lib/net/imap/response_data.rb#813
 module Net::IMAP::BodyStructure; end
 
 # BodyTypeAttachment is not used and will be removed in an upcoming release.
@@ -2608,21 +2730,21 @@ module Net::IMAP::BodyStructure; end
 # BodyTypeBasic.  As a result, what was previously BodyTypeMessage#body =>
 # BodyTypeAttachment is now BodyTypeBasic#disposition => ContentDisposition.
 #
-# source://net-imap//lib/net/imap/response_data.rb#1018
+# source://net-imap//lib/net/imap/response_data.rb#1077
 class Net::IMAP::BodyTypeAttachment < ::Struct
   # *invalid for BodyTypeAttachment*
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1020
+  # source://net-imap//lib/net/imap/response_data.rb#1079
   def media_type; end
 
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1048
+  # source://net-imap//lib/net/imap/response_data.rb#1107
   def multipart?; end
 
   # *invalid for BodyTypeAttachment*
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1028
+  # source://net-imap//lib/net/imap/response_data.rb#1087
   def subtype; end
 end
 
@@ -2635,7 +2757,7 @@ end
 # for full description of all +BODYSTRUCTURE+ fields, and also
 # Net::IMAP@Message+envelope+and+body+structure for other relevant RFCs.
 #
-# source://net-imap//lib/net/imap/response_data.rb#771
+# source://net-imap//lib/net/imap/response_data.rb#830
 class Net::IMAP::BodyTypeBasic < ::Struct
   include ::Net::IMAP::BodyStructure
 
@@ -2650,7 +2772,7 @@ class Net::IMAP::BodyTypeBasic < ::Struct
   # for something else?
   # ++
   #
-  # source://net-imap//lib/net/imap/response_data.rb#882
+  # source://net-imap//lib/net/imap/response_data.rb#941
   def media_subtype; end
 
   # :call-seq: multipart? -> false
@@ -2659,7 +2781,7 @@ class Net::IMAP::BodyTypeBasic < ::Struct
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#868
+  # source://net-imap//lib/net/imap/response_data.rb#927
   def multipart?; end
 end
 
@@ -2673,11 +2795,11 @@ end
 #   Net::IMAP now (correctly) parses all message types (other than
 #   <tt>message/rfc822</tt> or <tt>message/global</tt>) as BodyTypeBasic.
 #
-# source://net-imap//lib/net/imap/response_data.rb#1142
+# source://net-imap//lib/net/imap/response_data.rb#1201
 class Net::IMAP::BodyTypeExtension < ::Struct
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1143
+  # source://net-imap//lib/net/imap/response_data.rb#1202
   def multipart?; end
 end
 
@@ -2695,7 +2817,7 @@ end
 # * encoding[rdoc-ref:BodyTypeBasic#encoding]
 # * size[rdoc-ref:BodyTypeBasic#size]
 #
-# source://net-imap//lib/net/imap/response_data.rb#952
+# source://net-imap//lib/net/imap/response_data.rb#1011
 class Net::IMAP::BodyTypeMessage < ::Struct
   include ::Net::IMAP::BodyStructure
 
@@ -2703,7 +2825,7 @@ class Net::IMAP::BodyTypeMessage < ::Struct
   # generate a warning message to +stderr+, then return
   # the value of +subtype+.
   #
-  # source://net-imap//lib/net/imap/response_data.rb#978
+  # source://net-imap//lib/net/imap/response_data.rb#1037
   def media_subtype; end
 
   # :call-seq: multipart? -> false
@@ -2712,14 +2834,14 @@ class Net::IMAP::BodyTypeMessage < ::Struct
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#971
+  # source://net-imap//lib/net/imap/response_data.rb#1030
   def multipart?; end
 end
 
 # Net::IMAP::BodyTypeMultipart represents body structures of messages and
 # message parts, when <tt>Content-Type</tt> is <tt>multipart/*</tt>.
 #
-# source://net-imap//lib/net/imap/response_data.rb#1061
+# source://net-imap//lib/net/imap/response_data.rb#1120
 class Net::IMAP::BodyTypeMultipart < ::Struct
   include ::Net::IMAP::BodyStructure
 
@@ -2727,7 +2849,7 @@ class Net::IMAP::BodyTypeMultipart < ::Struct
   # generate a warning message to +stderr+, then return
   # the value of +subtype+.
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1125
+  # source://net-imap//lib/net/imap/response_data.rb#1184
   def media_subtype; end
 
   # :call-seq: multipart? -> true
@@ -2736,7 +2858,7 @@ class Net::IMAP::BodyTypeMultipart < ::Struct
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#1117
+  # source://net-imap//lib/net/imap/response_data.rb#1176
   def multipart?; end
 end
 
@@ -2753,7 +2875,7 @@ end
 # * encoding[rdoc-ref:BodyTypeBasic#encoding]
 # * size[rdoc-ref:BodyTypeBasic#size]
 #
-# source://net-imap//lib/net/imap/response_data.rb#907
+# source://net-imap//lib/net/imap/response_data.rb#966
 class Net::IMAP::BodyTypeText < ::Struct
   include ::Net::IMAP::BodyStructure
 
@@ -2761,7 +2883,7 @@ class Net::IMAP::BodyTypeText < ::Struct
   # generate a warning message to +stderr+, then return
   # the value of +subtype+.
   #
-  # source://net-imap//lib/net/imap/response_data.rb#927
+  # source://net-imap//lib/net/imap/response_data.rb#986
   def media_subtype; end
 
   # :call-seq: multipart? -> false
@@ -2770,7 +2892,7 @@ class Net::IMAP::BodyTypeText < ::Struct
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_data.rb#920
+  # source://net-imap//lib/net/imap/response_data.rb#979
   def multipart?; end
 end
 
@@ -2898,7 +3020,7 @@ end
 
 # Aliases for supported capabilities, to be used with the #enable command.
 #
-# source://net-imap//lib/net/imap.rb#696
+# source://net-imap//lib/net/imap.rb#723
 Net::IMAP::ENABLE_ALIASES = T.let(T.unsafe(nil), Hash)
 
 # **Note:** This represents an intentionally _unstable_ API.  Where
@@ -2911,7 +3033,7 @@ Net::IMAP::ENABLE_ALIASES = T.let(T.unsafe(nil), Hash)
 #
 # See also: UnparsedData, UnparsedNumericResponseData, IgnoredResponse
 #
-# source://net-imap//lib/net/imap/response_data.rb#119
+# source://net-imap//lib/net/imap/response_data.rb#120
 class Net::IMAP::ExtensionData < ::Struct; end
 
 # Net::IMAP::FetchData represents the contents of a FETCH response.
@@ -3020,8 +3142,8 @@ class Net::IMAP::FetchData < ::Struct
   #
   # A transformation of #attr, with all the keys converted to upper case.
   #
-  # Header field names are case-preserved but not not case-sensitive, so
-  # this is used by #header_fields and #header_fields_not.
+  # Header field names are case-preserved but not case-sensitive, so this is
+  # used by #header_fields and #header_fields_not.
   #
   # source://net-imap//lib/net/imap/fetch_data.rb#136
   def attr_upcase; end
@@ -3515,7 +3637,7 @@ Net::IMAP::HAS_NO_CHILDREN = T.let(T.unsafe(nil), Symbol)
 #
 # It matches no IMAP standard.
 #
-# source://net-imap//lib/net/imap/response_data.rb#64
+# source://net-imap//lib/net/imap/response_data.rb#65
 class Net::IMAP::IgnoredResponse < ::Net::IMAP::UntaggedResponse; end
 
 # Error raised when the server sends an invalid response.
@@ -3621,7 +3743,7 @@ Net::IMAP::NO_SELECT = T.let(T.unsafe(nil), Symbol)
 #
 # Returned by Net::IMAP#namespace, contained inside a Namespaces object.
 #
-# source://net-imap//lib/net/imap/response_data.rb#450
+# source://net-imap//lib/net/imap/response_data.rb#496
 class Net::IMAP::Namespace < ::Struct; end
 
 # Net::IMAP::Namespaces represents a +NAMESPACE+ server response, which
@@ -3629,7 +3751,7 @@ class Net::IMAP::Namespace < ::Struct; end
 #
 # Net::IMAP#namespace returns a Namespaces object.
 #
-# source://net-imap//lib/net/imap/response_data.rb#476
+# source://net-imap//lib/net/imap/response_data.rb#522
 class Net::IMAP::Namespaces < ::Struct; end
 
 # Common validators of number and nz_number types
@@ -3943,6 +4065,16 @@ class Net::IMAP::ResponseParser
   # source://net-imap//lib/net/imap/response_parser/parser_utils.rb#104
   def mod_sequence_value; end
 
+  # valid number ranges are not enforced by parser
+  #   number64        = 1*DIGIT
+  #                       ; Unsigned 63-bit integer
+  #                       ; (0 <= n <= 9,223,372,036,854,775,807)
+  # RFC7162:
+  # mod-sequence-valzer = "0" / mod-sequence-value
+  #
+  # source://net-imap//lib/net/imap/response_parser/parser_utils.rb#104
+  def mod_sequence_valzer; end
+
   # source://net-imap//lib/net/imap/response_parser/parser_utils.rb#104
   def number; end
 
@@ -4104,32 +4236,32 @@ class Net::IMAP::ResponseParser
   #
   # This advances @pos directly so it's safe before changing @lex_state.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1994
+  # source://net-imap//lib/net/imap/response_parser.rb#2023
   def accept_spaces; end
 
   # acl-data        = "ACL" SP mailbox *(SP identifier SP rights)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1420
+  # source://net-imap//lib/net/imap/response_parser.rb#1424
   def acl_data; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def addr_adl; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def addr_host; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def addr_mailbox; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def addr_name; end
 
   # address         = "(" addr-name SP addr-adl SP addr-mailbox SP
@@ -4139,38 +4271,38 @@ class Net::IMAP::ResponseParser
   #   addr-mailbox    = nstring
   #   addr-name       = nstring
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1882
+  # source://net-imap//lib/net/imap/response_parser.rb#1892
   def address; end
 
   # astring         = 1*ASTRING-CHAR / string
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#499
+  # source://net-imap//lib/net/imap/response_parser.rb#503
   def astring; end
 
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#503
+  # source://net-imap//lib/net/imap/response_parser.rb#507
   def astring?; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#484
+  # source://net-imap//lib/net/imap/response_parser.rb#488
   def astring_chars; end
 
   # TODO: handle atom, astring_chars, and tag entirely inside the lexer
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#483
+  # source://net-imap//lib/net/imap/response_parser.rb#487
   def atom; end
 
   # the #accept version of #atom
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#488
+  # source://net-imap//lib/net/imap/response_parser.rb#492
   def atom?; end
 
   # RFC-3501 & RFC-9051:
   #   body            = "(" (body-type-1part / body-type-mpart) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1005
+  # source://net-imap//lib/net/imap/response_parser.rb#1009
   def body; end
 
   # RFC2060
@@ -4185,7 +4317,7 @@ class Net::IMAP::ResponseParser
   #                       ; MUST NOT be returned on non-extensible
   #                       ; "BODY" fetch
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1176
+  # source://net-imap//lib/net/imap/response_parser.rb#1180
   def body_ext_1part; end
 
   # RFC-2060:
@@ -4199,7 +4331,7 @@ class Net::IMAP::ResponseParser
   #                       ; MUST NOT be returned on non-extensible
   #                       ; "BODY" fetch
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1195
+  # source://net-imap//lib/net/imap/response_parser.rb#1199
   def body_ext_mpart; end
 
   # body-extension  = nstring / number / number64 /
@@ -4211,93 +4343,93 @@ class Net::IMAP::ResponseParser
   #                       ; future Standard or Standards Track
   #                       ; revisions of this specification.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1252
+  # source://net-imap//lib/net/imap/response_parser.rb#1256
   def body_extension; end
 
   # body-extension *(SP body-extension)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1238
+  # source://net-imap//lib/net/imap/response_parser.rb#1242
   def body_extensions; end
 
   # RFC-3501 & RFC-9051:
   #   body-fields     = body-fld-param SP body-fld-id SP body-fld-desc SP
   #                     body-fld-enc SP body-fld-octets
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1141
+  # source://net-imap//lib/net/imap/response_parser.rb#1145
   def body_fields; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def body_fld_desc; end
 
   # body-fld-dsp    = "(" string SP body-fld-param ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1217
+  # source://net-imap//lib/net/imap/response_parser.rb#1221
   def body_fld_dsp; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def body_fld_id; end
 
   # body-fld-lang   = nstring / "(" string *(SP string) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1226
+  # source://net-imap//lib/net/imap/response_parser.rb#1230
   def body_fld_lang; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def body_fld_loc; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def body_fld_md5; end
 
   # RFC3501, RFC9051:
   # body-fld-param  = "(" string SP string *(SP string SP string) ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1153
+  # source://net-imap//lib/net/imap/response_parser.rb#1157
   def body_fld_param; end
 
   # RFC-3501 & RFC9051:
   #   body-type-1part = (body-type-basic / body-type-msg / body-type-text)
   #                     [SP body-ext-1part]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1017
+  # source://net-imap//lib/net/imap/response_parser.rb#1021
   def body_type_1part; end
 
   # RFC-3501 & RFC9051:
   #   body-type-basic = media-basic SP body-fields
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1041
+  # source://net-imap//lib/net/imap/response_parser.rb#1045
   def body_type_basic; end
 
   # This is a malformed body-type-mpart with no subparts.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1090
+  # source://net-imap//lib/net/imap/response_parser.rb#1094
   def body_type_mixed; end
 
   # RFC-3501 & RFC-9051:
   #   body-type-mpart = 1*body SP media-subtype
   #                     [SP body-ext-mpart]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1100
+  # source://net-imap//lib/net/imap/response_parser.rb#1104
   def body_type_mpart; end
 
   # RFC-3501 & RFC-9051:
   #   body-type-msg   = media-message SP body-fields SP envelope
   #                     SP body SP body-fld-lines
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1062
+  # source://net-imap//lib/net/imap/response_parser.rb#1066
   def body_type_msg; end
 
   # RFC-3501 & RFC-9051:
   #   body-type-text  = media-text SP body-fields SP body-fld-lines
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1051
+  # source://net-imap//lib/net/imap/response_parser.rb#1055
   def body_type_text; end
 
   # Returns <tt>atom.upcase</tt>
@@ -4306,20 +4438,20 @@ class Net::IMAP::ResponseParser
   #                     ; registered with IANA as standard or
   #                     ; standards-track
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#491
+  # source://net-imap//lib/net/imap/response_parser.rb#495
   def capability; end
 
   # Returns <tt>atom?&.upcase</tt>
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#494
+  # source://net-imap//lib/net/imap/response_parser.rb#498
   def capability?; end
 
   # As a workaround for buggy servers, allow a trailing SP:
   #     *(SP capability) [SP]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1621
+  # source://net-imap//lib/net/imap/response_parser.rb#1627
   def capability__list; end
 
   # The presence of "IMAP4rev1" or "IMAP4rev2" is unenforced here.
@@ -4333,39 +4465,39 @@ class Net::IMAP::ResponseParser
   #   capability-data  = "CAPABILITY" *(SP capability) SP "IMAP4rev2"
   #                      *(SP capability)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1610
+  # source://net-imap//lib/net/imap/response_parser.rb#1616
   def capability_data__untagged; end
 
   # Returns <tt>atom.upcase</tt>
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#491
+  # source://net-imap//lib/net/imap/response_parser.rb#495
   def case_insensitive__atom; end
 
   # Returns <tt>atom?&.upcase</tt>
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#494
+  # source://net-imap//lib/net/imap/response_parser.rb#498
   def case_insensitive__atom?; end
 
   # use where nstring represents "LABEL" values
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#552
+  # source://net-imap//lib/net/imap/response_parser.rb#556
   def case_insensitive__nstring; end
 
   # See https://www.rfc-editor.org/errata/rfc3501
   #
   # charset = atom / quoted
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1938
+  # source://net-imap//lib/net/imap/response_parser.rb#1963
   def charset; end
 
   # "(" charset *(SP charset) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1836
+  # source://net-imap//lib/net/imap/response_parser.rb#1846
   def charset__list; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def comparator_data(klass = T.unsafe(nil)); end
 
   # RFC3501 & RFC9051:
@@ -4376,12 +4508,12 @@ class Net::IMAP::ResponseParser
   #
   #   continue-req    = "+" (SP (resp-text)) CRLF
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#669
+  # source://net-imap//lib/net/imap/response_parser.rb#673
   def continue_req; end
 
   # enable-data   = "ENABLED" *(SP capability)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1615
+  # source://net-imap//lib/net/imap/response_parser.rb#1621
   def enable_data; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4391,7 +4523,7 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_bcc; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4401,7 +4533,7 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_cc; end
 
   # nstring         = string / nil
@@ -4410,7 +4542,7 @@ class Net::IMAP::ResponseParser
   #   env-in-reply-to = nstring
   #   env-message-id  = nstring
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def env_date; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4420,17 +4552,17 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_from; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def env_in_reply_to; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def env_message_id; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4440,7 +4572,7 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_reply_to; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4450,12 +4582,12 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_sender; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def env_subject; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4465,7 +4597,7 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def env_to; end
 
   # RFC3501 & RFC9051:
@@ -4473,35 +4605,29 @@ class Net::IMAP::ResponseParser
   #                     env-sender SP env-reply-to SP env-to SP env-cc SP
   #                     env-bcc SP env-in-reply-to SP env-message-id ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#945
+  # source://net-imap//lib/net/imap/response_parser.rb#949
   def envelope; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def esearch_response(klass = T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def expunged_resp(klass = T.unsafe(nil)); end
 
   # flag-list       = "(" [flag *(SP flag)] ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1903
+  # source://net-imap//lib/net/imap/response_parser.rb#1913
   def flag_list; end
 
   # "(" [flag-perm *(SP flag-perm)] ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1910
+  # source://net-imap//lib/net/imap/response_parser.rb#1923
   def flag_perm__list; end
-
-  # source://net-imap//lib/net/imap/response_parser.rb#1369
-  def getquota_response; end
-
-  # source://net-imap//lib/net/imap/response_parser.rb#1402
-  def getquotaroot_response; end
 
   # TODO: handle atom, astring_chars, and tag entirely inside the lexer
   # this represents the partial size for BODY or BINARY
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#483
+  # source://net-imap//lib/net/imap/response_parser.rb#487
   def gt__number__lt; end
 
   # RFC3501 & RFC9051:
@@ -4527,33 +4653,33 @@ class Net::IMAP::ResponseParser
   #                         %d59-126           ;  characters not including
   #                                            ;  ":".
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1330
+  # source://net-imap//lib/net/imap/response_parser.rb#1334
   def header_fld_name; end
 
   # header-list     = "(" header-fld-name *(SP header-fld-name) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1296
+  # source://net-imap//lib/net/imap/response_parser.rb#1300
   def header_list; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1634
+  # source://net-imap//lib/net/imap/response_parser.rb#1640
   def id_response; end
 
   # Use #label or #label_in to assert specific known labels
   # (+tagged-ext-label+ only, not +atom+).
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#509
+  # source://net-imap//lib/net/imap/response_parser.rb#513
   def label(word); end
 
   # Use #label or #label_in to assert specific known labels
   # (+tagged-ext-label+ only, not +atom+).
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#516
+  # source://net-imap//lib/net/imap/response_parser.rb#520
   def label_in(*labels); end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def language_data(klass = T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def listrights_data(klass = T.unsafe(nil)); end
 
   # astring         = 1*ASTRING-CHAR / string
@@ -4566,10 +4692,10 @@ class Net::IMAP::ResponseParser
   #                     ;  Refer to section 5.1 for further
   #                     ; semantic details of mailbox names.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#499
+  # source://net-imap//lib/net/imap/response_parser.rb#503
   def mailbox; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#828
+  # source://net-imap//lib/net/imap/response_parser.rb#832
   def mailbox_data__exists; end
 
   # mailbox-data    =  "FLAGS" SP flag-list / "LIST" SP mailbox-list /
@@ -4577,16 +4703,16 @@ class Net::IMAP::ResponseParser
   #                    "STATUS" SP mailbox SP "(" [status-att-list] ")" /
   #                    number SP "EXISTS" / number SP "RECENT"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1342
+  # source://net-imap//lib/net/imap/response_parser.rb#1346
   def mailbox_data__flags; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1348
+  # source://net-imap//lib/net/imap/response_parser.rb#1352
   def mailbox_data__list; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1348
+  # source://net-imap//lib/net/imap/response_parser.rb#1352
   def mailbox_data__lsub; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#828
+  # source://net-imap//lib/net/imap/response_parser.rb#832
   def mailbox_data__recent; end
 
   # RFC3501:
@@ -4604,15 +4730,15 @@ class Net::IMAP::ResponseParser
   #   mailbox-data        = obsolete-search-response / ...
   #   obsolete-search-response = "SEARCH" *(SP nz-number)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1460
+  # source://net-imap//lib/net/imap/response_parser.rb#1464
   def mailbox_data__search; end
 
   # mailbox-data    =/ "STATUS" SP mailbox SP "(" [status-att-list] ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1525
+  # source://net-imap//lib/net/imap/response_parser.rb#1530
   def mailbox_data__status; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1348
+  # source://net-imap//lib/net/imap/response_parser.rb#1352
   def mailbox_data__xlist; end
 
   # mailbox-list    = "(" [mbx-list-flags] ")" SP
@@ -4621,12 +4747,12 @@ class Net::IMAP::ResponseParser
   #             ; This is the list information pointed to by the ABNF
   #             ; item "mailbox-data", which is defined above
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1361
+  # source://net-imap//lib/net/imap/response_parser.rb#1365
   def mailbox_list; end
 
   # See Patterns::MBX_LIST_FLAGS
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1917
+  # source://net-imap//lib/net/imap/response_parser.rb#1941
   def mbx_list_flags; end
 
   # n.b. this handles both type and subtype
@@ -4649,7 +4775,7 @@ class Net::IMAP::ResponseParser
   #   media-subtype   = string
   # TODO: check types
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1124
+  # source://net-imap//lib/net/imap/response_parser.rb#1128
   def media_basic; end
 
   # n.b. this handles both type and subtype
@@ -4672,7 +4798,7 @@ class Net::IMAP::ResponseParser
   #   media-subtype   = string
   # */* --- catchall
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1124
+  # source://net-imap//lib/net/imap/response_parser.rb#1128
   def media_message; end
 
   # n.b. this handles both type and subtype
@@ -4695,7 +4821,7 @@ class Net::IMAP::ResponseParser
   #   media-subtype   = string
   # message/rfc822, message/global
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1124
+  # source://net-imap//lib/net/imap/response_parser.rb#1128
   def media_text; end
 
   # n.b. this handles both type and subtype
@@ -4717,21 +4843,21 @@ class Net::IMAP::ResponseParser
   #   media-text      = DQUOTE "TEXT" DQUOTE SP media-subtype
   #   media-subtype   = string
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1124
+  # source://net-imap//lib/net/imap/response_parser.rb#1128
   def media_type; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def message_data__converted(klass = T.unsafe(nil)); end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#828
+  # source://net-imap//lib/net/imap/response_parser.rb#832
   def message_data__expunge; end
 
   # message-data    = nz-number SP ("EXPUNGE" / ("FETCH" SP msg-att))
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#821
+  # source://net-imap//lib/net/imap/response_parser.rb#825
   def message_data__fetch; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def metadata_resp(klass = T.unsafe(nil)); end
 
   # RFC3501 & RFC9051:
@@ -4782,27 +4908,27 @@ class Net::IMAP::ResponseParser
   #   msg-att-static   =/ "BINARY" section-binary ["<" number ">"] SP
   #                       (nstring / literal8)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#885
+  # source://net-imap//lib/net/imap/response_parser.rb#889
   def msg_att(n); end
 
   # appends "[section]" and "<partial>" to the base label
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#922
+  # source://net-imap//lib/net/imap/response_parser.rb#926
   def msg_att__label; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def myrights_data(klass = T.unsafe(nil)); end
 
   # namespace         = nil / "(" 1*namespace-descr ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1681
+  # source://net-imap//lib/net/imap/response_parser.rb#1687
   def namespace; end
 
   # namespace-descr   = "(" string SP
   #                        (DQUOTE QUOTED-CHAR DQUOTE / nil)
   #                         [namespace-response-extensions] ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1692
+  # source://net-imap//lib/net/imap/response_parser.rb#1698
   def namespace_descr; end
 
   # namespace-response = "NAMESPACE" SP namespace
@@ -4812,23 +4938,23 @@ class Net::IMAP::ResponseParser
   #                  ; Namespace(s).
   #                  ; The third Namespace is the Shared Namespace(s).
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1669
+  # source://net-imap//lib/net/imap/response_parser.rb#1675
   def namespace_response; end
 
   # namespace-response-extensions = *namespace-response-extension
   # namespace-response-extension = SP string SP
   #                   "(" string *(SP string) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1704
+  # source://net-imap//lib/net/imap/response_parser.rb#1710
   def namespace_response_extensions; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#547
+  # source://net-imap//lib/net/imap/response_parser.rb#551
   def ndatetime; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#2001
+  # source://net-imap//lib/net/imap/response_parser.rb#2030
   def next_token; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1983
+  # source://net-imap//lib/net/imap/response_parser.rb#2012
   def nil_atom; end
 
   # env-from        = "(" 1*address ")" / nil
@@ -4838,21 +4964,21 @@ class Net::IMAP::ResponseParser
   #   env-cc          = "(" 1*address ")" / nil
   #   env-bcc         = "(" 1*address ")" / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#979
+  # source://net-imap//lib/net/imap/response_parser.rb#983
   def nlist__address; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1961
+  # source://net-imap//lib/net/imap/response_parser.rb#1990
   def nparens__objectid; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#547
+  # source://net-imap//lib/net/imap/response_parser.rb#551
   def nquoted; end
 
   # nstring         = string / nil
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#539
+  # source://net-imap//lib/net/imap/response_parser.rb#543
   def nstring; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#543
+  # source://net-imap//lib/net/imap/response_parser.rb#547
   def nstring8; end
 
   # TODO: handle atom, astring_chars, and tag entirely inside the lexer
@@ -4861,24 +4987,36 @@ class Net::IMAP::ResponseParser
   #         ; characters in object identifiers are case
   #         ; significant
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#483
+  # source://net-imap//lib/net/imap/response_parser.rb#487
   def objectid; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1952
+  # source://net-imap//lib/net/imap/response_parser.rb#1981
   def parens__modseq; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#1960
+  # source://net-imap//lib/net/imap/response_parser.rb#1989
   def parens__objectid; end
+
+  # This allows illegal "]" in flag names (Gmail),
+  # or "\*" in a FLAGS response (greenmail).
+  #
+  # source://net-imap//lib/net/imap/response_parser.rb#1934
+  def quirky__flag_list(name); end
+
+  # source://net-imap//lib/net/imap/response_parser.rb#1373
+  def quota_response; end
+
+  # source://net-imap//lib/net/imap/response_parser.rb#1406
+  def quotaroot_response; end
 
   # reads all the way up until CRLF
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#757
+  # source://net-imap//lib/net/imap/response_parser.rb#761
   def remaining_unparsed; end
 
   # As a workaround for buggy servers, allow a trailing SP:
   #     *(SP capability) [SP]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1621
+  # source://net-imap//lib/net/imap/response_parser.rb#1627
   def resp_code__capability; end
 
   # already matched:  "APPENDUID"
@@ -4893,14 +5031,14 @@ class Net::IMAP::ResponseParser
   # n.b, uniqueid ⊂ uid-set.  To avoid inconsistent return types, we always
   # match uid_set even if that returns a single-member array.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1852
+  # source://net-imap//lib/net/imap/response_parser.rb#1862
   def resp_code_apnd__data; end
 
   # already matched:  "COPYUID"
   #
   # resp-code-copy  = "COPYUID" SP nz-number SP uid-set SP uid-set
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1861
+  # source://net-imap//lib/net/imap/response_parser.rb#1871
   def resp_code_copy__data; end
 
   # resp-cond-auth   = ("OK" / "PREAUTH") SP resp-text
@@ -4910,14 +5048,14 @@ class Net::IMAP::ResponseParser
   #
   #   resp-cond-auth   = ("OK" / "PREAUTH") [SP resp-text]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#802
+  # source://net-imap//lib/net/imap/response_parser.rb#806
   def resp_cond_auth; end
 
   # expects "OK" or "PREAUTH" and raises InvalidResponseError on failure
   #
   # @raise [InvalidResponseError]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#523
+  # source://net-imap//lib/net/imap/response_parser.rb#527
   def resp_cond_auth__name; end
 
   # resp-cond-bye    = "BYE" SP resp-text
@@ -4927,7 +5065,7 @@ class Net::IMAP::ResponseParser
   #
   #   resp-cond-bye    = "BYE" [SP resp-text]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#814
+  # source://net-imap//lib/net/imap/response_parser.rb#818
   def resp_cond_bye; end
 
   # RFC3501 & RFC9051:
@@ -4938,17 +5076,17 @@ class Net::IMAP::ResponseParser
   #
   #   resp-cond-state = ("OK" / "NO" / "BAD") [SP resp-text]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#788
+  # source://net-imap//lib/net/imap/response_parser.rb#792
   def resp_cond_state; end
 
   # expects "OK" or "NO" or "BAD" and raises InvalidResponseError on failure
   #
   # @raise [InvalidResponseError]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#531
+  # source://net-imap//lib/net/imap/response_parser.rb#535
   def resp_cond_state__name; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#792
+  # source://net-imap//lib/net/imap/response_parser.rb#796
   def resp_cond_state__untagged; end
 
   # RFC3501:
@@ -4959,7 +5097,7 @@ class Net::IMAP::ResponseParser
   # We leniently re-interpret this as
   #   resp-text       = ["[" resp-text-code "]" [SP [text]] / [text]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1740
+  # source://net-imap//lib/net/imap/response_parser.rb#1746
   def resp_text; end
 
   # RFC3501 (See https://www.rfc-editor.org/errata/rfc3501):
@@ -5012,16 +5150,18 @@ class Net::IMAP::ResponseParser
   #   resp-text-code   =/ "HIGHESTMODSEQ" SP mod-sequence-value /
   #                       "NOMODSEQ" /
   #                       "MODIFIED" SP sequence-set
+  # RFC7162 (QRESYNC):
+  #   resp-text-code   =/ "CLOSED"
   #
   # RFC8474: OBJECTID
   #   resp-text-code   =/ "MAILBOXID" SP "(" objectid ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1802
+  # source://net-imap//lib/net/imap/response_parser.rb#1810
   def resp_text_code; end
 
   # Returns <tt>atom.upcase</tt>
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#491
+  # source://net-imap//lib/net/imap/response_parser.rb#495
   def resp_text_code__name; end
 
   # [RFC3501 & RFC9051:]
@@ -5034,7 +5174,7 @@ class Net::IMAP::ResponseParser
   #
   # n.b: our "response-tagged" definition parses "greeting" too.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#650
+  # source://net-imap//lib/net/imap/response_parser.rb#654
   def response; end
 
   # [RFC3501:]
@@ -5064,35 +5204,35 @@ class Net::IMAP::ResponseParser
   #
   # TODO: remove resp-cond-auth and handle greeting separately
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#702
+  # source://net-imap//lib/net/imap/response_parser.rb#706
   def response_data; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#762
+  # source://net-imap//lib/net/imap/response_parser.rb#766
   def response_data__ignored; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#762
+  # source://net-imap//lib/net/imap/response_parser.rb#766
   def response_data__noop; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#828
+  # source://net-imap//lib/net/imap/response_parser.rb#832
   def response_data__simple_numeric; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def response_data__unhandled(klass = T.unsafe(nil)); end
 
   # RFC3501 & RFC9051:
   #   response-tagged = tag SP resp-cond-state CRLF
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#777
+  # source://net-imap//lib/net/imap/response_parser.rb#781
   def response_tagged; end
 
   # section         = "[" [section-spec] "]"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1260
+  # source://net-imap//lib/net/imap/response_parser.rb#1264
   def section; end
 
   # section-binary  = "[" [section-part] "]"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1267
+  # source://net-imap//lib/net/imap/response_parser.rb#1271
   def section_binary; end
 
   # TODO: handle atom, astring_chars, and tag entirely inside the lexer
@@ -5100,7 +5240,7 @@ class Net::IMAP::ResponseParser
   #                     ; body part reference.
   #                     ; Allows for accessing nested body parts.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#483
+  # source://net-imap//lib/net/imap/response_parser.rb#487
   def section_part; end
 
   # section-spec    = section-msgtext / (section-part ["." section-text])
@@ -5119,7 +5259,7 @@ class Net::IMAP::ResponseParser
   # n.b: we could "cheat" here and just grab all text inside the brackets,
   # but literals would need special treatment.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1288
+  # source://net-imap//lib/net/imap/response_parser.rb#1292
   def section_spec; end
 
   # sequence-set    = (seq-number / seq-range) ["," sequence-set]
@@ -5130,7 +5270,7 @@ class Net::IMAP::ResponseParser
   #
   # *note*: doesn't match seq-last-command
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#464
+  # source://net-imap//lib/net/imap/response_parser.rb#468
   def sequence_set; end
 
   # RFC3501:
@@ -5148,7 +5288,7 @@ class Net::IMAP::ResponseParser
   #   mailbox-data        = obsolete-search-response / ...
   #   obsolete-search-response = "SEARCH" *(SP nz-number)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1460
+  # source://net-imap//lib/net/imap/response_parser.rb#1464
   def sort_data; end
 
   # RFC3501
@@ -5156,7 +5296,7 @@ class Net::IMAP::ResponseParser
   # RFC4466, RFC9051, and RFC3501 Errata
   #   status-att-list = status-att-val *(SP status-att-val)
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1536
+  # source://net-imap//lib/net/imap/response_parser.rb#1541
   def status_att_list; end
 
   # RFC3501 Errata:
@@ -5199,10 +5339,10 @@ class Net::IMAP::ResponseParser
   # status-att-val =/ "MAILBOXID" SP "(" objectid ")"
   #         ; follows tagged-ext production from [RFC4466]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1581
+  # source://net-imap//lib/net/imap/response_parser.rb#1586
   def status_att_val; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#485
+  # source://net-imap//lib/net/imap/response_parser.rb#489
   def tag; end
 
   # tagged-ext-comp     = astring /
@@ -5217,7 +5357,7 @@ class Net::IMAP::ResponseParser
   #                       ; A URL should be represented as
   #                       ; a "quoted" string.
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#567
+  # source://net-imap//lib/net/imap/response_parser.rb#571
   def tagged_ext_comp; end
 
   # tagged-ext-simple is a subset of atom
@@ -5225,13 +5365,13 @@ class Net::IMAP::ResponseParser
   #
   # tagged-ext-simple   = sequence-set / number / number64
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#584
+  # source://net-imap//lib/net/imap/response_parser.rb#588
   def tagged_ext_simple; end
 
   # tagged-ext-val      = tagged-ext-simple /
   #                       "(" [tagged-ext-comp] ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#590
+  # source://net-imap//lib/net/imap/response_parser.rb#594
   def tagged_ext_val; end
 
   # TEXT-CHAR       = <any CHAR except CR and LF>
@@ -5242,43 +5382,43 @@ class Net::IMAP::ResponseParser
   #                     ; Non-ASCII text can only be returned
   #                     ; after ENABLE IMAP4rev2 command
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1724
+  # source://net-imap//lib/net/imap/response_parser.rb#1730
   def text; end
 
   # an "accept" versiun of #text
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1729
+  # source://net-imap//lib/net/imap/response_parser.rb#1735
   def text?; end
 
   # 1*<any TEXT-CHAR except "]">
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1831
+  # source://net-imap//lib/net/imap/response_parser.rb#1841
   def text_chars_except_rbra; end
 
   # RFC5256: THREAD
   #   thread-data     = "THREAD" [SP 1*thread-list]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1475
+  # source://net-imap//lib/net/imap/response_parser.rb#1480
   def thread_data; end
 
   # RFC5256: THREAD
   #   thread-list     = "(" (thread-members / thread-nested) ")"
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1489
+  # source://net-imap//lib/net/imap/response_parser.rb#1494
   def thread_list; end
 
   # RFC5256: THREAD
   #   thread-members  = nz-number *(SP nz-number) [SP thread-nested]
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1502
+  # source://net-imap//lib/net/imap/response_parser.rb#1507
   def thread_members; end
 
   # RFC5256: THREAD
   #   thread-nested   = 2*thread-list
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1518
+  # source://net-imap//lib/net/imap/response_parser.rb#1523
   def thread_nested; end
 
   # RFC-4315 (UIDPLUS) or RFC9051 (IMAP4rev2):
@@ -5290,30 +5430,30 @@ class Net::IMAP::ResponseParser
   #      uniqueid        = nz-number
   #                          ; Strictly ascending
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1971
+  # source://net-imap//lib/net/imap/response_parser.rb#2000
   def uid_set; end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#744
+  # source://net-imap//lib/net/imap/response_parser.rb#748
   def uidfetch_resp(klass = T.unsafe(nil)); end
 
   # See https://developers.google.com/gmail/imap/imap-extensions
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1923
+  # source://net-imap//lib/net/imap/response_parser.rb#1948
   def x_gm_label; end
 
   # See https://developers.google.com/gmail/imap/imap-extensions
   #
-  # source://net-imap//lib/net/imap/response_parser.rb#1926
+  # source://net-imap//lib/net/imap/response_parser.rb#1951
   def x_gm_labels; end
 end
 
 # ASTRING-CHAR    = ATOM-CHAR / resp-specials
 # resp-specials   = "]"
 #
-# source://net-imap//lib/net/imap/response_parser.rb#475
+# source://net-imap//lib/net/imap/response_parser.rb#479
 Net::IMAP::ResponseParser::ASTRING_CHARS_TOKENS = T.let(T.unsafe(nil), Array)
 
-# source://net-imap//lib/net/imap/response_parser.rb#477
+# source://net-imap//lib/net/imap/response_parser.rb#481
 Net::IMAP::ResponseParser::ASTRING_TOKENS = T.let(T.unsafe(nil), Array)
 
 # basic utility methods for parsing.
@@ -5411,17 +5551,17 @@ module Net::IMAP::ResponseParser::Patterns
 
   private
 
-  # source://net-imap//lib/net/imap/response_parser.rb#348
+  # source://net-imap//lib/net/imap/response_parser.rb#352
   def unescape_quoted(quoted); end
 
-  # source://net-imap//lib/net/imap/response_parser.rb#342
+  # source://net-imap//lib/net/imap/response_parser.rb#346
   def unescape_quoted!(quoted); end
 
   class << self
-    # source://net-imap//lib/net/imap/response_parser.rb#348
+    # source://net-imap//lib/net/imap/response_parser.rb#352
     def unescape_quoted(quoted); end
 
-    # source://net-imap//lib/net/imap/response_parser.rb#342
+    # source://net-imap//lib/net/imap/response_parser.rb#346
     def unescape_quoted!(quoted); end
   end
 end
@@ -5547,7 +5687,7 @@ Net::IMAP::ResponseParser::Patterns::LIST_WILDCARDS = T.let(T.unsafe(nil), Regex
 #                        ; Non-synchronizing literals are not allowed when
 #                        ; sent from server to the client.
 #
-# source://net-imap//lib/net/imap/response_parser.rb#328
+# source://net-imap//lib/net/imap/response_parser.rb#332
 Net::IMAP::ResponseParser::Patterns::LITERAL = T.let(T.unsafe(nil), Regexp)
 
 # RFC3516 (BINARY):
@@ -5559,7 +5699,7 @@ Net::IMAP::ResponseParser::Patterns::LITERAL = T.let(T.unsafe(nil), Regexp)
 #                        ; <number64> represents the number of OCTETs
 #                        ; in the response string.
 #
-# source://net-imap//lib/net/imap/response_parser.rb#338
+# source://net-imap//lib/net/imap/response_parser.rb#342
 Net::IMAP::ResponseParser::Patterns::LITERAL8 = T.let(T.unsafe(nil), Regexp)
 
 # source://net-imap//lib/net/imap/response_parser.rb#221
@@ -5572,16 +5712,24 @@ Net::IMAP::ResponseParser::Patterns::MBX_LIST_FLAGS = T.let(T.unsafe(nil), Regex
 #                     ; Non-zero unsigned 32-bit integer
 #                     ; (0 < n < 4,294,967,296)
 #
-# source://net-imap//lib/net/imap/response_parser.rb#270
+# source://net-imap//lib/net/imap/response_parser.rb#274
 Net::IMAP::ResponseParser::Patterns::NZ_NUMBER = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#243
+# Gmail allows SP and "]" in flags.......
+#
+# source://net-imap//lib/net/imap/response_parser.rb#235
+Net::IMAP::ResponseParser::Patterns::QUIRKY_FLAG = T.let(T.unsafe(nil), Regexp)
+
+# source://net-imap//lib/net/imap/response_parser.rb#236
+Net::IMAP::ResponseParser::Patterns::QUIRKY_FLAGS_LIST = T.let(T.unsafe(nil), Regexp)
+
+# source://net-imap//lib/net/imap/response_parser.rb#247
 Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_esc = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#244
+# source://net-imap//lib/net/imap/response_parser.rb#248
 Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_rev1 = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#245
+# source://net-imap//lib/net/imap/response_parser.rb#249
 Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_rev2 = T.let(T.unsafe(nil), Regexp)
 
 # RFC3501:
@@ -5593,7 +5741,7 @@ Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_rev2 = T.let(T.unsafe(nil), Reg
 # RFC3501 & RFC9051:
 #   quoted          = DQUOTE *QUOTED-CHAR DQUOTE
 #
-# source://net-imap//lib/net/imap/response_parser.rb#242
+# source://net-imap//lib/net/imap/response_parser.rb#246
 Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_safe = T.let(T.unsafe(nil), Regexp)
 
 # quoted-specials = DQUOTE / "\"
@@ -5601,10 +5749,10 @@ Net::IMAP::ResponseParser::Patterns::QUOTED_CHAR_safe = T.let(T.unsafe(nil), Reg
 # source://net-imap//lib/net/imap/response_parser.rb#156
 Net::IMAP::ResponseParser::Patterns::QUOTED_SPECIALS = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#247
+# source://net-imap//lib/net/imap/response_parser.rb#251
 Net::IMAP::ResponseParser::Patterns::QUOTED_rev1 = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#248
+# source://net-imap//lib/net/imap/response_parser.rb#252
 Net::IMAP::ResponseParser::Patterns::QUOTED_rev2 = T.let(T.unsafe(nil), Regexp)
 
 # resp-specials   = "]"
@@ -5705,7 +5853,7 @@ Net::IMAP::ResponseParser::Patterns::RFC5234::OCTET = T.let(T.unsafe(nil), Regex
 # source://net-imap//lib/net/imap/response_parser.rb#110
 Net::IMAP::ResponseParser::Patterns::RFC5234::SP = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#314
+# source://net-imap//lib/net/imap/response_parser.rb#318
 Net::IMAP::ResponseParser::Patterns::SEQUENCE_SET = T.let(T.unsafe(nil), Regexp)
 
 # sequence-set    = (seq-number / seq-range) ["," sequence-set]
@@ -5721,10 +5869,10 @@ Net::IMAP::ResponseParser::Patterns::SEQUENCE_SET = T.let(T.unsafe(nil), Regexp)
 #                     ; be reordered and overlap coalesced to be
 #                     ; 4,5,6,7,8,9,10.
 #
-# source://net-imap//lib/net/imap/response_parser.rb#313
+# source://net-imap//lib/net/imap/response_parser.rb#317
 Net::IMAP::ResponseParser::Patterns::SEQUENCE_SET_ITEM = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#315
+# source://net-imap//lib/net/imap/response_parser.rb#319
 Net::IMAP::ResponseParser::Patterns::SEQUENCE_SET_STR = T.let(T.unsafe(nil), Regexp)
 
 # seq-number      = nz-number / "*"
@@ -5744,7 +5892,7 @@ Net::IMAP::ResponseParser::Patterns::SEQUENCE_SET_STR = T.let(T.unsafe(nil), Reg
 #                     ; messages in the selected mailbox.  This
 #                     ; includes "*" if the selected mailbox is empty.
 #
-# source://net-imap//lib/net/imap/response_parser.rb#288
+# source://net-imap//lib/net/imap/response_parser.rb#292
 Net::IMAP::ResponseParser::Patterns::SEQ_NUMBER = T.let(T.unsafe(nil), Regexp)
 
 # seq-range       = seq-number ":" seq-number
@@ -5757,7 +5905,7 @@ Net::IMAP::ResponseParser::Patterns::SEQ_NUMBER = T.let(T.unsafe(nil), Regexp)
 #                     ; the mailbox, even if that value is less than
 #                     ; 3291.
 #
-# source://net-imap//lib/net/imap/response_parser.rb#299
+# source://net-imap//lib/net/imap/response_parser.rb#303
 Net::IMAP::ResponseParser::Patterns::SEQ_RANGE = T.let(T.unsafe(nil), Regexp)
 
 # source://net-imap//lib/net/imap/response_parser.rb#180
@@ -5766,17 +5914,17 @@ Net::IMAP::ResponseParser::Patterns::TAG = T.let(T.unsafe(nil), Regexp)
 # tagged-ext-label   = tagged-label-fchar *tagged-label-char
 #                      ; Is a valid RFC 3501 "atom".
 #
-# source://net-imap//lib/net/imap/response_parser.rb#265
+# source://net-imap//lib/net/imap/response_parser.rb#269
 Net::IMAP::ResponseParser::Patterns::TAGGED_EXT_LABEL = T.let(T.unsafe(nil), Regexp)
 
 # tagged-label-char  = tagged-label-fchar / DIGIT / ":"
 #
-# source://net-imap//lib/net/imap/response_parser.rb#262
+# source://net-imap//lib/net/imap/response_parser.rb#266
 Net::IMAP::ResponseParser::Patterns::TAGGED_LABEL_CHAR = T.let(T.unsafe(nil), Regexp)
 
 # tagged-label-fchar = ALPHA / "-" / "_" / "."
 #
-# source://net-imap//lib/net/imap/response_parser.rb#260
+# source://net-imap//lib/net/imap/response_parser.rb#264
 Net::IMAP::ResponseParser::Patterns::TAGGED_LABEL_FCHAR = T.let(T.unsafe(nil), Regexp)
 
 # TEXT-CHAR       = <any CHAR except CR and LF>
@@ -5791,13 +5939,13 @@ Net::IMAP::ResponseParser::Patterns::TEXT_CHAR = T.let(T.unsafe(nil), Regexp)
 #                     ; Non-ASCII text can only be returned
 #                     ; after ENABLE IMAP4rev2 command
 #
-# source://net-imap//lib/net/imap/response_parser.rb#256
+# source://net-imap//lib/net/imap/response_parser.rb#260
 Net::IMAP::ResponseParser::Patterns::TEXT_rev1 = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#257
+# source://net-imap//lib/net/imap/response_parser.rb#261
 Net::IMAP::ResponseParser::Patterns::TEXT_rev2 = T.let(T.unsafe(nil), Regexp)
 
-# source://net-imap//lib/net/imap/response_parser.rb#674
+# source://net-imap//lib/net/imap/response_parser.rb#678
 Net::IMAP::ResponseParser::RE_RESPONSE_TYPE = T.let(T.unsafe(nil), Regexp)
 
 # end of response string
@@ -5835,15 +5983,15 @@ Net::IMAP::ResponseParser::ResponseConditions::RESP_COND_STATES = T.let(T.unsafe
 # source://net-imap//lib/net/imap/response_parser.rb#70
 Net::IMAP::ResponseParser::ResponseConditions::RESP_DATA_CONDS = T.let(T.unsafe(nil), Array)
 
-# source://net-imap//lib/net/imap/response_parser.rb#455
+# source://net-imap//lib/net/imap/response_parser.rb#459
 Net::IMAP::ResponseParser::SEQUENCE_SET_TOKENS = T.let(T.unsafe(nil), Array)
 
-# source://net-imap//lib/net/imap/response_parser.rb#1988
+# source://net-imap//lib/net/imap/response_parser.rb#2017
 Net::IMAP::ResponseParser::SPACES_REGEXP = T.let(T.unsafe(nil), Regexp)
 
 # tag             = 1*<any ASTRING-CHAR except "+">
 #
-# source://net-imap//lib/net/imap/response_parser.rb#480
+# source://net-imap//lib/net/imap/response_parser.rb#484
 Net::IMAP::ResponseParser::TAG_TOKENS = T.let(T.unsafe(nil), Array)
 
 # starts with atom special
@@ -5853,7 +6001,7 @@ Net::IMAP::ResponseParser::T_LITERAL8 = T.let(T.unsafe(nil), Symbol)
 
 # Used to avoid an allocation when ResponseText is empty
 #
-# source://net-imap//lib/net/imap/response_data.rb#168
+# source://net-imap//lib/net/imap/response_data.rb#169
 Net::IMAP::ResponseText::EMPTY = T.let(T.unsafe(nil), Net::IMAP::ResponseText)
 
 # Pluggable authentication mechanisms for protocols which support SASL
@@ -7710,97 +7858,1623 @@ Net::IMAP::STRFTIME = T.let(T.unsafe(nil), String)
 # source://net-imap//lib/net/imap/flags.rb#173
 Net::IMAP::SUBSCRIBED = T.let(T.unsafe(nil), Symbol)
 
-# An IMAP {sequence
-# set}[https://www.rfc-editor.org/rfc/rfc9051.html#section-4.1.1],
-# is a set of message sequence numbers or unique identifier numbers
-# ("UIDs").  It contains numbers and ranges of numbers.  The numbers are all
-# non-zero unsigned 32-bit integers and one special value, <tt>*</tt>, that
-# represents the largest value in the mailbox.
+# An array of sequence numbers returned by Net::IMAP#search, or unique
+# identifiers returned by Net::IMAP#uid_search.
 #
-# *NOTE:* This SequenceSet class is currently a placeholder for unhandled
-# extension data.  All it does now is validate.  It will be expanded to a
-# full API in a future release.
+# For backward compatibility, SearchResult inherits from Array.
 #
-# source://net-imap//lib/net/imap/sequence_set.rb#17
-class Net::IMAP::SequenceSet
-  # @return [SequenceSet] a new instance of SequenceSet
+# source://net-imap//lib/net/imap/search_result.rb#10
+class Net::IMAP::SearchResult < ::Array
+  # Returns a SearchResult populated with the given +seq_nums+.
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#21
-  def initialize(input); end
+  #     Net::IMAP::SearchResult.new([1, 3, 5], modseq: 9)
+  #     # => Net::IMAP::SearchResult[1, 3, 5, modseq: 9]
+  #
+  # @return [SearchResult] a new instance of SearchResult
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#29
+  def initialize(seq_nums, modseq: T.unsafe(nil)); end
 
-  # Hash equality requires the same encoded #atom representation.
+  # Returns whether +other+ is a SearchResult with the same values and the
+  # same #modseq.  The order of numbers is irrelevant.
   #
-  #   Net::IMAP::SequenceSet["1:3"]  .eql? Net::IMAP::SequenceSet["1:3"]  # => true
-  #   Net::IMAP::SequenceSet["1,2,3"].eql? Net::IMAP::SequenceSet["1:3"]  # => false
-  #   Net::IMAP::SequenceSet["1,3"]  .eql? Net::IMAP::SequenceSet["3,1"]  # => false
-  #   Net::IMAP::SequenceSet["9,1:*"].eql? Net::IMAP::SequenceSet["1:*"]  # => false
+  #     Net::IMAP::SearchResult[123, 456, modseq: 789] ==
+  #       Net::IMAP::SearchResult[123, 456, modseq: 789]
+  #     # => true
+  #     Net::IMAP::SearchResult[123, 456, modseq: 789] ==
+  #       Net::IMAP::SearchResult[456, 123, modseq: 789]
+  #     # => true
   #
-  # @return [Boolean]
+  #     Net::IMAP::SearchResult[123, 456, modseq: 789] ==
+  #       Net::IMAP::SearchResult[987, 654, modseq: 789]
+  #     # => false
+  #     Net::IMAP::SearchResult[123, 456, modseq: 789] ==
+  #       Net::IMAP::SearchResult[1, 2, 3, modseq: 9999]
+  #     # => false
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#43
+  # SearchResult can be compared directly with Array, if #modseq is nil and
+  # the array is sorted.
+  #
+  #     Net::IMAP::SearchResult[9, 8, 6, 4, 1] == [1, 4, 6, 8, 9] # => true
+  #     Net::IMAP::SearchResult[3, 5, 7, modseq: 99] == [3, 5, 7] # => false
+  #
+  # Note that Array#== does require matching order and ignores #modseq.
+  #
+  #     [9, 8, 6, 4, 1] == Net::IMAP::SearchResult[1, 4, 6, 8, 9] # => false
+  #     [3, 5, 7] == Net::IMAP::SearchResult[3, 5, 7, modseq: 99] # => true
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#62
   def ==(other); end
 
-  # Returns the IMAP string representation.  In the IMAP grammar,
-  # +sequence-set+ is a subset of +atom+ which is a subset of +astring+.
-  # Returns #atom.  In the IMAP grammar, +atom+ is a subset of +astring+.
-  #
-  # source://net-imap//lib/net/imap/sequence_set.rb#28
-  def astring; end
-
-  # Returns the IMAP string representation.  In the IMAP grammar,
-  # +sequence-set+ is a subset of +atom+ which is a subset of +astring+.
-  #
-  # source://net-imap//lib/net/imap/sequence_set.rb#28
-  def atom; end
-
-  # Returns the IMAP string representation.  In the IMAP grammar,
-  # +sequence-set+ is a subset of +atom+ which is a subset of +astring+.
-  #
-  # source://net-imap//lib/net/imap/sequence_set.rb#28
-  def atom=(_arg0); end
-
-  # Hash equality requires the same encoded #atom representation.
-  #
-  #   Net::IMAP::SequenceSet["1:3"]  .eql? Net::IMAP::SequenceSet["1:3"]  # => true
-  #   Net::IMAP::SequenceSet["1,2,3"].eql? Net::IMAP::SequenceSet["1:3"]  # => false
-  #   Net::IMAP::SequenceSet["1,3"]  .eql? Net::IMAP::SequenceSet["3,1"]  # => false
-  #   Net::IMAP::SequenceSet["9,1:*"].eql? Net::IMAP::SequenceSet["1:*"]  # => false
+  # Hash equality.  Unlike #==, order will be taken into account.
   #
   # @return [Boolean]
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#43
+  # source://net-imap//lib/net/imap/search_result.rb#77
   def eql?(other); end
+
+  # Hash equality.  Unlike #==, order will be taken into account.
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#71
+  def hash; end
+
+  # Returns a string that represents the SearchResult.
+  #
+  #    Net::IMAP::SearchResult[123, 456, 789].inspect
+  #    # => "[123, 456, 789]"
+  #
+  #    Net::IMAP::SearchResult[543, 210, 678, modseq: 2048].inspect
+  #    # => "Net::IMAP::SearchResult[543, 210, 678, modseq: 2048]"
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#90
+  def inspect; end
+
+  # A modification sequence number, as described by the +CONDSTORE+
+  # extension in {[RFC7162
+  # §3.1.6]}[https://www.rfc-editor.org/rfc/rfc7162.html#section-3.1.6].
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#23
+  def modseq; end
+
+  # source://net-imap//lib/net/imap/search_result.rb#123
+  def pretty_print(pp); end
+
+  # Returns a string that follows the formal \IMAP syntax.
+  #
+  #    data = Net::IMAP::SearchResult[2, 8, 32, 128, 256, 512]
+  #    data.to_s           # => "* SEARCH 2 8 32 128 256 512"
+  #    data.to_s("SEARCH") # => "* SEARCH 2 8 32 128 256 512"
+  #    data.to_s("SORT")   # => "* SORT 2 8 32 128 256 512"
+  #    data.to_s(nil)      # => "2 8 32 128 256 512"
+  #
+  #    data = Net::IMAP::SearchResult[1, 3, 16, 1024, modseq: 2048].to_s
+  #    data.to_s           # => "* SEARCH 1 3 16 1024 (MODSEQ 2048)"
+  #    data.to_s("SORT")   # => "* SORT 1 3 16 1024 (MODSEQ 2048)"
+  #    data.to_s           # => "1 3 16 1024 (MODSEQ 2048)"
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#108
+  def to_s(type = T.unsafe(nil)); end
+
+  # Converts the SearchResult into a SequenceSet.
+  #
+  #     Net::IMAP::SearchResult[9, 1, 2, 4, 10, 12, 3, modseq: 123_456]
+  #       .to_sequence_set
+  #     # => Net::IMAP::SequenceSet["1:4,9:10,12"]
+  #
+  # source://net-imap//lib/net/imap/search_result.rb#121
+  def to_sequence_set; end
+
+  class << self
+    # Returns a SearchResult populated with the given +seq_nums+.
+    #
+    #     Net::IMAP::SearchResult[1, 3, 5, modseq: 9]
+    #     # => Net::IMAP::SearchResult[1, 3, 5, modseq: 9]
+    #
+    # source://net-imap//lib/net/imap/search_result.rb#16
+    def [](*seq_nums, modseq: T.unsafe(nil)); end
+  end
+end
+
+# An \IMAP sequence set is a set of message sequence numbers or unique
+# identifier numbers ("UIDs").  It contains numbers and ranges of numbers.
+# The numbers are all non-zero unsigned 32-bit integers and one special
+# value (<tt>"*"</tt>) that represents the largest value in the mailbox.
+#
+# Certain types of \IMAP responses will contain a SequenceSet, for example
+# the data for a <tt>"MODIFIED"</tt> ResponseCode.  Some \IMAP commands may
+# receive a SequenceSet as an argument, for example IMAP#search, IMAP#fetch,
+# and IMAP#store.
+#
+# == EXPERIMENTAL API
+#
+# SequenceSet is currently experimental.  Only two methods, ::[] and
+# #valid_string, are considered stable.  Although the API isn't expected to
+# change much, any other methods may be removed or changed without
+# deprecation.
+#
+# == Creating sequence sets
+#
+# SequenceSet.new with no arguments creates an empty sequence set.  Note
+# that an empty sequence set is invalid in the \IMAP grammar.
+#
+#     set = Net::IMAP::SequenceSet.new
+#     set.empty?        #=> true
+#     set.valid?        #=> false
+#     set.valid_string  #!> raises DataFormatError
+#     set << 1..10
+#     set.empty?        #=> false
+#     set.valid?        #=> true
+#     set.valid_string  #=> "1:10"
+#
+# SequenceSet.new may receive a single optional argument: a non-zero 32 bit
+# unsigned integer, a range, a <tt>sequence-set</tt> formatted string,
+# another sequence set, or an enumerable containing any of these.
+#
+#     set = Net::IMAP::SequenceSet.new(1)
+#     set.valid_string  #=> "1"
+#     set = Net::IMAP::SequenceSet.new(1..100)
+#     set.valid_string  #=> "1:100"
+#     set = Net::IMAP::SequenceSet.new(1...100)
+#     set.valid_string  #=> "1:99"
+#     set = Net::IMAP::SequenceSet.new([1, 2, 5..])
+#     set.valid_string  #=> "1:2,5:*"
+#     set = Net::IMAP::SequenceSet.new("1,2,3:7,5,6:10,2048,1024")
+#     set.valid_string  #=> "1,2,3:7,5,6:10,2048,1024"
+#     set = Net::IMAP::SequenceSet.new(1, 2, 3..7, 5, 6..10, 2048, 1024)
+#     set.valid_string  #=> "1:10,55,1024:2048"
+#
+# Use ::[] with one or more arguments to create a frozen SequenceSet.  An
+# invalid (empty) set cannot be created with ::[].
+#
+#     set = Net::IMAP::SequenceSet["1,2,3:7,5,6:10,2048,1024"]
+#     set.valid_string  #=> "1,2,3:7,5,6:10,2048,1024"
+#     set = Net::IMAP::SequenceSet[1, 2, [3..7, 5], 6..10, 2048, 1024]
+#     set.valid_string  #=> "1:10,55,1024:2048"
+#
+# == Normalized form
+#
+# When a sequence set is created with a single String value, that #string
+# representation is preserved.  SequenceSet's internal representation
+# implicitly sorts all entries, de-duplicates numbers, and coalesces
+# adjacent or overlapping ranges.  Most enumeration methods and offset-based
+# methods use this normalized representation.  Most modification methods
+# will convert #string to its normalized form.
+#
+# In some cases the order of the string representation is significant, such
+# as the +ESORT+, <tt>CONTEXT=SORT</tt>, and +UIDPLUS+ extensions.  Use
+# #entries or #each_entry to enumerate the set in its original order.  To
+# preserve #string order while modifying a set, use #append, #string=, or
+# #replace.
+#
+# == Using <tt>*</tt>
+#
+# \IMAP sequence sets may contain a special value <tt>"*"</tt>, which
+# represents the largest number in use.  From +seq-number+ in
+# {RFC9051 §9}[https://www.rfc-editor.org/rfc/rfc9051.html#section-9-5]:
+# >>>
+#   In the case of message sequence numbers, it is the number of messages
+#   in a non-empty mailbox.  In the case of unique identifiers, it is the
+#   unique identifier of the last message in the mailbox or, if the
+#   mailbox is empty, the mailbox's current UIDNEXT value.
+#
+# When creating a SequenceSet, <tt>*</tt> may be input as <tt>-1</tt>,
+# <tt>"*"</tt>, <tt>:*</tt>, an endless range, or a range ending in
+# <tt>-1</tt>.  When converting to #elements, #ranges, or #numbers, it will
+# output as either <tt>:*</tt> or an endless range.  For example:
+#
+#   Net::IMAP::SequenceSet["1,3,*"].to_a      #=> [1, 3, :*]
+#   Net::IMAP::SequenceSet["1,234:*"].to_a    #=> [1, 234..]
+#   Net::IMAP::SequenceSet[1234..-1].to_a     #=> [1234..]
+#   Net::IMAP::SequenceSet[1234..].to_a       #=> [1234..]
+#
+#   Net::IMAP::SequenceSet[1234..].to_s       #=> "1234:*"
+#   Net::IMAP::SequenceSet[1234..-1].to_s     #=> "1234:*"
+#
+# Use #limit to convert <tt>"*"</tt> to a maximum value.  When a range
+# includes <tt>"*"</tt>, the maximum value will always be matched:
+#
+#   Net::IMAP::SequenceSet["9999:*"].limit(max: 25)
+#   #=> Net::IMAP::SequenceSet["25"]
+#
+# === Surprising <tt>*</tt> behavior
+#
+# When a set includes <tt>*</tt>, some methods may have surprising behavior.
+#
+# For example, #complement treats <tt>*</tt> as its own number.  This way,
+# the #intersection of a set and its #complement will always be empty.
+# This is not how an \IMAP server interprets the set: it will convert
+# <tt>*</tt> to either the number of messages in the mailbox or +UIDNEXT+,
+# as appropriate.  And there _will_ be overlap between a set and its
+# complement after #limit is applied to each:
+#
+#   ~Net::IMAP::SequenceSet["*"]  == Net::IMAP::SequenceSet[1..(2**32-1)]
+#   ~Net::IMAP::SequenceSet[1..5] == Net::IMAP::SequenceSet["6:*"]
+#
+#   set = Net::IMAP::SequenceSet[1..5]
+#   (set & ~set).empty? => true
+#
+#   (set.limit(max: 4) & (~set).limit(max: 4)).to_a => [4]
+#
+# When counting the number of numbers in a set, <tt>*</tt> will be counted
+# _except_ when UINT32_MAX is also in the set:
+#   UINT32_MAX = 2**32 - 1
+#   Net::IMAP::SequenceSet["*"].count                   => 1
+#   Net::IMAP::SequenceSet[1..UINT32_MAX - 1, :*].count => UINT32_MAX
+#
+#   Net::IMAP::SequenceSet["1:*"].count                 => UINT32_MAX
+#   Net::IMAP::SequenceSet[UINT32_MAX, :*].count        => 1
+#   Net::IMAP::SequenceSet[UINT32_MAX..].count          => 1
+#
+# == What's here?
+#
+# SequenceSet provides methods for:
+# * {Creating a SequenceSet}[rdoc-ref:SequenceSet@Methods+for+Creating+a+SequenceSet]
+# * {Comparing}[rdoc-ref:SequenceSet@Methods+for+Comparing]
+# * {Querying}[rdoc-ref:SequenceSet@Methods+for+Querying]
+# * {Iterating}[rdoc-ref:SequenceSet@Methods+for+Iterating]
+# * {Set Operations}[rdoc-ref:SequenceSet@Methods+for+Set+Operations]
+# * {Assigning}[rdoc-ref:SequenceSet@Methods+for+Assigning]
+# * {Deleting}[rdoc-ref:SequenceSet@Methods+for+Deleting]
+# * {IMAP String Formatting}[rdoc-ref:SequenceSet@Methods+for+IMAP+String+Formatting]
+#
+# === Methods for Creating a \SequenceSet
+# * ::[]: Creates a validated frozen sequence set from one or more inputs.
+# * ::new: Creates a new mutable sequence set, which may be empty (invalid).
+# * ::try_convert: Calls +to_sequence_set+ on an object and verifies that
+#   the result is a SequenceSet.
+# * ::empty: Returns a frozen empty (invalid) SequenceSet.
+# * ::full: Returns a frozen SequenceSet containing every possible number.
+#
+# === Methods for Comparing
+#
+# <i>Comparison to another \SequenceSet:</i>
+# - #==: Returns whether a given set contains the same numbers as +self+.
+# - #eql?: Returns whether a given set uses the same #string as +self+.
+#
+# <i>Comparison to objects which are convertible to \SequenceSet:</i>
+# - #===:
+#   Returns whether a given object is fully contained within +self+, or
+#   +nil+ if the object cannot be converted to a compatible type.
+# - #cover? (aliased as #===):
+#   Returns whether a given object is fully contained within +self+.
+# - #intersect? (aliased as #overlap?):
+#   Returns whether +self+ and a given object have any common elements.
+# - #disjoint?:
+#   Returns whether +self+ and a given object have no common elements.
+#
+# === Methods for Querying
+# These methods do not modify +self+.
+#
+# <i>Set membership:</i>
+# - #include? (aliased as #member?):
+#   Returns whether a given object (nz-number, range, or <tt>*</tt>) is
+#   contained by the set.
+# - #include_star?: Returns whether the set contains <tt>*</tt>.
+#
+# <i>Minimum and maximum value elements:</i>
+# - #min: Returns the minimum number in the set.
+# - #max: Returns the maximum number in the set.
+# - #minmax: Returns the minimum and maximum numbers in the set.
+#
+# <i>Accessing value by offset:</i>
+# - #[] (aliased as #slice): Returns the number or consecutive subset at a
+#   given offset or range of offsets.
+# - #at: Returns the number at a given offset.
+# - #find_index: Returns the given number's offset in the set
+#
+# <i>Set cardinality:</i>
+# - #count (aliased as #size): Returns the count of numbers in the set.
+# - #empty?: Returns whether the set has no members.  \IMAP syntax does not
+#   allow empty sequence sets.
+# - #valid?: Returns whether the set has any members.
+# - #full?: Returns whether the set contains every possible value, including
+#   <tt>*</tt>.
+#
+# === Methods for Iterating
+#
+# - #each_element: Yields each number and range in the set, sorted and
+#   coalesced, and returns +self+.
+# - #elements (aliased as #to_a): Returns an Array of every number and range
+#   in the set, sorted and coalesced.
+# - #each_entry: Yields each number and range in the set, unsorted and
+#   without deduplicating numbers or coalescing ranges, and returns +self+.
+# - #entries: Returns an Array of every number and range in the set,
+#   unsorted and without deduplicating numbers or coalescing ranges.
+# - #each_range:
+#   Yields each element in the set as a Range and returns +self+.
+# - #ranges: Returns an Array of every element in the set, converting
+#   numbers into ranges of a single value.
+# - #each_number: Yields each number in the set and returns +self+.
+# - #numbers: Returns an Array with every number in the set, expanding
+#   ranges into all of their contained numbers.
+# - #to_set: Returns a Set containing all of the #numbers in the set.
+#
+# === Methods for \Set Operations
+# These methods do not modify +self+.
+#
+# - #| (aliased as #union and #+): Returns a new set combining all members
+#   from +self+ with all members from the other object.
+# - #& (aliased as #intersection): Returns a new set containing all members
+#   common to +self+ and the other object.
+# - #- (aliased as #difference): Returns a copy of +self+ with all members
+#   in the other object removed.
+# - #^ (aliased as #xor): Returns a new set containing all members from
+#   +self+ and the other object except those common to both.
+# - #~ (aliased as #complement): Returns a new set containing all members
+#   that are not in +self+
+# - #limit: Returns a copy of +self+ which has replaced <tt>*</tt> with a
+#   given maximum value and removed all members over that maximum.
+#
+# === Methods for Assigning
+# These methods add or replace elements in +self+.
+#
+# - #add (aliased as #<<): Adds a given object to the set; returns +self+.
+# - #add?: If the given object is not an element in the set, adds it and
+#   returns +self+; otherwise, returns +nil+.
+# - #merge: Merges multiple elements into the set; returns +self+.
+# - #append: Adds a given object to the set, appending it to the existing
+#   string, and returns +self+.
+# - #string=: Assigns a new #string value and replaces #elements to match.
+# - #replace: Replaces the contents of the set with the contents
+#   of a given object.
+# - #complement!: Replaces the contents of the set with its own #complement.
+#
+# === Methods for Deleting
+# These methods remove elements from +self+.
+#
+# - #clear: Removes all elements in the set; returns +self+.
+# - #delete: Removes a given object from the set; returns +self+.
+# - #delete?: If the given object is an element in the set, removes it and
+#   returns it; otherwise, returns +nil+.
+# - #delete_at: Removes the number at a given offset.
+# - #slice!: Removes the number or consecutive numbers at a given offset or
+#   range of offsets.
+# - #subtract: Removes each given object from the set; returns +self+.
+# - #limit!: Replaces <tt>*</tt> with a given maximum value and removes all
+#   members over that maximum; returns +self+.
+#
+# === Methods for \IMAP String Formatting
+#
+# - #to_s: Returns the +sequence-set+ string, or an empty string when the
+#   set is empty.
+# - #string: Returns the +sequence-set+ string, or nil when empty.
+# - #valid_string: Returns the +sequence-set+ string, or raises
+#   DataFormatError when the set is empty.
+# - #normalized_string: Returns a <tt>sequence-set</tt> string with its
+#   elements sorted and coalesced, or nil when the set is empty.
+# - #normalize: Returns a new set with this set's normalized +sequence-set+
+#   representation.
+# - #normalize!: Updates #string to its normalized +sequence-set+
+#   representation and returns +self+.
+#
+# source://net-imap//lib/net/imap/sequence_set.rb#279
+class Net::IMAP::SequenceSet
+  # Create a new SequenceSet object from +input+, which may be another
+  # SequenceSet, an IMAP formatted +sequence-set+ string, a number, a
+  # range, <tt>:*</tt>, or an enumerable of these.
+  #
+  # Use ::[] to create a frozen (non-empty) SequenceSet.
+  #
+  # @return [SequenceSet] a new instance of SequenceSet
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#348
+  def initialize(input = T.unsafe(nil)); end
+
+  # :call-seq:
+  #   self & other        -> sequence set
+  #   intersection(other) -> sequence set
+  #
+  # Returns a new sequence set containing only the numbers common to this
+  # set and +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] & [2, 4, 6]
+  #     #=> Net::IMAP::SequenceSet["2,4"]
+  #
+  # <tt>(seqset & other)</tt> is equivalent to <tt>(seqset - ~other)</tt>.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#623
+  def &(other); end
+
+  # :call-seq:
+  #   self + other -> sequence set
+  #   self | other -> sequence set
+  #   union(other) -> sequence set
+  #
+  # Returns a new sequence set that has every number in the +other+ object
+  # added.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet["1:5"] | 2 | [4..6, 99]
+  #     #=> Net::IMAP::SequenceSet["1:6,99"]
+  #
+  # Related: #add, #merge
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#586
+  def +(other); end
+
+  # :call-seq:
+  #   self - other      -> sequence set
+  #   difference(other) -> sequence set
+  #
+  # Returns a new sequence set built by duplicating this set and removing
+  # every number that appears in +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] - 2 - 4 - 6
+  #     #=> Net::IMAP::SequenceSet["1,3,5"]
+  #
+  # Related: #subtract
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#605
+  def -(other); end
+
+  # :call-seq:
+  #   add(object)   -> self
+  #   self << other -> self
+  #
+  # Adds a range or number to the set and returns +self+.
+  #
+  # #string will be regenerated.  Use #merge to add many elements at once.
+  #
+  # Related: #add?, #merge, #union
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#674
+  def <<(object); end
+
+  # :call-seq: self == other -> true or false
+  #
+  # Returns true when the other SequenceSet represents the same message
+  # identifiers.  Encoding difference—such as order, overlaps, or
+  # duplicates—are ignored.
+  #
+  #   Net::IMAP::SequenceSet["1:3"]   == Net::IMAP::SequenceSet["1:3"]
+  #   #=> true
+  #   Net::IMAP::SequenceSet["1,2,3"] == Net::IMAP::SequenceSet["1:3"]
+  #   #=> true
+  #   Net::IMAP::SequenceSet["1,3"]   == Net::IMAP::SequenceSet["3,1"]
+  #   #=> true
+  #   Net::IMAP::SequenceSet["9,1:*"] == Net::IMAP::SequenceSet["1:*"]
+  #   #=> true
+  #
+  # Related: #eql?, #normalize
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#441
+  def ==(other); end
+
+  # :call-seq: self === other -> true | false | nil
+  #
+  # Returns whether +other+ is contained within the set.  Returns +nil+ if a
+  # StandardError is raised while converting +other+ to a comparable type.
+  #
+  # Related: #cover?, #include?, #include_star?
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#471
+  def ===(other); end
+
+  # :call-seq:
+  #    seqset[index]         -> integer or :* or nil
+  #    slice(index)          -> integer or :* or nil
+  #    seqset[start, length] -> sequence set or nil
+  #    slice(start, length)  -> sequence set or nil
+  #    seqset[range]         -> sequence set or nil
+  #    slice(range)          -> sequence set or nil
+  #
+  # Returns a number or a subset from +self+, without modifying the set.
+  #
+  # When an Integer argument +index+ is given, the number at offset +index+
+  # is returned:
+  #
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[0]   #=> 10
+  #     set[5]   #=> 15
+  #     set[10]  #=> 26
+  #
+  # If +index+ is negative, it counts relative to the end of +self+:
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[-1]  #=> 26
+  #     set[-3]  #=> 22
+  #     set[-6]  #=> 15
+  #
+  # If +index+ is out of range, +nil+ is returned.
+  #
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[11]  #=> nil
+  #     set[-12] #=> nil
+  #
+  # The result is based on the normalized set—sorted and de-duplicated—not
+  # on the assigned value of #string.
+  #
+  #     set = Net::IMAP::SequenceSet["12,20:23,11:16,21"]
+  #     set[0]   #=> 11
+  #     set[-1]  #=> 23
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1088
+  def [](index, length = T.unsafe(nil)); end
+
+  # :call-seq:
+  #   self ^ other -> sequence set
+  #   xor(other)   -> sequence set
+  #
+  # Returns a new sequence set containing numbers that are exclusive between
+  # this set and +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] ^ [2, 4, 6]
+  #     #=> Net::IMAP::SequenceSet["1,3,5:6"]
+  #
+  # <tt>(seqset ^ other)</tt> is equivalent to <tt>((seqset | other) -
+  # (seqset & other))</tt>.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#644
+  def ^(other); end
+
+  # :call-seq:
+  #   add(object)   -> self
+  #   self << other -> self
+  #
+  # Adds a range or number to the set and returns +self+.
+  #
+  # #string will be regenerated.  Use #merge to add many elements at once.
+  #
+  # Related: #add?, #merge, #union
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#674
+  def add(object); end
+
+  # :call-seq: add?(object) -> self or nil
+  #
+  # Adds a range or number to the set and returns +self+.  Returns +nil+
+  # when the object is already included in the set.
+  #
+  # #string will be regenerated.  Use #merge to add many elements at once.
+  #
+  # Related: #add, #merge, #union, #include?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#700
+  def add?(object); end
+
+  # Adds a range or number to the set and returns +self+.
+  #
+  # Unlike #add, #merge, or #union, the new value is appended to #string.
+  # This may result in a #string which has duplicates or is out-of-order.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#684
+  def append(object); end
+
+  # :call-seq: at(index) -> integer or nil
+  #
+  # Returns a number from +self+, without modifying the set.  Behaves the
+  # same as #[], except that #at only allows a single integer argument.
+  #
+  # Related: #[], #slice
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1037
+  def at(index); end
+
+  # Removes all elements and returns self.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#351
+  def clear; end
+
+  # :call-seq:
+  #   ~ self     -> sequence set
+  #   complement -> sequence set
+  #
+  # Returns the complement of self, a SequenceSet which contains all numbers
+  # _except_ for those in this set.
+  #
+  #     ~Net::IMAP::SequenceSet.full  #=> Net::IMAP::SequenceSet.empty
+  #     ~Net::IMAP::SequenceSet.empty #=> Net::IMAP::SequenceSet.full
+  #     ~Net::IMAP::SequenceSet["1:5,100:222"]
+  #     #=> Net::IMAP::SequenceSet["6:99,223:*"]
+  #     ~Net::IMAP::SequenceSet["6:99,223:*"]
+  #     #=> Net::IMAP::SequenceSet["1:5,100:222"]
+  #
+  # Related: #complement!
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#662
+  def complement; end
+
+  # :call-seq: complement! -> self
+  #
+  # Converts the SequenceSet to its own #complement.  It will contain all
+  # possible values _except_ for those currently in the set.
+  #
+  # Related: #complement
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1168
+  def complement!; end
+
+  # Returns the count of #numbers in the set.
+  #
+  # If <tt>*</tt> and <tt>2**32 - 1</tt> (the maximum 32-bit unsigned
+  # integer value) are both in the set, they will only be counted once.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#989
+  def count; end
+
+  # :call-seq: cover?(other) -> true | false | nil
+  #
+  # Returns whether +other+ is contained within the set.  +other+ may be any
+  # object that would be accepted by ::new.
+  #
+  # Related: #===, #include?, #include_star?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#483
+  def cover?(other); end
+
+  # :call-seq: delete(object) -> self
+  #
+  # Deletes the given range or number from the set and returns +self+.
+  #
+  # #string will be regenerated after deletion.  Use #subtract to remove
+  # many elements at once.
+  #
+  # Related: #delete?, #delete_at, #subtract, #difference
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#712
+  def delete(object); end
+
+  # :call-seq:
+  #   delete?(number) -> integer or nil
+  #   delete?(star)   -> :* or nil
+  #   delete?(range)  -> sequence set or nil
+  #
+  # Removes a specified value from the set, and returns the removed value.
+  # Returns +nil+ if nothing was removed.
+  #
+  # Returns an integer when the specified +number+ argument was removed:
+  #     set = Net::IMAP::SequenceSet.new [5..10, 20]
+  #     set.delete?(7)      #=> 7
+  #     set                 #=> #<Net::IMAP::SequenceSet "5:6,8:10,20">
+  #     set.delete?("20")   #=> 20
+  #     set                 #=> #<Net::IMAP::SequenceSet "5:6,8:10">
+  #     set.delete?(30)     #=> nil
+  #
+  # Returns <tt>:*</tt> when <tt>*</tt> or <tt>-1</tt> is specified and
+  # removed:
+  #     set = Net::IMAP::SequenceSet.new "5:9,20,35,*"
+  #     set.delete?(-1)  #=> :*
+  #     set              #=> #<Net::IMAP::SequenceSet "5:9,20,35">
+  #
+  # And returns a new SequenceSet when a range is specified:
+  #
+  #     set = Net::IMAP::SequenceSet.new [5..10, 20]
+  #     set.delete?(9..)  #=> #<Net::IMAP::SequenceSet "9:10,20">
+  #     set               #=> #<Net::IMAP::SequenceSet "5:8">
+  #     set.delete?(21..) #=> nil
+  #
+  # #string will be regenerated after deletion.
+  #
+  # Related: #delete, #delete_at, #subtract, #difference, #disjoint?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#749
+  def delete?(object); end
+
+  # :call-seq: delete_at(index) -> number or :* or nil
+  #
+  # Deletes a number the set, indicated by the given +index+.  Returns the
+  # number that was removed, or +nil+ if nothing was removed.
+  #
+  # #string will be regenerated after deletion.
+  #
+  # Related: #delete, #delete?, #slice!, #subtract, #difference
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#772
+  def delete_at(index); end
+
+  # :call-seq:
+  #   self - other      -> sequence set
+  #   difference(other) -> sequence set
+  #
+  # Returns a new sequence set built by duplicating this set and removing
+  # every number that appears in +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] - 2 - 4 - 6
+  #     #=> Net::IMAP::SequenceSet["1,3,5"]
+  #
+  # Related: #subtract
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#605
+  def difference(other); end
+
+  # Returns +true+ if the set and a given object have no common elements,
+  # +false+ otherwise.
+  #
+  #     Net::IMAP::SequenceSet["5:10"].disjoint? "7,9,11" #=> false
+  #     Net::IMAP::SequenceSet["5:10"].disjoint? "11:33"  #=> true
+  #
+  # Related: #intersection, #intersect?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#535
+  def disjoint?(other); end
+
+  # Yields each number or range (or <tt>:*</tt>) in #elements to the block
+  # and returns self.  Returns an enumerator when called without a block.
+  #
+  # The returned numbers are sorted and de-duplicated, even when the input
+  # #string is not.  See #normalize.
+  #
+  # Related: #elements, #each_entry
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#924
+  def each_element; end
+
+  # Yields each number or range in #string to the block and returns +self+.
+  # Returns an enumerator when called without a block.
+  #
+  # The entries are yielded in the same order they appear in #tring, with no
+  # sorting, deduplication, or coalescing.  When #string is in its
+  # normalized form, this will yield the same values as #each_element.
+  #
+  # Related: #entries, #each_element
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#910
+  def each_entry(&block); end
+
+  # Yields each number in #numbers to the block and returns self.
+  # If the set contains a <tt>*</tt>, RangeError will be raised.
+  #
+  # Returns an enumerator when called without a block (even if the set
+  # contains <tt>*</tt>).
+  #
+  # Related: #numbers
+  #
+  # @raise [RangeError]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#964
+  def each_number(&block); end
+
+  # Yields each range in #ranges to the block and returns self.
+  # Returns an enumerator when called without a block.
+  #
+  # Related: #ranges
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#946
+  def each_range; end
+
+  # Returns an array of ranges and integers and <tt>:*</tt>.
+  #
+  # The returned elements are sorted and coalesced, even when the input
+  # #string is not.  <tt>*</tt> will sort last.  See #normalize.
+  #
+  # By itself, <tt>*</tt> translates to <tt>:*</tt>.  A range containing
+  # <tt>*</tt> translates to an endless range.  Use #limit to translate both
+  # cases to a maximum value.
+  #
+  # If the original input was unordered or contains overlapping ranges, the
+  # returned ranges will be ordered and coalesced.
+  #
+  #   Net::IMAP::SequenceSet["2,5:9,6,*,12:11"].elements
+  #   #=> [2, 5..9, 11..12, :*]
+  #
+  # Related: #each_element, #ranges, #numbers
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#851
+  def elements; end
+
+  # Returns true if the set contains no elements
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#565
+  def empty?; end
+
+  # Returns an array of ranges and integers and <tt>:*</tt>.
+  #
+  # The entries are in the same order they appear in #string, with no
+  # sorting, deduplication, or coalescing.  When #string is in its
+  # normalized form, this will return the same result as #elements.
+  # This is useful when the given order is significant, for example in a
+  # ESEARCH response to IMAP#sort.
+  #
+  # Related: #each_entry, #elements
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#833
+  def entries; end
+
+  # :call-seq: eql?(other) -> true or false
+  #
+  # Hash equality requires the same encoded #string representation.
+  #
+  #   Net::IMAP::SequenceSet["1:3"]  .eql? Net::IMAP::SequenceSet["1:3"]
+  #   #=> true
+  #   Net::IMAP::SequenceSet["1,2,3"].eql? Net::IMAP::SequenceSet["1:3"]
+  #   #=> false
+  #   Net::IMAP::SequenceSet["1,3"]  .eql? Net::IMAP::SequenceSet["3,1"]
+  #   #=> false
+  #   Net::IMAP::SequenceSet["9,1:*"].eql? Net::IMAP::SequenceSet["1:*"]
+  #   #=> false
+  #
+  # Related: #==, #normalize
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#460
+  def eql?(other); end
+
+  # Returns the index of +number+ in the set, or +nil+ if +number+ isn't in
+  # the set.
+  #
+  # Related: #[]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1000
+  def find_index(number); end
+
+  # Freezes and returns the set.  A frozen SequenceSet is Ractor-safe.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#418
+  def freeze; end
+
+  # Returns true if the set contains every possible element.
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#568
+  def full?; end
 
   # See #eql?
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#47
+  # source://net-imap//lib/net/imap/sequence_set.rb#463
   def hash; end
 
-  # source://net-imap//lib/net/imap/sequence_set.rb#49
+  # Returns +true+ when a given number or range is in +self+, and +false+
+  # otherwise.  Returns +false+ unless +number+ is an Integer, Range, or
+  # <tt>*</tt>.
+  #
+  #     set = Net::IMAP::SequenceSet["5:10,100,111:115"]
+  #     set.include? 1      #=> false
+  #     set.include? 5..10  #=> true
+  #     set.include? 11..20 #=> false
+  #     set.include? 100    #=> true
+  #     set.include? 6      #=> true, covered by "5:10"
+  #     set.include? 4..9   #=> true, covered by "5:10"
+  #     set.include? "4:9"  #=> true, strings are parsed
+  #     set.include? 4..9   #=> false, intersection is not sufficient
+  #     set.include? "*"    #=> false, use #limit to re-interpret "*"
+  #     set.include? -1     #=> false, -1 is interpreted as "*"
+  #
+  #     set = Net::IMAP::SequenceSet["5:10,100,111:*"]
+  #     set.include? :*     #=> true
+  #     set.include? "*"    #=> true
+  #     set.include? -1     #=> true
+  #     set.include? 200..  #=> true
+  #     set.include? 100..  #=> false
+  #
+  # Related: #include_star?, #cover?, #===
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#509
+  def include?(element); end
+
+  # Returns +true+ when the set contains <tt>*</tt>.
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#514
+  def include_star?; end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1214
   def inspect; end
 
-  # Unstable API, for internal use only (Net::IMAP#send_data)
+  # Returns +true+ if the set and a given object have any common elements,
+  # +false+ otherwise.
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#61
+  #     Net::IMAP::SequenceSet["5:10"].intersect? "7,9,11" #=> true
+  #     Net::IMAP::SequenceSet["5:10"].intersect? "11:33"  #=> false
+  #
+  # Related: #intersection, #disjoint?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#523
+  def intersect?(other); end
+
+  # :call-seq:
+  #   self & other        -> sequence set
+  #   intersection(other) -> sequence set
+  #
+  # Returns a new sequence set containing only the numbers common to this
+  # set and +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] & [2, 4, 6]
+  #     #=> Net::IMAP::SequenceSet["2,4"]
+  #
+  # <tt>(seqset & other)</tt> is equivalent to <tt>(seqset - ~other)</tt>.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#623
+  def intersection(other); end
+
+  # Returns a frozen SequenceSet with <tt>*</tt> converted to +max+, numbers
+  # and ranges over +max+ removed, and ranges containing +max+ converted to
+  # end at +max+.
+  #
+  #   Net::IMAP::SequenceSet["5,10:22,50"].limit(max: 20).to_s
+  #   #=> "5,10:20"
+  #
+  # <tt>*</tt> is always interpreted as the maximum value.  When the set
+  # contains <tt>*</tt>, it will be set equal to the limit.
+  #
+  #   Net::IMAP::SequenceSet["*"].limit(max: 37)
+  #   #=> Net::IMAP::SequenceSet["37"]
+  #   Net::IMAP::SequenceSet["5:*"].limit(max: 37)
+  #   #=> Net::IMAP::SequenceSet["5:37"]
+  #   Net::IMAP::SequenceSet["500:*"].limit(max: 37)
+  #   #=> Net::IMAP::SequenceSet["37"]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1141
+  def limit(max:); end
+
+  # Removes all members over +max+ and returns self.  If <tt>*</tt> is a
+  # member, it will be converted to +max+.
+  #
+  # Related: #limit
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1154
+  def limit!(max:); end
+
+  # :call-seq: max(star: :*) => integer or star or nil
+  #
+  # Returns the maximum value in +self+, +star+ when the set includes
+  # <tt>*</tt>, or +nil+ when the set is empty.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#543
+  def max(star: T.unsafe(nil)); end
+
+  # Returns +true+ when a given number or range is in +self+, and +false+
+  # otherwise.  Returns +false+ unless +number+ is an Integer, Range, or
+  # <tt>*</tt>.
+  #
+  #     set = Net::IMAP::SequenceSet["5:10,100,111:115"]
+  #     set.include? 1      #=> false
+  #     set.include? 5..10  #=> true
+  #     set.include? 11..20 #=> false
+  #     set.include? 100    #=> true
+  #     set.include? 6      #=> true, covered by "5:10"
+  #     set.include? 4..9   #=> true, covered by "5:10"
+  #     set.include? "4:9"  #=> true, strings are parsed
+  #     set.include? 4..9   #=> false, intersection is not sufficient
+  #     set.include? "*"    #=> false, use #limit to re-interpret "*"
+  #     set.include? -1     #=> false, -1 is interpreted as "*"
+  #
+  #     set = Net::IMAP::SequenceSet["5:10,100,111:*"]
+  #     set.include? :*     #=> true
+  #     set.include? "*"    #=> true
+  #     set.include? -1     #=> true
+  #     set.include? 200..  #=> true
+  #     set.include? 100..  #=> false
+  #
+  # Related: #include_star?, #cover?, #===
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#509
+  def member?(element); end
+
+  # Merges all of the elements that appear in any of the +inputs+ into the
+  # set, and returns +self+.
+  #
+  # The +inputs+ may be any objects that would be accepted by ::new:
+  # non-zero 32 bit unsigned integers, ranges, <tt>sequence-set</tt>
+  # formatted strings, other sequence sets, or enumerables containing any of
+  # these.
+  #
+  # #string will be regenerated after all inputs have been merged.
+  #
+  # Related: #add, #add?, #union
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#805
+  def merge(*inputs); end
+
+  # :call-seq: min(star: :*) => integer or star or nil
+  #
+  # Returns the minimum value in +self+, +star+ when the only value in the
+  # set is <tt>*</tt>, or +nil+ when the set is empty.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#551
+  def min(star: T.unsafe(nil)); end
+
+  # :call-seq: minmax(star: :*) => nil or [integer, integer or star]
+  #
+  # Returns a 2-element array containing the minimum and maximum numbers in
+  # +self+, or +nil+ when the set is empty.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#559
+  def minmax(star: T.unsafe(nil)); end
+
+  # Returns a new SequenceSet with a normalized string representation.
+  #
+  # The returned set's #string is sorted and deduplicated.  Adjacent or
+  # overlapping elements will be merged into a single larger range.
+  #
+  #   Net::IMAP::SequenceSet["1:5,3:7,10:9,10:11"].normalize
+  #   #=> Net::IMAP::SequenceSet["1:7,9:11"]
+  #
+  # Related: #normalize!, #normalized_string
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1187
+  def normalize; end
+
+  # Resets #string to be sorted, deduplicated, and coalesced.  Returns
+  # +self+.
+  #
+  # Related: #normalize, #normalized_string
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1197
+  def normalize!; end
+
+  # Returns a normalized +sequence-set+ string representation, sorted
+  # and deduplicated.  Adjacent or overlapping elements will be merged into
+  # a single larger range.  Returns +nil+ when the set is empty.
+  #
+  #   Net::IMAP::SequenceSet["1:5,3:7,10:9,10:11"].normalized_string
+  #   #=> "1:7,9:11"
+  #
+  # Related: #normalize!, #normalize
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1210
+  def normalized_string; end
+
+  # Returns a sorted array of all of the number values in the sequence set.
+  #
+  # The returned numbers are sorted and de-duplicated, even when the input
+  # #string is not.  See #normalize.
+  #
+  #   Net::IMAP::SequenceSet["2,5:9,6,12:11"].numbers
+  #   #=> [2, 5, 6, 7, 8, 9, 11, 12]
+  #
+  # If the set contains a <tt>*</tt>, RangeError is raised.  See #limit.
+  #
+  #   Net::IMAP::SequenceSet["10000:*"].numbers
+  #   #!> RangeError
+  #
+  # *WARNING:* Even excluding sets with <tt>*</tt>, an enormous result can
+  # easily be created.  An array with over 4 billion integers could be
+  # returned, requiring up to 32GiB of memory on a 64-bit architecture.
+  #
+  #   Net::IMAP::SequenceSet[10000..2**32-1].numbers
+  #   # ...probably freezes the process for a while...
+  #   #!> NoMemoryError (probably)
+  #
+  # For safety, consider using #limit or #intersection to set an upper
+  # bound.  Alternatively, use #each_element, #each_range, or even
+  # #each_number to avoid allocation of a result array.
+  #
+  # Related: #elements, #ranges, #to_set
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#900
+  def numbers; end
+
+  # Returns +true+ if the set and a given object have any common elements,
+  # +false+ otherwise.
+  #
+  #     Net::IMAP::SequenceSet["5:10"].intersect? "7,9,11" #=> true
+  #     Net::IMAP::SequenceSet["5:10"].intersect? "11:33"  #=> false
+  #
+  # Related: #intersection, #disjoint?
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#523
+  def overlap?(other); end
+
+  # Returns an array of ranges
+  #
+  # The returned elements are sorted and coalesced, even when the input
+  # #string is not.  <tt>*</tt> will sort last.  See #normalize.
+  #
+  # <tt>*</tt> translates to an endless range.  By itself, <tt>*</tt>
+  # translates to <tt>:*..</tt>.  Use #limit to set <tt>*</tt> to a maximum
+  # value.
+  #
+  # The returned ranges will be ordered and coalesced, even when the input
+  # #string is not.  <tt>*</tt> will sort last.  See #normalize.
+  #
+  #   Net::IMAP::SequenceSet["2,5:9,6,*,12:11"].ranges
+  #   #=> [2..2, 5..9, 11..12, :*..]
+  #   Net::IMAP::SequenceSet["123,999:*,456:789"].ranges
+  #   #=> [123..123, 456..789, 999..]
+  #
+  # Related: #each_range, #elements, #numbers, #to_set
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#872
+  def ranges; end
+
+  # Replace the contents of the set with the contents of +other+ and returns
+  # +self+.
+  #
+  # +other+ may be another SequenceSet, or it may be an IMAP +sequence-set+
+  # string, a number, a range, <tt>*</tt>, or an enumerable of these.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#358
+  def replace(other); end
+
+  # Unstable API: for internal use only (Net::IMAP#send_data)
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1234
   def send_data(imap, tag); end
 
-  # Returns the IMAP string representation.  In the IMAP grammar,
-  # +sequence-set+ is a subset of +atom+ which is a subset of +astring+.
-  # Returns the value of #atom
+  # Returns the count of #numbers in the set.
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#28
+  # If <tt>*</tt> and <tt>2**32 - 1</tt> (the maximum 32-bit unsigned
+  # integer value) are both in the set, they will only be counted once.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#989
+  def size; end
+
+  # :call-seq:
+  #    seqset[index]         -> integer or :* or nil
+  #    slice(index)          -> integer or :* or nil
+  #    seqset[start, length] -> sequence set or nil
+  #    slice(start, length)  -> sequence set or nil
+  #    seqset[range]         -> sequence set or nil
+  #    slice(range)          -> sequence set or nil
+  #
+  # Returns a number or a subset from +self+, without modifying the set.
+  #
+  # When an Integer argument +index+ is given, the number at offset +index+
+  # is returned:
+  #
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[0]   #=> 10
+  #     set[5]   #=> 15
+  #     set[10]  #=> 26
+  #
+  # If +index+ is negative, it counts relative to the end of +self+:
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[-1]  #=> 26
+  #     set[-3]  #=> 22
+  #     set[-6]  #=> 15
+  #
+  # If +index+ is out of range, +nil+ is returned.
+  #
+  #     set = Net::IMAP::SequenceSet["10:15,20:23,26"]
+  #     set[11]  #=> nil
+  #     set[-12] #=> nil
+  #
+  # The result is based on the normalized set—sorted and de-duplicated—not
+  # on the assigned value of #string.
+  #
+  #     set = Net::IMAP::SequenceSet["12,20:23,11:16,21"]
+  #     set[0]   #=> 11
+  #     set[-1]  #=> 23
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1088
+  def slice(index, length = T.unsafe(nil)); end
+
+  # :call-seq:
+  #    slice!(index)          -> integer or :* or nil
+  #    slice!(start, length)  -> sequence set or nil
+  #    slice!(range)          -> sequence set or nil
+  #
+  # Deletes a number or consecutive numbers from the set, indicated by the
+  # given +index+, +start+ and +length+, or +range+ of offsets.  Returns the
+  # number or sequence set that was removed, or +nil+ if nothing was
+  # removed.  Arguments are interpreted the same as for #slice or #[].
+  #
+  # #string will be regenerated after deletion.
+  #
+  # Related: #slice, #delete_at, #delete, #delete?, #subtract, #difference
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#789
+  def slice!(index, length = T.unsafe(nil)); end
+
+  # Returns the \IMAP +sequence-set+ string representation, or +nil+ when
+  # the set is empty.  Note that an empty set is invalid in the \IMAP
+  # syntax.
+  #
+  # Use #valid_string to raise an exception when the set is empty, or #to_s
+  # to return an empty string.
+  #
+  # If the set was created from a single string, it is not normalized.  If
+  # the set is updated the string will be normalized.
+  #
+  # Related: #valid_string, #normalized_string, #to_s
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#390
+  def string; end
+
+  # Assigns a new string to #string and resets #elements to match.  It
+  # cannot be set to an empty string—assign +nil+ or use #clear instead.
+  # The string is validated but not normalized.
+  #
+  # Use #add or #merge to add a string to an existing set.
+  #
+  # Related: #replace, #clear
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#399
+  def string=(str); end
+
+  # Removes all of the elements that appear in any of the given +objects+
+  # from the set, and returns +self+.
+  #
+  # The +objects+ may be any objects that would be accepted by ::new:
+  # non-zero 32 bit unsigned integers, ranges, <tt>sequence-set</tt>
+  # formatted strings, other sequence sets, or enumerables containing any of
+  # these.
+  #
+  # Related: #difference
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#819
+  def subtract(*objects); end
+
+  # Returns an array of ranges and integers and <tt>:*</tt>.
+  #
+  # The returned elements are sorted and coalesced, even when the input
+  # #string is not.  <tt>*</tt> will sort last.  See #normalize.
+  #
+  # By itself, <tt>*</tt> translates to <tt>:*</tt>.  A range containing
+  # <tt>*</tt> translates to an endless range.  Use #limit to translate both
+  # cases to a maximum value.
+  #
+  # If the original input was unordered or contains overlapping ranges, the
+  # returned ranges will be ordered and coalesced.
+  #
+  #   Net::IMAP::SequenceSet["2,5:9,6,*,12:11"].elements
+  #   #=> [2, 5..9, 11..12, :*]
+  #
+  # Related: #each_element, #ranges, #numbers
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#851
+  def to_a; end
+
+  # Returns the \IMAP +sequence-set+ string representation, or an empty
+  # string when the set is empty.  Note that an empty set is invalid in the
+  # \IMAP syntax.
+  #
+  # Related: #valid_string, #normalized_string, #to_s
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#415
   def to_s; end
 
-  # Unstable API, for internal use only (Net::IMAP#validate_data)
+  # Returns self
+  def to_sequence_set; end
+
+  # Returns a Set with all of the #numbers in the sequence set.
   #
-  # source://net-imap//lib/net/imap/sequence_set.rb#54
+  # If the set contains a <tt>*</tt>, RangeError will be raised.
+  #
+  # See #numbers for the warning about very large sets.
+  #
+  # Related: #elements, #ranges, #numbers
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#983
+  def to_set; end
+
+  # :call-seq:
+  #   self + other -> sequence set
+  #   self | other -> sequence set
+  #   union(other) -> sequence set
+  #
+  # Returns a new sequence set that has every number in the +other+ object
+  # added.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet["1:5"] | 2 | [4..6, 99]
+  #     #=> Net::IMAP::SequenceSet["1:6,99"]
+  #
+  # Related: #add, #merge
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#586
+  def union(other); end
+
+  # Returns false when the set is empty.
+  #
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#562
+  def valid?; end
+
+  # Returns the \IMAP +sequence-set+ string representation, or raises a
+  # DataFormatError when the set is empty.
+  #
+  # Use #string to return +nil+ or #to_s to return an empty string without
+  # error.
+  #
+  # Related: #string, #normalized_string, #to_s
+  #
+  # @raise [DataFormatError]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#374
+  def valid_string; end
+
+  # Unstable API: currently for internal use only (Net::IMAP#validate_data)
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1228
   def validate; end
 
+  # :call-seq:
+  #   self ^ other -> sequence set
+  #   xor(other)   -> sequence set
+  #
+  # Returns a new sequence set containing numbers that are exclusive between
+  # this set and +other+.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet[1..5] ^ [2, 4, 6]
+  #     #=> Net::IMAP::SequenceSet["1,3,5:6"]
+  #
+  # <tt>(seqset ^ other)</tt> is equivalent to <tt>((seqset | other) -
+  # (seqset & other))</tt>.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#644
+  def xor(other); end
+
+  # :call-seq:
+  #   self + other -> sequence set
+  #   self | other -> sequence set
+  #   union(other) -> sequence set
+  #
+  # Returns a new sequence set that has every number in the +other+ object
+  # added.
+  #
+  # +other+ may be any object that would be accepted by ::new: a non-zero 32
+  # bit unsigned integer, range, <tt>sequence-set</tt> formatted string,
+  # another sequence set, or an enumerable containing any of these.
+  #
+  #     Net::IMAP::SequenceSet["1:5"] | 2 | [4..6, 99]
+  #     #=> Net::IMAP::SequenceSet["1:6,99"]
+  #
+  # Related: #add, #merge
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#586
+  def |(other); end
+
+  # :call-seq:
+  #   ~ self     -> sequence set
+  #   complement -> sequence set
+  #
+  # Returns the complement of self, a SequenceSet which contains all numbers
+  # _except_ for those in this set.
+  #
+  #     ~Net::IMAP::SequenceSet.full  #=> Net::IMAP::SequenceSet.empty
+  #     ~Net::IMAP::SequenceSet.empty #=> Net::IMAP::SequenceSet.full
+  #     ~Net::IMAP::SequenceSet["1:5,100:222"]
+  #     #=> Net::IMAP::SequenceSet["6:99,223:*"]
+  #     ~Net::IMAP::SequenceSet["6:99,223:*"]
+  #     #=> Net::IMAP::SequenceSet["1:5,100:222"]
+  #
+  # Related: #complement!
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#662
+  def ~; end
+
+  protected
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1240
+  def tuples; end
+
+  private
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1011
+  def each_tuple_with_index; end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1304
+  def from_tuple_int(num); end
+
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1313
+  def include_tuple?(_arg0); end
+
+  # frozen clones are shallow copied
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1247
+  def initialize_clone(other); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1251
+  def initialize_dup(other); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1257
+  def input_to_tuple(obj); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1268
+  def input_to_tuples(obj); end
+
+  # unlike SequenceSet#try_convert, this returns an Integer, Range,
+  # String, Set, Array, or... any type of object.
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1285
+  def input_try_convert(input); end
+
+  # @return [Boolean]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1315
+  def intersect_tuple?(_arg0); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1409
+  def nz_number(num); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1404
+  def range_gte_to(num); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1293
+  def range_to_tuple(range); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1244
+  def remain_frozen(set); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1020
+  def reverse_each_tuple_with_index; end
+
+  # @raise [ArgumentError]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1099
+  def slice_length(start, length); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1107
+  def slice_range(range); end
+
+  # @raise [DataFormatError]
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1308
+  def str_to_tuple(str); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1307
+  def str_to_tuples(str); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1303
+  def to_tuple_int(obj); end
+
+  # --|=====| |=====new tuple=====|                 append
+  #   ?????????-|=====new tuple=====|-|===lower===|-- insert
+  #
+  #             |=====new tuple=====|
+  #   ---------??=======lower=======??--------------- noop
+  #
+  #   ---------??===lower==|--|==|                    join remaining
+  #   ---------??===lower==|--|==|----|===upper===|-- join until upper
+  #   ---------??===lower==|--|==|--|=====upper===|-- join to upper
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1333
+  def tuple_add(tuple); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1342
+  def tuple_coalesce(lower, lower_idx, min, max); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1400
+  def tuple_gte_with_index(num); end
+
+  # |====tuple================|
+  # --|====|                               no more       1. noop
+  # --|====|---------------------------|====lower====|-- 2. noop
+  # -------|======lower================|---------------- 3. split
+  # --------|=====lower================|---------------- 4. trim beginning
+  #
+  # -------|======lower====????????????----------------- trim lower
+  # --------|=====lower====????????????----------------- delete lower
+  #
+  # -------??=====lower===============|----------------- 5. trim/delete one
+  # -------??=====lower====|--|====|       no more       6. delete rest
+  # -------??=====lower====|--|====|---|====upper====|-- 7. delete until
+  # -------??=====lower====|--|====|--|=====upper====|-- 8. delete and trim
+  #
+  # source://net-imap//lib/net/imap/sequence_set.rb#1369
+  def tuple_subtract(tuple); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#932
+  def tuple_to_entry(_arg0); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1306
+  def tuple_to_str(tuple); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1379
+  def tuple_trim_or_split(lower, idx, tmin, tmax); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1320
+  def tuples_add(tuples); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1321
+  def tuples_subtract(tuples); end
+
+  # source://net-imap//lib/net/imap/sequence_set.rb#1386
+  def tuples_trim_or_delete(lower, lower_idx, tmin, tmax); end
+
   class << self
-    # source://net-imap//lib/net/imap/sequence_set.rb#19
-    def [](str); end
+    # :call-seq:
+    #   SequenceSet[*values] -> valid frozen sequence set
+    #
+    # Returns a frozen SequenceSet, constructed from +values+.
+    #
+    # An empty SequenceSet is invalid and will raise a DataFormatError.
+    #
+    # Use ::new to create a mutable or empty SequenceSet.
+    #
+    # source://net-imap//lib/net/imap/sequence_set.rb#305
+    def [](first, *rest); end
+
+    # Returns a frozen empty set singleton.  Note that valid \IMAP sequence
+    # sets cannot be empty, so this set is _invalid_.
+    #
+    # source://net-imap//lib/net/imap/sequence_set.rb#336
+    def empty; end
+
+    # Returns a frozen full set singleton: <tt>"1:*"</tt>
+    #
+    # source://net-imap//lib/net/imap/sequence_set.rb#339
+    def full; end
+
+    # :call-seq:
+    #   SequenceSet.try_convert(obj) -> sequence set or nil
+    #
+    # If +obj+ is a SequenceSet, returns +obj+.  If +obj+ responds_to
+    # +to_sequence_set+, calls +obj.to_sequence_set+ and returns the result.
+    # Otherwise returns +nil+.
+    #
+    # If +obj.to_sequence_set+ doesn't return a SequenceSet, an exception is
+    # raised.
+    #
+    # @raise [DataFormatError]
+    #
+    # source://net-imap//lib/net/imap/sequence_set.rb#326
+    def try_convert(obj); end
   end
 end
+
+# source://net-imap//lib/net/imap/sequence_set.rb#291
+Net::IMAP::SequenceSet::COERCIBLE = T.let(T.unsafe(nil), Proc)
+
+# intentionally defined after the class implementation
+#
+# source://net-imap//lib/net/imap/sequence_set.rb#1420
+Net::IMAP::SequenceSet::EMPTY = T.let(T.unsafe(nil), Net::IMAP::SequenceSet)
+
+# source://net-imap//lib/net/imap/sequence_set.rb#292
+Net::IMAP::SequenceSet::ENUMABLE = T.let(T.unsafe(nil), Proc)
+
+# source://net-imap//lib/net/imap/sequence_set.rb#1421
+Net::IMAP::SequenceSet::FULL = T.let(T.unsafe(nil), Net::IMAP::SequenceSet)
+
+# valid inputs for "*"
+#
+# source://net-imap//lib/net/imap/sequence_set.rb#288
+Net::IMAP::SequenceSet::STARS = T.let(T.unsafe(nil), Array)
+
+# represents "*" internally, to simplify sorting (etc)
+#
+# source://net-imap//lib/net/imap/sequence_set.rb#284
+Net::IMAP::SequenceSet::STAR_INT = T.let(T.unsafe(nil), Integer)
+
+# The largest possible non-zero unsigned 32-bit integer
+#
+# source://net-imap//lib/net/imap/sequence_set.rb#281
+Net::IMAP::SequenceSet::UINT32_MAX = T.let(T.unsafe(nil), Integer)
 
 # source://net-imap//lib/net/imap/command_data.rb#273
 module Net::IMAP::StringFormatter
@@ -8516,6 +10190,23 @@ Net::IMAP::StringPrep::Trace::UNASSIGNED_TABLE = T.let(T.unsafe(nil), String)
 # source://net-imap//lib/net/imap/flags.rb#258
 Net::IMAP::TRASH = T.let(T.unsafe(nil), Symbol)
 
+# Net::IMAP::ThreadMember represents a thread-node returned
+# by Net::IMAP#thread.
+#
+# source://net-imap//lib/net/imap/response_data.rb#764
+class Net::IMAP::ThreadMember < ::Struct
+  # Returns a SequenceSet containing #seqno and all #children's seqno,
+  # recursively.
+  #
+  # source://net-imap//lib/net/imap/response_data.rb#780
+  def to_sequence_set; end
+
+  protected
+
+  # source://net-imap//lib/net/imap/response_data.rb#786
+  def all_seqnos(node = T.unsafe(nil)); end
+end
+
 # Net::IMAP::UIDPlusData represents the ResponseCode#data that accompanies
 # the +APPENDUID+ and +COPYUID+ response codes.
 #
@@ -8535,7 +10226,7 @@ Net::IMAP::TRASH = T.let(T.unsafe(nil), Symbol)
 # TODO: support MULTIAPPEND
 # ++
 #
-# source://net-imap//lib/net/imap/response_data.rb#300
+# source://net-imap//lib/net/imap/response_data.rb#346
 class Net::IMAP::UIDPlusData < ::Struct
   # :call-seq: uid_mapping -> nil or a hash
   #
@@ -8544,7 +10235,7 @@ class Net::IMAP::UIDPlusData < ::Struct
   #
   # Note:: Returns +nil+ for Net::IMAP#append.
   #
-  # source://net-imap//lib/net/imap/response_data.rb#330
+  # source://net-imap//lib/net/imap/response_data.rb#376
   def uid_mapping; end
 end
 
@@ -8570,7 +10261,7 @@ class Net::IMAP::UnknownResponseError < ::Net::IMAP::ResponseError; end
 #
 # See also: UnparsedNumericResponseData, ExtensionData, IgnoredResponse
 #
-# source://net-imap//lib/net/imap/response_data.rb#76
+# source://net-imap//lib/net/imap/response_data.rb#77
 class Net::IMAP::UnparsedData < ::Struct; end
 
 # **Note:** This represents an intentionally _unstable_ API.  Where
@@ -8582,10 +10273,10 @@ class Net::IMAP::UnparsedData < ::Struct; end
 #
 # See also: UnparsedData, ExtensionData, IgnoredResponse
 #
-# source://net-imap//lib/net/imap/response_data.rb#92
+# source://net-imap//lib/net/imap/response_data.rb#93
 class Net::IMAP::UnparsedNumericResponseData < ::Struct; end
 
-# source://net-imap//lib/net/imap.rb#693
+# source://net-imap//lib/net/imap.rb#720
 Net::IMAP::VERSION = T.let(T.unsafe(nil), String)
 
 # source://net-imap//lib/net/imap/authenticators.rb#35
