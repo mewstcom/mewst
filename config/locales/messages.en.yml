@@ -77,3 +77,17 @@ en:
         This is an alpha product.<br>
         During alpha, it is only available to the developer (<a class="link" href="/@shimbaco">@shimbaco</a>).<br>
         Development progress will be posted on GitHub and Bluesky.
+      description_1: Mewst is a social network where you can share your current feelings and situations in 160 characters.
+      description_2: We aim to provide a service that allows you to feel at ease by not oversharing information.
+      feature_1:
+        title: Only chronological timeline
+        body: There is no timeline arranged by the service side like "Recommended".
+      feature_2:
+        title: Not 'likes' but 'stamps'
+        body: We call them stamps so they can be easily used even for not-so-good topics, like sad stories.
+      feature_3:
+        title: Numbers are not displayed
+        body: Figures such as the number of stamps or followers are not shown.
+      feature_4:
+        title: You won't know who follows you
+        body: Since you can't list your followers, you can follow or unfollow others with ease.

@@ -4,7 +4,7 @@
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
     <h1 class="bg-primary font-bold inline-block px-3 py-1 rounded-full">
-      <%= t("nouns.mewst_kana") %>
+      Mewst
     </h1>
 
     <div class="mt-3">
@@ -19,6 +19,38 @@
           <%= link_to "Bluesky (@shimba.co)", "https://bsky.app/profile/shimba.co", class: "link", target: "_blank", rel: "nofollow" %>
         </li>
       </ul>
+    </div>
+
+    <hr class="my-6">
+
+    <div>
+      <p>
+        <%= t("messages.welcome.description_1") %>
+      </p>
+
+      <p class="mt-4">
+        <%= t("messages.welcome.description_2") %>
+      </p>
+    </div>
+
+    <hr class="my-6">
+
+    <h2 class="antialiased font-semibold text-xl">
+      <%= t("nouns.features_of_mewst") %>
+    </h2>
+
+    <div class="gap-4 grid grid-cols-1 md:grid-cols-2 mt-4">
+      <% [1, 2, 3, 4].each do |i| %>
+        <div>
+          <h3 class="antialiased font-semibold">
+            <%= t("messages.welcome.feature_#{i}.title") %>
+          </h3>
+
+          <div class="mt-1 text-gray-500 text-sm">
+            <%= t("messages.welcome.feature_#{i}.body") %>
+          </div>
+        </div>
+      <% end %>
     </div>
   <% end %>
 <% end %>
