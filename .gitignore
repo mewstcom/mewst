@@ -6,8 +6,10 @@
 /.idea
 /app/assets/builds/*
 /config/master.key
+/docker-compose.override.yml
 /log/*
 /node_modules
+/private
 /public/uploads/*
 /tmp/*
 /vendor/bundle
