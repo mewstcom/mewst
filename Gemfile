@@ -56,7 +56,7 @@ group :development do
   gem "bullet"
   gem "letter_opener_web"
   gem "sorbet"
-  gem "tapioca", ">= 0.10.5", require: false
+  gem "tapioca", "< 0.13.2", require: false
   gem "web-console"
 end
 

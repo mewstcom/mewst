@@ -410,7 +410,7 @@ GEM
     stringio (3.1.0)
     strong_migrations (1.8.0)
       activerecord (>= 5.2)
-    tapioca (0.13.2)
+    tapioca (0.13.1)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
@@ -503,7 +503,7 @@ DEPENDENCIES
   standard-rails
   standard-sorbet
   strong_migrations
-  tapioca (>= 0.10.5)
+  tapioca (< 0.13.2)
   view_component
   web-console
 
