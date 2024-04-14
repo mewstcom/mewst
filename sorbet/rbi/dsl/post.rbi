@@ -19,16 +19,16 @@ class Post
     sig { params(block: T.nilable(T.proc.params(record: ::Post).returns(T.untyped))).returns(T::Boolean) }
     def any?(&block); end
 
-    sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
+    sig { params(column_name: T.any(String, Symbol)).returns(Numeric) }
     def average(column_name); end
 
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Post).void)).returns(::Post) }
     def build(attributes = nil, &block); end
 
-    sig { params(operation: Symbol, column_name: T.any(String, Symbol)).returns(T.untyped) }
+    sig { params(operation: Symbol, column_name: T.any(String, Symbol)).returns(Numeric) }
     def calculate(operation, column_name); end
 
-    sig { params(column_name: T.untyped).returns(T.untyped) }
+    sig { params(column_name: T.untyped).returns(Integer) }
     def count(column_name = nil); end
 
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Post).void)).returns(::Post) }
@@ -55,8 +55,17 @@ class Post
     sig { returns(::Post) }
     def fifth!; end
 
-    sig { params(args: T.untyped).returns(T.untyped) }
-    def find(*args); end
+    sig do
+      params(
+        args: T.any(String, Symbol, ::ActiveSupport::Multibyte::Chars, T::Boolean, BigDecimal, Numeric, ::ActiveRecord::Type::Binary::Data, ::ActiveRecord::Type::Time::Value, Date, Time, ::ActiveSupport::Duration, T::Class[T.anything])
+      ).returns(::Post)
+    end
+    sig do
+      params(
+        args: T::Array[T.any(String, Symbol, ::ActiveSupport::Multibyte::Chars, T::Boolean, BigDecimal, Numeric, ::ActiveRecord::Type::Binary::Data, ::ActiveRecord::Type::Time::Value, Date, Time, ::ActiveSupport::Duration, T::Class[T.anything])]
+      ).returns(T::Enumerable[::Post])
+    end
+    def find(args); end
 
     sig { params(args: T.untyped).returns(T.nilable(::Post)) }
     def find_by(*args); end
@@ -71,8 +80,17 @@ class Post
         batch_size: Integer,
         error_on_ignore: T.untyped,
         order: Symbol,
-        block: T.nilable(T.proc.params(object: ::Post).void)
-      ).returns(T.nilable(T::Enumerator[::Post]))
+        block: T.proc.params(object: ::Post).void
+      ).void
+    end
+    sig do
+      params(
+        start: T.untyped,
+        finish: T.untyped,
+        batch_size: Integer,
+        error_on_ignore: T.untyped,
+        order: Symbol
+      ).returns(T::Enumerator[::Post])
     end
     def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
 
@@ -83,8 +101,17 @@ class Post
         batch_size: Integer,
         error_on_ignore: T.untyped,
         order: Symbol,
-        block: T.nilable(T.proc.params(object: T::Array[::Post]).void)
-      ).returns(T.nilable(T::Enumerator[T::Enumerator[::Post]]))
+        block: T.proc.params(object: T::Array[::Post]).void
+      ).void
+    end
+    sig do
+      params(
+        start: T.untyped,
+        finish: T.untyped,
+        batch_size: Integer,
+        error_on_ignore: T.untyped,
+        order: Symbol
+      ).returns(T::Enumerator[T::Enumerator[::Post]])
     end
     def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
 
@@ -106,7 +133,8 @@ class Post
     sig { params(arg: T.untyped, args: T.untyped).returns(::Post) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: T.untyped).returns(T.untyped) }
+    sig { params(limit: NilClass).returns(T.nilable(::Post)) }
+    sig { params(limit: Integer).returns(T::Array[::Post]) }
     def first(limit = nil); end
 
     sig { returns(::Post) }
@@ -136,15 +164,27 @@ class Post
         error_on_ignore: T.untyped,
         order: Symbol,
         use_ranges: T.untyped,
-        block: T.nilable(T.proc.params(object: PrivateRelation).void)
-      ).returns(T.nilable(::ActiveRecord::Batches::BatchEnumerator))
+        block: T.proc.params(object: PrivateRelation).void
+      ).void
+    end
+    sig do
+      params(
+        of: Integer,
+        start: T.untyped,
+        finish: T.untyped,
+        load: T.untyped,
+        error_on_ignore: T.untyped,
+        order: Symbol,
+        use_ranges: T.untyped
+      ).returns(::ActiveRecord::Batches::BatchEnumerator)
     end
     def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, order: :asc, use_ranges: nil, &block); end
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: T.untyped).returns(T.untyped) }
+    sig { params(limit: NilClass).returns(T.nilable(::Post)) }
+    sig { params(limit: Integer).returns(T::Array[::Post]) }
     def last(limit = nil); end
 
     sig { returns(::Post) }
@@ -196,11 +236,12 @@ class Post
       params(
         column_name: T.nilable(T.any(String, Symbol)),
         block: T.nilable(T.proc.params(record: T.untyped).returns(T.untyped))
-      ).returns(T.untyped)
+      ).returns(Numeric)
     end
     def sum(column_name = nil, &block); end
 
-    sig { params(limit: T.untyped).returns(T.untyped) }
+    sig { params(limit: NilClass).returns(T.nilable(::Post)) }
+    sig { params(limit: Integer).returns(T::Array[::Post]) }
     def take(limit = nil); end
 
     sig { returns(::Post) }
@@ -316,13 +357,13 @@ class Post
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def extending(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def extract_associated(*args, &blk); end
+    sig { params(association: Symbol).returns(T::Array[T.untyped]) }
+    def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationGroupChain) }
     def group(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -882,9 +923,6 @@ class Post
     def restore_published_at!; end
 
     sig { void }
-    def restore_stamps_count!; end
-
-    sig { void }
     def restore_updated_at!; end
 
     sig { returns(T.nilable([::String, ::String])) }
@@ -935,62 +973,11 @@ class Post
     sig { returns(T::Boolean) }
     def saved_change_to_published_at?; end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def saved_change_to_stamps_count; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_stamps_count?; end
-
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_updated_at; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_updated_at?; end
-
-    sig { returns(::Integer) }
-    def stamps_count; end
-
-    sig { params(value: ::Integer).returns(::Integer) }
-    def stamps_count=(value); end
-
-    sig { returns(T::Boolean) }
-    def stamps_count?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def stamps_count_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def stamps_count_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def stamps_count_came_from_user?; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def stamps_count_change; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def stamps_count_change_to_be_saved; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def stamps_count_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def stamps_count_in_database; end
-
-    sig { returns(T.nilable([::Integer, ::Integer])) }
-    def stamps_count_previous_change; end
-
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
-    def stamps_count_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def stamps_count_previously_was; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def stamps_count_was; end
-
-    sig { void }
-    def stamps_count_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at; end
@@ -1062,9 +1049,6 @@ class Post
     def will_save_change_to_published_at?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_stamps_count?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
   end
 
@@ -1099,13 +1083,13 @@ class Post
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def extending(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def extract_associated(*args, &blk); end
+    sig { params(association: Symbol).returns(T::Array[T.untyped]) }
+    def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationGroupChain) }
     def group(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1230,6 +1214,36 @@ class Post
     def to_ary; end
   end
 
+  class PrivateAssociationRelationGroupChain < PrivateAssociationRelation
+    Elem = type_member { { fixed: ::Post } }
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, Numeric]) }
+    def average(column_name); end
+
+    sig { params(operation: Symbol, column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, Numeric]) }
+    def calculate(operation, column_name); end
+
+    sig { params(column_name: T.untyped).returns(T::Hash[T.untyped, Integer]) }
+    def count(column_name = nil); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.self_type) }
+    def having(*args, &blk); end
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
+    def maximum(column_name); end
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
+    def minimum(column_name); end
+
+    sig do
+      params(
+        column_name: T.nilable(T.any(String, Symbol)),
+        block: T.nilable(T.proc.params(record: T.untyped).returns(T.untyped))
+      ).returns(T::Hash[T.untyped, Numeric])
+    end
+    def sum(column_name = nil, &block); end
+  end
+
   class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
     Elem = type_member { { fixed: ::Post } }
 
@@ -1335,6 +1349,36 @@ class Post
 
     sig { returns(T::Array[::Post]) }
     def to_ary; end
+  end
+
+  class PrivateRelationGroupChain < PrivateRelation
+    Elem = type_member { { fixed: ::Post } }
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, Numeric]) }
+    def average(column_name); end
+
+    sig { params(operation: Symbol, column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, Numeric]) }
+    def calculate(operation, column_name); end
+
+    sig { params(column_name: T.untyped).returns(T::Hash[T.untyped, Integer]) }
+    def count(column_name = nil); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.self_type) }
+    def having(*args, &blk); end
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
+    def maximum(column_name); end
+
+    sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
+    def minimum(column_name); end
+
+    sig do
+      params(
+        column_name: T.nilable(T.any(String, Symbol)),
+        block: T.nilable(T.proc.params(record: T.untyped).returns(T.untyped))
+      ).returns(T::Hash[T.untyped, Numeric])
+    end
+    def sum(column_name = nil, &block); end
   end
 
   class PrivateRelationWhereChain < PrivateRelation

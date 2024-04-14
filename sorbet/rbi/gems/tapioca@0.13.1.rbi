@@ -115,7 +115,7 @@ class RBI::Tree < ::RBI::NodeWithComments
   end
   def create_method(name, parameters: T.unsafe(nil), return_type: T.unsafe(nil), class_method: T.unsafe(nil), visibility: T.unsafe(nil), comments: T.unsafe(nil)); end
 
-  # source://tapioca//lib/tapioca/rbi_ext/model.rb#113
+  # source://tapioca//lib/tapioca/rbi_ext/model.rb#112
   sig do
     params(
       name: ::String,
@@ -140,9 +140,9 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(constant: ::Module, block: T.nilable(T.proc.params(scope: ::RBI::Scope).void)).returns(::RBI::Scope) }
   def create_path(constant, &block); end
 
-  # source://tapioca//lib/tapioca/rbi_ext/model.rb#134
-  sig { params(parameters: T::Hash[T.any(::String, ::Symbol), ::String], return_type: ::String).returns(::RBI::Sig) }
-  def create_sig(parameters:, return_type: T.unsafe(nil)); end
+  # source://tapioca//lib/tapioca/rbi_ext/model.rb#133
+  sig { params(parameters: T::Array[::RBI::TypedParam], return_type: ::String).returns(::RBI::Sig) }
+  def create_sig(parameters: T.unsafe(nil), return_type: T.unsafe(nil)); end
 
   # source://tapioca//lib/tapioca/rbi_ext/model.rb#74
   sig do
@@ -210,22 +210,22 @@ class RBI::Tree < ::RBI::NodeWithComments
 
   private
 
-  # source://tapioca//lib/tapioca/rbi_ext/model.rb#149
+  # source://tapioca//lib/tapioca/rbi_ext/model.rb#148
   sig { params(node: ::RBI::Node).returns(::RBI::Node) }
   def create_node(node); end
 
-  # source://tapioca//lib/tapioca/rbi_ext/model.rb#144
+  # source://tapioca//lib/tapioca/rbi_ext/model.rb#143
   sig { returns(T::Hash[::String, ::RBI::Node]) }
   def nodes_cache; end
 end
 
-# source://tapioca//lib/tapioca/rbi_ext/model.rb#159
+# source://tapioca//lib/tapioca/rbi_ext/model.rb#158
 class RBI::TypedParam < ::T::Struct
   const :param, ::RBI::Param
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.11288/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11346/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1142,7 +1142,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.11288/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11346/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1153,7 +1153,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.11288/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11346/lib/types/struct.rb#13
     def inherited(s); end
   end
 end

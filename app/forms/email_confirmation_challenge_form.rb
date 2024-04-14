@@ -9,7 +9,7 @@ class EmailConfirmationChallengeForm < ApplicationForm
 
   sig { returns(EmailConfirmation) }
   def email_confirmation!
-    EmailConfirmation.find(email_confirmation_id)
+    EmailConfirmation.find(email_confirmation_id.not_nil!)
   end
 
   sig { returns(T.nilable(EmailConfirmation)) }
