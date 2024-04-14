@@ -16,6 +16,8 @@ class Post < ApplicationRecord
   belongs_to :oauth_application
   has_many :stamps, dependent: :restrict_with_exception
   has_many :home_timeline_posts, dependent: :restrict_with_exception
+  has_one :post_link, dependent: :restrict_with_exception
+  has_one :link, through: :post_link
 
   scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }
 

@@ -214,6 +214,21 @@ CREATE TABLE public.home_timeline_posts (
 
 
 --
+-- Name: links; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.links (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    canonical_url character varying NOT NULL,
+    domain character varying NOT NULL,
+    title character varying NOT NULL,
+    image_url character varying DEFAULT ''::character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -276,6 +291,19 @@ CREATE TABLE public.oauth_applications (
     redirect_uri text NOT NULL,
     scopes character varying DEFAULT ''::character varying NOT NULL,
     confidential boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: post_links; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.post_links (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    post_id uuid NOT NULL,
+    link_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -492,6 +520,14 @@ ALTER TABLE ONLY public.home_timeline_posts
 
 
 --
+-- Name: links links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.links
+    ADD CONSTRAINT links_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -521,6 +557,14 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 ALTER TABLE ONLY public.oauth_applications
     ADD CONSTRAINT oauth_applications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_links post_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_links
+    ADD CONSTRAINT post_links_pkey PRIMARY KEY (id);
 
 
 --
@@ -757,6 +801,13 @@ CREATE INDEX index_home_timeline_posts_on_published_at ON public.home_timeline_p
 
 
 --
+-- Name: index_links_on_canonical_url; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_links_on_canonical_url ON public.links USING btree (canonical_url);
+
+
+--
 -- Name: index_notifications_on_notified_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -845,6 +896,20 @@ CREATE UNIQUE INDEX index_oauth_applications_on_name ON public.oauth_application
 --
 
 CREATE UNIQUE INDEX index_oauth_applications_on_uid ON public.oauth_applications USING btree (uid);
+
+
+--
+-- Name: index_post_links_on_link_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_links_on_link_id ON public.post_links USING btree (link_id);
+
+
+--
+-- Name: index_post_links_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_links_on_post_id ON public.post_links USING btree (post_id);
 
 
 --
@@ -1029,6 +1094,14 @@ ALTER TABLE ONLY public.actors
 
 
 --
+-- Name: post_links fk_rails_58bdc3e61c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_links
+    ADD CONSTRAINT fk_rails_58bdc3e61c FOREIGN KEY (link_id) REFERENCES public.links(id);
+
+
+--
 -- Name: follows fk_rails_5e22b9865a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1090,6 +1163,14 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.user_profiles
     ADD CONSTRAINT fk_rails_87a6352e58 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: post_links fk_rails_a3a77f0fe2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_links
+    ADD CONSTRAINT fk_rails_a3a77f0fe2 FOREIGN KEY (post_id) REFERENCES public.posts(id);
 
 
 --
@@ -1179,6 +1260,8 @@ ALTER TABLE ONLY public.home_timeline_posts
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240414155325'),
+('20240414155158'),
 ('20240414152059'),
 ('20240404162020'),
 ('20240403174827'),
