@@ -266,6 +266,9 @@ class StrongMigrations::Adapters::AbstractAdapter
   # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#27
   def add_column_default_safe?; end
 
+  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#39
+  def auto_incrementing_types; end
+
   # @return [Boolean]
   #
   # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#31
@@ -295,13 +298,13 @@ class StrongMigrations::Adapters::AbstractAdapter
 
   private
 
-  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#41
+  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#45
   def connection; end
 
-  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#45
+  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#49
   def select_all(statement); end
 
-  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#49
+  # source://strong_migrations//lib/strong_migrations/adapters/abstract_adapter.rb#53
   def target_version(target_version); end
 end
 
@@ -385,6 +388,9 @@ class StrongMigrations::Adapters::PostgreSQLAdapter < ::StrongMigrations::Adapte
   # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#40
   def analyze_table(table); end
 
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#172
+  def auto_incrementing_types; end
+
   # @return [Boolean]
   #
   # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#48
@@ -432,7 +438,7 @@ class StrongMigrations::Adapters::PostgreSQLAdapter < ::StrongMigrations::Adapte
 
   private
 
-  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#208
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#212
   def datetime_type; end
 
   # columns is array for column index and string for expression index
@@ -441,21 +447,21 @@ class StrongMigrations::Adapters::PostgreSQLAdapter < ::StrongMigrations::Adapte
   #
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#204
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#208
   def indexed?(table, column); end
 
-  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#174
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#178
   def set_timeout(setting, timeout); end
 
   # do not memoize
   # want latest value
   #
-  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#225
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#229
   def time_zone; end
 
   # units: https://www.postgresql.org/docs/current/config-setting.html
   #
-  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#182
+  # source://strong_migrations//lib/strong_migrations/adapters/postgresql_adapter.rb#186
   def timeout_to_sec(timeout); end
 end
 
@@ -568,10 +574,10 @@ end
 module StrongMigrations::Checks
   private
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#422
+  # source://strong_migrations//lib/strong_migrations/checks.rb#425
   def ar_version; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#473
+  # source://strong_migrations//lib/strong_migrations/checks.rb#476
   def backfill_code(table, column, default, function = T.unsafe(nil)); end
 
   # source://strong_migrations//lib/strong_migrations/checks.rb#6
@@ -580,7 +586,7 @@ module StrongMigrations::Checks
   # source://strong_migrations//lib/strong_migrations/checks.rb#30
   def check_add_column(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#83
+  # source://strong_migrations//lib/strong_migrations/checks.rb#88
   def check_add_exclusion_constraint(*args); end
 
   # unlike add_index, we don't make an exception here for new tables
@@ -596,100 +602,100 @@ module StrongMigrations::Checks
   # note: adding foreign_keys with create_table is fine
   # since the table is always guaranteed to be empty
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#103
+  # source://strong_migrations//lib/strong_migrations/checks.rb#108
   def check_add_foreign_key(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#120
+  # source://strong_migrations//lib/strong_migrations/checks.rb#125
   def check_add_index(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#145
+  # source://strong_migrations//lib/strong_migrations/checks.rb#150
   def check_add_reference(method, *args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#183
+  # source://strong_migrations//lib/strong_migrations/checks.rb#186
   def check_add_unique_constraint(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#198
+  # source://strong_migrations//lib/strong_migrations/checks.rb#201
   def check_change_column(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#219
+  # source://strong_migrations//lib/strong_migrations/checks.rb#222
   def check_change_column_default(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#231
+  # source://strong_migrations//lib/strong_migrations/checks.rb#234
   def check_change_column_null(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#307
+  # source://strong_migrations//lib/strong_migrations/checks.rb#310
   def check_change_table; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#311
+  # source://strong_migrations//lib/strong_migrations/checks.rb#314
   def check_create_join_table(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#319
+  # source://strong_migrations//lib/strong_migrations/checks.rb#322
   def check_create_table(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#329
+  # source://strong_migrations//lib/strong_migrations/checks.rb#332
   def check_execute; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#333
+  # source://strong_migrations//lib/strong_migrations/checks.rb#336
   def check_remove_column(method, *args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#365
+  # source://strong_migrations//lib/strong_migrations/checks.rb#368
   def check_remove_index(*args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#388
+  # source://strong_migrations//lib/strong_migrations/checks.rb#391
   def check_rename_column; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#392
+  # source://strong_migrations//lib/strong_migrations/checks.rb#395
   def check_rename_table; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#396
+  # source://strong_migrations//lib/strong_migrations/checks.rb#399
   def check_validate_check_constraint; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#402
+  # source://strong_migrations//lib/strong_migrations/checks.rb#405
   def check_validate_foreign_key; end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#450
+  # source://strong_migrations//lib/strong_migrations/checks.rb#453
   def command_str(command, args); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#441
+  # source://strong_migrations//lib/strong_migrations/checks.rb#444
   def constraint_str(statement, identifiers); end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#418
+  # source://strong_migrations//lib/strong_migrations/checks.rb#421
   def mariadb?; end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#414
+  # source://strong_migrations//lib/strong_migrations/checks.rb#417
   def mysql?; end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#494
+  # source://strong_migrations//lib/strong_migrations/checks.rb#497
   def new_column?(table, column); end
 
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#490
+  # source://strong_migrations//lib/strong_migrations/checks.rb#493
   def new_table?(table); end
 
   # helpers
   #
   # @return [Boolean]
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#410
+  # source://strong_migrations//lib/strong_migrations/checks.rb#413
   def postgresql?; end
 
   # only quote when needed
   # important! only use for display purposes
   #
-  # source://strong_migrations//lib/strong_migrations/checks.rb#486
+  # source://strong_migrations//lib/strong_migrations/checks.rb#489
   def quote_column_if_needed(column); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#426
+  # source://strong_migrations//lib/strong_migrations/checks.rb#429
   def raise_error(message_key, header: T.unsafe(nil), append: T.unsafe(nil), **vars); end
 
-  # source://strong_migrations//lib/strong_migrations/checks.rb#446
+  # source://strong_migrations//lib/strong_migrations/checks.rb#449
   def safety_assured_str(code); end
 end
 
@@ -802,11 +808,11 @@ class StrongMigrations::WrappedConnection
   # source://strong_migrations//lib/strong_migrations/schema_dumper.rb#17
   def columns(*args, **options); end
 
-  # source://activesupport/7.1.2/lib/active_support/core_ext/module/delegation.rb#331
+  # source://activesupport/7.1.3.2/lib/active_support/core_ext/module/delegation.rb#331
   def method_missing(method, *args, **_arg2, &block); end
 
   private
 
-  # source://activesupport/7.1.2/lib/active_support/core_ext/module/delegation.rb#323
+  # source://activesupport/7.1.3.2/lib/active_support/core_ext/module/delegation.rb#323
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
 end
