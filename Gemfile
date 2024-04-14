@@ -12,7 +12,6 @@ gem "addressable"
 gem "alba"
 gem "bcrypt" # `has_secure_password` で使っている
 gem "bootsnap", require: false
-gem "counter_culture"
 gem "cssbundling-rails"
 gem "discard"
 gem "doorkeeper"

@@ -14,7 +14,7 @@ class FanoutPostUseCase < ApplicationUseCase
     batch = GoodJob::Batch.new
     batch.add do
       followers.find_each do |follower|
-        AddPostToTimelineJob.perform_later(profile_id: follower.id, post_id: post.id.not_nil!)
+        AddPostToTimelineJob.perform_later(profile_id: follower.id.not_nil!, post_id: post.id.not_nil!)
       end
     end
     batch.enqueue

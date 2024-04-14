@@ -289,7 +289,6 @@ CREATE TABLE public.posts (
     id uuid DEFAULT public.generate_ulid() NOT NULL,
     profile_id uuid NOT NULL,
     content text NOT NULL,
-    stamps_count integer DEFAULT 0 NOT NULL,
     published_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
@@ -1180,6 +1179,7 @@ ALTER TABLE ONLY public.home_timeline_posts
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240414152059'),
 ('20240404162020'),
 ('20240403174827'),
 ('20240324094358'),

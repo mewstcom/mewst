@@ -526,8 +526,6 @@ components:
         published_at:
           type: string
           format: date-time
-        stamps_count:
-          type: integer
         viewer_has_stamped:
           type: boolean
         via:
@@ -537,7 +535,6 @@ components:
         - content
         - profile
         - published_at
-        - stamps_count
         - viewer_has_stamped
     stamp-notification-item:
       additionalProperties: false

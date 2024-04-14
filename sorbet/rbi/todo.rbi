@@ -4,6 +4,9 @@
 
 # typed: false
 
+module ::CounterCulture::Extensions; end
+module ::CounterCulture::Extensions::ClassMethods; end
+module ::CounterCulture::SkipUpdates; end
 module ::RedisClient::PIDCache::CoreExt; end
 module Capybara::Cuprite::Driver; end
 module V1::FollowForm; end

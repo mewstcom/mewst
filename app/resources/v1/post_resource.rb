@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class V1::PostResource < V1::ApplicationResource
-  delegate :id, :content, :stamps_count, to: :post
+  delegate :id, :content, to: :post
 
   sig { params(post: Post, viewer: T.nilable(Actor)).void }
   def initialize(post:, viewer:)
