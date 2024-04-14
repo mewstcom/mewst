@@ -18,8 +18,8 @@
     "stimulus-use": "^0.52.2"
   },
   "devDependencies": {
-    "daisyui": "^4.7.3",
+    "daisyui": "^4.10.1",
     "prettier": "3.2.5",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.3"
   }
 }
