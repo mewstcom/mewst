@@ -33,7 +33,6 @@ module Mewst::Test::ResourceHelpers
       id: post.id,
       content: post.content,
       published_at: post.published_at.iso8601,
-      stamps_count: post.stamps_count,
       viewer_has_stamped:,
       via: build_via_resource(oauth_application: post.oauth_application.not_nil!)
     }
