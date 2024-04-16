@@ -1,0 +1,4 @@
+<turbo-frame id="link-form">
+  <%= image_tag @link.image_url %>
+  <%= hidden_field_tag "post_form[canonical_url]", @link.canonical_url %>
+</turbo-frame>

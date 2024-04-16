@@ -11,6 +11,8 @@ en:
         confirmation_code: Confirmation code
       follow_form:
         target_atname: atname
+      link_data_fetcher_form:
+        target_url: URL
       password_reset_form:
         password: New password
       post_delete_form:
@@ -44,6 +46,10 @@ en:
           attributes:
             confirmation_code:
               incorrect_or_expired: is incorrect or expired
+        link_data_fetcher_form:
+          attributes:
+            target_url:
+              fetch_error: cannot fetch information
         session_form:
           unauthenticated: Login failed. Email or password is incorrect
         follow_form:

@@ -24,6 +24,7 @@ gem "inline_svg"
 gem "jb"
 gem "jsbundling-rails"
 gem "meta-tags"
+gem "nokogiri"
 gem "oj" # `alba` で使っている
 gem "pg"
 gem "propshaft"

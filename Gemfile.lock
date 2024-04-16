@@ -478,6 +478,7 @@ DEPENDENCIES
   letter_opener_web
   lograge
   meta-tags
+  nokogiri
   oj
   pg
   propshaft

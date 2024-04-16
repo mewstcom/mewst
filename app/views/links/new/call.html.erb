@@ -1,0 +1,13 @@
+<turbo-frame id="link-form">
+  <div class="py-2">
+    <%= form_with model: @form, url: link_list_path do |f| %>
+      <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
+
+      <%= f.hidden_field :target_url %>
+
+      <%= f.button class: "btn btn-ghost btn-xs no-animation rounded-full", tabindex: 2, type: :submit do %>
+        <%= t("verbs.add_link_card") %>
+      <% end %>
+    <% end %>
+  </div>
+</turbo-frame>
