@@ -3,7 +3,7 @@
 
 class PostForm < ApplicationForm
   attribute :content, :string
-  attribute :canonical_url, :string, default: ''
+  attribute :canonical_url, :string, default: ""
   attribute :with_frame, :boolean, default: false
 
   validates :content, length: {maximum: Post::MAXIMUM_CONTENT_LENGTH}, presence: true
