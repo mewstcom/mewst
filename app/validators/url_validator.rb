@@ -8,16 +8,8 @@ class UrlValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return if value.blank?
 
-    unless valid_uri?(value)
+    unless Url.new(value).valid?
       record.errors.add(attribute, :url)
     end
-  end
-
-  sig { params(value: String).returns(T::Boolean) }
-  private def valid_uri?(value)
-    uri = Addressable::URI.parse(value)
-    uri.is_a?(Addressable::URI) && !uri.host.nil?
-  rescue Addressable::URI::InvalidURIError
-    false
   end
 end
