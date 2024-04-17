@@ -10,6 +10,7 @@ import FlashToastController from './controllers/flash-toast-controller';
 import FlashToastDispatchController from './controllers/flash-toast-dispatch-controller';
 import ModalController from './controllers/modal-controller';
 import TimelineController from './controllers/timeline-controller';
+import UrlDetectorController from './controllers/url-detector-controller';
 
 const application = Application.start();
 application.debug = false;
@@ -23,3 +24,4 @@ Stimulus.register('flash-toast', FlashToastController);
 Stimulus.register('flash-toast-dispatch', FlashToastDispatchController);
 Stimulus.register('modal', ModalController);
 Stimulus.register('timeline', TimelineController);
+Stimulus.register('url-detector', UrlDetectorController);

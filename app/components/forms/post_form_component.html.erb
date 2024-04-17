@@ -3,8 +3,9 @@
   url: post_list_path,
   data: {
     character_counter_max_value: Post::MAXIMUM_CONTENT_LENGTH,
-    controller: "character-counter",
-    action: "turbo:submit-end->modal#close"
+    controller: "character-counter url-detector",
+    action: "turbo:submit-end->modal#close",
+    url_detector_new_link_path_value: new_link_path
   }
 ) do |f| %>
   <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
@@ -23,12 +24,18 @@
       autofocus: true,
       class: "pb-4 textarea textarea-bordered w-full",
       data: {
-        action: "keyup->character-counter#updateCounter",
+        action: "character-counter#updateCounter url-detector#detectUrl",
         character_counter_target: "textarea",
         controller: "autosize",
+        url_detector_target: "textarea",
       },
       tabindex: textarea_tabindex
     ) %>
+
+    <turbo-frame
+      data-url-detector-target="linkFormFrame"
+      id="link-form"
+    ></turbo-frame>
 
     <div class="mt-1 relative text-right">
       <span

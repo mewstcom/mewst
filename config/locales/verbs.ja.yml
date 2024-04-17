@@ -1,6 +1,7 @@
 ja:
   verbs:
     add: 追加する
+    add_link_card: "リンクカードを追加する: %{host_and_path}"
     connect: 連携する
     delete: 削除する
     disconnect: 連携解除する
