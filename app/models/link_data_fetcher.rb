@@ -19,7 +19,6 @@ class LinkDataFetcher
   sig { params(target_url: String).void }
   def initialize(target_url:)
     @target_url = target_url
-    @domain = URI.parse(target_url).host
   end
 
   sig { returns(Result) }
@@ -33,12 +32,16 @@ class LinkDataFetcher
     end
 
     doc = Nokogiri::HTML(response.body)
-    canonical_url = doc.at_css('link[rel="canonical"]')&.[]("href")
+    fetched_canonical_url = doc.at_css('link[rel="canonical"]')&.[]("href")
 
-    saved_link = Link.find_by(canonical_url:)
-    return Result.new(link: saved_link) if saved_link
+    if fetched_canonical_url
+      saved_link = Link.find_by(canonical_url: fetched_canonical_url)
+      return Result.new(link: saved_link) if saved_link
+    end
 
-    title = doc.at_css("title")&.text
+    canonical_url = fetched_canonical_url.presence || target_url
+    domain = URI.parse(canonical_url).host
+    title = doc.at_css("title")&.text.presence || canonical_url
     image_url = doc.at_css('meta[property="og:image"]')&.[]("content")
 
     Result.new(fetched_data: FetchedData.new(canonical_url:, domain:, title:, image_url:))
@@ -46,6 +49,7 @@ class LinkDataFetcher
 
   sig { params(url: String).returns(T.nilable(Faraday::Response)) }
   private def fetch_data(url:)
+    domain = URI.parse(url).host
     response = Faraday.get(url)
 
     # リダイレクトを検知し、同じドメインの場合はリダイレクト先の情報を取得する
@@ -68,8 +72,4 @@ class LinkDataFetcher
   sig { returns(String) }
   attr_reader :target_url
   private :target_url
-
-  sig { returns(String) }
-  attr_reader :domain
-  private :domain
 end
