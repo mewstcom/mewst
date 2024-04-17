@@ -6,16 +6,18 @@ class CreatePostUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(viewer: Actor, content: String, oauth_application: OauthApplication).returns(Result) }
-  def call(viewer:, content:, oauth_application: OauthApplication.mewst_web)
+  sig { params(viewer: Actor, content: String, canonical_url: String, oauth_application: OauthApplication).returns(Result) }
+  def call(viewer:, content:, canonical_url:, oauth_application: OauthApplication.mewst_web)
     post = viewer.posts.new(
       content:,
       published_at: Time.current,
       oauth_application:
     )
+    link = Link.find_by(canonical_url:)
 
     ActiveRecord::Base.transaction do
       post.save!
+      post.create_post_link!(link:) unless link.nil?
       viewer.update_last_post_time!(time: post.published_at)
 
       viewer.home_timeline.add_post!(post:)

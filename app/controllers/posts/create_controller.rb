@@ -16,7 +16,11 @@ class Posts::CreateController < ApplicationController
       return render("posts/new/call", status: :unprocessable_entity)
     end
 
-    result = CreatePostUseCase.new.call(viewer: current_actor!, content: @form.content.not_nil!)
+    result = CreatePostUseCase.new.call(
+      viewer: current_actor!,
+      content: @form.content.not_nil!,
+      canonical_url: @form.canonical_url.not_nil!
+    )
 
     unless @form.with_frame
       flash[:notice] = t("messages.posts.created")
@@ -32,6 +36,6 @@ class Posts::CreateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:post_form), ActionController::Parameters).permit(:content, :with_frame)
+    T.cast(params.require(:post_form), ActionController::Parameters).permit(:canonical_url, :content, :with_frame)
   end
 end
