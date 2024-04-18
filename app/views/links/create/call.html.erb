@@ -2,6 +2,15 @@
   <div class="mb-2">
     <%= render Cards::LinkCardComponent.new(link: @link) %>
 
+    <div class="mt-1 text-right">
+      <button
+        class="btn btn-ghost btn-xs no-animation rounded-full"
+        data-action="click->link-card-form#closeLinkForm"
+      >
+        <%= t("verbs.close") %>
+      </button>
+    </div>
+
     <%= hidden_field_tag "post_form[canonical_url]", @link.canonical_url %>
   </div>
 </turbo-frame>

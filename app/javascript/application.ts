@@ -8,9 +8,9 @@ import ComponentDataFetcherController from './controllers/component-data-fetcher
 import DropdownController from './controllers/dropdown-controller';
 import FlashToastController from './controllers/flash-toast-controller';
 import FlashToastDispatchController from './controllers/flash-toast-dispatch-controller';
+import LinkCardFormController from './controllers/link-card-form-controller';
 import ModalController from './controllers/modal-controller';
 import TimelineController from './controllers/timeline-controller';
-import UrlDetectorController from './controllers/url-detector-controller';
 
 const application = Application.start();
 application.debug = false;
@@ -22,6 +22,6 @@ Stimulus.register('component-data-fetcher', ComponentDataFetcherController);
 Stimulus.register('dropdown', DropdownController);
 Stimulus.register('flash-toast', FlashToastController);
 Stimulus.register('flash-toast-dispatch', FlashToastDispatchController);
+Stimulus.register('link-card-form', LinkCardFormController);
 Stimulus.register('modal', ModalController);
 Stimulus.register('timeline', TimelineController);
-Stimulus.register('url-detector', UrlDetectorController);

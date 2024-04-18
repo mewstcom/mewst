@@ -17,8 +17,7 @@ export default class extends Controller {
     if (url) {
       this.linkFormFrameTarget.src = `${this.newLinkPathValue}?url=${encodeURIComponent(url)}`;
     } else {
-      this.linkFormFrameTarget.src = null;
-      this.linkFormFrameTarget.innerHTML = '';
+      this.closeLinkForm();
     }
   }
 
@@ -34,5 +33,10 @@ export default class extends Controller {
     } else {
       return null;
     }
+  }
+
+  closeLinkForm() {
+    this.linkFormFrameTarget.src = null;
+    this.linkFormFrameTarget.innerHTML = '';
   }
 }
