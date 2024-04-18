@@ -19,36 +19,41 @@
 
     <%= f.hidden_field :with_frame %>
 
-    <%= f.text_area(
-      :content,
-      autofocus: true,
-      class: "pb-4 textarea textarea-bordered w-full",
-      data: {
-        action: "character-counter#updateCounter url-detector#detectUrl",
-        character_counter_target: "textarea",
-        controller: "autosize",
-        url_detector_target: "textarea",
-      },
-      tabindex: textarea_tabindex
-    ) %>
+    <div class="leading-none p-0 textarea textarea-bordered w-full">
+      <%= f.text_area(
+        :content,
+        autofocus: true,
+        class: "bg-transparent focus:outline-none leading-loose px-4 py-2 w-full",
+        data: {
+          action: "character-counter#updateCounter url-detector#detectUrl",
+          character_counter_target: "textarea",
+          controller: "autosize",
+          url_detector_target: "textarea",
+        },
+        rows: 1,
+        tabindex: textarea_tabindex
+      ) %>
 
-    <turbo-frame
-      data-url-detector-target="linkFormFrame"
-      id="link-form"
-    ></turbo-frame>
+      <div class="px-4 py-2">
+        <turbo-frame
+          data-url-detector-target="linkFormFrame"
+          id="link-form"
+        ></turbo-frame>
 
-    <div class="mt-1 relative text-right">
-      <span
-        class="text-gray-500 text-sm"
-        data-character-counter-target="counter"
-      ></span>
-
-      <div class="left-0 right-0 top-2 absolute text-center ml-auto mr-auto">
-        <%= f.button class: "btn btn-primary no-animation rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
-          <i class="bi bi-send me-1"></i>
-          <%= t("verbs.post") %>
-        <% end %>
+        <div class="text-right">
+          <span
+            class="text-gray-500 text-sm"
+            data-character-counter-target="counter"
+          ></span>
+        </div>
       </div>
+    </div>
+
+    <div class="mt-2 text-center">
+      <%= f.button class: "btn btn-primary no-animation rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
+        <i class="bi bi-send me-1"></i>
+        <%= t("verbs.post") %>
+      <% end %>
     </div>
   </label>
 <% end %>
