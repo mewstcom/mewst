@@ -8,6 +8,12 @@
 
     <%= render Cards::PostCard::BodyComponent.new(post:) %>
 
+    <% if post.link %>
+      <%= link_to post.link.canonical_url, rel: "nofollow noopener", target: "_blank" do %>
+        <%= render Cards::LinkCardComponent.new(link: post.link) %>
+      <% end %>
+    <% end %>
+
     <div class="mt-4">
       <%= render Cards::PostCard::FooterComponent.new(post:, stamp_checker:) %>
     </div>

@@ -32,6 +32,6 @@ class Profile::HomeTimeline
 
   T::Sig::WithoutRuntime.sig { returns(Post::PrivateRelation) }
   private def visible_posts
-    Post.kept.preload(:profile).joins(:home_timeline_posts).merge(profile.home_timeline_posts.visible)
+    Post.kept.preload(:profile, :link).joins(:home_timeline_posts).merge(profile.home_timeline_posts.visible)
   end
 end
