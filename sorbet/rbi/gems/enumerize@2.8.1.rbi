@@ -66,58 +66,52 @@ module Enumerize::ActiveRecordSupport
   def enumerize(name, options = T.unsafe(nil)); end
 end
 
-# source://enumerize//lib/enumerize/activerecord.rb#42
+# source://enumerize//lib/enumerize/activerecord.rb#48
 module Enumerize::ActiveRecordSupport::InstanceMethods
   # Support multiple enumerized attributes
   #
-  # source://enumerize//lib/enumerize/activerecord.rb#53
+  # source://enumerize//lib/enumerize/activerecord.rb#59
   def becomes(klass); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#66
+  # source://enumerize//lib/enumerize/activerecord.rb#72
   def reload(options = T.unsafe(nil)); end
 
   # https://github.com/brainspec/enumerize/issues/74
   #
-  # source://enumerize//lib/enumerize/activerecord.rb#44
+  # source://enumerize//lib/enumerize/activerecord.rb#50
   def write_attribute(attr_name, value, *options); end
 end
 
-# source://enumerize//lib/enumerize/activerecord.rb#89
+# source://enumerize//lib/enumerize/activerecord.rb#97
 module Enumerize::ActiveRecordSupport::RelationMethods
-  # source://enumerize//lib/enumerize/activerecord.rb#90
+  # source://enumerize//lib/enumerize/activerecord.rb#98
   def update_all(updates); end
 end
 
-# source://enumerize//lib/enumerize/activerecord.rb#103
+# source://enumerize//lib/enumerize/activerecord.rb#111
 class Enumerize::ActiveRecordSupport::Type < ::ActiveModel::Type::Value
   # @return [Type] a new instance of Type
   #
-  # source://enumerize//lib/enumerize/activerecord.rb#106
+  # source://enumerize//lib/enumerize/activerecord.rb#114
   def initialize(attr, subtype); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#124
+  # source://enumerize//lib/enumerize/activerecord.rb#136
   def as_json(options = T.unsafe(nil)); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#118
+  # source://enumerize//lib/enumerize/activerecord.rb#126
   def cast(value); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#128
+  # source://enumerize//lib/enumerize/activerecord.rb#140
   def encode_with(coder); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#134
+  # source://enumerize//lib/enumerize/activerecord.rb#146
   def init_with(coder); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#111
+  # source://enumerize//lib/enumerize/activerecord.rb#119
   def serialize(value); end
 
-  # source://enumerize//lib/enumerize/activerecord.rb#104
+  # source://enumerize//lib/enumerize/activerecord.rb#112
   def type(*_arg0, **_arg1, &_arg2); end
-
-  # source://enumerize//lib/enumerize/activerecord.rb#111
-  def type_cast_for_database(value); end
-
-  # source://enumerize//lib/enumerize/activerecord.rb#118
-  def type_cast_from_database(value); end
 end
 
 # source://enumerize//lib/enumerize/attribute.rb#4
@@ -128,24 +122,29 @@ class Enumerize::Attribute
   # source://enumerize//lib/enumerize/attribute.rb#7
   def initialize(klass, name, options = T.unsafe(nil)); end
 
+  # Returns the value of attribute arguments.
+  #
+  # source://enumerize//lib/enumerize/attribute.rb#5
+  def arguments; end
+
   # Returns the value of attribute default_value.
   #
   # source://enumerize//lib/enumerize/attribute.rb#5
   def default_value; end
 
-  # source://enumerize//lib/enumerize/attribute.rb#90
+  # source://enumerize//lib/enumerize/attribute.rb#91
   def define_methods!(mod); end
 
-  # source://enumerize//lib/enumerize/attribute.rb#47
+  # source://enumerize//lib/enumerize/attribute.rb#48
   def each_value; end
 
-  # source://enumerize//lib/enumerize/attribute.rb#31
+  # source://enumerize//lib/enumerize/attribute.rb#32
   def find_default_value(value); end
 
-  # source://enumerize//lib/enumerize/attribute.rb#39
+  # source://enumerize//lib/enumerize/attribute.rb#40
   def find_value(value); end
 
-  # source://enumerize//lib/enumerize/attribute.rb#43
+  # source://enumerize//lib/enumerize/attribute.rb#44
   def find_values(*values); end
 
   # Returns the value of attribute i18n_scope.
@@ -153,7 +152,7 @@ class Enumerize::Attribute
   # source://enumerize//lib/enumerize/attribute.rb#5
   def i18n_scope; end
 
-  # source://enumerize//lib/enumerize/attribute.rb#55
+  # source://enumerize//lib/enumerize/attribute.rb#56
   def i18n_scopes; end
 
   # Returns the value of attribute klass.
@@ -166,7 +165,7 @@ class Enumerize::Attribute
   # source://enumerize//lib/enumerize/attribute.rb#5
   def name; end
 
-  # source://enumerize//lib/enumerize/attribute.rb#65
+  # source://enumerize//lib/enumerize/attribute.rb#66
   def options(options = T.unsafe(nil)); end
 
   # Returns the value of attribute skip_validations_value.
@@ -176,7 +175,7 @@ class Enumerize::Attribute
 
   # @return [Boolean]
   #
-  # source://enumerize//lib/enumerize/attribute.rb#51
+  # source://enumerize//lib/enumerize/attribute.rb#52
   def value?(value); end
 
   # Returns the value of attribute values.
@@ -186,12 +185,12 @@ class Enumerize::Attribute
 
   private
 
-  # source://enumerize//lib/enumerize/attribute.rb#135
+  # source://enumerize//lib/enumerize/attribute.rb#136
   def method_missing(method); end
 
   # @return [Boolean]
   #
-  # source://enumerize//lib/enumerize/attribute.rb#86
+  # source://enumerize//lib/enumerize/attribute.rb#87
   def respond_to_missing?(method, include_private = T.unsafe(nil)); end
 end
 
@@ -536,12 +535,12 @@ module Enumerize::MongoidSupport::InstanceMethods
   def _set_default_value_for_enumerized_attribute(attr); end
 end
 
-# source://enumerize//lib/enumerize/attribute.rb#144
+# source://enumerize//lib/enumerize/attribute.rb#145
 module Enumerize::Multiple
-  # source://enumerize//lib/enumerize/attribute.rb#153
+  # source://enumerize//lib/enumerize/attribute.rb#154
   def define_methods!(mod); end
 
-  # source://enumerize//lib/enumerize/attribute.rb#145
+  # source://enumerize//lib/enumerize/attribute.rb#146
   def find_default_value(value); end
 end
 
@@ -773,6 +772,9 @@ class Enumerize::Value < ::String
   # source://enumerize//lib/enumerize/value.rb#33
   def ==(other); end
 
+  # source://enumerize//lib/enumerize/value.rb#41
+  def as_json(*_arg0); end
+
   # source://enumerize//lib/enumerize/value.rb#37
   def encode_with(coder); end
 
@@ -786,7 +788,7 @@ class Enumerize::Value < ::String
 
   private
 
-  # source://enumerize//lib/enumerize/value.rb#43
+  # source://enumerize//lib/enumerize/value.rb#47
   def predicate_call(value); end
 end
 
