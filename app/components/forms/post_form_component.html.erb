@@ -2,9 +2,10 @@
   model: form,
   url: post_list_path,
   data: {
+    action: "turbo:submit-end->modal#close",
     character_counter_max_value: Post::MAXIMUM_CONTENT_LENGTH,
-    controller: "character-counter",
-    action: "turbo:submit-end->modal#close"
+    controller: "character-counter link-card-form",
+    link_card_form_new_link_path_value: new_link_path
   }
 ) do |f| %>
   <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
@@ -18,30 +19,43 @@
 
     <%= f.hidden_field :with_frame %>
 
-    <%= f.text_area(
-      :content,
-      autofocus: true,
-      class: "pb-4 textarea textarea-bordered w-full",
-      data: {
-        action: "keyup->character-counter#updateCounter",
-        character_counter_target: "textarea",
-        controller: "autosize",
-      },
-      tabindex: textarea_tabindex
-    ) %>
+    <div class="leading-none p-0 textarea textarea-bordered w-full">
+      <%= f.text_area(
+        :content,
+        autofocus: true,
+        class: "bg-transparent focus:outline-none leading-loose px-4 py-2 w-full",
+        data: {
+          action: "character-counter#updateCounter link-card-form#detectUrl",
+          character_counter_target: "textarea",
+          controller: "autosize",
+          link_card_form_target: "textarea",
+        },
+        rows: 1
+      ) %>
 
-    <div class="mt-1 relative text-right">
-      <span
-        class="text-gray-500 text-sm"
-        data-character-counter-target="counter"
-      ></span>
+      <div class="px-4 py-2">
+        <turbo-frame
+          data-link-card-form-target="linkFormFrame"
+          id="link-form"
+        ></turbo-frame>
 
-      <div class="left-0 right-0 top-2 absolute text-center ml-auto mr-auto">
-        <%= f.button class: "btn btn-primary no-animation rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
-          <i class="bi bi-send me-1"></i>
-          <%= t("verbs.post") %>
-        <% end %>
+        <div class="text-right">
+          <span
+            class="text-gray-500 text-sm"
+            data-character-counter-target="counter"
+          ></span>
+        </div>
       </div>
+    </div>
+
+    <div class="mt-2 text-center">
+      <%= f.button(
+        class: "btn btn-primary no-animation rounded-full",
+        type: :submit
+      ) do %>
+        <i class="bi bi-send me-1"></i>
+        <%= t("verbs.post") %>
+      <% end %>
     </div>
   </label>
 <% end %>

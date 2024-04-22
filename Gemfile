@@ -24,6 +24,7 @@ gem "inline_svg"
 gem "jb"
 gem "jsbundling-rails"
 gem "meta-tags"
+gem "nokogiri"
 gem "oj" # `alba` で使っている
 gem "pg"
 gem "propshaft"
@@ -62,6 +63,7 @@ end
 group :test do
   gem "cuprite"
   gem "capybara"
+  gem "vcr"
 end
 
 group :production do

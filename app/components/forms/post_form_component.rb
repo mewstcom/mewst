@@ -15,19 +15,4 @@ class Forms::PostFormComponent < ApplicationComponent
   sig { returns(T::Boolean) }
   attr_reader :from_modal
   private :from_modal
-
-  sig { returns(Integer) }
-  private def textarea_tabindex
-    from_modal ? 3 : 1
-  end
-
-  sig { returns(Integer) }
-  private def submit_button_tabindex
-    from_modal ? 4 : 2
-  end
-
-  sig { returns(Integer) }
-  private def cancel_button_tabindex
-    from_modal ? 5 : 0
-  end
 end

@@ -1,0 +1,397 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.annict.com
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.9.0
+  response:
+    status:
+      code: 301
+      message: Moved Permanently
+    headers:
+      date:
+      - Wed, 17 Apr 2024 18:18:39 GMT
+      content-type:
+      - application/x-msdownload
+      transfer-encoding:
+      - chunked
+      connection:
+      - keep-alive
+      location:
+      - https://annict.com/
+      vary:
+      - Accept-Encoding, Origin
+      content-encoding:
+      - gzip
+      strict-transport-security:
+      - max-age=63072000, max-age=15724800; includeSubdomains
+      cf-cache-status:
+      - DYNAMIC
+      report-to:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=KL%2FSJuKD3tyK7xTU6WI4FNyDSouyBz7gAMgigWBq1Zzlno1uEZd9seJgiVluPcF628oHSPhzsr2T%2Br06YCxGupLaHOQaKor%2FxyJ9btEG%2BJZHbRS1uvm8i8loc6KHicQVBg%3D%3D"}],"group":"cf-nel","max_age":604800}'
+      nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      server:
+      - cloudflare
+      cf-ray:
+      - 875e6b3b5f5180f3-NRT
+      alt-svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: Redirecting to <a href="https://annict.com/">https://annict.com/</a>
+  recorded_at: Wed, 17 Apr 2024 18:18:39 GMT
+- request:
+    method: get
+    uri: https://annict.com/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.9.0
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      date:
+      - Wed, 17 Apr 2024 18:18:39 GMT
+      content-type:
+      - text/html; charset=utf-8
+      transfer-encoding:
+      - chunked
+      connection:
+      - keep-alive
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - 1; mode=block
+      x-content-type-options:
+      - nosniff
+      x-download-options:
+      - noopen
+      x-permitted-cross-domain-policies:
+      - none
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      link:
+      - "<https://annict.com/assets/application-98be2e439d11911084cfada2b89170e2661dbf2c.css>;
+        rel=preload; as=style; nopush"
+      vary:
+      - Accept, Accept-Encoding, Origin
+      cache-control:
+      - max-age=0, private, must-revalidate
+      set-cookie:
+      - _annict_session_v201904=8651bc89c2cd06e60dffe5c30c30820b; domain=.annict.com;
+        path=/; expires=Fri, 17 May 2024 18:18:39 GMT; secure; HttpOnly; SameSite=Lax
+      x-request-id:
+      - 5924cfd6-a7f6-4d9b-bbe6-14f1f9414548
+      x-runtime:
+      - '0.116179'
+      strict-transport-security:
+      - max-age=63072000, max-age=15724800; includeSubdomains
+      cf-cache-status:
+      - DYNAMIC
+      report-to:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=ttjR0Py3iFFnxafYkxLadnnIyvzpFqZPNsWKvAXrMx3QQLV9%2Fupqer15nFiNxlgvqJmKtps3S5Hdh4ayyXb8wppu84BOhYpCjuFyqvdgCm3zD9yGTxzN4O0OnHJb"}],"group":"cf-nel","max_age":604800}'
+      nel:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      server:
+      - cloudflare
+      cf-ray:
+      - 875e6b3bfbbdafa9-NRT
+      content-encoding:
+      - gzip
+      alt-svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |2
+
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2645159442597745" crossorigin="anonymous"></script>
+        <title>Annict | 見たアニメを記録して、共有しよう</title>
+        <meta name="description" content="Annict (アニクト)は、見たアニメを記録したり、見た感想を友達にシェアすることができるWebサービスです。「今どの作品を何話まで見ているんだっけ？」を解消します。">
+        <meta name="keywords" content="annict, anime, review">
+        <meta property="og:title" content="Annict | 見たアニメを記録して、共有しよう">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://annict.com/">
+        <meta property="og:description" content="Annict (アニクト)は、見たアニメを記録したり、見た感想を友達にシェアすることができるWebサービスです。「今どの作品を何話まで見ているんだっけ？」を解消します。">
+        <meta property="og:site_name" content="Annict">
+        <meta property="og:image" content="https://annict.com/images/og_image.png">
+        <meta property="og:locale" content="ja_JP">
+        <meta property="fb:app_id" content="602271853188285">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@AnnictJP">
+        <meta name="twitter:title" content="Annict | 見たアニメを記録して、共有しよう">
+        <meta name="twitter:description" content="Annict (アニクト)は、見たアニメを記録したり、見た感想を友達にシェアすることができるWebサービスです。「今どの作品を何話まで見ているんだっけ？」を解消します。">
+        <meta name="twitter:image" content="https://annict.com/images/og_image.png">
+        <meta name="turbo-cache-control" content="no-cache">
+        <meta http-equiv="x-dns-prefetch-control" content="on">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="csrf-param" content="authenticity_token" />
+        <meta name="csrf-token" content="LY_4Up2rafm7s1vr2TfQfhh-I_Lrc_G0arW6SP9lKd0QhxsENDJDwLqYSizJRTP9gn5n1bNb8XGv2N4Pw-QvGA" />
+        <link rel="dns-prefetch" href="//kit.fontawesome.com">
+        <link rel="dns-prefetch" href="//www.googletagmanager.com">
+        <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+        <link rel="canonical" href="https://annict.com/">
+        <link rel="alternate" hreflang="ja" href="https://annict.com/">
+        <link rel="alternate" hreflang="en" href="https://en.annict.com/">
+        <link rel="alternate" hreflang="x-default" href="https://annict.com/">
+        <script>
+        //<![CDATA[
+        window.AnnConfig = {"domain":"annict.com","flash":{"type":null,"message":null},"ga":{"trackingId":"UA-48560544-1"},"i18n":{"messages":{"areYouSure":"実行しますか？"},"noun":{"following":"フォロー中"},"verb":{"follow":"フォローする","mute":"ミュートする","unmute":"ミュートを解除する"}},"rails":{"env":"production"},"viewer":{"locale":"ja"}};
+        //]]>
+        </script>
+        <script data-mutate-approach="sync" crossorigin="anonymous" src="https://kit.fontawesome.com/0099029c12.js" defer></script>
+        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://annict.com/assets/application-98be2e439d11911084cfada2b89170e2661dbf2c.css" data-turbo-track="reload" media="screen" />
+        <script src="https://annict.com/assets/application-c2ee89371665bc9d6e08a49d8ff7ea5c7fa397fc.js" data-turbo-track="reload" defer="defer"></script>
+        </head>
+        <body>
+        <div class="l-welcome">
+        <div class="l-welcome__main d-flex flex-column">
+        <div class="l-welcome__content">
+        <div class="c-flash d-none" data-controller="flash" data-flash-type data-flash-message><div class="alert align-items-center border-0 d-flex mb-0 rounded-0"><span class="c-flash__alert-icon h2 mb-0 me-2"></span><span class="c-flash__message flex-grow-1"></span><i class="far fa-times u-cursor-pointer" data-action="click-&gt;flash#close"></i></div></div>
+        <div data-controller="component-value-fetcher" data-component-value-fetcher-url-value="/api/internal/library_entries" data-component-value-fetcher-event-name-value="component-value-fetcher:status-select-dropdown:fetched" data-component-value-fetcher-method-value="post" data-component-value-fetcher-payload-value="{&quot;work_ids&quot;:[]}"></div>
+        <div class="align-items-center c-hero d-flex position-relative py-3">
+        <div class="c-hero__content text-center align-self-center">
+        <h1 class="display-3 mb-0">
+        見たアニメを<span class="fw-bold">記録</span>して、<br class="d-sm-none"><span class="fw-bold">発見</span>しよう。
+        </h1>
+        <p class="lead mb-0 mt-5 px-2">
+        Annict (アニクト) は、アニメの視聴記録ができるWebサービスです。<br>何話まで見たかを記録したり、友達の視聴記録などから好きなアニメを見つけて、管理することができます。
+        </p>
+        <div class="mt-5 text-center">
+        <a class="btn btn-primary rounded-pill" href="/sign_up">
+        <i class="far fa-rocket"></i>
+        <span class="ms-1">
+        アカウント作成
+        </span>
+        </a>
+        <a class="btn btn-outline-primary ms-2 rounded-pill" href="/sign_in">
+        ログイン
+        </a> </div>
+        </div>
+        </div>
+        <div class="container py-5 u-container-flat">
+        <h2 class="fw-bold h1 mb-0 text-center">
+        今期のアニメ
+        </h2>
+        <div class="card mt-5 u-card-flat">
+        <div class="card-body">
+        <div class="row g-3">
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/8781"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/snelZnt7TT_VtGAI-JnHqtn76GHdaIxrwXPwnkkN2MA/s:166:221/plain/s3://annict-user-contents/shrine/workimage/5750/image/master-b26b04204ab8ba56a2f5ed24ad3ea065.jpg@webp 1x, https://image.annict.com/oukK_i-hChOk9gfqInN5wN0iDGPUCnA8VG3Yhwbf7mA/s:332:442/plain/s3://annict-user-contents/shrine/workimage/5750/image/master-b26b04204ab8ba56a2f5ed24ad3ea065.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/YUorQD3ZILo_h5ZVYBK3sdMhKQmrS2-HJfVlVRMgVUw/s:166:221/plain/s3://annict-user-contents/shrine/workimage/5750/image/master-b26b04204ab8ba56a2f5ed24ad3ea065.jpg@jpg 1x, https://image.annict.com/F4cFMLSvlSq5l80Ob0Yf_MKhLw0jvMYYn4etbJiyP5Y/s:332:442/plain/s3://annict-user-contents/shrine/workimage/5750/image/master-b26b04204ab8ba56a2f5ed24ad3ea065.jpg@jpg 2x">
+        <img alt="この素晴らしい世界に祝福を！ 3" class="img-thumbnail" loading="lazy" src="https://image.annict.com/YUorQD3ZILo_h5ZVYBK3sdMhKQmrS2-HJfVlVRMgVUw/s:166:221/plain/s3://annict-user-contents/shrine/workimage/5750/image/master-b26b04204ab8ba56a2f5ed24ad3ea065.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/8781" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="この素晴らしい世界に祝福を！ 3">この素晴らしい世界に祝福を！ 3</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="8781" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work8781Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="8781" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/8781" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/10135"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/2LrXfMx-cP-1AllQrdDXOQQDz3qirc4NDjpWpOM9uss/s:166:221/plain/s3://annict-user-contents/shrine/workimage/7438/image/master-00539b1ca0714b948cee5bc0929d22cf.jpg@webp 1x, https://image.annict.com/fMrxCF_m4nty6jZPwOuxlflChKwwsL6I_JXR_WTQNs8/s:332:442/plain/s3://annict-user-contents/shrine/workimage/7438/image/master-00539b1ca0714b948cee5bc0929d22cf.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/j0zS3BnC3f323Ede6jFbcWMvU9rUBs4J15TKUzKhK4Q/s:166:221/plain/s3://annict-user-contents/shrine/workimage/7438/image/master-00539b1ca0714b948cee5bc0929d22cf.jpg@jpg 1x, https://image.annict.com/-GjgB77RnzsRUrI0Y6tbMlePn_SKVS11BLhAqaRK-mg/s:332:442/plain/s3://annict-user-contents/shrine/workimage/7438/image/master-00539b1ca0714b948cee5bc0929d22cf.jpg@jpg 2x">
+        <img alt="ゆるキャン△ SEASON3" class="img-thumbnail" loading="lazy" src="https://image.annict.com/j0zS3BnC3f323Ede6jFbcWMvU9rUBs4J15TKUzKhK4Q/s:166:221/plain/s3://annict-user-contents/shrine/workimage/7438/image/master-00539b1ca0714b948cee5bc0929d22cf.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/10135" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="ゆるキャン△ SEASON3">ゆるキャン△ SEASON3</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="10135" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work10135Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="10135" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/10135" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/6688"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/UXhicITAmszsl02izPl2TvaWQrrXc9Fg6garECllL4E/s:166:221/plain/s3://annict-user-contents/shrine/workimage/3579/image/master-1195466d9bae8727e16c555111638fe9.jpg@webp 1x, https://image.annict.com/JiZbCelBKVu-zFy_MBRvWwNfyLeGT3HtVMakCA5ipqY/s:332:442/plain/s3://annict-user-contents/shrine/workimage/3579/image/master-1195466d9bae8727e16c555111638fe9.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/fkk2sEiG8kd8XUXvxIIRKbI7vk7jC-2qRctYDP_Ywdk/s:166:221/plain/s3://annict-user-contents/shrine/workimage/3579/image/master-1195466d9bae8727e16c555111638fe9.jpg@jpg 1x, https://image.annict.com/UidPcKUKZMeOVRdzqiaDHxUBwNsc9dCQVOtes_bhqf4/s:332:442/plain/s3://annict-user-contents/shrine/workimage/3579/image/master-1195466d9bae8727e16c555111638fe9.jpg@jpg 2x">
+        <img alt="響け！ユーフォニアム3" class="img-thumbnail" loading="lazy" src="https://image.annict.com/fkk2sEiG8kd8XUXvxIIRKbI7vk7jC-2qRctYDP_Ywdk/s:166:221/plain/s3://annict-user-contents/shrine/workimage/3579/image/master-1195466d9bae8727e16c555111638fe9.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/6688" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="響け！ユーフォニアム3">響け！ユーフォニアム3</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="6688" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work6688Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="6688" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/6688" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/11002"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/VsY98E4rrv3VYWxkSEOjaqouQgN90-x_g52d6A-uEXA/s:166:221/plain/s3://annict-user-contents/shrine/workimage/8656/image/master-2d0c8a6d7edc35f707893bd63411e3d0.jpg@webp 1x, https://image.annict.com/IZcAQbYkxiJUjhMuyZ79HKWiLpQ3X1cz_Xl7Sl74CY4/s:332:442/plain/s3://annict-user-contents/shrine/workimage/8656/image/master-2d0c8a6d7edc35f707893bd63411e3d0.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/aFdmKcu-2e7ESaq1pnkU-3zIGyFceX-CCdSl7378-lo/s:166:221/plain/s3://annict-user-contents/shrine/workimage/8656/image/master-2d0c8a6d7edc35f707893bd63411e3d0.jpg@jpg 1x, https://image.annict.com/EymBV92a9SvtoZcqeUuLH3mszIQCzmTmmoYg67NA294/s:332:442/plain/s3://annict-user-contents/shrine/workimage/8656/image/master-2d0c8a6d7edc35f707893bd63411e3d0.jpg@jpg 2x">
+        <img alt="無職転生Ⅱ ～異世界行ったら本気だす～ 第2クール" class="img-thumbnail" loading="lazy" src="https://image.annict.com/aFdmKcu-2e7ESaq1pnkU-3zIGyFceX-CCdSl7378-lo/s:166:221/plain/s3://annict-user-contents/shrine/workimage/8656/image/master-2d0c8a6d7edc35f707893bd63411e3d0.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/11002" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="無職転生Ⅱ ～異世界行ったら本気だす～ 第2クール">無職転生Ⅱ ～異世界行ったら本気だす～ 第2クール</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="11002" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work11002Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="11002" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/11002" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/9395"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/OlZ9qslLYn4lAenRMUCUcOfwrF6kmzhwVsoVLCB9wd8/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6319/image/master-5b048811001faa1c5bcf762a83cab1ae.jpg@webp 1x, https://image.annict.com/xVkos2-PbSDF0YkA68I5blekm9xCB3MKG-37Z1eezrU/s:332:442/plain/s3://annict-user-contents/shrine/workimage/6319/image/master-5b048811001faa1c5bcf762a83cab1ae.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/eBN87mxKBV4kdl50RUBn8uGuNSC5E9tHSQkeslyiR5Q/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6319/image/master-5b048811001faa1c5bcf762a83cab1ae.jpg@jpg 1x, https://image.annict.com/YgAKWDU5Sn-HBOg2qLKTLf3IQkm4HHsunSoKHy_01rA/s:332:442/plain/s3://annict-user-contents/shrine/workimage/6319/image/master-5b048811001faa1c5bcf762a83cab1ae.jpg@jpg 2x">
+        <img alt="狼と香辛料 MERCHANT MEETS THE WISE WOLF" class="img-thumbnail" loading="lazy" src="https://image.annict.com/eBN87mxKBV4kdl50RUBn8uGuNSC5E9tHSQkeslyiR5Q/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6319/image/master-5b048811001faa1c5bcf762a83cab1ae.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/9395" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="狼と香辛料 MERCHANT MEETS THE WISE WOLF">狼と香辛料 MERCHANT MEETS THE WISE WOLF</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="9395" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work9395Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="9395" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/9395" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        <div class="col-6 col-lg-2 col-md-4 col-sm-6">
+        <div class="align-items-end border-0 c-work-card card flex-column h-100"><div class="text-center w-100"><a href="/works/10176"><div class="align-items-center c-work-picture d-flex justify-content-center m-auto " style="width: 166px;">
+        <picture>
+        <source type="image/webp" srcset="https://image.annict.com/BqkIiFhbStECW_FrhXdfImYyUAxiMskH3yLqGVeYpVc/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6878/image/master-40a61d09b15dfbd09313fbaf25f873f9.jpg@webp 1x, https://image.annict.com/n_PCsDyYrgHASpgeivqpMcj3FjBuMGmPS5qTgUlMJnw/s:332:442/plain/s3://annict-user-contents/shrine/workimage/6878/image/master-40a61d09b15dfbd09313fbaf25f873f9.jpg@webp 2x">
+        <source type="image/jpeg" srcset="https://image.annict.com/K62gzpk8ZIE6JzpAZZyAHxHSiCKHtWTg2nYbb2U3JbU/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6878/image/master-40a61d09b15dfbd09313fbaf25f873f9.jpg@jpg 1x, https://image.annict.com/D2qn_nTtMKPEq3cWPGOs8wjNTjvO7TBENm5bUrMbqr8/s:332:442/plain/s3://annict-user-contents/shrine/workimage/6878/image/master-40a61d09b15dfbd09313fbaf25f873f9.jpg@jpg 2x">
+        <img alt="転生したらスライムだった件 第3期" class="img-thumbnail" loading="lazy" src="https://image.annict.com/K62gzpk8ZIE6JzpAZZyAHxHSiCKHtWTg2nYbb2U3JbU/s:166:221/plain/s3://annict-user-contents/shrine/workimage/6878/image/master-40a61d09b15dfbd09313fbaf25f873f9.jpg@jpg">
+        </picture>
+        </div>
+        </a></div><div class="mt-2 w-100"><a href="/works/10176" class="text-body"><div class="c-work-card__work-title fw-bold h5 mb-0" title="転生したらスライムだった件 第3期">転生したらスライムだった件 第3期</div></a></div><div class="mt-auto text-center w-100"><div class="mt-2"><div class="btn-group c-work-button-group "><div class="btn-group c-status-select-dropdown" data-controller="status-select-dropdown" data-status-select-dropdown-work-id-value="10176" data-status-select-dropdown-page-category-value="welcome" data-status-select-dropdown-kind-icons-value="{&quot;completed&quot;:&quot;check&quot;,&quot;dropped&quot;:&quot;stop&quot;,&quot;on_hold&quot;:&quot;pause&quot;,&quot;plan_to_watch&quot;:&quot;circle&quot;,&quot;watching&quot;:&quot;play&quot;,&quot;no_status&quot;:&quot;bars&quot;}"><button class="btn dropdown-toggle u-btn-outline-status" data-status-select-dropdown-target="button" type="button" id="work10176Dropdown" data-bs-toggle="dropdown"><i class="fas fa-bars"></i></button><ul class="dropdown-menu"><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="no_status"><i class="fas fa-bars me-3 text-status-no-status"></i>未選択</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="plan_to_watch"><i class="fas fa-circle me-3 text-status-plan-to-watch"></i>見たい</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="watching"><i class="fas fa-play me-3 text-status-watching"></i>見てる</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="completed"><i class="fas fa-check me-3 text-status-completed"></i>見た</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="on_hold"><i class="fas fa-pause me-3 text-status-on-hold"></i>一時中断</button></li><li><button class="dropdown-item py-2" data-action="status-select-dropdown#change" data-status-kind="dropped"><i class="fas fa-stop me-3 text-status-dropped"></i>視聴中止</button></li></ul></div><button class="btn btn-outline-secondary" data-controller="tracking-offcanvas-button" data-tracking-offcanvas-button-work-id-value="10176" data-tracking-offcanvas-button-frame-path="/fragment/trackable_works/10176" data-action="click-&gt;tracking-offcanvas-button#open" type="button"><i class="far fa-ellipsis-h"></i></button></div></div></div></div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="mt-3 text-center">
+        <a class="btn btn-outline-secondary rounded-pill" href="/works/2024-spring">
+        <i class="far fa-angle-right"></i>
+        もっと見る
+        </a> </div>
+        </div>
+        <div class="c-about l-welcome__about py-5">
+        <div class="container">
+        <h2 class="fw-bold h1 mb-0 text-center">
+        Annictでできること
+        </h2>
+        <div class="align-items-center mt-5 row">
+        <div class="col-12 col-sm-5">
+        <div class="badge bg-primary rounded-3">
+        <i class="display-5 far fa-check p-2"></i>
+        </div>
+        <h3 class="fw-bold h1 mt-3">
+        見たアニメが記録できる
+        </h3>
+        <p>
+        「何話まで見たっけ？」とならないように、見たアニメを記録することができます。
+        <br>
+        記録には感想を残すことができ、後から当時どんなことを思っていたかを振り返ることができます。
+        </p>
+        </div>
+        <div class="col-12 col-sm-7">
+        <img alt="見たアニメが記録できる" class="img-fluid rounded-3" src="https://annict.com/assets/about/feature-1-ff9e67aa17f83a7f1b2ac85e0e16ef39fea93b0d.jpg" />
+        </div>
+        </div>
+        <div class="align-items-center mt-5 row">
+        <div class="col-12 col-sm-5">
+        <div class="badge bg-primary rounded-3">
+        <i class="display-5 far fa-album-collection p-2"></i>
+        </div>
+        <h3 class="fw-bold h1 mt-3">
+        アニメを視聴ステータスで管理
+        </h3>
+        <p>
+        アニメを「見てる」「見たい」「見た」「一時中断」「視聴中止」という5つの視聴ステータスで管理することができます。
+        <br>
+        各ステータスを設定したアニメはライブラリページで一覧することができます。
+        </p>
+        </div>
+        <div class="col-12 col-sm-7">
+        <img alt="アニメを5つのステータスで管理" class="img-fluid rounded-3" src="https://annict.com/assets/about/feature-2-d382b97720c08d65df917f8c6a28df97627b9666.jpg" />
+        </div>
+        </div>
+        <div class="align-items-center mt-5 row">
+        <div class="col-12 col-sm-5">
+        <div class="badge bg-primary rounded-3">
+        <i class="display-5 far fa-users p-2"></i>
+        </div>
+        <h3 class="fw-bold h1 mt-3">
+        友達の視聴状況をチェック
+        </h3>
+        <p>
+        Annictの利用者をフォローすると、その人の視聴記録などがタイムラインに表示されます。
+        <br>
+        ネタバレを防止するため、自分が見ていないアニメやエピソードへの感想にはぼかしが入るようになっています。
+        </p>
+        </div>
+        <div class="col-12 col-sm-7">
+        <img alt="友達の視聴状況をチェック" class="img-fluid rounded-3" src="https://annict.com/assets/about/feature-3-e3a51d1092c7c67151fce57b8a5dfd0ff72b6750.jpg" />
+        </div>
+        </div>
+        <div class="align-items-center mt-5 row">
+        <div class="col-12 col-sm-5">
+        <div class="badge bg-primary rounded-3">
+        <i class="display-5 far fa-calendar-alt p-2"></i>
+        </div>
+        <h3 class="fw-bold h1 mt-3">
+        今晩見れるアニメがわかる
+        </h3>
+        <p>
+        普段見ているテレビのチャンネルを設定すると、見ているアニメの放送時間をカレンダーなどで確認することができます。
+        </p>
+        </div>
+        <div class="col-12 col-sm-7">
+        <img alt="今晩見れるアニメがわかる" class="img-fluid rounded-3" src="https://annict.com/assets/about/feature-4-e59bf4dec2bd3267c2b5265314d0ef8b956dd252.jpg" />
+        </div>
+        </div>
+        <div class="align-items-center mt-5 row">
+        <div class="col-12 col-sm-5">
+        <div class="badge bg-primary rounded-3">
+        <i class="display-5 far fa-brackets-curly p-2"></i>
+        </div>
+        <h3 class="fw-bold h1 mt-3">
+        Web APIでアニメデータを取得
+        </h3>
+        <p>
+        Annictはアニメデータや自分の視聴データなどが取得できるWeb APIを公開しています。
+        <br>
+        Web APIを使ってアニメ関係のアプリケーションを作ったり、自分の好みのAnnictクライアントを作ることができます。
+        </p>
+        </div>
+        <div class="col-12 col-sm-7">
+        <img alt="Web APIでアニメデータを取得" class="img-fluid rounded-3" src="https://annict.com/assets/about/feature-5-fe5b78dbfff95e97faedf7e571048aabf784b732.jpg" />
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="l-welcome__cta">
+        <div class="container">
+        <div class="h1 fw-bold text-white">
+        視聴記録を始めよう
+        </div>
+        <a class="btn btn-light mt-1 rounded-pill u-text-mizuho" href="/sign_up">
+        <i class="far fa-rocket"></i>
+        <span class="ms-1">
+        アカウント作成
+        </span>
+        </a> </div>
+        </div>
+        </div>
+        <div class="l-welcome__footer">
+        <div class="c-footer py-5"><div class="c-footer__main container-fluid"><div class="row"><div class="col-12 col-sm-3 mb-3 mb-sm-0"><h2 class="mb-1"><a class="text-body" href="/">Annict</a></h2><div class="c-footer__description mb-3 small">A platform for anime addicts.</div></div><div class="col-12 col-sm-3 mb-3 mb-sm-0"><h6 class="fw-bold h4 mb-3">サービス</h6><ul class="c-footer__list list-unstyled"><li class="mb-2"><a href="/userland" rel="noopener" target="_blank">Annict Userland</a></li><li class="mb-2"><a href="/forum" rel="noopener" target="_blank">Annict Forum</a></li><li class="mb-2"><a href="/db" rel="noopener" target="_blank">Annict DB</a></li><li class="mb-2"><a href="https://developers.annict.com" rel="noopener" target="_blank">Annict Developers</a></li><li class="mb-2"><a href="/supporters" rel="noopener" target="_blank">Annict Supporters</a></li></ul></div><div class="col-12 col-sm-3 mb-3 mb-sm-0"><h6 class="fw-bold h4 mb-3">コンテンツ</h6><ul class="c-footer__list list-unstyled"><li class="mb-2"><a href="/community" target="_blank">コミュニティ</a></li><li class="mb-2"><a href="/faq" target="_blank">よくある質問</a></li><li class="mb-2"><a href="/terms" target="_blank">利用規約</a></li><li class="mb-2"><a href="/privacy" target="_blank">プライバシーポリシー</a></li><li class="mb-2"><a href="/legal" target="_blank">特定商取引法に基づく表記</a></li></ul></div><div class="col-12 col-sm-3"><h6 class="fw-bold h4 mb-3">シーズン別アニメ</h6><ul class="c-footer__list list-unstyled"><li class="mb-2"><a href="/works/2024-summer">2024年夏</a></li><li class="mb-2"><a href="/works/2024-spring">2024年春</a></li><li class="mb-2"><a href="/works/2024-winter">2024年冬</a></li><li class="mb-2"><a href="/works/2023-autumn">2023年秋</a></li><li class="mb-2"><a href="/works/2023-summer">2023年夏</a></li></ul></div></div></div><div class="c-footer__auxiliary"><div class="container-fluid py-2"><div class="align-items-center row"><div class="col-6"><h4 class="d-inline-block fw-bold mb-0 me-2 small">言語:</h4><ul class="d-inline-block list-inline mb-0"><li class="list-inline-item"><a href="https://annict.com/">日本語</a></li><li class="list-inline-item"><a href="https://en.annict.com/">English</a></li></ul></div><div class="col-6 text-end"><div class="c-footer__copyright small"><i class="fal fa-copyright me-1"></i>2014-2024 Annict</div></div></div></div></div></div>
+        </div>
+        </div>
+        </div>
+        <div class="c-sign-up-modal modal">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-body text-center">
+        <p class="display-1 text-muted">
+        <i class="fal fa-info-circle"></i>
+        </p>
+        <p>
+        アカウント作成するとこの機能が使えます。
+        </p>
+        <a class="btn btn-primary me-2" href="/sign_up">
+        <i class="fas fa-rocket me-1"></i>
+        アカウント作成
+        </a>
+        <a class="btn btn-outline-secondary" href="/sign_in">
+        ログイン
+        </a> </div>
+        </div>
+        </div>
+        </div>
+        </body>
+        </html>
+  recorded_at: Wed, 17 Apr 2024 18:18:39 GMT
+recorded_with: VCR 6.2.0

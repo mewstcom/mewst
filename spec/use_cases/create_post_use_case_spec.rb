@@ -19,7 +19,7 @@ RSpec.describe CreatePostUseCase do
   it "投稿が作れること" do
     expect(Post.count).to eq(0)
 
-    result = use_case.call(viewer:, content: form.content.not_nil!)
+    result = use_case.call(viewer:, content: form.content.not_nil!, canonical_url: "")
 
     expect(Post.count).to eq(1)
     post = Post.first

@@ -261,17 +261,35 @@ class Post
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Link) }
+    def build_link(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def build_oauth_application(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PostLink) }
+    def build_post_link(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Link) }
+    def create_link(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Link) }
+    def create_link!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def create_oauth_application(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def create_oauth_application!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PostLink) }
+    def create_post_link(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PostLink) }
+    def create_post_link!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile(*args, &blk); end
@@ -293,11 +311,23 @@ class Post
     sig { params(value: T::Enumerable[::HomeTimelinePost]).void }
     def home_timeline_posts=(value); end
 
+    sig { returns(T.nilable(::Link)) }
+    def link; end
+
+    sig { params(value: T.nilable(::Link)).void }
+    def link=(value); end
+
     sig { returns(T.nilable(::OauthApplication)) }
     def oauth_application; end
 
     sig { params(value: T.nilable(::OauthApplication)).void }
     def oauth_application=(value); end
+
+    sig { returns(T.nilable(::PostLink)) }
+    def post_link; end
+
+    sig { params(value: T.nilable(::PostLink)).void }
+    def post_link=(value); end
 
     sig { returns(T.nilable(::Profile)) }
     def profile; end
@@ -305,8 +335,14 @@ class Post
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
 
+    sig { returns(T.nilable(::Link)) }
+    def reload_link; end
+
     sig { returns(T.nilable(::OauthApplication)) }
     def reload_oauth_application; end
+
+    sig { returns(T.nilable(::PostLink)) }
+    def reload_post_link; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_profile; end

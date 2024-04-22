@@ -1,0 +1,40 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.publickey.jp
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.9.0
+  response:
+    status:
+      code: 301
+      message: Moved Permanently
+    headers:
+      server:
+      - nginx
+      date:
+      - Wed, 17 Apr 2024 18:28:27 GMT
+      content-type:
+      - text/html; charset=iso-8859-1
+      content-length:
+      - '234'
+      connection:
+      - keep-alive
+      location:
+      - https://www.publickey1.jp/
+    body:
+      encoding: ISO-8859-1
+      string: |
+        <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+        <html><head>
+        <title>301 Moved Permanently</title>
+        </head><body>
+        <h1>Moved Permanently</h1>
+        <p>The document has moved <a href="https://www.publickey1.jp/">here</a>.</p>
+        </body></html>
+  recorded_at: Wed, 17 Apr 2024 18:28:27 GMT
+recorded_with: VCR 6.2.0

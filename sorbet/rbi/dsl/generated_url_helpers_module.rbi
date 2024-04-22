@@ -33,10 +33,16 @@ module GeneratedUrlHelpersModule
   def letter_opener_web_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def link_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_email_confirmation_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_link_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_post_url(*args); end

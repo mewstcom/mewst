@@ -423,6 +423,7 @@ GEM
     unicode-display_width (2.5.0)
     uniform_notifier (1.16.0)
     uri (0.13.0)
+    vcr (6.2.0)
     view_component (3.12.0)
       activesupport (>= 5.2.0, < 8.0)
       concurrent-ruby (~> 1.0)
@@ -478,6 +479,7 @@ DEPENDENCIES
   letter_opener_web
   lograge
   meta-tags
+  nokogiri
   oj
   pg
   propshaft
@@ -500,6 +502,7 @@ DEPENDENCIES
   standard-sorbet
   strong_migrations
   tapioca (< 0.13.2)
+  vcr
   view_component
   web-console
 

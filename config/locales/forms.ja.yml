@@ -11,6 +11,8 @@ ja:
         confirmation_code: 確認用コード
       follow_form:
         target_atname: atname
+      link_data_fetcher_form:
+        target_url: URL
       password_reset_form:
         password: 新しいパスワード
       post_delete_form:
@@ -44,6 +46,10 @@ ja:
           attributes:
             confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています
+        link_data_fetcher_form:
+          attributes:
+            target_url:
+              fetch_error: の情報を取得できませんでした
         session_form:
           unauthenticated: ログインに失敗しました。メールアドレスかパスワードが間違っています
         follow_form:

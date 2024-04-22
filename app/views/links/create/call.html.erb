@@ -1,0 +1,16 @@
+<turbo-frame id="link-form">
+  <div class="mb-2">
+    <div class="relative">
+      <%= render Cards::LinkCardComponent.new(link: @link) %>
+
+      <button
+        class="absolute btn btn-circle btn-ghost btn-xs m-2 no-animation rounded-full right-0 top-0"
+        data-action="click->link-card-form#closeLinkForm"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <%= hidden_field_tag "post_form[canonical_url]", @link.canonical_url %>
+  </div>
+</turbo-frame>

@@ -1,0 +1,20 @@
+<div class="border border-gray-300 flex p-2 rounded-lg">
+  <div class="flex flex-col gap-2 w-full">
+    <% if link.image_url.present? %>
+      <%= image_tag(link.image_url, {
+        class: "aspect-video max-h-[300px] object-contain w-full",
+        size: "16x9",
+      }) %>
+    <% end %>
+
+    <div class="flex flex-col gap-1">
+      <div class="text-gray-500 text-sm">
+        <%= link.domain %>
+      </div>
+
+      <div class="font-bold">
+        <%= link.title %>
+      </div>
+    </div>
+  </div>
+</div>
