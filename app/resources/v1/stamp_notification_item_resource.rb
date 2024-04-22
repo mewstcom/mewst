@@ -2,25 +2,25 @@
 # frozen_string_literal: true
 
 class V1::StampNotificationItemResource < V1::ApplicationResource
-  sig { params(stamp_notification: StampNotification, viewer: Actor).void }
-  def initialize(stamp_notification:, viewer:)
-    @stamp_notification = stamp_notification
+  sig { params(notification: Notification, viewer: Actor).void }
+  def initialize(notification:, viewer:)
+    @notification = notification
     @viewer = viewer
   end
 
   sig { returns(V1::ProfileResource) }
   def source_profile
-    V1::ProfileResource.new(profile: stamp_notification.profile, viewer:)
+    V1::ProfileResource.new(profile: notification.notifiable.profile, viewer:)
   end
 
   sig { returns(V1::PostResource) }
   def target_post
-    V1::PostResource.new(post: stamp_notification.post, viewer:)
+    V1::PostResource.new(post: notification.notifiable.post, viewer:)
   end
 
-  sig { returns(StampNotification) }
-  attr_reader :stamp_notification
-  private :stamp_notification
+  sig { returns(Notification) }
+  attr_reader :notification
+  private :notification
 
   sig { returns(Actor) }
   attr_reader :viewer
