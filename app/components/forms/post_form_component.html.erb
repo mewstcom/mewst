@@ -30,8 +30,7 @@
           controller: "autosize",
           link_card_form_target: "textarea",
         },
-        rows: 1,
-        tabindex: textarea_tabindex
+        rows: 1
       ) %>
 
       <div class="px-4 py-2">
@@ -50,7 +49,10 @@
     </div>
 
     <div class="mt-2 text-center">
-      <%= f.button class: "btn btn-primary no-animation rounded-full", tabindex: submit_button_tabindex, type: :submit do %>
+      <%= f.button(
+        class: "btn btn-primary no-animation rounded-full",
+        type: :submit
+      ) do %>
         <i class="bi bi-send me-1"></i>
         <%= t("verbs.post") %>
       <% end %>
