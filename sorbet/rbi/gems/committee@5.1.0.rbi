@@ -50,13 +50,13 @@ class Committee::Bin::CommitteeStub
   def get_options_parser; end
 end
 
-# source://committee//lib/committee/drivers.rb#4
+# source://committee//lib/committee/drivers.rb#6
 module Committee::Drivers
   class << self
     # Gets a driver instance from the specified name. Raises ArgumentError for
     # an unknown driver name.
     #
-    # source://committee//lib/committee/drivers.rb#7
+    # source://committee//lib/committee/drivers.rb#9
     def driver_from_name(name); end
 
     # load and build drive from Hash object
@@ -64,7 +64,7 @@ module Committee::Drivers
     # @param hash [Hash]
     # @return [Committee::Driver]
     #
-    # source://committee//lib/committee/drivers.rb#52
+    # source://committee//lib/committee/drivers.rb#57
     def load_from_data(hash, schema_path = T.unsafe(nil), parser_options: T.unsafe(nil)); end
 
     # load and build drive from file
@@ -72,7 +72,7 @@ module Committee::Drivers
     # @param schema_path [String]
     # @return [Committee::Driver]
     #
-    # source://committee//lib/committee/drivers.rb#38
+    # source://committee//lib/committee/drivers.rb#40
     def load_from_file(schema_path, parser_options: T.unsafe(nil)); end
 
     # load and build drive from JSON file
@@ -80,7 +80,7 @@ module Committee::Drivers
     # @param schema_path [String]
     # @return [Committee::Driver]
     #
-    # source://committee//lib/committee/drivers.rb#23
+    # source://committee//lib/committee/drivers.rb#25
     def load_from_json(schema_path, parser_options: T.unsafe(nil)); end
 
     # load and build drive from YAML file
@@ -88,8 +88,13 @@ module Committee::Drivers
     # @param schema_path [String]
     # @return [Committee::Driver]
     #
-    # source://committee//lib/committee/drivers.rb#30
+    # source://committee//lib/committee/drivers.rb#32
     def load_from_yaml(schema_path, parser_options: T.unsafe(nil)); end
+
+    private
+
+    # source://committee//lib/committee/drivers.rb#86
+    def cache_key(schema_path, parser_options); end
   end
 end
 
