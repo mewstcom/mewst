@@ -38,19 +38,19 @@ module OpenAPIParser
 
     private
 
-    # source://openapi_parser//lib/openapi_parser.rb#58
+    # source://openapi_parser//lib/openapi_parser.rb#61
     def file_uri(filepath); end
 
-    # source://openapi_parser//lib/openapi_parser.rb#91
+    # source://openapi_parser//lib/openapi_parser.rb#95
     def load_hash(hash, config:, uri:, schema_registry:); end
 
-    # source://openapi_parser//lib/openapi_parser.rb#64
+    # source://openapi_parser//lib/openapi_parser.rb#67
     def parse_file(content, ext); end
 
-    # source://openapi_parser//lib/openapi_parser.rb#87
+    # source://openapi_parser//lib/openapi_parser.rb#90
     def parse_json(content); end
 
-    # source://openapi_parser//lib/openapi_parser.rb#80
+    # source://openapi_parser//lib/openapi_parser.rb#83
     def parse_yaml(content); end
   end
 end
@@ -407,6 +407,17 @@ class OpenAPIParser::NotOneOf < ::OpenAPIParser::OpenAPIError
   def initialize(value, reference); end
 
   # source://openapi_parser//lib/openapi_parser/errors.rb#92
+  def message; end
+end
+
+# source://openapi_parser//lib/openapi_parser/errors.rb#276
+class OpenAPIParser::NotUniqueItems < ::OpenAPIParser::OpenAPIError
+  # @return [NotUniqueItems] a new instance of NotUniqueItems
+  #
+  # source://openapi_parser//lib/openapi_parser/errors.rb#277
+  def initialize(value, reference); end
+
+  # source://openapi_parser//lib/openapi_parser/errors.rb#282
   def message; end
 end
 
@@ -1096,7 +1107,7 @@ end
 
 # validate AllOf schema
 #
-# source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#1
+# source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#1
 class OpenAPIParser::SchemaValidator
   include ::OpenAPIParser::SchemaValidator::Validatable
 
@@ -1185,90 +1196,93 @@ class OpenAPIParser::SchemaValidator
   end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/all_of_validator.rb#3
+# source://openapi_parser//lib/openapi_parser/schema_validator/all_of_validator.rb#3
 class OpenAPIParser::SchemaValidator::AllOfValidator < ::OpenAPIParser::SchemaValidator::Base
   # coerce and validate value
   #
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/all_of_validator.rb#7
+  # source://openapi_parser//lib/openapi_parser/schema_validator/all_of_validator.rb#7
   def coerce_and_validate(value, schema, **keyword_args); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/any_of_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/any_of_validator.rb#2
 class OpenAPIParser::SchemaValidator::AnyOfValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/any_of_validator.rb#5
+  # source://openapi_parser//lib/openapi_parser/schema_validator/any_of_validator.rb#5
   def coerce_and_validate(value, schema, **_keyword_args); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/array_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/array_validator.rb#2
 class OpenAPIParser::SchemaValidator::ArrayValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Array]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/array_validator.rb#5
+  # source://openapi_parser//lib/openapi_parser/schema_validator/array_validator.rb#5
   def coerce_and_validate(value, schema, **_keyword_args); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/array_validator.rb#25
+  # source://openapi_parser//lib/openapi_parser/schema_validator/array_validator.rb#28
   def validate_max_min_items(value, schema); end
+
+  # source://openapi_parser//lib/openapi_parser/schema_validator/array_validator.rb#35
+  def validate_unique_items(value, schema); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/base.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/base.rb#2
 class OpenAPIParser::SchemaValidator::Base
   # @return [Base] a new instance of Base
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/base.rb#3
+  # source://openapi_parser//lib/openapi_parser/schema_validator/base.rb#3
   def initialize(validatable, coerce_value); end
 
   # need override
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/base.rb#11
+  # source://openapi_parser//lib/openapi_parser/schema_validator/base.rb#11
   def coerce_and_validate(_value, _schema, **_keyword_args); end
 
   # Returns the value of attribute validatable.
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/base.rb#8
+  # source://openapi_parser//lib/openapi_parser/schema_validator/base.rb#8
   def validatable; end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/base.rb#15
+  # source://openapi_parser//lib/openapi_parser/schema_validator/base.rb#15
   def validate_discriminator_schema(discriminator, value, parent_discriminator_schemas: T.unsafe(nil)); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/boolean_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/boolean_validator.rb#2
 class OpenAPIParser::SchemaValidator::BooleanValidator < ::OpenAPIParser::SchemaValidator::Base
   include ::OpenAPIParser::SchemaValidator::Enumable
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/boolean_validator.rb#8
+  # source://openapi_parser//lib/openapi_parser/schema_validator/boolean_validator.rb#8
   def coerce_and_validate(value, schema, **_keyword_args); end
 
   private
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/boolean_validator.rb#21
+  # source://openapi_parser//lib/openapi_parser/schema_validator/boolean_validator.rb#21
   def coerce(value); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/boolean_validator.rb#6
+# source://openapi_parser//lib/openapi_parser/schema_validator/boolean_validator.rb#6
 OpenAPIParser::SchemaValidator::BooleanValidator::FALSE_VALUES = T.let(T.unsafe(nil), Array)
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/boolean_validator.rb#5
+# source://openapi_parser//lib/openapi_parser/schema_validator/boolean_validator.rb#5
 OpenAPIParser::SchemaValidator::BooleanValidator::TRUE_VALUES = T.let(T.unsafe(nil), Array)
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/enumable.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/enumable.rb#2
 module OpenAPIParser::SchemaValidator::Enumable
   # check enum value by schema
   #
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/enumable.rb#6
+  # source://openapi_parser//lib/openapi_parser/schema_validator/enumable.rb#6
   def check_enum_include(value, schema); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/float_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/float_validator.rb#2
 class OpenAPIParser::SchemaValidator::FloatValidator < ::OpenAPIParser::SchemaValidator::Base
   include ::OpenAPIParser::SchemaValidator::Enumable
   include ::OpenAPIParser::SchemaValidator::MinimumMaximum
@@ -1278,19 +1292,19 @@ class OpenAPIParser::SchemaValidator::FloatValidator < ::OpenAPIParser::SchemaVa
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/float_validator.rb#9
+  # source://openapi_parser//lib/openapi_parser/schema_validator/float_validator.rb#9
   def coerce_and_validate(value, schema, **_keyword_args); end
 
   private
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/float_validator.rb#28
+  # source://openapi_parser//lib/openapi_parser/schema_validator/float_validator.rb#28
   def coerce(value); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/float_validator.rb#19
+  # source://openapi_parser//lib/openapi_parser/schema_validator/float_validator.rb#19
   def coercer_and_validate_numeric(value, schema); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/integer_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/integer_validator.rb#2
 class OpenAPIParser::SchemaValidator::IntegerValidator < ::OpenAPIParser::SchemaValidator::Base
   include ::OpenAPIParser::SchemaValidator::Enumable
   include ::OpenAPIParser::SchemaValidator::MinimumMaximum
@@ -1300,143 +1314,143 @@ class OpenAPIParser::SchemaValidator::IntegerValidator < ::OpenAPIParser::Schema
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/integer_validator.rb#9
+  # source://openapi_parser//lib/openapi_parser/schema_validator/integer_validator.rb#9
   def coerce_and_validate(value, schema, **_keyword_args); end
 
   private
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/integer_validator.rb#22
+  # source://openapi_parser//lib/openapi_parser/schema_validator/integer_validator.rb#22
   def coerce(value); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/minimum_maximum.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/minimum_maximum.rb#2
 module OpenAPIParser::SchemaValidator::MinimumMaximum
   # check minimum and maximum value by schema
   #
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/minimum_maximum.rb#6
+  # source://openapi_parser//lib/openapi_parser/schema_validator/minimum_maximum.rb#6
   def check_minimum_maximum(value, schema); end
 
   private
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/minimum_maximum.rb#18
+  # source://openapi_parser//lib/openapi_parser/schema_validator/minimum_maximum.rb#18
   def validate(value, schema); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/nil_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/nil_validator.rb#2
 class OpenAPIParser::SchemaValidator::NilValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/nil_validator.rb#5
+  # source://openapi_parser//lib/openapi_parser/schema_validator/nil_validator.rb#5
   def coerce_and_validate(value, schema, **_keyword_args); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/object_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/object_validator.rb#2
 class OpenAPIParser::SchemaValidator::ObjectValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Hash]
   # @param schema [OpenAPIParser::Schemas::Schema]
   # @param parent_all_of [Boolean] true if component is nested under allOf
   # @param discriminator_property_name [String, nil] discriminator.property_name to ignore checking additional_properties
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/object_validator.rb#7
+  # source://openapi_parser//lib/openapi_parser/schema_validator/object_validator.rb#7
   def coerce_and_validate(value, schema, parent_all_of: T.unsafe(nil), parent_discriminator_schemas: T.unsafe(nil), discriminator_property_name: T.unsafe(nil)); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/one_of_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/one_of_validator.rb#2
 class OpenAPIParser::SchemaValidator::OneOfValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Object]
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/one_of_validator.rb#5
+  # source://openapi_parser//lib/openapi_parser/schema_validator/one_of_validator.rb#5
   def coerce_and_validate(value, schema, **_keyword_args); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#2
 class OpenAPIParser::SchemaValidator::Options
   # @return [Options] a new instance of Options
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#11
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#11
   def initialize(coerce_value: T.unsafe(nil), datetime_coerce_class: T.unsafe(nil), validate_header: T.unsafe(nil)); end
 
   # @return [Boolean] coerce value option on/off
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#9
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#9
   def coerce_value; end
 
   # @return [Object, nil] coerce datetime string by this Object class
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#9
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#9
   def datetime_coerce_class; end
 
   # Returns the value of attribute validate_header.
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#9
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#9
   def validate_header; end
 end
 
 # response body validation option
 #
-# source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#19
+# source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#19
 class OpenAPIParser::SchemaValidator::ResponseValidateOptions
   # @return [ResponseValidateOptions] a new instance of ResponseValidateOptions
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#24
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#24
   def initialize(strict: T.unsafe(nil), validate_header: T.unsafe(nil)); end
 
   # @return [Boolean] validate by strict (when not exist definition, raise error)
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#22
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#22
   def strict; end
 
   # Returns the value of attribute validate_header.
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/options.rb#22
+  # source://openapi_parser//lib/openapi_parser/schema_validator/options.rb#22
   def validate_header; end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#2
 class OpenAPIParser::SchemaValidator::StringValidator < ::OpenAPIParser::SchemaValidator::Base
   include ::OpenAPIParser::SchemaValidator::Enumable
 
   # @return [StringValidator] a new instance of StringValidator
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#5
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#5
   def initialize(validator, coerce_value, datetime_coerce_class); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#10
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#10
   def coerce_and_validate(value, schema, **_keyword_args); end
 
   private
 
   # @param schema [OpenAPIParser::Schemas::Schema]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#40
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#40
   def pattern_validate(value, schema); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#74
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#74
   def validate_date_format(value, schema); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#86
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#90
   def validate_datetime_format(value, schema); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#55
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#55
   def validate_email_format(value, schema); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#48
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#48
   def validate_max_min_length(value, schema); end
 
-  # source://openapi_parser//lib/openapi_parser/schema_validators/string_validator.rb#66
+  # source://openapi_parser//lib/openapi_parser/schema_validator/string_validator.rb#66
   def validate_uuid_format(value, schema); end
 end
 
-# source://openapi_parser//lib/openapi_parser/schema_validators/unspecified_type_validator.rb#2
+# source://openapi_parser//lib/openapi_parser/schema_validator/unspecified_type_validator.rb#2
 class OpenAPIParser::SchemaValidator::UnspecifiedTypeValidator < ::OpenAPIParser::SchemaValidator::Base
   # @param value [Object]
   #
-  # source://openapi_parser//lib/openapi_parser/schema_validators/unspecified_type_validator.rb#4
+  # source://openapi_parser//lib/openapi_parser/schema_validator/unspecified_type_validator.rb#4
   def coerce_and_validate(value, _schema, **_keyword_args); end
 end
 
@@ -1588,6 +1602,15 @@ class OpenAPIParser::Schemas::Header < ::OpenAPIParser::Schemas::Base
   def validate(value); end
 end
 
+# source://openapi_parser//lib/openapi_parser/schemas/classes.rb#19
+class OpenAPIParser::Schemas::Info < ::OpenAPIParser::Schemas::Base
+  # source://openapi_parser//lib/openapi_parser/concerns/parser/value.rb#11
+  def title; end
+
+  # source://openapi_parser//lib/openapi_parser/concerns/parser/value.rb#11
+  def version; end
+end
+
 # source://openapi_parser//lib/openapi_parser/schemas/classes.rb#15
 class OpenAPIParser::Schemas::MediaType < ::OpenAPIParser::Schemas::Base
   # @return [Schema, nil] OpenAPI3 Schema object
@@ -1616,11 +1639,16 @@ class OpenAPIParser::Schemas::OpenAPI < ::OpenAPIParser::Schemas::Base
   # source://openapi_parser//lib/openapi_parser/concerns/parser/object.rb#11
   def components; end
 
+  # @return [Info, nil]
+  #
+  # source://openapi_parser//lib/openapi_parser/concerns/parser/object.rb#11
+  def info; end
+
   # load another schema with shared config and schema_registry
   #
   # @return [OpenAPIParser::Schemas::OpenAPI]
   #
-  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#39
+  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#43
   def load_another_schema(uri); end
 
   # @return [String, nil]
@@ -1635,12 +1663,12 @@ class OpenAPIParser::Schemas::OpenAPI < ::OpenAPIParser::Schemas::Base
 
   # @return [OpenAPIParser::RequestOperation, nil]
   #
-  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#33
+  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#37
   def request_operation(http_method, request_path); end
 
   private
 
-  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#51
+  # source://openapi_parser//lib/openapi_parser/schemas/openapi.rb#55
   def resolve_uri(uri); end
 end
 
