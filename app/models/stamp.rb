@@ -2,36 +2,25 @@
 # frozen_string_literal: true
 
 class Stamp < ApplicationRecord
+  include ModelConcerns::Notifiable
+
   belongs_to :post
   belongs_to :profile
 
   sig { void }
   def notify!
-    stamp_notification = StampNotification.find_by(stamp: self)
-
-    return if stamp_notification
-
-    notification = Notification.create!(
+    Notification.where(
       source_profile: profile,
       target_profile: post.not_nil!.profile,
-      notifiable_type: NotifiableType::Stamp.serialize,
-      notified_at: Time.current
-    )
-    StampNotification.create!(notification:, stamp: self)
+      notifiable: self
+    ).first_or_create!(notified_at: Time.current)
 
     nil
   end
 
   sig { void }
   def unnotify!
-    stamp_notification = StampNotification.find_by(stamp: self)
-
-    return unless stamp_notification
-
-    notification = stamp_notification.notification.not_nil!
-
-    stamp_notification.delete
-    notification.delete
+    notification&.destroy!
 
     nil
   end

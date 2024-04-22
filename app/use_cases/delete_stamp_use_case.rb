@@ -12,7 +12,7 @@ class DeleteStampUseCase < ApplicationUseCase
 
     ApplicationRecord.transaction do
       stamp&.unnotify!
-      stamp&.destroy!
+      stamp&.reload&.destroy!
     end
 
     Result.new(post: target_post.reload)
