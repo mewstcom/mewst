@@ -13,7 +13,7 @@ class CreatePostUseCase < ApplicationUseCase
       published_at: Time.current,
       oauth_application:
     )
-    link = Link.find_by(canonical_url:)
+    link = canonical_url.present? ? Link.find_by(canonical_url:) : nil
 
     ActiveRecord::Base.transaction do
       post.save!
