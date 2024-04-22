@@ -57,6 +57,33 @@ module Resend::ApiKeys
   end
 end
 
+# Audiences api wrapper
+#
+# source://resend//lib/resend/audiences.rb#8
+module Resend::Audiences
+  class << self
+    # https://resend.com/docs/api-reference/audiences/create-audience
+    #
+    # source://resend//lib/resend/audiences.rb#11
+    def create(params); end
+
+    # https://resend.com/docs/api-reference/audiences/get-audience
+    #
+    # source://resend//lib/resend/audiences.rb#17
+    def get(audience_id = T.unsafe(nil)); end
+
+    # https://resend.com/docs/api-reference/audiences/list-audiences
+    #
+    # source://resend//lib/resend/audiences.rb#23
+    def list; end
+
+    # https://resend.com/docs/api-reference/audiences/delete-audience
+    #
+    # source://resend//lib/resend/audiences.rb#29
+    def remove(audience_id = T.unsafe(nil)); end
+  end
+end
+
 # Module responsible for wrapping Batch email sending API
 #
 # source://resend//lib/resend/batch.rb#7
@@ -71,20 +98,57 @@ end
 
 # Client class.
 #
-# source://resend//lib/resend/client.rb#11
+# source://resend//lib/resend/client.rb#13
 class Resend::Client
   include ::Resend::Emails
 
   # @raise [ArgumentError]
   # @return [Client] a new instance of Client
   #
-  # source://resend//lib/resend/client.rb#16
+  # source://resend//lib/resend/client.rb#18
   def initialize(api_key); end
 
   # Returns the value of attribute api_key.
   #
-  # source://resend//lib/resend/client.rb#14
+  # source://resend//lib/resend/client.rb#16
   def api_key; end
+end
+
+# Contacts api wrapper
+#
+# source://resend//lib/resend/contacts.rb#8
+module Resend::Contacts
+  class << self
+    # https://resend.com/docs/api-reference/contacts/create-contact
+    #
+    # source://resend//lib/resend/contacts.rb#11
+    def create(params); end
+
+    # https://resend.com/docs/api-reference/contacts/get-contact
+    #
+    # source://resend//lib/resend/contacts.rb#17
+    def get(audience_id, id); end
+
+    # https://resend.com/docs/api-reference/contacts/list-contacts
+    #
+    # source://resend//lib/resend/contacts.rb#23
+    def list(audience_id); end
+
+    # Remove a contact from an audience
+    #
+    # see also: https://resend.com/docs/api-reference/contacts/delete-contact
+    #
+    # @param audience_id [String] the audience id
+    # @param contact_id [String] either the contact id or contact email
+    #
+    # source://resend//lib/resend/contacts.rb#35
+    def remove(audience_id, contact_id); end
+
+    # https://resend.com/docs/api-reference/contacts/update-contact
+    #
+    # source://resend//lib/resend/contacts.rb#41
+    def update(params); end
+  end
 end
 
 # domains api wrapper
@@ -99,22 +163,27 @@ module Resend::Domains
 
     # https://resend.com/docs/api-reference/domains/get-domain
     #
-    # source://resend//lib/resend/domains.rb#17
+    # source://resend//lib/resend/domains.rb#23
     def get(domain_id = T.unsafe(nil)); end
 
     # https://resend.com/docs/api-reference/api-keys/list-api-keys
     #
-    # source://resend//lib/resend/domains.rb#23
+    # source://resend//lib/resend/domains.rb#29
     def list; end
 
     # https://resend.com/docs/api-reference/domains/delete-domain
     #
-    # source://resend//lib/resend/domains.rb#29
+    # source://resend//lib/resend/domains.rb#35
     def remove(domain_id = T.unsafe(nil)); end
+
+    # https://resend.com/docs/api-reference/domains/update-domain
+    #
+    # source://resend//lib/resend/domains.rb#17
+    def update(params); end
 
     # https://resend.com/docs/api-reference/domains/verify-domain
     #
-    # source://resend//lib/resend/domains.rb#35
+    # source://resend//lib/resend/domains.rb#41
     def verify(domain_id = T.unsafe(nil)); end
   end
 end
