@@ -16,7 +16,7 @@ class Links::CreateController < ApplicationController
       return render("links/new/call", status: :unprocessable_entity)
     end
 
-    result = LinkDataFetcher.new(target_url: @form.target_url).call
+    result = LinkDataFetcher.new(target_url: @form.target_url.not_nil!).call
 
     if result.link
       @link = result.link
@@ -37,10 +37,10 @@ class Links::CreateController < ApplicationController
     end
 
     result = CreateLinkUseCase.new.call(
-      canonical_url: @link_form.canonical_url,
-      domain: @link_form.domain,
-      title: @link_form.title,
-      image_url: @link_form.image_url
+      canonical_url: @link_form.canonical_url.not_nil!,
+      domain: @link_form.domain.not_nil!,
+      title: @link_form.title.not_nil!,
+      image_url: @link_form.image_url.not_nil!
     )
 
     @link = result.link

@@ -6,6 +6,7 @@ class LinkDataFetcherForm < ApplicationForm
 
   validates :target_url, presence: true, url: true
 
+  sig { void }
   def add_fetch_error!
     errors.add(:target_url, :fetch_error)
   end

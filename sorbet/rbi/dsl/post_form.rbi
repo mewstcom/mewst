@@ -6,6 +6,12 @@
 
 class PostForm
   sig { returns(T.nilable(::String)) }
+  def canonical_url; end
+
+  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+  def canonical_url=(value); end
+
+  sig { returns(T.nilable(::String)) }
   def content; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }

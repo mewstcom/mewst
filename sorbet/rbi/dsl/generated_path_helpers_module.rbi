@@ -33,10 +33,16 @@ module GeneratedPathHelpersModule
   def letter_opener_web_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def link_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_account_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_email_confirmation_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_link_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_post_path(*args); end

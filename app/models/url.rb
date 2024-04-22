@@ -11,14 +11,14 @@ class Url
 
   sig { returns(T::Boolean) }
   def valid?
-    uri.is_a?(Addressable::URI) && !uri.host.nil?
+    uri.is_a?(Addressable::URI) && !uri.not_nil!.host.nil?
   end
 
   sig { returns(T.nilable(String)) }
   def host_and_path
     return unless valid?
 
-    "#{uri.host}#{uri.path}"
+    "#{uri.not_nil!.host}#{uri.not_nil!.path}"
   end
 
   sig { params(length: Integer).returns(T.nilable(String)) }
@@ -28,7 +28,7 @@ class Url
 
   sig { returns(T.nilable(Addressable::URI)) }
   private def uri
-    @uri ||= Addressable::URI.parse(value)
+    @uri ||= T.let(Addressable::URI.parse(value), T.nilable(Addressable::URI))
   rescue Addressable::URI::InvalidURIError
     nil
   end
