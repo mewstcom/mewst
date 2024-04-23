@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class PostDeleteForm < ApplicationForm
+class DiscardPostForm < ApplicationForm
   sig { returns(T.nilable(Profile)) }
   attr_accessor :profile
 
