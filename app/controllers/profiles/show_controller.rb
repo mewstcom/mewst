@@ -12,7 +12,7 @@ class Profiles::ShowController < ApplicationController
     @profile = Profile.kept.find_by!(atname: params[:atname])
     @follow_checker = FollowChecker.new(profile: current_actor&.profile, target_profiles: [@profile])
 
-    page = @profile.posts.kept.cursor_paginate(
+    page = @profile.posts.kept.preload(:link).cursor_paginate(
       after: params[:after].presence,
       before: params[:before].presence,
       limit: 15,
