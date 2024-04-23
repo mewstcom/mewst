@@ -24,7 +24,7 @@ class V1::NotificationResource < V1::ApplicationResource
   def item
     case kind
     when NotifiableType::Stamp.serialize
-      V1::StampNotificationItemResource.new(stamp_notification: notification.stamp_notification.not_nil!, viewer:)
+      V1::StampNotificationItemResource.new(notification: notification, viewer:)
     else
       raise "Unknown notification kind: #{kind.inspect}"
     end

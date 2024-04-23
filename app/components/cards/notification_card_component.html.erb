@@ -4,9 +4,7 @@
 
     <% case notification.deserialized_notifiable_type %>
     <% when NotifiableType::Stamp %>
-      <%= render Cards::NotificationCard::StampNotificationComponent.new(
-        stamp_notification: notification.stamp_notification.not_nil!
-      ) %>
+      <%= render Cards::NotificationCard::StampNotificationComponent.new(notification:) %>
     <% end %>
   <% end %>
 <% end %>

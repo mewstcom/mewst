@@ -239,7 +239,8 @@ CREATE TABLE public.notifications (
     notifiable_type character varying NOT NULL,
     notified_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    notifiable_id uuid NOT NULL
 );
 
 
@@ -364,19 +365,6 @@ CREATE TABLE public.sessions (
     ip_address character varying DEFAULT ''::character varying NOT NULL,
     user_agent character varying DEFAULT ''::character varying NOT NULL,
     signed_in_at timestamp(6) without time zone NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: stamp_notifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.stamp_notifications (
-    id uuid DEFAULT public.generate_ulid() NOT NULL,
-    notification_id uuid NOT NULL,
-    stamp_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -597,14 +585,6 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
-
-
---
--- Name: stamp_notifications stamp_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.stamp_notifications
-    ADD CONSTRAINT stamp_notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -969,20 +949,6 @@ CREATE UNIQUE INDEX index_sessions_on_token ON public.sessions USING btree (toke
 
 
 --
--- Name: index_stamp_notifications_on_notification_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_stamp_notifications_on_notification_id ON public.stamp_notifications USING btree (notification_id);
-
-
---
--- Name: index_stamp_notifications_on_stamp_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_stamp_notifications_on_stamp_id ON public.stamp_notifications USING btree (stamp_id);
-
-
---
 -- Name: index_stamps_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1046,14 +1012,6 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
--- Name: stamp_notifications fk_rails_02057a6968; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.stamp_notifications
-    ADD CONSTRAINT fk_rails_02057a6968 FOREIGN KEY (stamp_id) REFERENCES public.stamps(id);
-
-
---
 -- Name: stamps fk_rails_27da15755d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1107,14 +1065,6 @@ ALTER TABLE ONLY public.post_links
 
 ALTER TABLE ONLY public.follows
     ADD CONSTRAINT fk_rails_5e22b9865a FOREIGN KEY (source_profile_id) REFERENCES public.profiles(id);
-
-
---
--- Name: stamp_notifications fk_rails_63530a6a31; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.stamp_notifications
-    ADD CONSTRAINT fk_rails_63530a6a31 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
 
 
 --
@@ -1260,6 +1210,7 @@ ALTER TABLE ONLY public.home_timeline_posts
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240422190022'),
 ('20240414155325'),
 ('20240414155158'),
 ('20240414152059'),

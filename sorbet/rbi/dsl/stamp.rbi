@@ -261,11 +261,20 @@ class Stamp
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Notification) }
+    def build_notification(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
     def build_post(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_profile(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Notification) }
+    def create_notification(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Notification) }
+    def create_notification!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Post) }
     def create_post(*args, &blk); end
@@ -279,6 +288,12 @@ class Stamp
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_profile!(*args, &blk); end
 
+    sig { returns(T.nilable(::Notification)) }
+    def notification; end
+
+    sig { params(value: T.nilable(::Notification)).void }
+    def notification=(value); end
+
     sig { returns(T.nilable(::Post)) }
     def post; end
 
@@ -290,6 +305,9 @@ class Stamp
 
     sig { params(value: T.nilable(::Profile)).void }
     def profile=(value); end
+
+    sig { returns(T.nilable(::Notification)) }
+    def reload_notification; end
 
     sig { returns(T.nilable(::Post)) }
     def reload_post; end

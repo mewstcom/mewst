@@ -7,6 +7,7 @@
 class Notification
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include GeneratedDelegatedTypeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -309,9 +310,6 @@ class Notification
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_source_profile(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::StampNotification) }
-    def build_stamp_notification(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def build_target_profile(*args, &blk); end
 
@@ -321,23 +319,23 @@ class Notification
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_source_profile!(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::StampNotification) }
-    def create_stamp_notification(*args, &blk); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(::StampNotification) }
-    def create_stamp_notification!(*args, &blk); end
-
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_target_profile(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Profile) }
     def create_target_profile!(*args, &blk); end
 
+    sig { returns(T.untyped) }
+    def notifiable; end
+
+    sig { params(value: T.untyped).void }
+    def notifiable=(value); end
+
+    sig { returns(T.untyped) }
+    def reload_notifiable; end
+
     sig { returns(T.nilable(::Profile)) }
     def reload_source_profile; end
-
-    sig { returns(T.nilable(::StampNotification)) }
-    def reload_stamp_notification; end
 
     sig { returns(T.nilable(::Profile)) }
     def reload_target_profile; end
@@ -347,12 +345,6 @@ class Notification
 
     sig { params(value: T.nilable(::Profile)).void }
     def source_profile=(value); end
-
-    sig { returns(T.nilable(::StampNotification)) }
-    def stamp_notification; end
-
-    sig { params(value: T.nilable(::StampNotification)).void }
-    def stamp_notification=(value); end
 
     sig { returns(T.nilable(::Profile)) }
     def target_profile; end
@@ -509,6 +501,9 @@ class Notification
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def select(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def stamps(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def strict_loading(*args, &blk); end
@@ -686,16 +681,61 @@ class Notification
     sig { void }
     def id_will_change!; end
 
+    sig { returns(::String) }
+    def notifiable_id; end
+
+    sig { params(value: ::String).returns(::String) }
+    def notifiable_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def notifiable_id?; end
+
+    sig { returns(T.nilable(::String)) }
+    def notifiable_id_before_last_save; end
+
     sig { returns(T.untyped) }
+    def notifiable_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def notifiable_id_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def notifiable_id_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def notifiable_id_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def notifiable_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def notifiable_id_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def notifiable_id_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def notifiable_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def notifiable_id_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def notifiable_id_was; end
+
+    sig { void }
+    def notifiable_id_will_change!; end
+
+    sig { returns(::String) }
     def notifiable_type; end
 
-    sig { params(value: T.untyped).returns(T.untyped) }
+    sig { params(value: ::String).returns(::String) }
     def notifiable_type=(value); end
 
     sig { returns(T::Boolean) }
     def notifiable_type?; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notifiable_type_before_last_save; end
 
     sig { returns(T.untyped) }
@@ -704,28 +744,28 @@ class Notification
     sig { returns(T::Boolean) }
     def notifiable_type_came_from_user?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notifiable_type_change; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notifiable_type_change_to_be_saved; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def notifiable_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notifiable_type_in_database; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def notifiable_type_previous_change; end
 
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
     def notifiable_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notifiable_type_previously_was; end
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::String)) }
     def notifiable_type_was; end
 
     sig { void }
@@ -786,6 +826,9 @@ class Notification
     def restore_id_value!; end
 
     sig { void }
+    def restore_notifiable_id!; end
+
+    sig { void }
     def restore_notifiable_type!; end
 
     sig { void }
@@ -818,7 +861,13 @@ class Notification
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
 
-    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_notifiable_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_notifiable_id?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_notifiable_type; end
 
     sig { returns(T::Boolean) }
@@ -993,6 +1042,9 @@ class Notification
     def will_save_change_to_id_value?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_notifiable_id?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_notifiable_type?; end
 
     sig { returns(T::Boolean) }
@@ -1006,6 +1058,26 @@ class Notification
 
     sig { returns(T::Boolean) }
     def will_save_change_to_updated_at?; end
+  end
+
+  module GeneratedDelegatedTypeMethods
+    sig { params(args: T.untyped).returns(T.any(Stamp)) }
+    def build_notifiable(*args); end
+
+    sig { returns(T::Class[T.anything]) }
+    def notifiable_class; end
+
+    sig { returns(ActiveSupport::StringInquirer) }
+    def notifiable_name; end
+
+    sig { returns(T.nilable(Stamp)) }
+    def stamp; end
+
+    sig { returns(T::Boolean) }
+    def stamp?; end
+
+    sig { returns(T.nilable(::String)) }
+    def stamp_id; end
   end
 
   module GeneratedRelationMethods
@@ -1122,6 +1194,9 @@ class Notification
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def select(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def stamps(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def strict_loading(*args, &blk); end

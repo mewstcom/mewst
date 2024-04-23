@@ -12,7 +12,7 @@ class Notifications::IndexController < ApplicationController
   def call
     page = current_actor!
       .notifications
-      .preload(:source_profile, stamp_notification: {stamp: {post: :profile}})
+      .preload(:source_profile, notifiable: {post: :profile})
       .cursor_paginate(
         after: params[:after].presence,
         before: params[:before].presence,
