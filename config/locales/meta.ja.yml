@@ -2,7 +2,7 @@ ja:
   meta:
     description:
       default: |-
-        Mewstは160文字で今の気持ちや状況を共有できるソーシャルネットワークです。
+        Mewstは160文字で今の気持ちや状況を記録できるマイクロブログサービスです。
         力まず使えるサービスを目指しています。
     title:
       accounts:
@@ -35,4 +35,4 @@ ja:
       verification_challenges:
         new: 確認用コード入力
       welcome:
-        show: ほっとするソーシャルネットワーク
+        show: ほっとするマイクロブログ

@@ -6,7 +6,7 @@
   </h1>
 
   <p align="center">
-    ほっとするソーシャルネットワーク
+    ほっとするマイクロブログ
     <br>
     <a href="https://mewst.com/" rel="nofollow" target="_blank">
       <strong>mewst.com »</strong>
