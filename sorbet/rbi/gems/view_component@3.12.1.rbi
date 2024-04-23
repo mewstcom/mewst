@@ -1347,7 +1347,7 @@ class ViewComponent::Slot
 
   # @return [Boolean]
   #
-  # source://view_component//lib/view_component/slot.rb#99
+  # source://view_component//lib/view_component/slot.rb#109
   def html_safe?; end
 
   # Allow access to public component methods via the wrapper
@@ -1369,7 +1369,7 @@ class ViewComponent::Slot
   #   end
   # end
   #
-  # source://view_component//lib/view_component/slot.rb#94
+  # source://view_component//lib/view_component/slot.rb#104
   def method_missing(symbol, *args, **_arg2, &block); end
 
   # Used to render the slot content in the template
@@ -1396,12 +1396,12 @@ class ViewComponent::Slot
 
   # @return [Boolean]
   #
-  # source://view_component//lib/view_component/slot.rb#111
+  # source://view_component//lib/view_component/slot.rb#121
   def __vc_component_instance?; end
 
   # @return [Boolean]
   #
-  # source://view_component//lib/view_component/slot.rb#105
+  # source://view_component//lib/view_component/slot.rb#115
   def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
 end
 
