@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   match "/home",                                                                 via: :get,    as: :home,                                           to: "home/show#call"
   match "/links",                                                                via: :post,   as: :link_list,                                      to: "links/create#call"
   match "/links/new",                                                            via: :get,    as: :new_link,                                       to: "links/new#call"
+  match "/manifest",                                                             via: :get,    as: :manifest,                                       to: "manifests/show#call"
   match "/new",                                                                  via: :get,    as: :new_post,                                       to: "posts/new#call"
   match "/notifications",                                                        via: :get,    as: :notification_list,                              to: "notifications/index#call"
   match "/password",                                                             via: :patch,  as: :password,                                       to: "passwords/update#call"
