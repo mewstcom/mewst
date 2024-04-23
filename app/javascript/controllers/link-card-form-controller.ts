@@ -11,13 +11,20 @@ export default class extends Controller {
   declare readonly newLinkPathValue: String;
   declare readonly textareaTarget: HTMLTextAreaElement;
 
+  initialize() {
+    this.isFormFrameLoaded = false;
+  }
+
   detectUrl() {
+    if (this.isFormFrameLoaded) {
+      return;
+    }
+
     const url = this.extractLastUrl(this.textareaTarget.value);
 
     if (url) {
       this.linkFormFrameTarget.src = `${this.newLinkPathValue}?url=${encodeURIComponent(url)}`;
-    } else {
-      this.closeLinkForm();
+      this.isFormFrameLoaded = true;
     }
   }
 
@@ -38,5 +45,6 @@ export default class extends Controller {
   closeLinkForm() {
     this.linkFormFrameTarget.src = null;
     this.linkFormFrameTarget.innerHTML = '';
+    this.isFormFrameLoaded = false;
   }
 }
