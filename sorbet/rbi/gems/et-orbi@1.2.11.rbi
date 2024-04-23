@@ -183,22 +183,22 @@ class EtOrbi::EoTime
   # source://et-orbi//lib/et-orbi/time.rb#67
   def initialize(s, zone); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#236
+  # source://et-orbi//lib/et-orbi/time.rb#251
   def +(t); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#237
+  # source://et-orbi//lib/et-orbi/time.rb#252
   def -(t); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#229
+  # source://et-orbi//lib/et-orbi/time.rb#244
   def <(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#230
+  # source://et-orbi//lib/et-orbi/time.rb#245
   def <=(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#231
+  # source://et-orbi//lib/et-orbi/time.rb#246
   def <=>(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#206
+  # source://et-orbi//lib/et-orbi/time.rb#221
   def ==(o); end
 
   # Nota Bene:
@@ -210,13 +210,13 @@ class EtOrbi::EoTime
   # The eql? method returns true if obj and other refer to the same hash key.
   # This is used by Hash to test members for equality.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#227
+  # source://et-orbi//lib/et-orbi/time.rb#242
   def >(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#228
+  # source://et-orbi//lib/et-orbi/time.rb#243
   def >=(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#233
+  # source://et-orbi//lib/et-orbi/time.rb#248
   def add(t); end
 
   # Returns true if this EoTime instance corresponds to 2 different UTC
@@ -227,71 +227,78 @@ class EtOrbi::EoTime
   #
   # @return [Boolean]
   #
-  # source://et-orbi//lib/et-orbi/time.rb#113
+  # source://et-orbi//lib/et-orbi/time.rb#128
   def ambiguous?; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def asctime; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#409
+  def clone; end
+
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def day; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
   # in the current UTC timezone.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#127
+  # source://et-orbi//lib/et-orbi/time.rb#142
   def getgm; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
   # in the current UTC timezone.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#127
+  # source://et-orbi//lib/et-orbi/time.rb#142
   def getutc; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def hour; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#319
+  # source://et-orbi//lib/et-orbi/time.rb#339
   def in_time_zone(zone = T.unsafe(nil)); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#302
+  # source://et-orbi//lib/et-orbi/time.rb#317
   def inc(t, dir = T.unsafe(nil)); end
 
   # @return [Boolean]
   #
-  # source://et-orbi//lib/et-orbi/time.rb#174
+  # source://et-orbi//lib/et-orbi/time.rb#189
   def is_dst?; end
 
   # @return [Boolean]
   #
-  # source://et-orbi//lib/et-orbi/time.rb#174
+  # source://et-orbi//lib/et-orbi/time.rb#189
   def isdst; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#277
+  # source://et-orbi//lib/et-orbi/time.rb#292
   def iso8601(fraction_digits = T.unsafe(nil)); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#319
+  # source://et-orbi//lib/et-orbi/time.rb#339
   def localtime(zone = T.unsafe(nil)); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def min; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def month; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#242
+  # source://et-orbi//lib/et-orbi/time.rb#257
   def monthdays; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#339
+  # "reference week", used in fugit for cron modulo notation
+  #
+  # source://et-orbi//lib/et-orbi/time.rb#367
   def rday; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#345
+  # source://et-orbi//lib/et-orbi/time.rb#377
   def reach(points); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#333
+  # "reference week", used in fugit for cron modulo notation
+  #
+  # source://et-orbi//lib/et-orbi/time.rb#355
   def rweek; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def sec; end
 
   # instance methods
@@ -299,22 +306,22 @@ class EtOrbi::EoTime
   # source://et-orbi//lib/et-orbi/time.rb#64
   def seconds; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#95
+  # source://et-orbi//lib/et-orbi/time.rb#103
   def seconds=(f); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#155
+  # source://et-orbi//lib/et-orbi/time.rb#170
   def strftime(format); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#234
+  # source://et-orbi//lib/et-orbi/time.rb#249
   def subtract(t); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#180
+  # source://et-orbi//lib/et-orbi/time.rb#195
   def to_debug_s; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#145
+  # source://et-orbi//lib/et-orbi/time.rb#160
   def to_f; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#150
+  # source://et-orbi//lib/et-orbi/time.rb#165
   def to_i; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
@@ -322,10 +329,10 @@ class EtOrbi::EoTime
   #
   # Has a #to_t alias.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#167
+  # source://et-orbi//lib/et-orbi/time.rb#182
   def to_local_time; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#267
+  # source://et-orbi//lib/et-orbi/time.rb#282
   def to_s; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
@@ -333,37 +340,42 @@ class EtOrbi::EoTime
   #
   # Has a #to_t alias.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#167
+  # source://et-orbi//lib/et-orbi/time.rb#182
   def to_t; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#297
+  # source://et-orbi//lib/et-orbi/time.rb#312
   def to_time_s; end
 
   # Debug current time by showing local time / delta / utc time
   # for example: "0120-7(0820)"
   #
-  # source://et-orbi//lib/et-orbi/time.rb#286
+  # source://et-orbi//lib/et-orbi/time.rb#301
   def to_utc_comparison_s; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
   # in the current UTC timezone.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#127
+  # source://et-orbi//lib/et-orbi/time.rb#142
   def to_utc_time; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#272
+  # source://et-orbi//lib/et-orbi/time.rb#287
   def to_zs; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#319
+  # Nullify the "caches" used by #to_time, #rweek, and others
+  #
+  # source://et-orbi//lib/et-orbi/time.rb#96
+  def touch; end
+
+  # source://et-orbi//lib/et-orbi/time.rb#339
   def translate(zone = T.unsafe(nil)); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def usec; end
 
   # Returns this ::EtOrbi::EoTime as a ::Time instance
   # in the current UTC timezone.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#127
+  # source://et-orbi//lib/et-orbi/time.rb#142
   def utc; end
 
   # Returns true if this ::EtOrbi::EoTime instance timezone is UTC.
@@ -371,22 +383,22 @@ class EtOrbi::EoTime
   #
   # @return [Boolean]
   #
-  # source://et-orbi//lib/et-orbi/time.rb#135
+  # source://et-orbi//lib/et-orbi/time.rb#150
   def utc?; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#195
+  # source://et-orbi//lib/et-orbi/time.rb#210
   def utc_offset; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def wday; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#327
+  # source://et-orbi//lib/et-orbi/time.rb#347
   def wday_in_month; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def yday; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#203
+  # source://et-orbi//lib/et-orbi/time.rb#218
   def year; end
 
   # Returns the value of attribute zone.
@@ -394,18 +406,18 @@ class EtOrbi::EoTime
   # source://et-orbi//lib/et-orbi/time.rb#65
   def zone; end
 
-  # source://et-orbi//lib/et-orbi/time.rb#101
+  # source://et-orbi//lib/et-orbi/time.rb#112
   def zone=(z); end
 
   protected
 
-  # source://et-orbi//lib/et-orbi/time.rb#428
+  # source://et-orbi//lib/et-orbi/time.rb#465
   def _to_f(o); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#389
+  # source://et-orbi//lib/et-orbi/time.rb#426
   def count_weeks(start, dir); end
 
-  # source://et-orbi//lib/et-orbi/time.rb#402
+  # source://et-orbi//lib/et-orbi/time.rb#439
   def strfz(code); end
 
   # Returns a Ruby Time instance.
@@ -413,7 +425,7 @@ class EtOrbi::EoTime
   # Warning: the timezone of that Time instance will be UTC when used with
   # TZInfo < 2.0.0.
   #
-  # source://et-orbi//lib/et-orbi/time.rb#384
+  # source://et-orbi//lib/et-orbi/time.rb#421
   def to_time; end
 
   class << self
@@ -443,10 +455,10 @@ class EtOrbi::EoTime
   end
 end
 
-# source://et-orbi//lib/et-orbi/time.rb#239
+# source://et-orbi//lib/et-orbi/time.rb#254
 EtOrbi::EoTime::DAY_S = T.let(T.unsafe(nil), Integer)
 
-# source://et-orbi//lib/et-orbi/time.rb#240
+# source://et-orbi//lib/et-orbi/time.rb#255
 EtOrbi::EoTime::WEEK_S = T.let(T.unsafe(nil), Integer)
 
 # source://et-orbi//lib/et-orbi.rb#16
