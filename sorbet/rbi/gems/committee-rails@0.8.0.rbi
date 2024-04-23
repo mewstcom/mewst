@@ -7,16 +7,16 @@
 # source://committee-rails//lib/committee/rails/version.rb#1
 module Committee
   class << self
-    # source://committee/5.0.0/lib/committee.rb#12
+    # source://committee/5.1.0/lib/committee.rb#12
     def debug?; end
 
-    # source://committee/5.0.0/lib/committee.rb#16
+    # source://committee/5.1.0/lib/committee.rb#16
     def log_debug(message); end
 
-    # source://committee/5.0.0/lib/committee.rb#20
+    # source://committee/5.1.0/lib/committee.rb#20
     def need_good_option(message); end
 
-    # source://committee/5.0.0/lib/committee.rb#24
+    # source://committee/5.1.0/lib/committee.rb#24
     def warn_deprecated_until_6(cond, message); end
   end
 end
@@ -31,7 +31,7 @@ class Committee::Rails::RequestObject
   # source://committee-rails//lib/committee/rails/request_object.rb#7
   def initialize(request); end
 
-  # source://activesupport/7.0.4.3/lib/active_support/core_ext/module/delegation.rb#302
+  # source://activesupport/7.1.3.2/lib/active_support/core_ext/module/delegation.rb#331
   def method_missing(method, *args, **_arg2, &block); end
 
   # source://committee-rails//lib/committee/rails/request_object.rb#11
@@ -45,7 +45,7 @@ class Committee::Rails::RequestObject
 
   private
 
-  # source://activesupport/7.0.4.3/lib/active_support/core_ext/module/delegation.rb#294
+  # source://activesupport/7.1.3.2/lib/active_support/core_ext/module/delegation.rb#323
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
 end
 
