@@ -1,9 +1,7 @@
 en:
   meta:
     description:
-      default: |-
-        Mewst is a social network where you can share your current feelings and situation in 160 characters.
-        We aim to provide a service that can be used without any tension.
+      default: Mewst is a social network where you can share your current feelings and situation in 160 characters. We aim to provide a service that can be used without any tension.
     title:
       accounts:
         new: Create an account
