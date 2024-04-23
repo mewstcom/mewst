@@ -788,16 +788,17 @@ RuboCop::Cop::FactoryBot::FactoryNameStyle::RESTRICT_ON_SEND = T.let(T.unsafe(ni
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#19
 class RuboCop::Cop::FactoryBot::IdSequence < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::FactoryBot::Language
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#26
+  # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#27
   def on_send(node); end
 end
 
-# source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#23
+# source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#24
 RuboCop::Cop::FactoryBot::IdSequence::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#24
+# source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/id_sequence.rb#25
 RuboCop::Cop::FactoryBot::IdSequence::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Checks for redundant `factory` option.
