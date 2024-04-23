@@ -10,6 +10,6 @@ class Posts::NewController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PostForm.new(content: params[:text], with_frame: params[:with_frame])
+    @form = PostForm.new(content: params[:content], with_frame: params[:with_frame])
   end
 end
