@@ -6,7 +6,7 @@ class DiscardPostUseCase < ApplicationUseCase
   def call(target_post:)
     ApplicationRecord.transaction do
       target_post.discard!
-      DeletePostJob.perform_later(post_id: target_post.id.not_nil!)
+      DeletePostJob.perform_later(target_post_id: target_post.id.not_nil!)
     end
 
     nil
