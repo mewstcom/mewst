@@ -55,9 +55,9 @@ module Mewst
     config.mewst = config_for(:mewst)
 
     config.middleware.insert_before(Rack::Runtime, Rack::Rewrite) do
-      r301 /.*/, "https://#{ENV.fetch('MEWST_HOST')}$&", if: proc { |rack_env|
-        rack_env["SERVER_NAME"] == "www.#{ENV.fetch('MEWST_HOST')}"
-      }
+      r301(/.*/, "https://#{ENV.fetch("MEWST_HOST")}$&", if: proc { |rack_env|
+        rack_env["SERVER_NAME"] == "www.#{ENV.fetch("MEWST_HOST")}"
+      })
 
       maintenance_file = Rails.public_path.join("maintenance.html")
       send_file(/(.*)$(?<!maintenance|favicons|community)/, maintenance_file.to_s, if: proc { |rack_env|
