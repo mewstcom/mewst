@@ -1,6 +1,6 @@
 # コミュニティ
 
-Mewstに関することは以下のソーシャルメディアで発信しています。
+Mewstに関することは以下のサービスで発信しています。
 
 - [Mewst](https://mewst.com/@mewst)
 - [Bluesky](https://bsky.app/profile/mewst.com)
