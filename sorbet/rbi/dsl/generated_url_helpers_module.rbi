@@ -36,6 +36,9 @@ module GeneratedUrlHelpersModule
   def link_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def manifest_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_account_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

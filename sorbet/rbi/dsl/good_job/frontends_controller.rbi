@@ -10,6 +10,7 @@ class GoodJob::FrontendsController
 
   module HelperMethods
     include ::ActionController::Base::HelperMethods
+    include ::GoodJob::IconsHelper
     include ::GoodJob::ApplicationHelper
   end
 
