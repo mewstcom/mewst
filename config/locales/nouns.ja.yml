@@ -4,7 +4,9 @@ ja:
     cancel: キャンセル
     connected_accounts: 連携アカウント
     current_avatar: 現在のアバター画像
+    current_email: 現在のメールアドレス
     edit_profile: プロフィール編集
+    email: メールアドレス
     english: 英語
     english_native: English
     error: エラー

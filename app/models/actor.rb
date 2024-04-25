@@ -22,6 +22,11 @@ class Actor < ApplicationRecord
     profile.not_nil!.update!(last_post_at: time)
   end
 
+  sig { params(email: String).returns(T::Boolean) }
+  def update_email!(email:)
+    user.not_nil!.update!(email:)
+  end
+
   sig do
     params(application: OauthApplication, scopes: T.any(String, Doorkeeper::OAuth::Scopes))
       .returns(T.nilable(OauthAccessToken))

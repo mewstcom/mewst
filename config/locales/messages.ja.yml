@@ -40,6 +40,7 @@ ja:
       not_connected: 連携していません
     email_confirmations:
       confirmation_mail_sent: 確認用のメールを送信しました
+      email_updated: メールアドレスを更新しました
       enter_code: メールに記載されている確認用コードを入力してください
     home:
       lets_make_the_first_post_mobile: ↓の「投稿する」から最初のポストをしましょう

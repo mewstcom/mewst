@@ -9,6 +9,8 @@ ja:
         email: メールアドレス
       email_confirmation_challenge_form:
         confirmation_code: 確認用コード
+      email_update_form:
+        new_email: 新しいメールアドレス
       follow_form:
         target_atname: atname
       link_data_fetcher_form:
@@ -46,6 +48,8 @@ ja:
           attributes:
             confirmation_code:
               incorrect_or_expired: が間違っているか古くなっています
+        email_update_form:
+          uniqueness: はすでに存在します
         link_data_fetcher_form:
           attributes:
             target_url:

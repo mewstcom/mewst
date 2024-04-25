@@ -14,7 +14,7 @@
         <ul class="bg-neutral-200 menu rounded-box">
           <li>
             <%= link_to settings_profile_path, class: "flex justify-between" do %>
-              <%= t("nouns.profile") %>
+              <%= t("meta.title.settings.profiles.show") %>
 
               <i class="bi bi-chevron-right"></i>
             <% end %>
@@ -22,7 +22,15 @@
 
           <li>
             <%= link_to settings_user_path, class: "flex justify-between" do %>
-              <%= t("nouns.user") %>
+              <%= t("meta.title.settings.users.show") %>
+
+              <i class="bi bi-chevron-right"></i>
+            <% end %>
+          </li>
+
+          <li>
+            <%= link_to settings_email_path, class: "flex justify-between" do %>
+              <%= t("meta.title.settings.emails.show") %>
 
               <i class="bi bi-chevron-right"></i>
             <% end %>

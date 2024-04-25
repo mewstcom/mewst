@@ -6,9 +6,12 @@ class ConfirmEmailUseCase < ApplicationUseCase
     const :email_confirmation, EmailConfirmation
   end
 
-  sig { params(email_confirmation: EmailConfirmation).returns(Result) }
-  def call(email_confirmation:)
-    email_confirmation.success!
+  sig { params(current_actor: T.nilable(Actor), email_confirmation: EmailConfirmation).returns(Result) }
+  def call(current_actor:, email_confirmation:)
+    ActiveRecord::Base.transaction do
+      email_confirmation.success!
+      email_confirmation.process_after_success!(current_actor:)
+    end
 
     Result.new(email_confirmation:)
   end

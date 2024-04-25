@@ -4,11 +4,9 @@
 class EmailConfirmation < ApplicationRecord
   extend Enumerize
 
-  EVENT_PASSWORD_RESET = :password_reset
-  EVENT_SIGN_UP = :sign_up
   EXPIRES_IN = T.let(15.minutes, ActiveSupport::Duration)
 
-  enumerize :event, in: [EVENT_PASSWORD_RESET, EVENT_SIGN_UP]
+  enumerize :event, in: EmailConfirmationEvent.values.map(&:serialize)
 
   scope :active, -> { where(succeeded_at: nil).where("created_at > ?", EXPIRES_IN.ago) }
   scope :succeeded, -> { where.not(succeeded_at: nil) }
@@ -21,6 +19,11 @@ class EmailConfirmation < ApplicationRecord
     6.times.map { rand(10) }.join
   end
 
+  sig { returns(EmailConfirmationEvent) }
+  def deserialized_event
+    EmailConfirmationEvent.deserialize(event)
+  end
+
   sig { returns(T::Boolean) }
   def succeeded?
     !succeeded_at.nil?
@@ -29,6 +32,15 @@ class EmailConfirmation < ApplicationRecord
   sig { returns(T::Boolean) }
   def success!
     update!(succeeded_at: Time.current) unless succeeded?
+    true
+  end
+
+  sig { params(current_actor: T.nilable(Actor)).returns(T::Boolean) }
+  def process_after_success!(current_actor:)
+    if current_actor && deserialized_event == EmailConfirmationEvent::EmailUpdate
+      current_actor.update_email!(email:)
+    end
+
     true
   end
 

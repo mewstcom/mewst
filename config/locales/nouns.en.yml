@@ -4,7 +4,9 @@ en:
     cancel: Cancel
     connected_accounts: Connected accounts
     current_avatar: Current avatar
+    current_email: Current email
     edit_profile: Edit profile
+    email: Email
     english: English
     english_native: English
     error: Error
