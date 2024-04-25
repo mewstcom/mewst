@@ -111,6 +111,9 @@ module GeneratedUrlHelpersModule
   def search_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def settings_email_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def settings_profile_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

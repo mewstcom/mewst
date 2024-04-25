@@ -42,7 +42,9 @@ class EmailConfirmations::CreateController < ApplicationController
 
   sig { params(email_confirmation: EmailConfirmation).returns(String) }
   private def success_path(email_confirmation)
-    case email_confirmation.deserialized_event
+    event = email_confirmation.deserialized_event
+
+    case event
     when EmailConfirmationEvent::EmailUpdate
       settings_email_path
     when EmailConfirmationEvent::PasswordReset
