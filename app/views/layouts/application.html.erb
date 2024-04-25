@@ -30,8 +30,6 @@
   <body>
     <%= yield %>
 
-    <%= render Toasts::FlashToastComponent.new(flash:) %>
     <turbo-frame id="modal"></turbo-frame>
-    <turbo-frame id="toast"></turbo-frame>
   </body>
 </html>
