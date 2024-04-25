@@ -3,6 +3,7 @@
     <% if link.image_url.present? %>
       <%= image_tag(link.image_url, {
         class: "aspect-video max-h-[300px] object-contain w-full",
+        loading: "lazy",
         size: "16x9",
       }) %>
     <% end %>
