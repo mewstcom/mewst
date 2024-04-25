@@ -21,6 +21,8 @@ en:
       search:
         show: Search
       settings:
+        emails:
+          show: Change email
         index: Settings
         profiles:
           show: Edit profile

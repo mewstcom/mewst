@@ -9,6 +9,8 @@ en:
         email: Email
       email_confirmation_challenge_form:
         confirmation_code: Confirmation code
+      email_update_form:
+        new_email: New email
       follow_form:
         target_atname: atname
       link_data_fetcher_form:
@@ -46,6 +48,8 @@ en:
           attributes:
             confirmation_code:
               incorrect_or_expired: is incorrect or expired
+        email_update_form:
+          uniqueness: is already taken
         link_data_fetcher_form:
           attributes:
             target_url:

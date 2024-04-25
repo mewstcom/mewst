@@ -21,6 +21,8 @@ ja:
       search:
         show: 検索
       settings:
+        emails:
+          show: メールアドレスの変更
         index: 設定
         profiles:
           show: プロフィールの編集

@@ -7,7 +7,6 @@ class EmailConfirmations::NewController < ApplicationController
   include ControllerConcerns::EmailConfirmationFindable
 
   around_action :set_locale
-  before_action :require_no_authentication
   before_action :require_email_confirmation_id
 
   sig { returns(T.untyped) }

@@ -3,7 +3,8 @@
 
 class EmailConfirmationEvent < T::Enum
   enums do
-    SignUp = new("sign_up")
+    EmailUpdate = new("email_update")
     PasswordReset = new("password_reset")
+    SignUp = new("sign_up")
   end
 end
