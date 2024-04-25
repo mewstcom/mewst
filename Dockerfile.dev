@@ -29,7 +29,7 @@ RUN \
 
 RUN npm install --global yarn@1.22.19
 
-RUN gem install bundler -v 2.5.4
+RUN gem install bundler -v 2.5.9
 
 WORKDIR /app
 
