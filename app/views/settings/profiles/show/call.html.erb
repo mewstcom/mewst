@@ -27,7 +27,13 @@
                 </span>
               </div>
 
-              <%= f.text_field :atname, autofocus: true, class: "input input-bordered" %>
+              <%= f.text_field :atname, autofocus: true, class: "input input-bordered", required: true %>
+
+              <div class="label">
+                <span class="label-text-alt">
+                  <%= t("messages.accounts.atname_hint_html") %>
+                </span>
+              </div>
             <% end %>
 
             <%= f.label :name, class: "form-control" do %>
