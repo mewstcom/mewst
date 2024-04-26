@@ -1,4 +1,10 @@
 {
+  "cron": [
+    {
+      "command": "bin/rails suggested_follow:create",
+      "schedule": "0 10 * * *"
+    }
+  ],
   "scripts": {
     "dokku": {
       "postdeploy": "bin/rails db:migrate"
