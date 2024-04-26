@@ -1,7 +1,7 @@
 <% title = t("meta.title.home.show") %>
 <% set_meta_tags(title:) %>
 
-<%= render ::Layouts::BasicLayoutComponent.new(with_footer: false) do %>
+<%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
     <div class="hidden lg:block">
       <turbo-frame id="post-form">
