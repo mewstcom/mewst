@@ -1,4 +1,4 @@
 en:
   email_confirmation_mailer:
     email_confirmation:
-      subject: Mewst confirmation code
+      subject: "[Mewst] Confirmation code"

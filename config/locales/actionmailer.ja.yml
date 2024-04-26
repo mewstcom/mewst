@@ -1,4 +1,4 @@
 ja:
   email_confirmation_mailer:
     email_confirmation:
-      subject: Mewstの確認用コード
+      subject: "[Mewst] 確認用コード"
