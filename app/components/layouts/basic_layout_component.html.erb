@@ -6,10 +6,12 @@
   </div>
 
   <% if with_footer %>
-    <%= render Footers::BasicFooterComponent.new %>
+    <div class="mb-[100px] lg:mb-4">
+      <%= render Footers::BasicFooterComponent.new %>
+    </div>
   <% end %>
 
-  <div class="bottom-0 flex flex-col gap-4 p-4 sticky z-50">
+  <div class="bottom-0 fixed flex flex-col gap-4 left-1/2 p-4 translate-x-[-50%] z-50">
     <%= render Toasts::FlashToastComponent.new(flash:) %>
     <%= render Navbars::BottomNavbarComponent.new %>
   </div>
