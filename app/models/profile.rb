@@ -9,6 +9,7 @@ class Profile < ApplicationRecord
   ATNAME_FORMAT = /\A[A-Za-z0-9_]+\z/
   ATNAME_MIN_LENGTH = 2
   ATNAME_MAX_LENGTH = 20
+  MAX_SUGGESTED_FOLLOWS_COUNT = 30 # Note: この数値に深い意味はない
 
   enumerize :owner_type, in: ProfileOwnerType.values.map(&:serialize)
 
@@ -79,20 +80,34 @@ class Profile < ApplicationRecord
     atname == target_profile.atname
   end
 
-  # おすすめプロフィール (自分がフォローしている人がフォローしている人) を作成する
+  # おすすめプロフィール (自分がフォローしている人がフォローしている人と、その人がフォローしている人) を作成する
   sig { void }
   def create_suggested_follows!
     # おすすめプロフィールを作りすぎないように制限する
-    return if suggested_follows.not_checked.size >= 30 # Note: この数値に深い意味はない
+    return if suggested_follows.not_checked.size >= MAX_SUGGESTED_FOLLOWS_COUNT
 
     # Note: 各limitに指定している数値に深い意味はない
     followees.kept.sort_by_latest_post.limit(10).each do |source_followee|
-      source_followee.followees.kept.sort_by_latest_post.limit(10).each do |target_profile|
-        if !me?(target_profile:) && !following?(target_profile:)
-          suggested_follows.where(target_profile:).first_or_create!
+      source_followee.followees.kept.sort_by_latest_post.limit(10).each do |target_followee|
+        # 自分がフォローしている人がフォローしている人をおすすめする
+        create_suggested_follow!(target_profile: target_followee)
+
+        target_followee.followees.kept.sort_by_latest_post.limit(10).each do |child_target_followee|
+          # 自分がフォローしている人がフォローしている人がフォローしている人をおすすめする
+          create_suggested_follow!(target_profile: child_target_followee)
         end
       end
     end
+  end
+
+  sig { params(target_profile: Profile).void }
+  private def create_suggested_follow!(target_profile:)
+    return if me?(target_profile:)
+    return if following?(target_profile:)
+
+    suggested_follows.where(target_profile:).first_or_create!
+
+    true
   end
 
   sig { returns(Profile::Postability) }
