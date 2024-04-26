@@ -2,13 +2,12 @@ import { Controller } from '@hotwired/stimulus';
 import { useClickOutside } from 'stimulus-use';
 
 export default class extends Controller<HTMLDetailsElement> {
-  static targets = ['button', 'list'];
+  static targets = ['list'];
 
-  declare readonly buttonTarget: HTMLElement;
   declare readonly listTarget: HTMLUListElement;
 
   connect() {
-    useClickOutside(this, { element: this.buttonTarget });
+    useClickOutside(this);
   }
 
   clickOutside(_event) {
