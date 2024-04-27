@@ -394,10 +394,10 @@ module GoodJob::ActiveJobExtensions; end
 module GoodJob::ActiveJobExtensions::Batches
   extend ::ActiveSupport::Concern
 
-  # source://good_job//lib/good_job/active_job_extensions/batches.rb#8
+  # source://good_job//lib/good_job/active_job_extensions/batches.rb#14
   def batch; end
 
-  # source://good_job//lib/good_job/active_job_extensions/batches.rb#8
+  # source://good_job//lib/good_job/active_job_extensions/batches.rb#14
   def batch?; end
 end
 
