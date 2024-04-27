@@ -79,10 +79,9 @@ ja:
       updated: ユーザーを更新しました
     whats_happening: いまなにしてる？
     welcome:
-      alpha_html: |-
-        現在アルファ版です<br>
-        アルファ版の間は開発者 (<a class="link" href="/@shimbaco">@shimbaco</a>) しか使えません<br>
-        開発の進捗はGitHubやBlueskyで公開します
+      beta_html: |-
+        現在ベータ版です<br>
+        本来あるべき機能がなかったりしますが、それでも良ければぜひお試しください
       description_1: Mewst (ミュースト) は、160文字で今の気持ちや状況を記録できるマイクロブログです。
       description_2: 情報を出しすぎないことで、ほっとした気持ちで使えるサービスを目指しています。
       feature_1:
