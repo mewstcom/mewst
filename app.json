@@ -2,7 +2,7 @@
   "cron": [
     {
       "command": "bin/rails suggested_follow:create",
-      "schedule": "0 10 * * *"
+      "schedule": "0 * * * *"
     }
   ],
   "scripts": {
