@@ -7,7 +7,7 @@
       <%= render CardBodyComponent.new do %>
         <div class="flex gap-4 items-center">
           <%= link_to profile_path(@profile.atname) do %>
-            <%= render Images::AvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
+            <%= render Images::ProfileAvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
           <% end %>
 
           <div class="font-bold">

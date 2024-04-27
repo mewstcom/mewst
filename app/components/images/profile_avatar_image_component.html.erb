@@ -1,5 +1,1 @@
-<%= tag.div(class: "avatar") do %>
-  <%= tag.div(class: class_name) do %>
-    <%= image_tag(profile.avatar_url, alt:, loading: "lazy") %>
-  <% end %>
-<% end %>
+<%= render Images::AvatarImageComponent.new(image_url: profile.avatar_url, width:, alt:, class_name:) %>

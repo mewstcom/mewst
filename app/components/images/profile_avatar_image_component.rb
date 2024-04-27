@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Images::AvatarImageComponent < ApplicationComponent
+class Images::ProfileAvatarImageComponent < ApplicationComponent
   sig { params(profile: Profile, width: Integer, alt: String, class_name: String).void }
   def initialize(profile:, width:, alt: "", class_name: "")
     @profile = profile
@@ -14,23 +14,15 @@ class Images::AvatarImageComponent < ApplicationComponent
   attr_reader :profile
   private :profile
 
-  sig { returns(String) }
-  attr_reader :alt
-  private :alt
-
   sig { returns(Integer) }
   attr_reader :width
   private :width
 
   sig { returns(String) }
-  private def class_name
-    class_list = %w[rounded-full]
-    class_list << @class_name if @class_name.present?
-    class_list.join(" ")
-  end
+  attr_reader :alt
+  private :alt
 
   sig { returns(String) }
-  private def size
-    "#{width}x#{width}"
-  end
+  attr_reader :class_name
+  private :class_name
 end

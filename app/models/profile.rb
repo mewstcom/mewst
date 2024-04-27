@@ -51,7 +51,7 @@ class Profile < ApplicationRecord
       ActionController::Base.helpers.asset_url("avatar.png")
     when ProfileAvatarKind::Gravatar
       gravatar_url
-    when ProfileAvatarKind::ImageUrl
+    when ProfileAvatarKind::External
       image_url
     else
       T.absurd(deserialized_avatar_kind)
