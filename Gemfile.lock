@@ -504,7 +504,7 @@ DEPENDENCIES
   standard-rails
   standard-sorbet
   strong_migrations
-  tapioca (< 0.13.4)
+  tapioca
   vcr
   view_component
   web-console
