@@ -12,16 +12,28 @@ class ProfileForm
   def atname=(value); end
 
   sig { returns(T.nilable(::String)) }
-  def avatar_url; end
+  def avatar_kind; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def avatar_url=(value); end
+  def avatar_kind=(value); end
 
   sig { returns(T.nilable(::String)) }
   def description; end
 
   sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
   def description=(value); end
+
+  sig { returns(T.nilable(::String)) }
+  def gravatar_email; end
+
+  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+  def gravatar_email=(value); end
+
+  sig { returns(T.nilable(::String)) }
+  def image_url; end
+
+  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+  def image_url=(value); end
 
   sig { returns(T.nilable(::String)) }
   def name; end

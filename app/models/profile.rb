@@ -41,12 +41,14 @@ class Profile < ApplicationRecord
 
   sig { returns(ProfileAvatarKind) }
   def deserialized_avatar_kind
-    @deserialized_avatar_kind ||= ProfileAvatarKind.deserialize(avatar_kind)
+    ProfileAvatarKind.deserialize(avatar_kind)
   end
 
   sig { returns(String) }
   def avatar_url
-    case deserialized_avatar_kind
+    kind = deserialized_avatar_kind
+
+    case kind
     when ProfileAvatarKind::Default
       ActionController::Base.helpers.asset_url("avatar.png")
     when ProfileAvatarKind::Gravatar
@@ -54,7 +56,7 @@ class Profile < ApplicationRecord
     when ProfileAvatarKind::External
       image_url
     else
-      T.absurd(deserialized_avatar_kind)
+      T.absurd(kind)
     end.not_nil!
   end
 

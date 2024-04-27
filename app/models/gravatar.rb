@@ -19,7 +19,7 @@ class Gravatar
 
   sig { returns(String) }
   private def hash
-    @hash ||= T.let(Digest::SHA256.hexdigest(email), String)
+    Digest::SHA256.hexdigest(email)
   end
 
   sig { returns(String) }
