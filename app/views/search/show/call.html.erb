@@ -32,7 +32,7 @@
                     <div class="flex gap-2 justify-between">
                       <div class="flex-none">
                         <%= link_to profile_path(profile.atname) do %>
-                          <%= render Images::AvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
+                          <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
                         <% end %>
                       </div>
 

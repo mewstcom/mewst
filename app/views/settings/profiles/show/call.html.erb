@@ -56,25 +56,92 @@
               <%= f.text_area :description, class: "textarea textarea-bordered", data: { controller: "autosize" }, rows: 3 %>
             <% end %>
 
-            <%= f.label :avatar_url, class: "form-control" do %>
+            <div>
               <div class="label">
                 <span class="label-text">
-                  <%= t("forms.attributes.profile_form.avatar_url") %>
+                  <%= t("nouns.avatar_image") %>
                 </span>
               </div>
 
-              <%= f.text_field :avatar_url, class: "input input-bordered" %>
-            <% end %>
+              <div class="flex flex-col gap-4">
+                <div>
+                  <label class="cursor-pointer flex gap-2 items-center">
+                    <%= f.radio_button :avatar_kind, ProfileAvatarKind::Default.serialize, class: "radio" %>
 
-            <div class="form-control">
-              <div class="label">
-                <span class="label-text">
-                  <%= t("nouns.current_avatar") %>
-                </span>
-              </div>
+                    <%= render Images::AvatarImageComponent.new(image_url: asset_url("avatar.png"), class_name: "w-[30px]", width: 30) %>
 
-              <div>
-                <%= render Images::AvatarImageComponent.new(profile: current_actor.profile, width: 50, class_name: "w-[50px]") %>
+                    <span class="label-text">
+                      <%= t("activerecord.attributes.profile.avatar_kinds.#{ProfileAvatarKind::Default.serialize}") %>
+                    </span>
+                  </label>
+                </div>
+
+                <div>
+                  <label class="cursor-pointer flex gap-2 items-center">
+                    <%= f.radio_button :avatar_kind, ProfileAvatarKind::Gravatar.serialize, class: "radio" %>
+
+                    <% if current_actor!.gravatar_url.present? %>
+                      <%= render Images::AvatarImageComponent.new(image_url: current_actor!.gravatar_url, class_name: "w-[30px]", width: 30) %>
+                    <% else %>
+                      <i class="bi bi-dash-circle-dotted h-[30px] leading-[30px] text-[30px] text-gray-400"></i>
+                    <% end %>
+
+                    <span class="label-text">
+                      <%= t("activerecord.attributes.profile.avatar_kinds.#{ProfileAvatarKind::Gravatar.serialize}") %>
+                    </span>
+                  </label>
+
+                  <%= f.label :gravatar_email, class: "form-control pl-[28px]" do %>
+                    <div class="label">
+                      <span class="label-text">
+                        <%= t("forms.attributes.profile_form.gravatar_email") %>
+                      </span>
+                    </div>
+
+                    <%= f.text_field :gravatar_email, class: "input input-bordered" %>
+
+                    <div class="label pb-0">
+                      <span class="label-text-alt">
+                        <%= link_to "https://ja.gravatar.com/", rel: "nofollow noopener", target: "_blank" do %>
+                          <%= t("messages.profiles.about_gravatar") %>
+                          <i class="bi bi-box-arrow-up-right"></i>
+                        <% end %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+
+                <div>
+                  <label class="cursor-pointer flex gap-2 items-center">
+                    <%= f.radio_button :avatar_kind, ProfileAvatarKind::External.serialize, class: "radio" %>
+
+                    <% if current_actor!.image_url.present? %>
+                      <%= render Images::AvatarImageComponent.new(image_url: current_actor!.image_url, class_name: "w-[30px]", width: 30) %>
+                    <% else %>
+                      <i class="bi bi-dash-circle-dotted h-[30px] leading-[30px] text-[30px] text-gray-400"></i>
+                    <% end %>
+
+                    <span class="label-text">
+                      <%= t("activerecord.attributes.profile.avatar_kinds.#{ProfileAvatarKind::External.serialize}") %>
+                    </span>
+                  </label>
+
+                  <%= f.label :image_url, class: "form-control pl-[28px]" do %>
+                    <div class="label">
+                      <span class="label-text">
+                        <%= t("forms.attributes.profile_form.image_url") %>
+                      </span>
+                    </div>
+
+                    <%= f.text_field :image_url, class: "input input-bordered" %>
+
+                    <div class="label pb-0">
+                      <span class="label-text-alt">
+                        <%= t("messages.profiles.image_url_hint_html") %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>

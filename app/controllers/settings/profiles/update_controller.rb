@@ -19,9 +19,11 @@ class Settings::Profiles::UpdateController < ApplicationController
     UpdateProfileUseCase.new.call(
       viewer: current_actor!,
       atname: @form.atname.not_nil!,
-      avatar_url: @form.avatar_url.not_nil!,
+      name: @form.name.not_nil!,
       description: @form.description.not_nil!,
-      name: @form.name.not_nil!
+      avatar_kind: @form.avatar_kind.not_nil!,
+      gravatar_email: @form.gravatar_email.not_nil!,
+      image_url: @form.image_url.not_nil!
     )
 
     flash[:notice] = t("messages.profiles.updated")
@@ -30,6 +32,8 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(ActionController::Parameters) }
   private def form_params
-    T.cast(params.require(:profile_form), ActionController::Parameters).permit(:atname, :avatar_url, :description, :name)
+    T.cast(params.require(:profile_form), ActionController::Parameters).permit(
+      :atname, :name, :description, :avatar_kind, :gravatar_email, :image_url
+    )
   end
 end

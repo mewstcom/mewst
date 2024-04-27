@@ -7,6 +7,7 @@
 class Profile
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include EnumMethodsModule
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -14,6 +15,11 @@ class Profile
 
   sig { returns(NilClass) }
   def to_ary; end
+
+  class << self
+    sig { returns(T::Hash[T.any(String, Symbol), String]) }
+    def avatar_kinds; end
+  end
 
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::Profile).returns(T.untyped))).returns(T::Boolean) }
@@ -262,6 +268,26 @@ class Profile
     def third_to_last!; end
   end
 
+  module EnumMethodsModule
+    sig { void }
+    def default_avatar_kind!; end
+
+    sig { returns(T::Boolean) }
+    def default_avatar_kind?; end
+
+    sig { void }
+    def external_avatar_kind!; end
+
+    sig { returns(T::Boolean) }
+    def external_avatar_kind?; end
+
+    sig { void }
+    def gravatar_avatar_kind!; end
+
+    sig { returns(T::Boolean) }
+    def gravatar_avatar_kind?; end
+  end
+
   module GeneratedAssociationMethods
     sig { returns(T::Array[T.untyped]) }
     def actor_ids; end
@@ -468,6 +494,9 @@ class Profile
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def default_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -485,11 +514,17 @@ class Profile
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def extending(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def external_avatar_kind(*args, &blk); end
+
     sig { params(association: Symbol).returns(T::Array[T.untyped]) }
     def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def gravatar_avatar_kind(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationGroupChain) }
     def group(*args, &blk); end
@@ -563,6 +598,15 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def none(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_default_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_external_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_gravatar_avatar_kind(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def null_relation?(*args, &blk); end
@@ -705,49 +749,49 @@ class Profile
     def atname_will_change!; end
 
     sig { returns(::String) }
-    def avatar_url; end
+    def avatar_kind; end
 
-    sig { params(value: ::String).returns(::String) }
-    def avatar_url=(value); end
+    sig { params(value: T.any(::String, ::Symbol)).returns(T.any(::String, ::Symbol)) }
+    def avatar_kind=(value); end
 
     sig { returns(T::Boolean) }
-    def avatar_url?; end
+    def avatar_kind?; end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_url_before_last_save; end
+    def avatar_kind_before_last_save; end
 
     sig { returns(T.untyped) }
-    def avatar_url_before_type_cast; end
+    def avatar_kind_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def avatar_url_came_from_user?; end
+    def avatar_kind_came_from_user?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def avatar_url_change; end
+    def avatar_kind_change; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def avatar_url_change_to_be_saved; end
+    def avatar_kind_change_to_be_saved; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def avatar_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    sig { params(from: T.any(::String, ::Symbol), to: T.any(::String, ::Symbol)).returns(T::Boolean) }
+    def avatar_kind_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_url_in_database; end
+    def avatar_kind_in_database; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def avatar_url_previous_change; end
+    def avatar_kind_previous_change; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
-    def avatar_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def avatar_url_previously_was; end
+    sig { params(from: T.any(::String, ::Symbol), to: T.any(::String, ::Symbol)).returns(T::Boolean) }
+    def avatar_kind_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def avatar_url_was; end
+    def avatar_kind_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def avatar_kind_was; end
 
     sig { void }
-    def avatar_url_will_change!; end
+    def avatar_kind_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at; end
@@ -894,6 +938,96 @@ class Profile
     sig { void }
     def discarded_at_will_change!; end
 
+    sig { returns(::String) }
+    def gravatar_email; end
+
+    sig { params(value: ::String).returns(::String) }
+    def gravatar_email=(value); end
+
+    sig { returns(T::Boolean) }
+    def gravatar_email?; end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_email_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def gravatar_email_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def gravatar_email_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_email_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_email_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def gravatar_email_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_email_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_email_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def gravatar_email_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_email_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_email_was; end
+
+    sig { void }
+    def gravatar_email_will_change!; end
+
+    sig { returns(::String) }
+    def gravatar_url; end
+
+    sig { params(value: ::String).returns(::String) }
+    def gravatar_url=(value); end
+
+    sig { returns(T::Boolean) }
+    def gravatar_url?; end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_url_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def gravatar_url_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def gravatar_url_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_url_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_url_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def gravatar_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_url_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def gravatar_url_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def gravatar_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_url_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def gravatar_url_was; end
+
+    sig { void }
+    def gravatar_url_will_change!; end
+
     sig { returns(T.nilable(::String)) }
     def id; end
 
@@ -983,6 +1117,51 @@ class Profile
 
     sig { void }
     def id_will_change!; end
+
+    sig { returns(::String) }
+    def image_url; end
+
+    sig { params(value: ::String).returns(::String) }
+    def image_url=(value); end
+
+    sig { returns(T::Boolean) }
+    def image_url?; end
+
+    sig { returns(T.nilable(::String)) }
+    def image_url_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def image_url_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def image_url_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def image_url_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def image_url_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def image_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def image_url_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def image_url_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def image_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def image_url_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def image_url_was; end
+
+    sig { void }
+    def image_url_will_change!; end
 
     sig { returns(::ActiveSupport::TimeWithZone) }
     def joined_at; end
@@ -1178,7 +1357,7 @@ class Profile
     def restore_atname!; end
 
     sig { void }
-    def restore_avatar_url!; end
+    def restore_avatar_kind!; end
 
     sig { void }
     def restore_created_at!; end
@@ -1190,10 +1369,19 @@ class Profile
     def restore_discarded_at!; end
 
     sig { void }
+    def restore_gravatar_email!; end
+
+    sig { void }
+    def restore_gravatar_url!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
     def restore_id_value!; end
+
+    sig { void }
+    def restore_image_url!; end
 
     sig { void }
     def restore_joined_at!; end
@@ -1217,10 +1405,10 @@ class Profile
     def saved_change_to_atname?; end
 
     sig { returns(T.nilable([::String, ::String])) }
-    def saved_change_to_avatar_url; end
+    def saved_change_to_avatar_kind; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_avatar_url?; end
+    def saved_change_to_avatar_kind?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_created_at; end
@@ -1240,6 +1428,18 @@ class Profile
     sig { returns(T::Boolean) }
     def saved_change_to_discarded_at?; end
 
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_gravatar_email; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_gravatar_email?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_gravatar_url; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_gravatar_url?; end
+
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_id; end
 
@@ -1251,6 +1451,12 @@ class Profile
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_image_url; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_image_url?; end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_joined_at; end
@@ -1331,7 +1537,7 @@ class Profile
     def will_save_change_to_atname?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_avatar_url?; end
+    def will_save_change_to_avatar_kind?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
@@ -1343,10 +1549,19 @@ class Profile
     def will_save_change_to_discarded_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_gravatar_email?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_gravatar_url?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_image_url?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_joined_at?; end
@@ -1378,6 +1593,9 @@ class Profile
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def default_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1395,11 +1613,17 @@ class Profile
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def extending(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def external_avatar_kind(*args, &blk); end
+
     sig { params(association: Symbol).returns(T::Array[T.untyped]) }
     def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def gravatar_avatar_kind(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationGroupChain) }
     def group(*args, &blk); end
@@ -1439,6 +1663,15 @@ class Profile
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def none(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_default_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_external_avatar_kind(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_gravatar_avatar_kind(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def null_relation?(*args, &blk); end

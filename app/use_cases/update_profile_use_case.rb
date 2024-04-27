@@ -6,10 +6,23 @@ class UpdateProfileUseCase < ApplicationUseCase
     const :profile, Profile
   end
 
-  sig { params(viewer: Actor, atname: String, avatar_url: String, description: String, name: String).returns(Result) }
-  def call(viewer:, atname:, avatar_url:, description:, name:)
-    viewer.profile.not_nil!.update!(atname:, avatar_url:, description:, name:)
+  sig do
+    params(
+      viewer: Actor,
+      atname: String,
+      name: String,
+      description: String,
+      avatar_kind: String,
+      gravatar_email: String,
+      image_url: String
+    ).returns(Result)
+  end
+  def call(viewer:, atname:, name:, description:, avatar_kind:, gravatar_email:, image_url:)
+    profile = viewer.profile.not_nil!
+    gravatar_url = Gravatar.new(email: gravatar_email).url(size: 200)
 
-    Result.new(profile: viewer.profile.not_nil!)
+    profile.update!(atname:, name:, description:, avatar_kind:, gravatar_email:, image_url:, gravatar_url:)
+
+    Result.new(profile:)
   end
 end

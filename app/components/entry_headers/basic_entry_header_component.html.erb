@@ -1,7 +1,7 @@
 <div class="content-start flex gap-2">
   <div class="flex-none">
     <%= link_to profile_path(profile.atname) do %>
-      <%= render Images::AvatarImageComponent.new(profile:, width: 50, class_name: "w-[50px]") %>
+      <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 50, class_name: "w-[50px]") %>
     <% end %>
   </div>
 

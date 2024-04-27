@@ -336,12 +336,15 @@ CREATE TABLE public.profiles (
     atname public.citext NOT NULL,
     name character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
-    avatar_url character varying DEFAULT ''::character varying NOT NULL,
+    image_url character varying DEFAULT ''::character varying NOT NULL,
     joined_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     discarded_at timestamp(6) without time zone,
-    last_post_at timestamp(6) without time zone
+    last_post_at timestamp(6) without time zone,
+    gravatar_email character varying DEFAULT ''::character varying NOT NULL,
+    gravatar_url character varying DEFAULT ''::character varying NOT NULL,
+    avatar_kind character varying DEFAULT 'default'::character varying NOT NULL
 );
 
 
@@ -1210,6 +1213,7 @@ ALTER TABLE ONLY public.home_timeline_posts
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240427202315'),
 ('20240422190022'),
 ('20240414155325'),
 ('20240414155158'),

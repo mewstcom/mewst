@@ -3,7 +3,7 @@
     <div class="flex flex-row gap-2 items-center">
       <div class="flex-none">
         <%= link_to profile_path(post.profile.atname) do %>
-          <%= render Images::AvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
+          <%= render Images::ProfileAvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
         <% end %>
       </div>
 

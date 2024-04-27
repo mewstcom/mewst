@@ -1,8 +1,13 @@
-ja:
+en:
   activerecord:
     attributes:
       profile:
         atname: At name
-        avatar_url: Avatar URL
+        avatar_kinds:
+          default: Default
+          gravatar: Gravatar
+          external: External site image
+        image_url: Image URL
+        gravatar_email: Gravatar email
         description: Description
         name: Name

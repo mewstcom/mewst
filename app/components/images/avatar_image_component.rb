@@ -2,37 +2,29 @@
 # frozen_string_literal: true
 
 class Images::AvatarImageComponent < ApplicationComponent
-  sig { params(profile: Profile, width: Integer, alt: String, class_name: String).void }
-  def initialize(profile:, width:, alt: "", class_name: "")
-    @profile = profile
+  sig { params(image_url: String, width: Integer, alt: String, class_name: String).void }
+  def initialize(image_url:, width:, alt: "", class_name: "")
+    @image_url = image_url
     @width = width
-    @alt = T.let(alt.presence || "@#{@profile.atname}", String)
+    @alt = alt
     @class_name = class_name
   end
 
-  sig { returns(Profile) }
-  attr_reader :profile
-  private :profile
-
   sig { returns(String) }
-  attr_reader :alt
-  private :alt
+  attr_reader :image_url
+  private :image_url
 
   sig { returns(Integer) }
   attr_reader :width
   private :width
 
   sig { returns(String) }
-  private def avatar_url
-    profile.avatar_url.presence || asset_url("avatar.png")
-  end
+  attr_reader :alt
+  private :alt
 
   sig { returns(String) }
-  private def class_name
-    class_list = %w[rounded-full]
-    class_list << @class_name if @class_name.present?
-    class_list.join(" ")
-  end
+  attr_reader :class_name
+  private :class_name
 
   sig { returns(String) }
   private def size

@@ -58,6 +58,10 @@ ja:
       created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
+      about_gravatar: Gravatarについて
+      image_url_hint_html: |-
+        例: https://example.com/image.jpg<br>
+        ご自身で保管している画像のURLを入力してください
       updated: プロフィールを更新しました
     search:
       suggested_profiles:

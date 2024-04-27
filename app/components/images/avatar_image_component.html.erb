@@ -1,5 +1,5 @@
 <%= tag.div(class: "avatar") do %>
-  <%= tag.div(class: class_name) do %>
-    <%= image_tag(avatar_url, alt:, loading: "lazy") %>
+  <%= tag.div(class: class_names("rounded-full", class_name)) do %>
+    <%= image_tag(image_url, alt:, loading: "lazy", size:) %>
   <% end %>
 <% end %>
