@@ -1,4 +1,7 @@
 <div class="flex justify-between items-center">
   <%= render Buttons::StampButtonComponent.new(post:, stamp_checker:) %>
-  <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+
+  <% if current_actor!.atname == post.profile.atname %>
+    <%= render Dropdowns::PostOptionsDropdownComponent.new(post:) %>
+  <% end %>
 </div>
