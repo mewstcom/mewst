@@ -37,8 +37,9 @@ class GoodJob::Execution
     sig { params(operation: Symbol, column_name: T.any(String, Symbol)).returns(Numeric) }
     def calculate(operation, column_name); end
 
-    sig { params(column_name: T.untyped).returns(Integer) }
-    def count(column_name = nil); end
+    sig { params(column_name: T.nilable(T.any(String, Symbol))).returns(Integer) }
+    sig { params(column_name: NilClass, block: T.proc.params(object: ::GoodJob::Execution).void).returns(Integer) }
+    def count(column_name = nil, &block); end
 
     sig do
       params(
@@ -94,7 +95,13 @@ class GoodJob::Execution
         args: T::Array[T.any(String, Symbol, ::ActiveSupport::Multibyte::Chars, T::Boolean, BigDecimal, Numeric, ::ActiveRecord::Type::Binary::Data, ::ActiveRecord::Type::Time::Value, Date, Time, ::ActiveSupport::Duration, T::Class[T.anything])]
       ).returns(T::Enumerable[::GoodJob::Execution])
     end
-    def find(args); end
+    sig do
+      params(
+        args: NilClass,
+        block: T.proc.params(object: ::GoodJob::Execution).void
+      ).returns(T.nilable(::GoodJob::Execution))
+    end
+    def find(args = nil, &block); end
 
     sig { params(args: T.untyped).returns(T.nilable(::GoodJob::Execution)) }
     def find_by(*args); end
