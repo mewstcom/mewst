@@ -23,8 +23,9 @@ en:
         content: Content
       profile_form:
         atname: Atname
-        avatar_url: Avatar URL
         description: Description
+        gravatar_email: Gravatar email
+        image_url: Image URL
         name: Name
       session_form:
         email: Email

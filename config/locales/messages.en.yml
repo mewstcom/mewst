@@ -55,6 +55,10 @@ en:
       created: Post created.
       deleted: Post deleted.
     profiles:
+      about_gravatar: About Gravatar
+      image_url_hint_html: |-
+        e.g. https://example.com/image.jpg<br>
+        Please enter the URL of the image you are storing.
       updated: Profile updated.
     search:
       blank: No suggested profiles.

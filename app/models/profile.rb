@@ -12,6 +12,7 @@ class Profile < ApplicationRecord
   MAX_SUGGESTED_FOLLOWS_COUNT = 30 # Note: この数値に深い意味はない
 
   enumerize :owner_type, in: ProfileOwnerType.values.map(&:serialize)
+  enum :avatar_kind, ProfileAvatarKind.values.map { [_1.serialize, _1.serialize] }.to_h, suffix: true
 
   has_many :actors, dependent: :restrict_with_exception
   has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
@@ -37,6 +38,25 @@ class Profile < ApplicationRecord
     unreserved_atname: true
 
   delegate :delete_post, to: :postability
+
+  sig { returns(ProfileAvatarKind) }
+  def deserialized_avatar_kind
+    @deserialized_avatar_kind ||= ProfileAvatarKind.deserialize(avatar_kind)
+  end
+
+  sig { returns(String) }
+  def avatar_url
+    case deserialized_avatar_kind
+    when ProfileAvatarKind::Default
+      ActionController::Base.helpers.asset_url("avatar.png")
+    when ProfileAvatarKind::Gravatar
+      gravatar_url
+    when ProfileAvatarKind::ImageUrl
+      image_url
+    else
+      T.absurd(deserialized_avatar_kind)
+    end.not_nil!
+  end
 
   sig { returns(User) }
   def owner

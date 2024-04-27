@@ -13,9 +13,11 @@ class Settings::Profiles::ShowController < ApplicationController
     @form = ProfileForm.new(
       viewer: current_actor,
       atname: current_actor!.atname,
-      avatar_url: current_actor!.avatar_url,
+      name: current_actor!.name,
       description: current_actor!.description,
-      name: current_actor!.name
+      avatar_kind: current_actor!.avatar_kind,
+      gravatar_email: current_actor!.gravatar_email,
+      image_url: current_actor!.image_url
     )
   end
 end

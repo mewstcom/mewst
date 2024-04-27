@@ -23,8 +23,9 @@ ja:
         content: 本文
       profile_form:
         atname: アットネーム
-        avatar_url: アバター画像のURL
         description: 自己紹介
+        gravatar_email: Gravatarのメールアドレス
+        image_url: 画像URL
         name: 名前
       session_form:
         email: メールアドレス

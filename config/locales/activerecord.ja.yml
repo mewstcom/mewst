@@ -3,6 +3,11 @@ ja:
     attributes:
       profile:
         atname: アット名
-        avatar_url: アバターURL
+        avatar_kinds:
+          default: デフォルト
+          gravatar: Gravatar
+          external: 外部サイトの画像
+        image_url: 画像URL
+        gravatar_email: Gravatarのメールアドレス
         description: 自己紹介
         name: 名前
