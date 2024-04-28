@@ -29,14 +29,14 @@
               <div id="suggested-profiles-<%= profile.atname %>">
                 <%= render CardComponent.new do %>
                   <%= render CardBodyComponent.new do %>
-                    <div class="flex gap-2 justify-between">
-                      <div class="flex-none">
+                    <div class="flex flex-wrap gap-2 justify-between lg:flex-nowrap">
+                      <div class="basis-1/12 lg:basis-1/12">
                         <%= link_to profile_path(profile.atname) do %>
                           <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
                         <% end %>
                       </div>
 
-                      <%= link_to profile_path(profile.atname), class: "basis-9/12 text-body text-decoration-none" do %>
+                      <%= link_to profile_path(profile.atname), class: "basis-10/12 lg:basis-8/12 text-body text-decoration-none" do %>
                         <div class="font-bold">
                           <%= name_with_atname(profile:) %>
                         </div>
@@ -48,7 +48,7 @@
                         <% end %>
                       <% end %>
 
-                      <div class="basis-3/12 flex flex-col gap-2 text-center">
+                      <div class="basis-full flex flex-col gap-2 lg:basis-3/12 lg:mt-0 mt-2 text-center">
                         <%= render Buttons::FollowButtonComponent.new(target_profile: profile, follow_checker: @follow_checker, class_name: "w-full") %>
                         <%= render Buttons::CheckSuggestedProfileButtonComponent.new(target_profile: profile) %>
                       </div>
