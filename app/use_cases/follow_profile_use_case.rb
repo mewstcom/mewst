@@ -19,6 +19,10 @@ class FollowProfileUseCase < ApplicationUseCase
     ApplicationRecord.transaction do
       follow.save!
       follow.check_suggested!
+      AddFollowedProfilePostsToTimelineJob.perform_later(
+        source_profile_id: profile.id.not_nil!,
+        target_profile_id: target_profile.id.not_nil!
+      )
     end
 
     Result.new(target_profile: follow.target_profile.not_nil!)
