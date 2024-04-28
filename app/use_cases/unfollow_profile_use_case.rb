@@ -12,6 +12,10 @@ class UnfollowProfileUseCase < ApplicationUseCase
 
     ApplicationRecord.transaction do
       follow&.destroy!
+      RemoveFollowedProfilePostsFromTimelineJob.perform_later(
+        source_profile_id: profile.id.not_nil!,
+        target_profile_id: target_profile.id.not_nil!
+      )
     end
 
     Result.new(target_profile: target_profile.reload)
