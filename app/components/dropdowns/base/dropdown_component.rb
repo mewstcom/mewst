@@ -8,9 +8,6 @@ class Dropdowns::Base::DropdownComponent < ApplicationComponent
   end
 
   sig { returns(String) }
-  private def class_name
-    class_list = %w[dropdown]
-    class_list << @class_name if @class_name.present?
-    class_list.join(" ")
-  end
+  attr_reader :class_name
+  private :class_name
 end
