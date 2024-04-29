@@ -16,7 +16,7 @@ class Follows::CreateController < ApplicationController
       return render(content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity, layout: false)
     end
 
-    result = FollowProfileUseCase.new.call(profile: @form.profile.not_nil!, target_profile: @form.target_profile.not_nil!)
+    result = FollowProfileUseCase.new.call(source_profile: @form.profile.not_nil!, target_profile: @form.target_profile.not_nil!)
 
     @profile = result.target_profile
     @follow_checker = FollowChecker.new(profile: viewer!.profile.not_nil!, target_profiles: [@profile])
