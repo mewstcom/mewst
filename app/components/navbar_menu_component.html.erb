@@ -16,7 +16,7 @@
       <%= tag.i(class: icon_class_name("bell")) %>
     <% end %>
 
-    <%= link_to profile_path(current_actor!.atname), class: link_class_name do %>
+    <%= link_to profile_path(viewer!.atname), class: link_class_name do %>
       <%= tag.i(class: icon_class_name("person-circle")) %>
     <% end %>
   <% else %>

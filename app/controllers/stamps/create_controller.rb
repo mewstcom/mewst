@@ -16,9 +16,9 @@ class Stamps::CreateController < ApplicationController
       return render(content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity, layout: false)
     end
 
-    result = CreateStampUseCase.new.call(current_actor: current_actor, target_post: @form.target_post.not_nil!)
+    result = CreateStampUseCase.new.call(viewer: viewer!, target_post: @form.target_post.not_nil!)
     @post = result.post
-    @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: [@post])
+    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: [@post])
 
     render(content_type: "text/vnd.turbo-stream.html", layout: false)
   end

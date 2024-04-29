@@ -18,7 +18,7 @@ class EmailConfirmations::CreateController < ApplicationController
     end
 
     result = ConfirmEmailUseCase.new.call(
-      current_actor:,
+      viewer:,
       email_confirmation: @form.email_confirmation!
     )
 

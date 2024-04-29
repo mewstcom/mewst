@@ -10,7 +10,7 @@ class Notifications::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    page = current_actor!
+    page = viewer!
       .notifications
       .preload(:source_profile, notifiable: {post: :profile})
       .cursor_paginate(

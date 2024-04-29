@@ -35,10 +35,10 @@ class EmailConfirmation < ApplicationRecord
     true
   end
 
-  sig { params(current_actor: T.nilable(Actor)).returns(T::Boolean) }
-  def process_after_success!(current_actor:)
-    if current_actor && deserialized_event == EmailConfirmationEvent::EmailUpdate
-      current_actor.update_email!(email:)
+  sig { params(viewer: T.nilable(Actor)).returns(T::Boolean) }
+  def process_after_success!(viewer:)
+    if viewer && deserialized_event == EmailConfirmationEvent::EmailUpdate
+      viewer.update_email!(email:)
     end
 
     true

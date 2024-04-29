@@ -10,7 +10,7 @@ class Search::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profiles = current_actor!.checkable_suggested_followees.order(created_at: :desc).limit(30)
-    @follow_checker = FollowChecker.new(profile: current_actor.profile.not_nil!, target_profiles: @profiles)
+    @profiles = viewer!.checkable_suggested_followees.order(created_at: :desc).limit(30)
+    @follow_checker = FollowChecker.new(profile: viewer!.profile.not_nil!, target_profiles: @profiles)
   end
 end

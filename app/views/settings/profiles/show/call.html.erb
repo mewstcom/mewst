@@ -80,8 +80,8 @@
                   <label class="cursor-pointer flex gap-2 items-center">
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::Gravatar.serialize, class: "radio" %>
 
-                    <% if current_actor!.gravatar_url.present? %>
-                      <%= render Images::AvatarImageComponent.new(image_url: current_actor!.gravatar_url, class_name: "w-[30px]", width: 30) %>
+                    <% if viewer!.gravatar_url.present? %>
+                      <%= render Images::AvatarImageComponent.new(image_url: viewer!.gravatar_url, class_name: "w-[30px]", width: 30) %>
                     <% else %>
                       <i class="bi bi-dash-circle-dotted h-[30px] leading-[30px] text-[30px] text-gray-400"></i>
                     <% end %>

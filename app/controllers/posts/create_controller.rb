@@ -17,7 +17,7 @@ class Posts::CreateController < ApplicationController
     end
 
     result = CreatePostUseCase.new.call(
-      viewer: current_actor!,
+      viewer: viewer!,
       content: @form.content.not_nil!,
       canonical_url: @form.canonical_url.not_nil!
     )
@@ -28,7 +28,7 @@ class Posts::CreateController < ApplicationController
     end
 
     @post = result.post
-    @stamp_checker = StampChecker.new(profile: current_actor!.profile, posts: [@post])
+    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: [@post])
     @form = PostForm.new(with_frame: true)
 
     render(content_type: "text/vnd.turbo-stream.html", layout: false)

@@ -10,7 +10,7 @@ class Profiles::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @profile = Profile.kept.find_by!(atname: params[:atname])
-    @follow_checker = FollowChecker.new(profile: current_actor&.profile, target_profiles: [@profile])
+    @follow_checker = FollowChecker.new(profile: viewer&.profile, target_profiles: [@profile])
 
     page = @profile.posts.kept.preload(:link).cursor_paginate(
       after: params[:after].presence,
@@ -21,6 +21,6 @@ class Profiles::ShowController < ApplicationController
 
     @posts = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
-    @stamp_checker = StampChecker.new(profile: current_actor&.profile, posts: @posts)
+    @stamp_checker = StampChecker.new(profile: viewer&.profile, posts: @posts)
   end
 end

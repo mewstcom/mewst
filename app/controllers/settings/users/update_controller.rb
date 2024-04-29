@@ -17,7 +17,7 @@ class Settings::Users::UpdateController < ApplicationController
     end
 
     UpdateUserUseCase.new.call(
-      viewer: current_actor!,
+      viewer: viewer!,
       locale: @form.locale.not_nil!,
       time_zone: @form.time_zone.not_nil!
     )

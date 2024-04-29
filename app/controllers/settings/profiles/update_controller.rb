@@ -10,14 +10,14 @@ class Settings::Profiles::UpdateController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = ProfileForm.new(form_params.merge(viewer: current_actor))
+    @form = ProfileForm.new(form_params.merge(viewer: viewer))
 
     if @form.invalid?
       return render("settings/profiles/show/call", status: :unprocessable_entity)
     end
 
     UpdateProfileUseCase.new.call(
-      viewer: current_actor!,
+      viewer: viewer!,
       atname: @form.atname.not_nil!,
       name: @form.name.not_nil!,
       description: @form.description.not_nil!,

@@ -6,7 +6,7 @@ module ControllerConcerns::Authenticatable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :current_actor, :current_actor!, :signed_in?
+    helper_method :signed_in?, :viewer, :viewer!
   end
 
   sig(:final) { params(session: Session).returns(T::Boolean) }
@@ -26,21 +26,21 @@ module ControllerConcerns::Authenticatable
   end
 
   sig(:final) { returns(T.nilable(Actor)) }
-  def current_actor
-    @current_actor ||= T.let(begin
+  def viewer
+    @viewer ||= T.let(begin
       return unless cookies.signed[Session::COOKIE_KEY]
       Session.find_by(token: cookies.signed[Session::COOKIE_KEY])&.actor
     end, T.nilable(Actor))
   end
 
   sig(:final) { returns(Actor) }
-  def current_actor!
-    current_actor.not_nil!
+  def viewer!
+    viewer.not_nil!
   end
 
   sig(:final) { returns(T::Boolean) }
   def signed_in?
-    !current_actor.nil?
+    !viewer.nil?
   end
 
   sig(:final) { returns(T.untyped) }

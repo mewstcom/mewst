@@ -11,7 +11,6 @@ class Settings::Profiles::UpdateController
   module HelperMethods
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
-    include ::ComponentDataFetcherHelper
     include ::FlashToastHelper
     include ::LanguageHelper
     include ::ProfilesHelper
@@ -21,14 +20,14 @@ class Settings::Profiles::UpdateController
     include ::Doorkeeper::DashboardHelper
     include ::ApplicationController::HelperMethods
 
-    sig { returns(T.nilable(::Actor)) }
-    def current_actor; end
-
-    sig { returns(::Actor) }
-    def current_actor!; end
-
     sig { returns(T::Boolean) }
     def signed_in?; end
+
+    sig { returns(T.nilable(::Actor)) }
+    def viewer; end
+
+    sig { returns(::Actor) }
+    def viewer!; end
   end
 
   class HelperProxy < ::ActionView::Base
