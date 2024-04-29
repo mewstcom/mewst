@@ -6,21 +6,21 @@ class FollowProfileUseCase < ApplicationUseCase
     const :target_profile, Profile
   end
 
-  sig { params(profile: Profile, target_profile: Profile).returns(Result) }
-  def call(profile:, target_profile:)
-    followee = profile.followees.find_by(atname: target_profile.atname)
+  sig { params(source_profile: Profile, target_profile: Profile).returns(Result) }
+  def call(source_profile:, target_profile:)
+    followee = source_profile.followees.find_by(atname: target_profile.atname)
 
     if followee
       return Result.new(target_profile: followee)
     end
 
-    follow = profile.follows.new(target_profile: target_profile, followed_at: Time.current)
+    follow = source_profile.follows.new(target_profile: target_profile, followed_at: Time.current)
 
     ApplicationRecord.transaction do
       follow.save!
       follow.check_suggested!
       AddFollowedProfilePostsToTimelineJob.perform_later(
-        source_profile_id: profile.id.not_nil!,
+        source_profile_id: source_profile.id.not_nil!,
         target_profile_id: target_profile.id.not_nil!
       )
     end

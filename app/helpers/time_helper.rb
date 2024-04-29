@@ -6,7 +6,7 @@ module TimeHelper
 
   sig { params(time: ActiveSupport::TimeWithZone).returns(String) }
   def mst_absolute_time(time)
-    time.in_time_zone(current_actor&.time_zone).to_fs(:ymdhm)
+    time.in_time_zone(viewer&.time_zone).to_fs(:ymdhm)
   end
 
   sig { params(from_time: ActiveSupport::TimeWithZone).returns(String) }

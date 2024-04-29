@@ -11,7 +11,7 @@ class Posts::DestroyController < ApplicationController
   sig { returns(T.untyped) }
   def call
     form = DiscardPostForm.new(target_post_id: params[:post_id])
-    form.profile = current_actor!.profile.not_nil!
+    form.profile = viewer!.profile.not_nil!
     form.validate!
 
     DiscardPostUseCase.new.call(target_post: form.target_post.not_nil!)

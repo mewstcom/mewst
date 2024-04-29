@@ -33,7 +33,7 @@
           <div><%# レイアウト調整のために必要なdiv %></div>
           <div class="flex gap-2">
             <% if signed_in? %>
-              <% if current_actor.atname == @profile.atname %>
+              <% if viewer.atname == @profile.atname %>
                 <%= link_to(
                       t("nouns.edit_profile"),
                       settings_profile_path,

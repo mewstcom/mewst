@@ -6,9 +6,8 @@ class FanoutPostUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(post_id: T::Mewst::DatabaseId).returns(Result) }
-  def call(post_id:)
-    post = Post.find(post_id)
+  sig { params(post: Post).returns(Result) }
+  def call(post:)
     followers = post.profile.not_nil!.followers
 
     batch = GoodJob::Batch.new

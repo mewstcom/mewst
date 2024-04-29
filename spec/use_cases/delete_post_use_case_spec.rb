@@ -9,8 +9,8 @@ RSpec.describe DeletePostUseCase do
       post_author = FactoryBot.create(:actor)
       result = CreatePostUseCase.new.call(viewer: post_author, content: "hello", canonical_url: link.canonical_url)
       target_post = result.post
-      current_actor = FactoryBot.create(:actor)
-      CreateStampUseCase.new.call(current_actor:, target_post:)
+      viewer = FactoryBot.create(:actor)
+      CreateStampUseCase.new.call(viewer:, target_post:)
 
       {target_post:}
     end

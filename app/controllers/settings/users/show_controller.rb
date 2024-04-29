@@ -11,8 +11,8 @@ class Settings::Users::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = UserForm.new(
-      locale: current_actor!.locale.serialize,
-      time_zone: current_actor!.time_zone
+      locale: viewer!.locale.serialize,
+      time_zone: viewer!.time_zone
     )
   end
 end

@@ -9,9 +9,9 @@ RSpec.describe CreateSuggestedFollowsUseCase do
       profile_2 = FactoryBot.create(:profile)
       profile_3 = FactoryBot.create(:profile)
 
-      FollowProfileUseCase.new.call(profile: source_profile, target_profile: profile_1)
-      FollowProfileUseCase.new.call(profile: profile_1, target_profile: profile_2)
-      FollowProfileUseCase.new.call(profile: profile_2, target_profile: profile_3)
+      FollowProfileUseCase.new.call(source_profile: source_profile, target_profile: profile_1)
+      FollowProfileUseCase.new.call(source_profile: profile_1, target_profile: profile_2)
+      FollowProfileUseCase.new.call(source_profile: profile_2, target_profile: profile_3)
 
       {source_profile:, profile_1:, profile_2:, profile_3:}
     end

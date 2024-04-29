@@ -11,7 +11,7 @@ class Checks::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = SuggestedFollowForm.new(
-      source_profile: current_actor!.profile.not_nil!,
+      source_profile: viewer!.profile.not_nil!,
       target_atname: params[:atname]
     )
 
@@ -24,7 +24,7 @@ class Checks::CreateController < ApplicationController
       target_profile: @form.target_profile.not_nil!
     )
 
-    if current_actor!.checkable_suggested_followees.exists?
+    if viewer!.checkable_suggested_followees.exists?
       @atname = params[:atname]
       render(content_type: "text/vnd.turbo-stream.html", layout: false)
     else

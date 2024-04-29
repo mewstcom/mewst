@@ -11,13 +11,13 @@ class Settings::Profiles::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = ProfileForm.new(
-      viewer: current_actor,
-      atname: current_actor!.atname,
-      name: current_actor!.name,
-      description: current_actor!.description,
-      avatar_kind: current_actor!.avatar_kind,
-      gravatar_email: current_actor!.gravatar_email,
-      image_url: current_actor!.image_url
+      viewer: viewer,
+      atname: viewer!.atname,
+      name: viewer!.name,
+      description: viewer!.description,
+      avatar_kind: viewer!.avatar_kind,
+      gravatar_email: viewer!.gravatar_email,
+      image_url: viewer!.image_url
     )
   end
 end

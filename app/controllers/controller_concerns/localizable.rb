@@ -29,6 +29,6 @@ module ControllerConcerns::Localizable
 
   sig(:final) { returns(Locale) }
   private def current_locale
-    instant_locale.presence || current_actor&.locale.presence || preferred_locale
+    instant_locale.presence || viewer&.locale.presence || preferred_locale
   end
 end

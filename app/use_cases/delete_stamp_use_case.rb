@@ -6,9 +6,9 @@ class DeleteStampUseCase < ApplicationUseCase
     const :post, Post
   end
 
-  sig { params(current_actor: Actor, target_post: Post).returns(Result) }
-  def call(current_actor:, target_post:)
-    stamp = current_actor.stamps.find_by(post: target_post)
+  sig { params(viewer: Actor, target_post: Post).returns(Result) }
+  def call(viewer:, target_post:)
+    stamp = viewer.stamps.find_by(post: target_post)
 
     ApplicationRecord.transaction do
       stamp&.unnotify!
