@@ -43,8 +43,9 @@ ja:
       email_updated: メールアドレスを更新しました
       enter_code: メールに記載されている確認用コードを入力してください
     home:
-      lets_make_the_first_post_mobile: ↓の「投稿する」から最初のポストをしましょう
-      lets_make_the_first_post_pc: ↑の投稿欄から最初のポストをしましょう
+      lets_make_the_first_post_mobile: ↓の投稿ボタンからポストしましょう
+      lets_make_the_first_post_pc: ↑の投稿欄からポストしましょう
+      no_posts: 過去1ヶ月以内のポストはありません
     notifications:
       description: スタンプされたときに通知が届きます
     pagination:
