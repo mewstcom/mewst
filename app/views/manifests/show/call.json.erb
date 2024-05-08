@@ -1,17 +1,42 @@
+<%# https://developer.mozilla.org/ja/docs/Web/Manifest %>
 {
-  <%# https://developer.mozilla.org/ja/docs/Web/Manifest/background_color %>
   "background_color": "#f6f2eb",
   "description": "<%= t("meta.description.default") %>",
-  <%# https://developer.mozilla.org/ja/docs/Web/Manifest/display %>
   "display": "standalone",
   "icons": [
-    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
-    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+    {
+      "purpose": "any maskable",
+      "sizes": "192x192",
+      "src": "/icon-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any maskable",
+      "sizes": "512x512",
+      "src": "/icon-512.png",
+      "type": "image/png"
+    }
   ],
   "name": "Mewst",
-  <%# https://developer.mozilla.org/ja/docs/Web/Manifest/scope %>
   "scope": "/",
+  "share_target": {
+    "action": "/new",
+    "method": "GET",
+    "params": {
+      "url": "content"
+    }
+  },
+  "short_name": "Mewst",
+  "shortcuts": [
+    {
+      "name": "<%= t("meta.title.posts.new") %>",
+      "url": "/new"
+    },
+    {
+      "name": "<%= t("meta.title.notifications.index") %>",
+      "url": "/notifications"
+    }
+  ],
   "start_url": "/home",
-  <%# https://developer.mozilla.org/ja/docs/Web/Manifest/theme_color %>
   "theme_color": "#f6f2eb"
 }
