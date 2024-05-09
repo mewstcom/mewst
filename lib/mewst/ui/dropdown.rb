@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Dropdowns::Base::DropdownButtonComponent < ApplicationComponent
+class Mewst::UI::Dropdown < Mewst::UI::Base
   sig { params(class_name: String).void }
   def initialize(class_name: "")
     @class_name = class_name

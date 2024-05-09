@@ -1,11 +1,11 @@
 <% if signed_in? %>
-  <%= render Dropdowns::Base::DropdownComponent.new(class_name: "dropdown-bottom dropdown-end") do %>
-    <%= render Dropdowns::Base::DropdownButtonComponent.new(class_name: "btn btn-circle btn-ghost btn-sm hover:bg-gray-100") do %>
-      <i class="bi bi-three-dots"></i>
+  <%= render Mewst::UI::Dropdown.new(class_name: "dropdown-bottom dropdown-end") do %>
+    <%= render Mewst::UI::Dropdown::Button.new(class_name: "btn btn-circle btn-ghost btn-sm hover:bg-gray-100") do %>
+      <%= render Mewst::UI::Icon.new(name: "three-dots") %>
     <% end %>
 
-    <%= render Dropdowns::Base::DropdownListComponent.new(class_name: "bg-neutral-100 p-1 rounded-box shadow w-52 z-[1]") do %>
-      <%= render Dropdowns::Base::DropdownItemComponent.new do %>
+    <%= render Mewst::UI::Dropdown::List.new(class_name: "bg-neutral-100 p-1 rounded-box shadow w-52 z-[1]") do %>
+      <%= render Mewst::UI::Dropdown::Item.new do %>
         <%= link_to t("verbs.delete"), post_path(post.id),
           data: {
             turbo_confirm: t("messages.posts.are_you_sure_to_delete_post"),
