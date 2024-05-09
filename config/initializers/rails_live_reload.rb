@@ -10,6 +10,7 @@ if defined?(RailsLiveReload)
     config.watch %r{app/views/.+\.erb$}, reload: :on_change
     config.watch %r{(app|vendor)/(assets|javascript)/\w+/(.+\.(css|js|html|png|jpg|ts)).*}, reload: :always
     config.watch %r{app/helpers/.+\.rb}, reload: :always
+    config.watch %r{lib/mewst/.+\.(erb|rb)$}, reload: :always
     config.watch %r{config/locales/.+\.yml}, reload: :always
 
     config.enabled = Rails.env.development?
