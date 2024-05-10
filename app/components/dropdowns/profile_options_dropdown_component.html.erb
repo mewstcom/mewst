@@ -4,6 +4,19 @@
   <% end %>
   <%= render Mewst::UI::Dropdown::List.new(class_name: "bg-base-300 border border-gray-300 p-1 rounded-box w-64 z-[1]") do %>
     <%= render Mewst::UI::Dropdown::Item.new do %>
+      <%= render Mewst::UI::Button.new(
+        data: {
+          controller: "clipboard",
+          action: "clipboard#copy dropdown#close",
+          clipboard_text_value: profile_url(profile.atname),
+          clipboard_success_message_value: t("messages.profiles.copied_to_clipboard")
+        }
+      ) do %>
+        <%= t("verbs.copy_link_to_profile") %>
+      <% end %>
+    <% end %>
+
+    <%= render Mewst::UI::Dropdown::Item.new do %>
       <%= link_to t("nouns.rss_feed"), profile_atom_path(atname: profile.atname), target: "_blank" %>
     <% end %>
   <% end %>
