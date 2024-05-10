@@ -1,5 +1,5 @@
-<li
-  class="<%= class_names(class_name) %>"
->
+<%= tag.li(
+  class: class_names(class_name).presence
+) do %>
   <%= content %>
-</li>
+<% end %>
