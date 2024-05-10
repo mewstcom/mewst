@@ -6,7 +6,7 @@ if defined?(RailsLiveReload)
     config.url = "/rails/live/reload"
 
     # Default watched folders & files
-    config.watch %r{app/components/.+\.(erb|rb)$}, reload: :on_change
+    config.watch %r{app/components/.+\.(erb|rb)$}, reload: :always
     config.watch %r{app/views/.+\.erb$}, reload: :on_change
     config.watch %r{(app|vendor)/(assets|javascript)/\w+/(.+\.(css|js|html|png|jpg|ts)).*}, reload: :always
     config.watch %r{app/helpers/.+\.rb}, reload: :always
