@@ -1,10 +1,25 @@
-<% if signed_in? %>
-  <%= render Mewst::UI::Dropdown.new(class_name: "dropdown-bottom dropdown-end") do %>
-    <%= render Mewst::UI::Dropdown::Button.new(class_name: "btn btn-circle btn-ghost btn-sm hover:bg-gray-100") do %>
-      <%= render Mewst::UI::Icon.new(name: "three-dots") %>
+<%= render Mewst::UI::Dropdown.new(class_name: "dropdown-bottom dropdown-end") do %>
+  <%= render Mewst::UI::Dropdown::Button.new(class_name: "btn btn-circle btn-ghost btn-sm hover:bg-gray-100") do %>
+    <%= render Mewst::UI::Icon.new(name: "three-dots") %>
+  <% end %>
+
+  <%= render Mewst::UI::Dropdown::List.new(class_name: "bg-base-300 border border-gray-300 p-1 rounded-box w-60 z-[1]") do %>
+    <%= render Mewst::UI::Dropdown::Item.new do %>
+      <%= render Mewst::UI::Button.new(
+        data: {
+          controller: "clipboard",
+          action: "clipboard#copy dropdown#close",
+          clipboard_text_value: profile_post_url(post.profile.atname, post.id),
+          clipboard_success_message_value: t("messages.posts.copied_to_clipboard")
+        }
+      ) do %>
+        <%= t("verbs.copy_link_to_post") %>
+      <% end %>
     <% end %>
 
-    <%= render Mewst::UI::Dropdown::List.new(class_name: "bg-neutral-100 p-1 rounded-box shadow w-52 z-[1]") do %>
+    <% if signed_in? && viewer!.atname == post.profile.atname %>
+      <hr class="my-1">
+
       <%= render Mewst::UI::Dropdown::Item.new do %>
         <%= link_to t("verbs.delete"), post_path(post.id),
           data: {

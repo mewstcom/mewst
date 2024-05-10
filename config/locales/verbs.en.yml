@@ -4,6 +4,7 @@ en:
     add_link_card: "Add link card: %{host_and_path}"
     close: Close
     connect: Connect
+    copy_link_to_post: Copy link to post
     delete: Delete
     disconnect: Disconnect
     follow: Follow

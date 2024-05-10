@@ -53,6 +53,7 @@ en:
       reset_successfully_html: Password reset successfully. Please sign in with your new password.
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
+      copied_to_clipboard: Copied to clipboard.
       created: Post created.
       deleted: Post deleted.
     profiles:

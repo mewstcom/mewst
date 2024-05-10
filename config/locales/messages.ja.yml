@@ -56,6 +56,7 @@ ja:
       reset_successfully_html: パスワードをリセットしました<br>新しいパスワードでログインしてください
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
+      copied_to_clipboard: リンクをコピーしました
       created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
