@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Mewst::UI::Button < Mewst::UI::Base
-  sig { params(as: Symbol, class_name: String, options: T::Hash[Symbol, String]	).void }
+  sig { params(as: Symbol, class_name: String, options: T::Hash[Symbol, String]).void }
   def initialize(as: :button, class_name: "", **options)
     @as = as
     @class_name = class_name
