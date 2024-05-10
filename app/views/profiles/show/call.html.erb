@@ -29,19 +29,15 @@
           </div>
         <% end %>
 
-        <div class="flex items-center justify-between mt-4">
-          <div><%# レイアウト調整のために必要なdiv %></div>
+        <div class="flex items-center justify-center mt-4 relative">
           <div class="flex gap-2">
             <% if signed_in? %>
               <% if viewer.atname == @profile.atname %>
-                <%= link_to(
-                      t("nouns.edit_profile"),
-                      settings_profile_path,
-                      class: "bg-base-300 border-gray-400 btn hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation rounded-full text-gray-700"
+                <%= link_to(t("nouns.edit_profile"), settings_profile_path,
+                  class: "bg-base-300 border-gray-400 btn hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation rounded-full text-gray-700"
                 ) %>
-                <%= link_to(
-                      settings_path,
-                      class: "bg-base-300 border-gray-400 btn btn-circle hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation text-gray-700 text-lg"
+                <%= link_to(settings_path,
+                  class: "bg-base-300 border-gray-400 btn btn-circle hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation text-gray-700 text-lg"
                 ) do %>
                   <i class="bi bi-gear"></i>
                 <% end %>
@@ -50,7 +46,8 @@
               <% end %>
             <% end %>
           </div>
-          <div>
+
+          <div class="absolute right-0">
             <%= render Dropdowns::ProfileOptionsDropdownComponent.new(profile: @profile) %>
           </div>
         </div>
