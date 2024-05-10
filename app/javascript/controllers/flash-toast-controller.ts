@@ -38,6 +38,12 @@ export default class extends Controller {
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
     this.element.classList.remove('hidden');
+
+    if (this.type === 'notice') {
+      setTimeout(() => {
+        this.hideFlashToast();
+      }, 2000);
+    }
   }
 
   hideFlashToast() {
