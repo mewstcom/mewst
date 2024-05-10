@@ -37,7 +37,7 @@ export default class extends Controller {
     this.alertTarget.classList.add(this.alertBgClass);
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
-    this.element.classList.remove('hidden');
+    this.element.classList.remove('scale-90', 'opacity-0', 'hidden');
 
     if (this.type === 'notice') {
       setTimeout(() => {
