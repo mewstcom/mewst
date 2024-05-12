@@ -15,7 +15,7 @@
     <hr class="my-4">
 
     <%= render Mewst::UI::Card.new do %>
-      <%= render CardBodyComponent.new do %>
+      <%= render Mewst::UI::Card::Body.new do %>
         <%= form_with method: :patch, model: @form, url: settings_email_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors, class_name: "mb-4") %>
 

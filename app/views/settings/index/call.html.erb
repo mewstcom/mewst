@@ -10,7 +10,7 @@
     <hr class="my-4">
 
     <%= render Mewst::UI::Card.new do %>
-      <%= render CardBodyComponent.new do %>
+      <%= render Mewst::UI::Card::Body.new do %>
         <ul class="bg-neutral-200 menu rounded-box">
           <li>
             <%= link_to settings_profile_path, class: "flex justify-between" do %>

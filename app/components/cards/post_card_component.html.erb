@@ -1,5 +1,5 @@
 <%= render Mewst::UI::Card.new do %>
-  <%= render CardBodyComponent.new do %>
+  <%= render Mewst::UI::Card::Body.new do %>
     <%= render EntryHeaders::BasicEntryHeaderComponent.new(
       profile: post.profile,
       time: post.published_at,

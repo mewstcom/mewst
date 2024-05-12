@@ -4,7 +4,7 @@
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
     <%= render Mewst::UI::Card.new do %>
-      <%= render CardBodyComponent.new do %>
+      <%= render Mewst::UI::Card::Body.new do %>
         <div class="flex gap-4 items-center">
           <%= link_to profile_path(@profile.atname) do %>
             <%= render Images::ProfileAvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
