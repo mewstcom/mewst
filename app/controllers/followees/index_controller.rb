@@ -21,7 +21,7 @@ class Followees::IndexController < ApplicationController
         after: params[:after].presence,
         before: params[:before].presence,
         limit: 15,
-        order: {Arel.sql("follows.followed_at") => :desc, id: :desc}
+        order: {Arel.sql("follows.followed_at") => :desc, :id => :desc}
       )
       .fetch
     @followees = page.records
