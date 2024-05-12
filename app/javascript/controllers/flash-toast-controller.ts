@@ -1,5 +1,8 @@
 import { Controller } from '@hotwired/stimulus';
 
+const animationClasses = ['scale-90', 'opacity-0'];
+const hiddenClass = 'hidden';
+
 export default class extends Controller {
   static targets = ['alert', 'icon', 'message'];
   static values = {
@@ -37,7 +40,7 @@ export default class extends Controller {
     this.iconTarget.classList.add(this.alertIconColorClass);
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
-    this.element.classList.remove('scale-90', 'opacity-0', 'hidden');
+    this.element.classList.remove(hiddenClass, ...animationClasses);
 
     if (this.type === 'notice') {
       setTimeout(() => {
@@ -47,10 +50,10 @@ export default class extends Controller {
   }
 
   hideFlashToast() {
-    this.element.classList.add('scale-90', 'opacity-0');
+    this.element.classList.add(...animationClasses);
 
     setTimeout(() => {
-      this.element.classList.add('hidden');
+      this.element.classList.add(hiddenClass);
     }, 150);
   }
 
