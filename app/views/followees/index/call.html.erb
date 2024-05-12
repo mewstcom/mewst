@@ -1,0 +1,33 @@
+<% title = t("meta.title.followees.index") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <h1 class="antialiased font-semibold text-2xl">
+      <%= title %>
+    </h1>
+
+    <p class="mt-2 text-gray-500 text-sm">
+      <%= t("messages.followees.description") %>
+    </p>
+
+    <hr class="my-4">
+
+    <% if @followees.present? %>
+      <div class="flex flex-col gap-4">
+        <% @followees.each do |followee| %>
+        <% end %>
+      </div>
+
+      <div class="flex justify-center mt-4">
+        <%= render Paginations::PaginationComponent.new(
+          page_info: @page_info,
+          previous_path: notification_list_path(before: @page_info.previous_cursor),
+          next_path: notification_list_path(after: @page_info.next_cursor)
+        ) %>
+      </div>
+    <% else %>
+      <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_followees"), class_name: "py-8") %>
+    <% end %>
+  <% end %>
+<% end %>

@@ -42,6 +42,7 @@ Rails.application.routes.draw do
   match "/community",                                                            via: :get,    as: :community,                                      to: "communities/show#call"
   match "/email_confirmations",                                                  via: :post,   as: :email_confirmation_list,                        to: "email_confirmations/create#call"
   match "/email_confirmations/new",                                              via: :get,    as: :new_email_confirmation,                         to: "email_confirmations/new#call"
+  match "/followees",                                                            via: :get,    as: :followee_list,                                  to: "followees/index#call"
   match "/home",                                                                 via: :get,    as: :home,                                           to: "home/show#call"
   match "/links",                                                                via: :post,   as: :link_list,                                      to: "links/create#call"
   match "/links/new",                                                            via: :get,    as: :new_link,                                       to: "links/new#call"

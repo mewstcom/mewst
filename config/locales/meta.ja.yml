@@ -5,6 +5,8 @@ ja:
     title:
       accounts:
         new: アカウント情報の登録
+      followees:
+        index: フォロイー
       home:
         show: ホーム
       notifications:

@@ -23,6 +23,7 @@ ja:
       sign_in_link_expired: ログイン用リンクの有効期限が切れました。再度やり直してください
       sign_up_link_expired: アカウント作成用リンクの有効期限が切れました。再度やり直してください
     blank_slate:
+      no_followees: フォロイーはいません
       no_notifications: 通知はありません
       no_posts: ポストはありません
     components:
@@ -42,6 +43,8 @@ ja:
       confirmation_mail_sent: 確認用のメールを送信しました
       email_updated: メールアドレスを更新しました
       enter_code: メールに記載されている確認用コードを入力してください
+    followees:
+      description: あなたがフォローしているプロフィールを表示しています
     home:
       lets_make_the_first_post_mobile: ↓の投稿ボタンからポストしましょう
       lets_make_the_first_post_pc: ↑の投稿欄からポストしましょう

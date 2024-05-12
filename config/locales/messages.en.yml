@@ -20,6 +20,7 @@ en:
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
     blank_slate:
+      no_followees: No followees.
       no_notifications: No notifications.
       no_posts: No posts.
     components:
@@ -39,6 +40,8 @@ en:
       confirmation_mail_sent: Confirmation mail has been sent.
       email_updated: Email address updated.
       enter_code: Enter the confirmation code in the email.
+    followees:
+      description: Showing profiles you follow.
     home:
       lets_make_the_first_post_mobile: Let's make a post from "Post" below.
       lets_make_the_first_post_pc: Let's make a post from the form above.
