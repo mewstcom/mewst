@@ -4,5 +4,5 @@
 class ApplicationComponent < ViewComponent::Base
   extend T::Sig
 
-  delegate :mst_absolute_time, :mst_image_url, :mst_time_ago_in_words, :signed_in?, :viewer!, to: :helpers
+  delegate :mst_absolute_time, :mst_image_url, :mst_time_ago_in_words, :name_with_atname, :signed_in?, :viewer!, to: :helpers
 end
