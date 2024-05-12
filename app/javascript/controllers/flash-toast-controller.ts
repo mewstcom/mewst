@@ -34,7 +34,7 @@ export default class extends Controller {
   }
 
   showFlashToast() {
-    this.alertTarget.classList.add(this.alertBgClass);
+    this.iconTarget.classList.add(this.alertIconColorClass);
     this.iconTarget.innerHTML = this.alertIconHtml;
     this.messageTarget.innerHTML = this.messageHtml;
     this.element.classList.remove('scale-90', 'opacity-0', 'hidden');
@@ -54,14 +54,14 @@ export default class extends Controller {
     }, 150);
   }
 
-  private get alertBgClass() {
+  private get alertIconColorClass() {
     switch (this.type) {
       case 'alert':
-        return 'alert-error';
+        return 'text-error';
       case 'notice':
-        return 'alert-success';
+        return 'text-success';
       default:
-        return 'alert-info';
+        return 'text-info';
     }
   }
 
