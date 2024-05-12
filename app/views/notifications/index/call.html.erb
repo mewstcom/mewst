@@ -23,8 +23,8 @@
       <div class="flex justify-center mt-4">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
-          previous_path: home_path(before: @page_info.previous_cursor),
-          next_path: home_path(after: @page_info.next_cursor)
+          previous_path: notification_list_path(before: @page_info.previous_cursor),
+          next_path: notification_list_path(after: @page_info.next_cursor)
         ) %>
       </div>
     <% else %>
