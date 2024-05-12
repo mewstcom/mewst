@@ -28,6 +28,9 @@ module GeneratedPathHelpersModule
   def email_confirmation_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def followee_list_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
