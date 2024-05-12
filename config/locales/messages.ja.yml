@@ -56,10 +56,12 @@ ja:
       reset_successfully_html: パスワードをリセットしました<br>新しいパスワードでログインしてください
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
+      copied_to_clipboard: リンクをコピーしました
       created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
       about_gravatar: Gravatarについて
+      copied_to_clipboard: リンクをコピーしました
       image_url_hint_html: |-
         例: https://example.com/image.jpg<br>
         ご自身で保管している画像のURLを入力してください

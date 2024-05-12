@@ -53,10 +53,12 @@ en:
       reset_successfully_html: Password reset successfully. Please sign in with your new password.
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
+      copied_to_clipboard: Copied to clipboard.
       created: Post created.
       deleted: Post deleted.
     profiles:
       about_gravatar: About Gravatar
+      copied_to_clipboard: Copied to clipboard.
       image_url_hint_html: |-
         e.g. https://example.com/image.jpg<br>
         Please enter the URL of the image you are storing.
