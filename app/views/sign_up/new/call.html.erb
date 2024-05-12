@@ -23,7 +23,7 @@
       </p>
     </div>
 
-    <%= render CardComponent.new(class_name: "mt-8") do %>
+    <%= render Mewst::UI::Card.new(class_name: "mt-8") do %>
       <%= render CardBodyComponent.new do %>
         <%= form_with model: @form, url: sign_up_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>

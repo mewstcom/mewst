@@ -27,7 +27,7 @@
           <div class="flex flex-col gap-4">
             <% @profiles.each do |profile| %>
               <div id="suggested-profiles-<%= profile.atname %>">
-                <%= render CardComponent.new do %>
+                <%= render Mewst::UI::Card.new do %>
                   <%= render CardBodyComponent.new do %>
                     <div class="flex flex-wrap gap-2 justify-between lg:flex-nowrap">
                       <div class="basis-1/12 lg:basis-1/12">
