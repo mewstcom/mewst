@@ -69,8 +69,10 @@ en:
     search:
       blank: No suggested profiles.
       suggested_profiles:
-        exists_html: Showing people followed by people you follow.
-        not_exists: Showing people followed by people you follow.
+        exists_html: |-
+          Showing people followed by people you follow.
+        not_exists_html: |-
+          Showing people followed by people you follow.
     sign_in:
       dont_have_an_account_html: |-
         Don't have an account? <a href="/sign_up">Sign up</a>.
