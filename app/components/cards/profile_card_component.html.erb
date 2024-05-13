@@ -1,0 +1,27 @@
+<%= render Mewst::UI::Card.new do %>
+  <%= render Mewst::UI::Card::Body.new do %>
+    <div class="flex flex-wrap gap-2 justify-between lg:flex-nowrap">
+      <div class="basis-1/12 lg:basis-1/12">
+        <%= link_to profile_path(profile.atname) do %>
+          <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
+        <% end %>
+      </div>
+
+      <%= link_to profile_path(profile.atname), class: "basis-10/12 lg:basis-8/12 text-body text-decoration-none" do %>
+        <div class="font-bold">
+          <%= name_with_atname(profile:) %>
+        </div>
+
+        <% if profile.description.present? %>
+          <div class="break-words mt-2 text-sm">
+            <%= profile.description.truncate(100) %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <div class="basis-full flex flex-col gap-2 place-content-center lg:basis-3/12 lg:mt-0 mt-2 text-center">
+        <%= actions_menu %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

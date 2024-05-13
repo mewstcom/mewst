@@ -5,6 +5,8 @@ en:
     title:
       accounts:
         new: Create an account
+      followees:
+        index: Followees
       home:
         show: Home
       notifications:

@@ -17,7 +17,7 @@
       <% end %>
     <% end %>
 
-    <% if signed_in? && viewer!.atname == post.profile.atname %>
+    <% if signed_in? && viewer!.me?(target_profile: post.profile) %>
       <hr class="my-1">
 
       <%= render Mewst::UI::Dropdown::Item.new do %>

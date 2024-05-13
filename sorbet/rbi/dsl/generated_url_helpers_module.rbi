@@ -28,6 +28,9 @@ module GeneratedUrlHelpersModule
   def email_confirmation_list_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def followee_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def home_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

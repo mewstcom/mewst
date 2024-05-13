@@ -15,8 +15,8 @@
       </h1>
     </div>
 
-    <%= render CardComponent.new(class_name: "mt-8") do %>
-      <%= render CardBodyComponent.new do %>
+    <%= render Mewst::UI::Card.new(class_name: "mt-8") do %>
+      <%= render Mewst::UI::Card::Body.new do %>
         <%= form_with model: @form, url: account_list_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
 

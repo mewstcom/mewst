@@ -9,8 +9,8 @@ class Actor < ApplicationRecord
 
   delegate :email, :time_zone, to: :user
   delegate :atname, :avatar_kind, :avatar_url, :checkable_suggested_followees, :description, :fetch_notifications,
-    :following?, :follows, :generate_gravatar_url, :gravatar_email, :gravatar_url, :home_timeline, :image_url, :me?,
-    :name, :notifications, :posts, :stamps, :suggested_follows, :suggested_followees,
+    :followees, :following?, :follows, :generate_gravatar_url, :gravatar_email, :gravatar_url, :home_timeline,
+    :image_url, :me?, :name, :notifications, :posts, :stamps, :suggested_follows, :suggested_followees,
     to: :profile
 
   sig { returns(Locale) }

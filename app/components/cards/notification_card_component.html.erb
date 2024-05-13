@@ -1,5 +1,5 @@
-<%= render CardComponent.new do %>
-  <%= render CardBodyComponent.new do %>
+<%= render Mewst::UI::Card.new do %>
+  <%= render Mewst::UI::Card::Body.new do %>
     <%= render EntryHeaders::BasicEntryHeaderComponent.new(profile: source_profile, time: notification.notified_at) %>
 
     <% case notification.deserialized_notifiable_type %>

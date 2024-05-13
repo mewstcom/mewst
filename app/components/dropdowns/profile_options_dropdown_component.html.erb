@@ -4,6 +4,14 @@
   <% end %>
 
   <%= render Mewst::UI::Dropdown::List.new(class_name: "bg-base-300 border border-gray-300 p-1 rounded-box w-64 z-[1]") do %>
+    <% if signed_in? && viewer!.me?(target_profile: profile) %>
+      <%= render Mewst::UI::Dropdown::Item.new do %>
+        <%= link_to t("meta.title.followees.index"), followee_list_path %>
+      <% end %>
+
+      <hr class="my-1">
+    <% end %>
+
     <%= render Mewst::UI::Dropdown::Item.new do %>
       <%= render Mewst::UI::Button.new(
         data: {
