@@ -23,6 +23,7 @@ class FollowProfileUseCase < ApplicationUseCase
         source_profile_id: source_profile.id.not_nil!,
         target_profile_id: target_profile.id.not_nil!
       )
+      CreateSuggestedFollowsJob.perform_later(source_profile_id: source_profile.id.not_nil!)
     end
 
     Result.new(target_profile: follow.target_profile.not_nil!)
