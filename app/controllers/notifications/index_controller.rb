@@ -22,5 +22,9 @@ class Notifications::IndexController < ApplicationController
       .fetch
     @notifications = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
+    @follow_checker = FollowChecker.new(
+      profile: viewer!.profile.not_nil!,
+      target_profiles: @notifications.map(&:source_profile)
+    )
   end
 end

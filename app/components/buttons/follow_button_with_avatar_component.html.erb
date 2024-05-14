@@ -1,0 +1,39 @@
+<turbo-frame id="profiles-<%= target_profile.atname %>-follow-with-avatar">
+  <% if follow_checker.followed?(target_profile:) %>
+    <%= button_to profile_follow_path(target_profile.atname), {
+      class: class_names("no-animation", class_name),
+      data: {
+        turbo_confirm: t("messages.posts.are_you_sure_to_delete_post"),
+        turbo_method: :delete
+      },
+    } do %>
+      <div class="relative">
+        <%= content %>
+
+        <div class="absolute bottom-0 right-0">
+          <div class="bg-base-300 border rounded-full p-1">
+            <i class="bi bi-check"></i>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <%= button_to profile_follow_path(target_profile.atname), {
+      class: class_names("no-animation", class_name),
+      data: {
+        turbo_confirm: t("messages.profiles.do_you_follow", atname: target_profile.atname),
+        turbo_method: :post
+      }
+    } do %>
+      <div class="h-[50px] relative">
+        <%= content %>
+
+        <div class="absolute bottom-0 right-0">
+          <div class="bg-base-300 border border-gray-700 leading-none rounded-full">
+            <i class="bi bi-plus text-gray-700"></i>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</turbo-frame>
