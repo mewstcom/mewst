@@ -16,7 +16,7 @@
     <% if @notifications.present? %>
       <div class="flex flex-col gap-4">
         <% @notifications.each do |notification| %>
-          <%= render Cards::NotificationCardComponent.new(notification:, follow_checker: @follow_checker) %>
+          <%= render Cards::NotificationCardComponent.new(notification:) %>
         <% end %>
       </div>
 

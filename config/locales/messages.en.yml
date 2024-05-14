@@ -25,7 +25,7 @@ en:
       no_posts: No posts.
     components:
       notification_card:
-        stamped: stamped your post.
+        stamped: Stamped your post.
       stamp_button:
         sign_in_required: Sign in required to stamp.
     connected_accounts:
