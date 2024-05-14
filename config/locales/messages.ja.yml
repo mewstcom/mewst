@@ -28,7 +28,7 @@ ja:
       no_posts: ポストはありません
     components:
       notification_card:
-        stamped: あなたのポストにスタンプを押しました
+        stamped: があなたのポストにスタンプを押しました
       stamp_button:
         sign_in_required: ログインするとスタンプが押せます
     connected_accounts:

@@ -1,6 +1,11 @@
 <div>
-  <div>
+  <p>
+    <%= link_to "@#{target_post.profile.atname}", profile_path(target_post.profile.atname), class: "font-bold text-gray-700" %>
     <%= t("messages.components.notification_card.stamped") %>
+  </p>
+
+  <div class="mt-1 text-gray-500 text-sm">
+    <%= mst_time_ago_in_words(notification.notified_at) %>
   </div>
 
   <div class="mt-3">
