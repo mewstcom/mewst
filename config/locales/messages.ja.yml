@@ -66,6 +66,7 @@ ja:
       about_gravatar: Gravatarについて
       copied_to_clipboard: リンクをコピーしました
       do_you_follow: "@%{atname}をフォローしますか？"
+      do_you_unfollow: "@%{atname}のフォローをやめますか？"
       image_url_hint_html: |-
         例: https://example.com/image.jpg<br>
         ご自身で保管している画像のURLを入力してください

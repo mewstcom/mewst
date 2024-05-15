@@ -25,4 +25,12 @@ class EntryHeaders::BasicEntryHeaderComponent < ApplicationComponent
   sig { returns(T.nilable(FollowChecker)) }
   attr_reader :follow_checker
   private :follow_checker
+
+  sig { returns(T::Boolean) }
+  def show_avatar_with_follow_button?
+    signed_in? &&
+      !viewer!.me?(target_profile: profile) &&
+      !follow_checker.nil? &&
+      !follow_checker.followed?(target_profile: profile)
+  end
 end

@@ -13,7 +13,7 @@
 
   <turbo-stream action="update" target="profiles-<%= @profile.atname %>-follow-with-avatar">
     <template>
-      <%= render Buttons::FollowButtonWithAvatarComponent.new(target_profile: @profile, follow_checker: @follow_checker) %>
+      <%= render Buttons::FollowButtonWithAvatarComponent.new(target_profile: @profile, follow_checker: @follow_checker, avatar_width: 50) %>
     </template>
   </turbo-stream>
 <% end %>

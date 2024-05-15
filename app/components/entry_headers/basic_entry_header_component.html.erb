@@ -1,11 +1,9 @@
 <div class="content-start flex gap-2">
   <div class="flex-none">
-    <% if !signed_in? || viewer!.me?(target_profile: profile) || follow_checker.nil? || follow_checker.followed?(target_profile: profile) %>
-      <%= link_to profile_path(profile.atname) do %>
-        <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 50, class_name: "w-[50px]") %>
-      <% end %>
+    <% if show_avatar_with_follow_button? %>
+      <%= render Buttons::FollowButtonWithAvatarComponent.new(target_profile: profile, follow_checker:, avatar_width: 50) %>
     <% else %>
-      <%= render Buttons::FollowButtonWithAvatarComponent.new(target_profile: profile, follow_checker:) do %>
+      <%= link_to profile_path(profile.atname) do %>
         <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 50, class_name: "w-[50px]") %>
       <% end %>
     <% end %>
