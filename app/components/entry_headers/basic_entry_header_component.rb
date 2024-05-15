@@ -2,7 +2,14 @@
 # frozen_string_literal: true
 
 class EntryHeaders::BasicEntryHeaderComponent < ApplicationComponent
-  sig { params(profile: Profile, time: ActiveSupport::TimeWithZone, detail_path: T.nilable(String), follow_checker: T.nilable(FollowChecker)).void }
+  sig do
+    params(
+      profile: Profile,
+      time: ActiveSupport::TimeWithZone,
+      detail_path: T.nilable(String),
+      follow_checker: T.nilable(FollowChecker)
+    ).void
+  end
   def initialize(profile:, time:, detail_path: nil, follow_checker: nil)
     @profile = profile
     @time = time
@@ -27,10 +34,12 @@ class EntryHeaders::BasicEntryHeaderComponent < ApplicationComponent
   private :follow_checker
 
   sig { returns(T::Boolean) }
-  def show_avatar_with_follow_button?
-    signed_in? &&
+  private def show_avatar_with_follow_button?
+    T.must(
+      signed_in? &&
       !viewer!.me?(target_profile: profile) &&
       !follow_checker.nil? &&
-      !follow_checker.followed?(target_profile: profile)
+      !follow_checker.not_nil!.followed?(target_profile: profile)
+    )
   end
 end
