@@ -1,0 +1,54 @@
+<% title = t("meta.title.search.show") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <h1 class="antialiased font-semibold text-2xl">
+      <%= title %>
+    </h1>
+
+    <hr class="my-4">
+
+    <%= render Forms::KeywordSearchFormComponent.new(form: @form, form_url: search_profile_list_path) %>
+
+    <div class="mt-4 tabs tabs-bordered" role="tablist">
+      <%= link_to(t("nouns.profile"), search_profile_list_path(q: @form.q), class: "tab tab-active", role: "tab") %>
+
+      <%= link_to("#", class: "tab text-gray-500", role: "tab") do %>
+        <%= t("nouns.post") %>
+
+        <span class="ml-1">
+          (<%= t("messages.search.building") %>)
+        </span>
+      <% end %>
+    </div>
+
+    <div class="mt-4">
+      <% if @profiles.present? %>
+        <div class="flex flex-col gap-4">
+          <% @profiles.each do |profile| %>
+            <div>
+              <%= render Cards::ProfileCardComponent.new(profile:) do |component| %>
+                <% component.with_actions_menu do %>
+                  <% unless viewer!.me?(target_profile: profile) %>
+                    <%= render Buttons::FollowButtonComponent.new(target_profile: profile, follow_checker: @follow_checker, class_name: "w-full") %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="flex justify-center mt-4">
+          <%= render Paginations::PaginationComponent.new(
+            page_info: @page_info,
+            previous_path: search_profile_list_path(q: @form.q, before: @page_info.previous_cursor),
+            next_path: search_profile_list_path(q: @form.q, after: @page_info.next_cursor)
+          ) %>
+        </div>
+      <% else %>
+        <%= render BlankSlateComponent.new(message: t("messages.search.profiles.blank")) %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

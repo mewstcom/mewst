@@ -69,8 +69,11 @@ en:
         Please enter the URL of the image you are storing.
       updated: Profile updated.
     search:
-      blank: No suggested profiles.
+      building: Building...🚧
+      profiles:
+        blank: No profiles.
       suggested_profiles:
+        blank: No suggested profiles.
         exists_html: |-
           Showing people followed by people you follow.
         not_exists_html: |-

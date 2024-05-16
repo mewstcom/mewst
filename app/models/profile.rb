@@ -29,6 +29,14 @@ class Profile < ApplicationRecord
   has_one :user, through: :user_profile
 
   scope :sort_by_latest_post, -> { order("last_post_at DESC NULLS LAST") }
+  scope :search_by_keywords, ->(q:) {
+    words = q.split
+    conditions = words
+      .map.with_index { |_, i| "(atname ILIKE :word#{i} OR name ILIKE :word#{i} OR description ILIKE :word#{i})" }
+      .join(" AND ")
+    parameters = words.map.with_index { |word, i| { "word#{i}": "%#{word}%" } }.reduce({}, :merge)
+    where(conditions, parameters)
+  }
 
   validates :atname,
     format: {with: ATNAME_FORMAT},
