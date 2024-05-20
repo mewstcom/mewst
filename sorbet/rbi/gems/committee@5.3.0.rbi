@@ -1022,7 +1022,12 @@ class Committee::SchemaValidator::HyperSchema::ResponseValidator
   # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#9
   def initialize(link, options = T.unsafe(nil)); end
 
-  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#16
+  # Returns the value of attribute allow_blank_structures.
+  #
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#7
+  def allow_blank_structures; end
+
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#17
   def call(status, headers, data); end
 
   # Returns the value of attribute validate_success_only.
@@ -1032,15 +1037,15 @@ class Committee::SchemaValidator::HyperSchema::ResponseValidator
 
   private
 
-  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#60
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#70
   def check_content_type!(response); end
 
   # @return [Boolean]
   #
-  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#69
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#79
   def legacy_hyper_schema_rel?(link); end
 
-  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#50
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#60
   def response_media_type(response); end
 
   # Gets the target schema of a link. This is normally just the standard
@@ -1048,7 +1053,7 @@ class Committee::SchemaValidator::HyperSchema::ResponseValidator
   # tagged with rel=instances to instead use the schema of their parent
   # resource.
   #
-  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#79
+  # source://committee//lib/committee/schema_validator/hyper_schema/response_validator.rb#89
   def target_schema(link); end
 end
 
@@ -1329,8 +1334,13 @@ end
 class Committee::SchemaValidator::Option
   # @return [Option] a new instance of Option
   #
-  # source://committee//lib/committee/schema_validator/option.rb#30
+  # source://committee//lib/committee/schema_validator/option.rb#31
   def initialize(options, schema, schema_type); end
+
+  # Boolean Options
+  #
+  # source://committee//lib/committee/schema_validator/option.rb#7
+  def allow_blank_structures; end
 
   # Boolean Options
   #
@@ -1384,7 +1394,7 @@ class Committee::SchemaValidator::Option
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def headers_key; end
 
   # Boolean Options
@@ -1395,11 +1405,11 @@ class Committee::SchemaValidator::Option
   # Boolean Options
   #
   # source://committee//lib/committee/schema_validator/option.rb#7
-  def parameter_overwite_by_rails_rule; end
+  def parameter_overwrite_by_rails_rule; end
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def params_key; end
 
   # Boolean Options
@@ -1409,22 +1419,22 @@ class Committee::SchemaValidator::Option
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def path_hash_key; end
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def prefix; end
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def query_hash_key; end
 
   # Non-boolean options:
   #
-  # source://committee//lib/committee/schema_validator/option.rb#23
+  # source://committee//lib/committee/schema_validator/option.rb#24
   def request_body_hash_key; end
 
   # Boolean Options
