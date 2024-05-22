@@ -325,11 +325,20 @@ class GoodJob::Job
     sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::BatchRecord) }
     def build_batch(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::Process) }
+    def build_locked_by_process(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::BatchRecord) }
     def create_batch(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::BatchRecord) }
     def create_batch!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::Process) }
+    def create_locked_by_process(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::GoodJob::Process) }
+    def create_locked_by_process!(*args, &blk); end
 
     sig { returns(T::Array[T.untyped]) }
     def discrete_execution_ids; end
@@ -359,11 +368,23 @@ class GoodJob::Job
     sig { params(value: T::Enumerable[::GoodJob::Execution]).void }
     def executions=(value); end
 
+    sig { returns(T.nilable(::GoodJob::Process)) }
+    def locked_by_process; end
+
+    sig { params(value: T.nilable(::GoodJob::Process)).void }
+    def locked_by_process=(value); end
+
     sig { returns(T.nilable(::GoodJob::BatchRecord)) }
     def reload_batch; end
 
+    sig { returns(T.nilable(::GoodJob::Process)) }
+    def reload_locked_by_process; end
+
     sig { void }
     def reset_batch; end
+
+    sig { void }
+    def reset_locked_by_process; end
   end
 
   module GeneratedAssociationRelationMethods
