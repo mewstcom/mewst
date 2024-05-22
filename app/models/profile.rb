@@ -34,7 +34,7 @@ class Profile < ApplicationRecord
     conditions = words
       .map.with_index { |_, i| "(atname ILIKE :word#{i} OR name ILIKE :word#{i} OR description ILIKE :word#{i})" }
       .join(" AND ")
-    parameters = words.map.with_index { |word, i| { "word#{i}": "%#{word}%" } }.reduce({}, :merge)
+    parameters = words.map.with_index { |word, i| {"word#{i}": "%#{word}%"} }.reduce({}, :merge)
     where(conditions, parameters)
   }
 
