@@ -12,5 +12,6 @@ class Search::ShowController < ApplicationController
   def call
     @profiles = viewer!.checkable_suggested_followees.order(created_at: :desc).limit(30)
     @follow_checker = FollowChecker.new(profile: viewer!.profile.not_nil!, target_profiles: @profiles)
+    @form = KeywordSearchForm.new
   end
 end

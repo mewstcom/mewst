@@ -1,0 +1,11 @@
+<%= form_with method: :get, model: form, url: form_url do |f| %>
+  <label class="flex gap-2 input input-bordered items-center rounded-full w-full">
+    <i class="bi bi-search opacity-70"></i>
+    <%= text_field_tag(:q, f.object.q, {
+      autofocus: true,
+      class: "grow",
+      placeholder: t("nouns.search"),
+      required: true
+    }) %>
+  </label>
+<% end %>

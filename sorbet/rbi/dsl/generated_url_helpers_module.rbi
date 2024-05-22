@@ -112,6 +112,9 @@ module GeneratedUrlHelpersModule
   def root_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def search_profile_list_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def search_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

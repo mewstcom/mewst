@@ -9,7 +9,9 @@
 
     <hr class="my-4">
 
-    <div>
+    <%= render Forms::KeywordSearchFormComponent.new(form: @form, form_url: search_profile_list_path) %>
+
+    <div class="mt-4">
       <h2 class="antialiased font-semibold text-lg">
         <%= t("nouns.suggested_profiles") %>
       </h2>

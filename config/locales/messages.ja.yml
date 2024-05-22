@@ -72,6 +72,9 @@ ja:
         ご自身で保管している画像のURLを入力してください
       updated: プロフィールを更新しました
     search:
+      building: 準備中🚧
+      profiles:
+        blank: プロフィールはありません
       suggested_profiles:
         blank: おすすめプロフィールはありません
         exists_html: |-

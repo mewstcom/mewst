@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   match "/posts/:post_id/stamp",                                                 via: :post,                                                        to: "stamps/create#call"
   match "/privacy",                                                              via: :get,    as: :privacy,                                        to: "privacies/show#call"
   match "/search",                                                               via: :get,    as: :search,                                         to: "search/show#call"
+  match "/search/profiles",                                                      via: :get,    as: :search_profile_list,                            to: "search/profiles/index#call"
   match "/settings",                                                             via: :get,    as: :settings,                                       to: "settings/index#call"
   match "/settings/email",                                                       via: :get,    as: :settings_email,                                 to: "settings/emails/show#call"
   match "/settings/email",                                                       via: :patch,                                                       to: "settings/emails/update#call"
