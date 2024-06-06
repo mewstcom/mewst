@@ -788,43 +788,47 @@ module Zeitwerk::Loader::Helpers
 
   # @return [Boolean]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#132
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#141
   def cdef?(parent, cname); end
 
   # @raise [NameError]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#138
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#147
   def cget(parent, cname); end
 
   # @raise [Zeitwerk::NameError]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#153
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#162
   def cname_for(basename, abspath); end
 
   # Symbol#name was introduced in Ruby 3.0. It returns always the same
   # frozen object, so we may save a few string allocations.
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#122
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#131
   def cpath(parent, cname); end
 
   # @raise [NameError]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#144
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#153
   def crem(parent, cname); end
 
   # @return [Boolean]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#71
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#80
   def dir?(path); end
 
+  # Looks for a Ruby file using breadth-first search. This type of search is
+  # important to list as less directories as possible and return fast in the
+  # common case in which there are Ruby files.
+  #
   # @return [Boolean]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#47
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#51
   def has_at_least_one_ruby_file?(dir); end
 
   # @return [Boolean]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#76
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#85
   def hidden?(basename); end
 
   # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#7
@@ -835,17 +839,17 @@ module Zeitwerk::Loader::Helpers
 
   # @return [Boolean]
   #
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#66
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#75
   def ruby?(path); end
 
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#113
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#122
   def strict_autoload_path(parent, cname); end
 
-  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#81
+  # source://zeitwerk//lib/zeitwerk/loader/helpers.rb#90
   def walk_up(abspath); end
 end
 
-# source://zeitwerk//lib/zeitwerk/loader/helpers.rb#148
+# source://zeitwerk//lib/zeitwerk/loader/helpers.rb#157
 module Zeitwerk::Loader::Helpers::CNAME_VALIDATOR; end
 
 # source://zeitwerk//lib/zeitwerk/loader.rb#21
