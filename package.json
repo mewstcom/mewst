@@ -13,7 +13,7 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo": "^8.0.4",
     "autosize": "^6.0.1",
-    "esbuild": "^0.21.3",
+    "esbuild": "^0.21.4",
     "graphemesplit": "^2.4.4",
     "stimulus-use": "^0.52.2"
   },
