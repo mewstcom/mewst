@@ -1458,7 +1458,7 @@ class GoodJob::CapsuleTracker
   #
   # @return [Boolean]
   #
-  # source://good_job//lib/good_job/capsule_tracker.rb#153
+  # source://good_job//lib/good_job/capsule_tracker.rb#155
   def advisory_locked?; end
 
   # Number of tracked job executions with advisory locks.
@@ -1514,7 +1514,7 @@ class GoodJob::CapsuleTracker
   # source://good_job//lib/good_job/capsule_tracker.rb#145
   def renew(silent: T.unsafe(nil)); end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#158
+  # source://good_job//lib/good_job/capsule_tracker.rb#160
   def task_observer(_time, _output, thread_error); end
 
   # Unregisters the current process from the database.
@@ -1529,33 +1529,33 @@ class GoodJob::CapsuleTracker
 
   # @return [Boolean]
   #
-  # source://good_job//lib/good_job/capsule_tracker.rb#164
+  # source://good_job//lib/good_job/capsule_tracker.rb#166
   def advisory_locked_connection?; end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#196
+  # source://good_job//lib/good_job/capsule_tracker.rb#198
   def cancel_refresh_task; end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#176
+  # source://good_job//lib/good_job/capsule_tracker.rb#178
   def create_refresh_task(delay: T.unsafe(nil)); end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#172
+  # source://good_job//lib/good_job/capsule_tracker.rb#174
   def jitter; end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#213
+  # source://good_job//lib/good_job/capsule_tracker.rb#215
   def ns_reset; end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#201
+  # source://good_job//lib/good_job/capsule_tracker.rb#203
   def reset; end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#205
+  # source://good_job//lib/good_job/capsule_tracker.rb#207
   def reset_on_fork; end
 
   # Synchronize must always be called from within a Rails Executor; it may deadlock if the order is reversed.
   #
-  # source://good_job//lib/good_job/capsule_tracker.rb#219
+  # source://good_job//lib/good_job/capsule_tracker.rb#221
   def synchronize(&block); end
 
-  # source://good_job//lib/good_job/capsule_tracker.rb#168
+  # source://good_job//lib/good_job/capsule_tracker.rb#170
   def task_interval; end
 
   class << self
