@@ -94,8 +94,11 @@ en:
       beta_html: |-
         This is an beta product.<br>
         Please note that the service may be unstable.
-      description_1: Mewst is a social network where you can share your current feelings and situations in 160 characters.
-      description_2: We aim to provide a service that allows you to feel at ease by not oversharing information.
+      description_1_html: |-
+        Mewst is a social network where you can share your current feelings and situations in 160 characters.<br>
+        We aim to provide a service that allows you to feel at ease by not oversharing information.
+      description_2_html: |-
+        Developed by <a class="link" href="/@shimbaco">@shimbaco</a> as an individual project.
       feature_1:
         title: Only chronological timeline
         body: There is no timeline arranged by the service side like "Recommended".
