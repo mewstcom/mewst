@@ -2,7 +2,17 @@
 # frozen_string_literal: true
 
 class Icons::LogoIconComponent < ApplicationComponent
-  erb_template <<~ERB
-    <%= inline_svg_tag("logo.svg", height: "36px", width: "36px") %>
-  ERB
+  sig { params(size: String, class_name: String).void }
+  def initialize(size:, class_name: "")
+    @size = size
+    @class_name = class_name
+  end
+
+  sig { returns(String) }
+  attr_reader :size
+  private :size
+
+  sig { returns(String) }
+  attr_reader :class_name
+  private :class_name
 end
