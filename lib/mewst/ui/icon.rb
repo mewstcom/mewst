@@ -2,9 +2,10 @@
 # frozen_string_literal: true
 
 class Mewst::UI::Icon < Mewst::UI::Base
-  sig { params(name: String, size: String, class_name: String).void }
-  def initialize(name:, size: "16px", class_name: "")
+  sig { params(name: String, color: String, size: String, class_name: String).void }
+  def initialize(name:, color: "base-content", size: "16px", class_name: "")
     @name = name
+    @color = color
     @size = size
     @class_name = class_name
   end
@@ -14,10 +15,31 @@ class Mewst::UI::Icon < Mewst::UI::Base
   private :name
 
   sig { returns(String) }
+  attr_reader :color
+  private :color
+
+  sig { returns(String) }
   attr_reader :size
   private :size
 
   sig { returns(String) }
   attr_reader :class_name
   private :class_name
+
+  sig { returns(String) }
+  private def color_class_name
+    case color
+    when "base-content"
+      "[&_.content]:fill-base-content"
+    when "success"
+      "[&_.content]:fill-success"
+    else
+      fail "Unknown color: #{color.inspect}"
+    end
+  end
+
+  sig { returns(String) }
+  private def icon_class_name
+    [class_name, color_class_name].reject(&:blank?).join(" ")
+  end
 end
