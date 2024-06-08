@@ -3,8 +3,8 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <%= link_to settings_path, class: "link link-hover link-info" do %>
-      <i class="bi bi-arrow-left"></i>
+    <%= link_to settings_path, class: "flex gap-1 items-center link link-hover link-info" do %>
+      <%= render Mewst::UI::Icon.new(name: "arrow_left_fill", color: "info") %>
       <%= t("nouns.settings") %>
     <% end %>
 

@@ -3,8 +3,8 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <%= link_to settings_path, class: "link link-hover link-info" do %>
-      <i class="bi bi-arrow-left"></i>
+    <%= link_to settings_path, class: "flex gap-1 items-center link link-hover link-info" do %>
+      <%= render Mewst::UI::Icon.new(name: "arrow_left_fill", color: "info") %>
       <%= t("nouns.settings") %>
     <% end %>
 
@@ -68,7 +68,9 @@
                   <label class="cursor-pointer flex gap-2 items-center">
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::Default.serialize, class: "radio" %>
 
-                    <%= render Images::AvatarImageComponent.new(image_url: asset_url("avatar.png"), class_name: "w-[30px]", width: 30) %>
+                    <div class="pt-[6px] text-center w-[30px]">
+                      <%= render Images::AvatarImageComponent.new(image_url: asset_url("avatar.png"), class_name: "w-[25px]", width: 25) %>
+                    </div>
 
                     <span class="label-text">
                       <%= t("activerecord.attributes.profile.avatar_kinds.#{ProfileAvatarKind::Default.serialize}") %>
@@ -81,9 +83,11 @@
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::Gravatar.serialize, class: "radio" %>
 
                     <% if viewer!.gravatar_url.present? %>
-                      <%= render Images::AvatarImageComponent.new(image_url: viewer!.gravatar_url, class_name: "w-[30px]", width: 30) %>
+                      <div class="pt-[6px] text-center w-[30px]">
+                        <%= render Images::AvatarImageComponent.new(image_url: viewer!.gravatar_url, class_name: "w-[25px]", width: 25) %>
+                      </div>
                     <% else %>
-                      <i class="bi bi-dash-circle-dotted h-[30px] leading-[30px] text-[30px] text-gray-400"></i>
+                      <%= render Mewst::UI::Icon.new(name: "forbid_circle_line", color: "gray-300", size: "30px") %>
                     <% end %>
 
                     <span class="label-text">
@@ -102,9 +106,9 @@
 
                     <div class="label pb-0">
                       <span class="label-text-alt">
-                        <%= link_to "https://ja.gravatar.com/", rel: "nofollow noopener", target: "_blank" do %>
+                        <%= link_to "https://ja.gravatar.com/", class: "flex gap-1", rel: "nofollow noopener", target: "_blank" do %>
                           <%= t("messages.profiles.about_gravatar") %>
-                          <i class="bi bi-box-arrow-up-right"></i>
+                          <%= render Mewst::UI::Icon.new(name: "external_link_line") %>
                         <% end %>
                       </span>
                     </div>
@@ -116,9 +120,11 @@
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::External.serialize, class: "radio" %>
 
                     <% if viewer!.image_url.present? %>
-                      <%= render Images::AvatarImageComponent.new(image_url: viewer!.image_url, class_name: "w-[30px]", width: 30) %>
+                      <div class="pt-[6px] text-center w-[30px]">
+                        <%= render Images::AvatarImageComponent.new(image_url: viewer!.image_url, class_name: "w-[25px]", width: 25) %>
+                      </div>
                     <% else %>
-                      <i class="bi bi-dash-circle-dotted h-[30px] leading-[30px] text-[30px] text-gray-400"></i>
+                      <%= render Mewst::UI::Icon.new(name: "forbid_circle_line", color: "gray-300", size: "30px") %>
                     <% end %>
 
                     <span class="label-text">

@@ -37,9 +37,9 @@
                   class: "bg-base-300 border-gray-400 btn hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation rounded-full text-gray-700"
                 ) %>
                 <%= link_to(settings_path,
-                  class: "bg-base-300 border-gray-400 btn btn-circle hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation text-gray-700 text-lg"
+                  class: "bg-base-300 border-gray-400 btn btn-circle hover:bg-base-300 hover:border-gray-800 hover:text-gray-800 no-animation text-gray-700"
                 ) do %>
-                  <i class="bi bi-gear"></i>
+                  <%= render Mewst::UI::Icon.new(name: "settings_5_line", size: "24px") %>
                 <% end %>
               <% else %>
                 <%= render Buttons::FollowButtonComponent.new(target_profile: @profile, follow_checker: @follow_checker) %>

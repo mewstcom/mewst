@@ -33,6 +33,16 @@ class Mewst::UI::Icon < Mewst::UI::Base
       "[&_.content]:fill-base-content"
     when "error"
       "[&_.content]:fill-error"
+    when "gray-300"
+      "[&_.content]:fill-gray-300"
+    when "gray-500"
+      "[&_.content]:fill-gray-500"
+    when "gray-600"
+      "[&_.content]:fill-gray-600"
+    when "gray-700"
+      "[&_.content]:fill-gray-700"
+    when "info"
+      "[&_.content]:fill-info"
     when "success"
       "[&_.content]:fill-success"
     else
@@ -42,6 +52,6 @@ class Mewst::UI::Icon < Mewst::UI::Base
 
   sig { returns(String) }
   private def icon_class_name
-    [class_name, color_class_name].reject(&:blank?).join(" ")
+    [class_name, color_class_name, "inline-block"].reject(&:blank?).join(" ")
   end
 end

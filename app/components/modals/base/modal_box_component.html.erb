@@ -1,7 +1,7 @@
 <div class="<%= class_names("modal-box", class_name) %>">
   <form method="dialog">
     <button class="absolute btn btn-circle btn-ghost btn-sm right-2 top-2">
-      <i class="bi bi-x-lg"></i>
+      <%= render Mewst::UI::Icon.new(name: "close_fill") %>
     </button>
   </form>
 

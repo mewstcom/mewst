@@ -1,27 +1,27 @@
-<div class="<%= class_names("bg-base-300 flex gap-4 items-center px-4 py-2 rounded-full w-fit", class_name) %>">
+<div class="<%= class_names("bg-base-300 flex gap-4 items-center px-4 py-1 rounded-full w-fit", class_name) %>">
   <% if signed_in? %>
     <%= link_to home_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("house")) %>
+      <%= render Mewst::UI::Icon.new(name: "home_4_line", color: "gray-600", size: "30px") %>
     <% end %>
 
     <%= link_to search_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("search")) %>
+      <%= render Mewst::UI::Icon.new(name: "search_line", color: "gray-600", size: "30px") %>
     <% end %>
 
     <%= link_to new_post_path(with_frame: true), class: link_class_name, data: { turbo_frame: "modal" } do %>
-      <%= tag.i(class: icon_class_name("pencil-square")) %>
+      <%= render Mewst::UI::Icon.new(name: "edit_4_line", color: "gray-600", size: "30px") %>
     <% end %>
 
     <%= link_to notification_list_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("bell")) %>
+      <%= render Mewst::UI::Icon.new(name: "notification_line", color: "gray-600", size: "30px") %>
     <% end %>
 
     <%= link_to profile_path(viewer!.atname), class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("person-circle")) %>
+      <%= render Mewst::UI::Icon.new(name: "user_1_line", color: "gray-600", size: "30px") %>
     <% end %>
   <% else %>
     <%= link_to home_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("house")) %>
+      <%= render Mewst::UI::Icon.new(name: "home_4_line", color: "gray-600", size: "30px") %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.home") %>
@@ -29,7 +29,7 @@
     <% end %>
 
     <%= link_to sign_up_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("rocket-takeoff")) %>
+      <%= render Mewst::UI::Icon.new(name: "rocket_line", color: "gray-600", size: "28px") %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.sign_up") %>
@@ -37,7 +37,7 @@
     <% end %>
 
     <%= link_to sign_in_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("box-arrow-in-right")) %>
+      <%= render Mewst::UI::Icon.new(name: "entrance_line", color: "gray-600", size: "28px") %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.sign_in") %>

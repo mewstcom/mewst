@@ -16,7 +16,7 @@
             <%= link_to settings_profile_path, class: "flex justify-between" do %>
               <%= t("meta.title.settings.profiles.show") %>
 
-              <i class="bi bi-chevron-right"></i>
+              <%= render Mewst::UI::Icon.new(name: "right_fill") %>
             <% end %>
           </li>
 
@@ -24,7 +24,7 @@
             <%= link_to settings_user_path, class: "flex justify-between" do %>
               <%= t("meta.title.settings.users.show") %>
 
-              <i class="bi bi-chevron-right"></i>
+              <%= render Mewst::UI::Icon.new(name: "right_fill") %>
             <% end %>
           </li>
 
@@ -32,7 +32,7 @@
             <%= link_to settings_email_path, class: "flex justify-between" do %>
               <%= t("meta.title.settings.emails.show") %>
 
-              <i class="bi bi-chevron-right"></i>
+              <%= render Mewst::UI::Icon.new(name: "right_fill") %>
             <% end %>
           </li>
         </ul>
