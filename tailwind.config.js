@@ -7,6 +7,8 @@ module.exports = {
     './app/javascript/**/*.ts',
     './app/views/**/*.erb',
     './config/locales/*.yml',
+    './lib/mewst/ui/**/*.erb',
+    './lib/mewst/ui/**/*.rb',
     './public/*.html',
   ],
   theme: {
