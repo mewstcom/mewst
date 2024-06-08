@@ -31,6 +31,8 @@ class Mewst::UI::Icon < Mewst::UI::Base
     case color
     when "base-content"
       "[&_.content]:fill-base-content"
+    when "error"
+      "[&_.content]:fill-error"
     when "success"
       "[&_.content]:fill-success"
     else
