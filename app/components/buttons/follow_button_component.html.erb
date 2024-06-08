@@ -4,7 +4,6 @@
       class: class_names("btn btn-outline no-animation rounded-full", class_name),
       method: :delete
     } do %>
-      <i class="bi bi-check-lg"></i>
       <span>
         <%= t("nouns.following") %>
       </span>
@@ -13,7 +12,6 @@
     <%= button_to profile_follow_path(target_profile.atname), {
       class: class_names("btn btn-primary no-animation rounded-full", class_name),
     } do %>
-      <i class="bi bi-plus-lg"></i>
       <span>
         <%= t("verbs.follow") %>
       </span>
