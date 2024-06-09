@@ -35,6 +35,8 @@ class Mewst::UI::Icon < Mewst::UI::Base
       "[&_.content]:fill-error"
     when "gray-300"
       "[&_.content]:fill-gray-300"
+    when "gray-400"
+      "[&_.content]:fill-gray-400"
     when "gray-500"
       "[&_.content]:fill-gray-500"
     when "gray-600"

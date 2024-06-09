@@ -23,6 +23,6 @@ class NavbarMenuComponent < ApplicationComponent
 
   sig { returns(String) }
   private def text_class_name
-    "mt-1 text-xs"
+    "mt-1 text-gray-500 text-xs"
   end
 end

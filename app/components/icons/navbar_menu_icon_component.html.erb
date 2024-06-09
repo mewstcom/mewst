@@ -1,0 +1,5 @@
+<% if active %>
+  <%= render Mewst::UI::Icon.new(name: active_name, color: "base-content", size:) %>
+<% else %>
+  <%= render Mewst::UI::Icon.new(name:, color: "gray-400", size:) %>
+<% end %>
