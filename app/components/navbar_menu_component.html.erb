@@ -1,27 +1,57 @@
-<div class="<%= class_names("bg-base-300 flex gap-4 items-center px-4 py-2 rounded-full w-fit", class_name) %>">
+<div class="<%= class_names("bg-base-300 flex gap-4 items-center px-4 py-1 rounded-full w-fit", class_name) %>">
   <% if signed_in? %>
     <%= link_to home_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("house")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "home_4_line",
+        active_name: "home_4_fill",
+        size: "30px",
+        active: current_page?("/home")
+      ) %>
     <% end %>
 
     <%= link_to search_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("search")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "search_line",
+        active_name: "search_fill",
+        size: "30px",
+        active: current_page?("/search") || current_page?("/search/profiles")
+      ) %>
     <% end %>
 
     <%= link_to new_post_path(with_frame: true), class: link_class_name, data: { turbo_frame: "modal" } do %>
-      <%= tag.i(class: icon_class_name("pencil-square")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "edit_4_line",
+        active_name: "edit_4_fill",
+        size: "30px",
+        active: current_page?("/new")
+      ) %>
     <% end %>
 
     <%= link_to notification_list_path, class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("bell")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "notification_line",
+        active_name: "notification_fill",
+        size: "30px",
+        active: current_page?("/notifications")
+      ) %>
     <% end %>
 
     <%= link_to profile_path(viewer!.atname), class: link_class_name do %>
-      <%= tag.i(class: icon_class_name("person-circle")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "user_4_line",
+        active_name: "user_4_fill",
+        size: "30px",
+        active: params[:controller] == "profiles/show" && params[:action] == "call"
+      ) %>
     <% end %>
   <% else %>
     <%= link_to home_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("house")) %>
+      <%= render Icons::NavbarMenuIconComponent.new(
+        name: "home_4_line",
+        active_name: "home_4_fill",
+        size: "28px",
+        active: current_page?("/")
+      ) %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.home") %>
@@ -29,7 +59,7 @@
     <% end %>
 
     <%= link_to sign_up_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("rocket-takeoff")) %>
+      <%= render Mewst::UI::Icon.new(name: "rocket_line", color: "gray-400", size: "28px") %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.sign_up") %>
@@ -37,7 +67,7 @@
     <% end %>
 
     <%= link_to sign_in_path, class: link_with_text_class_name do %>
-      <%= tag.i(class: icon_with_text_class_name("box-arrow-in-right")) %>
+      <%= render Mewst::UI::Icon.new(name: "entrance_line", color: "gray-400", size: "28px") %>
 
       <%= tag.div(class: text_class_name) do %>
         <%= t("nouns.sign_in") %>

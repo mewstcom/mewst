@@ -11,10 +11,21 @@
     data-flash-toast-target="alert"
   >
     <div class="flex items-center toast-body">
-      <span
-        class="me-3 text-3xl"
-        data-flash-toast-target="icon"
-      ></span>
+      <span class="me-2">
+        <span
+          class="hidden"
+          data-flash-toast-target="noticeIcon"
+        >
+          <%= render Mewst::UI::Icon.new(name: "check_circle_fill", color: "success", size: "36px") %>
+        </span>
+
+        <span
+          class="hidden"
+          data-flash-toast-target="alertIcon"
+        >
+          <%= render Mewst::UI::Icon.new(name: "alert_fill", color: "error", size: "36px") %>
+        </span>
+      </span>
 
       <span
         class="grow"
@@ -27,7 +38,7 @@
       data-action="flash-toast#hideFlashToast"
       type="button"
     >
-      <i class="bi bi-x-lg"></i>
+      <%= render Mewst::UI::Icon.new(name: "close_fill") %>
     </button>
   </div>
 </div>

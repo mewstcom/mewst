@@ -14,9 +14,9 @@
           class_name: "w-[#{avatar_width}px]"
         ) %>
 
-        <div class="absolute bottom-0 right-0">
-          <div class="bg-base-300 border border-gray-700 leading-none rounded-full">
-            <i class="bi bi-check"></i>
+        <div class="absolute bottom-0 -right-1">
+          <div class="bg-base-300 border border-gray-700 btn btn-circle btn-xs">
+            <%= render Mewst::UI::Icon.new(name: "check_fill", size: "14px") %>
           </div>
         </div>
       </div>
@@ -36,9 +36,9 @@
           class_name: "w-[#{avatar_width}px]"
         ) %>
 
-        <div class="absolute bottom-0 right-0">
-          <div class="bg-primary border border-base-300 leading-none rounded-full">
-            <i class="bi bi-plus text-gray-700"></i>
+        <div class="absolute bottom-0 -right-1">
+          <div class="bg-primary border border-base-300 btn btn-circle btn-xs">
+            <%= render Mewst::UI::Icon.new(name: "add_fill", size: "14px") %>
           </div>
         </div>
       </div>

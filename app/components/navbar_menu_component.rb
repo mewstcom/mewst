@@ -13,7 +13,7 @@ class NavbarMenuComponent < ApplicationComponent
 
   sig { returns(String) }
   private def link_class_name
-    "h-[40px] hover:bg-gray-100 rounded-full text-center w-[40px]"
+    "hover:bg-gray-100 p-1 rounded-full"
   end
 
   sig { returns(String) }
@@ -21,18 +21,8 @@ class NavbarMenuComponent < ApplicationComponent
     "hover:bg-gray-100 rounded-lg text-center w-[100px]"
   end
 
-  sig { params(icon_name: String).returns(String) }
-  private def icon_class_name(icon_name)
-    class_names("bi leading-[40px] text-2xl", "bi-#{icon_name}")
-  end
-
-  sig { params(icon_name: String).returns(String) }
-  private def icon_with_text_class_name(icon_name)
-    class_names("bi text-xl", "bi-#{icon_name}")
-  end
-
   sig { returns(String) }
   private def text_class_name
-    "text-xs"
+    "mt-1 text-gray-500 text-xs"
   end
 end

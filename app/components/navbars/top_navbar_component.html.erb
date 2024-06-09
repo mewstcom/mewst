@@ -2,7 +2,7 @@
   <%= render Containers::BasicContainerComponent.new do %>
     <div class="flex items-center justify-between">
       <%= link_to root_path do %>
-        <%= render Icons::LogoIconComponent.new %>
+        <%= render Icons::LogoIconComponent.new(size: "36px") %>
       <% end %>
 
       <%= render NavbarMenuComponent.new %>
