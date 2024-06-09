@@ -54,6 +54,6 @@ class Mewst::UI::Icon < Mewst::UI::Base
 
   sig { returns(String) }
   private def icon_class_name
-    [class_name, color_class_name, "inline-block"].reject(&:blank?).join(" ")
+    [class_name, color_class_name, "inline-block"].compact_blank.join(" ")
   end
 end
