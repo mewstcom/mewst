@@ -41,7 +41,7 @@
         name: "user_4_line",
         active_name: "user_4_fill",
         size: "30px",
-        active: params[:controller] == "profiles/show" && params[:action] == "call"
+        active: current_page?("/@#{viewer!.atname}")
       ) %>
     <% end %>
   <% else %>
