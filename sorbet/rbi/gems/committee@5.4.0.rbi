@@ -843,10 +843,10 @@ class Committee::RequestUnpacker
   # source://committee//lib/committee/request_unpacker.rb#23
   def initialize(options = T.unsafe(nil)); end
 
-  # source://committee//lib/committee/request_unpacker.rb#59
+  # source://committee//lib/committee/request_unpacker.rb#63
   def unpack_headers(request); end
 
-  # source://committee//lib/committee/request_unpacker.rb#55
+  # source://committee//lib/committee/request_unpacker.rb#59
   def unpack_query_params(request); end
 
   # return params and is_form_params
@@ -856,7 +856,7 @@ class Committee::RequestUnpacker
 
   private
 
-  # source://committee//lib/committee/request_unpacker.rb#73
+  # source://committee//lib/committee/request_unpacker.rb#77
   def parse_json(request); end
 
   class << self
