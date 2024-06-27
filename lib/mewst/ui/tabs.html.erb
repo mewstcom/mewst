@@ -1,0 +1,8 @@
+<%= tag.div(
+  class: class_names("tabs tabs-bordered", class_name),
+  role: "tablist"
+) do %>
+  <% items.each do |item| %>
+    <%= item %>
+  <% end %>
+<% end %>
