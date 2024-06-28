@@ -653,10 +653,10 @@ class Faraday::Connection
   # @api private
   # @return [Faraday::Connection]
   #
-  # source://faraday//lib/faraday/connection.rb#490
+  # source://faraday//lib/faraday/connection.rb#491
   def dup; end
 
-  # source://faraday//lib/faraday/connection.rb#533
+  # source://faraday//lib/faraday/connection.rb#534
   def find_default_proxy; end
 
   # source://faraday//lib/faraday/connection.rb#199
@@ -766,10 +766,10 @@ class Faraday::Connection
   # source://faraday//lib/faraday/connection.rb#333
   def proxy=(new_value); end
 
-  # source://faraday//lib/faraday/connection.rb#541
+  # source://faraday//lib/faraday/connection.rb#542
   def proxy_for_request(url); end
 
-  # source://faraday//lib/faraday/connection.rb#513
+  # source://faraday//lib/faraday/connection.rb#514
   def proxy_from_env(url); end
 
   # source://faraday//lib/faraday/connection.rb#279
@@ -809,7 +809,7 @@ class Faraday::Connection
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/connection.rb#551
+  # source://faraday//lib/faraday/connection.rb#552
   def support_parallel?(adapter); end
 
   # source://faraday//lib/faraday/connection.rb#199
@@ -851,7 +851,7 @@ class Faraday::Connection
   # @yieldparam username [String] any username from URI
   # @yieldparam password [String] any password from URI
   #
-  # source://faraday//lib/faraday/connection.rb#507
+  # source://faraday//lib/faraday/connection.rb#508
   def with_uri_credentials(uri); end
 end
 
