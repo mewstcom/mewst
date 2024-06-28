@@ -20,6 +20,8 @@ ja:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname}) のプロフィール"
+      public:
+        show: パブリックタイムライン
       search:
         show: 検索
       settings:

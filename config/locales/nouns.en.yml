@@ -21,6 +21,7 @@ en:
     notifications: Notifications
     post: Post
     profile: Profile
+    public: Public
     rss_feed: RSS feed
     search: Search
     settings: Settings

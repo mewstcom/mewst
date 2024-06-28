@@ -9,9 +9,9 @@
       </turbo-frame>
     </div>
 
-    <hr class="hidden lg:block my-6">
+    <%= render Tabs::TimelineTabsComponent.new(class_name: "mt-6") %>
 
-    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4 lg:py-0") %>
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4") %>
 
     <% if @posts.present? %>
       <div class="flex justify-center mt-4">
