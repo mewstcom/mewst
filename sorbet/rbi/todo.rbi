@@ -6,6 +6,7 @@
 
 module ::RedisClient::PIDCache::CoreExt; end
 module Capybara::Cuprite::Driver; end
+module RSpec::Core::ExampleGroup; end
 module V1::FollowForm; end
 module V1::PostForm; end
 module V1::StampForm; end
