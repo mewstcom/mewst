@@ -12,18 +12,16 @@
     <%= render Forms::KeywordSearchFormComponent.new(form: @form, form_url: search_profile_list_path) %>
 
     <%= render Mewst::UI::Tabs.new(class_name: "mt-4") do |component| %>
-      <% component.with_item(active: true) do %>
-        <%= link_to(t("nouns.profile"), search_profile_list_path(q: @form.q)) %>
+      <% component.with_item(href: search_profile_list_path(q: @form.q), active: true) do %>
+        <%= t("nouns.profile") %>
       <% end %>
 
-      <% component.with_item do %>
-        <%= link_to("#", class: "text-gray-500", role: "tab") do %>
-          <%= t("nouns.post") %>
+      <% component.with_item(href: "#") do %>
+        <%= t("nouns.post") %>
 
-          <span class="ml-1">
-            (<%= t("messages.search.building") %>)
-          </span>
-        <% end %>
+        <span class="ml-1">
+          (<%= t("messages.search.building") %>)
+        </span>
       <% end %>
     <% end %>
 

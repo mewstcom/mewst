@@ -1,3 +1,7 @@
-<%= tag.span(class: class_names("font-semibold h-12 tab", class_name, "tab-active": active), role: "tab") do %>
+<%= tag.a(
+  class: class_names("font-semibold h-12 tab", class_name, "tab-active": active, "text-gray-500": !active),
+  href:,
+  role: "tab"
+) do %>
   <%= content %>
 <% end %>
