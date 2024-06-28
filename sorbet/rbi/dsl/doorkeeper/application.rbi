@@ -629,7 +629,7 @@ class Doorkeeper::Application
     sig { void }
     def confidential_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def created_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -647,10 +647,10 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def created_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -659,7 +659,7 @@ class Doorkeeper::Application
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def created_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -674,7 +674,7 @@ class Doorkeeper::Application
     sig { void }
     def created_at_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(::String) }
     def id; end
 
     sig { params(value: ::String).returns(::String) }
@@ -692,10 +692,10 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def id_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_change; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_change_to_be_saved; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
@@ -704,7 +704,7 @@ class Doorkeeper::Application
     sig { returns(T.nilable(::String)) }
     def id_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_previous_change; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
@@ -713,7 +713,7 @@ class Doorkeeper::Application
     sig { returns(T.nilable(::String)) }
     def id_previously_was; end
 
-    sig { returns(T.nilable(::String)) }
+    sig { returns(::String) }
     def id_value; end
 
     sig { params(value: ::String).returns(::String) }
@@ -731,10 +731,10 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def id_value_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_value_change; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_value_change_to_be_saved; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
@@ -743,7 +743,7 @@ class Doorkeeper::Application
     sig { returns(T.nilable(::String)) }
     def id_value_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def id_value_previous_change; end
 
     sig { params(from: ::String, to: ::String).returns(T::Boolean) }
@@ -890,19 +890,19 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def saved_change_to_confidential?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_id; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_id?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_id_value; end
 
     sig { returns(T::Boolean) }
@@ -938,7 +938,7 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def saved_change_to_uid?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
     sig { returns(T::Boolean) }
@@ -1079,7 +1079,7 @@ class Doorkeeper::Application
     sig { void }
     def uid_will_change!; end
 
-    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    sig { returns(::ActiveSupport::TimeWithZone) }
     def updated_at; end
 
     sig { params(value: ::ActiveSupport::TimeWithZone).returns(::ActiveSupport::TimeWithZone) }
@@ -1097,10 +1097,10 @@ class Doorkeeper::Application
     sig { returns(T::Boolean) }
     def updated_at_came_from_user?; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change_to_be_saved; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
@@ -1109,7 +1109,7 @@ class Doorkeeper::Application
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def updated_at_in_database; end
 
-    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_previous_change; end
 
     sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
