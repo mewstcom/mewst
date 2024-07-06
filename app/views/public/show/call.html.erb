@@ -11,7 +11,7 @@
 
     <%= render Tabs::TimelineTabsComponent.new(class_name: "mt-0 lg:mt-6") %>
 
-    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4") %>
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, follow_checker: @follow_checker, class_name: "py-4") %>
 
     <div class="flex justify-center mt-4">
       <%= render Paginations::PaginationComponent.new(

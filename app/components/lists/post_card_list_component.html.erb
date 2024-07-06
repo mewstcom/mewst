@@ -1,5 +1,5 @@
 <div class="<%= class_names("flex flex-col gap-4", class_name) %>" id="post-card-list">
   <% posts.each do |post| %>
-    <%= render Cards::PostCardComponent.new(post:, stamp_checker:) %>
+    <%= render Cards::PostCardComponent.new(post:, stamp_checker:, follow_checker:) %>
   <% end %>
 </div>

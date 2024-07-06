@@ -21,6 +21,7 @@ class Public::ShowController < ApplicationController
     @posts = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
     @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: @posts)
+    @follow_checker = FollowChecker.new(profile: viewer!.profile, target_profiles: @posts.map(&:profile))
   rescue ActiveRecordCursorPaginate::InvalidCursorError
     redirect_to(public_path, status: :moved_permanently)
   end

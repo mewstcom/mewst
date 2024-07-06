@@ -3,7 +3,8 @@
     <%= render EntryHeaders::BasicEntryHeaderComponent.new(
       profile: post.profile,
       time: post.published_at,
-      detail_path: profile_post_path(post.profile.atname, post.id)
+      detail_path: profile_post_path(post.profile.atname, post.id),
+      follow_checker:
     ) %>
 
     <%= render Cards::PostCard::BodyComponent.new(post:) %>
