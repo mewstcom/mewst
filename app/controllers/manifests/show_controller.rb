@@ -6,7 +6,7 @@ class Manifests::ShowController < ApplicationController
   def call
     respond_to do |format|
       format.json { render(layout: false) }
-      format.any  { render(plain: "Not Found", status: :not_found) }
+      format.any { render(plain: "Not Found", status: :not_found) }
     end
   end
 end
