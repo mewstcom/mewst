@@ -1,0 +1,24 @@
+<% title = t("meta.title.public.show") %>
+<% set_meta_tags(title:) %>
+
+<%= render ::Layouts::BasicLayoutComponent.new do %>
+  <%= render Containers::BasicContainerComponent.new do %>
+    <div class="hidden lg:block">
+      <turbo-frame id="post-form">
+        <%= render Forms::PostFormComponent.new(form: @form) %>
+      </turbo-frame>
+    </div>
+
+    <%= render Tabs::TimelineTabsComponent.new(class_name: "mt-0 lg:mt-6") %>
+
+    <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4") %>
+
+    <div class="flex justify-center mt-4">
+      <%= render Paginations::PaginationComponent.new(
+        page_info: @page_info,
+        previous_path: public_path(before: @page_info.previous_cursor),
+        next_path: public_path(after: @page_info.next_cursor)
+      ) %>
+    </div>
+  <% end %>
+<% end %>

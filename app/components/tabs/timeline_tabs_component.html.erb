@@ -1,0 +1,9 @@
+<%= render Mewst::UI::Tabs.new(class_name:) do |component| %>
+  <% component.with_item(href: home_path, active: current_page?("/home")) do %>
+    <%= t("nouns.home") %>
+  <% end %>
+
+  <% component.with_item(href: public_path, active: current_page?("/public")) do %>
+    <%= t("nouns.public") %>
+  <% end %>
+<% end %>

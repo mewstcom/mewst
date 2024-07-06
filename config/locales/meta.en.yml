@@ -20,6 +20,8 @@ en:
         show: "%{name} (@%{atname}): %{content}"
       profiles:
         show: "%{name} (@%{atname})'s profile"
+      public:
+        show: Public timeline
       search:
         show: Search
       settings:

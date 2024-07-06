@@ -23,11 +23,6 @@ class Post < ApplicationRecord
 
   validates :content, length: {maximum: MAXIMUM_CONTENT_LENGTH}, presence: true
 
-  sig { returns(String) }
-  def timeline_score
-    published_at.strftime("%s%L")
-  end
-
   sig { params(profile: Profile).returns(T::Boolean) }
   def stamped_by?(profile:)
     stamps.include?(profile:)
