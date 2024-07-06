@@ -35,14 +35,13 @@
               </span>
             </div>
 
-            <%= f.email_field(
-              :email,
+            <%= f.email_field(:email, {
               autocomplete: "username",
               autofocus: true,
               disabled: SignUpStopper.enabled?,
               class: "input input-bordered w-full",
               required: true
-            ) %>
+            }) %>
           <% end %>
 
           <div class="mt-8 text-center">

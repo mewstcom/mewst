@@ -7,7 +7,6 @@ class SessionForm < ApplicationForm
 
   validates :email, email: true, presence: true
   validates :password, presence: true
-  validates :user, presence: true
   validate :authentication
 
   sig { returns(T.nilable(User)) }
@@ -17,7 +16,7 @@ class SessionForm < ApplicationForm
 
   sig { void }
   private def authentication
-    unless user.not_nil!.authenticate(password)
+    unless user&.authenticate(password)
       errors.add(:base, :unauthenticated)
     end
   end
