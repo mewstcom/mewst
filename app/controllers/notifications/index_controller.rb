@@ -26,5 +26,7 @@ class Notifications::IndexController < ApplicationController
       profile: viewer!.profile.not_nil!,
       target_profiles: @notifications.map(&:source_profile)
     )
+  rescue ActiveRecordCursorPaginate::InvalidCursorError
+    redirect_to(notification_list_path, status: :moved_permanently)
   end
 end

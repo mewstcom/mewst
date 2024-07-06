@@ -27,5 +27,7 @@ class Followees::IndexController < ApplicationController
     @followees = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
     @follow_checker = FollowChecker.new(profile: viewer!.profile.not_nil!, target_profiles: @followees)
+  rescue ActiveRecordCursorPaginate::InvalidCursorError
+    redirect_to(followee_list_path, status: :moved_permanently)
   end
 end
