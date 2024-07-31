@@ -653,10 +653,10 @@ class Faraday::Connection
   # @api private
   # @return [Faraday::Connection]
   #
-  # source://faraday//lib/faraday/connection.rb#490
+  # source://faraday//lib/faraday/connection.rb#491
   def dup; end
 
-  # source://faraday//lib/faraday/connection.rb#533
+  # source://faraday//lib/faraday/connection.rb#534
   def find_default_proxy; end
 
   # source://faraday//lib/faraday/connection.rb#199
@@ -766,10 +766,10 @@ class Faraday::Connection
   # source://faraday//lib/faraday/connection.rb#333
   def proxy=(new_value); end
 
-  # source://faraday//lib/faraday/connection.rb#541
+  # source://faraday//lib/faraday/connection.rb#542
   def proxy_for_request(url); end
 
-  # source://faraday//lib/faraday/connection.rb#513
+  # source://faraday//lib/faraday/connection.rb#514
   def proxy_from_env(url); end
 
   # source://faraday//lib/faraday/connection.rb#279
@@ -809,7 +809,7 @@ class Faraday::Connection
 
   # @return [Boolean]
   #
-  # source://faraday//lib/faraday/connection.rb#551
+  # source://faraday//lib/faraday/connection.rb#552
   def support_parallel?(adapter); end
 
   # source://faraday//lib/faraday/connection.rb#199
@@ -851,7 +851,7 @@ class Faraday::Connection
   # @yieldparam username [String] any username from URI
   # @yieldparam password [String] any password from URI
   #
-  # source://faraday//lib/faraday/connection.rb#507
+  # source://faraday//lib/faraday/connection.rb#508
   def with_uri_credentials(uri); end
 end
 
@@ -1290,6 +1290,11 @@ end
 # source://faraday//lib/faraday/error.rb#104
 class Faraday::ForbiddenError < ::Faraday::ClientError; end
 
+# Raised by Faraday::Middleware and subclasses when invalid default_options are used
+#
+# source://faraday//lib/faraday/error.rb#163
+class Faraday::InitializationError < ::Faraday::Error; end
+
 # source://faraday//lib/faraday/logging/formatter.rb#6
 module Faraday::Logging; end
 
@@ -1381,31 +1386,65 @@ Faraday::METHODS_WITH_QUERY = T.let(T.unsafe(nil), Array)
 
 # Middleware is the basic base class of any Faraday middleware.
 #
-# source://faraday//lib/faraday/middleware.rb#5
+# source://faraday//lib/faraday/middleware.rb#7
 class Faraday::Middleware
   extend ::Faraday::MiddlewareRegistry
 
   # @return [Middleware] a new instance of Middleware
   #
-  # source://faraday//lib/faraday/middleware.rb#10
+  # source://faraday//lib/faraday/middleware.rb#15
   def initialize(app = T.unsafe(nil), options = T.unsafe(nil)); end
 
   # Returns the value of attribute app.
   #
-  # source://faraday//lib/faraday/middleware.rb#8
+  # source://faraday//lib/faraday/middleware.rb#10
   def app; end
 
-  # source://faraday//lib/faraday/middleware.rb#15
+  # source://faraday//lib/faraday/middleware.rb#54
   def call(env); end
 
-  # source://faraday//lib/faraday/middleware.rb#25
+  # source://faraday//lib/faraday/middleware.rb#64
   def close; end
 
   # Returns the value of attribute options.
   #
-  # source://faraday//lib/faraday/middleware.rb#8
+  # source://faraday//lib/faraday/middleware.rb#10
   def options; end
+
+  class << self
+    # default_options attr_reader that initializes class instance variable
+    # with the values of any Faraday::Middleware defaults, and merges with
+    # subclass defaults
+    #
+    # source://faraday//lib/faraday/middleware.rb#39
+    def default_options; end
+
+    # Faraday::Middleware::default_options= allows user to set default options at the Faraday::Middleware
+    # class level.
+    #
+    # my_app/config/initializers/my_faraday_middleware.rb
+    #
+    # Faraday::Response::RaiseError.default_options = { include_request: false }
+    #
+    # @example Set the Faraday::Response::RaiseError option, `include_request` to `false`
+    #
+    # source://faraday//lib/faraday/middleware.rb#29
+    def default_options=(options = T.unsafe(nil)); end
+
+    private
+
+    # @raise [Faraday::InitializationError]
+    #
+    # source://faraday//lib/faraday/middleware.rb#45
+    def validate_default_options(options); end
+  end
 end
+
+# source://faraday//lib/faraday/middleware.rb#12
+Faraday::Middleware::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
+
+# source://faraday//lib/faraday/middleware.rb#13
+Faraday::Middleware::LOCK = T.let(T.unsafe(nil), Thread::Mutex)
 
 # Adds the ability for other modules to register and lookup
 # middleware classes.
@@ -2430,10 +2469,10 @@ end
 #
 # source://faraday//lib/faraday/response/raise_error.rb#7
 class Faraday::Response::RaiseError < ::Faraday::Middleware
-  # source://faraday//lib/faraday/response/raise_error.rb#13
+  # source://faraday//lib/faraday/response/raise_error.rb#15
   def on_complete(env); end
 
-  # source://faraday//lib/faraday/response/raise_error.rb#75
+  # source://faraday//lib/faraday/response/raise_error.rb#77
   def query_params(env); end
 
   # Returns a hash of response data with the following keys:
@@ -2445,12 +2484,15 @@ class Faraday::Response::RaiseError < ::Faraday::Middleware
   # The `request` key is omitted when the middleware is explicitly
   # configured with the option `include_request: false`.
   #
-  # source://faraday//lib/faraday/response/raise_error.rb#52
+  # source://faraday//lib/faraday/response/raise_error.rb#54
   def response_values(env); end
 end
 
 # source://faraday//lib/faraday/response/raise_error.rb#9
 Faraday::Response::RaiseError::ClientErrorStatuses = T.let(T.unsafe(nil), Range)
+
+# source://faraday//lib/faraday/response/raise_error.rb#13
+Faraday::Response::RaiseError::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 # source://faraday//lib/faraday/response/raise_error.rb#10
 Faraday::Response::RaiseError::ServerErrorStatuses = T.let(T.unsafe(nil), Range)
