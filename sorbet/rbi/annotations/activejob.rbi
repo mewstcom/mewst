@@ -27,7 +27,7 @@ class ActiveJob::Base
   def self.before_perform(*filters, &blk); end
 
   sig { type_parameters(:ExceptionType).params(exceptions: T::Class[T.type_parameter(:ExceptionType)], block: T.nilable(T.proc.params(job: T.attached_class, error: T.type_parameter(:ExceptionType)).void)).void }
-  sig { params(exceptions: String, block: T.nilable(T.proc.params(job: T.attached_class, error: T.untyped).void)).void }
+  sig { params(exceptions: T.any(Module, String), block: T.nilable(T.proc.params(job: T.attached_class, error: T.untyped).void)).void }
   def self.discard_on(*exceptions, &block); end
 
   sig { params(klasses: T.any(Module, String), with: T.nilable(Symbol), block: T.nilable(T.proc.params(exception: T.untyped).void)).void }
