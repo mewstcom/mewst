@@ -1,9 +1,11 @@
 .DS_Store
 
 /.bundle
+/.devcontainer
 /.env.*.local
 /.env.local
 /.idea
+/.vscode
 /app/assets/builds/*
 /config/master.key
 /docker-compose.override.yml
