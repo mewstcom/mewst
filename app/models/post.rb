@@ -27,4 +27,20 @@ class Post < ApplicationRecord
   def stamped_by?(profile:)
     stamps.include?(profile:)
   end
+
+  sig { returns(T.nilable(Post)) }
+  def prev_post
+    Post.where(profile_id: profile_id).kept.
+      where("published_at < ?", published_at).
+      order(published_at: :desc, id: :desc).
+      first
+  end
+
+  sig { returns(T.nilable(Post)) }
+  def next_post
+    Post.where(profile_id: profile_id).kept.
+      where("published_at > ?", published_at).
+      order(published_at: :asc, id: :asc).
+      first
+  end
 end
