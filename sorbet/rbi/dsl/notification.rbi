@@ -560,6 +560,9 @@ class Notification
     def merge(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def nil_classes(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def none(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -1167,8 +1170,17 @@ class Notification
   end
 
   module GeneratedDelegatedTypeMethods
-    sig { params(args: T.untyped).returns(T.any(Stamp)) }
+    sig { params(args: T.untyped).returns(T.any(Stamp, NilClass)) }
     def build_notifiable(*args); end
+
+    sig { returns(T.nilable(NilClass)) }
+    def nil_class; end
+
+    sig { returns(T::Boolean) }
+    def nil_class?; end
+
+    sig { returns(T.nilable(::String)) }
+    def nil_class_id; end
 
     sig { returns(T::Class[T.anything]) }
     def notifiable_class; end
@@ -1252,6 +1264,9 @@ class Notification
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def merge(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def nil_classes(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def none(*args, &blk); end
