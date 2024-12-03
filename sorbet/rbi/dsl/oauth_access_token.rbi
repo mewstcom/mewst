@@ -16,6 +16,16 @@ class OauthAccessToken
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(::OauthAccessToken)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::OauthAccessToken).returns(T.untyped))).returns(T::Boolean) }
     def any?(&block); end
@@ -23,6 +33,13 @@ class OauthAccessToken
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)).returns(::OauthAccessToken) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -38,6 +55,13 @@ class OauthAccessToken
     sig { params(column_name: NilClass, block: T.proc.params(object: ::OauthAccessToken).void).returns(Integer) }
     def count(column_name = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)).returns(::OauthAccessToken) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -46,6 +70,13 @@ class OauthAccessToken
     end
     def create(attributes = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)).returns(::OauthAccessToken) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -56,12 +87,24 @@ class OauthAccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
       ).returns(::OauthAccessToken)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -150,6 +193,12 @@ class OauthAccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
       ).returns(::OauthAccessToken)
@@ -158,12 +207,24 @@ class OauthAccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
       ).returns(::OauthAccessToken)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -181,7 +242,7 @@ class OauthAccessToken
     sig { params(arg: T.untyped, args: T.untyped).returns(::OauthAccessToken) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OauthAccessToken)) }
+    sig { returns(T.nilable(::OauthAccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::OauthAccessToken]) }
     def first(limit = nil); end
 
@@ -231,7 +292,7 @@ class OauthAccessToken
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OauthAccessToken)) }
+    sig { returns(T.nilable(::OauthAccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::OauthAccessToken]) }
     def last(limit = nil); end
 
@@ -250,6 +311,13 @@ class OauthAccessToken
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)).returns(::OauthAccessToken) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::OauthAccessToken).void)
+      ).returns(T::Array[::OauthAccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -295,7 +363,7 @@ class OauthAccessToken
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::OauthAccessToken)) }
+    sig { returns(T.nilable(::OauthAccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::OauthAccessToken]) }
     def take(limit = nil); end
 
@@ -357,6 +425,12 @@ class OauthAccessToken
 
     sig { params(value: T.nilable(::Actor)).void }
     def resource_owner=(value); end
+
+    sig { returns(T::Boolean) }
+    def resource_owner_changed?; end
+
+    sig { returns(T::Boolean) }
+    def resource_owner_previously_changed?; end
   end
 
   module GeneratedAssociationRelationMethods
@@ -538,8 +612,9 @@ class OauthAccessToken
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -1314,8 +1389,9 @@ class OauthAccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1372,7 +1448,7 @@ class OauthAccessToken
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::OauthAccessToken } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1514,7 +1590,7 @@ class OauthAccessToken
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::OauthAccessToken } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

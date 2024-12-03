@@ -16,6 +16,16 @@ class Doorkeeper::AccessToken
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(::Doorkeeper::AccessToken)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig do
       params(
@@ -27,6 +37,17 @@ class Doorkeeper::AccessToken
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(::Doorkeeper::AccessToken)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -49,12 +70,34 @@ class Doorkeeper::AccessToken
 
     sig do
       params(
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(::Doorkeeper::AccessToken)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
       ).returns(::Doorkeeper::AccessToken)
     end
     def create(attributes = nil, &block); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(::Doorkeeper::AccessToken)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -65,12 +108,24 @@ class Doorkeeper::AccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
       ).returns(::Doorkeeper::AccessToken)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -159,6 +214,12 @@ class Doorkeeper::AccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
       ).returns(::Doorkeeper::AccessToken)
@@ -167,12 +228,24 @@ class Doorkeeper::AccessToken
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
       ).returns(::Doorkeeper::AccessToken)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -190,7 +263,7 @@ class Doorkeeper::AccessToken
     sig { params(arg: T.untyped, args: T.untyped).returns(::Doorkeeper::AccessToken) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Doorkeeper::AccessToken)) }
+    sig { returns(T.nilable(::Doorkeeper::AccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::Doorkeeper::AccessToken]) }
     def first(limit = nil); end
 
@@ -240,7 +313,7 @@ class Doorkeeper::AccessToken
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Doorkeeper::AccessToken)) }
+    sig { returns(T.nilable(::Doorkeeper::AccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::Doorkeeper::AccessToken]) }
     def last(limit = nil); end
 
@@ -263,6 +336,17 @@ class Doorkeeper::AccessToken
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(::Doorkeeper::AccessToken)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Doorkeeper::AccessToken).void)
+      ).returns(T::Array[::Doorkeeper::AccessToken])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -316,7 +400,7 @@ class Doorkeeper::AccessToken
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Doorkeeper::AccessToken)) }
+    sig { returns(T.nilable(::Doorkeeper::AccessToken)) }
     sig { params(limit: Integer).returns(T::Array[::Doorkeeper::AccessToken]) }
     def take(limit = nil); end
 
@@ -342,6 +426,12 @@ class Doorkeeper::AccessToken
 
     sig { params(value: T.nilable(::OauthApplication)).void }
     def application=(value); end
+
+    sig { returns(T::Boolean) }
+    def application_changed?; end
+
+    sig { returns(T::Boolean) }
+    def application_previously_changed?; end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def build_application(*args, &blk); end
@@ -538,8 +628,9 @@ class Doorkeeper::AccessToken
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -1314,8 +1405,9 @@ class Doorkeeper::AccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1372,7 +1464,7 @@ class Doorkeeper::AccessToken
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::Doorkeeper::AccessToken } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1514,7 +1606,7 @@ class Doorkeeper::AccessToken
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::Doorkeeper::AccessToken } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

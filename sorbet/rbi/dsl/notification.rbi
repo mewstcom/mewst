@@ -17,6 +17,16 @@ class Notification
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(::Notification)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig { params(block: T.nilable(T.proc.params(record: ::Notification).returns(T.untyped))).returns(T::Boolean) }
     def any?(&block); end
@@ -24,6 +34,13 @@ class Notification
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::Notification).void)).returns(::Notification) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -39,6 +56,13 @@ class Notification
     sig { params(column_name: NilClass, block: T.proc.params(object: ::Notification).void).returns(Integer) }
     def count(column_name = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::Notification).void)).returns(::Notification) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -47,6 +71,13 @@ class Notification
     end
     def create(attributes = nil, &block); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::Notification).void)).returns(::Notification) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -57,12 +88,24 @@ class Notification
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Notification).void)
       ).returns(::Notification)
     end
     def create_or_find_by(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -151,6 +194,12 @@ class Notification
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Notification).void)
       ).returns(::Notification)
@@ -159,12 +208,24 @@ class Notification
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::Notification).void)
       ).returns(::Notification)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -182,7 +243,7 @@ class Notification
     sig { params(arg: T.untyped, args: T.untyped).returns(::Notification) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Notification)) }
+    sig { returns(T.nilable(::Notification)) }
     sig { params(limit: Integer).returns(T::Array[::Notification]) }
     def first(limit = nil); end
 
@@ -232,7 +293,7 @@ class Notification
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Notification)) }
+    sig { returns(T.nilable(::Notification)) }
     sig { params(limit: Integer).returns(T::Array[::Notification]) }
     def last(limit = nil); end
 
@@ -251,6 +312,13 @@ class Notification
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig { params(block: T.nilable(T.proc.params(object: ::Notification).void)).returns(::Notification) }
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::Notification).void)
+      ).returns(T::Array[::Notification])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -296,7 +364,7 @@ class Notification
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::Notification)) }
+    sig { returns(T.nilable(::Notification)) }
     sig { params(limit: Integer).returns(T::Array[::Notification]) }
     def take(limit = nil); end
 
@@ -341,6 +409,12 @@ class Notification
     sig { params(value: T.untyped).void }
     def notifiable=(value); end
 
+    sig { returns(T::Boolean) }
+    def notifiable_changed?; end
+
+    sig { returns(T::Boolean) }
+    def notifiable_previously_changed?; end
+
     sig { returns(T.untyped) }
     def reload_notifiable; end
 
@@ -365,11 +439,23 @@ class Notification
     sig { params(value: T.nilable(::Profile)).void }
     def source_profile=(value); end
 
+    sig { returns(T::Boolean) }
+    def source_profile_changed?; end
+
+    sig { returns(T::Boolean) }
+    def source_profile_previously_changed?; end
+
     sig { returns(T.nilable(::Profile)) }
     def target_profile; end
 
     sig { params(value: T.nilable(::Profile)).void }
     def target_profile=(value); end
+
+    sig { returns(T::Boolean) }
+    def target_profile_changed?; end
+
+    sig { returns(T::Boolean) }
+    def target_profile_previously_changed?; end
   end
 
   module GeneratedAssociationRelationMethods
@@ -554,8 +640,9 @@ class Notification
     end
     def upsert_all(attributes, returning: nil, unique_by: nil); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
@@ -1229,8 +1316,9 @@ class Notification
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
@@ -1287,7 +1375,7 @@ class Notification
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::Notification } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -1429,7 +1517,7 @@ class Notification
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::Notification } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }
