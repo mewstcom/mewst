@@ -7,6 +7,7 @@
 /.idea
 /.vscode
 /app/assets/builds/*
+/bin/sync
 /config/master.key
 /docker-compose.override.yml
 /log/*
