@@ -34,7 +34,10 @@ Capybara.register_driver(:mewst_cuprite) do |app|
     app,
     browser_options: remote_chrome ? {"no-sandbox" => nil} : {},
     inspector: true,
-    window_size: [1200, 800], **remote_options
+    window_size: [1200, 800],
+    # GitHub Actionsでのテスト実行時にChromeが起動するまでに時間がかかるため、タイムアウトを長く設定する
+    process_timeout: 60,
+    **remote_options
   )
 end
 
