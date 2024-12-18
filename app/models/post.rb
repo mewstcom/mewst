@@ -20,6 +20,7 @@ class Post < ApplicationRecord
   has_one :link, through: :post_link
 
   scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }
+  scope :ordered, -> { order(published_at: :desc, id: :desc) }
 
   validates :content, length: {maximum: MAXIMUM_CONTENT_LENGTH}, presence: true
 
@@ -30,17 +31,11 @@ class Post < ApplicationRecord
 
   sig { returns(T.nilable(Post)) }
   def prev_post
-    Post.where(profile_id: profile_id).kept.
-      where("published_at < ?", published_at).
-      order(published_at: :desc, id: :desc).
-      first
+    @prev_post ||= profile.posts.kept.where(id: ...id).ordered.first
   end
 
   sig { returns(T.nilable(Post)) }
   def next_post
-    Post.where(profile_id: profile_id).kept.
-      where("published_at > ?", published_at).
-      order(published_at: :asc, id: :asc).
-      first
+    @next_post ||= profile.posts.kept.where(Post.arel_table[:id].gt(id)).ordered.first
   end
 end
