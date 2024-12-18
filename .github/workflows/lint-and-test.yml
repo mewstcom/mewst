@@ -90,6 +90,8 @@ jobs:
           npm install --global yarn@1.22.19
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 133.0.6893.0
       - run: chrome --version
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
