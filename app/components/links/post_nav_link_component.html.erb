@@ -1,15 +1,23 @@
-<div class="flex items-center justify-between">
-  <% if post.prev_post %>
-    <div class="flex flex-col gap-2">
-      <div class="text-gray-500 text-sm">
-        <%= t("nouns.prev_post") %>
+<%= link_to profile_post_path(post.profile.atname, post.id), {
+  class: "duration-200 ease-in-out hover:ring-1 hover:ring-primary inline-block rounded-2xl transition w-full"
+} do %>
+  <%= render Mewst::UI::Card.new do %>
+    <%= render Mewst::UI::Card::Body.new do %>
+      <div class="<%= class_names("flex gap-4 items-center", "flex-row-reverse": next?) %>">
+        <div class="basis-[18px]">
+          <%= render Mewst::UI::Icon.new(name: icon_name, size: "18px") %>
+        </div>
+
+        <div class="<%= class_names("flex flex-col gap-1", "flex-row-reverse": next?) %>">
+          <div class="<%= class_names("text-gray-400 text-xs", "text-right": next?) %>">
+            <%= direction_text %>
+          </div>
+
+          <div class="h-[40px] line-clamp-2 text-sm">
+            <%= post.content %>
+          </div>
+        </div>
       </div>
-
-      <%= render Cards::PostNavLinkCardComponent.new(post: post.prev_post) %>
-    </div>
+    <% end %>
   <% end %>
-
-  <% if post.next_post %>
-    <%= render Cards::PostNavLinkCardComponent.new(post: post.next_post) %>
-  <% end %>
-</div>
+<% end %>

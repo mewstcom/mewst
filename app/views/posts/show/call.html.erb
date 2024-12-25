@@ -6,7 +6,25 @@
     <div class="flex flex-col gap-4">
       <%= render Cards::DetailedPostCardComponent.new(post: @post, stamp_checker: @stamp_checker) %>
 
-      <%= render Links::PostNavLinkComponent.new(post: @post) %>
+      <div class="flex gap-4 items-center justify-between">
+        <div class="basis-1/2">
+          <% if @post.prev_post %>
+            <%= render Links::PostNavLinkComponent.new(
+              post: @post.prev_post,
+              direction: Links::PostNavLinkComponent::Direction::Prev
+            ) %>
+          <% end %>
+        </div>
+
+        <div class="basis-1/2">
+          <% if @post.next_post %>
+            <%= render Links::PostNavLinkComponent.new(
+              post: @post.next_post,
+              direction: Links::PostNavLinkComponent::Direction::Next
+            ) %>
+          <% end %>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>
