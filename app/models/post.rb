@@ -20,11 +20,22 @@ class Post < ApplicationRecord
   has_one :link, through: :post_link
 
   scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }
+  scope :ordered, -> { order(published_at: :desc, id: :desc) }
 
   validates :content, length: {maximum: MAXIMUM_CONTENT_LENGTH}, presence: true
 
   sig { params(profile: Profile).returns(T::Boolean) }
   def stamped_by?(profile:)
     stamps.include?(profile:)
+  end
+
+  sig { returns(T.nilable(Post)) }
+  def prev_post
+    @prev_post ||= profile.posts.kept.where(id: ...id).ordered.first
+  end
+
+  sig { returns(T.nilable(Post)) }
+  def next_post
+    @next_post ||= profile.posts.kept.where(Post.arel_table[:id].gt(id)).ordered.first
   end
 end
