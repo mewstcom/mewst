@@ -1,0 +1,5 @@
+<%= render Mewst::UI::Card.new do %>
+  <%= render Mewst::UI::Card::Body.new do %>
+    <%= post.content.truncate(10) %>
+  <% end %>
+<% end %>
