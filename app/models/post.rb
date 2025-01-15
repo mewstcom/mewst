@@ -32,11 +32,11 @@ class Post < ApplicationRecord
 
   sig { returns(T.nilable(Post)) }
   def prev_post
-    profile.posts.kept.where(id: ...id).order_by_recent.first
+    profile.not_nil!.posts.kept.where(id: ...id).order_by_recent.first
   end
 
   sig { returns(T.nilable(Post)) }
   def next_post
-    profile.posts.kept.where(Post.arel_table[:id].gt(id)).order_by_oldest.first
+    profile.not_nil!.posts.kept.where(Post.arel_table[:id].gt(id)).order_by_oldest.first
   end
 end
