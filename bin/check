@@ -7,8 +7,8 @@ end
 puts "=== 型を更新中..."
 system!("bin/rails sorbet:update")
 
-# puts "\n=== Prettierを実行中..."
-# system!("yarn prettier . --write")
+puts "\n=== Prettierを実行中..."
+system!("yarn prettier . --write")
 
 puts "\n=== ERB Lintを実行中..."
 system!("bin/erb_lint --lint-all")
