@@ -1,6 +1,6 @@
 <%= render Mewst::UI::Card.new do %>
   <%= render Mewst::UI::Card::Body.new do %>
-    <div class="flex flex-row gap-2 items-center">
+    <div class="flex flex-row items-center gap-2">
       <div class="flex-none">
         <%= link_to profile_path(post.profile.atname) do %>
           <%= render Images::ProfileAvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
@@ -14,7 +14,7 @@
           </div>
         <% end %>
 
-        <div class="text-gray-500 text-sm">
+        <div class="text-sm text-gray-500">
           @<%= profile.atname %>
         </div>
       <% end %>
@@ -39,7 +39,7 @@
         class: "text-gray-500 text-sm"
       ) %>
 
-      <span class="text-gray-500 text-sm">
+      <span class="text-sm text-gray-500">
         via <%= post.oauth_application.name %>
       </span>
     </div>

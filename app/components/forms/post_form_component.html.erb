@@ -12,14 +12,14 @@
 
   <label class="form-control">
     <div class="label pt-0">
-      <span class="font-bold label-text">
+      <span class="label-text font-bold">
         <%= t("messages.whats_happening") %>
       </span>
     </div>
 
     <%= f.hidden_field :with_frame %>
 
-    <div class="leading-none p-0 textarea textarea-bordered w-full">
+    <div class="textarea textarea-bordered w-full p-0 leading-none">
       <%= f.text_area(
         :content,
         autofocus: true,
@@ -41,7 +41,7 @@
 
         <div class="text-right">
           <span
-            class="text-gray-500 text-sm"
+            class="text-sm text-gray-500"
             data-character-counter-target="counter"
           ></span>
         </div>

@@ -21,12 +21,12 @@
       <hr class="my-1">
 
       <%= render Mewst::UI::Dropdown::Item.new do %>
-        <%= link_to t("verbs.delete"), post_path(post.id),
+        <%= link_to t("verbs.delete"), post_path(post.id), {
           data: {
             turbo_confirm: t("messages.posts.are_you_sure_to_delete_post"),
             turbo_method: :delete
           }
-        %>
+        } %>
       <% end %>
     <% end %>
   <% end %>

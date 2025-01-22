@@ -8,7 +8,7 @@
       <%= t("nouns.settings") %>
     <% end %>
 
-    <h1 class="antialiased font-semibold mt-2 text-2xl">
+    <h1 class="mt-2 text-2xl font-semibold antialiased">
       <%= title %>
     </h1>
 
@@ -65,10 +65,10 @@
 
               <div class="flex flex-col gap-4">
                 <div>
-                  <label class="cursor-pointer flex gap-2 items-center">
+                  <label class="flex cursor-pointer items-center gap-2">
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::Default.serialize, class: "radio" %>
 
-                    <div class="pt-[6px] text-center w-[30px]">
+                    <div class="w-[30px] pt-[6px] text-center">
                       <%= render Images::AvatarImageComponent.new(image_url: asset_url("avatar.png"), class_name: "w-[25px]", width: 25) %>
                     </div>
 
@@ -79,11 +79,11 @@
                 </div>
 
                 <div>
-                  <label class="cursor-pointer flex gap-2 items-center">
+                  <label class="flex cursor-pointer items-center gap-2">
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::Gravatar.serialize, class: "radio" %>
 
                     <% if viewer!.gravatar_url.present? %>
-                      <div class="pt-[6px] text-center w-[30px]">
+                      <div class="w-[30px] pt-[6px] text-center">
                         <%= render Images::AvatarImageComponent.new(image_url: viewer!.gravatar_url, class_name: "w-[25px]", width: 25) %>
                       </div>
                     <% else %>
@@ -116,11 +116,11 @@
                 </div>
 
                 <div>
-                  <label class="cursor-pointer flex gap-2 items-center">
+                  <label class="flex cursor-pointer items-center gap-2">
                     <%= f.radio_button :avatar_kind, ProfileAvatarKind::External.serialize, class: "radio" %>
 
                     <% if viewer!.image_url.present? %>
-                      <div class="pt-[6px] text-center w-[30px]">
+                      <div class="w-[30px] pt-[6px] text-center">
                         <%= render Images::AvatarImageComponent.new(image_url: viewer!.image_url, class_name: "w-[25px]", width: 25) %>
                       </div>
                     <% else %>

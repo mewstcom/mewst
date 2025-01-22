@@ -3,7 +3,7 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <h1 class="bg-primary font-bold inline-block px-3 py-1 rounded-full">
+    <h1 class="inline-block rounded-full bg-primary px-3 py-1 font-bold">
       Mewst
     </h1>
 
@@ -25,18 +25,18 @@
 
     <hr class="my-6">
 
-    <h2 class="antialiased font-semibold text-xl">
+    <h2 class="text-xl font-semibold antialiased">
       <%= t("nouns.features_of_mewst") %>
     </h2>
 
-    <div class="gap-4 grid grid-cols-1 md:grid-cols-2 mt-4">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
       <% [1, 2, 3, 4].each do |i| %>
         <div>
-          <h3 class="antialiased font-semibold">
+          <h3 class="font-semibold antialiased">
             <%= t("messages.welcome.feature_#{i}.title") %>
           </h3>
 
-          <div class="mt-1 text-gray-500 text-sm">
+          <div class="mt-1 text-sm text-gray-500">
             <%= t("messages.welcome.feature_#{i}.body") %>
           </div>
         </div>

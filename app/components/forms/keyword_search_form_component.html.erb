@@ -1,11 +1,12 @@
 <%= form_with method: :get, model: form, url: form_url do |f| %>
-  <label class="flex gap-2 input input-bordered items-center rounded-full w-full">
+  <label class="input input-bordered flex w-full items-center gap-2 rounded-full">
     <%= render Mewst::UI::Icon.new(name: "search_line") %>
     <%= text_field_tag(:q, f.object.q, {
       autofocus: true,
       class: "grow",
       placeholder: t("nouns.search"),
-      required: true
+      required: true,
+      autocomplete: "off"
     }) %>
   </label>
 <% end %>

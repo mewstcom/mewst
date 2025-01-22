@@ -3,7 +3,7 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <h1 class="antialiased font-semibold text-2xl">
+    <h1 class="text-2xl font-semibold antialiased">
       <%= title %>
     </h1>
 
@@ -12,11 +12,11 @@
     <%= render Forms::KeywordSearchFormComponent.new(form: @form, form_url: search_profile_list_path) %>
 
     <div class="mt-4">
-      <h2 class="antialiased font-semibold text-lg">
+      <h2 class="text-lg font-semibold antialiased">
         <%= t("nouns.suggested_profiles") %>
       </h2>
 
-      <p class="mt-2 text-gray-500 text-sm">
+      <p class="mt-2 text-sm text-gray-500">
         <% if @profiles.present? %>
           <%= t("messages.search.suggested_profiles.exists_html") %>
         <% else %>

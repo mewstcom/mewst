@@ -10,7 +10,7 @@
         <% end %>
       </div>
 
-      <h1 class="font-bold mt-8 text-3xl">
+      <h1 class="mt-8 text-3xl font-bold">
         <%= title %>
       </h1>
 
@@ -19,7 +19,7 @@
       </p>
     </div>
 
-    <div class="bg-base-300 card mt-8">
+    <div class="card mt-8 bg-base-300">
       <div class="card-body">
         <%= form_with model: @form, url: password_reset_path do |f| %>
           <%= render Cards::FormErrorsCardComponent.new(errors: f.object.errors) %>
