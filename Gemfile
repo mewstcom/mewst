@@ -36,6 +36,7 @@ gem "rails_autolink"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sorbet-runtime"
+gem "stackprof" # Sentryで使っている
 gem "strong_migrations"
 gem "view_component"
 
