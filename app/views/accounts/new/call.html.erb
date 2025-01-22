@@ -27,7 +27,11 @@
               </span>
             </div>
 
-            <%= text_field_tag :email, f.object.email, class: "input input-bordered w-full", disabled: true %>
+            <%= text_field_tag :email, f.object.email, {
+              class: "input input-bordered w-full",
+              disabled: true,
+              autocomplete: "off"
+            } %>
 
             <div class="label">
               <span class="label-text-alt">
