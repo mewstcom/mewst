@@ -6401,7 +6401,7 @@ class RDoc::Markup::ToHtmlCrossref < ::RDoc::Markup::ToHtml
   # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#19
   def context=(_arg0); end
 
-  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#185
+  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#187
   def convert_flow(flow); end
 
   # Creates a link to the reference +name+ if the name exists.  If +text+ is
@@ -6413,7 +6413,7 @@ class RDoc::Markup::ToHtmlCrossref < ::RDoc::Markup::ToHtml
   # Generates links for <tt>rdoc-ref:</tt> scheme URLs and allows
   # RDoc::Markup::ToHtml to handle other schemes.
   #
-  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#136
+  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#138
   def gen_url(url, text); end
 
   # We're invoked when any text matches the CROSSREF pattern.  If we find the
@@ -6428,7 +6428,7 @@ class RDoc::Markup::ToHtmlCrossref < ::RDoc::Markup::ToHtml
   # Handles <tt>rdoc-ref:</tt> scheme links and allows RDoc::Markup::ToHtml to
   # handle other schemes.
   #
-  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#102
+  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#104
   def handle_regexp_HYPERLINK(target); end
 
   # +target+ is an rdoc-schemed link that will be converted into a hyperlink.
@@ -6438,7 +6438,7 @@ class RDoc::Markup::ToHtmlCrossref < ::RDoc::Markup::ToHtml
   # All other contents are handled by
   # {the superclass}[rdoc-ref:RDoc::Markup::ToHtml#handle_regexp_RDOCLINK]
   #
-  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#121
+  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#123
   def handle_regexp_RDOCLINK(target); end
 
   # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#46
@@ -6446,7 +6446,7 @@ class RDoc::Markup::ToHtmlCrossref < ::RDoc::Markup::ToHtml
 
   # Creates an HTML link to +name+ with the given +text+.
   #
-  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#148
+  # source://rdoc//lib/rdoc/markup/to_html_crossref.rb#150
   def link(name, text, code = T.unsafe(nil), rdoc_ref: T.unsafe(nil)); end
 
   # Should we show '#' characters on method references?
@@ -7740,11 +7740,26 @@ end
 class RDoc::Options
   # @return [Options] a new instance of Options
   #
-  # source://rdoc//lib/rdoc/options.rb#358
+  # source://rdoc//lib/rdoc/options.rb#366
   def initialize(loaded_options = T.unsafe(nil)); end
 
-  # source://rdoc//lib/rdoc/options.rb#477
+  # source://rdoc//lib/rdoc/options.rb#494
   def ==(other); end
+
+  # Exclude the default patterns as well if true.
+  #
+  # source://rdoc//lib/rdoc/options.rb#360
+  def apply_default_exclude; end
+
+  # Words to be ignored in autolink cross-references
+  #
+  # source://rdoc//lib/rdoc/options.rb#364
+  def autolink_excluded_words; end
+
+  # Words to be ignored in autolink cross-references
+  #
+  # source://rdoc//lib/rdoc/options.rb#364
+  def autolink_excluded_words=(_arg0); end
 
   # Character-set for HTML output.  #encoding is preferred over #charset
   #
@@ -7758,12 +7773,12 @@ class RDoc::Options
 
   # Check that the files on the command line exist
   #
-  # source://rdoc//lib/rdoc/options.rb#502
+  # source://rdoc//lib/rdoc/options.rb#521
   def check_files; end
 
   # Ensure only one generator is loaded
   #
-  # source://rdoc//lib/rdoc/options.rb#523
+  # source://rdoc//lib/rdoc/options.rb#542
   def check_generator; end
 
   # If true, only report on undocumented files
@@ -7780,7 +7795,7 @@ class RDoc::Options
   # from a source file, so that a title set from the command line
   # will have the priority.
   #
-  # source://rdoc//lib/rdoc/options.rb#535
+  # source://rdoc//lib/rdoc/options.rb#554
   def default_title=(string); end
 
   # If true, RDoc will not write any files.
@@ -7821,7 +7836,7 @@ class RDoc::Options
 
   # Create a regexp for #exclude
   #
-  # source://rdoc//lib/rdoc/options.rb#563
+  # source://rdoc//lib/rdoc/options.rb#582
   def exclude; end
 
   # Files matching this pattern will be excluded
@@ -7843,13 +7858,13 @@ class RDoc::Options
   # existent files, creating a regexp for #exclude and setting a default
   # #template.
   #
-  # source://rdoc//lib/rdoc/options.rb#579
+  # source://rdoc//lib/rdoc/options.rb#600
   def finish; end
 
   # Fixes the page_dir to be relative to the root_dir and adds the page_dir to
   # the files list.
   #
-  # source://rdoc//lib/rdoc/options.rb#620
+  # source://rdoc//lib/rdoc/options.rb#641
   def finish_page_dir; end
 
   # Create the output even if the output directory does not look
@@ -7896,7 +7911,7 @@ class RDoc::Options
 
   # Returns a properly-space list of generators and their descriptions.
   #
-  # source://rdoc//lib/rdoc/options.rb#639
+  # source://rdoc//lib/rdoc/options.rb#660
   def generator_descriptions; end
 
   # For #==
@@ -7928,10 +7943,10 @@ class RDoc::Options
   # source://rdoc//lib/rdoc/options.rb#212
   def hyperlink_all=(_arg0); end
 
-  # source://rdoc//lib/rdoc/options.rb#363
+  # source://rdoc//lib/rdoc/options.rb#376
   def init_ivars; end
 
-  # source://rdoc//lib/rdoc/options.rb#410
+  # source://rdoc//lib/rdoc/options.rb#422
   def init_with(map); end
 
   # Include line numbers in the source code
@@ -8020,7 +8035,7 @@ class RDoc::Options
   # source://rdoc//lib/rdoc/options.rb#258
   def output_decoration=(_arg0); end
 
-  # source://rdoc//lib/rdoc/options.rb#442
+  # source://rdoc//lib/rdoc/options.rb#457
   def override(map); end
 
   # Directory where guides, FAQ, and other pages not associated with a class
@@ -8037,7 +8052,7 @@ class RDoc::Options
 
   # Parses command line options.
   #
-  # source://rdoc//lib/rdoc/options.rb#665
+  # source://rdoc//lib/rdoc/options.rb#686
   def parse(argv); end
 
   # Is RDoc in pipe mode?
@@ -8052,12 +8067,12 @@ class RDoc::Options
 
   # Don't display progress as we process the files
   #
-  # source://rdoc//lib/rdoc/options.rb#1225
+  # source://rdoc//lib/rdoc/options.rb#1258
   def quiet; end
 
   # Set quietness to +bool+
   #
-  # source://rdoc//lib/rdoc/options.rb#1232
+  # source://rdoc//lib/rdoc/options.rb#1265
   def quiet=(bool); end
 
   # Array of directories to search for files to satisfy an :include:
@@ -8086,7 +8101,7 @@ class RDoc::Options
 
   # Removes directories from +path+ that are outside the current directory
   #
-  # source://rdoc//lib/rdoc/options.rb#1239
+  # source://rdoc//lib/rdoc/options.rb#1272
   def sanitize_path(path); end
 
   # Set up an output generator for the named +generator_name+.
@@ -8095,7 +8110,7 @@ class RDoc::Options
   # the options instance.  This allows generators to add custom options or set
   # default options.
   #
-  # source://rdoc//lib/rdoc/options.rb#1266
+  # source://rdoc//lib/rdoc/options.rb#1299
   def setup_generator(generator_name = T.unsafe(nil)); end
 
   # Include the '#' at the front of hyperlinked instance method names
@@ -8160,7 +8175,7 @@ class RDoc::Options
 
   # Finds the template dir for +template+
   #
-  # source://rdoc//lib/rdoc/options.rb#1288
+  # source://rdoc//lib/rdoc/options.rb#1321
   def template_dir_for(template); end
 
   # Additional template stylesheets
@@ -8185,7 +8200,7 @@ class RDoc::Options
 
   # For dumping YAML
   #
-  # source://rdoc//lib/rdoc/options.rb#542
+  # source://rdoc//lib/rdoc/options.rb#561
   def to_yaml(*options); end
 
   # Should RDoc update the timestamps in the output dir?
@@ -8224,12 +8239,12 @@ class RDoc::Options
   # When +:all+ is passed, visibility is set to +:private+, similarly to
   # RDOCOPT="--all", see #visibility for more information.
   #
-  # source://rdoc//lib/rdoc/options.rb#1305
+  # source://rdoc//lib/rdoc/options.rb#1338
   def visibility=(visibility); end
 
   # Displays a warning using Kernel#warn if we're being verbose
   #
-  # source://rdoc//lib/rdoc/options.rb#1317
+  # source://rdoc//lib/rdoc/options.rb#1350
   def warn(message); end
 
   # Warn if rdoc-ref links can't be resolved
@@ -8257,10 +8272,10 @@ class RDoc::Options
   # Writes the YAML file .rdoc_options to the current directory containing the
   # parsed options.
   #
-  # source://rdoc//lib/rdoc/options.rb#1325
+  # source://rdoc//lib/rdoc/options.rb#1358
   def write_options; end
 
-  # source://rdoc//lib/rdoc/options.rb#438
+  # source://rdoc//lib/rdoc/options.rb#453
   def yaml_initialize(tag, map); end
 
   class << self
@@ -8269,10 +8284,13 @@ class RDoc::Options
     #
     # @raise [RDoc::Error]
     #
-    # source://rdoc//lib/rdoc/options.rb#1339
+    # source://rdoc//lib/rdoc/options.rb#1372
     def load_options; end
   end
 end
+
+# source://rdoc//lib/rdoc/options.rb#371
+RDoc::Options::DEFAULT_EXCLUDE = T.let(T.unsafe(nil), Array)
 
 # A parser is simple a class that subclasses RDoc::Parser and implements #scan
 # to fill in an RDoc::TopLevel with parsed data.
