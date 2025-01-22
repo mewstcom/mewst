@@ -44,6 +44,7 @@ group :development, :test do
   gem "committee"
   gem "committee-rails"
   gem "dotenv-rails"
+  gem "erb_lint", require: false
   gem "factory_bot_rails"
   gem "rspec-rails"
   gem "rubocop-factory_bot", require: false
