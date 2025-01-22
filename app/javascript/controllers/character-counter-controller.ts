@@ -1,8 +1,8 @@
-import { Controller } from '@hotwired/stimulus';
-import split = require('graphemesplit');
+import { Controller } from "@hotwired/stimulus";
+import split = require("graphemesplit");
 
 export default class extends Controller {
-  static targets = ['counter', 'textarea'];
+  static targets = ["counter", "textarea"];
   static values = {
     max: Number,
   };

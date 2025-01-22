@@ -6,7 +6,7 @@ en:
         You can enter 2 to 20 characters, and use alphanumeric characters and underscores (_).
       atname_placeholder: "e.g. atname_example"
       authentication_failed: Incorrect email or password.
-      email_hint_html: |- 
+      email_hint_html: |-
         If you want to change it, please create an account again from the <a href="/sign_up">Sign up</a> page.
       password_hint_html: |-
         Please enter 8 or more characters.

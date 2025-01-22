@@ -3,7 +3,7 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <h1 class="antialiased font-semibold text-2xl">
+    <h1 class="text-2xl font-semibold antialiased">
       <%= title %>
     </h1>
 
@@ -11,7 +11,7 @@
 
     <%= render Mewst::UI::Card.new do %>
       <%= render Mewst::UI::Card::Body.new do %>
-        <ul class="bg-neutral-200 menu rounded-box">
+        <ul class="menu rounded-box bg-neutral-200">
           <li>
             <%= link_to settings_profile_path, class: "flex justify-between" do %>
               <%= t("meta.title.settings.profiles.show") %>

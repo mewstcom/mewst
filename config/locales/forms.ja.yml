@@ -43,7 +43,7 @@ ja:
       models:
         account_form:
           password_too_long: が長すぎます
-          reserved: " \"%{value}\" は予約されているため使用できません"
+          reserved: ' "%{value}" は予約されているため使用できません'
           uniqueness: はすでに存在します
         email_confirmation_challenge_form:
           attributes:

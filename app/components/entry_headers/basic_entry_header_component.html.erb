@@ -1,4 +1,4 @@
-<div class="content-start flex gap-2">
+<div class="flex content-start gap-2">
   <div class="flex-none">
     <% if show_avatar_with_follow_button? %>
       <%= render Buttons::FollowButtonWithAvatarComponent.new(
@@ -13,17 +13,17 @@
   </div>
 
   <%= link_to profile_path(profile.atname), class: "grow overflow-hidden" do %>
-    <div class="font-bold overflow-hidden text-ellipsis whitespace-nowrap">
+    <div class="overflow-hidden text-ellipsis whitespace-nowrap font-bold">
       <%= profile.name %>
     </div>
 
-    <div class="overflow-hidden text-ellipsis text-gray-500 whitespace-nowrap">
+    <div class="overflow-hidden text-ellipsis whitespace-nowrap text-gray-500">
       @<%= profile.atname %>
     </div>
   <% end %>
 
   <% if detail_path.nil? %>
-    <div class="flex-none text-gray-500 text-sm">
+    <div class="flex-none text-sm text-gray-500">
       <%= mst_time_ago_in_words(time) %>
     </div>
   <% else %>

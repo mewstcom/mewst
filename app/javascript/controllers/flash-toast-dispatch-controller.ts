@@ -1,6 +1,6 @@
-import { Controller } from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
-import { EventDispatcher } from '../utils/event-dispatcher';
+import { EventDispatcher } from "../utils/event-dispatcher";
 
 export default class extends Controller {
   static values = {
@@ -12,7 +12,7 @@ export default class extends Controller {
   declare readonly typeValue: string;
 
   connect() {
-    new EventDispatcher('flash-toast:show', {
+    new EventDispatcher("flash-toast:show", {
       type: this.typeValue,
       messageHtml: this.messageHtmlValue,
     }).dispatch();

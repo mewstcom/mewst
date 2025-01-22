@@ -5,7 +5,7 @@
 
   <div class="mt-3">
     <%= link_to profile_post_path(target_post.profile.atname, target_post.id) do %>
-      <blockquote class="antialiased border-gray-500 border-l-2 break-words px-4 text-gray-500">
+      <blockquote class="break-words border-l-2 border-gray-500 px-4 text-gray-500 antialiased">
         <%= target_post.content %>
       </blockquote>
     <% end %>

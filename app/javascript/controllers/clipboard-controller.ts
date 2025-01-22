@@ -1,5 +1,5 @@
-import { Controller } from '@hotwired/stimulus';
-import {EventDispatcher} from "../utils/event-dispatcher";
+import { Controller } from "@hotwired/stimulus";
+import { EventDispatcher } from "../utils/event-dispatcher";
 
 export default class extends Controller<HTMLButtonElement> {
   static values = {
@@ -16,9 +16,9 @@ export default class extends Controller<HTMLButtonElement> {
     }
 
     navigator.clipboard.writeText(this.textValue).then(() => {
-      new EventDispatcher('flash-toast:show', {
-        type: 'notice',
-        messageHtml: this.successMessageValue || 'Copied to clipboard',
+      new EventDispatcher("flash-toast:show", {
+        type: "notice",
+        messageHtml: this.successMessageValue || "Copied to clipboard",
       }).dispatch();
     });
   }

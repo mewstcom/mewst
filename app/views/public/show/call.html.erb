@@ -13,7 +13,7 @@
 
     <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, follow_checker: @follow_checker, class_name: "py-4") %>
 
-    <div class="flex justify-center mt-4">
+    <div class="mt-4 flex justify-center">
       <%= render Paginations::PaginationComponent.new(
         page_info: @page_info,
         previous_path: public_path(before: @page_info.previous_cursor),

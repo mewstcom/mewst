@@ -4,7 +4,7 @@
       <%= render Cards::LinkCardComponent.new(link: @link) %>
 
       <button
-        class="absolute btn btn-circle btn-xs m-2 no-animation rounded-full right-0 top-0"
+        class="btn btn-circle no-animation btn-xs absolute right-0 top-0 m-2 rounded-full"
         data-action="click->link-card-form#closeLinkForm"
       >
         <%= render Mewst::UI::Icon.new(name: "close_fill") %>

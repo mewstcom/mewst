@@ -3,11 +3,11 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <h1 class="antialiased font-semibold text-2xl">
+    <h1 class="text-2xl font-semibold antialiased">
       <%= title %>
     </h1>
 
-    <p class="mt-2 text-gray-500 text-sm">
+    <p class="mt-2 text-sm text-gray-500">
       <%= t("messages.notifications.description") %>
     </p>
 
@@ -20,7 +20,7 @@
         <% end %>
       </div>
 
-      <div class="flex justify-center mt-4">
+      <div class="mt-4 flex justify-center">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
           previous_path: notification_list_path(before: @page_info.previous_cursor),

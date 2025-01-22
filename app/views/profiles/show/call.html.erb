@@ -5,7 +5,7 @@
   <%= render Containers::BasicContainerComponent.new do %>
     <%= render Mewst::UI::Card.new do %>
       <%= render Mewst::UI::Card::Body.new do %>
-        <div class="flex gap-4 items-center">
+        <div class="flex items-center gap-4">
           <%= link_to profile_path(@profile.atname) do %>
             <%= render Images::ProfileAvatarImageComponent.new(profile: @profile, width: 100, class_name: "w-[100px]") %>
           <% end %>
@@ -24,12 +24,12 @@
         </div>
 
         <% if @profile.description.present? %>
-          <div class="break-words mt-4">
+          <div class="mt-4 break-words">
             <%= render_content(@profile.description) %>
           </div>
         <% end %>
 
-        <div class="flex items-center justify-center mt-4 relative">
+        <div class="relative mt-4 flex items-center justify-center">
           <div class="flex gap-2">
             <% if signed_in? %>
               <% if viewer.atname == @profile.atname %>
@@ -59,7 +59,7 @@
     </div>
 
     <% if @posts.present? %>
-      <div class="flex justify-center mt-4">
+      <div class="mt-4 flex justify-center">
         <%= render Paginations::PaginationComponent.new(
           page_info: @page_info,
           previous_path: profile_path(@profile.atname, before: @page_info.previous_cursor),

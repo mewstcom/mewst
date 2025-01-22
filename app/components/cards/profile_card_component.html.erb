@@ -1,6 +1,6 @@
 <%= render Mewst::UI::Card.new do %>
   <%= render Mewst::UI::Card::Body.new do %>
-    <div class="flex flex-wrap gap-2 justify-between lg:flex-nowrap">
+    <div class="flex flex-wrap justify-between gap-2 lg:flex-nowrap">
       <div class="basis-1/12 lg:basis-1/12">
         <%= link_to profile_path(profile.atname) do %>
           <%= render Images::ProfileAvatarImageComponent.new(profile:, width: 40, class_name: "w-[40px]") %>
@@ -13,13 +13,13 @@
         </div>
 
         <% if profile.description.present? %>
-          <div class="break-words mt-2 text-sm">
+          <div class="mt-2 break-words text-sm">
             <%= profile.description.truncate(100) %>
           </div>
         <% end %>
       <% end %>
 
-      <div class="basis-full flex flex-col gap-2 place-content-center lg:basis-3/12 lg:mt-0 mt-2 text-center">
+      <div class="mt-2 flex basis-full flex-col place-content-center gap-2 text-center lg:mt-0 lg:basis-3/12">
         <%= actions_menu %>
       </div>
     </div>

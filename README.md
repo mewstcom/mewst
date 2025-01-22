@@ -13,9 +13,10 @@
     </a>
   </p>
 
-  [![Build](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml/badge.svg)](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml)
-  [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
-  [![Discord](https://img.shields.io/discord/1044830617860317184?label=Discord&color=5865F2)](https://discord.gg/tNwVpJ4Jfk)
+[![Build](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml/badge.svg)](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+[![Discord](https://img.shields.io/discord/1044830617860317184?label=Discord&color=5865F2)](https://discord.gg/tNwVpJ4Jfk)
+
 </div>
 
 ## リンク

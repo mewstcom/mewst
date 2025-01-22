@@ -1,8 +1,8 @@
-import { Controller } from '@hotwired/stimulus';
-import { FrameElement } from '@hotwired/turbo';
+import { Controller } from "@hotwired/stimulus";
+import { FrameElement } from "@hotwired/turbo";
 
 export default class extends Controller {
-  static targets = ['linkFormFrame', 'textarea'];
+  static targets = ["linkFormFrame", "textarea"];
   static values = {
     newLinkPath: String,
   };
@@ -44,7 +44,7 @@ export default class extends Controller {
 
   closeLinkForm() {
     this.linkFormFrameTarget.src = null;
-    this.linkFormFrameTarget.innerHTML = '';
+    this.linkFormFrameTarget.innerHTML = "";
     this.isFormFrameLoaded = false;
   }
 }
