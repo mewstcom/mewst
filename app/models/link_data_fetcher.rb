@@ -16,22 +16,49 @@ class LinkDataFetcher
     const :fetched_data, T.nilable(FetchedData)
   end
 
+  sig { params(target_url: String).returns(Result) }
+  def self.call(target_url:)
+    saved_link = Link.find_by(canonical_url: target_url)
+    return Result.new(link: saved_link) if saved_link
+
+    fetcher = new(target_url:)
+
+    html = fetcher.fetch_html
+    return Result.new if html.blank?
+
+    fetcher.parse_html(html:)
+  end
+
   sig { params(target_url: String).void }
   def initialize(target_url:)
     @target_url = target_url
   end
 
-  sig { returns(Result) }
-  def call
-    saved_link = Link.find_by(canonical_url: target_url)
-    return Result.new(link: saved_link) if saved_link
+  sig { returns(String) }
+  def fetch_html
+    domain = URI.parse(target_url).host
+    response = Faraday.get(target_url)
 
-    response = fetch_data(url: target_url)
-    if response.nil?
-      return Result.new(fetched_data: FetchedData.new(canonical_url: nil, domain: nil, title: nil, image_url: nil))
+    # リダイレクトを検知し、同じドメインの場合はリダイレクト先の情報を取得する
+    # フィッシングに利用される可能性があるため、他のドメインにリダイレクトされる場合はリダイレクト先の情報は取得しない
+    if response.status.between?(300, 399)
+      location = response.headers["location"]
+      redirect_url = URI.join(target_url, location).to_s
+      redirect_domain = URI.parse(redirect_url).host
+
+      if redirect_domain&.delete_prefix("www.") == domain&.delete_prefix("www.")
+        return fetch_data(url: redirect_url)
+      end
     end
 
-    doc = Nokogiri::HTML(response.body)
+    response.body
+  rescue Faraday::Error
+    ""
+  end
+
+  sig { params(html: String).returns(Result) }
+  def parse_html(html:)
+    doc = Nokogiri::HTML(html)
     fetched_canonical_url = doc.at_css('link[rel="canonical"]')&.[]("href")
 
     if fetched_canonical_url
@@ -45,28 +72,6 @@ class LinkDataFetcher
     image_url = doc.at_css('meta[property="og:image"]')&.[]("content")
 
     Result.new(fetched_data: FetchedData.new(canonical_url:, domain:, title:, image_url:))
-  end
-
-  sig { params(url: String).returns(T.nilable(Faraday::Response)) }
-  private def fetch_data(url:)
-    domain = URI.parse(url).host
-    response = Faraday.get(url)
-
-    # リダイレクトを検知し、同じドメインの場合はリダイレクト先の情報を取得する
-    # フィッシングに利用される可能性があるため、他のドメインにリダイレクトされる場合はリダイレクト先の情報は取得しない
-    if response.status.between?(300, 399)
-      location = response.headers["location"]
-      redirect_url = URI.join(url, location).to_s
-      redirect_domain = URI.parse(redirect_url).host
-
-      if redirect_domain&.delete_prefix("www.") == domain&.delete_prefix("www.")
-        return fetch_data(url: redirect_url)
-      end
-    end
-
-    response
-  rescue Faraday::Error
-    nil
   end
 
   sig { returns(String) }
