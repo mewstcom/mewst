@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 RSpec.describe LinkDataFetcher do
-  describe ".call" do
+  describe "#call" do
     it "全てのデータが取得できるとき、全てのデータを返すこと" do
       target_url = "https://example.com?foo=bar"
 
       VCR.use_cassette("link_data_fetcher/valid") do
-        result = LinkDataFetcher.call(target_url:)
+        result = LinkDataFetcher.new.call(target_url:)
 
         expect(result.link).to be_nil
         expect(result.fetched_data.canonical_url).to eq("https://example.com")
@@ -16,16 +16,12 @@ RSpec.describe LinkDataFetcher do
         expect(result.fetched_data.image_url).to eq("https://example.com/image.jpg")
       end
     end
-  end
 
-  describe "#fetch_html" do
-    it "wwwありからwwwなしにリダイレクトするとき、データが取得できること" do
+    it "wwwありからwwwなしにリダイレクトするとき、HTMLが取得できること" do
       target_url = "https://www.annict.com"
 
       VCR.use_cassette("link_data_fetcher/redirect_www_to_no_www") do
-        fetcher = LinkDataFetcher.new(target_url:)
-        html = fetcher.fetch_html
-        binding.irb
+        result = LinkDataFetcher.new.call(target_url:)
 
         expect(result.link).to be_nil
         expect(result.fetched_data.canonical_url).to eq("https://annict.com/")
@@ -35,60 +31,64 @@ RSpec.describe LinkDataFetcher do
       end
     end
 
-    context "別ドメインにリダイレクトするとき" do
-      it "リダイレクト前のデータを取得すること" do
-        target_url = "https://www.publickey.jp"
+    it "別ドメインにリダイレクトするとき、リダイレクト前のデータを取得すること" do
+      target_url = "https://www.publickey.jp"
 
-        VCR.use_cassette("link_data_fetcher/redirect_other_domain") do
-          result = LinkDataFetcher.new(target_url:).call
+      VCR.use_cassette("link_data_fetcher/redirect_other_domain") do
+        result = LinkDataFetcher.new.call(target_url:)
 
-          expect(result.link).to be_nil
-          expect(result.fetched_data.canonical_url).to eq("https://www.publickey.jp")
-          expect(result.fetched_data.domain).to eq("www.publickey.jp")
-          expect(result.fetched_data.title).to eq("301 Moved Permanently")
-          expect(result.fetched_data.image_url).to be_nil
-        end
-      end
-    end
-  end
-
-  describe "#parse_html" do
-    context "canonicalタグがないとき" do
-      it "`target_url` が `canonical_url` となること" do
-        target_url = "https://example.com?foo=bar"
-
-        VCR.use_cassette("link_data_fetcher/without_canonical") do
-          result = LinkDataFetcher.new(target_url:).call
-
-          expect(result.link).to be_nil
-          expect(result.fetched_data.canonical_url).to eq(target_url)
-        end
+        expect(result.link).to be_nil
+        expect(result.fetched_data.canonical_url).to eq("https://www.publickey.jp")
+        expect(result.fetched_data.domain).to eq("www.publickey.jp")
+        expect(result.fetched_data.title).to eq("301 Moved Permanently")
+        expect(result.fetched_data.image_url).to be_nil
       end
     end
 
-    context "og:imageタグがないとき" do
-      it "`image_url` が `nil` となること" do
-        target_url = "https://example.com"
+    it "canonicalタグがないとき、`target_url` が `canonical_url` となること" do
+      target_url = "https://example.com?foo=bar"
 
-        VCR.use_cassette("link_data_fetcher/without_og_image") do
-          result = LinkDataFetcher.new(target_url:).call
+      VCR.use_cassette("link_data_fetcher/without_canonical") do
+        result = LinkDataFetcher.new.call(target_url:)
 
-          expect(result.link).to be_nil
-          expect(result.fetched_data.image_url).to be_nil
-        end
+        expect(result.link).to be_nil
+        expect(result.fetched_data.canonical_url).to eq(target_url)
       end
     end
 
-    context "titleタグがないとき" do
-      it "`title` が `target_url` となること" do
-        target_url = "https://example.com"
+    it "og:imageタグがないとき、`image_url` が `nil` となること" do
+      target_url = "https://example.com"
 
-        VCR.use_cassette("link_data_fetcher/without_title") do
-          result = LinkDataFetcher.new(target_url:).call
+      VCR.use_cassette("link_data_fetcher/without_og_image") do
+        result = LinkDataFetcher.new.call(target_url:)
 
-          expect(result.link).to be_nil
-          expect(result.fetched_data.title).to eq(target_url)
-        end
+        expect(result.link).to be_nil
+        expect(result.fetched_data.image_url).to be_nil
+      end
+    end
+
+    it "titleタグがないとき、`title` が `target_url` となること" do
+      target_url = "https://example.com"
+
+      VCR.use_cassette("link_data_fetcher/without_title") do
+        result = LinkDataFetcher.new.call(target_url:)
+
+        expect(result.link).to be_nil
+        expect(result.fetched_data.title).to eq(target_url)
+      end
+    end
+
+    it "`youtu.be` のURLが指定されたとき、`youtube.com` の情報を取得すること" do
+      target_url = "https://youtu.be/pbQQAwSQUX4?si=XtT8QfSo5yM75-4b"
+
+      VCR.use_cassette("link_data_fetcher/youtube_short_url") do
+        result = LinkDataFetcher.new.call(target_url:)
+
+        expect(result.link).to be_nil
+        expect(result.fetched_data.canonical_url).to eq("https://www.youtube.com/watch?v=pbQQAwSQUX4")
+        expect(result.fetched_data.domain).to eq("www.youtube.com")
+        expect(result.fetched_data.title).to eq("【公式】『ちいかわ』第1話「かためのプリン／ホットケーキ」 - YouTube")
+        expect(result.fetched_data.image_url).to eq("https://i.ytimg.com/vi/pbQQAwSQUX4/maxresdefault.jpg")
       end
     end
   end

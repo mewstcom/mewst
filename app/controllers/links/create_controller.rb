@@ -16,7 +16,7 @@ class Links::CreateController < ApplicationController
       return render("links/new/call", status: :unprocessable_entity)
     end
 
-    result = LinkDataFetcher.new(target_url: @form.target_url.not_nil!).call
+    result = LinkDataFetcher.new.call(target_url: @form.target_url.not_nil!)
 
     if result.link
       @link = result.link
