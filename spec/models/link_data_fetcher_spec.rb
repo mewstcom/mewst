@@ -91,5 +91,19 @@ RSpec.describe LinkDataFetcher do
         expect(result.fetched_data.image_url).to eq("https://i.ytimg.com/vi/pbQQAwSQUX4/maxresdefault.jpg")
       end
     end
+
+    it "ThreadsのURLが指定されたとき、情報が取得できること" do
+      target_url = "https://www.threads.net/@mewstcom"
+
+      VCR.use_cassette("link_data_fetcher/threads_url") do
+        result = LinkDataFetcher.new.call(target_url:)
+
+        expect(result.link).to be_nil
+        expect(result.fetched_data.canonical_url).to eq("https://www.threads.net/@mewstcom")
+        expect(result.fetched_data.domain).to eq("www.threads.net")
+        expect(result.fetched_data.title).to eq("Mewst (ミュースト) (@mewstcom) • Threads, Say more")
+        expect(result.fetched_data.image_url).to eq("https://scontent-itm1-1.cdninstagram.com/v/t51.2885-19/434521890_1126680301811525_7130821923454510285_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=104&ccb=1-7&_nc_sid=2a654c&_nc_ohc=djAffuo-75AQ7kNvgHosyr6&_nc_zt=24&_nc_ht=scontent-itm1-1.cdninstagram.com&oh=00_AYAz9Mp_tiH-wpziNLxvWT6wXWTtDpeqqFCcqSNZCmEngw&oe=67A94F5F")
+      end
+    end
   end
 end

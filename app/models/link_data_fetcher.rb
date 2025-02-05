@@ -50,7 +50,7 @@ class LinkDataFetcher
       end
     end
 
-    response.body
+    response.body.force_encoding("UTF-8")
   rescue Faraday::Error
     ""
   end
