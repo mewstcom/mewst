@@ -16,9 +16,9 @@ class LinkDataFetcher
     const :fetched_data, T.nilable(FetchedData)
   end
 
-  REDIRECT_ALLOWED_DOMAINS = {
+  REDIRECT_ALLOWED_DOMAINS = T.let({
     "youtu.be" => "youtube.com"
-  }.freeze
+  }.freeze, T::Hash[String, String])
 
   sig { params(target_url: String).returns(Result) }
   def call(target_url:)
@@ -66,7 +66,7 @@ class LinkDataFetcher
     end
 
     canonical_url = fetched_canonical_url.presence || target_url
-    domain = URI.parse(canonical_url).host
+    domain = URI.parse(canonical_url).host.not_nil!
     title = doc.at_css("title")&.text.presence || canonical_url
     image_url = doc.at_css('meta[property="og:image"]')&.[]("content")
 
