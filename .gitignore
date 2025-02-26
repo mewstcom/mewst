@@ -10,6 +10,7 @@
 /bin/sync
 /config/master.key
 /docker-compose.override.yml
+/lib/tasks/dev.rake
 /log/*
 /node_modules
 /private
