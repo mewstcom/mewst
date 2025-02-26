@@ -87,7 +87,7 @@ RSpec.describe LinkDataFetcher do
         expect(result.link).to be_nil
         expect(result.fetched_data.canonical_url).to eq("https://www.youtube.com/watch?v=pbQQAwSQUX4")
         expect(result.fetched_data.domain).to eq("www.youtube.com")
-        expect(result.fetched_data.title).to eq("【公式】『ちいかわ』第1話「かためのプリン／ホットケーキ」 - YouTube")
+        expect(result.fetched_data.title).to eq("【公式】『ちいかわ』第1話「かためのプリン／ホットケーキ」")
         expect(result.fetched_data.image_url).to eq("https://i.ytimg.com/vi/pbQQAwSQUX4/maxresdefault.jpg")
       end
     end

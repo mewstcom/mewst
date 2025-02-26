@@ -67,7 +67,9 @@ class LinkDataFetcher
 
     canonical_url = fetched_canonical_url.presence || target_url
     domain = URI.parse(canonical_url).host.not_nil!
-    title = doc.at_css("title")&.text.presence || canonical_url
+    title = doc.at_css('meta[property="og:title"]')&.[]("content").presence ||
+      doc.at_css("title")&.text.presence ||
+      canonical_url
     image_url = doc.at_css('meta[property="og:image"]')&.[]("content")
 
     Result.new(fetched_data: FetchedData.new(canonical_url:, domain:, title:, image_url:))
