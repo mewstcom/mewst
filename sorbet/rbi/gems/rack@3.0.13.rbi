@@ -26,7 +26,7 @@ module Rack
   end
 end
 
-# source://rack//lib/rack.rb#65
+# source://rack//lib/rack.rb#61
 module Rack::Auth; end
 
 # Rack::Auth::AbstractHandler implements common authentication functionality.
@@ -849,7 +849,7 @@ class Rack::CommonLogger
   # Attempt to determine the content length for the response to
   # include it in the logged data.
   #
-  # source://rack//lib/rack/common_logger.rb#83
+  # source://rack//lib/rack/common_logger.rb#84
   def extract_content_length(headers); end
 
   # Log the request to the configured logger.
@@ -3153,13 +3153,13 @@ class Rack::Request
   # source://rack//lib/rack/request.rb#71
   def update_param(k, v); end
 
-  # source://yard/0.9.36/lib/yard/server/rack_adapter.rb#94
+  # source://yard/0.9.37/lib/yard/server/rack_adapter.rb#94
   def version_supplied; end
 
-  # source://yard/0.9.36/lib/yard/server/rack_adapter.rb#94
+  # source://yard/0.9.37/lib/yard/server/rack_adapter.rb#94
   def version_supplied=(_arg0); end
 
-  # source://yard/0.9.36/lib/yard/server/rack_adapter.rb#96
+  # source://yard/0.9.37/lib/yard/server/rack_adapter.rb#96
   def xhr?; end
 
   class << self
