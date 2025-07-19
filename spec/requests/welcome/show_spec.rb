@@ -2,17 +2,20 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /", type: :request do
-  context "ログインしているとき" do
-    let!(:actor) { FactoryBot.create(:actor) }
+  it "ログインしているとき、ホーム画面にリダイレクトすること" do
+    actor = FactoryBot.create(:actor)
+    sign_in actor
 
-    before do
-      sign_in actor
-    end
+    get "/"
 
-    it "ホーム画面にリダイレクトすること" do
-      get "/"
+    expect(response).to redirect_to(home_path)
+    expect(response).to have_http_status(:found)
+  end
 
-      expect(response).to redirect_to(home_path)
-    end
+  it "ログインしていないとき、ウェルカムページが表示されること" do
+    get "/"
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("現在ベータ版です")
   end
 end
