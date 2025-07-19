@@ -94,7 +94,7 @@ ja:
         お使いのメールアドレスをご入力ください<br>
         アカウント作成用のメールを送信します
     users:
-      updated: ユーザーを更新しました
+      updated: ユーザー設定を更新しました。
     whats_happening: いまなにしてる？
     welcome:
       beta_html: |-

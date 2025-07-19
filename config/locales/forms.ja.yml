@@ -81,3 +81,11 @@ ja:
           attributes:
             target_profile:
               blank: が見つかりませんでした
+        user_form:
+          attributes:
+            locale:
+              blank: を入力してください
+              inclusion: は一覧にありません
+            time_zone:
+              blank: を入力してください
+              inclusion: は一覧にありません
