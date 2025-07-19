@@ -760,6 +760,61 @@ class GoodJob::DiscreteExecution
     sig { void }
     def created_at_will_change!; end
 
+    sig { returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration; end
+
+    sig { params(value: T.nilable(::ActiveSupport::Duration)).returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration=(value); end
+
+    sig { returns(T::Boolean) }
+    def duration?; end
+
+    sig { returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def duration_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def duration_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::Duration), T.nilable(::ActiveSupport::Duration)])) }
+    def duration_change; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::Duration), T.nilable(::ActiveSupport::Duration)])) }
+    def duration_change_to_be_saved; end
+
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::Duration),
+        to: T.nilable(::ActiveSupport::Duration)
+      ).returns(T::Boolean)
+    end
+    def duration_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::Duration), T.nilable(::ActiveSupport::Duration)])) }
+    def duration_previous_change; end
+
+    sig do
+      params(
+        from: T.nilable(::ActiveSupport::Duration),
+        to: T.nilable(::ActiveSupport::Duration)
+      ).returns(T::Boolean)
+    end
+    def duration_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::Duration)) }
+    def duration_was; end
+
+    sig { void }
+    def duration_will_change!; end
+
     sig { returns(T.nilable(::String)) }
     def error; end
 
@@ -768,6 +823,51 @@ class GoodJob::DiscreteExecution
 
     sig { returns(T::Boolean) }
     def error?; end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def error_backtrace; end
+
+    sig { params(value: T.nilable(T::Array[::String])).returns(T.nilable(T::Array[::String])) }
+    def error_backtrace=(value); end
+
+    sig { returns(T::Boolean) }
+    def error_backtrace?; end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def error_backtrace_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def error_backtrace_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def error_backtrace_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def error_backtrace_change; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def error_backtrace_change_to_be_saved; end
+
+    sig { params(from: T.nilable(T::Array[::String]), to: T.nilable(T::Array[::String])).returns(T::Boolean) }
+    def error_backtrace_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def error_backtrace_in_database; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def error_backtrace_previous_change; end
+
+    sig { params(from: T.nilable(T::Array[::String]), to: T.nilable(T::Array[::String])).returns(T::Boolean) }
+    def error_backtrace_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def error_backtrace_previously_was; end
+
+    sig { returns(T.nilable(T::Array[::String])) }
+    def error_backtrace_was; end
+
+    sig { void }
+    def error_backtrace_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def error_before_last_save; end
@@ -1086,6 +1186,51 @@ class GoodJob::DiscreteExecution
     def performed_at_will_change!; end
 
     sig { returns(T.nilable(::String)) }
+    def process_id; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def process_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def process_id?; end
+
+    sig { returns(T.nilable(::String)) }
+    def process_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def process_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def process_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def process_id_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def process_id_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def process_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def process_id_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def process_id_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def process_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def process_id_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def process_id_was; end
+
+    sig { void }
+    def process_id_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
     def queue_name; end
 
     sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
@@ -1137,7 +1282,13 @@ class GoodJob::DiscreteExecution
     def restore_created_at!; end
 
     sig { void }
+    def restore_duration!; end
+
+    sig { void }
     def restore_error!; end
+
+    sig { void }
+    def restore_error_backtrace!; end
 
     sig { void }
     def restore_error_event!; end
@@ -1156,6 +1307,9 @@ class GoodJob::DiscreteExecution
 
     sig { void }
     def restore_performed_at!; end
+
+    sig { void }
+    def restore_process_id!; end
 
     sig { void }
     def restore_queue_name!; end
@@ -1181,11 +1335,23 @@ class GoodJob::DiscreteExecution
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::Duration), T.nilable(::ActiveSupport::Duration)])) }
+    def saved_change_to_duration; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_duration?; end
+
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_error; end
 
     sig { returns(T::Boolean) }
     def saved_change_to_error?; end
+
+    sig { returns(T.nilable([T.nilable(T::Array[::String]), T.nilable(T::Array[::String])])) }
+    def saved_change_to_error_backtrace; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_error_backtrace?; end
 
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_error_event; end
@@ -1222,6 +1388,12 @@ class GoodJob::DiscreteExecution
 
     sig { returns(T::Boolean) }
     def saved_change_to_performed_at?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_process_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_process_id?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_queue_name; end
@@ -1399,7 +1571,13 @@ class GoodJob::DiscreteExecution
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_duration?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_error?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_error_backtrace?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_error_event?; end
@@ -1418,6 +1596,9 @@ class GoodJob::DiscreteExecution
 
     sig { returns(T::Boolean) }
     def will_save_change_to_performed_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_process_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_queue_name?; end
