@@ -14,4 +14,10 @@ class SuggestedFollowForm < ApplicationForm
   def target_profile
     Profile.kept.find_by(atname: target_atname)
   end
+
+  # ビューテンプレートとの互換性のためのエイリアス
+  sig { returns(T.nilable(String)) }
+  def atname
+    target_atname
+  end
 end

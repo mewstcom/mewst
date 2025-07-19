@@ -2,25 +2,40 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /sign_in", type: :request do
-  context "ログインしているとき" do
-    let!(:actor) { FactoryBot.create(:actor) }
+  it "ログインしているとき、ホーム画面にリダイレクトすること" do
+    actor = FactoryBot.create(:actor)
+    sign_in actor
 
-    before do
-      sign_in actor
-    end
+    get "/sign_in"
 
-    it "ホーム画面にリダイレクトすること" do
-      get "/sign_in"
-
-      expect(response).to redirect_to(home_path)
-    end
+    expect(response).to redirect_to(home_path)
   end
 
-  context "ログインしていないとき" do
-    it "ページが表示されること" do
-      get "/sign_in"
+  it "ログインしていないとき、ログインページが表示されること" do
+    get "/sign_in"
 
-      expect(response.body).to include("ログイン")
-    end
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("ログイン")
+  end
+
+  it "ログインしているとき、既にログイン済みのメッセージが表示されること" do
+    actor = FactoryBot.create(:actor)
+    sign_in actor
+
+    get "/sign_in"
+
+    expect(flash[:notice]).to eq("すでにログインしています")
+  end
+
+  it "ログインしていないとき、正しいコンテンツタイプでレスポンスされること" do
+    get "/sign_in"
+
+    expect(response.content_type).to match(%r{text/html})
+  end
+
+  it "ロケールが設定されていること" do
+    get "/sign_in", headers: {"Accept-Language" => "en"}
+
+    expect(response).to have_http_status(:ok)
   end
 end
