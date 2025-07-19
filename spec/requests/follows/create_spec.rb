@@ -58,4 +58,3 @@ RSpec.describe "POST /@:atname/follow", type: :request do
     expect(Follow.count).to eq(1)
   end
 end
-

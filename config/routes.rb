@@ -6,11 +6,11 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
+  # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   if Rails.env.test?
     match "/test/session", via: :post, as: :test_session, to: "test/sessions/create#call"
   end
 
-  # standard:disable Layout/ExtraSpacing, Rails/MatchRoute
   match "/@:atname",                                                             via: :get,    as: :profile,                                        to: "profiles/show#call"
   match "/@:atname/atom",                                                        via: :get,    as: :profile_atom,                                   to: "profiles/atom/show#call"
   match "/@:atname/check",                                                       via: :post,   as: :profile_check,                                  to: "checks/create#call"
