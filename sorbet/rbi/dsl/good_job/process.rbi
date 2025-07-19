@@ -749,6 +749,51 @@ class GoodJob::Process
     sig { void }
     def id_will_change!; end
 
+    sig { returns(T.nilable(::Integer)) }
+    def lock_type; end
+
+    sig { params(value: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
+    def lock_type=(value); end
+
+    sig { returns(T::Boolean) }
+    def lock_type?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def lock_type_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def lock_type_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def lock_type_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def lock_type_change; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def lock_type_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::Integer), to: T.nilable(::Integer)).returns(T::Boolean) }
+    def lock_type_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def lock_type_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def lock_type_previous_change; end
+
+    sig { params(from: T.nilable(::Integer), to: T.nilable(::Integer)).returns(T::Boolean) }
+    def lock_type_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def lock_type_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def lock_type_was; end
+
+    sig { void }
+    def lock_type_will_change!; end
+
     sig { void }
     def restore_created_at!; end
 
@@ -757,6 +802,9 @@ class GoodJob::Process
 
     sig { void }
     def restore_id_value!; end
+
+    sig { void }
+    def restore_lock_type!; end
 
     sig { void }
     def restore_state!; end
@@ -781,6 +829,12 @@ class GoodJob::Process
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def saved_change_to_lock_type; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_lock_type?; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_state; end
@@ -892,6 +946,9 @@ class GoodJob::Process
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_lock_type?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_state?; end
