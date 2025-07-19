@@ -2,27 +2,25 @@
 # frozen_string_literal: true
 
 RSpec.describe "GET /@:atname", type: :request do
-  context "ログインしていないとき" do
-    let!(:actor) { FactoryBot.create(:actor) }
+  it "ログインしていないとき、プロフィールページが表示されること" do
+    actor = FactoryBot.create(:actor)
+    get "/@#{actor.atname}"
 
-    it "ページが表示されること" do
-      get "/@#{actor.atname}"
-
-      expect(response.body).to include("@#{actor.atname}")
-    end
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("@#{actor.atname}")
   end
 
-  context "ログインしているとき" do
-    let!(:actor) { FactoryBot.create(:actor) }
+  it "ログインしているとき、プロフィール編集リンクが表示されること" do
+    actor = FactoryBot.create(:actor)
+    sign_in actor
+    get "/@#{actor.atname}"
 
-    before do
-      sign_in actor
-    end
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("プロフィール編集")
+  end
 
-    it "ページが表示されること" do
-      get "/@#{actor.atname}"
-
-      expect(response.body).to include("プロフィール編集")
-    end
+  it "存在しないユーザーの場合、404エラーが発生すること" do
+    get "/@nonexistent_user"
+    expect(response).to have_http_status(:not_found)
   end
 end
