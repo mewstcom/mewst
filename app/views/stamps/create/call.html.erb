@@ -1,5 +1,5 @@
 <% if @form.errors.any? %>
-  <turbo-stream action="after" target="posts-<%= @form.post_id %>-stamp">
+  <turbo-stream action="after" target="posts-<%= @form.target_post_id %>-stamp">
     <template>
       <%= dispatch_to_flash_toast(type: "alert", message: @form.errors.full_messages.first) %>
     </template>
