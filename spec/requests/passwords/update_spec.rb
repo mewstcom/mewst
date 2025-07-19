@@ -71,6 +71,7 @@ RSpec.describe "PATCH /password", type: :request do
     FactoryBot.create(:user, email: "test@example.com")
     email_confirmation = FactoryBot.create(:email_confirmation,
       email: "test@example.com",
+      code: "123456",
       succeeded_at: Time.current)
 
     set_session(email_confirmation_id: email_confirmation.id)
@@ -88,6 +89,7 @@ RSpec.describe "PATCH /password", type: :request do
     FactoryBot.create(:user, email: "test@example.com")
     email_confirmation = FactoryBot.create(:email_confirmation,
       email: "test@example.com",
+      code: "123456",
       succeeded_at: Time.current)
 
     set_session(email_confirmation_id: email_confirmation.id)
