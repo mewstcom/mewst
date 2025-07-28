@@ -10,16 +10,16 @@ export default class extends Controller<HTMLDetailsElement> {
     useClickOutside(this);
   }
 
-  clickOutside(_event) {
+  clickOutside() {
     this.element.removeAttribute("open");
   }
 
-  toggle(event) {
+  toggle(event: Event) {
     event.preventDefault();
     this.element.toggleAttribute("open");
   }
 
-  close(event) {
+  close(event: Event) {
     event.preventDefault();
     this.element.removeAttribute("open");
   }

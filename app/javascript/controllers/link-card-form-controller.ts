@@ -8,8 +8,10 @@ export default class extends Controller {
   };
 
   declare readonly linkFormFrameTarget: FrameElement;
-  declare readonly newLinkPathValue: String;
+  declare readonly newLinkPathValue: string;
   declare readonly textareaTarget: HTMLTextAreaElement;
+
+  private isFormFrameLoaded = false;
 
   initialize() {
     this.isFormFrameLoaded = false;
@@ -43,7 +45,7 @@ export default class extends Controller {
   }
 
   closeLinkForm() {
-    this.linkFormFrameTarget.src = null;
+    this.linkFormFrameTarget.src = "";
     this.linkFormFrameTarget.innerHTML = "";
     this.isFormFrameLoaded = false;
   }
