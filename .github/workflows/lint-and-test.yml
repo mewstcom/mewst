@@ -87,6 +87,25 @@ jobs:
         run: |
           yarn prettier . --check
 
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install Yarn
+        run: |
+          npm install --global yarn@1.22.19
+      - name: Install npm packages
+        run: |
+          yarn install
+      - name: ESLint check
+        run: |
+          yarn eslint .
+
   rspec:
     name: RSpec
     runs-on: ubuntu-latest

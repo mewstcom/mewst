@@ -8,7 +8,7 @@ export default class extends Controller {
   };
 
   declare readonly linkFormFrameTarget: FrameElement;
-  declare readonly newLinkPathValue: String;
+  declare readonly newLinkPathValue: string;
   declare readonly textareaTarget: HTMLTextAreaElement;
 
   initialize() {
