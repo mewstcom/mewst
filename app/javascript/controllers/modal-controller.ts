@@ -7,7 +7,8 @@ export default class extends Controller<HTMLDialogElement> {
 
   close(event: CustomEvent) {
     // モーダルの中でリンクカードを追加したときモーダルを閉じないようにする
-    if (event.target.dataset.action !== "turbo:submit-end->modal#close") {
+    const target = event.target as HTMLElement;
+    if (!target || target.dataset.action !== "turbo:submit-end->modal#close") {
       return;
     }
 

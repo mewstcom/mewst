@@ -1,7 +1,7 @@
-export class EventDispatcher {
-  event!: CustomEvent;
+export class EventDispatcher<T = unknown> {
+  event!: CustomEvent<T>;
 
-  constructor(eventName: string, detail: any = {}) {
+  constructor(eventName: string, detail: T) {
     this.event = new CustomEvent(eventName, {
       detail,
     });

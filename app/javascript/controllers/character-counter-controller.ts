@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import split = require("graphemesplit");
+import split from "graphemesplit";
 
 export default class extends Controller {
   static targets = ["counter", "textarea"];

@@ -11,15 +11,21 @@ import FlashToastDispatchController from "./controllers/flash-toast-dispatch-con
 import LinkCardFormController from "./controllers/link-card-form-controller";
 import ModalController from "./controllers/modal-controller";
 
+declare global {
+  interface Window {
+    Stimulus: Application;
+  }
+}
+
 const application = Application.start();
 application.debug = false;
 window.Stimulus = application;
 
-Stimulus.register("autosize", AutosizeController);
-Stimulus.register("character-counter", CharacterCounterController);
-Stimulus.register("clipboard", ClipboardController);
-Stimulus.register("dropdown", DropdownController);
-Stimulus.register("flash-toast", FlashToastController);
-Stimulus.register("flash-toast-dispatch", FlashToastDispatchController);
-Stimulus.register("link-card-form", LinkCardFormController);
-Stimulus.register("modal", ModalController);
+application.register("autosize", AutosizeController);
+application.register("character-counter", CharacterCounterController);
+application.register("clipboard", ClipboardController);
+application.register("dropdown", DropdownController);
+application.register("flash-toast", FlashToastController);
+application.register("flash-toast-dispatch", FlashToastDispatchController);
+application.register("link-card-form", LinkCardFormController);
+application.register("modal", ModalController);
