@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Profile < ApplicationRecord
+class ProfileRecord < ApplicationRecord
+  self.table_name = "profiles"
+
   extend Enumerize
 
   include Discard::Model

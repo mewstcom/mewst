@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class EmailConfirmation < ApplicationRecord
+class EmailConfirmationRecord < ApplicationRecord
+  self.table_name = "email_confirmations"
+
   extend Enumerize
 
   EXPIRES_IN = T.let(15.minutes, ActiveSupport::Duration)

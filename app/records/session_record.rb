@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Session < ApplicationRecord
+class SessionRecord < ApplicationRecord
+  self.table_name = "sessions"
+
   COOKIE_KEY = :mewst_session_token
 
   has_secure_token

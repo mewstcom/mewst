@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Stamp < ApplicationRecord
+class StampRecord < ApplicationRecord
+  self.table_name = "stamps"
+
   include ModelConcerns::Notifiable
 
   belongs_to :post

@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class UserProfile < ApplicationRecord
+class UserProfileRecord < ApplicationRecord
+  self.table_name = "user_profiles"
+
   belongs_to :user
   belongs_to :profile
 end

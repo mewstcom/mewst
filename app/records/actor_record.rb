@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Actor < ApplicationRecord
+class ActorRecord < ApplicationRecord
+  self.table_name = "actors"
+
   belongs_to :user
   belongs_to :profile
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner

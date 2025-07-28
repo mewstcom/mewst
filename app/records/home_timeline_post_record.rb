@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class HomeTimelinePost < ApplicationRecord
+class HomeTimelinePostRecord < ApplicationRecord
+  self.table_name = "home_timeline_posts"
+
   belongs_to :post
   belongs_to :profile
 

@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class Post < ApplicationRecord
+class PostRecord < ApplicationRecord
+  self.table_name = "posts"
+
   extend Enumerize
 
   include Discard::Model

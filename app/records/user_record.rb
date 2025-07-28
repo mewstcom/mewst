@@ -1,7 +1,9 @@
 # typed: strict
 # frozen_string_literal: true
 
-class User < ApplicationRecord
+class UserRecord < ApplicationRecord
+  self.table_name = "users"
+
   extend Enumerize
 
   PASSWORD_MIN_LENGTH = 8
