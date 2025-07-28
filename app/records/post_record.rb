@@ -14,31 +14,31 @@ class PostRecord < ApplicationRecord
   #   2. URLが含まれると140文字だと心もとないため
   MAXIMUM_CONTENT_LENGTH = 160
 
-  belongs_to :profile
+  belongs_to :profile_record, class_name: "ProfileRecord", foreign_key: :profile_id
   belongs_to :oauth_application
-  has_many :stamps, dependent: :restrict_with_exception
-  has_many :home_timeline_posts, dependent: :restrict_with_exception
-  has_one :post_link, dependent: :restrict_with_exception
-  has_one :link, through: :post_link
+  has_many :stamp_records, class_name: "StampRecord", dependent: :restrict_with_exception, foreign_key: :post_id
+  has_many :home_timeline_post_records, class_name: "HomeTimelinePostRecord", dependent: :restrict_with_exception, foreign_key: :post_id
+  has_one :post_link_record, class_name: "PostLinkRecord", dependent: :restrict_with_exception, foreign_key: :post_id
+  has_one :link_record, class_name: "LinkRecord", through: :post_link_record
 
-  scope :kept, -> { undiscarded.joins(:profile).merge(Profile.kept) }
+  scope :kept, -> { undiscarded.joins(:profile_record).merge(ProfileRecord.kept) }
   scope :order_by_recent, -> { order(published_at: :desc, id: :desc) }
   scope :order_by_oldest, -> { order(published_at: :asc, id: :asc) }
 
   validates :content, length: {maximum: MAXIMUM_CONTENT_LENGTH}, presence: true
 
-  sig { params(profile: Profile).returns(T::Boolean) }
+  sig { params(profile: ProfileRecord).returns(T::Boolean) }
   def stamped_by?(profile:)
-    stamps.include?(profile:)
+    stamp_records.exists?(profile_id: profile.id)
   end
 
-  sig { returns(T.nilable(Post)) }
+  sig { returns(T.nilable(PostRecord)) }
   def prev_post
-    profile.not_nil!.posts.kept.where(id: ...id).order_by_recent.first
+    profile_record.not_nil!.posts.kept.where(id: ...id).order_by_recent.first
   end
 
-  sig { returns(T.nilable(Post)) }
+  sig { returns(T.nilable(PostRecord)) }
   def next_post
-    profile.not_nil!.posts.kept.where(Post.arel_table[:id].gt(id)).order_by_oldest.first
+    profile_record.not_nil!.posts.kept.where(PostRecord.arel_table[:id].gt(id)).order_by_oldest.first
   end
 end

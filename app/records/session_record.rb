@@ -8,9 +8,9 @@ class SessionRecord < ApplicationRecord
 
   has_secure_token
 
-  belongs_to :actor
+  belongs_to :actor_record, class_name: "ActorRecord", foreign_key: :actor_id
 
-  sig { params(ip_address: T.nilable(String), user_agent: T.nilable(String), signed_in_at: ActiveSupport::TimeWithZone).returns(Session) }
+  sig { params(ip_address: T.nilable(String), user_agent: T.nilable(String), signed_in_at: ActiveSupport::TimeWithZone).returns(SessionRecord) }
   def self.start!(ip_address:, user_agent:, signed_in_at: Time.zone.now)
     create!(
       ip_address: ip_address || "",

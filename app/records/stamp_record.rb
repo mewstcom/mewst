@@ -6,14 +6,14 @@ class StampRecord < ApplicationRecord
 
   include ModelConcerns::Notifiable
 
-  belongs_to :post
-  belongs_to :profile
+  belongs_to :post_record, class_name: "PostRecord", foreign_key: :post_id
+  belongs_to :profile_record, class_name: "ProfileRecord", foreign_key: :profile_id
 
   sig { void }
   def notify!
-    Notification.where(
-      source_profile: profile,
-      target_profile: post.not_nil!.profile,
+    NotificationRecord.where(
+      source_profile_id: profile_id,
+      target_profile_id: post_record.not_nil!.profile_id,
       notifiable: self
     ).first_or_create!(notified_at: Time.current)
 

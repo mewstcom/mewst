@@ -4,11 +4,11 @@
 class FollowRecord < ApplicationRecord
   self.table_name = "follows"
 
-  belongs_to :source_profile, class_name: "Profile"
-  belongs_to :target_profile, class_name: "Profile"
+  belongs_to :source_profile_record, class_name: "ProfileRecord", foreign_key: :source_profile_id
+  belongs_to :target_profile_record, class_name: "ProfileRecord", foreign_key: :target_profile_id
 
   sig { void }
   def check_suggested!
-    SuggestedFollow.find_by(source_profile:, target_profile:)&.touch(:checked_at)
+    SuggestedFollowRecord.find_by(source_profile_id: source_profile_id, target_profile_id: target_profile_id)&.touch(:checked_at)
   end
 end

@@ -10,16 +10,16 @@ class UserRecord < ApplicationRecord
 
   enumerize :locale, in: I18n.available_locales
 
-  has_many :actors, dependent: :restrict_with_exception
-  has_one :user_profile, dependent: :restrict_with_exception
-  has_one :profile, through: :user_profile
+  has_many :actor_records, class_name: "ActorRecord", dependent: :restrict_with_exception, foreign_key: :user_id
+  has_one :user_profile_record, class_name: "UserProfileRecord", dependent: :restrict_with_exception, foreign_key: :user_id
+  has_one :profile_record, class_name: "ProfileRecord", through: :user_profile_record
 
   has_secure_password
 
   validates :email, presence: true, uniqueness: true
 
-  sig { returns(Actor) }
+  sig { returns(ActorRecord) }
   def first_actor
-    actors.find_by!(profile:)
+    actor_records.find_by!(profile_id: profile_record.id)
   end
 end

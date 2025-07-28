@@ -4,30 +4,30 @@
 class ActorRecord < ApplicationRecord
   self.table_name = "actors"
 
-  belongs_to :user
-  belongs_to :profile
+  belongs_to :user_record, class_name: "UserRecord", foreign_key: :user_id
+  belongs_to :profile_record, class_name: "ProfileRecord", foreign_key: :profile_id
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
-  has_many :sessions, dependent: :restrict_with_exception
+  has_many :session_records, class_name: "SessionRecord", dependent: :restrict_with_exception
 
-  delegate :email, :time_zone, to: :user
+  delegate :email, :time_zone, to: :user_record
   delegate :atname, :avatar_kind, :avatar_url, :checkable_suggested_followees, :description, :fetch_notifications,
     :followees, :following?, :follows, :generate_gravatar_url, :gravatar_email, :gravatar_url, :home_timeline,
     :image_url, :me?, :name, :notifications, :posts, :stamps, :suggested_follows, :suggested_followees,
-    to: :profile
+    to: :profile_record
 
   sig { returns(Locale) }
   def locale
-    Locale.deserialize(user.not_nil!.locale)
+    Locale.deserialize(user_record.not_nil!.locale)
   end
 
   sig { params(time: ActiveSupport::TimeWithZone).returns(T::Boolean) }
   def update_last_post_time!(time:)
-    profile.not_nil!.update!(last_post_at: time)
+    profile_record.not_nil!.update!(last_post_at: time)
   end
 
   sig { params(email: String).returns(T::Boolean) }
   def update_email!(email:)
-    user.not_nil!.update!(email:)
+    user_record.not_nil!.update!(email:)
   end
 
   sig do

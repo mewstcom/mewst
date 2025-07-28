@@ -16,19 +16,19 @@ class ProfileRecord < ApplicationRecord
   enumerize :owner_type, in: ProfileOwnerType.values.map(&:serialize)
   enum :avatar_kind, ProfileAvatarKind.values.map { [_1.serialize, _1.serialize] }.to_h, suffix: true
 
-  has_many :actors, dependent: :restrict_with_exception
-  has_many :follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
-  has_many :inverse_follows, class_name: "Follow", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
-  has_many :followees, class_name: "Profile", source: :target_profile, through: :follows
-  has_many :followers, class_name: "Profile", source: :source_profile, through: :inverse_follows
-  has_many :home_timeline_posts, dependent: :restrict_with_exception
-  has_many :notifications, dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile
-  has_many :posts, dependent: :restrict_with_exception
-  has_many :stamps, dependent: :restrict_with_exception
-  has_many :suggested_follows, dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile
-  has_many :suggested_followees, class_name: "Profile", source: :target_profile, through: :suggested_follows
-  has_one :user_profile, dependent: :restrict_with_exception
-  has_one :user, through: :user_profile
+  has_many :actor_records, class_name: "ActorRecord", dependent: :restrict_with_exception, foreign_key: :profile_id
+  has_many :follow_records, class_name: "FollowRecord", dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile_record
+  has_many :inverse_follow_records, class_name: "FollowRecord", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile_record
+  has_many :followee_records, class_name: "ProfileRecord", source: :target_profile_record, through: :follow_records
+  has_many :follower_records, class_name: "ProfileRecord", source: :source_profile_record, through: :inverse_follow_records
+  has_many :home_timeline_post_records, class_name: "HomeTimelinePostRecord", dependent: :restrict_with_exception, foreign_key: :profile_id
+  has_many :notification_records, class_name: "NotificationRecord", dependent: :restrict_with_exception, foreign_key: :target_profile_id, inverse_of: :target_profile_record
+  has_many :post_records, class_name: "PostRecord", dependent: :restrict_with_exception, foreign_key: :profile_id
+  has_many :stamp_records, class_name: "StampRecord", dependent: :restrict_with_exception, foreign_key: :profile_id
+  has_many :suggested_follow_records, class_name: "SuggestedFollowRecord", dependent: :restrict_with_exception, foreign_key: :source_profile_id, inverse_of: :source_profile_record
+  has_many :suggested_followee_records, class_name: "ProfileRecord", source: :target_profile_record, through: :suggested_follow_records
+  has_one :user_profile_record, class_name: "UserProfileRecord", dependent: :restrict_with_exception, foreign_key: :profile_id
+  has_one :user_record, class_name: "UserRecord", through: :user_profile_record
 
   scope :sort_by_latest_post, -> { order("last_post_at DESC NULLS LAST") }
   scope :search_by_keywords, ->(q:) {
@@ -70,26 +70,26 @@ class ProfileRecord < ApplicationRecord
     end.not_nil!
   end
 
-  sig { returns(User) }
+  sig { returns(UserRecord) }
   def owner
     profile_owner_type = ProfileOwnerType.deserialize(owner_type.value)
 
     case profile_owner_type
     when ProfileOwnerType::User
-      user
+      user_record
     else
       T.absurd(profile_owner_type)
     end.not_nil!
   end
 
-  sig { returns(Post::PrivateRelation) }
+  sig { returns(PostRecord::PrivateRelation) }
   def followee_posts
-    Post.joins(:profile).merge(followees)
+    PostRecord.joins(:profile_record).merge(followee_records)
   end
 
   sig { returns(ActiveRecord::Relation) }
   def checkable_suggested_followees
-    suggested_followees.kept.merge(SuggestedFollow.not_checked)
+    suggested_followee_records.kept.merge(SuggestedFollowRecord.not_checked)
   end
 
   sig { returns(String) }
@@ -97,17 +97,17 @@ class ProfileRecord < ApplicationRecord
     name.presence || atname
   end
 
-  sig { returns(Profile::HomeTimeline) }
+  sig { returns(ProfileRecord::HomeTimeline) }
   def home_timeline
-    Profile::HomeTimeline.new(profile: self)
+    ProfileRecord::HomeTimeline.new(profile: self)
   end
 
-  sig { params(target_profile: Profile).returns(T::Boolean) }
+  sig { params(target_profile: ProfileRecord).returns(T::Boolean) }
   def following?(target_profile:)
-    follows.exists?(target_profile:)
+    follow_records.exists?(target_profile_id: target_profile.id)
   end
 
-  sig { params(target_profile: Profile).returns(T::Boolean) }
+  sig { params(target_profile: ProfileRecord).returns(T::Boolean) }
   def me?(target_profile:)
     atname == target_profile.atname
   end
@@ -119,12 +119,12 @@ class ProfileRecord < ApplicationRecord
     return if suggested_follows.not_checked.size >= MAX_SUGGESTED_FOLLOWS_COUNT
 
     # Note: 各limitに指定している数値に深い意味はない
-    followees.kept.sort_by_latest_post.limit(10).each do |source_followee|
-      source_followee.followees.kept.sort_by_latest_post.limit(10).each do |target_followee|
+    followee_records.kept.sort_by_latest_post.limit(10).each do |source_followee|
+      source_followee.followee_records.kept.sort_by_latest_post.limit(10).each do |target_followee|
         # 自分がフォローしている人がフォローしている人をおすすめする
         create_suggested_follow!(target_profile: target_followee)
 
-        target_followee.followees.kept.sort_by_latest_post.limit(10).each do |child_target_followee|
+        target_followee.followee_records.kept.sort_by_latest_post.limit(10).each do |child_target_followee|
           # 自分がフォローしている人がフォローしている人がフォローしている人をおすすめする
           create_suggested_follow!(target_profile: child_target_followee)
         end
@@ -137,13 +137,13 @@ class ProfileRecord < ApplicationRecord
     return if me?(target_profile:)
     return if following?(target_profile:)
 
-    suggested_follows.where(target_profile:).first_or_create!
+    suggested_follow_records.where(target_profile_id: target_profile.id).first_or_create!
 
     true
   end
 
-  sig { returns(Profile::Postability) }
+  sig { returns(ProfileRecord::Postability) }
   private def postability
-    Profile::Postability.new(profile: self)
+    ProfileRecord::Postability.new(profile: self)
   end
 end
