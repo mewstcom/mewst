@@ -59,7 +59,7 @@ GEM
       activemodel (= 7.1.5.1)
       activesupport (= 7.1.5.1)
       timeout (>= 0.4.0)
-    activerecord_cursor_paginate (0.2.0)
+    activerecord_cursor_paginate (0.4.1)
       activerecord (>= 7.0)
     activestorage (7.1.5.1)
       actionpack (= 7.1.5.1)
