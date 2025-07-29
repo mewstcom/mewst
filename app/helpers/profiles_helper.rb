@@ -4,7 +4,7 @@
 module ProfilesHelper
   extend T::Sig
 
-  sig { params(profile: Profile).returns(String) }
+  sig { params(profile: ProfileRecord).returns(String) }
   def name_with_atname(profile:)
     profile.name.present? ? "#{profile.name} (@#{profile.atname})" : "@#{profile.atname}"
   end

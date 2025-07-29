@@ -9,7 +9,7 @@
         data: {
           controller: "clipboard",
           action: "clipboard#copy dropdown#close",
-          clipboard_text_value: profile_post_url(post.profile.atname, post.id),
+          clipboard_text_value: profile_post_url(post.profile_record.atname, post.id),
           clipboard_success_message_value: t("messages.posts.copied_to_clipboard")
         }
       ) do %>
@@ -17,7 +17,7 @@
       <% end %>
     <% end %>
 
-    <% if signed_in? && viewer!.me?(target_profile: post.profile) %>
+    <% if signed_in? && viewer!.me?(target_profile: post.profile_record) %>
       <hr class="my-1">
 
       <%= render Mewst::UI::Dropdown::Item.new do %>

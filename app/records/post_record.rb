@@ -34,11 +34,11 @@ class PostRecord < ApplicationRecord
 
   sig { returns(T.nilable(PostRecord)) }
   def prev_post
-    profile_record.not_nil!.posts.kept.where(id: ...id).order_by_recent.first
+    profile_record.not_nil!.post_records.kept.where(id: ...id).order_by_recent.first
   end
 
   sig { returns(T.nilable(PostRecord)) }
   def next_post
-    profile_record.not_nil!.posts.kept.where(PostRecord.arel_table[:id].gt(id)).order_by_oldest.first
+    profile_record.not_nil!.post_records.kept.where(PostRecord.arel_table[:id].gt(id)).order_by_oldest.first
   end
 end

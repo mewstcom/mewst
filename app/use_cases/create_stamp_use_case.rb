@@ -8,19 +8,19 @@ class CreateStampUseCase < ApplicationUseCase
 
   sig { params(viewer: ActorRecord, target_post: PostRecord).returns(Result) }
   def call(viewer:, target_post:)
-    stamp = viewer.stamps.find_by(post: target_post)
+    stamp = viewer.profile_record.not_nil!.stamp_records.find_by(post_record: target_post)
 
     if stamp
-      return Result.new(post: stamp.post)
+      return Result.new(post: stamp.post_record.not_nil!)
     end
 
-    new_stamp = viewer.stamps.new(post: target_post, stamped_at: Time.current)
+    new_stamp = viewer.profile_record.not_nil!.stamp_records.new(post_record: target_post, stamped_at: Time.current)
 
     ApplicationRecord.transaction do
       new_stamp.save!
       new_stamp.notify!
     end
 
-    Result.new(post: new_stamp.post.reload)
+    Result.new(post: new_stamp.post_record.not_nil!.reload)
   end
 end

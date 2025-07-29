@@ -21,7 +21,7 @@ class StampChecker
     @stamped_post_ids ||= begin
       return [] if profile.nil? || posts.empty?
 
-      profile.not_nil!.stamps.where(post: posts).pluck(:post_id)
+      profile.not_nil!.stamp_records.where(post_record: posts).pluck(:post_record_id)
     end
   end
 

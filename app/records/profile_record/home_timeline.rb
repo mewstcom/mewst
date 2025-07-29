@@ -21,7 +21,7 @@ class ProfileRecord::HomeTimeline
 
   sig { params(post: PostRecord).returns(T.self_type) }
   def add_post!(post:)
-    profile.home_timeline_posts.where(post:).first_or_create!(published_at: post.published_at)
+    profile.home_timeline_post_records.where(post:).first_or_create!(published_at: post.published_at)
 
     self
   end
@@ -32,6 +32,6 @@ class ProfileRecord::HomeTimeline
 
   T::Sig::WithoutRuntime.sig { returns(PostRecord::PrivateRelation) }
   private def visible_posts
-    PostRecord.kept.preload(:profile, :link).joins(:home_timeline_posts).merge(profile.home_timeline_posts.visible)
+    PostRecord.kept.preload(:profile_record, :link_record).joins(:home_timeline_post_records).merge(profile.home_timeline_post_records.visible)
   end
 end

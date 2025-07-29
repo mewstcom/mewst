@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 class Cards::NotificationCardComponent < ApplicationComponent
-  sig { params(notification: Notification, follow_checker: FollowChecker).void }
+  sig { params(notification: NotificationRecord, follow_checker: FollowChecker).void }
   def initialize(notification:, follow_checker:)
     @notification = notification
     @follow_checker = follow_checker
   end
 
-  sig { returns(Notification) }
+  sig { returns(NotificationRecord) }
   attr_reader :notification
   private :notification
 
@@ -16,8 +16,8 @@ class Cards::NotificationCardComponent < ApplicationComponent
   attr_reader :follow_checker
   private :follow_checker
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   def source_profile
-    notification.source_profile.not_nil!
+    notification.source_profile_record.not_nil!
   end
 end

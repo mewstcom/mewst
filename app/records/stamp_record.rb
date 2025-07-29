@@ -22,7 +22,7 @@ class StampRecord < ApplicationRecord
 
   sig { void }
   def unnotify!
-    notification&.destroy!
+    notification_record&.destroy!
 
     nil
   end

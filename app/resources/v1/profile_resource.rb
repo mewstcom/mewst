@@ -4,7 +4,7 @@
 class V1::ProfileResource < V1::ApplicationResource
   delegate :id, :atname, :name, :description, :avatar_url, to: :profile
 
-  sig { params(viewer: T.nilable(Actor), profile: Profile).void }
+  sig { params(viewer: T.nilable(ActorRecord), profile: ProfileRecord).void }
   def initialize(viewer:, profile:)
     @viewer = viewer
     @profile = profile
@@ -17,11 +17,11 @@ class V1::ProfileResource < V1::ApplicationResource
     viewer.not_nil!.following?(target_profile: profile)
   end
 
-  sig { returns(T.nilable(Actor)) }
+  sig { returns(T.nilable(ActorRecord)) }
   attr_reader :viewer
   private :viewer
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   attr_reader :profile
   private :profile
 end

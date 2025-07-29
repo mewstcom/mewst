@@ -20,6 +20,6 @@ class UserRecord < ApplicationRecord
 
   sig { returns(ActorRecord) }
   def first_actor
-    actor_records.find_by!(profile_id: profile_record.id)
+    actor_records.find_by!(profile_id: profile_record.not_nil!.id)
   end
 end

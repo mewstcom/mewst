@@ -4,7 +4,7 @@
 module Mewst::Test::ResourceHelpers
   extend T::Sig
 
-  sig { params(email_confirmation: EmailConfirmation).returns(T::Hash[Symbol, T.untyped]) }
+  sig { params(email_confirmation: EmailConfirmationRecord).returns(T::Hash[Symbol, T.untyped]) }
   def build_email_confirmation_resource(email_confirmation:)
     {
       id: email_confirmation.id,
@@ -14,7 +14,7 @@ module Mewst::Test::ResourceHelpers
     }
   end
 
-  sig { params(profile: Profile, viewer_has_followed: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
+  sig { params(profile: ProfileRecord, viewer_has_followed: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
   def build_profile_resource(profile:, viewer_has_followed:)
     {
       id: profile.id,
@@ -26,10 +26,10 @@ module Mewst::Test::ResourceHelpers
     }
   end
 
-  sig { params(post: Post, viewer_has_followed: T::Boolean, viewer_has_stamped: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
+  sig { params(post: PostRecord, viewer_has_followed: T::Boolean, viewer_has_stamped: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
   def build_post_resource(post:, viewer_has_followed:, viewer_has_stamped:)
     {
-      profile: build_profile_resource(profile: post.profile.not_nil!, viewer_has_followed:),
+      profile: build_profile_resource(profile: post.profile_record.not_nil!, viewer_has_followed:),
       id: post.id,
       content: post.content,
       published_at: post.published_at.iso8601,
@@ -38,7 +38,7 @@ module Mewst::Test::ResourceHelpers
     }
   end
 
-  sig { params(user: User).returns(T::Hash[Symbol, T.untyped]) }
+  sig { params(user: UserRecord).returns(T::Hash[Symbol, T.untyped]) }
   def build_user_resource(user:)
     {
       id: user.id,

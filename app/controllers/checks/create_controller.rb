@@ -11,7 +11,7 @@ class Checks::CreateController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = SuggestedFollowForm.new(
-      source_profile: viewer!.profile.not_nil!,
+      source_profile: viewer!.profile_record.not_nil!,
       target_atname: params[:atname]
     )
 

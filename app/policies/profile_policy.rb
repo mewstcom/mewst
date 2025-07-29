@@ -4,6 +4,6 @@
 class ProfilePolicy < ApplicationPolicy
   sig { returns(T::Boolean) }
   def show?
-    profile == T.cast(record, Post).profile
+    profile == T.cast(record, ProfileRecord)
   end
 end

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Images::ProfileAvatarImageComponent < ApplicationComponent
-  sig { params(profile: Profile, width: Integer, alt: String, class_name: String).void }
+  sig { params(profile: ProfileRecord, width: Integer, alt: String, class_name: String).void }
   def initialize(profile:, width:, alt: "", class_name: "")
     @profile = profile
     @width = width
@@ -10,7 +10,7 @@ class Images::ProfileAvatarImageComponent < ApplicationComponent
     @class_name = class_name
   end
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   attr_reader :profile
   private :profile
 

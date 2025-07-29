@@ -10,7 +10,7 @@ class Profiles::Atom::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @profile = ProfileRecord.kept.find_by!(atname: params[:atname])
-    @posts = @profile.posts.kept.order(published_at: :desc).limit(15)
+    @posts = @profile.post_records.kept.order(published_at: :desc).limit(15)
 
     render(formats: :atom)
   end

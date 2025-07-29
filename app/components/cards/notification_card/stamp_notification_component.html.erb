@@ -4,7 +4,7 @@
   </div>
 
   <div class="mt-3">
-    <%= link_to profile_post_path(target_post.profile.atname, target_post.id) do %>
+    <%= link_to profile_post_path(target_post.profile_record.atname, target_post.id) do %>
       <blockquote class="break-words border-l-2 border-gray-500 px-4 text-gray-500 antialiased">
         <%= target_post.content %>
       </blockquote>

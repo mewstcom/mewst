@@ -12,6 +12,6 @@ class DiscardPostForm < ApplicationForm
 
   sig { returns(T.nilable(PostRecord)) }
   def target_post
-    profile&.posts&.kept&.find_by(id: target_post_id)
+    profile&.post_records&.kept&.find_by(id: target_post_id)
   end
 end

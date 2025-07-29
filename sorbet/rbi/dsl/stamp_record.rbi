@@ -379,11 +379,20 @@ class StampRecord
   end
 
   module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::NotificationRecord) }
+    def build_notification_record(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::PostRecord) }
     def build_post_record(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::ProfileRecord) }
     def build_profile_record(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::NotificationRecord) }
+    def create_notification_record(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::NotificationRecord) }
+    def create_notification_record!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::PostRecord) }
     def create_post_record(*args, &blk); end
@@ -396,6 +405,12 @@ class StampRecord
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::ProfileRecord) }
     def create_profile_record!(*args, &blk); end
+
+    sig { returns(T.nilable(::NotificationRecord)) }
+    def notification_record; end
+
+    sig { params(value: T.nilable(::NotificationRecord)).void }
+    def notification_record=(value); end
 
     sig { returns(T.nilable(::PostRecord)) }
     def post_record; end
@@ -421,11 +436,17 @@ class StampRecord
     sig { returns(T::Boolean) }
     def profile_record_previously_changed?; end
 
+    sig { returns(T.nilable(::NotificationRecord)) }
+    def reload_notification_record; end
+
     sig { returns(T.nilable(::PostRecord)) }
     def reload_post_record; end
 
     sig { returns(T.nilable(::ProfileRecord)) }
     def reload_profile_record; end
+
+    sig { void }
+    def reset_notification_record; end
 
     sig { void }
     def reset_post_record; end

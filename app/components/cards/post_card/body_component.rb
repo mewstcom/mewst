@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 class Cards::PostCard::BodyComponent < ApplicationComponent
-  sig { params(post: Post, class_name: String).void }
+  sig { params(post: PostRecord, class_name: String).void }
   def initialize(post:, class_name: "")
     @post = post
     @class_name = class_name
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 
@@ -16,8 +16,8 @@ class Cards::PostCard::BodyComponent < ApplicationComponent
   attr_reader :class_name
   private :class_name
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   private def profile
-    post.profile.not_nil!
+    post.profile_record.not_nil!
   end
 end

@@ -4,7 +4,7 @@
 class EntryHeaders::BasicEntryHeaderComponent < ApplicationComponent
   sig do
     params(
-      profile: Profile,
+      profile: ProfileRecord,
       time: ActiveSupport::TimeWithZone,
       detail_path: T.nilable(String),
       follow_checker: T.nilable(FollowChecker)
@@ -17,7 +17,7 @@ class EntryHeaders::BasicEntryHeaderComponent < ApplicationComponent
     @follow_checker = follow_checker
   end
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   attr_reader :profile
   private :profile
 

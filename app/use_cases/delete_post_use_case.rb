@@ -5,13 +5,13 @@ class DeletePostUseCase < ApplicationUseCase
   sig { params(target_post: PostRecord).void }
   def call(target_post:)
     ActiveRecord::Base.transaction do
-      target_post.stamps.find_each do |stamp|
-        stamp.notification&.destroy!
+      target_post.stamp_records.find_each do |stamp|
+        stamp.notification_record&.destroy!
         stamp.reload.destroy!
       end
 
-      target_post.home_timeline_posts.find_each(&:destroy!)
-      target_post.post_link&.destroy!
+      target_post.home_timeline_post_records.find_each(&:destroy!)
+      target_post.post_link_record&.destroy!
       target_post.reload.destroy!
     end
 

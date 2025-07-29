@@ -8,7 +8,7 @@ class UnfollowProfileUseCase < ApplicationUseCase
 
   sig { params(profile: ProfileRecord, target_profile: ProfileRecord).returns(Result) }
   def call(profile:, target_profile:)
-    follow = profile.follows.find_by(target_profile: target_profile)
+    follow = profile.follow_records.find_by(target_profile_id: target_profile.id)
 
     ApplicationRecord.transaction do
       follow&.destroy!

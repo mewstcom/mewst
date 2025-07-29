@@ -4,7 +4,7 @@
 class V1::NotificationResource < V1::ApplicationResource
   delegate :id, to: :notification
 
-  sig { params(notification: Notification, viewer: Actor).void }
+  sig { params(notification: NotificationRecord, viewer: ActorRecord).void }
   def initialize(notification:, viewer:)
     @notification = notification
     @viewer = viewer
@@ -12,7 +12,7 @@ class V1::NotificationResource < V1::ApplicationResource
 
   sig { returns(V1::ProfileResource) }
   def source_profile
-    V1::ProfileResource.new(profile: notification.source_profile.not_nil!, viewer:)
+    V1::ProfileResource.new(profile: notification.source_profile_record.not_nil!, viewer:)
   end
 
   sig { returns(String) }
@@ -35,11 +35,11 @@ class V1::NotificationResource < V1::ApplicationResource
     notification.notified_at.iso8601
   end
 
-  sig { returns(Notification) }
+  sig { returns(NotificationRecord) }
   attr_reader :notification
   private :notification
 
-  sig { returns(Actor) }
+  sig { returns(ActorRecord) }
   attr_reader :viewer
   private :viewer
 end

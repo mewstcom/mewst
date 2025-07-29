@@ -1,9 +1,9 @@
 <%= render Mewst::UI::Card.new do %>
   <%= render Mewst::UI::Card::Body.new do %>
     <%= render EntryHeaders::BasicEntryHeaderComponent.new(
-      profile: post.profile,
+      profile: post.profile_record,
       time: post.published_at,
-      detail_path: profile_post_path(post.profile.atname, post.id),
+      detail_path: profile_post_path(post.profile_record.atname, post.id),
       follow_checker:
     ) %>
 

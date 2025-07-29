@@ -4,13 +4,13 @@
 class ApplicationPolicy
   extend T::Sig
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   attr_reader :profile
 
   sig { returns(ApplicationRecord) }
   attr_reader :record
 
-  sig { params(profile: Profile, record: ApplicationRecord).void }
+  sig { params(profile: ProfileRecord, record: ApplicationRecord).void }
   def initialize(profile, record)
     @profile = profile
     @record = record
@@ -54,7 +54,7 @@ class ApplicationPolicy
   class Scope
     extend T::Sig
 
-    T::Sig::WithoutRuntime.sig { params(profile: Profile, scope: ActiveRecord::Relation).void }
+    T::Sig::WithoutRuntime.sig { params(profile: ProfileRecord, scope: ActiveRecord::Relation).void }
     def initialize(profile, scope)
       @profile = profile
       @scope = scope
@@ -65,7 +65,7 @@ class ApplicationPolicy
       raise NotImplementedError, "You must define #resolve in #{self.class}"
     end
 
-    sig { returns(Profile) }
+    sig { returns(ProfileRecord) }
     attr_reader :profile
     private :profile
 

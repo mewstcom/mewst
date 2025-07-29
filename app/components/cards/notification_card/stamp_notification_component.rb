@@ -2,17 +2,17 @@
 # frozen_string_literal: true
 
 class Cards::NotificationCard::StampNotificationComponent < ApplicationComponent
-  sig { params(notification: Notification).void }
+  sig { params(notification: NotificationRecord).void }
   def initialize(notification:)
     @notification = notification
   end
 
-  sig { returns(Notification) }
+  sig { returns(NotificationRecord) }
   attr_reader :notification
   private :notification
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   def target_post
-    notification.notifiable.post.not_nil!
+    notification.notifiable.post_record.not_nil!
   end
 end

@@ -4,7 +4,7 @@
 class V1::EmailConfirmationResource < V1::ApplicationResource
   delegate :id, :email, :event, to: :email_confirmation
 
-  sig { params(email_confirmation: EmailConfirmation).void }
+  sig { params(email_confirmation: EmailConfirmationRecord).void }
   def initialize(email_confirmation:)
     @email_confirmation = email_confirmation
   end
@@ -14,7 +14,7 @@ class V1::EmailConfirmationResource < V1::ApplicationResource
     email_confirmation.succeeded_at&.iso8601
   end
 
-  sig { returns(EmailConfirmation) }
+  sig { returns(EmailConfirmationRecord) }
   attr_reader :email_confirmation
   private :email_confirmation
 end

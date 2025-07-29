@@ -23,7 +23,7 @@ class Search::Profiles::IndexController < ApplicationController
       .fetch
     @profiles = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
-    @follow_checker = FollowChecker.new(profile: viewer!.profile.not_nil!, target_profiles: @profiles)
+    @follow_checker = FollowChecker.new(profile: viewer!.profile_record.not_nil!, target_profiles: @profiles)
   rescue ActiveRecordCursorPaginate::InvalidCursorError
     redirect_to(search_profile_list_path(q: params[:q]), status: :moved_permanently)
   end

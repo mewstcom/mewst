@@ -1,4 +1,4 @@
-<%= link_to profile_post_path(post.profile.atname, post.id), {
+<%= link_to profile_post_path(post.profile_record.atname, post.id), {
   class: "duration-200 ease-in-out hover:ring-1 hover:ring-gray-400 inline-block rounded-2xl transition w-full"
 } do %>
   <%= render Mewst::UI::Card.new do %>

@@ -116,7 +116,7 @@ class ProfileRecord < ApplicationRecord
   sig { void }
   def create_suggested_follows!
     # おすすめプロフィールを作りすぎないように制限する
-    return if suggested_follows.not_checked.size >= MAX_SUGGESTED_FOLLOWS_COUNT
+    return if suggested_follow_records.not_checked.size >= MAX_SUGGESTED_FOLLOWS_COUNT
 
     # Note: 各limitに指定している数値に深い意味はない
     followee_records.kept.sort_by_latest_post.limit(10).each do |source_followee|
@@ -132,7 +132,7 @@ class ProfileRecord < ApplicationRecord
     end
   end
 
-  sig { params(target_profile: Profile).void }
+  sig { params(target_profile: ProfileRecord).void }
   private def create_suggested_follow!(target_profile:)
     return if me?(target_profile:)
     return if following?(target_profile:)

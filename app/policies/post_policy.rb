@@ -4,6 +4,6 @@
 class PostPolicy < ApplicationPolicy
   sig { returns(T::Boolean) }
   def destroy?
-    profile == T.cast(record, Post).profile
+    profile == T.cast(record, PostRecord).profile_record
   end
 end

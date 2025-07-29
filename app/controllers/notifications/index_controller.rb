@@ -10,9 +10,9 @@ class Notifications::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    page = viewer!
-      .notifications
-      .preload(:source_profile, notifiable: {post: :profile})
+    page = viewer!.profile_record.not_nil!
+      .notification_records
+      .preload(:source_profile_record, notifiable: {post_record: :profile_record})
       .cursor_paginate(
         after: params[:after].presence,
         before: params[:before].presence,
@@ -23,8 +23,8 @@ class Notifications::IndexController < ApplicationController
     @notifications = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
     @follow_checker = FollowChecker.new(
-      profile: viewer!.profile.not_nil!,
-      target_profiles: @notifications.map(&:source_profile)
+      profile: viewer!.profile_record.not_nil!,
+      target_profiles: @notifications.map(&:source_profile_record)
     )
   rescue ActiveRecordCursorPaginate::InvalidCursorError
     redirect_to(notification_list_path, status: :moved_permanently)

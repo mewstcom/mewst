@@ -11,11 +11,11 @@ class Home::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = PostForm.new(with_frame: true)
-    @posts, @page_info = viewer!.home_timeline.fetch_posts(
+    @posts, @page_info = viewer!.profile_record.not_nil!.home_timeline.fetch_posts(
       before: params[:before].presence,
       after: params[:after].presence,
       limit: 15
     )
-    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: @posts)
+    @stamp_checker = StampChecker.new(profile: viewer!.profile_record, posts: @posts)
   end
 end

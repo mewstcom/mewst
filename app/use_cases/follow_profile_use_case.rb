@@ -8,13 +8,13 @@ class FollowProfileUseCase < ApplicationUseCase
 
   sig { params(source_profile: ProfileRecord, target_profile: ProfileRecord).returns(Result) }
   def call(source_profile:, target_profile:)
-    followee = source_profile.followees.find_by(atname: target_profile.atname)
+    followee = source_profile.followee_records.find_by(atname: target_profile.atname)
 
     if followee
       return Result.new(target_profile: followee)
     end
 
-    follow = source_profile.follows.new(target_profile: target_profile, followed_at: Time.current)
+    follow = source_profile.follow_records.new(target_profile_record: target_profile, followed_at: Time.current)
 
     ApplicationRecord.transaction do
       follow.save!
@@ -26,6 +26,6 @@ class FollowProfileUseCase < ApplicationUseCase
       CreateSuggestedFollowsJob.perform_later(source_profile_id: source_profile.id.not_nil!)
     end
 
-    Result.new(target_profile: follow.target_profile.not_nil!)
+    Result.new(target_profile: follow.target_profile_record.not_nil!)
   end
 end

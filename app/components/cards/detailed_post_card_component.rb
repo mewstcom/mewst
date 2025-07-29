@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 class Cards::DetailedPostCardComponent < ApplicationComponent
-  sig { params(post: Post, stamp_checker: StampChecker).void }
+  sig { params(post: PostRecord, stamp_checker: StampChecker).void }
   def initialize(post:, stamp_checker:)
     @post = post
     @stamp_checker = stamp_checker
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 
@@ -16,8 +16,8 @@ class Cards::DetailedPostCardComponent < ApplicationComponent
   attr_reader :stamp_checker
   private :stamp_checker
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   private def profile
-    post.profile.not_nil!
+    post.profile_record.not_nil!
   end
 end

@@ -29,7 +29,7 @@ module ControllerConcerns::Authenticatable
   def viewer
     @viewer ||= T.let(begin
       return unless cookies.signed[SessionRecord::COOKIE_KEY]
-      SessionRecord.find_by(token: cookies.signed[SessionRecord::COOKIE_KEY])&.actor
+      SessionRecord.find_by(token: cookies.signed[SessionRecord::COOKIE_KEY])&.actor_record
     end, T.nilable(ActorRecord))
   end
 
