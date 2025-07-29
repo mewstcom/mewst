@@ -4,7 +4,25 @@
 
 # typed: false
 
+module ::Actor; end
+module ::Follow; end
+module ::HomeTimelinePost; end
+module ::Link; end
+module ::PostLink; end
+module ::Stamp; end
+module ::UserProfile; end
 module Capybara::Cuprite::Driver; end
+module Cards::LinkCardComponent::Link; end
+module EmailConfirmationRecord::Actor; end
+module NotificationRecord::GeneratedDelegatedTypeMethods::Stamp; end
+module Post::MAXIMUM_CONTENT_LENGTH; end
+module Profile::ATNAME_MAX_LENGTH; end
+module Profile::HomeTimeline; end
+module Session::COOKIE_KEY; end
 module V1::FollowForm; end
+module V1::NotificationResource::Actor; end
 module V1::PostForm; end
+module V1::PostResource::Actor; end
+module V1::ProfileResource::Actor; end
 module V1::StampForm; end
+module V1::StampNotificationItemResource::Actor; end

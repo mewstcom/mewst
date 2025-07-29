@@ -24,10 +24,10 @@ class Welcome::ShowController
     sig { returns(T::Boolean) }
     def signed_in?; end
 
-    sig { returns(T.nilable(::Actor)) }
+    sig { returns(T.nilable(::ActorRecord)) }
     def viewer; end
 
-    sig { returns(::Actor) }
+    sig { returns(::ActorRecord) }
     def viewer!; end
   end
 

@@ -393,7 +393,7 @@ class OauthAccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def build_application(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActorRecord) }
     def build_resource_owner(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
@@ -402,16 +402,16 @@ class OauthAccessToken
     sig { params(args: T.untyped, blk: T.untyped).returns(::OauthApplication) }
     def create_application!(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActorRecord) }
     def create_resource_owner(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActorRecord) }
     def create_resource_owner!(*args, &blk); end
 
     sig { returns(T.nilable(::OauthApplication)) }
     def reload_application; end
 
-    sig { returns(T.nilable(::Actor)) }
+    sig { returns(T.nilable(::ActorRecord)) }
     def reload_resource_owner; end
 
     sig { void }
@@ -420,10 +420,10 @@ class OauthAccessToken
     sig { void }
     def reset_resource_owner; end
 
-    sig { returns(T.nilable(::Actor)) }
+    sig { returns(T.nilable(::ActorRecord)) }
     def resource_owner; end
 
-    sig { params(value: T.nilable(::Actor)).void }
+    sig { params(value: T.nilable(::ActorRecord)).void }
     def resource_owner=(value); end
 
     sig { returns(T::Boolean) }
