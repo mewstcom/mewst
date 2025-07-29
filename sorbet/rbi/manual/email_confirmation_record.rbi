@@ -1,7 +1,7 @@
 # typed: strong
 # frozen_string_literal: true
 
-class EmailConfirmation
+class EmailConfirmationRecord
   def self.enumerize(*args)
   end
 

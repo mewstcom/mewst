@@ -1,6 +1,6 @@
 # typed: strong
 # frozen_string_literal: true
 
-class Account
+class UserRecord
   def self.enumerize(*args); end
 end
