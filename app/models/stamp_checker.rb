@@ -4,14 +4,14 @@
 class StampChecker
   extend T::Sig
 
-  sig { params(profile: T.nilable(Profile), posts: T.any(ActiveRecord::Relation, T::Array[Post])).void }
+  sig { params(profile: T.nilable(ProfileRecord), posts: T.any(ActiveRecord::Relation, T::Array[PostRecord])).void }
   def initialize(profile:, posts:)
     @profile = profile
     @posts = posts
     @stamped_post_ids = T.let(nil, T.nilable(T::Array[T::Mewst::DatabaseId]))
   end
 
-  sig { params(post: Post).returns(T::Boolean) }
+  sig { params(post: PostRecord).returns(T::Boolean) }
   def stamped?(post:)
     !profile.nil? && stamped_post_ids.include?(post.id)
   end
@@ -25,11 +25,11 @@ class StampChecker
     end
   end
 
-  sig { returns(T.nilable(Profile)) }
+  sig { returns(T.nilable(ProfileRecord)) }
   attr_reader :profile
   private :profile
 
-  sig { returns(T.any(ActiveRecord::Relation, T::Array[Post])) }
+  sig { returns(T.any(ActiveRecord::Relation, T::Array[PostRecord])) }
   attr_reader :posts
   private :posts
 end

@@ -9,7 +9,7 @@ class Profiles::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = Profile.kept.find_by!(atname: params[:atname])
+    @profile = ProfileRecord.kept.find_by!(atname: params[:atname])
     @follow_checker = FollowChecker.new(profile: viewer&.profile, target_profiles: [@profile])
 
     page = @profile.posts.kept.preload(:link).cursor_paginate(

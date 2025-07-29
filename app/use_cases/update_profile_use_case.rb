@@ -3,12 +3,12 @@
 
 class UpdateProfileUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :profile, Profile
+    const :profile, ProfileRecord
   end
 
   sig do
     params(
-      viewer: Actor,
+      viewer: ActorRecord,
       atname: String,
       name: String,
       description: String,

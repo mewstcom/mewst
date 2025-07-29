@@ -4,8 +4,8 @@
 class AddFollowedProfilePostsToTimelineJob < ApplicationJob
   sig { params(source_profile_id: T::Mewst::DatabaseId, target_profile_id: T::Mewst::DatabaseId).void }
   def perform(source_profile_id:, target_profile_id:)
-    source_profile = Profile.kept.find(source_profile_id)
-    target_profile = Profile.kept.find(target_profile_id)
+    source_profile = ProfileRecord.kept.find(source_profile_id)
+    target_profile = ProfileRecord.kept.find(target_profile_id)
 
     AddFollowedProfilePostsToTimelineUseCase.new.call(source_profile:, target_profile:)
   end

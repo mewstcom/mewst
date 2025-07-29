@@ -3,10 +3,10 @@
 
 class ConfirmEmailUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :email_confirmation, EmailConfirmation
+    const :email_confirmation, EmailConfirmationRecord
   end
 
-  sig { params(viewer: T.nilable(Actor), email_confirmation: EmailConfirmation).returns(Result) }
+  sig { params(viewer: T.nilable(ActorRecord), email_confirmation: EmailConfirmationRecord).returns(Result) }
   def call(viewer:, email_confirmation:)
     ActiveRecord::Base.transaction do
       email_confirmation.success!

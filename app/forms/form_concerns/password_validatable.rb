@@ -5,7 +5,7 @@ module FormConcerns::PasswordValidatable
   extend ActiveSupport::Concern
 
   included do
-    validates :password, length: {minimum: User::PASSWORD_MIN_LENGTH}, presence: true
+    validates :password, length: {minimum: UserRecord::PASSWORD_MIN_LENGTH}, presence: true
     validate do |record|
       password_value = record.password
 

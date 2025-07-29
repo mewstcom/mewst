@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class AddFollowedProfilePostsToTimelineUseCase < ApplicationUseCase
-  sig { params(source_profile: Profile, target_profile: Profile).void }
+  sig { params(source_profile: ProfileRecord, target_profile: ProfileRecord).void }
   def call(source_profile:, target_profile:)
     target_posts = target_profile.posts.kept.order(published_at: :desc).limit(30)
 

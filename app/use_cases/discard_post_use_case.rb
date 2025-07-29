@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class DiscardPostUseCase < ApplicationUseCase
-  sig { params(target_post: Post).void }
+  sig { params(target_post: PostRecord).void }
   def call(target_post:)
     ApplicationRecord.transaction do
       target_post.discard!

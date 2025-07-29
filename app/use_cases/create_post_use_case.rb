@@ -3,17 +3,17 @@
 
 class CreatePostUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :post, Post
+    const :post, PostRecord
   end
 
-  sig { params(viewer: Actor, content: String, canonical_url: String, oauth_application: OauthApplication).returns(Result) }
+  sig { params(viewer: ActorRecord, content: String, canonical_url: String, oauth_application: OauthApplication).returns(Result) }
   def call(viewer:, content:, canonical_url:, oauth_application: OauthApplication.mewst_web)
     post = viewer.posts.new(
       content:,
       published_at: Time.current,
       oauth_application:
     )
-    link = canonical_url.present? ? Link.find_by(canonical_url:) : nil
+    link = canonical_url.present? ? LinkRecord.find_by(canonical_url:) : nil
 
     ActiveRecord::Base.transaction do
       post.save!

@@ -9,9 +9,9 @@ module ControllerConcerns::Authenticatable
     helper_method :signed_in?, :viewer, :viewer!
   end
 
-  sig(:final) { params(session: Session).returns(T::Boolean) }
+  sig(:final) { params(session: SessionRecord).returns(T::Boolean) }
   def sign_in(session)
-    cookies.signed.permanent[Session::COOKIE_KEY] = {
+    cookies.signed.permanent[SessionRecord::COOKIE_KEY] = {
       value: session.token,
       httponly: true,
       same_site: :lax
@@ -21,19 +21,19 @@ module ControllerConcerns::Authenticatable
 
   sig(:final) { returns(T::Boolean) }
   def sign_out
-    cookies.delete(Session::COOKIE_KEY)
+    cookies.delete(SessionRecord::COOKIE_KEY)
     true
   end
 
-  sig(:final) { returns(T.nilable(Actor)) }
+  sig(:final) { returns(T.nilable(ActorRecord)) }
   def viewer
     @viewer ||= T.let(begin
-      return unless cookies.signed[Session::COOKIE_KEY]
-      Session.find_by(token: cookies.signed[Session::COOKIE_KEY])&.actor
-    end, T.nilable(Actor))
+      return unless cookies.signed[SessionRecord::COOKIE_KEY]
+      SessionRecord.find_by(token: cookies.signed[SessionRecord::COOKIE_KEY])&.actor
+    end, T.nilable(ActorRecord))
   end
 
-  sig(:final) { returns(Actor) }
+  sig(:final) { returns(ActorRecord) }
   def viewer!
     viewer.not_nil!
   end

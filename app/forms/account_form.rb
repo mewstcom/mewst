@@ -11,8 +11,8 @@ class AccountForm < ApplicationForm
   attribute :time_zone, :string
 
   validates :atname,
-    format: {with: Profile::ATNAME_FORMAT},
-    length: {in: Profile::ATNAME_MIN_LENGTH..Profile::ATNAME_MAX_LENGTH},
+    format: {with: ProfileRecord::ATNAME_FORMAT},
+    length: {in: ProfileRecord::ATNAME_MIN_LENGTH..ProfileRecord::ATNAME_MAX_LENGTH},
     presence: true,
     unreserved_atname: true
   validates :email, email: true, presence: true
@@ -23,14 +23,14 @@ class AccountForm < ApplicationForm
 
   sig { void }
   private def atname_uniqueness
-    if Profile.find_by(atname:)
+    if ProfileRecord.find_by(atname:)
       errors.add(:atname, :uniqueness)
     end
   end
 
   sig { void }
   private def email_uniqueness
-    if User.find_by(email:)
+    if UserRecord.find_by(email:)
       errors.add(:email, :uniqueness)
     end
   end

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class RemoveFollowedProfilePostsFromTimelineUseCase < ApplicationUseCase
-  sig { params(source_profile: Profile, target_profile: Profile).void }
+  sig { params(source_profile: ProfileRecord, target_profile: ProfileRecord).void }
   def call(source_profile:, target_profile:)
     source_profile.home_timeline_posts.joins(:post).merge(target_profile.posts).find_each do |home_timeline_post|
       home_timeline_post.destroy!

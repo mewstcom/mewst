@@ -3,10 +3,10 @@
 
 class FanoutPostUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :post, Post
+    const :post, PostRecord
   end
 
-  sig { params(post: Post).returns(Result) }
+  sig { params(post: PostRecord).returns(Result) }
   def call(post:)
     followers = post.profile.not_nil!.followers
 

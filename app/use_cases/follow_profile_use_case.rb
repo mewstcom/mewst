@@ -3,10 +3,10 @@
 
 class FollowProfileUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :target_profile, Profile
+    const :target_profile, ProfileRecord
   end
 
-  sig { params(source_profile: Profile, target_profile: Profile).returns(Result) }
+  sig { params(source_profile: ProfileRecord, target_profile: ProfileRecord).returns(Result) }
   def call(source_profile:, target_profile:)
     followee = source_profile.followees.find_by(atname: target_profile.atname)
 

@@ -9,7 +9,7 @@ class Posts::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = Profile.kept.find_by!(atname: params[:atname])
+    @profile = ProfileRecord.kept.find_by!(atname: params[:atname])
     @post = @profile.posts.kept.find(params[:post_id])
     @stamp_checker = StampChecker.new(profile: viewer&.profile, posts: [@post])
   end

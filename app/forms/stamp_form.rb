@@ -6,8 +6,8 @@ class StampForm < ApplicationForm
 
   validates :target_post, presence: true
 
-  sig { returns(T.nilable(Post)) }
+  sig { returns(T.nilable(PostRecord)) }
   def target_post
-    Post.find_by(id: target_post_id)
+    PostRecord.find_by(id: target_post_id)
   end
 end

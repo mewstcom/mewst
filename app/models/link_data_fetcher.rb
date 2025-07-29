@@ -12,7 +12,7 @@ class LinkDataFetcher
   end
 
   class Result < T::Struct
-    const :link, T.nilable(Link)
+    const :link, T.nilable(LinkRecord)
     const :fetched_data, T.nilable(FetchedData)
   end
 
@@ -22,7 +22,7 @@ class LinkDataFetcher
 
   sig { params(target_url: String).returns(Result) }
   def call(target_url:)
-    saved_link = Link.find_by(canonical_url: target_url)
+    saved_link = LinkRecord.find_by(canonical_url: target_url)
     return Result.new(link: saved_link) if saved_link
 
     html = fetch_html(target_url:)
@@ -61,7 +61,7 @@ class LinkDataFetcher
     fetched_canonical_url = doc.at_css('link[rel="canonical"]')&.[]("href")
 
     if fetched_canonical_url
-      saved_link = Link.find_by(canonical_url: fetched_canonical_url)
+      saved_link = LinkRecord.find_by(canonical_url: fetched_canonical_url)
       return Result.new(link: saved_link) if saved_link
     end
 

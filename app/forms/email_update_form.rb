@@ -9,7 +9,7 @@ class EmailUpdateForm < ApplicationForm
 
   sig { void }
   private def email_uniqueness
-    if User.find_by(email: new_email)
+    if UserRecord.find_by(email: new_email)
       errors.add(:new_email, :uniqueness)
     end
   end

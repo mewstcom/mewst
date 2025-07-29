@@ -3,10 +3,10 @@
 
 class UnfollowProfileUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :target_profile, Profile
+    const :target_profile, ProfileRecord
   end
 
-  sig { params(profile: Profile, target_profile: Profile).returns(Result) }
+  sig { params(profile: ProfileRecord, target_profile: ProfileRecord).returns(Result) }
   def call(profile:, target_profile:)
     follow = profile.follows.find_by(target_profile: target_profile)
 

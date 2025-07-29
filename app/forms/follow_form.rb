@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class FollowForm < ApplicationForm
-  sig { returns(T.nilable(Profile)) }
+  sig { returns(T.nilable(ProfileRecord)) }
   attr_accessor :profile
 
   attribute :target_atname, :string
@@ -16,9 +16,9 @@ class FollowForm < ApplicationForm
     target_atname
   end
 
-  sig { returns(T.nilable(Profile)) }
+  sig { returns(T.nilable(ProfileRecord)) }
   def target_profile
-    @target_profile ||= T.let(Profile.kept.find_by(atname: target_atname), T.nilable(Profile))
+    @target_profile ||= T.let(ProfileRecord.kept.find_by(atname: target_atname), T.nilable(ProfileRecord))
   end
 
   sig { void }

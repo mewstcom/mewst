@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class CreateSuggestedFollowsUseCase < ApplicationUseCase
-  sig { params(source_profile: Profile).void }
+  sig { params(source_profile: ProfileRecord).void }
   def call(source_profile:)
     source_profile.create_suggested_follows!
 

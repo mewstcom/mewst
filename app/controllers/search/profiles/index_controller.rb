@@ -11,7 +11,7 @@ class Search::Profiles::IndexController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = KeywordSearchForm.new(q: params[:q].presence || "")
-    page = Profile
+    page = ProfileRecord
       .kept
       .search_by_keywords(q: @form.q)
       .cursor_paginate(
