@@ -5,11 +5,14 @@
 # typed: false
 
 module ::Actor; end
+module ::EmailConfirmation; end
 module ::Follow; end
 module ::HomeTimelinePost; end
 module ::Link; end
+module ::Notification; end
 module ::PostLink; end
 module ::Stamp; end
+module ::User; end
 module ::UserProfile; end
 module Capybara::Cuprite::Driver; end
 module Cards::LinkCardComponent::Link; end
@@ -21,3 +24,4 @@ module Session::COOKIE_KEY; end
 module V1::FollowForm; end
 module V1::PostForm; end
 module V1::StampForm; end
+module V1::UserResource::User; end

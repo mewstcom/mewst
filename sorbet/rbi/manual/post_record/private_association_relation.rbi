@@ -1,6 +1,6 @@
 # typed: strong
 # frozen_string_literal: true
 
-class Profile::PrivateRelation
+class PostRecord::PrivateAssociationRelation
   include ActiveRecordCursorPaginate::Extension
 end

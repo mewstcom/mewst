@@ -1,7 +1,7 @@
 # typed: strong
 # frozen_string_literal: true
 
-class Session::PrivateCollectionProxy
+class SessionRecord::PrivateCollectionProxy
   def start!(*args)
   end
 end
