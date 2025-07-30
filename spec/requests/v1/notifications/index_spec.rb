@@ -10,7 +10,7 @@ RSpec.xdescribe "GET /v1/notifications", type: :request, api_version: :v1 do
     let!(:post) { CreatePostUseCase.new.call(viewer:, content: "Hello").post }
 
     before do
-      FollowProfileUseCase.new.call(viewer: other_actor, target_profile: viewer.profile)
+      FollowProfileUseCase.new.call(viewer: other_actor, target_profile: viewer.profile_record)
       CreateStampUseCase.new.call(viewer: other_actor, target_post: post)
     end
 
@@ -20,17 +20,17 @@ RSpec.xdescribe "GET /v1/notifications", type: :request, api_version: :v1 do
       expect(response).to have_http_status(:ok)
       assert_response_schema_confirm(200)
 
-      expect(viewer.notifications.count).to eq(1)
-      notification = viewer.notifications.first
+      expect(viewer.notification_records.count).to eq(1)
+      notification = viewer.notification_records.first
 
       expected = {
         notifications: [
           {
             id: notification.id,
-            source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false),
+            source_profile: build_profile_resource(profile: other_actor.profile_record, viewer_has_followed: false),
             kind: "Stamp",
             item: {
-              source_profile: build_profile_resource(profile: other_actor.profile, viewer_has_followed: false),
+              source_profile: build_profile_resource(profile: other_actor.profile_record, viewer_has_followed: false),
               target_post: build_post_resource(post: post.reload, viewer_has_followed: false, viewer_has_stamped: false)
             },
             notified_at: notification.notified_at.iso8601

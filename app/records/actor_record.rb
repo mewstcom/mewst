@@ -7,7 +7,7 @@ class ActorRecord < ApplicationRecord
   belongs_to :user_record, class_name: "UserRecord", foreign_key: :user_id
   belongs_to :profile_record, class_name: "ProfileRecord", foreign_key: :profile_id
   has_many :oauth_access_tokens, dependent: :restrict_with_exception, foreign_key: :resource_owner_id, inverse_of: :resource_owner
-  has_many :session_records, class_name: "SessionRecord", dependent: :restrict_with_exception
+  has_many :session_records, class_name: "SessionRecord", dependent: :restrict_with_exception, foreign_key: :actor_id
 
   delegate :email, :time_zone, to: :user_record
   delegate :atname, :avatar_kind, :avatar_url, :checkable_suggested_followees, :description, :fetch_notifications,

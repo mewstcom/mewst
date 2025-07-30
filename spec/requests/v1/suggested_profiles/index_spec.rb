@@ -10,9 +10,9 @@ RSpec.xdescribe "GET /v1/suggested_profiles", type: :request, api_version: :v1 d
     let!(:actor_b) { create(:actor) }
 
     before do
-      FollowProfileUseCase.new.call(viewer:, target_profile: actor_a.profile)
-      FollowProfileUseCase.new.call(viewer: actor_a, target_profile: actor_b.profile)
-      viewer.profile.create_suggested_follows!
+      FollowProfileUseCase.new.call(viewer:, target_profile: actor_a.profile_record)
+      FollowProfileUseCase.new.call(viewer: actor_a, target_profile: actor_b.profile_record)
+      viewer.profile_record.create_suggested_follows!
     end
 
     it "おすすめプロフィール一覧が返ること" do

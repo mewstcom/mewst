@@ -21,7 +21,7 @@ class ProfileRecord::HomeTimeline
 
   sig { params(post: PostRecord).returns(T.self_type) }
   def add_post!(post:)
-    profile.home_timeline_post_records.where(post:).first_or_create!(published_at: post.published_at)
+    profile.home_timeline_post_records.where(post_record: post).first_or_create!(published_at: post.published_at)
 
     self
   end

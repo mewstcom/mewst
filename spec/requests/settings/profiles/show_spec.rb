@@ -19,7 +19,7 @@ RSpec.describe "GET /settings/profile", type: :request do
 
   it "ログインしているとき、現在のプロフィール情報がフォームに設定されること" do
     actor = FactoryBot.create(:actor)
-    profile = actor.profile
+    profile = actor.profile_record
     profile.update!(
       atname: "testuser",
       name: "テストユーザー",
@@ -40,7 +40,7 @@ RSpec.describe "GET /settings/profile", type: :request do
 
   it "ログインしているとき、外部画像URLを使用している場合、その情報がフォームに設定されること" do
     actor = FactoryBot.create(:actor)
-    profile = actor.profile
+    profile = actor.profile_record
     profile.update!(
       atname: "imageuser",
       name: "画像ユーザー",

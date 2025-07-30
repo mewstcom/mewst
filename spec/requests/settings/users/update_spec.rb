@@ -27,7 +27,7 @@ RSpec.describe "PATCH /settings/user", type: :request do
     expect(response).to redirect_to("/settings/user")
     expect(flash[:notice]).to eq("ユーザー設定を更新しました。")
 
-    user = actor.user.reload
+    user = actor.user_record.reload
     expect(user.locale).to eq("ja")
     expect(user.time_zone).to eq("Asia/Tokyo")
   end
@@ -45,7 +45,7 @@ RSpec.describe "PATCH /settings/user", type: :request do
 
     expect(response).to redirect_to("/settings/user")
 
-    user = actor.user.reload
+    user = actor.user_record.reload
     expect(user.locale).to eq("en")
     expect(user.time_zone).to eq("America/New_York")
   end

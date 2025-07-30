@@ -32,21 +32,21 @@ RSpec.xdescribe "POST /v1/suggested_profiles/@:atname/check", type: :request, ap
     actor_a = FactoryBot.create(:actor)
     actor_b = FactoryBot.create(:actor)
 
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
-    expect(viewer.profile.suggested_follows.count).to eq(1)
-    suggested_follow = viewer.suggested_follows.first
-    expect(suggested_follow.target_profile).to eq(actor_b.profile)
+    expect(viewer.profile_record.suggested_follow_records.count).to eq(1)
+    suggested_follow = viewer.suggested_follow_records.first
+    expect(suggested_follow.target_profile).to eq(actor_b.profile_record)
     expect(suggested_follow.checked_at).to be_nil
 
     post("/v1/suggested_profiles/@#{actor_b.atname}/check", headers:)
     expect(response).to have_http_status(:no_content)
 
-    expect(viewer.suggested_follows.count).to eq(1)
-    suggested_follow = viewer.profile.suggested_follows.first
-    expect(suggested_follow.target_profile).to eq(actor_b.profile)
+    expect(viewer.suggested_follow_records.count).to eq(1)
+    suggested_follow = viewer.profile_record.suggested_follow_records.first
+    expect(suggested_follow.target_profile).to eq(actor_b.profile_record)
     expect(suggested_follow.checked_at).not_to be_nil
 
     assert_response_schema_confirm(204)

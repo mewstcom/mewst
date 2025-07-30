@@ -4,7 +4,7 @@
 class Lists::PostCardListComponent < ApplicationComponent
   sig do
     params(
-      posts: T.any(ActiveRecord::Relation, T::Array[Post]),
+      posts: T.any(ActiveRecord::Relation, T::Array[PostRecord]),
       stamp_checker: StampChecker,
       follow_checker: T.nilable(FollowChecker),
       class_name: String
@@ -17,7 +17,7 @@ class Lists::PostCardListComponent < ApplicationComponent
     @class_name = class_name
   end
 
-  sig { returns(T.any(ActiveRecord::Relation, T::Array[Post])) }
+  sig { returns(T.any(ActiveRecord::Relation, T::Array[PostRecord])) }
   attr_reader :posts
   private :posts
 

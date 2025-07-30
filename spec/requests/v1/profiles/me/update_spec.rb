@@ -34,7 +34,7 @@ RSpec.xdescribe "PATCH /v1/profiles/me", type: :request, api_version: :v1 do
 
   context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { viewer.profile }
+    let!(:profile) { viewer.profile_record }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 

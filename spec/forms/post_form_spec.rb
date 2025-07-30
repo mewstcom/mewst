@@ -13,7 +13,7 @@ RSpec.describe PostForm do
     end
 
     context "投稿内容が長すぎるとき" do
-      let!(:long_content) { "a" * (Post::MAXIMUM_CONTENT_LENGTH + 1) }
+      let!(:long_content) { "a" * (PostRecord::MAXIMUM_CONTENT_LENGTH + 1) }
       let!(:form) { PostForm.new(content: long_content) }
 
       it "不正なデータとすること" do

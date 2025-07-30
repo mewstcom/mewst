@@ -76,7 +76,7 @@ RSpec.describe "PATCH /settings/profile", type: :request do
 
   it "ログインしているとき、atnameが既に使用されている場合、エラーが表示されること" do
     actor = FactoryBot.create(:actor)
-    FactoryBot.create(:profile, atname: "taken")
+    FactoryBot.create(:profile_record, atname: "taken")
     sign_in(actor)
 
     patch "/settings/profile", params: {
@@ -188,10 +188,10 @@ RSpec.describe "PATCH /settings/profile", type: :request do
     expect(response).to redirect_to(settings_profile_path)
     expect(flash[:notice]).to eq("プロフィールを更新しました")
 
-    actor.profile.reload
-    expect(actor.profile.atname).to eq("newatname")
-    expect(actor.profile.name).to eq("新しい名前")
-    expect(actor.profile.description).to eq("新しい説明")
+    actor.profile_record.reload
+    expect(actor.profile_record.atname).to eq("newatname")
+    expect(actor.profile_record.name).to eq("新しい名前")
+    expect(actor.profile_record.description).to eq("新しい説明")
   end
 
   it "ログインしているとき、avatar_kindがgravatarの場合、gravatar_emailが保存されること" do
@@ -211,9 +211,9 @@ RSpec.describe "PATCH /settings/profile", type: :request do
 
     expect(response).to redirect_to(settings_profile_path)
 
-    actor.profile.reload
-    expect(actor.profile.avatar_kind).to eq("gravatar")
-    expect(actor.profile.gravatar_email).to eq("gravatar@example.com")
+    actor.profile_record.reload
+    expect(actor.profile_record.avatar_kind).to eq("gravatar")
+    expect(actor.profile_record.gravatar_email).to eq("gravatar@example.com")
   end
 
   it "ログインしているとき、avatar_kindがexternalの場合、image_urlが保存されること" do
@@ -233,14 +233,14 @@ RSpec.describe "PATCH /settings/profile", type: :request do
 
     expect(response).to redirect_to(settings_profile_path)
 
-    actor.profile.reload
-    expect(actor.profile.avatar_kind).to eq("external")
-    expect(actor.profile.image_url).to eq("https://example.com/avatar.png")
+    actor.profile_record.reload
+    expect(actor.profile_record.avatar_kind).to eq("external")
+    expect(actor.profile_record.image_url).to eq("https://example.com/avatar.png")
   end
 
   it "ログインしているとき、自分のatnameを再度設定してもエラーにならないこと" do
     actor = FactoryBot.create(:actor)
-    actor.profile.update!(atname: "myatname")
+    actor.profile_record.update!(atname: "myatname")
     sign_in(actor)
 
     patch "/settings/profile", params: {

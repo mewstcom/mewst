@@ -22,7 +22,7 @@ RSpec.describe "POST /posts", type: :request do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
 
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
 
     post "/posts", params: {
       post_form: {
@@ -34,18 +34,18 @@ RSpec.describe "POST /posts", type: :request do
 
     expect(response).to redirect_to(home_path)
     expect(flash[:notice]).to eq("投稿しました")
-    expect(Post.count).to eq(1)
+    expect(PostRecord.count).to eq(1)
 
-    created_post = Post.first
+    created_post = PostRecord.first
     expect(created_post.content).to eq("テスト投稿")
-    expect(created_post.profile).to eq(actor.profile)
+    expect(created_post.profile_record).to eq(actor.profile_record)
   end
 
   it "認証されたユーザーでwith_frameがtrueの場合、投稿が作成されてTurbo Streamで応答すること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
 
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
 
     post "/posts", params: {
       post_form: {
@@ -57,19 +57,19 @@ RSpec.describe "POST /posts", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to include("text/vnd.turbo-stream.html")
-    expect(Post.count).to eq(1)
+    expect(PostRecord.count).to eq(1)
 
-    created_post = Post.first
+    created_post = PostRecord.first
     expect(created_post.content).to eq("テスト投稿")
-    expect(created_post.profile).to eq(actor.profile)
+    expect(created_post.profile_record).to eq(actor.profile_record)
   end
 
   it "認証されたユーザーで既存のLinkのcanonical_urlが設定された場合、投稿が作成されてLinkが関連付けられること" do
     actor = FactoryBot.create(:actor)
-    link = FactoryBot.create(:link, canonical_url: "https://example.com")
+    link = FactoryBot.create(:link_record, canonical_url: "https://example.com")
     sign_in(actor)
 
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
 
     post "/posts", params: {
       post_form: {
@@ -80,12 +80,12 @@ RSpec.describe "POST /posts", type: :request do
     }
 
     expect(response).to redirect_to(home_path)
-    expect(Post.count).to eq(1)
+    expect(PostRecord.count).to eq(1)
 
-    created_post = Post.first
+    created_post = PostRecord.first
     expect(created_post.content).to eq("テスト投稿")
-    expect(created_post.link).to eq(link)
-    expect(created_post.link.canonical_url).to eq("https://example.com")
+    expect(created_post.link_record).to eq(link)
+    expect(created_post.link_record.canonical_url).to eq("https://example.com")
   end
 
   it "認証されたユーザーで投稿内容が空の場合、422エラーが返ること" do
@@ -101,14 +101,14 @@ RSpec.describe "POST /posts", type: :request do
     }
 
     expect(response).to have_http_status(:unprocessable_entity)
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
   end
 
   it "認証されたユーザーで投稿内容が最大文字数を超える場合、422エラーが返ること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
 
-    long_content = "a" * (Post::MAXIMUM_CONTENT_LENGTH + 1)
+    long_content = "a" * (PostRecord::MAXIMUM_CONTENT_LENGTH + 1)
 
     post "/posts", params: {
       post_form: {
@@ -119,7 +119,7 @@ RSpec.describe "POST /posts", type: :request do
     }
 
     expect(response).to have_http_status(:unprocessable_entity)
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
   end
 
   it "認証されたユーザーで無効なcanonical_urlが設定された場合、422エラーが返ること" do
@@ -135,6 +135,6 @@ RSpec.describe "POST /posts", type: :request do
     }
 
     expect(response).to have_http_status(:unprocessable_entity)
-    expect(Post.count).to eq(0)
+    expect(PostRecord.count).to eq(0)
   end
 end

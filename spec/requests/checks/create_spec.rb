@@ -30,13 +30,13 @@ RSpec.describe "POST /@:atname/check", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_c.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_c.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     # actor_bをチェック前の状態を確認
-    suggested_follow_b = viewer.profile.suggested_follows.find_by(target_profile: actor_b.profile)
+    suggested_follow_b = viewer.profile_record.suggested_follow_records.find_by(target_profile_id: actor_b.profile_record.id)
     expect(suggested_follow_b.checked_at).to be_nil
 
     post("/@#{actor_b.atname}/check")
@@ -60,9 +60,9 @@ RSpec.describe "POST /@:atname/check", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成（1つだけ）
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     # 唯一のサジェスチョンをチェック
     post("/@#{actor_b.atname}/check")

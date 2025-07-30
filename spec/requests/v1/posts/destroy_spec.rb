@@ -6,7 +6,7 @@ RSpec.xdescribe "DELETE /v1/posts/:post_id", type: :request, api_version: :v1 do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
-    let!(:post) { create(:post) }
+    let!(:post) { create(:post_record) }
 
     it "`422` を返すこと" do
       delete("/v1/posts/#{post.id}", headers:)
@@ -32,7 +32,7 @@ RSpec.xdescribe "DELETE /v1/posts/:post_id", type: :request, api_version: :v1 do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
-    let!(:post) { create(:post, profile: viewer.profile) }
+    let!(:post) { create(:post_record, profile: viewer.profile_record) }
 
     it "`204` を返すこと" do
       expect(Post.kept.count).to eq(1)

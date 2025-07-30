@@ -36,14 +36,14 @@ RSpec.xdescribe "POST /v1/posts/:post_id/stamp", type: :request, api_version: :v
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "`204` を返すこと" do
-      expect(Post.count).to eq(1)
-      expect(Stamp.count).to eq(0)
+      expect(PostRecord.count).to eq(1)
+      expect(StampRecord.count).to eq(0)
 
       post("/v1/posts/#{target_post.id}/stamp", headers:)
       expect(response).to have_http_status(:created)
 
-      expect(Post.count).to eq(1)
-      expect(Stamp.count).to eq(1)
+      expect(PostRecord.count).to eq(1)
+      expect(StampRecord.count).to eq(1)
 
       expected = {
         post: build_post_resource(post: target_post.reload, viewer_has_followed: false, viewer_has_stamped: true)

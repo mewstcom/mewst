@@ -20,7 +20,7 @@ RSpec.describe "GET /accounts/new", type: :request do
   end
 
   it "メール確認が完了していない場合、ルートパスにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation)
+    email_confirmation = FactoryBot.create(:email_confirmation_record)
 
     # set_sessionヘルパーを使ってセッションを設定
     set_session(email_confirmation_id: email_confirmation.id)
@@ -31,7 +31,7 @@ RSpec.describe "GET /accounts/new", type: :request do
   end
 
   it "メール確認が完了している場合、ページが正常に表示されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       succeeded_at: Time.current)
 

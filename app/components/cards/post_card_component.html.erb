@@ -9,9 +9,9 @@
 
     <%= render Cards::PostCard::BodyComponent.new(post:) %>
 
-    <% if post.link %>
-      <%= link_to post.link.canonical_url, rel: "nofollow noopener", target: "_blank" do %>
-        <%= render Cards::LinkCardComponent.new(link: post.link) %>
+    <% if post.link_record %>
+      <%= link_to post.link_record.canonical_url, rel: "nofollow noopener", target: "_blank" do %>
+        <%= render Cards::LinkCardComponent.new(link: post.link_record) %>
       <% end %>
     <% end %>
 

@@ -7,10 +7,10 @@ RSpec.xdescribe "POST /v1/internal/sessions", type: :request do
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
-    let!(:user) { create(:user, email:, password:) }
+    let!(:user) { create(:user_record, email:, password:) }
 
     before do
-      create(:actor, user:)
+      create(:actor, user_record: user)
     end
 
     it "`422` を返すこと" do
@@ -40,9 +40,9 @@ RSpec.xdescribe "POST /v1/internal/sessions", type: :request do
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:email) { "test@example.com" }
     let!(:password) { "correct_password" }
-    let!(:user) { create(:user, email:, password:) }
-    let!(:actor) { create(:actor, :with_access_token_for_web, user:) }
-    let!(:profile) { actor.profile }
+    let!(:user) { create(:user_record, email:, password:) }
+    let!(:actor) { create(:actor, :with_access_token_for_web, user_record: user) }
+    let!(:profile) { actor.profile_record }
     let!(:oauth_access_token) { actor.oauth_access_tokens.first }
 
     it "`201` を返すこと" do

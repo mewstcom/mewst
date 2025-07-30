@@ -9,7 +9,7 @@ RSpec.xdescribe "POST /v1/posts", type: :request, api_version: :v1 do
 
     it "`422` を返すこと" do
       post("/v1/posts", headers:, params: {
-        content: "a" * (Post::MAXIMUM_CONTENT_LENGTH + 1)
+        content: "a" * (PostRecord::MAXIMUM_CONTENT_LENGTH + 1)
       })
       expect(response).to have_http_status(:unprocessable_entity)
 
@@ -18,7 +18,7 @@ RSpec.xdescribe "POST /v1/posts", type: :request, api_version: :v1 do
           {
             code: "invalid_input_data",
             field: "content",
-            message: "Content is too long (maximum is #{Post::MAXIMUM_CONTENT_LENGTH} characters)"
+            message: "Content is too long (maximum is #{PostRecord::MAXIMUM_CONTENT_LENGTH} characters)"
           }
         ]
       }
@@ -35,15 +35,15 @@ RSpec.xdescribe "POST /v1/posts", type: :request, api_version: :v1 do
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "`201` を返すこと" do
-      expect(Post.count).to eq(0)
+      expect(PostRecord.count).to eq(0)
 
       post("/v1/posts", headers:, params: {
         content: "Hello"
       })
       expect(response).to have_http_status(:created)
 
-      expect(Post.count).to eq(1)
-      post = Post.first
+      expect(PostRecord.count).to eq(1)
+      post = PostRecord.first
 
       expected = {
         post: build_post_resource(post:, viewer_has_followed: false, viewer_has_stamped: false)

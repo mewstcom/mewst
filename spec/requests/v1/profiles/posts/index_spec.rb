@@ -4,7 +4,7 @@
 RSpec.xdescribe "GET /v1/@:atname/posts", type: :request, api_version: :v1 do
   context "正常系" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { viewer.profile }
+    let!(:profile) { viewer.profile_record }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
     let!(:form) { V1::PostForm.new(viewer:, content: "Hello") }

@@ -13,9 +13,9 @@ class CreateAccountUseCase < ApplicationUseCase
     actor = ActiveRecord::Base.transaction do
       profile = ProfileRecord.create!(owner_type: ProfileOwnerType::User.serialize, atname:, joined_at: current_time)
       user = UserRecord.create!(email:, password:, locale:, time_zone:, signed_up_at: current_time)
-      UserProfileRecord.create!(user:, profile:)
+      UserProfileRecord.create!(user_record: user, profile_record: profile)
 
-      ActorRecord.create!(user:, profile:)
+      ActorRecord.create!(user_record: user, profile_record: profile)
     end
 
     Result.new(actor:)

@@ -31,15 +31,15 @@ RSpec.describe "GET /@:atname", type: :request do
 
   it "削除されたプロフィールの場合、404エラーが発生すること" do
     actor = FactoryBot.create(:actor)
-    actor.profile.discard!
+    actor.profile_record.discard!
     get "/@#{actor.atname}"
     expect(response).to have_http_status(:not_found)
   end
 
   it "正常なページネーションパラメータを受け取れること" do
     actor = FactoryBot.create(:actor)
-    FactoryBot.create(:post, profile: actor.profile)
-    FactoryBot.create(:post, profile: actor.profile)
+    FactoryBot.create(:post_record, profile_record: actor.profile_record)
+    FactoryBot.create(:post_record, profile_record: actor.profile_record)
 
     get "/@#{actor.atname}"
     expect(response).to have_http_status(:ok)

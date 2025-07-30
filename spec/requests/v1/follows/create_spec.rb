@@ -4,7 +4,7 @@
 RSpec.xdescribe "POST /v1/@:atname/follow", type: :request, api_version: :v1 do
   context "アットネームが正しくないとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { viewer.profile }
+    let!(:profile) { viewer.profile_record }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
@@ -30,17 +30,17 @@ RSpec.xdescribe "POST /v1/@:atname/follow", type: :request, api_version: :v1 do
 
   context "入力データが正しいとき" do
     let!(:viewer) { create(:actor, :with_access_token_for_web) }
-    let!(:target_profile) { create(:user).profile }
+    let!(:target_profile) { create(:user_record).profile_record }
     let!(:oauth_access_token) { viewer.oauth_access_tokens.first }
     let!(:headers) { {"Authorization" => "bearer #{oauth_access_token.token}"} }
 
     it "`201` を返すこと" do
-      expect(Follow.count).to eq(0)
+      expect(FollowRecord.count).to eq(0)
 
       post("/v1/@#{target_profile.atname}/follow", headers:)
       expect(response).to have_http_status(:created)
 
-      expect(Follow.count).to eq(1)
+      expect(FollowRecord.count).to eq(1)
 
       expected = {
         profile: build_profile_resource(profile: target_profile, viewer_has_followed: true)

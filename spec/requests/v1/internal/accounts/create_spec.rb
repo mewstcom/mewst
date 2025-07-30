@@ -56,8 +56,8 @@ RSpec.xdescribe "POST /v1/internal/accounts", type: :request do
       expect(Actor.count).to eq(1)
       expect(OauthAccessToken.count).to eq(1)
       actor = Actor.first
-      user = actor.user
-      profile = actor.profile
+      user = actor.user_record
+      profile = actor.profile_record
       oauth_access_token = actor.oauth_access_tokens.first
 
       expected = {

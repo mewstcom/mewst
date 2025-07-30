@@ -14,7 +14,7 @@ class FollowProfileUseCase < ApplicationUseCase
       return Result.new(target_profile: followee)
     end
 
-    follow = source_profile.follow_records.new(target_profile_record: target_profile, followed_at: Time.current)
+    follow = source_profile.follow_records.new(target_profile_id: target_profile.id, followed_at: Time.current)
 
     ApplicationRecord.transaction do
       follow.save!

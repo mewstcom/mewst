@@ -28,7 +28,7 @@ RSpec.xdescribe "GET /v1/internal/email_confirmations/:email_confirmation_id", t
   context "`email_confirmation_id` が正しいとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
-    let!(:email_confirmation) { create(:email_confirmation) }
+    let!(:email_confirmation) { create(:email_confirmation_record) }
     let!(:email_confirmation_id) { email_confirmation.id }
 
     it "`200` を返すこと" do

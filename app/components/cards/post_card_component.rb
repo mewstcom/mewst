@@ -2,14 +2,14 @@
 # frozen_string_literal: true
 
 class Cards::PostCardComponent < ApplicationComponent
-  sig { params(post: Post, stamp_checker: StampChecker, follow_checker: T.nilable(FollowChecker)).void }
+  sig { params(post: PostRecord, stamp_checker: StampChecker, follow_checker: T.nilable(FollowChecker)).void }
   def initialize(post:, stamp_checker:, follow_checker: nil)
     @post = post
     @stamp_checker = stamp_checker
     @follow_checker = follow_checker
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 

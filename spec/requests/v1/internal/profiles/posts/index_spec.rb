@@ -6,7 +6,7 @@ RSpec.xdescribe "GET /v1/internal/@:atname/posts", type: :request do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
     let!(:actor) { create(:actor, :with_access_token_for_web) }
-    let!(:profile) { actor.profile }
+    let!(:profile) { actor.profile_record }
     let!(:form) { V1::PostForm.new(viewer: actor, content: "Hello") }
     let!(:post) { CreatePostUseCase.new.call(viewer: actor, content: form.content.not_nil!).post }
 

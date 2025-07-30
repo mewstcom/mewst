@@ -27,7 +27,7 @@ RSpec.xdescribe "GET /v1/internal/posts/:post_id", type: :request do
   context "リクエストが正常なとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
-    let!(:post) { create(:post) }
+    let!(:post) { create(:post_record) }
 
     it "ポストを返すこと" do
       get("/v1/internal/posts/#{post.id}", headers:)

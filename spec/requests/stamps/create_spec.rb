@@ -5,7 +5,7 @@ RSpec.describe "POST /posts/:post_id/stamp", type: :request do
   it "未ログインのとき、ルートパスにリダイレクトすること" do
     oauth_app = FactoryBot.create(:oauth_application, :mewst_web)
     target_actor = FactoryBot.create(:actor)
-    target_post = FactoryBot.create(:post, profile: target_actor.profile, oauth_application: oauth_app)
+    target_post = FactoryBot.create(:post_record, profile_record: target_actor.profile_record, oauth_application: oauth_app)
 
     post("/posts/#{target_post.id}/stamp")
     expect(response).to redirect_to(root_path)
@@ -26,25 +26,25 @@ RSpec.describe "POST /posts/:post_id/stamp", type: :request do
     oauth_app = FactoryBot.create(:oauth_application, :mewst_web)
     viewer = FactoryBot.create(:actor)
     target_actor = FactoryBot.create(:actor)
-    target_post = FactoryBot.create(:post, profile: target_actor.profile, oauth_application: oauth_app)
+    target_post = FactoryBot.create(:post_record, profile_record: target_actor.profile_record, oauth_application: oauth_app)
 
     # ログイン状態にする
     post(sign_in_path, params: {session_form: {email: viewer.email, password: "passw0rd"}})
 
-    expect(Post.count).to eq(1)
-    expect(Stamp.count).to eq(0)
+    expect(PostRecord.count).to eq(1)
+    expect(StampRecord.count).to eq(0)
 
     post("/posts/#{target_post.id}/stamp")
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eq("text/vnd.turbo-stream.html; charset=utf-8")
 
-    expect(Post.count).to eq(1)
-    expect(Stamp.count).to eq(1)
+    expect(PostRecord.count).to eq(1)
+    expect(StampRecord.count).to eq(1)
 
     # スタンプが正しく作成されていることを確認
-    stamp = Stamp.last
-    expect(stamp.profile).to eq(viewer.profile)
-    expect(stamp.post).to eq(target_post)
+    stamp = StampRecord.last
+    expect(stamp.profile_record).to eq(viewer.profile_record)
+    expect(stamp.post_record).to eq(target_post)
     expect(stamp.stamped_at).to be_present
   end
 
@@ -52,14 +52,14 @@ RSpec.describe "POST /posts/:post_id/stamp", type: :request do
     oauth_app = FactoryBot.create(:oauth_application, :mewst_web)
     viewer = FactoryBot.create(:actor)
     target_actor = FactoryBot.create(:actor)
-    target_post = FactoryBot.create(:post, profile: target_actor.profile, oauth_application: oauth_app)
+    target_post = FactoryBot.create(:post_record, profile_record: target_actor.profile_record, oauth_application: oauth_app)
 
     # ログイン状態にする
     post(sign_in_path, params: {session_form: {email: viewer.email, password: "passw0rd"}})
 
     # 事前にスタンプを作成
     CreateStampUseCase.new.call(viewer: viewer, target_post: target_post)
-    expect(Stamp.count).to eq(1)
+    expect(StampRecord.count).to eq(1)
 
     # 再度スタンプを実行
     post("/posts/#{target_post.id}/stamp")
@@ -67,14 +67,14 @@ RSpec.describe "POST /posts/:post_id/stamp", type: :request do
     expect(response.content_type).to eq("text/vnd.turbo-stream.html; charset=utf-8")
 
     # スタンプが重複作成されていないことを確認
-    expect(Stamp.count).to eq(1)
+    expect(StampRecord.count).to eq(1)
   end
 
   it "削除されたポストにスタンプしようとしたとき、422を返すこと" do
     oauth_app = FactoryBot.create(:oauth_application, :mewst_web)
     viewer = FactoryBot.create(:actor)
     target_actor = FactoryBot.create(:actor)
-    target_post = FactoryBot.create(:post, profile: target_actor.profile, oauth_application: oauth_app)
+    target_post = FactoryBot.create(:post_record, profile_record: target_actor.profile_record, oauth_application: oauth_app)
     post_id = target_post.id
 
     # ログイン状態にする
@@ -92,7 +92,7 @@ RSpec.describe "POST /posts/:post_id/stamp", type: :request do
     oauth_app = FactoryBot.create(:oauth_application, :mewst_web)
     viewer = FactoryBot.create(:actor)
     target_actor = FactoryBot.create(:actor)
-    target_post = FactoryBot.create(:post, profile: target_actor.profile, oauth_application: oauth_app)
+    target_post = FactoryBot.create(:post_record, profile_record: target_actor.profile_record, oauth_application: oauth_app)
 
     # ログイン状態にする
     post(sign_in_path, params: {session_form: {email: viewer.email, password: "passw0rd"}})

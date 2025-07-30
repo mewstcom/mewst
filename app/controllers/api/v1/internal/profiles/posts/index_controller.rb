@@ -6,7 +6,7 @@ class Api::V1::Internal::Profiles::Posts::IndexController < Api::V1::Internal::A
   #
   # def call
   #   profile = ProfileRecord.kept.find_by!(atname: params[:atname])
-  #   result = Paginator.new(records: profile.posts.kept).paginate(
+  #   result = Paginator.new(records: profile.post_records.kept).paginate(
   #     before: params[:before].presence,
   #     after: params[:after].presence,
   #     limit: 15

@@ -5,7 +5,7 @@ RSpec.describe DeletePostUseCase do
   context "正常系" do
     def setup_data
       FactoryBot.create(:oauth_application, :mewst_web)
-      link = FactoryBot.create(:link)
+      link = FactoryBot.create(:link_record)
       post_author = FactoryBot.create(:actor)
       result = CreatePostUseCase.new.call(viewer: post_author, content: "hello", canonical_url: link.canonical_url)
       target_post = result.post
@@ -18,21 +18,21 @@ RSpec.describe DeletePostUseCase do
     it "ポストが削除できること" do
       setup_data => {target_post:}
 
-      expect(Link.count).to eq(1)
-      expect(Post.count).to eq(1)
-      expect(Stamp.count).to eq(1)
-      expect(Notification.count).to eq(1)
-      expect(PostLink.count).to eq(1)
-      expect(HomeTimelinePost.count).to eq(1)
+      expect(LinkRecord.count).to eq(1)
+      expect(PostRecord.count).to eq(1)
+      expect(StampRecord.count).to eq(1)
+      expect(NotificationRecord.count).to eq(1)
+      expect(PostLinkRecord.count).to eq(1)
+      expect(HomeTimelinePostRecord.count).to eq(1)
 
       DeletePostUseCase.new.call(target_post:)
 
-      expect(Link.count).to eq(1)
-      expect(Post.count).to eq(0)
-      expect(Stamp.count).to eq(0)
-      expect(Notification.count).to eq(0)
-      expect(PostLink.count).to eq(0)
-      expect(HomeTimelinePost.count).to eq(0)
+      expect(LinkRecord.count).to eq(1)
+      expect(PostRecord.count).to eq(0)
+      expect(StampRecord.count).to eq(0)
+      expect(NotificationRecord.count).to eq(0)
+      expect(PostLinkRecord.count).to eq(0)
+      expect(HomeTimelinePostRecord.count).to eq(0)
     end
   end
 end

@@ -29,15 +29,15 @@ RSpec.describe "DELETE /@:atname/follow", type: :request do
     sign_in actor
 
     # 事前にフォロー関係を作成
-    Follow.create!(source_profile: actor.profile, target_profile: target_actor.profile, followed_at: Time.current)
-    expect(Follow.count).to eq(1)
+    FollowRecord.create!(source_profile_id: actor.profile_record.id, target_profile_id: target_actor.profile_record.id, followed_at: Time.current)
+    expect(FollowRecord.count).to eq(1)
 
     delete "/@#{target_actor.atname}/follow"
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to include("text/vnd.turbo-stream.html")
 
     # フォロー関係が削除されていることを確認
-    expect(Follow.count).to eq(0)
+    expect(FollowRecord.count).to eq(0)
   end
 
   it "フォローしていないユーザーをアンフォローしようとしても正常に処理されること" do
@@ -45,12 +45,12 @@ RSpec.describe "DELETE /@:atname/follow", type: :request do
     target_actor = FactoryBot.create(:actor)
     sign_in actor
 
-    expect(Follow.count).to eq(0)
+    expect(FollowRecord.count).to eq(0)
 
     delete "/@#{target_actor.atname}/follow"
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to include("text/vnd.turbo-stream.html")
 
-    expect(Follow.count).to eq(0)
+    expect(FollowRecord.count).to eq(0)
   end
 end

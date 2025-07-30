@@ -9,8 +9,8 @@ RSpec.describe "DELETE /sign_out", type: :request do
   end
 
   it "ログインしているとき、ルートページにリダイレクトすること" do
-    user = FactoryBot.create(:user, email: "test@example.com", password: "password")
-    actor = FactoryBot.create(:actor, user:)
+    user = FactoryBot.create(:user_record, email: "test@example.com", password: "password")
+    actor = FactoryBot.create(:actor, user_record: user)
 
     # ログイン
     sign_in(actor, password: "password")
@@ -22,21 +22,21 @@ RSpec.describe "DELETE /sign_out", type: :request do
   end
 
   it "ログインしているとき、セッションクッキーが削除されること" do
-    user = FactoryBot.create(:user, email: "test@example.com", password: "password")
-    actor = FactoryBot.create(:actor, user:)
+    user = FactoryBot.create(:user_record, email: "test@example.com", password: "password")
+    actor = FactoryBot.create(:actor, user_record: user)
 
     # ログイン
     sign_in(actor, password: "password")
-    expect(cookies[Session::COOKIE_KEY]).not_to be_nil
+    expect(cookies[SessionRecord::COOKIE_KEY]).not_to be_nil
 
     delete("/sign_out")
 
-    expect(cookies[Session::COOKIE_KEY]).to eq("")
+    expect(cookies[SessionRecord::COOKIE_KEY]).to eq("")
   end
 
   it "ログアウト後、認証が必要なページにアクセスするとルートページにリダイレクトすること" do
-    user = FactoryBot.create(:user, email: "test@example.com", password: "password")
-    actor = FactoryBot.create(:actor, user:)
+    user = FactoryBot.create(:user_record, email: "test@example.com", password: "password")
+    actor = FactoryBot.create(:actor, user_record: user)
 
     # ログイン
     sign_in(actor, password: "password")

@@ -19,7 +19,7 @@ class FollowChecker
   private def followed_profile_ids
     return [] if profile.nil? || target_profiles.empty?
 
-    profile.not_nil!.follow_records.where(target_profile_record: target_profiles).pluck(:target_profile_record_id)
+    profile.not_nil!.follow_records.where(target_profile_id: target_profiles).pluck(:target_profile_id)
   end
 
   sig { returns(T.nilable(ProfileRecord)) }

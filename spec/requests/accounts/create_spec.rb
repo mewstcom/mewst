@@ -29,7 +29,7 @@ RSpec.describe "POST /accounts", type: :request do
   end
 
   it "メール確認が完了していない場合、ルートパスにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation, code: "123456")
+    email_confirmation = FactoryBot.create(:email_confirmation_record, code: "123456")
 
     # Set session and make request
     get "/accounts/new"
@@ -59,7 +59,7 @@ RSpec.describe "POST /accounts", type: :request do
   end
 
   it "有効なパラメータでアカウント作成が成功する場合、Profile、User、UserProfile、Actorレコードが作成されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       code: "123456",
       succeeded_at: Time.current)
@@ -78,19 +78,19 @@ RSpec.describe "POST /accounts", type: :request do
           time_zone: "Asia/Tokyo"
         }
       }
-    end.to change(Profile, :count).by(1)
-      .and change(User, :count).by(1)
-      .and change(UserProfile, :count).by(1)
-      .and change(Actor, :count).by(1)
+    end.to change(ProfileRecord, :count).by(1)
+      .and change(UserRecord, :count).by(1)
+      .and change(UserProfileRecord, :count).by(1)
+      .and change(ActorRecord, :count).by(1)
 
     # 成功時はサインインされてホームにリダイレクト
     expect(response).to redirect_to(home_path)
 
     # 作成されたレコードの関連性を確認
-    created_profile = Profile.find_by(atname: "testuser123")
-    created_user = User.find_by(email: "test@example.com")
-    created_user_profile = UserProfile.find_by(user: created_user, profile: created_profile)
-    created_actor = Actor.find_by(user: created_user, profile: created_profile)
+    created_profile = ProfileRecord.find_by(atname: "testuser123")
+    created_user = UserRecord.find_by(email: "test@example.com")
+    created_user_profile = UserProfileRecord.find_by(user_id: created_user.id, profile_id: created_profile.id)
+    created_actor = ActorRecord.find_by(user_id: created_user.id, profile_id: created_profile.id)
 
     expect(created_profile).to be_present
     expect(created_user).to be_present
@@ -109,16 +109,16 @@ RSpec.describe "POST /accounts", type: :request do
     expect(created_user.signed_up_at).to be_present
 
     # UserProfileの関連確認
-    expect(created_user_profile.user).to eq(created_user)
-    expect(created_user_profile.profile).to eq(created_profile)
+    expect(created_user_profile.user_record).to eq(created_user)
+    expect(created_user_profile.profile_record).to eq(created_profile)
 
     # Actorの関連確認
-    expect(created_actor.user).to eq(created_user)
-    expect(created_actor.profile).to eq(created_profile)
+    expect(created_actor.user_record).to eq(created_user)
+    expect(created_actor.profile_record).to eq(created_profile)
   end
 
   it "バリデーションエラー時はエラーメッセージとともに422ステータスが返されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       code: "123456",
       succeeded_at: Time.current)
@@ -137,10 +137,10 @@ RSpec.describe "POST /accounts", type: :request do
           time_zone: "Asia/Tokyo"
         }
       }
-    end.to change(Profile, :count).by(0)
-      .and change(User, :count).by(0)
-      .and change(UserProfile, :count).by(0)
-      .and change(Actor, :count).by(0)
+    end.to change(ProfileRecord, :count).by(0)
+      .and change(UserRecord, :count).by(0)
+      .and change(UserProfileRecord, :count).by(0)
+      .and change(ActorRecord, :count).by(0)
 
     # バリデーションエラー時は422ステータス
     expect(response).to have_http_status(:unprocessable_entity)

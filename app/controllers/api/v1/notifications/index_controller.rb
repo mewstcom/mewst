@@ -5,7 +5,7 @@ class Api::V1::Notifications::IndexController < Api::V1::ApplicationController
   # include ControllerConcerns::PublicAuthenticatable
   #
   # def call
-  #   notifications = current_viewer!.notifications.preload(:stamp_notification)
+  #   notifications = current_viewer!.notification_records.preload(:stamp_notification)
   #   result = Paginator.new(records: notifications).paginate(
   #     before: params[:before].presence,
   #     after: params[:after].presence,

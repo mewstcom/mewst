@@ -30,7 +30,7 @@ RSpec.describe "PATCH /settings/email", type: :request do
 
   it "ログインしているとき、新しいメールアドレスが既に使用されている場合、エラーが表示されること" do
     actor = FactoryBot.create(:actor)
-    FactoryBot.create(:user, email: "taken@example.com")
+    FactoryBot.create(:user_record, email: "taken@example.com")
     sign_in(actor)
 
     patch "/settings/email", params: {email_update_form: {new_email: "taken@example.com"}}
@@ -56,9 +56,9 @@ RSpec.describe "PATCH /settings/email", type: :request do
 
     expect {
       patch "/settings/email", params: {email_update_form: {new_email: "new@example.com"}}
-    }.to change(EmailConfirmation, :count).by(1)
+    }.to change(EmailConfirmationRecord, :count).by(1)
 
-    email_confirmation = EmailConfirmation.last
+    email_confirmation = EmailConfirmationRecord.last
     expect(email_confirmation.not_nil!.email).to eq("new@example.com")
     expect(email_confirmation.not_nil!.event).to eq("email_update")
   end

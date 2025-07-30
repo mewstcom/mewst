@@ -5,7 +5,7 @@ RSpec.xdescribe "POST /v1/internal/email_confirmations/:email_confirmation_id/ch
   context "確認用コードが不正なとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
-    let!(:email_confirmation) { create(:email_confirmation) }
+    let!(:email_confirmation) { create(:email_confirmation_record) }
 
     it "`422` を返すこと" do
       post("/v1/internal/email_confirmations/#{email_confirmation.id}/challenge", headers:, params: {
@@ -31,7 +31,7 @@ RSpec.xdescribe "POST /v1/internal/email_confirmations/:email_confirmation_id/ch
   context "確認用コードが正しいとき" do
     let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
     let!(:headers) { {"HTTP_AUTHORIZATION" => token} }
-    let!(:email_confirmation) { create(:email_confirmation) }
+    let!(:email_confirmation) { create(:email_confirmation_record) }
 
     it "`200` を返すこと" do
       expect(EmailConfirmation.count).to eq(1)
