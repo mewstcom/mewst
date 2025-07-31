@@ -3,6 +3,6 @@
 
 class NotifiableType < T::Enum
   enums do
-    Stamp = new("Stamp")
+    Stamp = new("StampRecord")
   end
 end
