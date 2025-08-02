@@ -11,7 +11,7 @@ class ActorRecord < ApplicationRecord
 
   delegate :email, :time_zone, to: :user_record
   delegate :atname, :avatar_kind, :avatar_url, :checkable_suggested_followees, :description, :fetch_notifications,
-    :following?, :generate_gravatar_url, :gravatar_email, :gravatar_url,
+    :followee_records, :following?, :generate_gravatar_url, :gravatar_email, :gravatar_url, :home_timeline,
     :image_url, :me?, :name,
     to: :profile_record
 

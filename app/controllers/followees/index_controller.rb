@@ -10,7 +10,7 @@ class Followees::IndexController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    page = viewer!.profile_record.not_nil!.followee_records.kept
+    page = viewer!.followee_records.kept
       # NOTE: order で `follows.followed_at` を指定していると `page.records` の `id` が `follows.id` になってしまう
       #       https://github.com/healthie/activerecord_cursor_paginate/blob/0c262804e436964da9760f2ade1c66a9e3d2906b/lib/activerecord_cursor_paginate/paginator.rb#L84
       #       ↑で `Arel.star` が使われており、おそらく https://github.com/rails/rails/issues/41151 の影響で
