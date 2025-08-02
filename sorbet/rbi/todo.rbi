@@ -4,15 +4,5 @@
 
 # typed: false
 
-module ::Actor; end
-module ::EmailConfirmation; end
-module ::Post; end
-module ::Profile; end
-module ::Profile::ATNAME_MAX_LENGTH; end
-module ::User; end
 module Capybara::Cuprite::Driver; end
-module NotificationRecord::GeneratedDelegatedTypeMethods::Stamp; end
-module V1::FollowForm; end
-module V1::PostForm; end
-module V1::StampForm; end
 module V1::UserResource::User; end

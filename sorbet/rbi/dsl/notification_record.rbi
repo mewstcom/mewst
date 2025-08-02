@@ -632,7 +632,7 @@ class NotificationRecord
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def stamps(*args, &blk); end
+    def stamp_records(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def strict_loading(*args, &blk); end
@@ -1191,7 +1191,7 @@ class NotificationRecord
   end
 
   module GeneratedDelegatedTypeMethods
-    sig { params(args: T.untyped).returns(T.any(Stamp, NilClass)) }
+    sig { params(args: T.untyped).returns(T.any(StampRecord, NilClass)) }
     def build_notifiable(*args); end
 
     sig { returns(T.nilable(NilClass)) }
@@ -1209,14 +1209,14 @@ class NotificationRecord
     sig { returns(ActiveSupport::StringInquirer) }
     def notifiable_name; end
 
-    sig { returns(T.nilable(Stamp)) }
-    def stamp; end
+    sig { returns(T.nilable(StampRecord)) }
+    def stamp_record; end
 
     sig { returns(T::Boolean) }
-    def stamp?; end
+    def stamp_record?; end
 
     sig { returns(T.nilable(::String)) }
-    def stamp_id; end
+    def stamp_record_id; end
   end
 
   module GeneratedRelationMethods
@@ -1343,7 +1343,7 @@ class NotificationRecord
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def stamps(*args, &blk); end
+    def stamp_records(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def strict_loading(*args, &blk); end
