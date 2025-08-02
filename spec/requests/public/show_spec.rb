@@ -29,8 +29,8 @@ RSpec.describe "GET /public", type: :request do
   it "ログインしているとき、公開された投稿が表示されること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
-    FactoryBot.create(:post, content: "最初の投稿", published_at: 2.hours.ago)
-    FactoryBot.create(:post, content: "2番目の投稿", published_at: 1.hour.ago)
+    FactoryBot.create(:post_record, content: "最初の投稿", published_at: 2.hours.ago)
+    FactoryBot.create(:post_record, content: "2番目の投稿", published_at: 1.hour.ago)
 
     get "/public"
 
@@ -41,8 +41,8 @@ RSpec.describe "GET /public", type: :request do
   it "ログインしているとき、投稿が新しい順に表示されること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
-    FactoryBot.create(:post, content: "古い投稿", published_at: 2.hours.ago)
-    FactoryBot.create(:post, content: "新しい投稿", published_at: 1.hour.ago)
+    FactoryBot.create(:post_record, content: "古い投稿", published_at: 2.hours.ago)
+    FactoryBot.create(:post_record, content: "新しい投稿", published_at: 1.hour.ago)
 
     get "/public"
 
@@ -53,8 +53,8 @@ RSpec.describe "GET /public", type: :request do
   it "ログインしているとき、削除された投稿は表示されないこと" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
-    FactoryBot.create(:post, content: "表示される投稿")
-    FactoryBot.create(:post, content: "削除された投稿", discarded_at: Time.current)
+    FactoryBot.create(:post_record, content: "表示される投稿")
+    FactoryBot.create(:post_record, content: "削除された投稿", discarded_at: Time.current)
 
     get "/public"
 
@@ -67,7 +67,7 @@ RSpec.describe "GET /public", type: :request do
     sign_in(actor)
     # 20件の投稿を作成
     20.times do |i|
-      FactoryBot.create(:post, content: "ページネーション投稿#{i}", published_at: i.hours.ago)
+      FactoryBot.create(:post_record, content: "ページネーション投稿#{i}", published_at: i.hours.ago)
     end
 
     # 最初のページを取得（最大15件）
@@ -103,7 +103,7 @@ RSpec.describe "GET /public", type: :request do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
     20.times do |i|
-      FactoryBot.create(:post, content: "投稿#{i}", published_at: i.minutes.ago)
+      FactoryBot.create(:post_record, content: "投稿#{i}", published_at: i.minutes.ago)
     end
 
     get "/public"

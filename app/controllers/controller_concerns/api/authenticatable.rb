@@ -9,12 +9,12 @@ module ControllerConcerns::Api::Authenticatable
   #   before_action :doorkeeper_authorize!
   # end
   #
-  # sig { returns(T.nilable(Actor)) }
+  # sig { returns(T.nilable(ActorRecord)) }
   # def current_viewer
-  #   @current_viewer ||= T.let(doorkeeper_token&.resource_owner, T.nilable(Actor))
+  #   @current_viewer ||= T.let(doorkeeper_token&.resource_owner, T.nilable(ActorRecord))
   # end
   #
-  # sig { returns(Actor) }
+  # sig { returns(ActorRecord) }
   # def current_viewer!
   #   current_viewer.not_nil!
   # end

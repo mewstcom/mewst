@@ -3,12 +3,12 @@
 
 class FanoutPostUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :post, Post
+    const :post, PostRecord
   end
 
-  sig { params(post: Post).returns(Result) }
+  sig { params(post: PostRecord).returns(Result) }
   def call(post:)
-    followers = post.profile.not_nil!.followers
+    followers = post.profile_record.not_nil!.follower_records
 
     batch = GoodJob::Batch.new
     batch.add do

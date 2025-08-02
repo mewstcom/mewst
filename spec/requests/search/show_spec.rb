@@ -25,15 +25,15 @@ RSpec.describe "GET /search", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     get "/search"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include(actor_b.profile.atname)
-    expect(response.body).to include("suggested-profiles-#{actor_b.profile.atname}")
+    expect(response.body).to include(actor_b.profile_record.atname)
+    expect(response.body).to include("suggested-profiles-#{actor_b.profile_record.atname}")
   end
 
   it "ログインしているとき、提案プロフィールがない場合、空のメッセージが表示されること" do
@@ -65,14 +65,14 @@ RSpec.describe "GET /search", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     get "/search"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("suggested-profiles-#{actor_b.profile.atname}")
+    expect(response.body).to include("suggested-profiles-#{actor_b.profile_record.atname}")
   end
 
   it "ログインしているとき、複数の提案プロフィールが表示されること" do
@@ -84,16 +84,16 @@ RSpec.describe "GET /search", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_c.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_c.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     get "/search"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include(actor_b.profile.atname)
-    expect(response.body).to include(actor_c.profile.atname)
+    expect(response.body).to include(actor_b.profile_record.atname)
+    expect(response.body).to include(actor_c.profile_record.atname)
   end
 
   it "ログインしているとき、チェック済みの提案プロフィールは表示されないこと" do
@@ -105,19 +105,19 @@ RSpec.describe "GET /search", type: :request do
     sign_in(viewer)
 
     # フォロー関係を設定してサジェスチョンを作成
-    FollowProfileUseCase.new.call(source_profile: viewer.profile, target_profile: actor_a.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_b.profile)
-    FollowProfileUseCase.new.call(source_profile: actor_a.profile, target_profile: actor_c.profile)
-    viewer.profile.create_suggested_follows!
+    FollowProfileUseCase.new.call(source_profile: viewer.profile_record, target_profile: actor_a.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_b.profile_record)
+    FollowProfileUseCase.new.call(source_profile: actor_a.profile_record, target_profile: actor_c.profile_record)
+    viewer.profile_record.create_suggested_follows!
 
     # actor_bをチェック済みにする
-    suggested_follow_b = viewer.profile.suggested_follows.find_by(target_profile: actor_b.profile)
+    suggested_follow_b = viewer.profile_record.suggested_follow_records.find_by(target_profile_id: actor_b.profile_record.id)
     suggested_follow_b.update!(checked_at: Time.current)
 
     get "/search"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).not_to include("suggested-profiles-#{actor_b.profile.atname}")
-    expect(response.body).to include("suggested-profiles-#{actor_c.profile.atname}")
+    expect(response.body).not_to include("suggested-profiles-#{actor_b.profile_record.atname}")
+    expect(response.body).to include("suggested-profiles-#{actor_c.profile_record.atname}")
   end
 end

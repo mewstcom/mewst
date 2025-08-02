@@ -3,12 +3,12 @@
 
 class CreateEmailConfirmationUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :email_confirmation, EmailConfirmation
+    const :email_confirmation, EmailConfirmationRecord
   end
 
   sig { params(email: String, event: EmailConfirmationEvent, locale: Locale).returns(Result) }
   def call(email:, event:, locale:)
-    email_confirmation = EmailConfirmation.new(email:, event: event.serialize, code: EmailConfirmation.generate_code)
+    email_confirmation = EmailConfirmationRecord.new(email:, event: event.serialize, code: EmailConfirmationRecord.generate_code)
 
     ActiveRecord::Base.transaction do
       email_confirmation.save!

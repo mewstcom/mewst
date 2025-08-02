@@ -29,7 +29,6 @@ gem "oj" # `alba` で使っている
 gem "pg"
 gem "propshaft"
 gem "puma"
-gem "pundit"
 gem "rack-rewrite"
 gem "rails-i18n"
 gem "rails_autolink"

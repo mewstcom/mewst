@@ -16,6 +16,6 @@ class Home::ShowController < ApplicationController
       after: params[:after].presence,
       limit: 15
     )
-    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: @posts)
+    @stamp_checker = StampChecker.new(profile: viewer!.profile_record, posts: @posts)
   end
 end

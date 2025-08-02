@@ -5,7 +5,7 @@ class Api::V1::Internal::EmailConfirmations::ShowController < Api::V1::Internal:
   # include ControllerConcerns::InternalAuthenticatable
   #
   # def call
-  #   email_confirmation = EmailConfirmation.find_by(id: params[:email_confirmation_id])
+  #   email_confirmation = EmailConfirmationRecord.find_by(id: params[:email_confirmation_id])
   #
   #   unless email_confirmation
   #     resource = V1::ResponseErrorResource.new(code: V1::ResponseErrorCode::NotFound, message: "Not found")

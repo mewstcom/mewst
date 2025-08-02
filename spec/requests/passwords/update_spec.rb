@@ -14,7 +14,7 @@ RSpec.describe "PATCH /password", type: :request do
 
   it "すでにサインイン済みの場合、フラッシュメッセージとともにホームページにリダイレクトすること" do
     actor = FactoryBot.create(:actor)
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: actor.email,
       succeeded_at: Time.current)
 
@@ -31,7 +31,7 @@ RSpec.describe "PATCH /password", type: :request do
   end
 
   it "メール確認が完了していない場合、ルートパスにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation, code: "123456")
+    email_confirmation = FactoryBot.create(:email_confirmation_record, code: "123456")
 
     set_session(email_confirmation_id: email_confirmation.id)
 
@@ -45,8 +45,8 @@ RSpec.describe "PATCH /password", type: :request do
   end
 
   it "有効なパスワードが渡された場合、パスワードが更新されてサインインページにリダイレクトすること" do
-    user = FactoryBot.create(:user, email: "test@example.com", password: "oldpassword")
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    user = FactoryBot.create(:user_record, email: "test@example.com", password: "oldpassword")
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       succeeded_at: Time.current)
 
@@ -68,8 +68,8 @@ RSpec.describe "PATCH /password", type: :request do
   end
 
   it "無効なパスワードが渡された場合、422ステータスでエラーを返すこと" do
-    FactoryBot.create(:user, email: "test@example.com")
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    FactoryBot.create(:user_record, email: "test@example.com")
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       code: "123456",
       succeeded_at: Time.current)
@@ -86,8 +86,8 @@ RSpec.describe "PATCH /password", type: :request do
   end
 
   it "成功時にセッションがリセットされること" do
-    FactoryBot.create(:user, email: "test@example.com")
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    FactoryBot.create(:user_record, email: "test@example.com")
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       code: "123456",
       succeeded_at: Time.current)

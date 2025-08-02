@@ -2,8 +2,8 @@
   <%= render Mewst::UI::Card::Body.new do %>
     <div class="flex flex-row items-center gap-2">
       <div class="flex-none">
-        <%= link_to profile_path(post.profile.atname) do %>
-          <%= render Images::ProfileAvatarImageComponent.new(profile: post.profile, width: 50, class_name: "w-[50px]") %>
+        <%= link_to profile_path(post.profile_record.atname) do %>
+          <%= render Images::ProfileAvatarImageComponent.new(profile: post.profile_record, width: 50, class_name: "w-[50px]") %>
         <% end %>
       </div>
 
@@ -24,10 +24,10 @@
       <%= render Cards::PostCard::BodyComponent.new(post:, class_name: "text-2xl") %>
     </div>
 
-    <% if post.link %>
+    <% if post.link_record %>
       <div class="mt-2">
-        <%= link_to post.link.canonical_url, rel: "nofollow noopener", target: "_blank" do %>
-          <%= render Cards::LinkCardComponent.new(link: post.link) %>
+        <%= link_to post.link_record.canonical_url, rel: "nofollow noopener", target: "_blank" do %>
+          <%= render Cards::LinkCardComponent.new(link: post.link_record) %>
         <% end %>
       </div>
     <% end %>
@@ -35,7 +35,7 @@
     <div class="mt-2">
       <%= link_to(
         mst_absolute_time(post.published_at),
-        profile_post_path(post.profile.atname, post.id),
+        profile_post_path(post.profile_record.atname, post.id),
         class: "text-gray-500 text-sm"
       ) %>
 

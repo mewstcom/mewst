@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 class Buttons::StampButtonComponent < ApplicationComponent
-  sig { params(post: Post, stamp_checker: StampChecker).void }
+  sig { params(post: PostRecord, stamp_checker: StampChecker).void }
   def initialize(post:, stamp_checker:)
     @post = post
     @stamp_checker = stamp_checker
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 

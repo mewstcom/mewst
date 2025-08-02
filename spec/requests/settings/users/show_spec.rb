@@ -19,7 +19,7 @@ RSpec.describe "GET /settings/user", type: :request do
 
   it "ログインしているとき、現在のロケールとタイムゾーンがフォームに設定されること" do
     actor = FactoryBot.create(:actor)
-    user = actor.user
+    user = actor.user_record
     user.update!(
       locale: "ja",
       time_zone: "Asia/Tokyo"
@@ -35,7 +35,7 @@ RSpec.describe "GET /settings/user", type: :request do
 
   it "ログインしているとき、英語ロケールとニューヨークのタイムゾーンが正しくフォームに設定されること" do
     actor = FactoryBot.create(:actor)
-    user = actor.user
+    user = actor.user_record
     user.update!(
       locale: "en",
       time_zone: "America/New_York"

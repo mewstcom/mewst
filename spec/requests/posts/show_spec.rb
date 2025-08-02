@@ -4,7 +4,7 @@
 RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
   it "ログインしていないとき、ポストが表示されること" do
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
 
     get "/@#{actor.atname}/posts/#{post.id}"
 
@@ -15,7 +15,7 @@ RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
   it "ログインしているとき、ポストが表示されること" do
     viewer = FactoryBot.create(:actor)
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
 
     sign_in viewer
     get "/@#{actor.atname}/posts/#{post.id}"
@@ -26,8 +26,8 @@ RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
 
   it "削除されたプロフィールのポストの場合、404エラーが発生すること" do
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
-    actor.profile.discard!
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
+    actor.profile_record.discard!
 
     get "/@#{actor.atname}/posts/#{post.id}"
 
@@ -36,7 +36,7 @@ RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
 
   it "削除されたポストの場合、404エラーが発生すること" do
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
     post.discard!
 
     get "/@#{actor.atname}/posts/#{post.id}"
@@ -61,7 +61,7 @@ RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
   it "他のプロフィールのポストを指定した場合、404エラーが発生すること" do
     actor1 = FactoryBot.create(:actor)
     actor2 = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor2.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor2.profile_record)
 
     get "/@#{actor1.atname}/posts/#{post.id}"
 
@@ -71,8 +71,8 @@ RSpec.describe "GET /@:atname/posts/:post_id", type: :request do
   it "ログインユーザーがポストにスタンプしている場合、正常に表示されること" do
     viewer = FactoryBot.create(:actor)
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
-    Stamp.create!(profile: viewer.profile, post: post, stamped_at: Time.current)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
+    StampRecord.create!(profile_record: viewer.profile_record, post_record: post, stamped_at: Time.current)
 
     sign_in viewer
     get "/@#{actor.atname}/posts/#{post.id}"

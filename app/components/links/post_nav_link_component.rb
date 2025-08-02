@@ -10,13 +10,13 @@ module Links
       end
     end
 
-    sig { params(post: Post, direction: Direction).void }
+    sig { params(post: PostRecord, direction: Direction).void }
     def initialize(post:, direction:)
       @post = post
       @direction = direction
     end
 
-    sig { returns(Post) }
+    sig { returns(PostRecord) }
     attr_reader :post
     private :post
 

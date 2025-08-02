@@ -5,8 +5,8 @@ class Api::V1::Profiles::Posts::IndexController < Api::V1::ApplicationController
   # include ControllerConcerns::PublicAuthenticatable
   #
   # def call
-  #   profile = Profile.kept.find_by!(atname: params[:atname])
-  #   result = Paginator.new(records: profile.posts.kept).paginate(
+  #   profile = ProfileRecord.kept.find_by!(atname: params[:atname])
+  #   result = Paginator.new(records: profile.post_records.kept).paginate(
   #     before: params[:before].presence,
   #     after: params[:after].presence,
   #     limit: 15

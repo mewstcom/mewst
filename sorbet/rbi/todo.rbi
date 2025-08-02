@@ -5,6 +5,4 @@
 # typed: false
 
 module Capybara::Cuprite::Driver; end
-module V1::FollowForm; end
-module V1::PostForm; end
-module V1::StampForm; end
+module V1::UserResource::User; end

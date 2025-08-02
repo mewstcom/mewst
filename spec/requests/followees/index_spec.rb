@@ -23,14 +23,14 @@ RSpec.describe "GET /followees", type: :request do
     sign_in actor
 
     # フォロー関係を作成（followed_atの時間を違うものにする）
-    Follow.create!(
-      source_profile: actor.profile,
-      target_profile: target_actor1.profile,
+    FollowRecord.create!(
+      source_profile_id: actor.profile_record.id,
+      target_profile_id: target_actor1.profile_record.id,
       followed_at: 2.days.ago
     )
-    Follow.create!(
-      source_profile: actor.profile,
-      target_profile: target_actor2.profile,
+    FollowRecord.create!(
+      source_profile_id: actor.profile_record.id,
+      target_profile_id: target_actor2.profile_record.id,
       followed_at: 1.day.ago
     )
 
@@ -54,9 +54,9 @@ RSpec.describe "GET /followees", type: :request do
     # 複数のフォロー関係を作成
     16.times do |i|
       target_actor = FactoryBot.create(:actor)
-      Follow.create!(
-        source_profile: actor.profile,
-        target_profile: target_actor.profile,
+      FollowRecord.create!(
+        source_profile_id: actor.profile_record.id,
+        target_profile_id: target_actor.profile_record.id,
         followed_at: i.days.ago
       )
     end

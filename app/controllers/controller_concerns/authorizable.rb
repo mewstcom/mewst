@@ -4,11 +4,4 @@
 module ControllerConcerns::Authorizable
   extend T::Sig
   extend ActiveSupport::Concern
-
-  include Pundit::Authorization
-
-  sig(:final) { returns(Actor) }
-  def pundit_user
-    current_viewer!
-  end
 end

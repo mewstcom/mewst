@@ -4,5 +4,5 @@
 class OauthAccessToken < Doorkeeper::AccessToken
   extend T::Sig
 
-  belongs_to :resource_owner, class_name: "Actor"
+  belongs_to :resource_owner, class_name: "ActorRecord"
 end

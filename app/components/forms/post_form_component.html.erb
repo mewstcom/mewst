@@ -3,7 +3,7 @@
   url: post_list_path,
   data: {
     action: "turbo:submit-end->modal#close",
-    character_counter_max_value: Post::MAXIMUM_CONTENT_LENGTH,
+    character_counter_max_value: PostRecord::MAXIMUM_CONTENT_LENGTH,
     controller: "character-counter link-card-form",
     link_card_form_new_link_path_value: new_link_path
   }

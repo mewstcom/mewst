@@ -9,11 +9,11 @@ class ProfileForm < ApplicationForm
   attribute :gravatar_email, :string
   attribute :image_url, :string
 
-  sig { returns(T.nilable(Actor)) }
+  sig { returns(T.nilable(ActorRecord)) }
   attr_accessor :viewer
 
-  validates :atname, format: {with: Profile::ATNAME_FORMAT}, length: {maximum: 30}, presence: true
-  validates :avatar_kind, inclusion: Profile.avatar_kinds.keys, presence: true
+  validates :atname, format: {with: ProfileRecord::ATNAME_FORMAT}, length: {maximum: 30}, presence: true
+  validates :avatar_kind, inclusion: ProfileRecord.avatar_kinds.keys, presence: true
   validates :image_url, url: {allow_blank: true}
   validates :viewer, presence: true
   validate :atname_uniqueness
@@ -22,7 +22,7 @@ class ProfileForm < ApplicationForm
 
   sig { void }
   private def atname_uniqueness
-    if Profile.where.not(id: viewer.not_nil!.profile_id).find_by(atname:)
+    if ProfileRecord.where.not(id: viewer.not_nil!.profile_id).find_by(atname:)
       errors.add(:atname, :atname_uniqueness)
     end
   end

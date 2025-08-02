@@ -18,7 +18,7 @@ RSpec.describe "GET /email_confirmations/new", type: :request do
   end
 
   it "email_confirmation_idがsessionにあるとき、正常にレスポンスが返されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation)
+    email_confirmation = FactoryBot.create(:email_confirmation_record)
     set_session(email_confirmation_id: email_confirmation.id)
 
     get "/email_confirmations/new"
@@ -29,7 +29,7 @@ RSpec.describe "GET /email_confirmations/new", type: :request do
   it "サインイン済みでemail_confirmation_idがsessionにあるとき、正常にレスポンスが返されること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
-    email_confirmation = FactoryBot.create(:email_confirmation)
+    email_confirmation = FactoryBot.create(:email_confirmation_record)
     set_session(email_confirmation_id: email_confirmation.id)
 
     get "/email_confirmations/new"

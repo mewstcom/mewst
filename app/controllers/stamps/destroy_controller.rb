@@ -23,7 +23,7 @@ class Stamps::DestroyController < ApplicationController
 
     result = DeleteStampUseCase.new.call(viewer: viewer!, target_post: @form.target_post.not_nil!)
     @post = result.post
-    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: [@post])
+    @stamp_checker = StampChecker.new(profile: viewer!.profile_record, posts: [@post])
 
     render("stamps/create/call", content_type: "text/vnd.turbo-stream.html", layout: false)
   end

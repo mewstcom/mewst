@@ -28,17 +28,17 @@ RSpec.describe "POST /@:atname/follow", type: :request do
     target_actor = FactoryBot.create(:actor)
     sign_in actor
 
-    expect(Follow.count).to eq(0)
+    expect(FollowRecord.count).to eq(0)
 
     post "/@#{target_actor.atname}/follow"
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to include("text/vnd.turbo-stream.html")
 
     # フォロー関係が作成されていることを確認
-    expect(Follow.count).to eq(1)
-    follow = Follow.first
-    expect(follow.source_profile).to eq(actor.profile)
-    expect(follow.target_profile).to eq(target_actor.profile)
+    expect(FollowRecord.count).to eq(1)
+    follow = FollowRecord.first
+    expect(follow.source_profile_record).to eq(actor.profile_record)
+    expect(follow.target_profile_record).to eq(target_actor.profile_record)
   end
 
   it "既にフォローしているユーザーをフォローしようとしても正常に処理されること" do
@@ -47,14 +47,14 @@ RSpec.describe "POST /@:atname/follow", type: :request do
     sign_in actor
 
     # 事前にフォロー関係を作成
-    Follow.create!(source_profile: actor.profile, target_profile: target_actor.profile, followed_at: Time.current)
-    expect(Follow.count).to eq(1)
+    FollowRecord.create!(source_profile_id: actor.profile_record.id, target_profile_id: target_actor.profile_record.id, followed_at: Time.current)
+    expect(FollowRecord.count).to eq(1)
 
     post "/@#{target_actor.atname}/follow"
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to include("text/vnd.turbo-stream.html")
 
     # フォロー関係が重複して作成されないことを確認
-    expect(Follow.count).to eq(1)
+    expect(FollowRecord.count).to eq(1)
   end
 end

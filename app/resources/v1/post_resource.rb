@@ -4,7 +4,7 @@
 class V1::PostResource < V1::ApplicationResource
   delegate :id, :content, to: :post
 
-  sig { params(post: Post, viewer: T.nilable(Actor)).void }
+  sig { params(post: PostRecord, viewer: T.nilable(ActorRecord)).void }
   def initialize(post:, viewer:)
     @post = post
     @viewer = viewer
@@ -12,7 +12,7 @@ class V1::PostResource < V1::ApplicationResource
 
   sig { returns(V1::ProfileResource) }
   def profile
-    V1::ProfileResource.new(profile: post.profile.not_nil!, viewer:)
+    V1::ProfileResource.new(profile: post.profile_record.not_nil!, viewer:)
   end
 
   sig { returns(V1::ViaResource) }
@@ -24,7 +24,7 @@ class V1::PostResource < V1::ApplicationResource
   def viewer_has_stamped
     return false if viewer.nil?
 
-    viewer.not_nil!.stamps.exists?(post:)
+    viewer.not_nil!.profile_record.not_nil!.stamp_records.exists?(post_record_id: post.id)
   end
 
   sig { returns(String) }
@@ -32,11 +32,11 @@ class V1::PostResource < V1::ApplicationResource
     post.published_at.iso8601
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 
-  sig { returns(T.nilable(Actor)) }
+  sig { returns(T.nilable(ActorRecord)) }
   attr_reader :viewer
   private :viewer
 end

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Buttons::FollowButtonWithAvatarComponent < ApplicationComponent
-  sig { params(target_profile: Profile, follow_checker: FollowChecker, avatar_width: Integer, button_class_name: String).void }
+  sig { params(target_profile: ProfileRecord, follow_checker: FollowChecker, avatar_width: Integer, button_class_name: String).void }
   def initialize(target_profile:, follow_checker:, avatar_width:, button_class_name: "")
     @target_profile = target_profile
     @follow_checker = follow_checker
@@ -10,7 +10,7 @@ class Buttons::FollowButtonWithAvatarComponent < ApplicationComponent
     @button_class_name = button_class_name
   end
 
-  sig { returns(Profile) }
+  sig { returns(ProfileRecord) }
   attr_reader :target_profile
   private :target_profile
 

@@ -5,7 +5,7 @@ class Api::V1::Profiles::Me::ShowController < Api::V1::ApplicationController
   # include ControllerConcerns::PublicAuthenticatable
   #
   # def call
-  #   profile_resource = V1::ProfileResource.new(viewer: current_viewer!, profile: current_viewer!.profile.not_nil!)
+  #   profile_resource = V1::ProfileResource.new(viewer: current_viewer!, profile: current_viewer!.profile_record.not_nil!)
   #
   #   render(
   #     json: {

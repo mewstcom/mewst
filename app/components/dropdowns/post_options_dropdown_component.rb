@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 class Dropdowns::PostOptionsDropdownComponent < ApplicationComponent
-  sig { params(post: Post).void }
+  sig { params(post: PostRecord).void }
   def initialize(post:)
     @post = post
   end
 
-  sig { returns(Post) }
+  sig { returns(PostRecord) }
   attr_reader :post
   private :post
 end

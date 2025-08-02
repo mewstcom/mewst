@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :actor do
-    user { association :user }
-    profile { user.profile }
+  factory :actor, class: "ActorRecord" do
+    user_record { association :user_record }
+    profile_record { user_record.profile_record }
 
     trait :with_access_token_for_web do
       after(:create) do |actor|

@@ -6,8 +6,8 @@ class DeletePostForm < ApplicationForm
 
   validates :target_post, presence: true
 
-  sig { returns(T.nilable(Post)) }
+  sig { returns(T.nilable(PostRecord)) }
   def target_post
-    Post.discarded.find_by(id: target_post_id)
+    PostRecord.discarded.find_by(id: target_post_id)
   end
 end

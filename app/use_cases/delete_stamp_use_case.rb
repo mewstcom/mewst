@@ -3,12 +3,12 @@
 
 class DeleteStampUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :post, Post
+    const :post, PostRecord
   end
 
-  sig { params(viewer: Actor, target_post: Post).returns(Result) }
+  sig { params(viewer: ActorRecord, target_post: PostRecord).returns(Result) }
   def call(viewer:, target_post:)
-    stamp = viewer.stamps.find_by(post: target_post)
+    stamp = viewer.profile_record.not_nil!.stamp_records.find_by(post_record: target_post)
 
     ApplicationRecord.transaction do
       stamp&.unnotify!

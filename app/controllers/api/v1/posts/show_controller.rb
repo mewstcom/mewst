@@ -5,7 +5,7 @@ class Api::V1::Posts::ShowController < Api::V1::ApplicationController
   # include ControllerConcerns::PublicAuthenticatable
   #
   # def call
-  #   post = Post.kept.find_by(id: params[:post_id])
+  #   post = PostRecord.kept.find_by(id: params[:post_id])
   #
   #   if post.nil?
   #     resource = V1::ResponseErrorResource.new(code: V1::ResponseErrorCode::NotFound, message: "Not found")

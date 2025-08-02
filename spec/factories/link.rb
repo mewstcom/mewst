@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :link do
+  factory :link_record, class: "LinkRecord" do
     sequence(:canonical_url) { |n| "https://example.com/#{n}" }
     domain { "example.com" }
     sequence(:title) { |n| "Page Title ##{n}" }

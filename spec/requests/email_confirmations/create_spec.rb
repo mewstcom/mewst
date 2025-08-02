@@ -26,7 +26,7 @@ RSpec.describe "POST /email_confirmations", type: :request do
   end
 
   it "無効な確認コードが送信された場合、422ステータスが返されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation, code: "123456")
+    email_confirmation = FactoryBot.create(:email_confirmation_record, code: "123456")
     set_session(email_confirmation_id: email_confirmation.id)
 
     post "/email_confirmations", params: {
@@ -39,7 +39,7 @@ RSpec.describe "POST /email_confirmations", type: :request do
   end
 
   it "有効な確認コードでサインアップイベントの場合、アカウント作成ページにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       code: "123456",
       event: "sign_up",
       succeeded_at: nil)
@@ -56,11 +56,11 @@ RSpec.describe "POST /email_confirmations", type: :request do
   end
 
   it "有効な確認コードでメールアドレス更新イベントの場合、メール設定ページにリダイレクトすること" do
-    user = FactoryBot.create(:user)
-    actor = FactoryBot.create(:actor, user:)
+    user = FactoryBot.create(:user_record)
+    actor = FactoryBot.create(:actor, user_record: user)
     sign_in(actor)
 
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       code: "123456",
       event: "email_update",
       succeeded_at: nil)
@@ -78,7 +78,7 @@ RSpec.describe "POST /email_confirmations", type: :request do
   end
 
   it "有効な確認コードでパスワードリセットイベントの場合、パスワード編集ページにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       code: "123456",
       event: "password_reset",
       succeeded_at: nil)

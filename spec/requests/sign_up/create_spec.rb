@@ -10,7 +10,7 @@ RSpec.describe "POST /sign_up", type: :request do
     expect(response).to redirect_to(new_email_confirmation_path)
     expect(flash[:notice]).to eq("確認用のメールを送信しました")
 
-    email_confirmation = EmailConfirmation.find_by(email: "test@example.com")
+    email_confirmation = EmailConfirmationRecord.find_by(email: "test@example.com")
     expect(email_confirmation).not_to be_nil
     expect(email_confirmation.not_nil!.event).to eq("sign_up")
     expect(session[:email_confirmation_id]).to eq(email_confirmation.not_nil!.id)
@@ -21,7 +21,7 @@ RSpec.describe "POST /sign_up", type: :request do
 
     expect(response).to have_http_status(:unprocessable_entity)
     expect(response.body).to include("メールアドレスは不正な値です")
-    expect(EmailConfirmation.find_by(email: "invalid-email")).to be_nil
+    expect(EmailConfirmationRecord.find_by(email: "invalid-email")).to be_nil
   end
 
   it "認証されていない場合、空のメールアドレスでは422ステータスでフォームが再表示されること" do
@@ -50,12 +50,12 @@ RSpec.describe "POST /sign_up", type: :request do
 
   it "同じメールアドレスで複数回送信した場合、新しいEmailConfirmationが作成されること" do
     post sign_up_path, params: {email_confirmation_form: {email: "test@example.com"}}
-    first_confirmation = EmailConfirmation.find_by(email: "test@example.com")
+    first_confirmation = EmailConfirmationRecord.find_by(email: "test@example.com")
 
     post sign_up_path, params: {email_confirmation_form: {email: "test@example.com"}}
 
     expect(response).to redirect_to(new_email_confirmation_path)
-    confirmations = EmailConfirmation.where(email: "test@example.com")
+    confirmations = EmailConfirmationRecord.where(email: "test@example.com")
     expect(confirmations.count).to eq(2)
     expect(session[:email_confirmation_id]).not_to eq(first_confirmation.not_nil!.id)
   end

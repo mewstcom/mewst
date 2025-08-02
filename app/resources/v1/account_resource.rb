@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 class V1::AccountResource < V1::ApplicationResource
-  sig { returns(User) }
+  sig { returns(UserRecord) }
   attr_reader :user
 
   sig { returns(OauthAccessToken) }
   attr_reader :oauth_access_token
 
-  sig { params(user: User, profile: Profile, oauth_access_token: OauthAccessToken).void }
+  sig { params(user: UserRecord, profile: ProfileRecord, oauth_access_token: OauthAccessToken).void }
   def initialize(user:, profile:, oauth_access_token:)
     @user = user
     @profile = profile

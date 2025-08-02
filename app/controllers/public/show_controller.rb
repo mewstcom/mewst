@@ -11,7 +11,7 @@ class Public::ShowController < ApplicationController
   sig { returns(T.untyped) }
   def call
     @form = PostForm.new(with_frame: true)
-    page = Post.kept.preload(:profile, :link).cursor_paginate(
+    page = PostRecord.kept.preload(:profile_record, :link_record).cursor_paginate(
       after: params[:after].presence,
       before: params[:before].presence,
       limit: 15,
@@ -20,8 +20,8 @@ class Public::ShowController < ApplicationController
 
     @posts = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
-    @stamp_checker = StampChecker.new(profile: viewer!.profile, posts: @posts)
-    @follow_checker = FollowChecker.new(profile: viewer!.profile, target_profiles: @posts.map(&:profile))
+    @stamp_checker = StampChecker.new(profile: viewer!.profile_record, posts: @posts)
+    @follow_checker = FollowChecker.new(profile: viewer!.profile_record, target_profiles: @posts.map(&:profile_record))
   rescue ActiveRecordCursorPaginate::InvalidCursorError
     redirect_to(public_path, status: :moved_permanently)
   end

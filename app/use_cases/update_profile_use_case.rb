@@ -3,12 +3,12 @@
 
 class UpdateProfileUseCase < ApplicationUseCase
   class Result < T::Struct
-    const :profile, Profile
+    const :profile, ProfileRecord
   end
 
   sig do
     params(
-      viewer: Actor,
+      viewer: ActorRecord,
       atname: String,
       name: String,
       description: String,
@@ -18,7 +18,7 @@ class UpdateProfileUseCase < ApplicationUseCase
     ).returns(Result)
   end
   def call(viewer:, atname:, name:, description:, avatar_kind:, gravatar_email:, image_url:)
-    profile = viewer.profile.not_nil!
+    profile = viewer.profile_record.not_nil!
     gravatar_url = Gravatar.new(email: gravatar_email).url(size: 200)
 
     profile.update!(atname:, name:, description:, avatar_kind:, gravatar_email:, image_url:, gravatar_url:)

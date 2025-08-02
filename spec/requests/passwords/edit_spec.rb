@@ -10,7 +10,7 @@ RSpec.describe "GET /password/edit", type: :request do
 
   it "すでにサインイン済みの場合、フラッシュメッセージとともにホームページにリダイレクトすること" do
     actor = FactoryBot.create(:actor)
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: actor.email,
       succeeded_at: Time.current)
 
@@ -23,7 +23,7 @@ RSpec.describe "GET /password/edit", type: :request do
   end
 
   it "メール確認が完了していない場合、ルートパスにリダイレクトすること" do
-    email_confirmation = FactoryBot.create(:email_confirmation, code: "123456")
+    email_confirmation = FactoryBot.create(:email_confirmation_record, code: "123456")
 
     set_session(email_confirmation_id: email_confirmation.id)
 
@@ -33,7 +33,7 @@ RSpec.describe "GET /password/edit", type: :request do
   end
 
   it "有効なemail_confirmationがあり未認証の場合、パスワードリセットフォームが表示されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       succeeded_at: Time.current)
 
@@ -46,7 +46,7 @@ RSpec.describe "GET /password/edit", type: :request do
   end
 
   it "フォームが正しく表示されること" do
-    email_confirmation = FactoryBot.create(:email_confirmation,
+    email_confirmation = FactoryBot.create(:email_confirmation_record,
       email: "test@example.com",
       succeeded_at: Time.current)
 

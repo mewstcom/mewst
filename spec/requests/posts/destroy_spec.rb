@@ -4,7 +4,7 @@
 RSpec.describe "DELETE /posts/:post_id", type: :request do
   it "ログインしていないとき、ルートページにリダイレクトされること" do
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
 
     delete "/posts/#{post.id}"
 
@@ -14,7 +14,7 @@ RSpec.describe "DELETE /posts/:post_id", type: :request do
 
   it "ログインしているとき、自分のポストを削除できること" do
     viewer = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: viewer.profile)
+    post = FactoryBot.create(:post_record, profile_record: viewer.profile_record)
 
     sign_in viewer
     delete "/posts/#{post.id}"
@@ -22,13 +22,13 @@ RSpec.describe "DELETE /posts/:post_id", type: :request do
     expect(response).to have_http_status(:see_other)
     expect(response).to redirect_to(home_path)
     expect(flash[:notice]).to eq("投稿を削除しました")
-    expect(Post.kept.exists?(id: post.id)).to be(false)
+    expect(PostRecord.kept.exists?(id: post.id)).to be(false)
   end
 
   it "他のユーザーのポストを削除しようとした場合、バリデーションエラーが発生すること" do
     viewer = FactoryBot.create(:actor)
     other_actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: other_actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: other_actor.profile_record)
 
     sign_in viewer
     expect { delete "/posts/#{post.id}" }.to raise_error(ActiveModel::ValidationError)
@@ -43,7 +43,7 @@ RSpec.describe "DELETE /posts/:post_id", type: :request do
 
   it "既に削除されたポストを削除しようとした場合、バリデーションエラーが発生すること" do
     viewer = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: viewer.profile)
+    post = FactoryBot.create(:post_record, profile_record: viewer.profile_record)
     post.discard!
 
     sign_in viewer

@@ -4,7 +4,7 @@
 RSpec.describe "GET /@:atname/atom", type: :request do
   it "ログインしていないとき、ATOMフィードが表示されること" do
     actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
     get "/@#{actor.atname}/atom"
 
     expect(response).to have_http_status(:ok)
@@ -16,7 +16,7 @@ RSpec.describe "GET /@:atname/atom", type: :request do
   it "ログインしているとき、ATOMフィードが表示されること" do
     actor = FactoryBot.create(:actor)
     other_actor = FactoryBot.create(:actor)
-    post = FactoryBot.create(:post, profile: actor.profile)
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
     sign_in other_actor
     get "/@#{actor.atname}/atom"
 
@@ -33,7 +33,7 @@ RSpec.describe "GET /@:atname/atom", type: :request do
 
   it "ソフト削除されたプロフィールの場合、404エラーが発生すること" do
     actor = FactoryBot.create(:actor)
-    actor.profile.discard
+    actor.profile_record.discard
     get "/@#{actor.atname}/atom"
     expect(response).to have_http_status(:not_found)
   end
@@ -49,8 +49,8 @@ RSpec.describe "GET /@:atname/atom", type: :request do
 
   it "ソフト削除された投稿は含まれないこと" do
     actor = FactoryBot.create(:actor)
-    FactoryBot.create(:post, profile: actor.profile, content: "通常の投稿")
-    post2 = FactoryBot.create(:post, profile: actor.profile, content: "削除される投稿")
+    FactoryBot.create(:post_record, profile_record: actor.profile_record, content: "通常の投稿")
+    post2 = FactoryBot.create(:post_record, profile_record: actor.profile_record, content: "削除される投稿")
     post2.discard
     get "/@#{actor.atname}/atom"
 
@@ -63,12 +63,12 @@ RSpec.describe "GET /@:atname/atom", type: :request do
     actor = FactoryBot.create(:actor)
     # 古い投稿を5件作成（これらは表示されないはず）
     5.times do |i|
-      FactoryBot.create(:post, profile: actor.profile, content: "古い投稿#{i + 1}", published_at: (20 + i).minutes.ago)
+      FactoryBot.create(:post_record, profile_record: actor.profile_record, content: "古い投稿#{i + 1}", published_at: (20 + i).minutes.ago)
     end
 
     # 新しい投稿を15件作成（これらが表示されるはず）
     15.times do |i|
-      FactoryBot.create(:post, profile: actor.profile, content: "新しい投稿#{i + 1}", published_at: (14 - i).minutes.ago)
+      FactoryBot.create(:post_record, profile_record: actor.profile_record, content: "新しい投稿#{i + 1}", published_at: (14 - i).minutes.ago)
     end
 
     get "/@#{actor.atname}/atom"

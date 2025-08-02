@@ -31,7 +31,7 @@ class EmailConfirmations::CreateController < ApplicationController
     T.cast(params.require(:email_confirmation_challenge_form), ActionController::Parameters).permit(:confirmation_code)
   end
 
-  sig { params(email_confirmation: EmailConfirmation).void }
+  sig { params(email_confirmation: EmailConfirmationRecord).void }
   private def flash_message(email_confirmation)
     if email_confirmation.deserialized_event == EmailConfirmationEvent::EmailUpdate
       flash[:notice] = t("messages.email_confirmations.email_updated")
@@ -40,7 +40,7 @@ class EmailConfirmations::CreateController < ApplicationController
     nil
   end
 
-  sig { params(email_confirmation: EmailConfirmation).returns(String) }
+  sig { params(email_confirmation: EmailConfirmationRecord).returns(String) }
   private def success_path(email_confirmation)
     event = email_confirmation.deserialized_event
 

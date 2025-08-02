@@ -9,10 +9,10 @@ class Profiles::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @profile = Profile.kept.find_by!(atname: params[:atname])
-    @follow_checker = FollowChecker.new(profile: viewer&.profile, target_profiles: [@profile])
+    @profile = ProfileRecord.kept.find_by!(atname: params[:atname])
+    @follow_checker = FollowChecker.new(profile: viewer&.profile_record, target_profiles: [@profile])
 
-    page = @profile.posts.kept.preload(:link).cursor_paginate(
+    page = @profile.post_records.kept.preload(:profile_record, :link_record).cursor_paginate(
       after: params[:after].presence,
       before: params[:before].presence,
       limit: 15,
@@ -21,7 +21,7 @@ class Profiles::ShowController < ApplicationController
 
     @posts = page.records
     @page_info = PageInfo.from_cursor_paginate_page(page:)
-    @stamp_checker = StampChecker.new(profile: viewer&.profile, posts: @posts)
+    @stamp_checker = StampChecker.new(profile: viewer&.profile_record, posts: @posts)
   rescue ActiveRecordCursorPaginate::InvalidCursorError
     redirect_to(profile_path(@profile.atname), status: :moved_permanently)
   end
