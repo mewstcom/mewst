@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "POST /v1/suggested_profiles/@:atname/check", type: :request, api_version: :v1 do
   # it "アットネームが正しくないとき、422を返すこと" do
   #   viewer = FactoryBot.create(:actor, :with_access_token_for_web)
@@ -52,3 +53,4 @@ RSpec.xdescribe "POST /v1/suggested_profiles/@:atname/check", type: :request, ap
   #   assert_response_schema_confirm(204)
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

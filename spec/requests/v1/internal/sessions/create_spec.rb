@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "POST /v1/internal/sessions", type: :request do
   # context "パスワードが正しくないとき" do
   #   let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
@@ -72,3 +73,4 @@ RSpec.xdescribe "POST /v1/internal/sessions", type: :request do
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

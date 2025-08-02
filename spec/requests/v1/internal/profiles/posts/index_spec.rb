@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "GET /v1/internal/@:atname/posts", type: :request do
   # context "正常系" do
   #   let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
@@ -39,3 +40,4 @@ RSpec.xdescribe "GET /v1/internal/@:atname/posts", type: :request do
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

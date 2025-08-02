@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "GET /v1/suggested_profiles", type: :request, api_version: :v1 do
   # context "正常系" do
   #   let!(:viewer) { create(:actor, :with_access_token_for_web) }
@@ -34,3 +35,4 @@ RSpec.xdescribe "GET /v1/suggested_profiles", type: :request, api_version: :v1 d
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "PATCH /v1/users/me", type: :request, api_version: :v1 do
   # context "言語が不正なとき" do
   #   let!(:viewer) { create(:actor, :with_access_token_for_web) }
@@ -64,3 +65,4 @@ RSpec.xdescribe "PATCH /v1/users/me", type: :request, api_version: :v1 do
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

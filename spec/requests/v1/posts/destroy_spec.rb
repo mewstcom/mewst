@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "DELETE /v1/posts/:post_id", type: :request, api_version: :v1 do
   # context "リクエストデータが不正なとき" do
   #   let!(:viewer) { create(:actor, :with_access_token_for_web) }
@@ -46,3 +47,4 @@ RSpec.xdescribe "DELETE /v1/posts/:post_id", type: :request, api_version: :v1 do
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup

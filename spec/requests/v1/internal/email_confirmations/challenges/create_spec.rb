@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyExampleGroup
 RSpec.xdescribe "POST /v1/internal/email_confirmations/:email_confirmation_id/challenge", type: :request do
   # context "確認用コードが不正なとき" do
   #   let!(:token) { ActionController::HttpAuthentication::Token.encode_credentials(Rails.configuration.mewst["internal_api_token"]) }
@@ -55,3 +56,4 @@ RSpec.xdescribe "POST /v1/internal/email_confirmations/:email_confirmation_id/ch
   #   end
   # end
 end
+# rubocop:enable RSpec/EmptyExampleGroup
