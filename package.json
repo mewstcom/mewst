@@ -18,7 +18,7 @@
     "stimulus-use": "^0.52.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.32.0",
+    "@eslint/js": "^9.33.0",
     "@ttskch/prettier-plugin-tailwindcss-anywhere": "^0.1.1",
     "@types/autosize": "^4.0.3",
     "@types/hotwired__turbo": "^8.0.4",
