@@ -69,15 +69,17 @@
     <% else %>
       <div id="post-blank-slate">
         <%= render BlankSlateComponent.new(message: t("messages.blank_slate.no_posts"), class_name: "py-8") do %>
-          <div class="mt-2">
-            <p class="hidden lg:block">
-              <%= t("messages.home.lets_make_the_first_post_pc") %>
-            </p>
+          <% if signed_in? && viewer.atname == @profile.atname %>
+            <div class="mt-2">
+              <p class="hidden lg:block">
+                <%= t("messages.home.lets_make_the_first_post_pc") %>
+              </p>
 
-            <p class="lg:hidden">
-              <%= t("messages.home.lets_make_the_first_post_mobile") %>
-            </p>
-          </div>
+              <p class="lg:hidden">
+                <%= t("messages.home.lets_make_the_first_post_mobile") %>
+              </p>
+            </div>
+          <% end %>
         <% end %>
       </div>
     <% end %>
