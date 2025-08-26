@@ -77,15 +77,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.11.1
-      - name: Install Yarn
+      - name: Install pnpm
         run: |
-          npm install --global yarn@1.22.19
+          npm install --global pnpm@10.15.0
       - name: Install npm packages
         run: |
-          yarn install
+          pnpm install
       - name: Prettier check
         run: |
-          yarn prettier . --check
+          pnpm prettier . --check
 
   eslint:
     name: ESLint
@@ -96,15 +96,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.11.1
-      - name: Install Yarn
+      - name: Install pnpm
         run: |
-          npm install --global yarn@1.22.19
+          npm install --global pnpm@10.15.0
       - name: Install npm packages
         run: |
-          yarn install
+          pnpm install
       - name: ESLint check
         run: |
-          yarn eslint .
+          pnpm eslint .
 
   rspec:
     name: RSpec
@@ -135,9 +135,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.11.1
-      - name: Install Yarn
+      - name: Install pnpm
         run: |
-          npm install --global yarn@1.22.19
+          npm install --global pnpm@10.15.0
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v2
       - run: chrome --version

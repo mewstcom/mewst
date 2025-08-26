@@ -8,9 +8,9 @@ argument-hint: "ベースブランチ名 (default: main)"
 ```bash
 bin/rails zeitwerk:check
 bin/rails sorbet:update
-yarn prettier . --write
-yarn eslint . --fix
-yarn tsc
+pnpm prettier . --write
+pnpm eslint . --fix
+pnpm tsc
 bin/erb_lint --lint-all
 bin/srb tc
 bin/standardrb
