@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+@import "basecoat-css";
 
 /* https://fontawesome.com/docs/web/add-icons/svg-bare */
 .mst-fa-icon {
