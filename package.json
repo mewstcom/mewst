@@ -14,6 +14,7 @@
     "@hotwired/turbo": "^8.0.13",
     "@tailwindcss/cli": "^4.1.12",
     "autosize": "^6.0.1",
+    "basecoat-css": "^0.3.2",
     "esbuild": "^0.25.8",
     "graphemesplit": "^2.6.0",
     "stimulus-use": "^0.52.3"
@@ -23,7 +24,6 @@
     "@ttskch/prettier-plugin-tailwindcss-anywhere": "^0.1.1",
     "@types/autosize": "^4.0.3",
     "@types/hotwired__turbo": "^8.0.4",
-    "daisyui": "^4.12.22",
     "eslint": "^9.34.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
