@@ -8,12 +8,22 @@ RUN \
     apt update && \
     apt dist-upgrade -yq && \
     apt install -y --no-install-recommends \
-    git \
-    curl \
     build-essential \
+    curl \
+    git \
+    # PostgreSQLのインストールに必要
+    gnupg \
+    # PostgreSQLのインストールに必要
+    lsb-release \
     postgresql-client-16 \
     sudo \
     zsh \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && apt update \
+    && apt install -y postgresql-client-16 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
