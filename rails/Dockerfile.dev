@@ -13,19 +13,18 @@ RUN \
   git \
   # PostgreSQLやNode.jsのインストールに必要
   gnupg \
+  # PostgreSQLのインストールに必要
   lsb-release \
   sudo \
   zsh && \
   rm -rf /var/lib/apt/lists/*
 
 # PostgreSQLのセットアップ
-RUN \
-  curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-  echo "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-  apt update && \
-  apt install -y --no-install-recommends \
-  libpq-dev \
-  postgresql-client-16
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && apt update \
+    && apt install -y libpq-dev postgresql-client-16 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Node.jsのセットアップ
 RUN \

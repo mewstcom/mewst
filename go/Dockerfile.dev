@@ -5,46 +5,47 @@ ARG GROUP_ID=1000
 ARG USERNAME=developer
 
 RUN \
-    apt update && \
-    apt dist-upgrade -yq && \
-    apt install -y --no-install-recommends \
-    build-essential \
-    curl \
-    git \
-    # PostgreSQLのインストールに必要
-    gnupg \
-    # PostgreSQLのインストールに必要
-    lsb-release \
-    postgresql-client-16 \
-    sudo \
-    zsh \
-    && rm -rf /var/lib/apt/lists/*
+  apt update && \
+  apt dist-upgrade -yq && \
+  apt install -y --no-install-recommends \
+  build-essential \
+  curl \
+  git \
+  # PostgreSQLのインストールに必要
+  gnupg \
+  # PostgreSQLのインストールに必要
+  lsb-release \
+  sudo \
+  zsh \
+  && rm -rf /var/lib/apt/lists/*
 
+# PostgreSQLのインストール
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
-    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && apt update \
-    && apt install -y postgresql-client-16 \
-    && rm -rf /var/lib/apt/lists/*
+  && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+  && apt update \
+  && apt install -y libpq-dev postgresql-client-16 \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs=24.11.1-1nodesource1 \
-    && npm install -g npm@latest
+# Node.jsのインストール
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+  && apt-get install -y nodejs=24.11.1-1nodesource1 \
+  && npm install -g npm@latest
 
 # dbmate のインストール（マイグレーション管理ツール）
 RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64 \
-    && chmod +x /usr/local/bin/dbmate
+  && chmod +x /usr/local/bin/dbmate
 
 # golangci-lint のインストール
 # https://golangci-lint.run/docs/welcome/install/#install-from-sources
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.6.2
 
 RUN \
-    groupadd -g ${GROUP_ID} ${USERNAME} && \
-    useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USERNAME} && \
-    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+  groupadd -g ${GROUP_ID} ${USERNAME} && \
+  useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USERNAME} && \
+  echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN mkdir -p /go/.cache/go-build /go/pkg && \
-    chown -R ${USER_ID}:${GROUP_ID} /go
+  chown -R ${USER_ID}:${GROUP_ID} /go
 
 WORKDIR /workspace
 
