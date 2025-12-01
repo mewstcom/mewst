@@ -1,4 +1,4 @@
-name: Lint and test
+name: Rails CI
 
 on: push
 
