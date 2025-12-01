@@ -15,6 +15,7 @@ Mewst はマイクロブログサービスです。
 /workspace/
 ├── go/          # Go版の実装（段階的に機能を移行中）
 ├── rails/       # Rails版の実装（既存の本番システム）
+├── caddy/       # リバースプロキシ設定
 ├── .github/     # 共通のCI/CD設定
 └── CLAUDE.md    # このファイル（プロジェクト全体のガイド）
 ```
@@ -42,7 +43,8 @@ Rails 版のソースコードは `/workspace/rails/` 配下に格納されて�
 ```
 /workspace/rails/
 ├── app/controllers/     # コントローラー
-├── app/models/          # モデル
+├── app/records/         # ActiveRecordモデル
+├── app/use_cases/       # ユースケース（ビジネスロジック）
 ├── app/views/           # ビューテンプレート
 ├── config/routes.rb     # ルーティング定義
 └── db/structure.sql     # DBスキーマ
@@ -56,52 +58,15 @@ Go 版を実装する際は、Rails 版のコードを参考にすることで�
 
 - **バージョン**: PostgreSQL 16.2
 - **共有方針**: Rails 版と Go 版で同一のデータベースを共有
-- **開発環境**: Docker Compose で管理
-  - Rails 版用: `postgresql:5432`
-  - Go 版テスト用: `postgresql:5432`
+- **開発環境**: Docker Compose で管理（ポート: 4104）
+- **データベース名**:
+  - 開発: `mewst_development`
+  - テスト: `mewst_test`
 
 ### セッションストア（PostgreSQL）
 
 - **ストレージ**: PostgreSQL の `sessions` テーブルを使用
-- **Rails 版**: ActiveRecord SessionStore を使用
-  - 各リクエストで `updated_at` カラムを自動更新
-  - セッションの有効期限: 30 日
-- **Go 版**: 同じ `sessions` テーブルを共有
-  - 認証ミドルウェアで `updated_at` カラムを更新
-  - Rails 版と完全に互換性のあるセッション管理を実現
-- **セッションクリーンアップ**: 毎日 19:00 に `rake session:sweep` タスクが実行され、30 日以上前のセッションを自動削除
 - **共有方針**: Rails 版と Go 版で同一のセッションストアを共有（段階的移行を実現）
-
-### 画像配信アーキテクチャ
-
-作品画像の配信には以下のシステムを使用しています（Rails 版と Go 版で共通利用）：
-
-#### S3 互換オブジェクトストレージ（Cloudflare R2）
-
-- **開発環境**: Cloudflare R2（開発環境用アカウント）
-- **本番環境**: Cloudflare R2（本番環境用アカウント）
-- **バケット名**:
-  - 開発: `annict-development`
-  - 本番: `annict-production`
-- **画像パス**: `shrine/`プレフィックス付きで保存（Rails の Shrine ライブラリの仕様）
-- **アクセスキー**: `.env.development.local`（開発）、環境変数（本番）に設定
-
-#### imgproxy（画像リサイズ・最適化プロキシ）
-
-- **ポート**: 18080（開発環境）
-- **アクセス方法**: S3 プロトコル経由でストレージにアクセス（`s3://annict-{environment}/shrine/{path}`）
-- **セキュリティ**: 署名付き URL を生成してセキュアな画像配信を実現
-- **設定**: KEY/SALT は環境変数で管理
-- **管理**: Docker Compose（`/workspace/rails/docker-compose.yml`）で管理
-
-#### 画像 URL 生成の流れ
-
-1. `work_images`テーブルの`image_data`カラム（JSON）から画像パスを取得
-2. S3 プロトコルの URL を生成（例: `s3://annict-development/shrine/workimage/...`）
-3. imgproxy の署名付き URL を生成（HMAC による署名）
-4. ブラウザは imgproxy 経由で最適化された画像を取得
-
-**重要**: S3 互換ストレージと imgproxy は Rails 版と Go 版で共通利用するため、Go 版が本流になっても継続して使用します。
 
 ## 開発環境のセットアップ
 
@@ -115,22 +80,23 @@ Go 版を実装する際は、Rails 版のコードを参考にすることで�
 1. **リポジトリのクローン**
 
 ```sh
-git clone <repository-url>
-cd annict
+git clone git@github.com:mewstcom/mewst.git
+cd mewst
 ```
 
-2. **Dev Container の起動**
-
-VS Code や Claude Code などでリポジトリを開くと、Dev Container が自動的に起動します。
-
-3. **共通インフラの起動（ホスト側で実行）**
-
-Rails 版の Docker Compose で共通インフラ（PostgreSQL、imgproxy）を起動します：
+2. **Docker Compose の起動**
 
 ```sh
-cd rails
-docker compose up -d
+docker compose up
 ```
+
+3. **Dev Container の起動**
+
+VS Code や Claude Code などでリポジトリを開くと、Dev Container が自動的に起動します。
+Rails 版と Go 版で別々の Dev Container が用意されています：
+
+- Rails 版: `.devcontainer/rails/devcontainer.json`
+- Go 版: `.devcontainer/go/devcontainer.json`
 
 4. **各サブプロジェクトのセットアップ**
 
@@ -156,9 +122,11 @@ docker compose up -d
 
 各サブプロジェクトで実装を行った場合は、コミット前に以下を確認してください：
 
-- コードフォーマット（Go/Rails: `make fmt`）
-- リント（Go/Rails: `make lint`）
-- テスト（Go/Rails: `make test`）
+- コードフォーマット
+- リント
+- テスト
+
+Rails 版の具体的なコマンドは `rails/CLAUDE.md` を参照してください。
 
 ### コメントのガイドライン
 
@@ -172,10 +140,10 @@ docker compose up -d
 
 **避けるべきコメント**：
 
-- ❌ **実装の変遷を説明するコメント**（「以前は〜だった」「〜は削除した」など）
-- ❌ **過去との比較**（「別途インストール不要になった」「〜を統合したため不要」など）
-- ❌ **自明なことの説明**（コードを読めばわかること）
-- ❌ **やり取りの文脈に依存するコメント**（PR レビューのコメントは PR に書く）
+- **実装の変遷を説明するコメント**（「以前は〜だった」「〜は削除した」など）
+- **過去との比較**（「別途インストール不要になった」「〜を統合したため不要」など）
+- **自明なことの説明**（コードを読めばわかること）
+- **やり取りの文脈に依存するコメント**（PR レビューのコメントは PR に書く）
 
 **原則**：
 
@@ -247,23 +215,16 @@ Pull Request を作成する際は、以下のルールを遵守してくださ�
 
 このモノレポの CI/CD 設定は`.github/workflows/`ディレクトリに配置されています：
 
-- `go-ci.yml`: Go 版の CI（lint、test、build）
-- `rails-ci.yml`: Rails 版の CI（zeitwerk、sorbet、standard、erb_lint、eslint、rspec）
+- `lint-and-test.yml`: Rails 版の CI（zeitwerk、sorbet、standard、erb_lint、prettier、eslint、rspec）
 
-各 CI は対応するファイルが変更されたときのみ実行されます（パスフィルタリング）。
+各 CI は対応するファイルが変更されたときに実行されます。
 
 ## トラブルシューティング
 
 ### データベース接続エラー
 
 - PostgreSQL コンテナが起動しているか確認: `docker compose ps`
-- ポートが正しいか確認: Rails 版開発用は 15432、Go 版テスト用は 5432
-
-### 画像が表示されない
-
-- imgproxy コンテナが起動しているか確認
-- 環境変数（R2 アクセスキー、imgproxy KEY/SALT）が正しく設定されているか確認
-- Cloudflare R2 バケットへのアクセス権限が正しく設定されているか確認
+- ポートが正しいか確認: 開発環境は 4104
 
 ### その他の問題
 
