@@ -1,0 +1,29 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/internal/templates"
+)
+
+// FormErrors はフォームエラーを表示する
+templ FormErrors(formErrors *session.FormErrors) {
+	if formErrors != nil && formErrors.HasErrors() {
+		<div class="card bg-error text-error-content" role="alert">
+			<div class="card-body">
+				<div class="text-lg font-bold">
+					{ templates.T(ctx, "nouns.error") }
+				</div>
+				<ul class="list-inside list-disc">
+					// グローバルエラーを表示
+					for _, err := range formErrors.Global {
+						<li>{ err }</li>
+					}
+					// フィールドエラーを表示
+					for _, fieldErr := range formErrors.FieldErrors() {
+						<li>{ fieldErr.Message }</li>
+					}
+				</ul>
+			</div>
+		</div>
+	}
+}

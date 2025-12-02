@@ -1,0 +1,42 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/internal/session"
+)
+
+// Flash はフラッシュメッセージを表示する
+templ Flash() {
+	// フラッシュメッセージはJavaScriptで表示制御される
+	// クッキーからフラッシュを取得し、トースト表示する
+	<div id="flash-container" class="toast toast-end toast-bottom">
+		// フラッシュメッセージがある場合は表示
+		// 実際の表示はハンドラーでコンテキストにセットされたFlashから行う
+	</div>
+}
+
+// FlashMessage はフラッシュメッセージを表示する（明示的なメッセージ表示用）
+templ FlashMessage(flash *session.Flash) {
+	if flash != nil {
+		<div id="flash-container" class="toast toast-end toast-bottom">
+			<div class={ flashAlertClass(flash.Type) } role="alert">
+				<span>{ flash.Message }</span>
+			</div>
+		</div>
+	}
+}
+
+// flashAlertClass はフラッシュタイプに応じたCSSクラスを返す
+func flashAlertClass(flashType session.FlashType) string {
+	switch flashType {
+	case session.FlashSuccess:
+		return "alert alert-success"
+	case session.FlashError:
+		return "alert alert-error"
+	case session.FlashWarning:
+		return "alert alert-warning"
+	case session.FlashInfo:
+		return "alert alert-info"
+	default:
+		return "alert"
+	}
+}
