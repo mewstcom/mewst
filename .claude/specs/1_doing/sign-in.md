@@ -374,7 +374,7 @@ cookie := &http.Cookie{
 各タスクには想定サイズを明記してください
 -->
 
-- [ ] **1-0**: 開発環境コマンド（Makefile）の作成
+- [x] **1-0**: 開発環境コマンド（Makefile）の作成
 
   - `Makefile` の作成（run, build, test, fmt, lint など）
   - `.golangci.yml` の作成（golangci-lint 設定）
