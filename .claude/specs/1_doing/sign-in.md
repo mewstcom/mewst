@@ -383,6 +383,19 @@ cookie := &http.Cookie{
   - **想定ファイル数**: 約 4 ファイル（実装 4 + テスト 0）
   - **想定行数**: 約 250 行（実装 250 行 + テスト 0 行）
 
+- [ ] **1-0-1**: GitHub Actions CI の設定
+
+  - `.github/workflows/go-ci.yml` の作成（Go 版 CI）
+    - Lint ジョブ: templ generate チェック、go mod tidy チェック、golangci-lint
+    - Test ジョブ: PostgreSQL サービス、テスト実行
+    - Build ジョブ: バイナリビルド確認
+  - `.github/workflows/rails-ci.yml` の更新（Rails 版 CI）
+    - working-directory を `rails/` に設定
+    - paths トリガーを追加（`rails/**`, `.github/workflows/rails-ci.yml`）
+  - **参考**: Annict の設定（`/annict/.github/workflows/go-ci.yml`, `/annict/.github/workflows/rails-ci.yml`）
+  - **想定ファイル数**: 約 2 ファイル（実装 2 + テスト 0）
+  - **想定行数**: 約 300 行（実装 300 行 + テスト 0 行）
+
 - [ ] **1-1**: Go プロジェクトの初期化
 
   - `go.mod`, `go.sum` の作成
