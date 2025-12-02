@@ -69,14 +69,14 @@ services:
       context: ./difit
       dockerfile: ./Dockerfile.dev
     volumes:
-      - ./difit:/app
-      - difit-pnpm-store:/app/.pnpm-store
-      - difit-node-modules:/app/node_modules
+      - .:/workspace
+      - difit-pnpm-store:/workspace/.pnpm-store
+      - difit-node-modules:/workspace/node_modules
     ports:
       - "4106:4966"
     stdin_open: true
     tty: true
-    working_dir: /app
+    working_dir: /workspace
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
 

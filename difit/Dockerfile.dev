@@ -5,10 +5,10 @@ FROM node:21-bookworm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Git をインストール（simple-git で必要）
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y git && rm -rf /var/lib/apt/lists/*
 
 # 作業ディレクトリを設定
-WORKDIR /app
+WORKDIR /workspace
 
 # 開発用ポートを公開
 EXPOSE 4966
