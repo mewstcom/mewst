@@ -1,7 +1,7 @@
 .DS_Store
 
 /.claude/settings.local.json
-/.claude/specs/3_done
 /.vscode
 /docker-compose.override.yml
+/docs/specs
 /start.sh
