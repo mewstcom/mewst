@@ -12,16 +12,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mewstcom/mewst/internal/config"
 )
 
 func main() {
-	// ポート設定（環境変数から取得、デフォルトは3000）
-	port := os.Getenv("MEWST_PORT")
-	if port == "" {
-		port = "3000"
+	// 設定を読み込み
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("設定の読み込みに失敗しました", "error", err)
+		os.Exit(1)
 	}
 
-	slog.Info("サーバーを起動します", "port", port)
+	slog.Info("サーバーを起動します", "port", cfg.Port, "env", cfg.Env)
 
 	// Chiルーターの設定
 	r := chi.NewRouter()
@@ -40,7 +42,7 @@ func main() {
 
 	// サーバー起動
 	// Dockerコンテナ内で動かす場合、0.0.0.0でリッスンする必要がある
-	addr := fmt.Sprintf("0.0.0.0:%s", port)
+	addr := fmt.Sprintf("0.0.0.0:%s", cfg.Port)
 	slog.Info("HTTPサーバーを起動します", "addr", addr)
 
 	// HTTPサーバーの作成
