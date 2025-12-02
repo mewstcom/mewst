@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/mewstcom/mewst/internal/config"
+	"github.com/mewstcom/mewst/internal/database"
 )
 
 func main() {
@@ -25,6 +26,19 @@ func main() {
 
 	slog.Info("サーバーを起動します", "port", cfg.Port, "env", cfg.Env)
 
+	// データベース接続
+	db, err := database.Connect(cfg.DatabaseDSN())
+	if err != nil {
+		slog.Error("データベース接続に失敗しました", "error", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			slog.Error("データベース接続のクローズに失敗しました", "error", err)
+		}
+	}()
+	slog.Info("データベースに接続しました")
+
 	// Chiルーターの設定
 	r := chi.NewRouter()
 
@@ -36,6 +50,12 @@ func main() {
 
 	// ヘルスチェックエンドポイント
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		// DBの接続確認
+		if err := db.PingContext(r.Context()); err != nil {
+			slog.ErrorContext(r.Context(), "ヘルスチェック: データベース接続エラー", "error", err)
+			http.Error(w, "DB connection failed", http.StatusServiceUnavailable)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})

@@ -1,0 +1,17 @@
+-- name: GetUserByID :one
+SELECT id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
+FROM users
+WHERE id = $1
+LIMIT 1;
+
+-- name: GetUserByEmail :one
+SELECT id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
+FROM users
+WHERE email = $1
+LIMIT 1;
+
+-- name: GetUserByEmailForSignIn :one
+SELECT id, email, password_digest
+FROM users
+WHERE email = $1
+LIMIT 1;
