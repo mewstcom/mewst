@@ -6,13 +6,17 @@ jobs:
   zeitwerk:
     name: Zeitwerk
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+          working-directory: rails
       - run: bin/rails zeitwerk:check
 
   sorbet:
@@ -20,13 +24,17 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+          working-directory: rails
       - run: bin/rails sorbet:update
       - name: Push RBI files or fail
         run: |
@@ -47,32 +55,43 @@ jobs:
   standard:
     name: Standard
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+          working-directory: rails
       - run: bin/standardrb
 
   erb_lint:
     name: ERB Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+          working-directory: rails
       - run: bin/erb_lint --lint-all
 
   prettier:
     name: Prettier
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -90,8 +109,11 @@ jobs:
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -109,6 +131,9 @@ jobs:
   rspec:
     name: RSpec
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
     env:
       DATABASE_URL: postgresql://postgres@localhost:5432/mewst_test
       RAILS_ENV: test
@@ -122,15 +147,13 @@ jobs:
           POSTGRES_DB: mewst_test
           POSTGRES_PASSWORD: ""
           POSTGRES_HOST_AUTH_METHOD: trust
-        # Adding a health check via options
-        # https://github.community/t5/GitHub-Actions/Github-Actions-services-not-reachable/td-p/30050
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -146,11 +169,11 @@ jobs:
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+          working-directory: rails
       - name: Setup Database
         run: |
           bin/rails db:schema:load
       - name: Precompile assets
-        # E2Eテストのために実行する
         run: |
           bin/rails assets:precompile
       - run: bin/rspec
@@ -159,4 +182,4 @@ jobs:
         if: failure()
         with:
           name: capybara-screenshots
-          path: "**/tmp/capybara/"
+          path: "rails/**/tmp/capybara/"

@@ -48,7 +48,7 @@ cat /workspace/rails/app/models/work.rb
 
 ## 技術スタック
 
-- Go 1.25.1
+- Go 1.25.4
   - chi/v5: HTTP ルーターとミドルウェア
   - lib/pq: PostgreSQL ドライバー
   - sqlc: SQL クエリからタイプセーフな Go コードを生成
@@ -237,7 +237,7 @@ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
 # 4. バージョン確認
 golangci-lint version
-# => golangci-lint has version 2.6.2 built with go1.25.1 ...
+# => golangci-lint has version 2.6.2 built with go1.25.4 ...
 ```
 
 ### ホスト側で実行するコマンド (Claude Code による実行は不要)
