@@ -1,0 +1,17 @@
+# difit 開発用 Dockerfile
+FROM node:21-bookworm
+
+# pnpm をインストール
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Git をインストール（simple-git で必要）
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリを設定
+WORKDIR /app
+
+# 開発用ポートを公開
+EXPOSE 4966
+
+# コンテナを起動したまま待機（手動で npx difit を実行する）
+CMD ["tail", "-f", "/dev/null"]
