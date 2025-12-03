@@ -11,9 +11,16 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/mewstcom/mewst/internal/config"
 	"github.com/mewstcom/mewst/internal/database"
+	"github.com/mewstcom/mewst/internal/handler/sign_in"
+	"github.com/mewstcom/mewst/internal/handler/sign_out"
+	"github.com/mewstcom/mewst/internal/middleware"
+	"github.com/mewstcom/mewst/internal/repository"
+	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/internal/turnstile"
+	"github.com/mewstcom/mewst/internal/usecase"
 )
 
 func main() {
@@ -39,14 +46,47 @@ func main() {
 	}()
 	slog.Info("データベースに接続しました")
 
+	// リポジトリの初期化
+	userRepo := repository.NewUserRepository(db)
+	sessionRepo := repository.NewSessionRepository(db)
+	actorRepo := repository.NewActorRepository(db)
+
+	// セッションマネージャーの初期化
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+
+	// ユースケースの初期化
+	createSessionUC := usecase.NewCreateSessionUsecase(sessionRepo)
+
+	// Turnstileクライアントの初期化
+	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
+
+	// ハンドラーの初期化
+	signInHandler := sign_in.NewHandler(cfg, sessionMgr, userRepo, actorRepo, createSessionUC, turnstileClient)
+	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
+
+	// ミドルウェアの初期化
+	authMiddleware := middleware.NewAuth(sessionMgr)
+	csrfMiddleware := middleware.NewCSRF(cfg)
+
 	// Chiルーターの設定
 	r := chi.NewRouter()
 
-	// ミドルウェア
-	r.Use(middleware.Logger)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
+	// 基本ミドルウェア
+	r.Use(chimiddleware.Logger)
+	r.Use(chimiddleware.RequestID)
+	r.Use(chimiddleware.RealIP)
+	r.Use(chimiddleware.Recoverer)
+	r.Use(middleware.MethodOverride)
+
+	// リバースプロキシの設定（Rails版へのプロキシ）
+	if cfg.RailsAppURL != "" {
+		proxyMiddleware, err := middleware.NewReverseProxyMiddleware(cfg.RailsAppURL, cfg)
+		if err != nil {
+			slog.Error("リバースプロキシミドルウェアの初期化に失敗しました", "error", err)
+			os.Exit(1)
+		}
+		r.Use(proxyMiddleware.Middleware)
+	}
 
 	// ヘルスチェックエンドポイント
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +98,21 @@ func main() {
 		}
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
+	})
+
+	// ログインページ（未認証ユーザーのみ）
+	r.Group(func(r chi.Router) {
+		r.Use(csrfMiddleware.Middleware)
+		r.Use(authMiddleware.RequireNoAuth)
+		r.Get("/sign_in", signInHandler.New)
+		r.Post("/sign_in", signInHandler.Create)
+	})
+
+	// ログアウト（認証済みユーザーのみ）
+	r.Group(func(r chi.Router) {
+		r.Use(csrfMiddleware.Middleware)
+		r.Use(authMiddleware.RequireAuth)
+		r.Delete("/sign_out", signOutHandler.Delete)
 	})
 
 	// サーバー起動

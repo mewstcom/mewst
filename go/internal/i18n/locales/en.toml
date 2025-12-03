@@ -1,0 +1,86 @@
+# English translation file
+# English messages for Mewst Go project
+
+# ============================================
+# Meta information
+# ============================================
+
+[meta.title.sign_in.new]
+description = "Sign in page title"
+other = "Sign in"
+
+[meta.title.sign_up.new]
+description = "Sign up page title"
+other = "Sign up"
+
+[meta.title.password_resets.new]
+description = "Password reset page title"
+other = "Forgot your password?"
+
+# ============================================
+# Form attribute labels
+# ============================================
+
+[forms.attributes.session_form.email]
+description = "Sign in form email label"
+other = "Email"
+
+[forms.attributes.session_form.password]
+description = "Sign in form password label"
+other = "Password"
+
+# ============================================
+# Verbs
+# ============================================
+
+[verbs.sign_in]
+description = "Sign in button text"
+other = "Sign in"
+
+# ============================================
+# Messages
+# ============================================
+
+[messages.sign_in.dont_have_an_account]
+description = "No account message"
+other = "Don't have an account?"
+
+[messages.authentication.sign_in]
+description = "Sign in success message"
+other = "Signed in successfully."
+
+[messages.authentication.sign_out]
+description = "Sign out success message"
+other = "Signed out successfully."
+
+# ============================================
+# Error messages
+# ============================================
+
+[nouns.error]
+description = "Error noun"
+other = "Error"
+
+[forms.errors.session_form.unauthenticated]
+description = "Sign in failure error message"
+other = "Login failed. Email or password is incorrect"
+
+# ============================================
+# Validation errors
+# ============================================
+
+[errors.validation.required]
+description = "Required field error"
+other = "is required"
+
+[errors.validation.invalid_email]
+description = "Invalid email format error"
+other = "is not a valid email address"
+
+# ============================================
+# Turnstile (Bot protection)
+# ============================================
+
+[errors.turnstile_verification_failed]
+description = "Turnstile verification failed error"
+other = "Robot verification failed. Please try again"

@@ -1,0 +1,86 @@
+# 日本語翻訳ファイル
+# Mewst Go プロジェクトの日本語メッセージ定義
+
+# ============================================
+# メタ情報
+# ============================================
+
+[meta.title.sign_in.new]
+description = "ログインページのタイトル"
+other = "ログイン"
+
+[meta.title.sign_up.new]
+description = "新規登録ページのタイトル"
+other = "アカウント作成"
+
+[meta.title.password_resets.new]
+description = "パスワードリセットページのタイトル"
+other = "パスワード忘れた？"
+
+# ============================================
+# フォーム属性ラベル
+# ============================================
+
+[forms.attributes.session_form.email]
+description = "ログインフォームのメールアドレスラベル"
+other = "メールアドレス"
+
+[forms.attributes.session_form.password]
+description = "ログインフォームのパスワードラベル"
+other = "パスワード"
+
+# ============================================
+# 動詞
+# ============================================
+
+[verbs.sign_in]
+description = "ログインボタンのテキスト"
+other = "ログインする"
+
+# ============================================
+# メッセージ
+# ============================================
+
+[messages.sign_in.dont_have_an_account]
+description = "アカウント未所持の案内"
+other = "アカウント持ってない？"
+
+[messages.authentication.sign_in]
+description = "ログイン成功メッセージ"
+other = "ログインしました"
+
+[messages.authentication.sign_out]
+description = "ログアウト成功メッセージ"
+other = "ログアウトしました"
+
+# ============================================
+# エラーメッセージ
+# ============================================
+
+[nouns.error]
+description = "エラーの名詞"
+other = "エラー"
+
+[forms.errors.session_form.unauthenticated]
+description = "ログイン失敗エラーメッセージ"
+other = "ログインに失敗しました。メールアドレスかパスワードが間違っています"
+
+# ============================================
+# バリデーションエラー
+# ============================================
+
+[errors.validation.required]
+description = "必須フィールドエラー"
+other = "入力してください"
+
+[errors.validation.invalid_email]
+description = "メールアドレス形式エラー"
+other = "正しいメールアドレスを入力してください"
+
+# ============================================
+# Turnstile（Bot対策）
+# ============================================
+
+[errors.turnstile_verification_failed]
+description = "Turnstile検証失敗エラー"
+other = "ロボット検証に失敗しました。もう一度お試しください"

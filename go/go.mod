@@ -3,11 +3,14 @@ module github.com/mewstcom/mewst
 go 1.25.4
 
 require (
+	github.com/BurntSushi/toml v1.5.0
 	github.com/a-h/templ v0.3.960
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
+	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	golang.org/x/crypto v0.45.0
+	golang.org/x/text v0.31.0
 	golang.org/x/tools v0.39.0
 )
 
