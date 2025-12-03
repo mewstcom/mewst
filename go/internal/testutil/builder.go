@@ -26,7 +26,7 @@ func NewUserBuilder(t *testing.T, tx *sql.Tx) *UserBuilder {
 		t:              t,
 		tx:             tx,
 		email:          fmt.Sprintf("test-%d@example.com", time.Now().UnixNano()),
-		passwordDigest: "$2a$12$K0jMxHLfeLiKc4kNv6qU9eVJj3N3z6kJ8YqYJYpBh1Kx5vOqK7vGq", // "password"
+		passwordDigest: "$2a$10$fVAfh.ILhcWBVH1UyokEEedHoNLxozZUTGkoeVnQj9TpZwWPv3ZZS", // "password"
 		locale:         "ja",
 		timeZone:       "Asia/Tokyo",
 	}
