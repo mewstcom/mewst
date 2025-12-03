@@ -38,10 +38,10 @@ test: db-setup-test ## テストを実行
 	@which tparse > /dev/null || (echo "Installing tparse from go.mod..." && go install github.com/mfridman/tparse)
 	@if [ "$$CI" = "true" ]; then \
 		echo "CI環境: 短時間テストのみ実行 (-short)"; \
-		set -o pipefail && go test -json -race -short ./... | tparse; \
+		bash -c 'set -o pipefail && go test -json -race -short ./... | tparse'; \
 	else \
 		echo "ローカル環境: 全テストを実行"; \
-		set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./... | tparse; \
+		bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./... | tparse'; \
 	fi
 
 .PHONY: test-pkg
@@ -53,7 +53,7 @@ test-pkg: db-setup-test ## 特定のパッケージのテストを実行（使�
 		exit 1; \
 	fi
 	@echo "パッケージ $(PKG) のテストを実行"
-	@set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) | tparse
+	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) | tparse'
 
 .PHONY: test-run
 test-run: db-setup-test ## 特定のテストを実行（使用例: make test-run PKG=internal/handler/sign_in RUN=TestCreate）
@@ -69,13 +69,13 @@ test-run: db-setup-test ## 特定のテストを実行（使用例: make test-ru
 		exit 1; \
 	fi
 	@echo "パッケージ $(PKG) のテスト $(RUN) を実行"
-	@set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) -run $(RUN) | tparse
+	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) -run $(RUN) | tparse'
 
 .PHONY: test-verbose
 test-verbose: db-setup-test ## 詳細ログ付きで全テストを実行（デバッグ用）
 	@which tparse > /dev/null || (echo "Installing tparse from go.mod..." && go install github.com/mfridman/tparse)
 	@echo "ローカル環境: 詳細ログ付きで全テストを実行"
-	@set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race -count=1 ./... | tparse -all
+	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race -count=1 ./... | tparse -all'
 
 .PHONY: fmt
 fmt: ## コードをフォーマット
