@@ -274,6 +274,7 @@ make run
 make build
 
 # テスト実行（テスト用DBのセットアップも自動実行されます）
+# tparse を使用してテスト結果を整形表示します（失敗テストの強調、パッケージサマリーテーブル）
 make test
 
 # 特定のパッケージのテストを実行（1Password CLI経由で環境変数を自動設定）
@@ -283,6 +284,7 @@ make test-pkg PKG=internal/handler/password_reset
 make test-run PKG=internal/handler/password_reset RUN=TestCreate_TurnstileVerification
 
 # 詳細ログ付きで全テストを実行（デバッグ用）
+# tparse -all オプションで合格テストも含めて表示します
 make test-verbose
 
 # テスト用DBのセットアップのみ実行
