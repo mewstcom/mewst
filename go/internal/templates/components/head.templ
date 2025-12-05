@@ -2,12 +2,24 @@ package components
 
 // Head はHTMLヘッダーを生成する
 templ Head(title, description, assetVersion string) {
+	<title>{ title } | Mewst</title>
+
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
-	<title>{ title } | Mewst</title>
 	if description != "" {
 		<meta name="description" content={ description }/>
 	}
-	<link rel="stylesheet" href={ "/static/css/app.css?v=" + assetVersion }/>
-	<script src={ "/static/js/app.js?v=" + assetVersion } defer></script>
+	<link rel="stylesheet" href={ "/static/css/style.css?v=" + assetVersion }/>
+
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
+	<script>
+		(() => {
+			try {
+				if (matchMedia("(prefers-color-scheme: dark)").matches) {
+					document.documentElement.classList.add("dark");
+				}
+			} catch (_) {}
+		})();
+	</script>
+	<script type="module" src={ "/static/js/main.js?v=" + assetVersion } defer></script>
 }
