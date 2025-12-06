@@ -8,6 +8,7 @@ import (
 	"github.com/mewstcom/mewst/internal/templates"
 	"github.com/mewstcom/mewst/internal/templates/layouts"
 	sign_in_page "github.com/mewstcom/mewst/internal/templates/pages/sign_in"
+	"github.com/mewstcom/mewst/internal/viewmodel"
 )
 
 // New はログインフォームを表示する (GET /sign_in)
@@ -26,7 +27,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// テンプレートをレンダリング
-	meta := layouts.SimpleMeta{
+	meta := viewmodel.PageMeta{
 		Title:        templates.T(ctx, "meta.title.sign_in.new"),
 		Description:  "",
 		AssetVersion: h.cfg.GetAssetVersion(),

@@ -1,15 +1,17 @@
 package components
 
+import "github.com/mewstcom/mewst/internal/viewmodel"
+
 // Head はHTMLヘッダーを生成する
-templ Head(title, description, assetVersion string) {
-	<title>{ title } | Mewst</title>
+templ Head(meta viewmodel.PageMeta) {
+	<title>{ meta.Title } | Mewst</title>
 
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
-	if description != "" {
-		<meta name="description" content={ description }/>
+	if meta.Description != "" {
+		<meta name="description" content={ meta.Description }/>
 	}
-	<link rel="stylesheet" href={ "/static/css/style.css?v=" + assetVersion }/>
+	<link rel="stylesheet" href={ "/static/css/style.css?v=" + meta.AssetVersion }/>
 
 	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
 	<script>
@@ -21,5 +23,5 @@ templ Head(title, description, assetVersion string) {
 			} catch (_) {}
 		})();
 	</script>
-	<script type="module" src={ "/static/js/main.js?v=" + assetVersion } defer></script>
+	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion } defer></script>
 }
