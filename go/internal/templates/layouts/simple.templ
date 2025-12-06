@@ -4,21 +4,15 @@ import (
 	"github.com/a-h/templ"
 	"github.com/mewstcom/mewst/internal/templates"
 	"github.com/mewstcom/mewst/internal/templates/components"
+	"github.com/mewstcom/mewst/internal/viewmodel"
 )
 
-// SimpleMeta はシンプルレイアウト用のメタデータ
-type SimpleMeta struct {
-	Title         string
-	Description   string
-	AssetVersion  string
-}
-
 // Simple はシンプルなレイアウトを提供する（ログインページ等で使用）
-templ Simple(meta SimpleMeta, content templ.Component) {
+templ Simple(meta viewmodel.PageMeta, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang={ templates.Locale(ctx) }>
 		<head>
-			@components.Head(meta.Title, meta.Description, meta.AssetVersion)
+			@components.Head(meta)
 		</head>
 
 		<body class="min-h-screen flex items-center justify-center">

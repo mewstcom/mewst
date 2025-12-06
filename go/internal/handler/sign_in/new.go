@@ -8,11 +8,16 @@ import (
 	"github.com/mewstcom/mewst/internal/templates"
 	"github.com/mewstcom/mewst/internal/templates/layouts"
 	sign_in_page "github.com/mewstcom/mewst/internal/templates/pages/sign_in"
+	"github.com/mewstcom/mewst/internal/viewmodel"
 )
 
 // New はログインフォームを表示する (GET /sign_in)
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	// コンテキストにロケールと設定を設定（テンプレート内での翻訳用）
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, h.cfg)
 
 	// CSRFトークンを取得
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
@@ -26,15 +31,9 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// テンプレートをレンダリング
-	meta := layouts.SimpleMeta{
-		Title:        templates.T(ctx, "meta.title.sign_in.new"),
-		Description:  "",
-		AssetVersion: h.cfg.GetAssetVersion(),
-	}
-
-	// コンテキストにロケールを設定（テンプレート内での翻訳用）
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, h.cfg)
+	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
+	meta.SetTitle(ctx, "meta.title.sign_in.new")
+	meta.SetOGURL(h.cfg, r.URL.Path)
 
 	content := sign_in_page.New(data)
 	layout := layouts.Simple(meta, content)

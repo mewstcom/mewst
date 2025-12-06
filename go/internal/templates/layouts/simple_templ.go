@@ -10,17 +10,11 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 	"github.com/mewstcom/mewst/internal/templates"
 	"github.com/mewstcom/mewst/internal/templates/components"
+	"github.com/mewstcom/mewst/internal/viewmodel"
 )
 
-// SimpleMeta はシンプルレイアウト用のメタデータ
-type SimpleMeta struct {
-	Title        string
-	Description  string
-	AssetVersion string
-}
-
 // Simple はシンプルなレイアウトを提供する（ログインページ等で使用）
-func Simple(meta SimpleMeta, content templ.Component) templ.Component {
+func Simple(meta viewmodel.PageMeta, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -48,7 +42,7 @@ func Simple(meta SimpleMeta, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templates.Locale(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/simple.templ`, Line: 19, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/simple.templ`, Line: 13, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -58,7 +52,7 @@ func Simple(meta SimpleMeta, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Head(meta.Title, meta.Description, meta.AssetVersion).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Head(meta).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/mewstcom/mewst/internal/templates/layouts"
 	sign_in_page "github.com/mewstcom/mewst/internal/templates/pages/sign_in"
 	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/internal/viewmodel"
 )
 
 // Create はログイン処理を実行する (POST /sign_in)
@@ -118,11 +119,9 @@ func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfTok
 		Email:            email,
 	}
 
-	meta := layouts.SimpleMeta{
-		Title:        templates.T(ctx, "meta.title.sign_in.new"),
-		Description:  "",
-		AssetVersion: h.cfg.GetAssetVersion(),
-	}
+	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
+	meta.SetTitle(ctx, "meta.title.sign_in.new")
+	meta.SetOGURL(h.cfg, "/sign_in")
 
 	content := sign_in_page.New(data)
 	layout := layouts.Simple(meta, content)
