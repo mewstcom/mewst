@@ -3,7 +3,10 @@ package components
 // Turnstile はCloudflare Turnstileウィジェットを表示する
 templ Turnstile(siteKey string) {
 	if siteKey != "" {
-		<div class="cf-turnstile" data-sitekey={ siteKey } data-theme="light"></div>
 		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+		<div
+			class="cf-turnstile"
+			data-sitekey={ siteKey }
+		></div>
 	}
 }

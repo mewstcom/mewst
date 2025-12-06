@@ -19,7 +19,7 @@ other = "Mewst is a social network where you can share your current feelings and
 
 [sign_in_title]
 description = "Sign in page title"
-other = "Sign in"
+other = "Sign in to Mewst"
 
 [sign_up_title]
 description = "Sign up page title"

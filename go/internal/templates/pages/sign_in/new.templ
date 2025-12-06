@@ -26,75 +26,94 @@ templ New(data NewPageData) {
 		</div>
 
 		<div class="flex flex-col gap-2">
-			<h1 class="text-center text-3xl font-bold">
+			<h1 class="text-center text-3xl font-bold antialiased">
 				{ templates.T(ctx, "sign_in_title") }
 			</h1>
 		</div>
 
 		@components.FormErrors(data.FormErrors)
 
-		<form method="POST" action="/sign_in" class="grid gap-6">
+		<form
+			action="/sign_in"
+			class="form grid gap-6"
+			data-on:submit__passive="$isSubmitting = true"
+			method="POST"
+		>
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 
 			<div class="grid gap-2">
 				<label for="email">
 					{ templates.T(ctx, "label_email") }
 				</label>
+
 				<input
 					if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
 						aria-invalid="true"
 					} else {
 						aria-invalid="false"
 					}
-					type="email"
+					autocomplete="email"
+					autofocus
 					id="email"
 					name="email"
-					autocomplete="username"
-					autofocus
 					required
 					tabindex="1"
+					type="email"
 					value={ data.Email }
 				/>
+
 				if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
 					for _, errorMsg := range data.FormErrors.Fields["email"] {
-						<p class="text-sm text-red-600">{ errorMsg }</p>
+						<p class="text-sm text-red-600">
+							{ errorMsg }
+						</p>
 					}
 				}
 			</div>
 
 			<div class="grid gap-2">
-				<div class="flex items-center justify-between">
+				<div class="flex items-center gap-2">
 					<label for="password">
 						{ templates.T(ctx, "label_password") }
 					</label>
-					<a class="link text-sm" href="/password_reset" tabindex="4">
+
+					<a class="link text-sm ml-auto" href="/password_reset" tabindex="4">
 						{ templates.T(ctx, "password_reset_title") }
 					</a>
 				</div>
+
 				<input
 					if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
 						aria-invalid="true"
 					} else {
 						aria-invalid="false"
 					}
-					type="password"
+					autocomplete="current-password"
 					id="password"
 					name="password"
-					autocomplete="current-password"
 					required
 					tabindex="2"
+					type="password"
 				/>
+
 				if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
 					for _, errorMsg := range data.FormErrors.Fields["password"] {
-						<p class="text-sm text-red-600">{ errorMsg }</p>
+						<p class="text-sm text-red-600">
+							{ errorMsg }
+						</p>
 					}
 				}
 			</div>
 
 			@components.Turnstile(data.TurnstileSiteKey)
 
-			<button class="btn rounded-full w-fit" tabindex="3" type="submit">
-				@templates.Icon("sign-in")
+			<button
+				class="btn rounded-full w-fit text-black"
+				tabindex="3"
+				type="submit"
+				data-attr:disabled="$isSubmitting == true"
+			>
+				@templates.Icon("arrow-right")
 				{ templates.T(ctx, "btn_sign_in") }
 			</button>
 		</form>

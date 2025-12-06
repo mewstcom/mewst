@@ -19,7 +19,7 @@ other = "Mewstは160文字で今の気持ちや状況を記録できるマイク
 
 [sign_in_title]
 description = "ログインページのタイトル"
-other = "ログイン"
+other = "Mewstにログイン"
 
 [sign_up_title]
 description = "新規登録ページのタイトル"
