@@ -4,6 +4,7 @@ package viewmodel
 import (
 	"context"
 
+	"github.com/mewstcom/mewst/internal/config"
 	"github.com/mewstcom/mewst/internal/i18n"
 )
 
@@ -19,6 +20,36 @@ type PageMeta struct {
 	OGURL        string // og:urlの値（canonicalと同じ）
 	OGImage      string // og:imageの値
 	OGLocale     string // og:localeの値（"ja_JP", "en_US"など）
+}
+
+// DefaultPageMeta はデフォルトのメタ情報を返す
+// コンテキストから検出された言語に応じて、タイトルと説明が自動的に切り替わる
+// Titleには自動的に " | Mewst" サフィックスが付加される
+func DefaultPageMeta(ctx context.Context, cfg *config.Config) PageMeta {
+	ogImageURL := cfg.AppURL() + "/static/images/og-image.png"
+	title := i18n.T(ctx, "default_title") + siteSuffix
+
+	return PageMeta{
+		Title:        title,
+		Description:  i18n.T(ctx, "default_description"),
+		AssetVersion: cfg.GetAssetVersion(),
+		OGType:       "website",
+		OGURL:        "",
+		OGImage:      ogImageURL,
+		OGLocale:     ogLocaleFromLocale(i18n.GetLocale(ctx)),
+	}
+}
+
+// ogLocaleFromLocale はロケール文字列からOGP用のロケール文字列に変換する
+func ogLocaleFromLocale(locale string) string {
+	switch locale {
+	case "ja":
+		return "ja_JP"
+	case "en":
+		return "en_US"
+	default:
+		return "ja_JP"
+	}
 }
 
 // SetTitle はタイトルを設定する（" | Mewst" サフィックス付き）

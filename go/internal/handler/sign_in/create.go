@@ -119,9 +119,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfTok
 		Email:            email,
 	}
 
-	meta := viewmodel.PageMeta{
-		AssetVersion: h.cfg.GetAssetVersion(),
-	}
+	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "meta.title.sign_in.new")
 
 	content := sign_in_page.New(data)

@@ -15,6 +15,10 @@ import (
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	// コンテキストにロケールと設定を設定（テンプレート内での翻訳用）
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, h.cfg)
+
 	// CSRFトークンを取得
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
@@ -27,14 +31,8 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// テンプレートをレンダリング
-	meta := viewmodel.PageMeta{
-		AssetVersion: h.cfg.GetAssetVersion(),
-	}
+	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "meta.title.sign_in.new")
-
-	// コンテキストにロケールを設定（テンプレート内での翻訳用）
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, h.cfg)
 
 	content := sign_in_page.New(data)
 	layout := layouts.Simple(meta, content)

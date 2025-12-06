@@ -2,6 +2,18 @@
 # English messages for Mewst Go project
 
 # ============================================
+# Default meta information
+# ============================================
+
+[default_title]
+description = "Site default title"
+other = "Mewst"
+
+[default_description]
+description = "Site default description"
+other = "Mewst is a social network where you can share your current feelings and situation in 160 characters. We aim to provide a service that can be used without any tension."
+
+# ============================================
 # Meta information
 # ============================================
 
