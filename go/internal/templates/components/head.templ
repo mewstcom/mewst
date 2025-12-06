@@ -11,26 +11,15 @@ templ Head(meta viewmodel.PageMeta) {
 
 	<title>{ meta.Title }</title>
 
-	if meta.Description != "" {
-		<meta name="description" content={ meta.Description }/>
-	}
+	<meta name="description" content={ meta.Description }/>
 
-	// OGPメタタグ
+	<meta property="og:description" content={ meta.Description }/>
+	<meta property="og:image" content={ meta.OGImage }/>
+	<meta property="og:locale" content={ meta.OGLocale }/>
+	<meta property="og:site_name" content="Mewst (ミュースト)"/>
 	<meta property="og:title" content={ meta.Title }/>
 	<meta property="og:type" content={ meta.OGType }/>
-	if meta.OGURL != "" {
-		<meta property="og:url" content={ meta.OGURL }/>
-	}
-	if meta.Description != "" {
-		<meta property="og:description" content={ meta.Description }/>
-	}
-	<meta property="og:site_name" content="Mewst (ミュースト)"/>
-	if meta.OGImage != "" {
-		<meta property="og:image" content={ meta.OGImage }/>
-	}
-	if meta.OGLocale != "" {
-		<meta property="og:locale" content={ meta.OGLocale }/>
-	}
+	<meta property="og:url" content={ meta.OGURL }/>
 
 	// iOSのSafariで「ホームに追加」した時にフルスクリーン表示にする
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
