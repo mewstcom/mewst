@@ -202,7 +202,7 @@ func Head(meta viewmodel.PageMeta) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"><link rel=\"icon\" href=\"/favicon.ico\" sizes=\"any\"><link rel=\"icon\" href=\"/icon.svg\" type=\"image/svg+xml\"><link rel=\"manifest\" href=\"/manifest.json\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Itim&display=swap\"><link rel=\"preconnect\" href=\"https://challenges.cloudflare.com\"><link rel=\"stylesheet\" href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<link rel=\"apple-touch-icon\" href=\"/static/images/apple-touch-icon.png\"><link rel=\"icon\" href=\"/static/images/favicon.ico\" sizes=\"any\"><link rel=\"icon\" href=\"/static/images/icon.svg\" type=\"image/svg+xml\"><link rel=\"manifest\" href=\"/manifest.json\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Itim&display=swap\"><link rel=\"preconnect\" href=\"https://challenges.cloudflare.com\"><link rel=\"stylesheet\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
