@@ -120,10 +120,9 @@ func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfTok
 	}
 
 	meta := viewmodel.PageMeta{
-		Title:        templates.T(ctx, "meta.title.sign_in.new"),
-		Description:  "",
 		AssetVersion: h.cfg.GetAssetVersion(),
 	}
+	meta.SetTitle(ctx, "meta.title.sign_in.new")
 
 	content := sign_in_page.New(data)
 	layout := layouts.Simple(meta, content)

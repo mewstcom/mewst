@@ -9,14 +9,14 @@ templ Head(meta viewmodel.PageMeta) {
   // ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-	<title>{ meta.Title } | Mewst</title>
+	<title>{ meta.Title }</title>
 
 	if meta.Description != "" {
 		<meta name="description" content={ meta.Description }/>
 	}
 
 	// OGPメタタグ
-	<meta property="og:title" content={ meta.Title + " | Mewst" }/>
+	<meta property="og:title" content={ meta.Title }/>
 	<meta property="og:type" content={ meta.OGType }/>
 	if meta.OGURL != "" {
 		<meta property="og:url" content={ meta.OGURL }/>

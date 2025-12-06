@@ -46,7 +46,7 @@ func Head(meta viewmodel.PageMeta) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Mewst</title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,9 +74,9 @@ func Head(meta viewmodel.PageMeta) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(meta.Title + " | Mewst")
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(meta.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/head.templ`, Line: 19, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/head.templ`, Line: 19, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

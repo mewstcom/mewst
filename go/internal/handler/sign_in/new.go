@@ -28,10 +28,9 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 
 	// テンプレートをレンダリング
 	meta := viewmodel.PageMeta{
-		Title:        templates.T(ctx, "meta.title.sign_in.new"),
-		Description:  "",
 		AssetVersion: h.cfg.GetAssetVersion(),
 	}
+	meta.SetTitle(ctx, "meta.title.sign_in.new")
 
 	// コンテキストにロケールを設定（テンプレート内での翻訳用）
 	ctx = templates.WithLocale(ctx, "ja")
