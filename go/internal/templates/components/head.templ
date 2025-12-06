@@ -4,16 +4,60 @@ import "github.com/mewstcom/mewst/internal/viewmodel"
 
 // Head はHTMLヘッダーを生成する
 templ Head(meta viewmodel.PageMeta) {
+	<meta charset="utf-8"/>
+	// iOSのSafariでautofocus属性の影響でズームされてしまうのを防ぐため `maximum-scale=1` を設定
+  // ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
 	<title>{ meta.Title } | Mewst</title>
 
-	<meta charset="utf-8"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	if meta.Description != "" {
 		<meta name="description" content={ meta.Description }/>
 	}
+
+	// OGPメタタグ
+	<meta property="og:title" content={ meta.Title + " | Mewst" }/>
+	<meta property="og:type" content={ meta.OGType }/>
+	if meta.OGURL != "" {
+		<meta property="og:url" content={ meta.OGURL }/>
+	}
+	if meta.Description != "" {
+		<meta property="og:description" content={ meta.Description }/>
+	}
+	<meta property="og:site_name" content="Mewst"/>
+	if meta.OGImage != "" {
+		<meta property="og:image" content={ meta.OGImage }/>
+	}
+	if meta.OGLocale != "" {
+		<meta property="og:locale" content={ meta.OGLocale }/>
+	}
+
+	// iOSのSafariで「ホームに追加」した時にフルスクリーン表示にする
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+
+	// canonicalリンク
+	if meta.OGURL != "" {
+		<link rel="canonical" href={ meta.OGURL }/>
+	}
+
+	// ファビコンとアイコン
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+	<link rel="icon" href="/favicon.ico" sizes="any"/>
+	<link rel="icon" href="/icon.svg" type="image/svg+xml"/>
+	<link rel="manifest" href="/manifest.json"/>
+
+	// Google Fonts (Itim)
+	<link rel="preconnect" href="https://fonts.googleapis.com"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Itim&display=swap"/>
+
+	// Cloudflare Turnstile プリコネクト
+	<link rel="preconnect" href="https://challenges.cloudflare.com"/>
+
+	// CSS
 	<link rel="stylesheet" href={ "/static/css/style.css?v=" + meta.AssetVersion }/>
 
-	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
+	// ダークモード検出スクリプト
 	<script>
 		(() => {
 			try {
@@ -23,5 +67,10 @@ templ Head(meta viewmodel.PageMeta) {
 			} catch (_) {}
 		})();
 	</script>
-	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion } defer></script>
+
+	// Datastar
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
+
+	// アプリケーションJS
+	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion }></script>
 }
