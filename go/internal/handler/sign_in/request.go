@@ -21,17 +21,17 @@ func (r *CreateRequest) Validate(ctx context.Context) *session.FormErrors {
 
 	// メールアドレスの必須チェック
 	if r.Email == "" {
-		errors.AddFieldError("email", templates.T(ctx, "errors.validation.required", "email"))
+		errors.AddFieldError("email", templates.T(ctx, "error_required"))
 	} else {
 		// メールアドレス形式チェック
 		if _, err := mail.ParseAddress(r.Email); err != nil {
-			errors.AddFieldError("email", templates.T(ctx, "errors.validation.invalid_email"))
+			errors.AddFieldError("email", templates.T(ctx, "error_invalid_email"))
 		}
 	}
 
 	// パスワードの必須チェック
 	if r.Password == "" {
-		errors.AddFieldError("password", templates.T(ctx, "errors.validation.required", "password"))
+		errors.AddFieldError("password", templates.T(ctx, "error_required"))
 	}
 
 	return errors

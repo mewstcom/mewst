@@ -27,7 +27,7 @@ templ New(data NewPageData) {
 
 		<div class="flex flex-col gap-2">
 			<h1 class="text-center text-3xl font-bold">
-				{ templates.T(ctx, "meta.title.sign_in.new") }
+				{ templates.T(ctx, "sign_in_title") }
 			</h1>
 		</div>
 
@@ -38,7 +38,7 @@ templ New(data NewPageData) {
 
 			<div class="grid gap-2">
 				<label for="email">
-					{ templates.T(ctx, "forms.attributes.session_form.email") }
+					{ templates.T(ctx, "label_email") }
 				</label>
 				<input
 					if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
@@ -65,10 +65,10 @@ templ New(data NewPageData) {
 			<div class="grid gap-2">
 				<div class="flex items-center justify-between">
 					<label for="password">
-						{ templates.T(ctx, "forms.attributes.session_form.password") }
+						{ templates.T(ctx, "label_password") }
 					</label>
 					<a class="link text-sm" href="/password_reset" tabindex="4">
-						{ templates.T(ctx, "meta.title.password_resets.new") }
+						{ templates.T(ctx, "password_reset_title") }
 					</a>
 				</div>
 				<input
@@ -95,15 +95,15 @@ templ New(data NewPageData) {
 
 			<button class="btn rounded-full w-fit" tabindex="3" type="submit">
 				@templates.Icon("sign-in")
-				{ templates.T(ctx, "verbs.sign_in") }
+				{ templates.T(ctx, "btn_sign_in") }
 			</button>
 		</form>
 
 		<div class="text-center text-muted-foreground">
-			{ templates.T(ctx, "messages.sign_in.dont_have_an_account") }
+			{ templates.T(ctx, "sign_in_no_account") }
 			{ " " }
 			<a class="link" href="/sign_up">
-				{ templates.T(ctx, "meta.title.sign_up.new") }
+				{ templates.T(ctx, "sign_up_title") }
 			</a>
 		</div>
 	</div>

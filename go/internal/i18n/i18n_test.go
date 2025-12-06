@@ -16,32 +16,32 @@ func TestT_Japanese(t *testing.T) {
 	}{
 		{
 			name:      "ログインページタイトル",
-			messageID: "meta.title.sign_in.new",
+			messageID: "sign_in_title",
 			expected:  "ログイン",
 		},
 		{
 			name:      "メールアドレスラベル",
-			messageID: "forms.attributes.session_form.email",
+			messageID: "label_email",
 			expected:  "メールアドレス",
 		},
 		{
 			name:      "パスワードラベル",
-			messageID: "forms.attributes.session_form.password",
+			messageID: "label_password",
 			expected:  "パスワード",
 		},
 		{
 			name:      "ログインボタン",
-			messageID: "verbs.sign_in",
+			messageID: "btn_sign_in",
 			expected:  "ログインする",
 		},
 		{
 			name:      "ログイン成功メッセージ",
-			messageID: "messages.authentication.sign_in",
+			messageID: "flash_sign_in_success",
 			expected:  "ログインしました",
 		},
 		{
 			name:      "必須バリデーションエラー",
-			messageID: "errors.validation.required",
+			messageID: "error_required",
 			expected:  "入力してください",
 		},
 	}
@@ -71,32 +71,32 @@ func TestT_English(t *testing.T) {
 	}{
 		{
 			name:      "Sign in page title",
-			messageID: "meta.title.sign_in.new",
+			messageID: "sign_in_title",
 			expected:  "Sign in",
 		},
 		{
 			name:      "Email label",
-			messageID: "forms.attributes.session_form.email",
+			messageID: "label_email",
 			expected:  "Email",
 		},
 		{
 			name:      "Password label",
-			messageID: "forms.attributes.session_form.password",
+			messageID: "label_password",
 			expected:  "Password",
 		},
 		{
 			name:      "Sign in button",
-			messageID: "verbs.sign_in",
+			messageID: "btn_sign_in",
 			expected:  "Sign in",
 		},
 		{
 			name:      "Sign in success message",
-			messageID: "messages.authentication.sign_in",
+			messageID: "flash_sign_in_success",
 			expected:  "Signed in successfully.",
 		},
 		{
 			name:      "Required validation error",
-			messageID: "errors.validation.required",
+			messageID: "error_required",
 			expected:  "is required",
 		},
 	}
@@ -135,10 +135,10 @@ func TestT_DefaultLocale(t *testing.T) {
 	// ロケールが設定されていない場合、デフォルト（日本語）が使われる
 	ctx := context.Background()
 
-	got := T(ctx, "meta.title.sign_in.new")
+	got := T(ctx, "sign_in_title")
 	expected := "ログイン"
 	if got != expected {
-		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "meta.title.sign_in.new", got, expected)
+		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "sign_in_title", got, expected)
 	}
 }
 

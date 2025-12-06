@@ -2,66 +2,74 @@
 # English messages for Mewst Go project
 
 # ============================================
-# Default meta information
+# Site information
 # ============================================
 
-[default_title]
+[site_title]
 description = "Site default title"
 other = "Mewst"
 
-[default_description]
+[site_description]
 description = "Site default description"
 other = "Mewst is a social network where you can share your current feelings and situation in 160 characters. We aim to provide a service that can be used without any tension."
 
 # ============================================
-# Meta information
+# Page titles
 # ============================================
 
-[meta.title.sign_in.new]
+[sign_in_title]
 description = "Sign in page title"
 other = "Sign in"
 
-[meta.title.sign_up.new]
+[sign_up_title]
 description = "Sign up page title"
 other = "Sign up"
 
-[meta.title.password_resets.new]
+[password_reset_title]
 description = "Password reset page title"
 other = "Forgot your password?"
 
 # ============================================
-# Form attribute labels
+# Common labels
 # ============================================
 
-[forms.attributes.session_form.email]
-description = "Sign in form email label"
+[label_email]
+description = "Email label"
 other = "Email"
 
-[forms.attributes.session_form.password]
-description = "Sign in form password label"
+[label_password]
+description = "Password label"
 other = "Password"
 
+[label_error]
+description = "Error noun"
+other = "Error"
+
 # ============================================
-# Verbs
+# Buttons
 # ============================================
 
-[verbs.sign_in]
+[btn_sign_in]
 description = "Sign in button text"
 other = "Sign in"
 
 # ============================================
-# Messages
+# Page-specific messages
 # ============================================
 
-[messages.sign_in.dont_have_an_account]
+[sign_in_no_account]
 description = "No account message"
 other = "Don't have an account?"
 
-[messages.authentication.sign_in]
+# ============================================
+# Flash messages
+# ============================================
+
+[flash_sign_in_success]
 description = "Sign in success message"
 other = "Signed in successfully."
 
-[messages.authentication.sign_out]
+[flash_sign_out_success]
 description = "Sign out success message"
 other = "Signed out successfully."
 
@@ -69,30 +77,18 @@ other = "Signed out successfully."
 # Error messages
 # ============================================
 
-[nouns.error]
-description = "Error noun"
-other = "Error"
-
-[forms.errors.session_form.unauthenticated]
-description = "Sign in failure error message"
-other = "Login failed. Email or password is incorrect"
-
-# ============================================
-# Validation errors
-# ============================================
-
-[errors.validation.required]
+[error_required]
 description = "Required field error"
 other = "is required"
 
-[errors.validation.invalid_email]
+[error_invalid_email]
 description = "Invalid email format error"
 other = "is not a valid email address"
 
-# ============================================
-# Turnstile (Bot protection)
-# ============================================
+[error_invalid_credentials]
+description = "Sign in failure error message"
+other = "Login failed. Email or password is incorrect"
 
-[errors.turnstile_verification_failed]
+[error_turnstile_failed]
 description = "Turnstile verification failed error"
 other = "Robot verification failed. Please try again"

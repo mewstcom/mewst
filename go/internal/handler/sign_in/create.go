@@ -42,7 +42,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if !turnstileValid {
 		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "errors.turnstile_verification_failed"))
+		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
 		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
 		return
 	}
@@ -59,7 +59,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == repository.ErrNotFound {
 			formErrors := session.NewFormErrors()
-			formErrors.AddGlobalError(templates.T(ctx, "forms.errors.session_form.unauthenticated"))
+			formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
 			h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
 			return
 		}
@@ -71,7 +71,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// パスワードを検証
 	if err := auth.CheckPassword(user.PasswordDigest, req.Password); err != nil {
 		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "forms.errors.session_form.unauthenticated"))
+		formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
 		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
 		return
 	}
@@ -104,7 +104,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	h.sessionMgr.SetSessionCookie(w, r, result.Token)
 
 	// フラッシュメッセージを設定
-	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "messages.authentication.sign_in"))
+	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_sign_in_success"))
 
 	// ホームページにリダイレクト
 	http.Redirect(w, r, "/", http.StatusFound)
@@ -120,7 +120,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfTok
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "meta.title.sign_in.new")
+	meta.SetTitle(ctx, "sign_in_title")
 	meta.SetOGURL(h.cfg, "/sign_in")
 
 	content := sign_in_page.New(data)

@@ -32,7 +32,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 
 	// テンプレートをレンダリング
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "meta.title.sign_in.new")
+	meta.SetTitle(ctx, "sign_in_title")
 	meta.SetOGURL(h.cfg, r.URL.Path)
 
 	content := sign_in_page.New(data)
