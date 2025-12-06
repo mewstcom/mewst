@@ -7,5 +7,12 @@
   "service": "rails-app",
   "workspaceFolder": "/workspace",
   "forwardPorts": [],
-  "remoteUser": "developer"
+  "remoteUser": "developer",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
 }
