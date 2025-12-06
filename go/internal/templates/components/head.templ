@@ -24,7 +24,7 @@ templ Head(meta viewmodel.PageMeta) {
 	if meta.Description != "" {
 		<meta property="og:description" content={ meta.Description }/>
 	}
-	<meta property="og:site_name" content="Mewst"/>
+	<meta property="og:site_name" content="Mewst (ミュースト)"/>
 	if meta.OGImage != "" {
 		<meta property="og:image" content={ meta.OGImage }/>
 	}
@@ -54,7 +54,6 @@ templ Head(meta viewmodel.PageMeta) {
 	// Cloudflare Turnstile プリコネクト
 	<link rel="preconnect" href="https://challenges.cloudflare.com"/>
 
-	// CSS
 	<link rel="stylesheet" href={ "/static/css/style.css?v=" + meta.AssetVersion }/>
 
 	// ダークモード検出スクリプト
@@ -68,9 +67,6 @@ templ Head(meta viewmodel.PageMeta) {
 		})();
 	</script>
 
-	// Datastar
 	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
-
-	// アプリケーションJS
 	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion }></script>
 }
