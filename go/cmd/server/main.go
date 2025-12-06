@@ -14,6 +14,7 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/mewstcom/mewst/internal/config"
 	"github.com/mewstcom/mewst/internal/database"
+	"github.com/mewstcom/mewst/internal/handler/manifest"
 	"github.com/mewstcom/mewst/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/internal/handler/sign_out"
 	"github.com/mewstcom/mewst/internal/middleware"
@@ -61,6 +62,7 @@ func main() {
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
 
 	// ハンドラーの初期化
+	manifestHandler := manifest.NewHandler(cfg)
 	signInHandler := sign_in.NewHandler(cfg, sessionMgr, userRepo, actorRepo, createSessionUC, turnstileClient)
 	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
 
@@ -103,6 +105,9 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
+
+	// Web App Manifest
+	r.Get("/manifest.json", manifestHandler.Show)
 
 	// ログインページ（未認証ユーザーのみ）
 	r.Group(func(r chi.Router) {

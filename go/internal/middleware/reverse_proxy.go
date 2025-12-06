@@ -23,10 +23,11 @@ type ReverseProxyMiddleware struct {
 // Go版で処理するパス（ホワイトリスト）
 // これらのパスはRails版にプロキシせず、Go版のハンドラーで処理する
 var goHandledPaths = []string{
-	"/static",   // 静的ファイル（CSS、JS、画像など）
-	"/health",   // ヘルスチェックエンドポイント
-	"/sign_in",  // ログインページ・処理
-	"/sign_out", // ログアウト処理
+	"/static",        // 静的ファイル（CSS、JS、画像など）
+	"/health",        // ヘルスチェックエンドポイント
+	"/manifest.json", // Web App Manifest
+	"/sign_in",       // ログインページ・処理
+	"/sign_out",      // ログアウト処理
 }
 
 // NewReverseProxyMiddleware は新しいReverseProxyMiddlewareを作成
