@@ -63,3 +63,9 @@ func (p *PageMeta) SetTitle(ctx context.Context, titleKey string) {
 func (p *PageMeta) SetTitleWithoutSuffix(ctx context.Context, titleKey string) {
 	p.Title = i18n.T(ctx, titleKey)
 }
+
+// SetOGURL はOGURLを設定する
+// pathにはクエリパラメータを除いたパスを指定する（canonical URLとして適切な形式）
+func (p *PageMeta) SetOGURL(cfg *config.Config, path string) {
+	p.OGURL = cfg.AppURL() + path
+}

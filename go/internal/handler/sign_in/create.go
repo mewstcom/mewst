@@ -121,6 +121,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfTok
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "meta.title.sign_in.new")
+	meta.SetOGURL(h.cfg, "/sign_in")
 
 	content := sign_in_page.New(data)
 	layout := layouts.Simple(meta, content)
