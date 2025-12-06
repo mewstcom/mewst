@@ -13,6 +13,8 @@ jobs:
     defaults:
       run:
         working-directory: rails
+    env:
+      RAILS_ENV: test
     steps:
       - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
@@ -31,6 +33,8 @@ jobs:
     defaults:
       run:
         working-directory: rails
+    env:
+      RAILS_ENV: test
     steps:
       - uses: actions/checkout@v6
       - name: Setup Ruby and install gems
