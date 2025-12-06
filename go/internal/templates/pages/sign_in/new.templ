@@ -16,6 +16,18 @@ type NewPageData struct {
 
 // New はログインフォームを表示する
 templ New(data NewPageData) {
+	<div class="flex flex-col gap-6 min-w-full md:min-w-md px-4">
+		<div class="text-center">
+			<a href="/" class="inline-block">
+				<img
+					alt="Annict"
+					src="/static/images/logo-mizuho.png"
+					width="50"
+				/>
+			</a>
+		</div>
+	</div>
+
 	<div class="text-center">
 		<div class="mt-12">
 			<a href="/" class="inline-block">
