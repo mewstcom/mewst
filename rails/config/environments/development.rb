@@ -69,12 +69,12 @@ Rails.application.configure do
   # ここから独自の設定
   # -----------------------------------------------------------------------------------------
 
-  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_HOST"), port: ENV.fetch("MEWST_PORT")}
+  config.action_mailer.default_url_options = {host: ENV.fetch("MEWST_DOMAIN")}
   config.action_mailer.delivery_method = :letter_opener_web
 
   config.hosts += [
-    ENV.fetch("MEWST_HOST"),
-    "www.#{ENV.fetch("MEWST_HOST")}"
+    ENV.fetch("MEWST_DOMAIN"),
+    "www.#{ENV.fetch("MEWST_DOMAIN")}"
   ]
 
   config.after_initialize do
