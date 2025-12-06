@@ -1,10 +1,11 @@
 /.env
 /.playwright-mcp
-/.pnpm-store
 /bin
 /node_modules
 /server
 /static/css/*
+!/static/css/.gitkeep
 /static/js/*
+!/static/js/.gitkeep
 /tmp
 /web/dist

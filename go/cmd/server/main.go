@@ -88,6 +88,10 @@ func main() {
 		r.Use(proxyMiddleware.Middleware)
 	}
 
+	// 静的ファイルの配信 (Tailwind CLI + esbuild のビルド結果)
+	fileServer := http.FileServer(http.Dir("./static"))
+	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
 	// ヘルスチェックエンドポイント
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		// DBの接続確認
