@@ -12,9 +12,8 @@
       "extensions": [
         "golang.go",
         "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss",
-        "dbaeumer.vscode-eslint",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "a-h.templ"
       ],
       "settings": {
         "go.toolsManagement.checkForUpdates": "local",
