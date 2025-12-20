@@ -17,7 +17,7 @@ func TestT_Japanese(t *testing.T) {
 		{
 			name:      "ログインページタイトル",
 			messageID: "sign_in_title",
-			expected:  "ログイン",
+			expected:  "Mewstにログイン",
 		},
 		{
 			name:      "メールアドレスラベル",
@@ -72,7 +72,7 @@ func TestT_English(t *testing.T) {
 		{
 			name:      "Sign in page title",
 			messageID: "sign_in_title",
-			expected:  "Sign in",
+			expected:  "Sign in to Mewst",
 		},
 		{
 			name:      "Email label",
@@ -136,7 +136,7 @@ func TestT_DefaultLocale(t *testing.T) {
 	ctx := context.Background()
 
 	got := T(ctx, "sign_in_title")
-	expected := "ログイン"
+	expected := "Mewstにログイン"
 	if got != expected {
 		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "sign_in_title", got, expected)
 	}
