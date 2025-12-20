@@ -4,20 +4,30 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG USERNAME=developer
 
-RUN \
-  apt update && \
-  apt dist-upgrade -yq && \
-  apt install -y --no-install-recommends \
-  build-essential \
-  curl \
-  git \
-  # PostgreSQLのインストールに必要
-  gnupg \
-  # PostgreSQLのインストールに必要
-  lsb-release \
-  sudo \
-  zsh \
-  && rm -rf /var/lib/apt/lists/*
+RUN <<EOF
+apt update
+apt dist-upgrade -yq
+
+PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
+  build-essential
+  curl
+  fzf                     # Claude Codeで使用
+  git
+  jq                      # Claude Codeで使用
+  nano                    # Claude Codeで使用
+  gnupg                   # PostgreSQLのインストールに必要
+  lsb-release             # PostgreSQLのインストールに必要
+  ripgrep                 # Claude Codeで使用
+  sudo
+  tree                    # Claude Codeで使用
+  vim                     # Claude Codeで使用
+  zsh
+PKGLIST
+)
+
+apt install -y --no-install-recommends $PACKAGES
+rm -rf /var/lib/apt/lists/*
+EOF
 
 # PostgreSQLのインストール
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
@@ -58,6 +68,8 @@ ENV PATH=$NPM_CONFIG_PREFIX/bin:$PATH
 COPY --from=1password/op:2 /usr/local/bin/op /usr/local/bin/op
 
 RUN npm install -g pnpm@10.24.0
+RUN npm install -g @anthropic-ai/claude-code@latest
+RUN npm install -g @modelcontextprotocol/server-filesystem
 
 RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0
 RUN go install github.com/air-verse/air@latest
@@ -72,5 +84,8 @@ SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 
 RUN touch /home/${USERNAME}/.zshrc
+
+RUN git config --global user.email "me@shimba.co" && \
+    git config --global user.name "Koji Shimba"
 
 CMD ["/bin/zsh"]
