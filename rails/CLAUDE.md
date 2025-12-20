@@ -324,6 +324,49 @@ Rails 版 Mewst は、標準の MVC アーキテクチャに加え、以下の�
 - **命名**: `{ComponentName}Component`
 - **テンプレート**: ERB を使用
 
+### RSpec コーディング規約
+
+```ruby
+# ❌ context, let, described_classは使用しない
+context "when xxx" do
+  let(:user) { create(:user) }
+end
+
+# ✅ itブロック内で変数定義
+it "xxxのとき、somethingすること" do
+  user = FactoryBot.create(:user)
+  # テスト実装
+end
+
+# ✅ FactoryBotで作成したレコードの変数名には_recordサフィックスを付ける
+user_record = FactoryBot.create(:user_record)
+post_record = FactoryBot.create(:post_record)
+
+# ❌ サフィックスなしの変数名は避ける
+user = FactoryBot.create(:user_record)
+```
+
+#### システムテストの待機処理
+
+```ruby
+# ❌ sleepを使用した待機処理は避ける
+button.click
+sleep 2
+expect(page).to have_current_path(some_path)
+
+# ✅ Capybaraの待機機能を活用
+button.click
+# ページ上の要素の変化を待つ（Capybaraが自動的に最大5秒待機）
+expect(page).not_to have_content("削除されたコンテンツ")
+expect(page).to have_content("新しく表示されるコンテンツ")
+
+# ✅ have_css/not_to have_cssで要素の出現/消失を待つ
+expect(page).to have_css(".success-message")
+expect(page).not_to have_css(".loading-spinner")
+```
+
+**重要**: システムテストでは`sleep`の使用を避け、Capybaraの自動待機機能を活用すること
+
 ### 国際化（I18n）
 
 すべてのユーザー向けメッセージは**必ず国際化対応**します：
