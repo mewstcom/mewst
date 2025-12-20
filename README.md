@@ -1,5 +1,5 @@
 <div align="center">
-  <img align="center" width="128" src="public/icon-192.png">
+  <img align="center" width="128" src="go/static/images/icon-192.png">
 
   <h1 align="center">
     <b>Mewst (ミュースト)</b>
