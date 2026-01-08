@@ -8,10 +8,11 @@ import (
 
 // NewPageData はログインフォームページのデータ
 type NewPageData struct {
-	CSRFToken       string
+	CSRFToken        string
 	TurnstileSiteKey string
-	FormErrors      *session.FormErrors
-	Email           string
+	FormErrors       *session.FormErrors
+	Email            string
+	BackURL          string
 }
 
 // New はログインフォームを表示する
@@ -40,6 +41,9 @@ templ New(data NewPageData) {
 			method="POST"
 		>
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+			if data.BackURL != "" {
+				<input type="hidden" name="back" value={ data.BackURL }/>
+			}
 
 			<div class="grid gap-2">
 				<label for="email">
@@ -64,7 +68,7 @@ templ New(data NewPageData) {
 
 				if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
 					for _, errorMsg := range data.FormErrors.Fields["email"] {
-						<p class="text-sm text-red-600">
+						<p class="text-sm text-(--error)">
 							{ errorMsg }
 						</p>
 					}
@@ -98,7 +102,7 @@ templ New(data NewPageData) {
 
 				if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
 					for _, errorMsg := range data.FormErrors.Fields["password"] {
-						<p class="text-sm text-red-600">
+						<p class="text-sm text-(--error)">
 							{ errorMsg }
 						</p>
 					}
@@ -121,9 +125,15 @@ templ New(data NewPageData) {
 		<div class="text-center text-muted-foreground">
 			{ templates.T(ctx, "sign_in_no_account") }
 			{ " " }
-			<a class="link" href="/sign_up">
-				{ templates.T(ctx, "sign_up_title") }
-			</a>
+			if data.BackURL != "" {
+				<a class="link" href={ templ.SafeURL("/sign_up?back=" + data.BackURL) }>
+					{ templates.T(ctx, "sign_up_title") }
+				</a>
+			} else {
+				<a class="link" href="/sign_up">
+					{ templates.T(ctx, "sign_up_title") }
+				</a>
+			}
 		</div>
 	</div>
 }
