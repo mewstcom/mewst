@@ -221,3 +221,52 @@ func TestDelete_FlashMessage_English(t *testing.T) {
 		t.Errorf("フラッシュタイプが不正: got %v, want %v", flashTypeCookie.Value, session.FlashSuccess)
 	}
 }
+
+func TestDelete_POSTMethod(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx)
+
+	// コンテキストをセットアップ
+	ctx := context.Background()
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// POSTメソッドでリクエストを作成（HTMLフォームからの呼び出しを想定）
+	req := httptest.NewRequest(http.MethodPost, "/sign_out", nil)
+	req.AddCookie(&http.Cookie{
+		Name:  session.CookieName,
+		Value: "test-session-token",
+	})
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Delete(rr, req)
+
+	// リダイレクトを検証
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// リダイレクト先を検証
+	location := rr.Header().Get("Location")
+	if location != "/" {
+		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+	}
+
+	// セッションクッキーが削除されているか確認
+	cookies := rr.Result().Cookies()
+	var sessionCookie *http.Cookie
+	for _, c := range cookies {
+		if c.Name == session.CookieName {
+			sessionCookie = c
+			break
+		}
+	}
+	if sessionCookie == nil {
+		t.Error("セッションクッキーがレスポンスに含まれていません")
+	} else if sessionCookie.MaxAge != -1 {
+		t.Errorf("セッションクッキーのMaxAgeが不正: got %v, want -1", sessionCookie.MaxAge)
+	}
+}
