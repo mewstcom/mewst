@@ -78,7 +78,8 @@ func main() {
 	r.Use(chimiddleware.RequestID)
 	r.Use(chimiddleware.RealIP)
 	r.Use(chimiddleware.Recoverer)
-	r.Use(middleware.MethodOverride)
+	// MethodOverride はリクエストボディを消費するため、
+	// Go版で処理するルートにのみ適用する（プロキシされるパスには適用しない）
 
 	// リバースプロキシの設定（Rails版へのプロキシ）
 	if cfg.RailsAppURL != "" {
@@ -119,6 +120,7 @@ func main() {
 
 	// ログアウト（認証済みユーザーのみ）
 	r.Group(func(r chi.Router) {
+		r.Use(middleware.MethodOverride)
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Delete("/sign_out", signOutHandler.Delete)
