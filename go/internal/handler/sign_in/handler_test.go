@@ -371,3 +371,203 @@ func TestCreate_EmptyFields(t *testing.T) {
 		t.Error("必須フィールドのバリデーションエラーメッセージが表示されていません")
 	}
 }
+
+func TestNew_WithBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// backパラメータ付きでリクエスト
+	req := httptest.NewRequest(http.MethodGet, "/sign_in?back=/settings", nil)
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.New(rr, req)
+
+	// ステータスコードを検証
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	// レスポンスにback hiddenフィールドが含まれているか確認
+	body := rr.Body.String()
+	if !strings.Contains(body, `name="back"`) {
+		t.Error("back hiddenフィールドがフォームに含まれていません")
+	}
+	if !strings.Contains(body, `value="/settings"`) {
+		t.Error("back hiddenフィールドの値が正しくありません")
+	}
+
+	// サインアップリンクにbackパラメータが含まれているか確認
+	if !strings.Contains(body, `/sign_up?back=/settings`) {
+		t.Error("サインアップリンクにbackパラメータが含まれていません")
+	}
+}
+
+func TestCreate_SuccessWithBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx, true)
+
+	// テストユーザーを作成
+	testEmail := "test-back-success@example.com"
+	createTestUser(t, tx, testEmail)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// backパラメータ付きでログイン
+	form := url.Values{}
+	form.Set("email", testEmail)
+	form.Set("password", "password")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+	form.Set("back", "/settings")
+
+	req := httptest.NewRequest(http.MethodPost, "/sign_in", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	// リダイレクトを検証
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// リダイレクト先がbackパラメータの値であることを検証
+	location := rr.Header().Get("Location")
+	if location != "/settings" {
+		t.Errorf("リダイレクト先が不正: got %v, want /settings", location)
+	}
+}
+
+func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name    string
+		backURL string
+		wantURL string
+	}{
+		{
+			name:    "絶対URL（外部サイト）",
+			backURL: "https://evil.com",
+			wantURL: "/",
+		},
+		{
+			name:    "プロトコル相対URL（外部サイト）",
+			backURL: "//evil.com",
+			wantURL: "/",
+		},
+		{
+			name:    "空文字",
+			backURL: "",
+			wantURL: "/",
+		},
+		{
+			name:    "正常な相対パス",
+			backURL: "/profile",
+			wantURL: "/profile",
+		},
+		{
+			name:    "クエリパラメータ付き相対パス",
+			backURL: "/search?q=test",
+			wantURL: "/search?q=test",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, tx := testutil.SetupTestDB(t)
+			h, cfg := setupTestHandler(t, db, tx, true)
+
+			// テストユーザーを作成
+			testEmail := "test-invalid-back-" + tc.name + "@example.com"
+			createTestUser(t, tx, testEmail)
+
+			ctx := context.Background()
+			ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+			ctx = templates.WithLocale(ctx, "ja")
+			ctx = templates.WithConfig(ctx, cfg)
+
+			form := url.Values{}
+			form.Set("email", testEmail)
+			form.Set("password", "password")
+			form.Set("csrf_token", "test-csrf-token")
+			form.Set("cf-turnstile-response", "test-token")
+			form.Set("back", tc.backURL)
+
+			req := httptest.NewRequest(http.MethodPost, "/sign_in", strings.NewReader(form.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			req = req.WithContext(ctx)
+			rr := httptest.NewRecorder()
+
+			h.Create(rr, req)
+
+			// リダイレクトを検証
+			if rr.Code != http.StatusFound {
+				t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+			}
+
+			// リダイレクト先を検証
+			location := rr.Header().Get("Location")
+			if location != tc.wantURL {
+				t.Errorf("リダイレクト先が不正: got %v, want %v", location, tc.wantURL)
+			}
+		})
+	}
+}
+
+func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// backパラメータ付きで無効なメールアドレスでログイン試行
+	form := url.Values{}
+	form.Set("email", "invalid-email")
+	form.Set("password", "password")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+	form.Set("back", "/settings")
+
+	req := httptest.NewRequest(http.MethodPost, "/sign_in", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	// ステータスコードを検証（422 Unprocessable Entity）
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+	}
+
+	// レスポンスにback hiddenフィールドが保持されているか確認
+	body := rr.Body.String()
+	if !strings.Contains(body, `name="back"`) {
+		t.Error("back hiddenフィールドがフォームに保持されていません")
+	}
+	if !strings.Contains(body, `value="/settings"`) {
+		t.Error("back hiddenフィールドの値が保持されていません")
+	}
+}

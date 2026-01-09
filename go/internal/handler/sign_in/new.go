@@ -22,12 +22,16 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	// CSRFトークンを取得
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
+	// backパラメータを取得（ログイン後のリダイレクト先）
+	backURL := r.URL.Query().Get("back")
+
 	// ページデータを作成
 	data := sign_in_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
 		FormErrors:       session.NewFormErrors(),
 		Email:            "",
+		BackURL:          backURL,
 	}
 
 	// テンプレートをレンダリング

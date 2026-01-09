@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/mewstcom/mewst/internal/auth"
 	"github.com/mewstcom/mewst/internal/clientip"
@@ -28,6 +29,9 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// CSRFトークンを取得
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
+	// backパラメータを取得（ログイン後のリダイレクト先）
+	backURL := r.FormValue("back")
+
 	// フォームデータを取得
 	req := &CreateRequest{
 		Email:    r.FormValue("email"),
@@ -43,14 +47,14 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if !turnstileValid {
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
 		return
 	}
 
 	// フォームバリデーション
 	formErrors := req.Validate(ctx)
 	if formErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
 		return
 	}
 
@@ -60,7 +64,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		if err == repository.ErrNotFound {
 			formErrors := session.NewFormErrors()
 			formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-			h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+			h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
 			return
 		}
 		slog.ErrorContext(ctx, "ユーザー検索中にエラーが発生", "error", err)
@@ -72,7 +76,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := auth.CheckPassword(user.PasswordDigest, req.Password); err != nil {
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
 		return
 	}
 
@@ -106,17 +110,23 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// フラッシュメッセージを設定
 	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_sign_in_success"))
 
-	// ホームページにリダイレクト
-	http.Redirect(w, r, "/", http.StatusFound)
+	// リダイレクト先を決定（オープンリダイレクト攻撃を防ぐため相対パスのみ許可）
+	redirectURL := "/"
+	if backURL != "" && strings.HasPrefix(backURL, "/") && !strings.HasPrefix(backURL, "//") {
+		redirectURL = backURL
+	}
+
+	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 // renderForm はログインフォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, email string, formErrors *session.FormErrors) {
+func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, email, backURL string, formErrors *session.FormErrors) {
 	data := sign_in_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
 		FormErrors:       formErrors,
 		Email:            email,
+		BackURL:          backURL,
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)

@@ -78,7 +78,6 @@ func main() {
 	r.Use(chimiddleware.RequestID)
 	r.Use(chimiddleware.RealIP)
 	r.Use(chimiddleware.Recoverer)
-	r.Use(middleware.MethodOverride)
 
 	// リバースプロキシの設定（Rails版へのプロキシ）
 	if cfg.RailsAppURL != "" {
@@ -118,10 +117,15 @@ func main() {
 	})
 
 	// ログアウト（認証済みユーザーのみ）
+	// HTMLフォームからはPOST（_method=DELETE付き）で呼び出されるが、
+	// Chiはルートマッチング時にメソッドも考慮するため、
+	// POSTとDELETE両方を登録する必要がある
+	// 注: Rails版のページからのリクエストにはGo版のCSRFトークンが含まれないため、
+	// CSRFミドルウェアは適用しない（ログアウトは破壊的操作ではないため安全）
 	r.Group(func(r chi.Router) {
-		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Delete("/sign_out", signOutHandler.Delete)
+		r.Post("/sign_out", signOutHandler.Delete)
 	})
 
 	// サーバー起動

@@ -11,7 +11,7 @@ module ControllerConcerns::Authenticatable
 
   sig(:final) { params(session: SessionRecord).returns(T::Boolean) }
   def sign_in(session)
-    cookies.signed.permanent[SessionRecord::COOKIE_KEY] = {
+    cookies.permanent[SessionRecord::COOKIE_KEY] = {
       value: session.token,
       httponly: true,
       same_site: :lax
@@ -28,8 +28,8 @@ module ControllerConcerns::Authenticatable
   sig(:final) { returns(T.nilable(ActorRecord)) }
   def viewer
     @viewer ||= T.let(begin
-      return unless cookies.signed[SessionRecord::COOKIE_KEY]
-      SessionRecord.find_by(token: cookies.signed[SessionRecord::COOKIE_KEY])&.actor_record
+      return unless cookies[SessionRecord::COOKIE_KEY]
+      SessionRecord.find_by(token: cookies[SessionRecord::COOKIE_KEY])&.actor_record
     end, T.nilable(ActorRecord))
   end
 

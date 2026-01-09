@@ -181,18 +181,20 @@ make graphql-dump
 
 ### コミット前に実行するコマンド
 
-**重要**: コードをコミットする前に、以下のコマンドを実行して CI が通ることを確認してください：
+**重要**: コードをコミットする前に、以下のコマンドを実行して CI が通ることを確認してください。
+
+**注意**: 環境変数は 1Password CLI 経由で自動設定されるため、`make` コマンドを使用してください。直接 `bin/rails` 等を実行すると環境変数が不足してエラーになります。
 
 ```sh
 # 1. Zeitwerk（オートロード）チェック
-bin/rails zeitwerk:check
+make zeitwerk
 
 # 2. Sorbet型定義の更新と型チェック
-bin/rails sorbet:update
-bin/srb tc
+make sorbet-update
+make sorbet
 
 # 3. Rubyコードのリント・フォーマット
-bin/standardrb --fix
+make fmt
 
 # 4. ERBリント
 bin/erb_lint --lint-all
@@ -204,7 +206,7 @@ yarn prettier . --check
 yarn eslint .
 
 # 7. テストを実行
-bin/rspec
+make test
 ```
 
 ## Pull Request のガイドライン
