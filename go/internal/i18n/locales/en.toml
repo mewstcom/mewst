@@ -93,3 +93,23 @@ other = "Login failed. Email or password is incorrect"
 description = "Turnstile verification failed error"
 other = "Robot verification failed. Please try again"
 
+# ============================================
+# Password reset
+# ============================================
+
+[password_reset_description]
+description = "Password reset description"
+other = "Enter your registered email address. We will send you a confirmation code."
+
+[btn_send_reset_code]
+description = "Send confirmation code button"
+other = "Send confirmation code"
+
+[back_to_sign_in]
+description = "Back to sign in link"
+other = "Back to sign in"
+
+[flash_password_reset_email_sent]
+description = "Password reset email sent success message"
+other = "Confirmation code sent. Please check your email."
+
