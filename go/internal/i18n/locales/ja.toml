@@ -113,3 +113,35 @@ other = "ログインに戻る"
 description = "パスワードリセットメール送信成功メッセージ"
 other = "確認コードを送信しました。メールをご確認ください。"
 
+# ============================================
+# メール確認
+# ============================================
+
+[email_confirmation_title]
+description = "メール確認ページのタイトル"
+other = "確認コードを入力"
+
+[email_confirmation_description]
+description = "メール確認ページの説明"
+other = "メールで届いた6桁の確認コードを入力してください。"
+
+[label_confirmation_code]
+description = "確認コードラベル"
+other = "確認コード"
+
+[btn_verify_code]
+description = "確認ボタン"
+other = "確認する"
+
+[error_code_incorrect_or_expired]
+description = "確認コードが間違っているか期限切れのエラー"
+other = "確認コードが間違っているか、有効期限が切れています。"
+
+[error_invalid_code_format]
+description = "確認コードの形式エラー"
+other = "確認コードは6桁の数字で入力してください。"
+
+[flash_email_confirmed]
+description = "メール確認成功メッセージ"
+other = "確認が完了しました。"
+

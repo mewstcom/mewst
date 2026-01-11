@@ -113,3 +113,35 @@ other = "Back to sign in"
 description = "Password reset email sent success message"
 other = "Confirmation code sent. Please check your email."
 
+# ============================================
+# Email confirmation
+# ============================================
+
+[email_confirmation_title]
+description = "Email confirmation page title"
+other = "Enter confirmation code"
+
+[email_confirmation_description]
+description = "Email confirmation page description"
+other = "Enter the 6-digit confirmation code sent to your email."
+
+[label_confirmation_code]
+description = "Confirmation code label"
+other = "Confirmation code"
+
+[btn_verify_code]
+description = "Verify button"
+other = "Verify"
+
+[error_code_incorrect_or_expired]
+description = "Confirmation code incorrect or expired error"
+other = "The confirmation code is incorrect or has expired."
+
+[error_invalid_code_format]
+description = "Invalid confirmation code format error"
+other = "Please enter a 6-digit confirmation code."
+
+[flash_email_confirmed]
+description = "Email confirmed success message"
+other = "Confirmation complete."
+
