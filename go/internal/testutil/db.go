@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -39,4 +40,13 @@ func SetupTestDB(t *testing.T) (*sql.DB, *sql.Tx) {
 	})
 
 	return db, tx
+}
+
+// MustParseUUID は文字列をUUIDに変換する（パニックする可能性あり）
+func MustParseUUID(s string) uuid.UUID {
+	id, err := uuid.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }

@@ -66,6 +66,21 @@ CREATE TABLE public.actors (
 
 
 --
+-- Name: email_confirmations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.email_confirmations (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    email public.citext NOT NULL,
+    event character varying NOT NULL,
+    code character varying NOT NULL,
+    succeeded_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: profiles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -128,6 +143,14 @@ ALTER TABLE ONLY public.actors
 
 
 --
+-- Name: email_confirmations email_confirmations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.email_confirmations
+    ADD CONSTRAINT email_confirmations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -156,6 +179,20 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX index_actors_on_user_id_and_profile_id ON public.actors USING btree (user_id, profile_id);
+
+
+--
+-- Name: index_email_confirmations_on_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_email_confirmations_on_created_at ON public.email_confirmations USING btree (created_at);
+
+
+--
+-- Name: index_email_confirmations_on_email_and_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_email_confirmations_on_email_and_code ON public.email_confirmations USING btree (email, code);
 
 
 --
