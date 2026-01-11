@@ -92,3 +92,4 @@ other = "Login failed. Email or password is incorrect"
 [error_turnstile_failed]
 description = "Turnstile verification failed error"
 other = "Robot verification failed. Please try again"
+

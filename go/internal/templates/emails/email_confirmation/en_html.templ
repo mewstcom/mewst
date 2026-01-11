@@ -1,0 +1,25 @@
+package email_confirmation
+
+// EnHTML は英語版のメール確認（HTML形式）です
+templ EnHTML(email, code string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Confirmation Code</title>
+		</head>
+		<body style="font-family: sans-serif; line-height: 1.6; color: #333; padding: 20px;">
+			<p>Hello { email },</p>
+			<p>Your confirmation code is below.</p>
+			<p style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">{ code }</p>
+			<p>This confirmation code will expire in 15 minutes.</p>
+			<p>If you didn't request this email, please ignore it.</p>
+			<hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+			<p style="color: #666; font-size: 12px;">
+				Mewst<br/>
+				<a href="https://mewst.com" style="color: #666;">https://mewst.com</a>
+			</p>
+		</body>
+	</html>
+}

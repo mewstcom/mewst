@@ -92,3 +92,4 @@ other = "ログインに失敗しました。メールアドレスかパスワ�
 [error_turnstile_failed]
 description = "Turnstile検証失敗エラー"
 other = "ロボット検証に失敗しました。もう一度お試しください"
+

@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mfridman/tparse v0.18.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
+	github.com/resend/resend-go/v2 v2.28.0
 	golang.org/x/crypto v0.45.0
 	golang.org/x/text v0.31.0
 	golang.org/x/tools v0.39.0
