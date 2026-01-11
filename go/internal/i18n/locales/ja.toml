@@ -92,3 +92,27 @@ other = "ログインに失敗しました。メールアドレスかパスワ�
 [error_turnstile_failed]
 description = "Turnstile検証失敗エラー"
 other = "ロボット検証に失敗しました。もう一度お試しください"
+
+# ============================================
+# メール
+# ============================================
+
+[email_confirmation_subject]
+description = "確認コードメールの件名"
+other = "[Mewst] 確認用コード"
+
+[email_confirmation_greeting]
+description = "確認コードメールの挨拶"
+other = "{{.Email}} さん、こんにちは。"
+
+[email_confirmation_code_intro]
+description = "確認コードの説明"
+other = "確認用コードは下記になります。"
+
+[email_confirmation_expiration]
+description = "確認コードの有効期限"
+other = "確認用コードの有効期間は15分です。"
+
+[email_confirmation_ignore]
+description = "心当たりがない場合の説明"
+other = "もしこのメールに心当たりが無い場合は無視してください。"

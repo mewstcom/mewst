@@ -92,3 +92,27 @@ other = "Login failed. Email or password is incorrect"
 [error_turnstile_failed]
 description = "Turnstile verification failed error"
 other = "Robot verification failed. Please try again"
+
+# ============================================
+# Email
+# ============================================
+
+[email_confirmation_subject]
+description = "Email confirmation subject"
+other = "[Mewst] Confirmation Code"
+
+[email_confirmation_greeting]
+description = "Email confirmation greeting"
+other = "Hello {{.Email}},"
+
+[email_confirmation_code_intro]
+description = "Confirmation code introduction"
+other = "Your confirmation code is below."
+
+[email_confirmation_expiration]
+description = "Confirmation code expiration"
+other = "This confirmation code will expire in 15 minutes."
+
+[email_confirmation_ignore]
+description = "Ignore if not requested"
+other = "If you didn't request this email, please ignore it."
