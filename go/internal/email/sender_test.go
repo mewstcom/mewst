@@ -6,28 +6,20 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/emails"
+	"github.com/mewstcom/mewst/internal/templates/emails/email_confirmation"
 )
 
 func TestNoopSender_SendEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
 	sender := NewNoopSender()
-
-	// コンテキストにロケールを設定
-	ctx := templates.WithLocale(context.Background(), "ja")
-
-	// テスト用のテンプレートデータ
-	templateData := emails.EmailConfirmationData{
-		Email: "test@example.com",
-		Code:  "123456",
-	}
+	ctx := context.Background()
 
 	input := SendEmailConfirmationInput{
-		To:      "test@example.com",
-		Subject: "テスト件名",
-		Body:    emails.EmailConfirmation(templateData),
+		To:       "test@example.com",
+		Subject:  "テスト件名",
+		HTMLBody: email_confirmation.JaHTML("test@example.com", "123456"),
+		TextBody: email_confirmation.JaText("test@example.com", "123456"),
 	}
 
 	err := sender.SendEmailConfirmation(ctx, input)
@@ -53,18 +45,15 @@ func TestNoopSender_MultipleSends(t *testing.T) {
 	t.Parallel()
 
 	sender := NewNoopSender()
-	ctx := templates.WithLocale(context.Background(), "ja")
+	ctx := context.Background()
 
 	// 複数回メール送信
 	for i := 0; i < 3; i++ {
-		templateData := emails.EmailConfirmationData{
-			Email: "test@example.com",
-			Code:  "123456",
-		}
 		input := SendEmailConfirmationInput{
-			To:      "test@example.com",
-			Subject: "テスト",
-			Body:    emails.EmailConfirmation(templateData),
+			To:       "test@example.com",
+			Subject:  "テスト",
+			HTMLBody: email_confirmation.JaHTML("test@example.com", "123456"),
+			TextBody: email_confirmation.JaText("test@example.com", "123456"),
 		}
 		err := sender.SendEmailConfirmation(ctx, input)
 		if err != nil {
@@ -77,22 +66,16 @@ func TestNoopSender_MultipleSends(t *testing.T) {
 	}
 }
 
-func TestEmailConfirmationTemplate_Japanese(t *testing.T) {
+func TestEmailConfirmationTemplate_Japanese_HTML(t *testing.T) {
 	t.Parallel()
 
-	// 日本語ロケールを設定（i18nはinit()で自動初期化される）
-	ctx := templates.WithLocale(context.Background(), "ja")
-
-	templateData := emails.EmailConfirmationData{
-		Email: "user@example.com",
-		Code:  "654321",
-	}
+	ctx := context.Background()
 
 	// テンプレートをレンダリング
 	var buf bytes.Buffer
-	err := emails.EmailConfirmation(templateData).Render(ctx, &buf)
+	err := email_confirmation.JaHTML("user@example.com", "654321").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("EmailConfirmation render failed: %v", err)
+		t.Fatalf("JaHTML render failed: %v", err)
 	}
 
 	html := buf.String()
@@ -111,24 +94,53 @@ func TestEmailConfirmationTemplate_Japanese(t *testing.T) {
 	if !strings.Contains(html, `lang="ja"`) {
 		t.Error("expected lang=ja in HTML")
 	}
+
+	// メールアドレスが含まれているか
+	if !strings.Contains(html, "user@example.com") {
+		t.Error("expected email address in HTML")
+	}
 }
 
-func TestEmailConfirmationTemplate_English(t *testing.T) {
+func TestEmailConfirmationTemplate_Japanese_Text(t *testing.T) {
 	t.Parallel()
 
-	// 英語ロケールを設定（i18nはinit()で自動初期化される）
-	ctx := templates.WithLocale(context.Background(), "en")
-
-	templateData := emails.EmailConfirmationData{
-		Email: "user@example.com",
-		Code:  "987654",
-	}
+	ctx := context.Background()
 
 	// テンプレートをレンダリング
 	var buf bytes.Buffer
-	err := emails.EmailConfirmation(templateData).Render(ctx, &buf)
+	err := email_confirmation.JaText("user@example.com", "654321").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("EmailConfirmation render failed: %v", err)
+		t.Fatalf("JaText render failed: %v", err)
+	}
+
+	text := buf.String()
+
+	// 確認コードが含まれているか
+	if !strings.Contains(text, "654321") {
+		t.Error("expected confirmation code in text")
+	}
+
+	// メールアドレスが含まれているか
+	if !strings.Contains(text, "user@example.com") {
+		t.Error("expected email address in text")
+	}
+
+	// 日本語メッセージが含まれているか
+	if !strings.Contains(text, "確認用コード") {
+		t.Error("expected Japanese message in text")
+	}
+}
+
+func TestEmailConfirmationTemplate_English_HTML(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// テンプレートをレンダリング
+	var buf bytes.Buffer
+	err := email_confirmation.EnHTML("user@example.com", "987654").Render(ctx, &buf)
+	if err != nil {
+		t.Fatalf("EnHTML render failed: %v", err)
 	}
 
 	html := buf.String()
@@ -141,5 +153,35 @@ func TestEmailConfirmationTemplate_English(t *testing.T) {
 	// lang属性が英語になっているか
 	if !strings.Contains(html, `lang="en"`) {
 		t.Error("expected lang=en in HTML")
+	}
+
+	// 英語メッセージが含まれているか
+	if !strings.Contains(html, "confirmation code") {
+		t.Error("expected English message in HTML")
+	}
+}
+
+func TestEmailConfirmationTemplate_English_Text(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// テンプレートをレンダリング
+	var buf bytes.Buffer
+	err := email_confirmation.EnText("user@example.com", "987654").Render(ctx, &buf)
+	if err != nil {
+		t.Fatalf("EnText render failed: %v", err)
+	}
+
+	text := buf.String()
+
+	// 確認コードが含まれているか
+	if !strings.Contains(text, "987654") {
+		t.Error("expected confirmation code in text")
+	}
+
+	// 英語メッセージが含まれているか
+	if !strings.Contains(text, "confirmation code") {
+		t.Error("expected English message in text")
 	}
 }

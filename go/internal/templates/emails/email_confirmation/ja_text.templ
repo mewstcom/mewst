@@ -1,0 +1,18 @@
+package email_confirmation
+
+// JaText は日本語版のメール確認（テキスト形式）です
+templ JaText(email, code string) {
+	{ email } さん、こんにちは。
+
+	確認用コードは下記になります。
+
+	{ code }
+
+	確認用コードの有効期間は15分です。
+
+	もしこのメールに心当たりが無い場合は無視してください。
+
+	--
+	Mewst
+	https://mewst.com
+}

@@ -18,9 +18,10 @@ type Sender interface {
 
 // SendEmailConfirmationInput は確認メール送信の入力
 type SendEmailConfirmationInput struct {
-	To      string          // 送信先メールアドレス
-	Subject string          // 件名
-	Body    templ.Component // メール本文（templコンポーネント）
+	To       string          // 送信先メールアドレス
+	Subject  string          // 件名
+	HTMLBody templ.Component // メール本文（HTML形式）
+	TextBody templ.Component // メール本文（テキスト形式）
 }
 
 // ResendSender はResend APIを使用してメールを送信する
@@ -39,19 +40,25 @@ func NewResendSender(apiKey, from string) *ResendSender {
 
 // SendEmailConfirmation は確認コードを含むメールを送信する
 func (s *ResendSender) SendEmailConfirmation(ctx context.Context, input SendEmailConfirmationInput) error {
-	// templコンポーネントをHTMLにレンダリング
-	var buf bytes.Buffer
-	if err := input.Body.Render(ctx, &buf); err != nil {
-		return fmt.Errorf("メールテンプレートのレンダリングに失敗しました: %w", err)
+	// HTMLテンプレートをレンダリング
+	var htmlBuf bytes.Buffer
+	if err := input.HTMLBody.Render(ctx, &htmlBuf); err != nil {
+		return fmt.Errorf("HTMLテンプレートのレンダリングに失敗しました: %w", err)
 	}
-	htmlBody := buf.String()
+
+	// テキストテンプレートをレンダリング
+	var textBuf bytes.Buffer
+	if err := input.TextBody.Render(ctx, &textBuf); err != nil {
+		return fmt.Errorf("テキストテンプレートのレンダリングに失敗しました: %w", err)
+	}
 
 	// Resend APIを使用してメール送信
 	params := &resend.SendEmailRequest{
 		From:    s.from,
 		To:      []string{input.To},
 		Subject: input.Subject,
-		Html:    htmlBody,
+		Html:    htmlBuf.String(),
+		Text:    textBuf.String(),
 	}
 
 	_, err := s.client.Emails.SendWithContext(ctx, params)
