@@ -93,3 +93,23 @@ other = "ログインに失敗しました。メールアドレスかパスワ�
 description = "Turnstile検証失敗エラー"
 other = "ロボット検証に失敗しました。もう一度お試しください"
 
+# ============================================
+# パスワードリセット
+# ============================================
+
+[password_reset_description]
+description = "パスワードリセットの説明"
+other = "登録したメールアドレスを入力してください。確認コードをお送りします。"
+
+[btn_send_reset_code]
+description = "確認コード送信ボタン"
+other = "確認コードを送信"
+
+[back_to_sign_in]
+description = "ログインに戻るリンク"
+other = "ログインに戻る"
+
+[flash_password_reset_email_sent]
+description = "パスワードリセットメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
