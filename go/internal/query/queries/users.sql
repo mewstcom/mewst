@@ -15,3 +15,8 @@ SELECT id, email, password_digest
 FROM users
 WHERE email = $1
 LIMIT 1;
+
+-- name: UpdatePasswordByEmail :exec
+UPDATE users
+SET password_digest = $2, updated_at = NOW()
+WHERE email = $1;

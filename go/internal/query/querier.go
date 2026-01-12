@@ -24,6 +24,7 @@ type Querier interface {
 	GetUserByEmailForSignIn(ctx context.Context, email string) (GetUserByEmailForSignInRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	MarkEmailConfirmationAsSucceeded(ctx context.Context, id uuid.UUID) error
+	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 }
 
 var _ Querier = (*Queries)(nil)

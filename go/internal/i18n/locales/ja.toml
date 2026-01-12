@@ -145,3 +145,43 @@ other = "確認コードは6桁の数字で入力してください。"
 description = "メール確認成功メッセージ"
 other = "確認が完了しました。"
 
+# ============================================
+# パスワード更新
+# ============================================
+
+[password_edit_title]
+description = "パスワード更新ページのタイトル"
+other = "新しいパスワードを設定"
+
+[password_edit_description]
+description = "パスワード更新ページの説明"
+other = "新しいパスワードを入力してください。"
+
+[label_new_password]
+description = "新しいパスワードラベル"
+other = "新しいパスワード"
+
+[password_hint]
+description = "パスワードのヒント"
+other = "8文字以上で入力してください"
+
+[btn_reset_password]
+description = "パスワード更新ボタン"
+other = "パスワードを更新"
+
+[error_password_too_short]
+description = "パスワードが短すぎるエラー"
+other = "8文字以上で入力してください"
+
+[error_password_too_long]
+description = "パスワードが長すぎるエラー"
+other = "パスワードが長すぎます"
+
+[error_password_update_failed]
+description = "パスワード更新失敗エラー"
+other = "パスワードの更新に失敗しました。もう一度お試しください。"
+
+[flash_password_reset_success]
+description = "パスワードリセット成功メッセージ"
+other = "パスワードを更新しました。新しいパスワードでログインしてください。"
+

@@ -145,3 +145,43 @@ other = "Please enter a 6-digit confirmation code."
 description = "Email confirmed success message"
 other = "Confirmation complete."
 
+# ============================================
+# Password update
+# ============================================
+
+[password_edit_title]
+description = "Password update page title"
+other = "Set a new password"
+
+[password_edit_description]
+description = "Password update page description"
+other = "Please enter your new password."
+
+[label_new_password]
+description = "New password label"
+other = "New password"
+
+[password_hint]
+description = "Password hint"
+other = "Enter at least 8 characters"
+
+[btn_reset_password]
+description = "Reset password button"
+other = "Reset password"
+
+[error_password_too_short]
+description = "Password too short error"
+other = "Enter at least 8 characters"
+
+[error_password_too_long]
+description = "Password too long error"
+other = "Password is too long"
+
+[error_password_update_failed]
+description = "Password update failed error"
+other = "Failed to update password. Please try again."
+
+[flash_password_reset_success]
+description = "Password reset success message"
+other = "Password updated. Please sign in with your new password."
+
