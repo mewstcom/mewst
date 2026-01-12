@@ -6,7 +6,6 @@ import (
 )
 
 // HashPassword はパスワードをbcryptでハッシュ化する
-// Rails版のhas_secure_passwordとの互換性を保つためコスト12を使用
 func HashPassword(plainPassword string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
 	if err != nil {
