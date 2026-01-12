@@ -91,3 +91,11 @@ func (r *UserRepository) GetByEmailForSignIn(ctx context.Context, email string) 
 		PasswordDigest: row.PasswordDigest,
 	}, nil
 }
+
+// UpdatePasswordByEmail はメールアドレスでユーザーのパスワードを更新する
+func (r *UserRepository) UpdatePasswordByEmail(ctx context.Context, email string, passwordDigest string) error {
+	return r.queries.UpdatePasswordByEmail(ctx, query.UpdatePasswordByEmailParams{
+		Email:          email,
+		PasswordDigest: passwordDigest,
+	})
+}
