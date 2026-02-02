@@ -9,22 +9,48 @@ import (
 	"github.com/mewstcom/mewst/internal/templates/emails/email_confirmation"
 )
 
-func TestNoopSender_SendEmailConfirmation(t *testing.T) {
+func TestResendSender_from_WithName(t *testing.T) {
+	t.Parallel()
+
+	sender := NewResendSender("dummy-api-key", "noreply@example.com", "Mewst")
+
+	got := sender.from()
+	want := "Mewst <noreply@example.com>"
+
+	if got != want {
+		t.Errorf("from() = %q, want %q", got, want)
+	}
+}
+
+func TestResendSender_from_WithoutName(t *testing.T) {
+	t.Parallel()
+
+	sender := NewResendSender("dummy-api-key", "noreply@example.com", "")
+
+	got := sender.from()
+	want := "noreply@example.com"
+
+	if got != want {
+		t.Errorf("from() = %q, want %q", got, want)
+	}
+}
+
+func TestNoopSender_Send(t *testing.T) {
 	t.Parallel()
 
 	sender := NewNoopSender()
 	ctx := context.Background()
 
-	input := SendEmailConfirmationInput{
+	input := SendInput{
 		To:       "test@example.com",
 		Subject:  "テスト件名",
 		HTMLBody: email_confirmation.JaHTML("test@example.com", "123456"),
 		TextBody: email_confirmation.JaText("test@example.com", "123456"),
 	}
 
-	err := sender.SendEmailConfirmation(ctx, input)
+	err := sender.Send(ctx, input)
 	if err != nil {
-		t.Fatalf("SendEmailConfirmation failed: %v", err)
+		t.Fatalf("Send failed: %v", err)
 	}
 
 	// 送信されたメールが記録されているか確認
@@ -49,15 +75,15 @@ func TestNoopSender_MultipleSends(t *testing.T) {
 
 	// 複数回メール送信
 	for i := 0; i < 3; i++ {
-		input := SendEmailConfirmationInput{
+		input := SendInput{
 			To:       "test@example.com",
 			Subject:  "テスト",
 			HTMLBody: email_confirmation.JaHTML("test@example.com", "123456"),
 			TextBody: email_confirmation.JaText("test@example.com", "123456"),
 		}
-		err := sender.SendEmailConfirmation(ctx, input)
+		err := sender.Send(ctx, input)
 		if err != nil {
-			t.Fatalf("SendEmailConfirmation failed: %v", err)
+			t.Fatalf("Send failed: %v", err)
 		}
 	}
 
@@ -183,5 +209,70 @@ func TestEmailConfirmationTemplate_English_Text(t *testing.T) {
 	// 英語メッセージが含まれているか
 	if !strings.Contains(text, "confirmation code") {
 		t.Error("expected English message in text")
+	}
+}
+
+func TestNoopSender_SendRaw(t *testing.T) {
+	t.Parallel()
+
+	sender := NewNoopSender()
+	ctx := context.Background()
+
+	input := SendRawInput{
+		To:       "test@example.com",
+		Subject:  "テスト件名",
+		HTMLBody: "<p>HTMLボディ</p>",
+		TextBody: "テキストボディ",
+	}
+
+	err := sender.SendRaw(ctx, input)
+	if err != nil {
+		t.Fatalf("SendRaw failed: %v", err)
+	}
+
+	// 送信されたメールが記録されているか確認
+	if len(sender.SentRawEmails) != 1 {
+		t.Errorf("expected 1 sent raw email, got %d", len(sender.SentRawEmails))
+	}
+
+	if sender.SentRawEmails[0].To != "test@example.com" {
+		t.Errorf("expected to=test@example.com, got %s", sender.SentRawEmails[0].To)
+	}
+
+	if sender.SentRawEmails[0].Subject != "テスト件名" {
+		t.Errorf("expected subject=テスト件名, got %s", sender.SentRawEmails[0].Subject)
+	}
+
+	if sender.SentRawEmails[0].HTMLBody != "<p>HTMLボディ</p>" {
+		t.Errorf("expected HTMLBody=<p>HTMLボディ</p>, got %s", sender.SentRawEmails[0].HTMLBody)
+	}
+
+	if sender.SentRawEmails[0].TextBody != "テキストボディ" {
+		t.Errorf("expected TextBody=テキストボディ, got %s", sender.SentRawEmails[0].TextBody)
+	}
+}
+
+func TestNoopSender_SendRaw_MultipleSends(t *testing.T) {
+	t.Parallel()
+
+	sender := NewNoopSender()
+	ctx := context.Background()
+
+	// 複数回メール送信
+	for i := 0; i < 3; i++ {
+		input := SendRawInput{
+			To:       "test@example.com",
+			Subject:  "テスト",
+			HTMLBody: "<p>HTML</p>",
+			TextBody: "Text",
+		}
+		err := sender.SendRaw(ctx, input)
+		if err != nil {
+			t.Fatalf("SendRaw failed: %v", err)
+		}
+	}
+
+	if len(sender.SentRawEmails) != 3 {
+		t.Errorf("expected 3 sent raw emails, got %d", len(sender.SentRawEmails))
 	}
 }
