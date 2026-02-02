@@ -45,6 +45,11 @@ type Config struct {
 
 	// アセットバージョン（CDNキャッシュ対策用）
 	AssetVersion string
+
+	// メール送信（Resend API）
+	ResendAPIKey  string
+	EmailFrom     string
+	EmailFromName string
 }
 
 // Load は環境変数から設定を読み込みます
@@ -120,6 +125,12 @@ func Load() (*Config, error) {
 
 	// アセットバージョン（Gitコミットハッシュ）を設定
 	cfg.AssetVersion = getGitCommitHash()
+
+	// Resend API（オプショナル - メール送信で使用）
+	// テスト環境では空文字列でも動作する（モックSenderを使用）
+	cfg.ResendAPIKey = os.Getenv("MEWST_RESEND_API_KEY")
+	cfg.EmailFrom = os.Getenv("MEWST_EMAIL_FROM")
+	cfg.EmailFromName = os.Getenv("MEWST_EMAIL_FROM_NAME")
 
 	return cfg, nil
 }

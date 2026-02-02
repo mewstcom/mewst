@@ -15,8 +15,14 @@ import (
 // CookieName はRails版と共有するセッションクッキー名
 const CookieName = "mewst_session_token"
 
+// EmailConfirmationCookieName はメール確認IDを保存するクッキー名
+const EmailConfirmationCookieName = "mewst_email_confirmation_id"
+
 // MaxAge はクッキーの有効期限（10年、Rails版と同じ）
 const MaxAge = 10 * 365 * 24 * 60 * 60
+
+// EmailConfirmationMaxAge はメール確認クッキーの有効期限（15分）
+const EmailConfirmationMaxAge = 15 * 60
 
 // Manager はセッション管理を行う
 type Manager struct {
@@ -173,4 +179,55 @@ func (m *Manager) DeleteSessionCookie(w http.ResponseWriter, r *http.Request) {
 func (m *Manager) IsLoggedIn(ctx context.Context, r *http.Request) bool {
 	user, err := m.GetCurrentUser(ctx, r)
 	return err == nil && user != nil
+}
+
+// SetEmailConfirmationID はメール確認IDをクッキーに保存する
+func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, r *http.Request, id string) {
+	secure := m.cfg.SessionSecure
+	// リバースプロキシ経由のHTTPS接続を検出
+	if r.Header.Get("X-Forwarded-Proto") == "https" {
+		secure = true
+	}
+
+	cookie := &http.Cookie{
+		Name:     EmailConfirmationCookieName,
+		Value:    id,
+		Path:     "/",
+		Domain:   m.cfg.CookieDomain,
+		Secure:   secure,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   EmailConfirmationMaxAge,
+	}
+	http.SetCookie(w, cookie)
+}
+
+// GetEmailConfirmationID はクッキーからメール確認IDを取得する
+func (m *Manager) GetEmailConfirmationID(r *http.Request) string {
+	cookie, err := r.Cookie(EmailConfirmationCookieName)
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+
+// DeleteEmailConfirmationID はメール確認IDクッキーを削除する
+func (m *Manager) DeleteEmailConfirmationID(w http.ResponseWriter, r *http.Request) {
+	secure := m.cfg.SessionSecure
+	// リバースプロキシ経由のHTTPS接続を検出
+	if r.Header.Get("X-Forwarded-Proto") == "https" {
+		secure = true
+	}
+
+	cookie := &http.Cookie{
+		Name:     EmailConfirmationCookieName,
+		Value:    "",
+		Path:     "/",
+		Domain:   m.cfg.CookieDomain,
+		Secure:   secure,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1, // 即座に削除
+	}
+	http.SetCookie(w, cookie)
 }

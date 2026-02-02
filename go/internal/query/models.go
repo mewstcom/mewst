@@ -19,6 +19,16 @@ type Actor struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
+type EmailConfirmation struct {
+	ID          uuid.UUID    `db:"id"`
+	Email       string       `db:"email"`
+	Event       string       `db:"event"`
+	Code        string       `db:"code"`
+	SucceededAt sql.NullTime `db:"succeeded_at"`
+	CreatedAt   time.Time    `db:"created_at"`
+	UpdatedAt   time.Time    `db:"updated_at"`
+}
+
 type Profile struct {
 	ID            uuid.UUID    `db:"id"`
 	OwnerType     string       `db:"owner_type"`

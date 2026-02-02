@@ -1,0 +1,99 @@
+package email_confirmation
+
+import (
+	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/internal/templates"
+	"github.com/mewstcom/mewst/internal/templates/components"
+)
+
+// NewPageData は確認コード入力フォームページのデータ
+type NewPageData struct {
+	CSRFToken  string
+	FormErrors *session.FormErrors
+	Code       string
+	Flash      *session.Flash
+}
+
+// New は確認コード入力フォームを表示する
+templ New(data NewPageData) {
+	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+		<div class="text-center">
+			<a href="/" class="inline-block">
+				<div class="bg-(--primary) rounded-xl">
+					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
+				</div>
+			</a>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<h1 class="text-center text-3xl font-bold antialiased">
+				{ templates.T(ctx, "email_confirmation_title") }
+			</h1>
+			<p class="text-center text-muted-foreground">
+				{ templates.T(ctx, "email_confirmation_description") }
+			</p>
+		</div>
+
+		@components.FlashMessage(data.Flash)
+
+		@components.FormErrors(data.FormErrors)
+
+		<form
+			action="/email_confirmation"
+			class="form grid gap-6"
+			data-on:submit__passive="$isSubmitting = true"
+			method="POST"
+		>
+			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+			<div class="grid gap-2">
+				<label for="code">
+					{ templates.T(ctx, "label_confirmation_code") }
+				</label>
+
+				<input
+					if data.FormErrors != nil && data.FormErrors.Fields["code"] != nil {
+						aria-invalid="true"
+					} else {
+						aria-invalid="false"
+					}
+					autocomplete="one-time-code"
+					autofocus
+					id="code"
+					inputmode="numeric"
+					maxlength="6"
+					name="code"
+					pattern="[0-9]{6}"
+					required
+					tabindex="1"
+					type="text"
+					value={ data.Code }
+				/>
+
+				if data.FormErrors != nil && data.FormErrors.Fields["code"] != nil {
+					for _, errorMsg := range data.FormErrors.Fields["code"] {
+						<p class="text-sm text-(--error)">
+							{ errorMsg }
+						</p>
+					}
+				}
+			</div>
+
+			<button
+				class="btn rounded-full w-fit text-black"
+				tabindex="2"
+				type="submit"
+				data-attr:disabled="$isSubmitting == true"
+			>
+				@templates.Icon("arrow-right")
+				{ templates.T(ctx, "btn_verify_code") }
+			</button>
+		</form>
+
+		<div class="text-center text-muted-foreground">
+			<a class="link" href="/sign_in">
+				{ templates.T(ctx, "back_to_sign_in") }
+			</a>
+		</div>
+	</div>
+}

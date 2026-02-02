@@ -1,0 +1,100 @@
+package password
+
+import (
+	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/internal/templates"
+	"github.com/mewstcom/mewst/internal/templates/components"
+)
+
+// EditPageData はパスワード更新フォームページのデータ
+type EditPageData struct {
+	CSRFToken  string
+	FormErrors *session.FormErrors
+	Flash      *session.Flash
+}
+
+// Edit はパスワード更新フォームを表示する
+templ Edit(data EditPageData) {
+	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+		<div class="text-center">
+			<a href="/" class="inline-block">
+				<div class="bg-(--primary) rounded-xl">
+					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
+				</div>
+			</a>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<h1 class="text-center text-3xl font-bold antialiased">
+				{ templates.T(ctx, "password_edit_title") }
+			</h1>
+			<p class="text-center text-muted-foreground">
+				{ templates.T(ctx, "password_edit_description") }
+			</p>
+		</div>
+
+		@components.FlashMessage(data.Flash)
+
+		@components.FormErrors(data.FormErrors)
+
+		<form
+			action="/password"
+			class="form grid gap-6"
+			data-on:submit__passive="$isSubmitting = true"
+			method="POST"
+		>
+			<input type="hidden" name="_method" value="PATCH"/>
+			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+			<div class="grid gap-2">
+				<label for="password">
+					{ templates.T(ctx, "label_new_password") }
+				</label>
+
+				<input
+					if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
+						aria-invalid="true"
+					} else {
+						aria-invalid="false"
+					}
+					autocomplete="new-password"
+					autofocus
+					id="password"
+					minlength="8"
+					name="password"
+					required
+					tabindex="1"
+					type="password"
+				/>
+
+				<p class="text-sm text-muted-foreground">
+					{ templates.T(ctx, "password_hint") }
+				</p>
+
+				if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
+					for _, errorMsg := range data.FormErrors.Fields["password"] {
+						<p class="text-sm text-(--error)">
+							{ errorMsg }
+						</p>
+					}
+				}
+			</div>
+
+			<button
+				class="btn rounded-full w-fit text-black"
+				tabindex="2"
+				type="submit"
+				data-attr:disabled="$isSubmitting == true"
+			>
+				@templates.Icon("arrow-right")
+				{ templates.T(ctx, "btn_reset_password") }
+			</button>
+		</form>
+
+		<div class="text-center text-muted-foreground">
+			<a class="link" href="/sign_in">
+				{ templates.T(ctx, "back_to_sign_in") }
+			</a>
+		</div>
+	</div>
+}

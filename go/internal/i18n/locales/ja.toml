@@ -92,3 +92,96 @@ other = "ログインに失敗しました。メールアドレスかパスワ�
 [error_turnstile_failed]
 description = "Turnstile検証失敗エラー"
 other = "ロボット検証に失敗しました。もう一度お試しください"
+
+# ============================================
+# パスワードリセット
+# ============================================
+
+[password_reset_description]
+description = "パスワードリセットの説明"
+other = "登録したメールアドレスを入力してください。確認コードをお送りします。"
+
+[btn_send_reset_code]
+description = "確認コード送信ボタン"
+other = "確認コードを送信"
+
+[back_to_sign_in]
+description = "ログインに戻るリンク"
+other = "ログインに戻る"
+
+[flash_password_reset_email_sent]
+description = "パスワードリセットメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
+# ============================================
+# メール確認
+# ============================================
+
+[email_confirmation_title]
+description = "メール確認ページのタイトル"
+other = "確認コードを入力"
+
+[email_confirmation_description]
+description = "メール確認ページの説明"
+other = "メールで届いた6桁の確認コードを入力してください。"
+
+[label_confirmation_code]
+description = "確認コードラベル"
+other = "確認コード"
+
+[btn_verify_code]
+description = "確認ボタン"
+other = "確認する"
+
+[error_code_incorrect_or_expired]
+description = "確認コードが間違っているか期限切れのエラー"
+other = "確認コードが間違っているか、有効期限が切れています。"
+
+[error_invalid_code_format]
+description = "確認コードの形式エラー"
+other = "確認コードは6桁の数字で入力してください。"
+
+[flash_email_confirmed]
+description = "メール確認成功メッセージ"
+other = "確認が完了しました。"
+
+# ============================================
+# パスワード更新
+# ============================================
+
+[password_edit_title]
+description = "パスワード更新ページのタイトル"
+other = "新しいパスワードを設定"
+
+[password_edit_description]
+description = "パスワード更新ページの説明"
+other = "新しいパスワードを入力してください。"
+
+[label_new_password]
+description = "新しいパスワードラベル"
+other = "新しいパスワード"
+
+[password_hint]
+description = "パスワードのヒント"
+other = "8文字以上で入力してください"
+
+[btn_reset_password]
+description = "パスワード更新ボタン"
+other = "パスワードを更新"
+
+[error_password_too_short]
+description = "パスワードが短すぎるエラー"
+other = "8文字以上で入力してください"
+
+[error_password_too_long]
+description = "パスワードが長すぎるエラー"
+other = "パスワードが長すぎます"
+
+[error_password_update_failed]
+description = "パスワード更新失敗エラー"
+other = "パスワードの更新に失敗しました。もう一度お試しください。"
+
+[flash_password_reset_success]
+description = "パスワードリセット成功メッセージ"
+other = "パスワードを更新しました。新しいパスワードでログインしてください。"
+

@@ -92,3 +92,96 @@ other = "Login failed. Email or password is incorrect"
 [error_turnstile_failed]
 description = "Turnstile verification failed error"
 other = "Robot verification failed. Please try again"
+
+# ============================================
+# Password reset
+# ============================================
+
+[password_reset_description]
+description = "Password reset description"
+other = "Enter your registered email address. We will send you a confirmation code."
+
+[btn_send_reset_code]
+description = "Send confirmation code button"
+other = "Send confirmation code"
+
+[back_to_sign_in]
+description = "Back to sign in link"
+other = "Back to sign in"
+
+[flash_password_reset_email_sent]
+description = "Password reset email sent success message"
+other = "Confirmation code sent. Please check your email."
+
+# ============================================
+# Email confirmation
+# ============================================
+
+[email_confirmation_title]
+description = "Email confirmation page title"
+other = "Enter confirmation code"
+
+[email_confirmation_description]
+description = "Email confirmation page description"
+other = "Enter the 6-digit confirmation code sent to your email."
+
+[label_confirmation_code]
+description = "Confirmation code label"
+other = "Confirmation code"
+
+[btn_verify_code]
+description = "Verify button"
+other = "Verify"
+
+[error_code_incorrect_or_expired]
+description = "Confirmation code incorrect or expired error"
+other = "The confirmation code is incorrect or has expired."
+
+[error_invalid_code_format]
+description = "Invalid confirmation code format error"
+other = "Please enter a 6-digit confirmation code."
+
+[flash_email_confirmed]
+description = "Email confirmed success message"
+other = "Confirmation complete."
+
+# ============================================
+# Password update
+# ============================================
+
+[password_edit_title]
+description = "Password update page title"
+other = "Set a new password"
+
+[password_edit_description]
+description = "Password update page description"
+other = "Please enter your new password."
+
+[label_new_password]
+description = "New password label"
+other = "New password"
+
+[password_hint]
+description = "Password hint"
+other = "Enter at least 8 characters"
+
+[btn_reset_password]
+description = "Reset password button"
+other = "Reset password"
+
+[error_password_too_short]
+description = "Password too short error"
+other = "Enter at least 8 characters"
+
+[error_password_too_long]
+description = "Password too long error"
+other = "Password is too long"
+
+[error_password_update_failed]
+description = "Password update failed error"
+other = "Failed to update password. Please try again."
+
+[flash_password_reset_success]
+description = "Password reset success message"
+other = "Password updated. Please sign in with your new password."
+

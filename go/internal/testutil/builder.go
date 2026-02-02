@@ -241,3 +241,80 @@ func (b *SessionBuilder) Build() uuid.UUID {
 
 	return id
 }
+
+// EmailConfirmationBuilder はメール確認テストデータのビルダー
+type EmailConfirmationBuilder struct {
+	t           *testing.T
+	tx          *sql.Tx
+	email       string
+	event       string
+	code        string
+	succeededAt *time.Time
+	createdAt   *time.Time
+}
+
+// NewEmailConfirmationBuilder はEmailConfirmationBuilderを生成する
+func NewEmailConfirmationBuilder(t *testing.T, tx *sql.Tx) *EmailConfirmationBuilder {
+	t.Helper()
+	return &EmailConfirmationBuilder{
+		t:     t,
+		tx:    tx,
+		email: fmt.Sprintf("test-%d@example.com", time.Now().UnixNano()),
+		event: "password_reset",
+		code:  "123456",
+	}
+}
+
+// WithEmail はメールアドレスを設定する
+func (b *EmailConfirmationBuilder) WithEmail(email string) *EmailConfirmationBuilder {
+	b.email = email
+	return b
+}
+
+// WithEvent はイベント種別を設定する
+func (b *EmailConfirmationBuilder) WithEvent(event string) *EmailConfirmationBuilder {
+	b.event = event
+	return b
+}
+
+// WithCode は確認コードを設定する
+func (b *EmailConfirmationBuilder) WithCode(code string) *EmailConfirmationBuilder {
+	b.code = code
+	return b
+}
+
+// WithSucceededAt は成功日時を設定する
+func (b *EmailConfirmationBuilder) WithSucceededAt(succeededAt time.Time) *EmailConfirmationBuilder {
+	b.succeededAt = &succeededAt
+	return b
+}
+
+// WithCreatedAt は作成日時を設定する
+func (b *EmailConfirmationBuilder) WithCreatedAt(createdAt time.Time) *EmailConfirmationBuilder {
+	b.createdAt = &createdAt
+	return b
+}
+
+// Build はメール確認をDBに作成し、IDを返す
+func (b *EmailConfirmationBuilder) Build() uuid.UUID {
+	b.t.Helper()
+
+	now := time.Now()
+	createdAt := now
+	if b.createdAt != nil {
+		createdAt = *b.createdAt
+	}
+
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO email_confirmations (email, event, code, succeeded_at, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`, b.email, b.event, b.code, b.succeededAt, createdAt, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("メール確認の作成に失敗: %v", err)
+	}
+
+	return id
+}
