@@ -2,6 +2,8 @@ package worker
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"testing"
 
 	"github.com/riverqueue/river"
@@ -70,5 +72,48 @@ func TestSendEmailWorker_Work(t *testing.T) {
 	}
 	if sentEmail.TextBody != "Text Body" {
 		t.Errorf("TextBody = %v, want Text Body", sentEmail.TextBody)
+	}
+}
+
+// errorSender はテスト用のエラーを返すSender
+type errorSender struct {
+	err error
+}
+
+func (s *errorSender) Send(_ context.Context, _ email.SendInput) error {
+	return s.err
+}
+
+func (s *errorSender) SendRaw(_ context.Context, _ email.SendRawInput) error {
+	return s.err
+}
+
+func TestSendEmailWorker_Work_Error(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	sendErr := errors.New("送信エラー")
+	w := NewSendEmailWorker(&errorSender{err: sendErr})
+
+	job := &river.Job[SendEmailArgs]{
+		Args: SendEmailArgs{
+			To:       "test@example.com",
+			Subject:  "Test Subject",
+			HTMLBody: "<p>HTML Body</p>",
+			TextBody: "Text Body",
+		},
+	}
+
+	err := w.Work(ctx, job)
+	if err == nil {
+		t.Fatal("Work() should return error")
+	}
+
+	if !errors.Is(err, sendErr) {
+		t.Errorf("Work() error should wrap original error, got: %v", err)
+	}
+
+	if !strings.Contains(err.Error(), "メール送信に失敗") {
+		t.Errorf("Work() error message should contain 'メール送信に失敗', got: %v", err)
 	}
 }
