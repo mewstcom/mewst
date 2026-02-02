@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/riverqueue/river"
 
 	"github.com/mewstcom/mewst/internal/config"
 	"github.com/mewstcom/mewst/internal/database"
@@ -73,10 +72,9 @@ func main() {
 	}
 
 	// Workerの初期化
-	workers := river.NewWorkers()
-	river.AddWorker(workers, worker.NewSendEmailWorker(emailSender))
-
-	workerClient, err := worker.NewClient(context.Background(), db, workers)
+	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), worker.Dependencies{
+		EmailSender: emailSender,
+	})
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
 		os.Exit(1)

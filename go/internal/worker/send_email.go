@@ -2,6 +2,8 @@ package worker
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 
 	"github.com/riverqueue/river"
 
@@ -44,10 +46,27 @@ func NewSendEmailWorker(sender email.Sender) *SendEmailWorker {
 
 // Work はメール送信ジョブを実行する
 func (w *SendEmailWorker) Work(ctx context.Context, job *river.Job[SendEmailArgs]) error {
-	return w.sender.SendRaw(ctx, email.SendRawInput{
+	slog.InfoContext(ctx, "メール送信ジョブを開始します",
+		"to", job.Args.To,
+		"subject", job.Args.Subject,
+	)
+
+	err := w.sender.SendRaw(ctx, email.SendRawInput{
 		To:       job.Args.To,
 		Subject:  job.Args.Subject,
 		HTMLBody: job.Args.HTMLBody,
 		TextBody: job.Args.TextBody,
 	})
+	if err != nil {
+		slog.ErrorContext(ctx, "メール送信に失敗しました",
+			"to", job.Args.To,
+			"error", err,
+		)
+		return fmt.Errorf("メール送信に失敗: %w", err)
+	}
+
+	slog.InfoContext(ctx, "メール送信が完了しました",
+		"to", job.Args.To,
+	)
+	return nil
 }
