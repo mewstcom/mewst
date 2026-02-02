@@ -64,27 +64,9 @@ services:
       # https://docs.browserless.io/docs/docker.html#connection-timeout
       CONNECTION_TIMEOUT: 600000
 
-  difit:
-    build:
-      context: ./difit
-      dockerfile: ./Dockerfile.dev
-    volumes:
-      - .:/workspace
-      - difit-pnpm-store:/workspace/.pnpm-store
-      - difit-node-modules:/workspace/node_modules
-    ports:
-      - "4106:4966"
-    stdin_open: true
-    tty: true
-    working_dir: /workspace
-    environment:
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-
 volumes:
   op-config:
   app_gems_data:
   go-build-cache:
   go-mod-cache:
   postgresql16_data:
-  difit-pnpm-store:
-  difit-node-modules:

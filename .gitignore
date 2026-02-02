@@ -3,7 +3,5 @@
 /.claude
 /.env.op
 /.pnpm-store
-/.vscode
 /compose-up.sh
 /docker-compose.override.yml
-/docs

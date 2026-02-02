@@ -47,8 +47,9 @@ type Config struct {
 	AssetVersion string
 
 	// メール送信（Resend API）
-	ResendAPIKey string
-	EmailFrom    string
+	ResendAPIKey  string
+	EmailFrom     string
+	EmailFromName string
 }
 
 // Load は環境変数から設定を読み込みます
@@ -129,6 +130,7 @@ func Load() (*Config, error) {
 	// テスト環境では空文字列でも動作する（モックSenderを使用）
 	cfg.ResendAPIKey = os.Getenv("MEWST_RESEND_API_KEY")
 	cfg.EmailFrom = os.Getenv("MEWST_EMAIL_FROM")
+	cfg.EmailFromName = os.Getenv("MEWST_EMAIL_FROM_NAME")
 
 	return cfg, nil
 }

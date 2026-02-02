@@ -12,6 +12,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/riverqueue/river"
+
 	"github.com/mewstcom/mewst/internal/config"
 	"github.com/mewstcom/mewst/internal/database"
 	"github.com/mewstcom/mewst/internal/email"
@@ -26,6 +28,7 @@ import (
 	"github.com/mewstcom/mewst/internal/session"
 	"github.com/mewstcom/mewst/internal/turnstile"
 	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/internal/worker"
 )
 
 func main() {
@@ -63,15 +66,33 @@ func main() {
 	// メール送信クライアントの初期化
 	var emailSender email.Sender
 	if cfg.ResendAPIKey != "" && cfg.EmailFrom != "" {
-		emailSender = email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom)
+		emailSender = email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
 	} else {
 		emailSender = email.NewNoopSender()
 		slog.Warn("Resend APIキーまたは送信元メールアドレスが設定されていないため、メール送信は無効です")
 	}
 
+	// Workerの初期化
+	workers := river.NewWorkers()
+	river.AddWorker(workers, worker.NewSendEmailWorker(emailSender))
+
+	workerClient, err := worker.NewClient(context.Background(), db, workers)
+	if err != nil {
+		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
+		os.Exit(1)
+	}
+
+	// Workerを開始
+	if err := workerClient.Start(context.Background()); err != nil {
+		slog.Error("Workerの開始に失敗しました", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("Workerを開始しました")
+
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(sessionRepo)
-	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, emailSender)
+	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, emailSender).
+		WithWorkerClient(workerClient)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
 
 	// Turnstileクライアントの初期化
@@ -191,6 +212,13 @@ func main() {
 
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
+
+		// Workerを停止
+		if err := workerClient.Stop(shutdownCtx); err != nil {
+			slog.Error("Workerの停止に失敗しました", "error", err)
+		} else {
+			slog.Info("Workerを停止しました")
+		}
 
 		if err := srv.Shutdown(shutdownCtx); err != nil {
 			slog.Error("サーバーのシャットダウンに失敗しました", "error", err)
