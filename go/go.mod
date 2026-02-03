@@ -15,6 +15,7 @@ require (
 	github.com/riverqueue/river v0.30.2
 	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.30.2
 	github.com/riverqueue/river/rivertype v0.30.2
+	github.com/sqlc-dev/pqtype v0.3.0
 	golang.org/x/crypto v0.46.0
 	golang.org/x/text v0.33.0
 	golang.org/x/tools v0.40.0

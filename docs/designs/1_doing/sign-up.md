@@ -427,7 +427,7 @@ var ReservedAtnames = []string{
 
 ### フェーズ 1: 基盤整備
 
-- [ ] **1-1**: [Go] リポジトリ層の実装（Profile, UserProfile）
+- [x] **1-1**: [Go] リポジトリ層の実装（Profile, UserProfile）
 
   - `internal/repository/profile_repository.go` の作成
   - `internal/repository/user_profile_repository.go` の作成

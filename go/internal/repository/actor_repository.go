@@ -69,3 +69,28 @@ func (r *ActorRepository) GetByUserID(ctx context.Context, userID uuid.UUID) (*m
 		UpdatedAt: row.UpdatedAt,
 	}, nil
 }
+
+// CreateActorParams はアクター作成のパラメータ
+type CreateActorParams struct {
+	UserID    uuid.UUID
+	ProfileID uuid.UUID
+}
+
+// Create はアクターを作成する
+func (r *ActorRepository) Create(ctx context.Context, params CreateActorParams) (*model.Actor, error) {
+	row, err := r.queries.CreateActor(ctx, query.CreateActorParams{
+		UserID:    params.UserID,
+		ProfileID: params.ProfileID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Actor{
+		ID:        row.ID,
+		UserID:    row.UserID,
+		ProfileID: row.ProfileID,
+		CreatedAt: row.CreatedAt,
+		UpdatedAt: row.UpdatedAt,
+	}, nil
+}
