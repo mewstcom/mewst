@@ -2,7 +2,7 @@
 package manifest
 
 import (
-	"github.com/mewstcom/mewst/internal/config"
+	"github.com/mewstcom/mewst/go/internal/config"
 )
 
 // Handler はWeb App Manifest関連のHTTPハンドラーです

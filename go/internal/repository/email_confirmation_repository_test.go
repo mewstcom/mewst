@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 func TestEmailConfirmationRepository_Create(t *testing.T) {

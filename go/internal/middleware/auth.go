@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/session"
 )
 
 // contextKey はコンテキストに値を保存するための型

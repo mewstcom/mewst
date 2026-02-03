@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mewstcom/mewst/internal/clientip"
-	"github.com/mewstcom/mewst/internal/config"
+	"github.com/mewstcom/mewst/go/internal/clientip"
+	"github.com/mewstcom/mewst/go/internal/config"
 )
 
 // ReverseProxyMiddleware はRails版へのリバースプロキシミドルウェア

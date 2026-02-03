@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/query"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/query"
 )
 
 // EmailConfirmationRepository はメール確認のリポジトリ

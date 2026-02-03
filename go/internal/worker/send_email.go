@@ -7,7 +7,7 @@ import (
 
 	"github.com/riverqueue/river"
 
-	"github.com/mewstcom/mewst/internal/email"
+	"github.com/mewstcom/mewst/go/internal/email"
 )
 
 // SendEmailArgs はメール送信ジョブの引数

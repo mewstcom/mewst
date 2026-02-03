@@ -4,7 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/clientip"
+	"github.com/mewstcom/mewst/go/internal/clientip"
 )
 
 func TestGetClientIP(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/session"
 )
 
 // CSRFCookieName はCSRFトークンを保存するクッキー名

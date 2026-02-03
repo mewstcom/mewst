@@ -9,11 +9,11 @@ import (
 
 	"github.com/a-h/templ"
 
-	"github.com/mewstcom/mewst/internal/email"
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/repository"
-	email_confirmation_tmpl "github.com/mewstcom/mewst/internal/templates/emails/email_confirmation"
-	"github.com/mewstcom/mewst/internal/worker"
+	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	email_confirmation_tmpl "github.com/mewstcom/mewst/go/internal/templates/emails/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/worker"
 )
 
 // CreateEmailConfirmationUsecase はメール確認作成のユースケース

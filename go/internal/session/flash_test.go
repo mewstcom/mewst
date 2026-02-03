@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
+	"github.com/mewstcom/mewst/go/internal/config"
 )
 
 func TestFormErrors(t *testing.T) {

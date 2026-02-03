@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/middleware"
 )
 
 func TestCSRFMiddleware_GET(t *testing.T) {

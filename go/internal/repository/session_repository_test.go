@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 func TestSessionRepository_GetByToken(t *testing.T) {

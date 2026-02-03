@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/templates/emails/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/templates/emails/email_confirmation"
 )
 
 func TestResendSender_from_WithName(t *testing.T) {
