@@ -1031,6 +1031,85 @@ func TestPopularWorks(t *testing.T) {
 }
 ```
 
+### テーブル駆動テストの書き方
+
+複数のテストケースを効率的に実行するために、テーブル駆動テストを使用します。
+
+**基本パターン**:
+
+```go
+func TestCreateAccount(t *testing.T) {
+    t.Parallel()
+
+    db, tx := testutil.SetupTestDB(t)
+    ctx := context.Background()
+
+    // テスト対象のセットアップ（共通部分）
+    userRepo := repository.NewUserRepository(db).WithTx(tx)
+    profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+    uc := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo)
+
+    // テストケースの定義
+    tests := []struct {
+        name    string
+        input   usecase.CreateAccountInput
+        wantErr bool
+    }{
+        {
+            name: "正常系: 有効な入力でアカウントを作成できる",
+            input: usecase.CreateAccountInput{
+                Email:    "test@example.com",
+                Atname:   "testuser",
+                Password: "password123",
+            },
+            wantErr: false,
+        },
+        {
+            name: "正常系: 日本語パスワードでアカウントを作成できる",
+            input: usecase.CreateAccountInput{
+                Email:    "japanese@example.com",
+                Atname:   "japaneseuser",
+                Password: "パスワード123",
+            },
+            wantErr: false,
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            result, err := uc.Execute(ctx, tt.input)
+
+            if tt.wantErr {
+                if err == nil {
+                    t.Error("expected error but got nil")
+                }
+                return
+            }
+
+            if err != nil {
+                t.Fatalf("unexpected error: %v", err)
+            }
+
+            if result == nil {
+                t.Fatal("result should not be nil")
+            }
+        })
+    }
+}
+```
+
+**テーブル駆動テストを使用する場面**:
+
+- 同じロジックに対して複数の入力パターンをテストする場合
+- 正常系と異常系を網羅的にテストする場合
+- バリデーションルールを複数テストする場合
+
+**テーブル駆動テストを使用しない場面**:
+
+- テストケースごとに異なるセットアップが必要な場合
+- 各テストの検証ロジックが大きく異なる場合
+- 単一のシンプルなテストケースの場合
+
 ### テストヘルパーの使用
 
 `internal/testutil` パッケージには以下のヘルパーが用意されています：
