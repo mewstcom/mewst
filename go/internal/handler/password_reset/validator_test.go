@@ -13,48 +13,48 @@ func TestCreateValidator_Validate(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		validator     CreateValidator
+		input         CreateValidatorInput
 		wantErrors    bool
 		expectedField string
 	}{
 		{
 			name: "正常系: 有効なメールアドレス",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: サブドメインを含むメールアドレス",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user@mail.example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: 日本語ドメインのメールアドレス",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user@example.co.jp",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: プラス記号を含むメールアドレス",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user+tag@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: ドットを含むローカルパート",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user.name@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "異常系: メールアドレスが空",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "",
 			},
 			wantErrors:    true,
@@ -62,7 +62,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: @マークがない",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "userexample.com",
 			},
 			wantErrors:    true,
@@ -70,7 +70,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: ドメイン部分がない",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user@",
 			},
 			wantErrors:    true,
@@ -78,7 +78,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: ローカルパート部分がない",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "@example.com",
 			},
 			wantErrors:    true,
@@ -86,13 +86,15 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: 無効な文字を含む",
-			validator: CreateValidator{
+			input: CreateValidatorInput{
 				Email: "user name@example.com",
 			},
 			wantErrors:    true,
 			expectedField: "email",
 		},
 	}
+
+	validator := NewCreateValidator()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,18 +103,18 @@ func TestCreateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = templates.WithLocale(ctx, "ja")
 
-			formErrors := tt.validator.Validate(ctx)
+			result := validator.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
-				if !formErrors.HasErrors() {
+				if !result.FormErrors.HasErrors() {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
-				if tt.expectedField != "" && !formErrors.HasFieldError(tt.expectedField) {
+				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
 					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
-				if formErrors.HasErrors() {
-					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", formErrors)
+				if result.FormErrors.HasErrors() {
+					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", result.FormErrors)
 				}
 			}
 		})
@@ -125,17 +127,19 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
+	validator := NewCreateValidator()
+
 	t.Run("メールアドレス必須エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		validator := CreateValidator{Email: ""}
-		formErrors := validator.Validate(ctx)
+		input := CreateValidatorInput{Email: ""}
+		result := validator.Validate(ctx, input)
 
-		if !formErrors.HasFieldError("email") {
+		if !result.FormErrors.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := formErrors.GetFieldErrors("email")
+		emailErrors := result.FormErrors.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}
@@ -149,14 +153,14 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Run("メールアドレス形式エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		validator := CreateValidator{Email: "invalid-email"}
-		formErrors := validator.Validate(ctx)
+		input := CreateValidatorInput{Email: "invalid-email"}
+		result := validator.Validate(ctx, input)
 
-		if !formErrors.HasFieldError("email") {
+		if !result.FormErrors.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := formErrors.GetFieldErrors("email")
+		emailErrors := result.FormErrors.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}

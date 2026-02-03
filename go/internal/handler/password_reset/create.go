@@ -27,7 +27,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	// フォームデータを取得
-	validator := &CreateValidator{
+	input := CreateValidatorInput{
 		Email: r.FormValue("email"),
 	}
 
@@ -40,20 +40,21 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if !turnstileValid {
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, validator.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, input.Email, formErrors)
 		return
 	}
 
 	// フォームバリデーション
-	formErrors := validator.Validate(ctx)
-	if formErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, validator.Email, formErrors)
+	validator := NewCreateValidator()
+	result := validator.Validate(ctx, input)
+	if result.FormErrors.HasErrors() {
+		h.renderForm(w, ctx, csrfToken, input.Email, result.FormErrors)
 		return
 	}
 
 	// メール確認レコードを作成し、確認メールを送信
-	result, err := h.createEmailConfirmationUC.Execute(ctx, usecase.CreateEmailConfirmationInput{
-		Email:  validator.Email,
+	ucResult, err := h.createEmailConfirmationUC.Execute(ctx, usecase.CreateEmailConfirmationInput{
+		Email:  input.Email,
 		Event:  model.EmailConfirmationEventPasswordReset,
 		Locale: "ja",
 	})
@@ -66,10 +67,10 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// セッションにemail_confirmation_idを保存
-	h.sessionMgr.SetEmailConfirmationID(w, r, result.EmailConfirmation.ID.String())
+	h.sessionMgr.SetEmailConfirmationID(w, r, ucResult.EmailConfirmation.ID.String())
 
 	// /email_confirmationへリダイレクト
-	h.redirectToEmailConfirmation(w, r, ctx, result.EmailConfirmation.ID.String())
+	h.redirectToEmailConfirmation(w, r, ctx, ucResult.EmailConfirmation.ID.String())
 }
 
 // renderForm はパスワードリセットフォームを再表示する

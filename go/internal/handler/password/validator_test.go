@@ -13,41 +13,41 @@ func TestUpdateValidator_Validate(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		validator     UpdateValidator
+		input         UpdateValidatorInput
 		wantErrors    bool
 		expectedField string
 	}{
 		{
 			name: "正常系: 有効なパスワード（8文字）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "password",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: 有効なパスワード（長いパスワード）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "thisisaverylongpassword123!",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: 72バイトちょうどのパスワード",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: strings.Repeat("a", 72),
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: 記号を含むパスワード",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "P@ssw0rd!",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "異常系: パスワードが空",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "",
 			},
 			wantErrors:    true,
@@ -55,7 +55,7 @@ func TestUpdateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: パスワードが短すぎる（7文字）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "passwor",
 			},
 			wantErrors:    true,
@@ -63,7 +63,7 @@ func TestUpdateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: パスワードが短すぎる（1文字）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "a",
 			},
 			wantErrors:    true,
@@ -71,7 +71,7 @@ func TestUpdateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: パスワードが長すぎる（73バイト）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: strings.Repeat("a", 73),
 			},
 			wantErrors:    true,
@@ -79,20 +79,22 @@ func TestUpdateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "正常系: 日本語を含むパスワード（8文字以上）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "パスワード123",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "異常系: 日本語のみで8文字未満（文字数カウント）",
-			validator: UpdateValidator{
+			input: UpdateValidatorInput{
 				Password: "パスワード12",
 			},
 			wantErrors:    true,
 			expectedField: "password",
 		},
 	}
+
+	validator := NewUpdateValidator()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,18 +103,18 @@ func TestUpdateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = templates.WithLocale(ctx, "ja")
 
-			formErrors := tt.validator.Validate(ctx)
+			result := validator.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
-				if !formErrors.HasErrors() {
+				if !result.FormErrors.HasErrors() {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
-				if tt.expectedField != "" && !formErrors.HasFieldError(tt.expectedField) {
+				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
 					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
-				if formErrors.HasErrors() {
-					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", formErrors)
+				if result.FormErrors.HasErrors() {
+					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", result.FormErrors)
 				}
 			}
 		})
@@ -125,13 +127,15 @@ func TestUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
+	validator := NewUpdateValidator()
+
 	t.Run("境界値: 7文字（NG）", func(t *testing.T) {
 		t.Parallel()
 
-		validator := UpdateValidator{Password: "1234567"}
-		formErrors := validator.Validate(ctx)
+		input := UpdateValidatorInput{Password: "1234567"}
+		result := validator.Validate(ctx, input)
 
-		if !formErrors.HasFieldError("password") {
+		if !result.FormErrors.HasFieldError("password") {
 			t.Error("7文字のパスワードはエラーになるべき")
 		}
 	})
@@ -139,10 +143,10 @@ func TestUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 	t.Run("境界値: 8文字（OK）", func(t *testing.T) {
 		t.Parallel()
 
-		validator := UpdateValidator{Password: "12345678"}
-		formErrors := validator.Validate(ctx)
+		input := UpdateValidatorInput{Password: "12345678"}
+		result := validator.Validate(ctx, input)
 
-		if formErrors.HasErrors() {
+		if result.FormErrors.HasErrors() {
 			t.Error("8文字のパスワードはエラーにならないべき")
 		}
 	})
@@ -150,10 +154,10 @@ func TestUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 	t.Run("境界値: 72バイト（OK）", func(t *testing.T) {
 		t.Parallel()
 
-		validator := UpdateValidator{Password: strings.Repeat("a", 72)}
-		formErrors := validator.Validate(ctx)
+		input := UpdateValidatorInput{Password: strings.Repeat("a", 72)}
+		result := validator.Validate(ctx, input)
 
-		if formErrors.HasErrors() {
+		if result.FormErrors.HasErrors() {
 			t.Error("72バイトのパスワードはエラーにならないべき")
 		}
 	})
@@ -161,10 +165,10 @@ func TestUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 	t.Run("境界値: 73バイト（NG）", func(t *testing.T) {
 		t.Parallel()
 
-		validator := UpdateValidator{Password: strings.Repeat("a", 73)}
-		formErrors := validator.Validate(ctx)
+		input := UpdateValidatorInput{Password: strings.Repeat("a", 73)}
+		result := validator.Validate(ctx, input)
 
-		if !formErrors.HasFieldError("password") {
+		if !result.FormErrors.HasFieldError("password") {
 			t.Error("73バイトのパスワードはエラーになるべき")
 		}
 	})
