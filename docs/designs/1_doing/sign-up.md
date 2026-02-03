@@ -53,6 +53,7 @@ Rails 版 Mewst と同じ DB を共有するため、Go 版で作成されたア
 - Cloudflare Turnstile による Bot 対策を実施（Rails 版にはなかった新機能）
 - メールアドレスの重複チェックを行う
 - 確認コードは暗号学的に安全な乱数で生成する
+- PostgreSQL ベースのレート制限を実施（Wikino の実装を参考）
 
 #### 国際化
 
@@ -154,6 +155,24 @@ CREATE TABLE public.email_confirmations (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
+```
+
+#### rate_limits テーブル（新規）
+
+```sql
+CREATE TABLE rate_limits (
+    id VARCHAR NOT NULL PRIMARY KEY DEFAULT generate_ulid(),
+    key VARCHAR NOT NULL,
+    window_start TIMESTAMP WITH TIME ZONE NOT NULL,
+    count INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    UNIQUE(key, window_start)
+);
+
+-- インデックス
+CREATE INDEX idx_rate_limits_key_window_start ON rate_limits(key, window_start);
+CREATE INDEX idx_rate_limits_window_start ON rate_limits(window_start);
 ```
 
 ### API 設計（ルーティング）
@@ -373,7 +392,7 @@ func HashPassword(password string) (string, error) {
 **アットネーム**:
 - 必須
 - フォーマット: `/^[A-Za-z0-9_]+$/`（半角英数字とアンダースコアのみ）
-- 長さ: 2-20文字
+- 長さ: 最大20文字
 - 重複チェック（profiles テーブル検索）
 - 予約名チェック（admin, support, help など）
 
@@ -426,6 +445,15 @@ var ReservedAtnames = []string{
   - bcrypt パスワードハッシュ化
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 300 行（実装 120 行 + テスト 180 行）
+
+- [ ] **1-3**: [Go] レート制限の実装（Wikino の実装を移植）
+
+  - `db/migrations/YYYYMMDDHHMMSS_create_rate_limits.sql` の作成
+  - `db/queries/rate_limits.sql` の作成
+  - `internal/ratelimit/limiter.go` の作成
+  - sqlc コード生成
+  - **想定ファイル数**: 約 4 ファイル（実装 3 + テスト 1）
+  - **想定行数**: 約 250 行（実装 150 行 + テスト 100 行）
 
 ### フェーズ 2: サインアップフォーム（メールアドレス入力）
 
@@ -503,7 +531,6 @@ var ReservedAtnames = []string{
 
 - **サインアップ停止機能（SignUpStopper）**: Rails 版には存在するが、Go 版では当面不要
 - **ソーシャルログイン（OAuth）**: 別タスクで実装予定
-- **レート制限**: 将来的に実装予定（Turnstile で一定のBot対策は実施）
 - **メール確認の再送機能**: 別タスクで実装予定
 - **プロフィール画像設定**: 別タスクで実装予定
 
@@ -513,6 +540,7 @@ var ReservedAtnames = []string{
 - **Go 版 Mewst ログイン実装**: `/workspace/go/internal/handler/sign_in/`
 - **Go 版 Mewst メール確認実装**: `/workspace/go/internal/handler/email_confirmation/`
 - **Annict Go 版サインアップ実装**: `/annict/go/internal/handler/sign_up/`
+- **Wikino レート制限実装**: `/wikino/go/internal/ratelimit/limiter.go`
 - **Go CLAUDE.md**: `/workspace/go/CLAUDE.md`
 - [chi ルーター](https://github.com/go-chi/chi)
 - [sqlc](https://docs.sqlc.dev/)
