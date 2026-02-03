@@ -7,12 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
-	handler "github.com/mewstcom/mewst/internal/handler/sign_out"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/config"
+	handler "github.com/mewstcom/mewst/go/internal/handler/sign_out"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 // setupTestHandler はテスト用のハンドラーをセットアップする

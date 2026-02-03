@@ -5,14 +5,14 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	password_reset_page "github.com/mewstcom/mewst/internal/templates/pages/password_reset"
-	"github.com/mewstcom/mewst/internal/usecase"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	password_reset_page "github.com/mewstcom/mewst/go/internal/templates/pages/password_reset"
+	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Create はパスワードリセット処理を実行する (POST /password_reset)
@@ -27,7 +27,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	// フォームデータを取得
-	req := &CreateRequest{
+	validator := &CreateValidator{
 		Email: r.FormValue("email"),
 	}
 
@@ -40,20 +40,20 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if !turnstileValid {
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, validator.Email, formErrors)
 		return
 	}
 
 	// フォームバリデーション
-	formErrors := req.Validate(ctx)
+	formErrors := validator.Validate(ctx)
 	if formErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, req.Email, formErrors)
+		h.renderForm(w, ctx, csrfToken, validator.Email, formErrors)
 		return
 	}
 
 	// メール確認レコードを作成し、確認メールを送信
 	result, err := h.createEmailConfirmationUC.Execute(ctx, usecase.CreateEmailConfirmationInput{
-		Email:  req.Email,
+		Email:  validator.Email,
 		Event:  model.EmailConfirmationEventPasswordReset,
 		Locale: "ja",
 	})

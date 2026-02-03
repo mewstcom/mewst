@@ -2,20 +2,19 @@ package email_confirmation
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	email_confirmation_page "github.com/mewstcom/mewst/internal/templates/pages/email_confirmation"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Create は確認コードを検証する (POST /email_confirmation)
@@ -46,42 +45,30 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	req := &CreateRequest{
+	input := CreateValidatorInput{
+		ID:   id,
 		Code: r.FormValue("code"),
 	}
 
-	// フォームバリデーション
-	formErrors := req.Validate(ctx)
-	if formErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, req.Code, formErrors)
-		return
-	}
-
-	// 有効な確認レコードを取得
-	emailConfirmation, err := h.emailConfirmationRepo.GetActiveByID(ctx, id)
-	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			// 見つからないまたは期限切れの場合はエラー表示
-			formErrors := session.NewFormErrors()
-			formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-			h.renderForm(w, ctx, csrfToken, req.Code, formErrors)
-			return
-		}
-		slog.ErrorContext(ctx, "メール確認レコードの取得に失敗", "error", err)
+	// バリデーション（形式バリデーション + 状態バリデーション）
+	result := h.validator.Validate(ctx, input)
+	if result.Err != nil {
+		slog.ErrorContext(ctx, "メール確認レコードの取得に失敗", "error", result.Err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	// 確認コードを検証
-	if emailConfirmation.Code != req.Code {
-		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-		h.renderForm(w, ctx, csrfToken, req.Code, formErrors)
+	if result.FormErrors != nil && result.FormErrors.HasErrors() {
+		h.renderForm(w, ctx, csrfToken, input.Code, result.FormErrors)
 		return
 	}
 
-	// 確認を成功としてマーク
-	if err := h.emailConfirmationRepo.MarkAsSucceeded(ctx, id); err != nil {
+	emailConfirmation := result.EmailConfirmation
+
+	// UseCaseで確認を成功としてマーク
+	_, err = h.markEmailAsConfirmedUC.Execute(ctx, usecase.MarkEmailAsConfirmedInput{
+		EmailConfirmationID: id,
+	})
+	if err != nil {
 		slog.ErrorContext(ctx, "メール確認の成功マークに失敗", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

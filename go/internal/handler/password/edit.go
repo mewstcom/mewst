@@ -7,13 +7,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	password_page "github.com/mewstcom/mewst/internal/templates/pages/password"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	password_page "github.com/mewstcom/mewst/go/internal/templates/pages/password"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Edit は新しいパスワード入力フォームを表示する (GET /password/edit)

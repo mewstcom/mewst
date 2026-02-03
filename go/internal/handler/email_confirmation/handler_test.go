@@ -10,13 +10,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mewstcom/mewst/internal/config"
-	handler "github.com/mewstcom/mewst/internal/handler/email_confirmation"
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/config"
+	handler "github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
@@ -40,7 +41,10 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
-	h := handler.NewHandler(cfg, sessionMgr, emailConfirmRepo)
+	// UseCaseの初期化
+	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmRepo)
+
+	h := handler.NewHandler(cfg, sessionMgr, emailConfirmRepo, markEmailAsConfirmedUC)
 
 	return h, cfg
 }

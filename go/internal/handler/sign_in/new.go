@@ -3,12 +3,12 @@ package sign_in
 import (
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	sign_in_page "github.com/mewstcom/mewst/internal/templates/pages/sign_in"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	sign_in_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_in"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // New はログインフォームを表示する (GET /sign_in)

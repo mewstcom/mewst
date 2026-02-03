@@ -7,11 +7,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // Update はパスワードを更新する (PATCH /password)
@@ -55,12 +55,12 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	req := &UpdateRequest{
+	validator := &UpdateValidator{
 		Password: r.FormValue("password"),
 	}
 
 	// フォームバリデーション
-	formErrors := req.Validate(ctx)
+	formErrors := validator.Validate(ctx)
 	if formErrors.HasErrors() {
 		h.renderEditForm(w, ctx, csrfToken, formErrors)
 		return
@@ -69,7 +69,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// パスワードを更新
 	input := usecase.UpdatePasswordInput{
 		Email:    emailConfirmation.Email,
-		Password: req.Password,
+		Password: validator.Password,
 	}
 	if err := h.updatePasswordUC.Execute(ctx, input); err != nil {
 		slog.ErrorContext(ctx, "パスワードの更新に失敗", "error", err, "email", emailConfirmation.Email)
