@@ -381,11 +381,29 @@ expect(page).not_to have_css(".loading-spinner")
   - `forms.ja.yml`, `forms.en.yml` - フォーム
   - `meta.ja.yml`, `meta.en.yml` - メタ情報
 - **ビュー**: `t('.message_key')` または `I18n.t('message_key')` で翻訳を呼び出す
+- **モデル**: `human_attribute_name` でカラム名を国際化
 - **対象メッセージ**:
   - ページタイトル、見出し、ラベル、ボタンテキスト
   - エラーメッセージ、成功メッセージ
   - ヘルプテキスト、説明文
   - ログメッセージや開発者向けエラーは日本語のままで OK
+
+#### バリデーションエラーメッセージの国際化
+
+ActiveRecord のバリデーションエラーメッセージも国際化します：
+
+```yaml
+# config/locales/ja.yml
+ja:
+  activerecord:
+    errors:
+      models:
+        user_record:
+          attributes:
+            email:
+              blank: "を入力してください"
+              invalid: "の形式が正しくありません"
+```
 
 ## テスト戦略
 
@@ -510,6 +528,15 @@ make db-migrate
 - **スキーマファイル**: `db/structure.sql` （PostgreSQL 形式）
 - **Go 版との共有**: Rails 版のマイグレーションが DB スキーマを管理
 - **ULID**: 主キーには ULID を使用（`generate_ulid()` 関数で生成）
+
+## デバッグ・トラブルシューティング
+
+よくある問題とその解決方法：
+
+- **Sorbet エラー**: `make sorbet-update` で型定義を更新
+- **オートローディングエラー**: `make zeitwerk` でチェック
+- **フォーマットエラー**: `make fmt` または `yarn prettier . --write` で修正
+- **Lint エラー**: 各種 Lint コマンド（`make lint`, `bin/erb_lint --lint-all`, `yarn eslint .`）で修正
 
 ## 関連ドキュメント
 
