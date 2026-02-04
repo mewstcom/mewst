@@ -89,7 +89,7 @@ func (h *Handler) getRedirectPath(event model.EmailConfirmationEvent) string {
 	case model.EmailConfirmationEventPasswordReset:
 		return "/password/edit"
 	case model.EmailConfirmationEventSignUp:
-		return "/sign_up/new_account"
+		return "/accounts/new"
 	case model.EmailConfirmationEventEmailUpdate:
 		return "/settings/email"
 	default:
