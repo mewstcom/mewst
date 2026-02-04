@@ -185,3 +185,31 @@ other = "Failed to update password. Please try again."
 description = "Password reset success message"
 other = "Password updated. Please sign in with your new password."
 
+# ============================================
+# Sign up
+# ============================================
+
+[sign_up_description]
+description = "Sign up description"
+other = "Enter your email address. We will send you a confirmation code."
+
+[btn_send_confirmation_code]
+description = "Send confirmation code button"
+other = "Send confirmation code"
+
+[already_have_account]
+description = "Already have an account"
+other = "Already have an account? Sign in"
+
+[flash_sign_up_email_sent]
+description = "Sign up email sent success message"
+other = "Confirmation code sent. Please check your email."
+
+[error_email_already_taken]
+description = "Email already taken error"
+other = "This email is already registered"
+
+[error_rate_limit_exceeded]
+description = "Rate limit exceeded error"
+other = "Too many requests. Please try again later."
+

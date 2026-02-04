@@ -185,3 +185,31 @@ other = "パスワードの更新に失敗しました。もう一度お試し�
 description = "パスワードリセット成功メッセージ"
 other = "パスワードを更新しました。新しいパスワードでログインしてください。"
 
+# ============================================
+# サインアップ
+# ============================================
+
+[sign_up_description]
+description = "サインアップの説明"
+other = "メールアドレスを入力してください。確認コードをお送りします。"
+
+[btn_send_confirmation_code]
+description = "確認コード送信ボタン"
+other = "確認コードを送信"
+
+[already_have_account]
+description = "既にアカウントをお持ちの方"
+other = "既にアカウントをお持ちの方はログイン"
+
+[flash_sign_up_email_sent]
+description = "サインアップメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
+[error_email_already_taken]
+description = "メールアドレスが既に使用されているエラー"
+other = "このメールアドレスは既に登録されています"
+
+[error_rate_limit_exceeded]
+description = "レート制限超過エラー"
+other = "リクエストが多すぎます。しばらく経ってからお試しください。"
+
