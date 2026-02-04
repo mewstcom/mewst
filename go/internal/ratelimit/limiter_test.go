@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -15,7 +16,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:check_allowed",
@@ -73,7 +75,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:check_exceeded",
@@ -109,7 +112,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input1 := CheckInput{
 			Key:    "test:key1",
@@ -147,7 +151,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "",
@@ -165,7 +170,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:invalid_limit",
@@ -183,7 +189,8 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:invalid_window",
@@ -205,7 +212,8 @@ func TestLimiter_Allow(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:allow_ok",
@@ -223,7 +231,8 @@ func TestLimiter_Allow(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		input := CheckInput{
 			Key:    "test:allow_exceeded",
@@ -252,7 +261,8 @@ func TestLimiter_CleanupOldRecords(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		limiter := NewLimiter(tx)
+		repo := repository.NewRateLimitRepository(tx)
+		limiter := NewLimiter(repo)
 
 		// レコードを作成
 		input := CheckInput{
