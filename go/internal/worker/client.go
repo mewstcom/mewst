@@ -48,6 +48,7 @@ func NewClient(ctx context.Context, databaseURL string, deps Dependencies) (*Cli
 	// ワーカーの登録
 	workers := river.NewWorkers()
 	river.AddWorker(workers, NewSendEmailWorker(deps.EmailSender))
+	river.AddWorker(workers, NewSendEmailConfirmationWorker(deps.EmailSender))
 
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
 		Queues: map[string]river.QueueConfig{

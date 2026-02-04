@@ -275,6 +275,15 @@ type Profile struct {
 	AvatarKind    string       `db:"avatar_kind"`
 }
 
+type RateLimit struct {
+	ID          uuid.UUID `db:"id"`
+	Key         string    `db:"key"`
+	WindowStart time.Time `db:"window_start"`
+	Count       int32     `db:"count"`
+	CreatedAt   time.Time `db:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at"`
+}
+
 type RiverClient struct {
 	ID        string          `db:"id"`
 	CreatedAt time.Time       `db:"created_at"`

@@ -1,44 +1,40 @@
 package usecase
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"fmt"
+	"log/slog"
 	"math/big"
 
-	"github.com/a-h/templ"
+	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/rivertype"
 
-	"github.com/mewstcom/mewst/go/internal/email"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	email_confirmation_tmpl "github.com/mewstcom/mewst/go/internal/templates/emails/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/worker"
 )
+
+// JobInserter はジョブをキューに追加するインターフェース
+type JobInserter interface {
+	Insert(ctx context.Context, args river.JobArgs) (*rivertype.JobInsertResult, error)
+}
 
 // CreateEmailConfirmationUsecase はメール確認作成のユースケース
 type CreateEmailConfirmationUsecase struct {
 	emailConfirmRepo *repository.EmailConfirmationRepository
-	emailSender      email.Sender
-	workerClient     *worker.Client // nilの場合は同期送信
+	inserter         JobInserter
 }
 
 // NewCreateEmailConfirmationUsecase はCreateEmailConfirmationUsecaseを生成する
 func NewCreateEmailConfirmationUsecase(
 	emailConfirmRepo *repository.EmailConfirmationRepository,
-	emailSender email.Sender,
+	inserter JobInserter,
 ) *CreateEmailConfirmationUsecase {
 	return &CreateEmailConfirmationUsecase{
 		emailConfirmRepo: emailConfirmRepo,
-		emailSender:      emailSender,
-		workerClient:     nil,
+		inserter:         inserter,
 	}
-}
-
-// WithWorkerClient はWorkerクライアントを設定する（非同期メール送信用）
-func (uc *CreateEmailConfirmationUsecase) WithWorkerClient(client *worker.Client) *CreateEmailConfirmationUsecase {
-	uc.workerClient = client
-	return uc
 }
 
 // CreateEmailConfirmationInput はメール確認作成の入力パラメータ
@@ -53,7 +49,7 @@ type CreateEmailConfirmationResult struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute はメール確認を作成し、確認メールを送信する
+// Execute はメール確認を作成し、確認メール送信ジョブをエンキューする
 func (uc *CreateEmailConfirmationUsecase) Execute(ctx context.Context, input CreateEmailConfirmationInput) (*CreateEmailConfirmationResult, error) {
 	// 6桁のランダムなコードを生成
 	code, err := generateConfirmationCode()
@@ -71,58 +67,27 @@ func (uc *CreateEmailConfirmationUsecase) Execute(ctx context.Context, input Cre
 		return nil, fmt.Errorf("メール確認レコードの作成に失敗: %w", err)
 	}
 
-	// メールテンプレートを選択（ロケールに基づく）
-	htmlBody, textBody := getEmailTemplates(input.Locale, input.Email, code)
-	subject := getEmailSubject(input.Locale)
-
-	// Workerクライアントがある場合は非同期送信、ない場合は同期送信
-	if uc.workerClient != nil {
-		// テンプレートをレンダリング
-		htmlStr, textStr, err := renderEmailTemplates(ctx, htmlBody, textBody)
-		if err != nil {
-			return nil, err
-		}
-
-		// ジョブをキューに追加
-		_, err = uc.workerClient.Insert(ctx, worker.SendEmailArgs{
-			To:       input.Email,
-			Subject:  subject,
-			HTMLBody: htmlStr,
-			TextBody: textStr,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("メール送信ジョブの登録に失敗: %w", err)
-		}
+	// メール送信ジョブをエンキュー（テンプレートのレンダリングはWorkerで行う）
+	_, err = uc.inserter.Insert(ctx, worker.SendEmailConfirmationArgs{
+		Email:  input.Email,
+		Code:   code,
+		Locale: input.Locale,
+	})
+	if err != nil {
+		// ジョブエンキューに失敗してもコードは有効なので、エラーログを出力して続行
+		slog.ErrorContext(ctx, "メール送信ジョブのエンキューに失敗しました",
+			"email", input.Email,
+			"error", err,
+		)
 	} else {
-		// 同期でメール送信
-		if err := uc.emailSender.Send(ctx, email.SendInput{
-			To:       input.Email,
-			Subject:  subject,
-			HTMLBody: htmlBody,
-			TextBody: textBody,
-		}); err != nil {
-			return nil, fmt.Errorf("確認メールの送信に失敗: %w", err)
-		}
+		slog.InfoContext(ctx, "メール送信ジョブをエンキューしました",
+			"email", input.Email,
+		)
 	}
 
 	return &CreateEmailConfirmationResult{
 		EmailConfirmation: ec,
 	}, nil
-}
-
-// renderEmailTemplates はメールテンプレートをレンダリングして文字列に変換する
-func renderEmailTemplates(ctx context.Context, htmlBody, textBody templ.Component) (string, string, error) {
-	var htmlBuf bytes.Buffer
-	if err := htmlBody.Render(ctx, &htmlBuf); err != nil {
-		return "", "", fmt.Errorf("HTMLテンプレートのレンダリングに失敗: %w", err)
-	}
-
-	var textBuf bytes.Buffer
-	if err := textBody.Render(ctx, &textBuf); err != nil {
-		return "", "", fmt.Errorf("テキストテンプレートのレンダリングに失敗: %w", err)
-	}
-
-	return htmlBuf.String(), textBuf.String(), nil
 }
 
 // generateConfirmationCode は6桁のランダムな数字コードを生成する
@@ -134,24 +99,4 @@ func generateConfirmationCode() (string, error) {
 	}
 	// 6桁になるようにゼロ埋め
 	return fmt.Sprintf("%06d", n.Int64()), nil
-}
-
-// getEmailTemplates はロケールに基づいてメールテンプレートを返す
-func getEmailTemplates(locale, emailAddr, code string) (htmlBody, textBody templ.Component) {
-	switch locale {
-	case "en":
-		return email_confirmation_tmpl.EnHTML(emailAddr, code), email_confirmation_tmpl.EnText(emailAddr, code)
-	default:
-		return email_confirmation_tmpl.JaHTML(emailAddr, code), email_confirmation_tmpl.JaText(emailAddr, code)
-	}
-}
-
-// getEmailSubject はロケールに基づいてメール件名を返す
-func getEmailSubject(locale string) string {
-	switch locale {
-	case "en":
-		return "[Mewst] Confirmation code"
-	default:
-		return "[Mewst] 確認用コード"
-	}
 }

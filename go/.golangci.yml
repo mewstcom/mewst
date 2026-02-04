@@ -63,7 +63,7 @@ linters:
         # 直接のデータアクセスとビジネスロジックに依存しない
         templates-layer:
           files:
-            - "**/internal/templates/**/*.go"
+            - "**/internal/templates/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "TemplatesはQueryに依存できません。"
@@ -82,7 +82,7 @@ linters:
         # 他のPresentation層パッケージに依存しない
         viewmodel-layer:
           files:
-            - "**/internal/viewmodel/**/*.go"
+            - "**/internal/viewmodel/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "ViewModelはQueryに依存できません。"
@@ -99,7 +99,7 @@ linters:
         # QueryへのアクセスはRepositoryを経由
         handler-layer:
           files:
-            - "**/internal/handler/**/*.go"
+            - "**/internal/handler/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "HandlerはQueryに直接依存できません。Repositoryを経由してください。"
@@ -134,7 +134,7 @@ linters:
         # 他のPresentation層パッケージ、Application層、Domain/Infrastructure層に依存しない
         middleware-layer:
           files:
-            - "**/internal/middleware/**/*.go"
+            - "**/internal/middleware/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "MiddlewareはQueryに依存できません。"
@@ -153,7 +153,7 @@ linters:
         # Presentation層に依存しない
         application-layer:
           files:
-            - "**/internal/usecase/**/*.go"
+            - "**/internal/usecase/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "Application層はQueryに直接依存できません。Repositoryを経由してください。"
@@ -170,7 +170,7 @@ linters:
         # データアクセス層、上位層に依存しない
         model-layer:
           files:
-            - "**/internal/model/**/*.go"
+            - "**/internal/model/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "ModelはQueryに依存できません。"
@@ -187,11 +187,30 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "ModelはPresentation層に依存できません。"
 
+        # RateLimit層のルール: インフラストラクチャユーティリティ
+        # Queryに直接依存せず、Repositoryを経由する
+        ratelimit-layer:
+          files:
+            - "**/internal/ratelimit/*.go"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RateLimitはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RateLimitはPresentation層に依存できません。"
+
         # Repository層のルール: データアクセス層
         # 上位層に依存しない
         repository-layer:
           files:
-            - "**/internal/repository/**/*.go"
+            - "**/internal/repository/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
               desc: "RepositoryはApplication層に依存できません。"
@@ -208,7 +227,7 @@ linters:
         # 上位層に依存しない
         query-layer:
           files:
-            - "**/internal/query/**/*.go"
+            - "**/internal/query/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/repository
               desc: "QueryはRepositoryに依存できません。"

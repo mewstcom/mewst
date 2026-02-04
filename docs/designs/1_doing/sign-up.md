@@ -449,7 +449,7 @@ var ReservedAtnames = []string{
     - 既に登録済みのメールアドレスでの登録エラー
     - 既に使用されているアットネームでの登録エラー
 
-- [ ] **1-3**: [Go] レート制限の実装（Wikino の実装を移植）
+- [x] **1-3**: [Go] レート制限の実装（Wikino の実装を移植）
 
   - `db/migrations/YYYYMMDDHHMMSS_create_rate_limits.sql` の作成
   - `db/queries/rate_limits.sql` の作成

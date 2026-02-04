@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,6 +18,8 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
 	CreateUserProfile(ctx context.Context, arg CreateUserProfileParams) (UserProfile, error)
+	// 指定された時刻より古いRate Limitレコードを削除する
+	DeleteOldRateLimits(ctx context.Context, windowStart time.Time) error
 	DeleteSessionByToken(ctx context.Context, token string) error
 	ExistsProfileByAtname(ctx context.Context, atname string) (bool, error)
 	ExistsUserByEmail(ctx context.Context, email string) (bool, error)
@@ -26,6 +29,8 @@ type Querier interface {
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetProfileByAtname(ctx context.Context, atname string) (GetProfileByAtnameRow, error)
 	GetProfileByID(ctx context.Context, id uuid.UUID) (GetProfileByIDRow, error)
+	// 指定されたkeyとウィンドウ開始時刻でのカウントを取得する
+	GetRateLimitCount(ctx context.Context, arg GetRateLimitCountParams) (int32, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)
 	GetSucceededEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
@@ -33,6 +38,9 @@ type Querier interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserProfileByProfileID(ctx context.Context, profileID uuid.UUID) (UserProfile, error)
 	GetUserProfileByUserID(ctx context.Context, userID uuid.UUID) (UserProfile, error)
+	// Rate Limit カウンターをインクリメントする（UPSERT）
+	// 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
+	IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error)
 	MarkEmailConfirmationAsSucceeded(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 }
