@@ -428,6 +428,65 @@ func TestCreate_WithoutEmailConfirmationID(t *testing.T) {
 	}
 }
 
+func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx)
+
+	// sign_upイベントのメール確認レコードを作成
+	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
+		WithEmail("test@example.com").
+		WithCode("123456").
+		WithEvent("sign_up").
+		Build()
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// フォームデータを作成
+	form := url.Values{}
+	form.Set("code", "123456")
+	form.Set("csrf_token", "test-csrf-token")
+
+	req := httptest.NewRequest(http.MethodPost, "/email_confirmation", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.AddCookie(&http.Cookie{
+		Name:  session.EmailConfirmationCookieName,
+		Value: emailConfirmID.String(),
+	})
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	// リダイレクトを検証
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// /accounts/newへリダイレクトを検証
+	location := rr.Header().Get("Location")
+	if location != "/accounts/new" {
+		t.Errorf("リダイレクト先が不正: got %v, want /accounts/new", location)
+	}
+
+	// フラッシュメッセージクッキーが設定されているか確認
+	cookies := rr.Result().Cookies()
+	var flashCookie *http.Cookie
+	for _, c := range cookies {
+		if c.Name == session.FlashCookieName {
+			flashCookie = c
+			break
+		}
+	}
+	if flashCookie == nil {
+		t.Error("フラッシュメッセージクッキーが設定されていません")
+	}
+}
+
 func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 	t.Parallel()
 

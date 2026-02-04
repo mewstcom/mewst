@@ -469,7 +469,7 @@ var ReservedAtnames = []string{
   - **想定ファイル数**: 約 8 ファイル（実装 4 + テスト 4）
   - **想定行数**: 約 500 行（実装 200 行 + テスト 300 行）
 
-- [ ] **2-2**: [Go] サインアップテンプレートの実装
+- [x] **2-2**: [Go] サインアップテンプレートの実装
 
   - `internal/templates/pages/sign_up/new.templ` の作成
   - 国際化対応（`ja.toml`, `en.toml` への追加）
@@ -478,7 +478,7 @@ var ReservedAtnames = []string{
 
 ### フェーズ 3: メール確認フローの拡張
 
-- [ ] **3-1**: [Go] email_confirmation ハンドラーの拡張
+- [x] **3-1**: [Go] email_confirmation ハンドラーの拡張
 
   - event が "sign_up" の場合のリダイレクト先を `/accounts/new` に変更
   - セッションへの email_confirmation_id 保存処理の追加
