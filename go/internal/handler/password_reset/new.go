@@ -3,12 +3,12 @@ package password_reset
 import (
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	password_reset_page "github.com/mewstcom/mewst/internal/templates/pages/password_reset"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	password_reset_page "github.com/mewstcom/mewst/go/internal/templates/pages/password_reset"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // New はパスワードリセットフォームを表示する (GET /password_reset)

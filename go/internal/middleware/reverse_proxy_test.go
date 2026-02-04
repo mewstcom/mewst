@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
+	"github.com/mewstcom/mewst/go/internal/config"
 )
 
 func TestReverseProxyMiddleware_GoHandledPaths(t *testing.T) {

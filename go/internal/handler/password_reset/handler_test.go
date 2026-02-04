@@ -9,15 +9,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/email"
-	handler "github.com/mewstcom/mewst/internal/handler/password_reset"
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/testutil"
-	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/email"
+	handler "github.com/mewstcom/mewst/go/internal/handler/password_reset"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // mockTurnstile はテスト用のTurnstile検証モック

@@ -59,6 +59,45 @@ Repository と Model を同じ層として扱うことで、依存関係がシ�
 - **保守性**: Model の変更が Repository に集約される
 - **可読性**: コードの見通しが良くなる
 
+#### 命名規則
+
+Model と Repository のファイル名・構造体名は統一します：
+
+| Model          | Repository                 | ファイル名           |
+| -------------- | -------------------------- | -------------------- |
+| `Work`         | `WorkRepository`           | `work.go`            |
+| `User`         | `UserRepository`           | `user.go`            |
+| `UserCalendar` | `UserCalendarRepository`   | `user_calendar.go`   |
+
+**命名のルール**:
+
+- **ファイル名**: スネークケース（`user_calendar.go`）
+- **構造体名**: パスカルケース（`UserCalendar`, `UserCalendarRepository`）
+- **Model と Repository は同じ名前**: `model/user_calendar.go` ↔ `repository/user_calendar.go`
+
+#### Query ファイルの命名
+
+Query ファイルは用途に応じて 2 つのパターンがあります：
+
+**1. テーブル名ベース（単純な CRUD 操作）**:
+
+- 単一テーブルに対する CRUD 操作
+- 例: `users.sql`, `works.sql`, `sessions.sql`
+
+**2. モデル/機能名ベース（複雑なクエリ）**:
+
+- 複数テーブルを JOIN するクエリ
+- 特定のモデルを構築するためのクエリ
+- 例: `user_calendar.sql`（users, library_entries, slots, works を JOIN）
+
+```
+internal/query/queries/
+├── users.sql           # usersテーブルのCRUD
+├── works.sql           # worksテーブルのCRUD
+├── sessions.sql        # sessionsテーブルのCRUD
+└── user_calendar.sql   # UserCalendarモデル用の複合クエリ
+```
+
 ### データの流れ
 
 1. **Query** (Domain/Infrastructure 層): SQL クエリを実行し、クエリ結果（`query.GetPopularWorksRow`など）を返す
@@ -360,6 +399,48 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 ### 概要
 
 ビジネスロジックとトランザクション管理は `internal/usecase` パッケージで行います。
+
+### Usecase と Repository の使い分け
+
+**Usecase を使う場合**:
+
+- トランザクションを伴う永続化処理（作成・更新・削除）
+- 複数の Repository を跨ぐビジネスロジック
+- ロールバックが必要な複合操作
+
+```go
+// 例: StripeサブスクライバーとUserを同時に更新する場合
+type DeleteStripeSubscriberUsecase struct {
+    db                   *sql.DB
+    stripeSubscriberRepo *repository.StripeSubscriberRepository
+    userRepo             *repository.UserRepository
+}
+
+func (uc *DeleteStripeSubscriberUsecase) Execute(ctx context.Context, input Input) (*Result, error) {
+    tx, err := uc.db.BeginTx(ctx, nil)
+    // トランザクション内で複数のRepositoryを操作
+}
+```
+
+**Repository で完結する場合（Usecase を作成しない）**:
+
+- 読み取り専用の処理（参照系 API、データ取得）
+- 単一のエンティティに対する操作
+- トランザクション不要な処理
+
+```go
+// 例: カレンダーデータの取得（読み取り専用）
+type UserCalendarRepository struct {
+    queries *query.Queries
+}
+
+func (r *UserCalendarRepository) GetByUsername(ctx context.Context, username string) (*model.UserCalendar, error) {
+    // 複数のクエリを実行してModelを組み立てて返す
+    // トランザクション不要、Usecaseを経由しない
+}
+```
+
+**判断基準**: 読み取り専用の処理は Repository で完結させ、Usecase を作成しない。Usecase はトランザクションを伴う永続化処理のために使用する。
 
 ### 責務
 

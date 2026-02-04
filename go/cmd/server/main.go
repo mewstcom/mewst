@@ -13,21 +13,21 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/database"
-	"github.com/mewstcom/mewst/internal/email"
-	"github.com/mewstcom/mewst/internal/handler/email_confirmation"
-	"github.com/mewstcom/mewst/internal/handler/manifest"
-	"github.com/mewstcom/mewst/internal/handler/password"
-	"github.com/mewstcom/mewst/internal/handler/password_reset"
-	"github.com/mewstcom/mewst/internal/handler/sign_in"
-	"github.com/mewstcom/mewst/internal/handler/sign_out"
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/turnstile"
-	"github.com/mewstcom/mewst/internal/usecase"
-	"github.com/mewstcom/mewst/internal/worker"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/database"
+	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/handler/manifest"
+	"github.com/mewstcom/mewst/go/internal/handler/password"
+	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
+	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
+	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/turnstile"
+	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/worker"
 )
 
 func main() {
@@ -92,6 +92,7 @@ func main() {
 	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, emailSender).
 		WithWorkerClient(workerClient)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
+	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmationRepo)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -101,7 +102,7 @@ func main() {
 	signInHandler := sign_in.NewHandler(cfg, sessionMgr, userRepo, actorRepo, createSessionUC, turnstileClient)
 	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
 	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createEmailConfirmationUC, turnstileClient)
-	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, emailConfirmationRepo)
+	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, emailConfirmationRepo, markEmailAsConfirmedUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, emailConfirmationRepo, updatePasswordUC)
 
 	// ミドルウェアの初期化

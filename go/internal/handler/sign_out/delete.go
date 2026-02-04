@@ -3,8 +3,8 @@ package sign_out
 import (
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // Delete はログアウト処理を実行する (DELETE /sign_out)

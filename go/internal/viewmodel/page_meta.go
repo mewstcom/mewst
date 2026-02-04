@@ -4,8 +4,8 @@ package viewmodel
 import (
 	"context"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/i18n"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 )
 
 // サイト名のサフィックス

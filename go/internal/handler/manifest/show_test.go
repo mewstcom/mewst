@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/handler/manifest"
-	"github.com/mewstcom/mewst/internal/i18n"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/handler/manifest"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 )
 
 // テスト用のConfigを作成

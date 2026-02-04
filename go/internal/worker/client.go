@@ -13,7 +13,7 @@ import (
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/riverqueue/river/rivertype"
 
-	"github.com/mewstcom/mewst/internal/email"
+	"github.com/mewstcom/mewst/go/internal/email"
 )
 
 // Dependencies はWorkerクライアントの依存関係を保持する

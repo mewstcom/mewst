@@ -5,8 +5,9 @@ import (
 	"context"
 
 	"github.com/a-h/templ"
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/i18n"
+
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 )
 
 // configContextKey はコンテキストに保存する設定のキー

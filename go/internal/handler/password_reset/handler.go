@@ -2,10 +2,10 @@
 package password_reset
 
 import (
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/turnstile"
-	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/turnstile"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // Handler はパスワードリセット開始機能のHTTPハンドラー

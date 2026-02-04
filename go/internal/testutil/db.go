@@ -12,8 +12,13 @@ import (
 
 // SetupTestDB はテスト用のデータベース接続とトランザクションをセットアップする
 // テスト終了時にトランザクションをロールバックしてクリーンアップする
+// -short フラグが指定されている場合はテストをスキップする
 func SetupTestDB(t *testing.T) (*sql.DB, *sql.Tx) {
 	t.Helper()
+
+	if testing.Short() {
+		t.Skip("skipping database test in short mode")
+	}
 
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {

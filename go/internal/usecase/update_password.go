@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/mewstcom/mewst/internal/auth"
-	"github.com/mewstcom/mewst/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
 // UpdatePasswordInput はパスワード更新の入力データ

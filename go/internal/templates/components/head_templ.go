@@ -8,7 +8,7 @@ package components
 import (
 	"github.com/a-h/templ"
 	templruntime "github.com/a-h/templ/runtime"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Head はHTMLヘッダーを生成する

@@ -2,10 +2,10 @@
 package password
 
 import (
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // Handler はパスワード関連のHTTPハンドラー

@@ -2,8 +2,8 @@
 package sign_out
 
 import (
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/session"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/session"
 )
 
 // Handler はログアウト機能のHTTPハンドラー

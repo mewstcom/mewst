@@ -6,16 +6,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mewstcom/mewst/internal/auth"
-	"github.com/mewstcom/mewst/internal/clientip"
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	sign_in_page "github.com/mewstcom/mewst/internal/templates/pages/sign_in"
-	"github.com/mewstcom/mewst/internal/usecase"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/clientip"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	sign_in_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_in"
+	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Create はログイン処理を実行する (POST /sign_in)
@@ -33,7 +31,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	backURL := r.FormValue("back")
 
 	// フォームデータを取得
-	req := &CreateRequest{
+	input := CreateValidatorInput{
 		Email:    r.FormValue("email"),
 		Password: r.FormValue("password"),
 	}
@@ -47,38 +45,23 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if !turnstileValid {
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
+		h.renderForm(w, ctx, csrfToken, input.Email, backURL, formErrors)
 		return
 	}
 
-	// フォームバリデーション
-	formErrors := req.Validate(ctx)
-	if formErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
-		return
-	}
-
-	// ユーザーをメールアドレスで検索
-	user, err := h.userRepo.GetByEmailForSignIn(ctx, req.Email)
-	if err != nil {
-		if err == repository.ErrNotFound {
-			formErrors := session.NewFormErrors()
-			formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-			h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
-			return
-		}
-		slog.ErrorContext(ctx, "ユーザー検索中にエラーが発生", "error", err)
+	// バリデーション（形式バリデーション + 状態バリデーション）
+	result := h.validator.Validate(ctx, input)
+	if result.Err != nil {
+		slog.ErrorContext(ctx, "ユーザー検索中にエラーが発生", "error", result.Err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	// パスワードを検証
-	if err := auth.CheckPassword(user.PasswordDigest, req.Password); err != nil {
-		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-		h.renderForm(w, ctx, csrfToken, req.Email, backURL, formErrors)
+	if result.FormErrors != nil && result.FormErrors.HasErrors() {
+		h.renderForm(w, ctx, csrfToken, input.Email, backURL, result.FormErrors)
 		return
 	}
+
+	user := result.User
 
 	// アクターを取得
 	actor, err := h.actorRepo.GetByUserID(ctx, user.ID)
@@ -93,7 +76,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	userAgent := r.UserAgent()
 
 	// セッションを作成
-	result, err := h.createSessionUC.Execute(ctx, usecase.CreateSessionInput{
+	sessionResult, err := h.createSessionUC.Execute(ctx, usecase.CreateSessionInput{
 		ActorID:   actor.ID,
 		IPAddress: ipAddress,
 		UserAgent: userAgent,
@@ -105,7 +88,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// セッションクッキーを設定
-	h.sessionMgr.SetSessionCookie(w, r, result.Token)
+	h.sessionMgr.SetSessionCookie(w, r, sessionResult.Token)
 
 	// フラッシュメッセージを設定
 	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_sign_in_success"))

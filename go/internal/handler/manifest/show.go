@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/i18n"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 )
 
 // Show はWeb App Manifestを返します (GET /manifest.json)

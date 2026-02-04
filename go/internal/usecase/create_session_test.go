@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/testutil"
-	"github.com/mewstcom/mewst/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 func TestCreateSessionUsecase_Execute(t *testing.T) {

@@ -6,13 +6,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mewstcom/mewst/internal/middleware"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/session"
-	"github.com/mewstcom/mewst/internal/templates"
-	"github.com/mewstcom/mewst/internal/templates/layouts"
-	email_confirmation_page "github.com/mewstcom/mewst/internal/templates/pages/email_confirmation"
-	"github.com/mewstcom/mewst/internal/viewmodel"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // New は確認コード入力フォームを表示する (GET /email_confirmation)

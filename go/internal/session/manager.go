@@ -7,9 +7,9 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	"github.com/mewstcom/mewst/internal/config"
-	"github.com/mewstcom/mewst/internal/model"
-	"github.com/mewstcom/mewst/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
 // CookieName はRails版と共有するセッションクッキー名

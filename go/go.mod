@@ -1,4 +1,4 @@
-module github.com/mewstcom/mewst
+module github.com/mewstcom/mewst/go
 
 go 1.25.4
 

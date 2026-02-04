@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mewstcom/mewst/internal/auth"
-	"github.com/mewstcom/mewst/internal/repository"
-	"github.com/mewstcom/mewst/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 func TestUpdatePasswordUsecase_Execute(t *testing.T) {
