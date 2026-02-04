@@ -163,9 +163,8 @@ linters:
               desc: "Application層はPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
               desc: "Application層はPresentation層に依存できません。"
-            # TODO: create_email_confirmation.go のリファクタリング後に有効化
-            # - pkg: github.com/mewstcom/mewst/go/internal/templates
-            #   desc: "Application層はPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "Application層はPresentation層に依存できません。"
 
         # Model層のルール: 純粋なドメインエンティティ
         # データアクセス層、上位層に依存しない

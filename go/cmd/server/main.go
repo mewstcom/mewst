@@ -89,8 +89,7 @@ func main() {
 
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(sessionRepo)
-	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, emailSender).
-		WithWorkerClient(workerClient)
+	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, workerClient)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
 	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmationRepo)
 

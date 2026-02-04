@@ -9,8 +9,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/rivertype"
+
 	"github.com/mewstcom/mewst/go/internal/config"
-	"github.com/mewstcom/mewst/go/internal/email"
 	handler "github.com/mewstcom/mewst/go/internal/handler/password_reset"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/repository"
@@ -27,6 +29,13 @@ type mockTurnstile struct {
 
 func (m *mockTurnstile) Verify(_ context.Context, _ string) (bool, error) {
 	return m.shouldSucceed, nil
+}
+
+// mockInserter はテスト用のモック inserter
+type mockInserter struct{}
+
+func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs) (*rivertype.JobInsertResult, error) {
+	return &rivertype.JobInsertResult{}, nil
 }
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
@@ -50,8 +59,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
-	emailSender := email.NewNoopSender()
-	createEmailConfirmUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, emailSender)
+	inserter := &mockInserter{}
+	createEmailConfirmUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
 	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile)
