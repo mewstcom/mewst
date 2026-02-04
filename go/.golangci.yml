@@ -187,6 +187,25 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "ModelはPresentation層に依存できません。"
 
+        # RateLimit層のルール: インフラストラクチャユーティリティ
+        # Queryに直接依存せず、Repositoryを経由する
+        ratelimit-layer:
+          files:
+            - "**/internal/ratelimit/*.go"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RateLimitはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RateLimitはPresentation層に依存できません。"
+
         # Repository層のルール: データアクセス層
         # 上位層に依存しない
         repository-layer:
