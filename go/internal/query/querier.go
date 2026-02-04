@@ -11,18 +11,28 @@ import (
 )
 
 type Querier interface {
+	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateEmailConfirmation(ctx context.Context, arg CreateEmailConfirmationParams) (EmailConfirmation, error)
+	CreateProfile(ctx context.Context, arg CreateProfileParams) (CreateProfileRow, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
+	CreateUserProfile(ctx context.Context, arg CreateUserProfileParams) (UserProfile, error)
 	DeleteSessionByToken(ctx context.Context, token string) error
+	ExistsProfileByAtname(ctx context.Context, atname string) (bool, error)
+	ExistsUserByEmail(ctx context.Context, email string) (bool, error)
 	GetActiveEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetActorByID(ctx context.Context, id uuid.UUID) (Actor, error)
 	GetActorByUserID(ctx context.Context, userID uuid.UUID) (Actor, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
+	GetProfileByAtname(ctx context.Context, atname string) (GetProfileByAtnameRow, error)
+	GetProfileByID(ctx context.Context, id uuid.UUID) (GetProfileByIDRow, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)
 	GetSucceededEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByEmailForSignIn(ctx context.Context, email string) (GetUserByEmailForSignInRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
+	GetUserProfileByProfileID(ctx context.Context, profileID uuid.UUID) (UserProfile, error)
+	GetUserProfileByUserID(ctx context.Context, userID uuid.UUID) (UserProfile, error)
 	MarkEmailConfirmationAsSucceeded(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 }
