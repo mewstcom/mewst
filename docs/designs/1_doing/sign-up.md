@@ -460,7 +460,7 @@ var ReservedAtnames = []string{
 
 ### フェーズ 2: サインアップフォーム（メールアドレス入力）
 
-- [ ] **2-1**: [Go] サインアップハンドラーの実装
+- [x] **2-1**: [Go] サインアップハンドラーの実装
 
   - `internal/handler/sign_up/handler.go` の作成
   - `internal/handler/sign_up/new.go` の作成
