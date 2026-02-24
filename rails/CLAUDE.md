@@ -421,20 +421,20 @@ expect(page).not_to have_css(".loading-spinner")
 
 ### クラス間の依存関係ルール
 
-| クラス     | 依存可能な先                                      |
-| ---------- | ------------------------------------------------- |
-| Component  | Component, Form, Model                            |
-| Controller | Form, Model, Record, Repository, UseCase, View    |
-| Form       | Record, Validator                                 |
-| Job        | UseCase                                           |
-| Mailer     | Model, Record, Repository, View                   |
-| Model      | Model                                             |
-| Policy     | Record                                            |
-| Record     | Record                                            |
-| Repository | Model, Record, Policy                             |
-| UseCase    | Job, Mailer, Record                               |
-| Validator  | Record                                            |
-| View       | Component, Form, Model                            |
+| クラス     | 依存可能な先                                   |
+| ---------- | ---------------------------------------------- |
+| Component  | Component, Form, Model                         |
+| Controller | Form, Model, Record, Repository, UseCase, View |
+| Form       | Record, Validator                              |
+| Job        | UseCase                                        |
+| Mailer     | Model, Record, Repository, View                |
+| Model      | Model                                          |
+| Policy     | Record                                         |
+| Record     | Record                                         |
+| Repository | Model, Record, Policy                          |
+| UseCase    | Job, Mailer, Record                            |
+| Validator  | Record                                         |
+| View       | Component, Form, Model                         |
 
 #### UseCaseとJobの依存関係について
 
