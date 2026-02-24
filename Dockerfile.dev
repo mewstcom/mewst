@@ -11,26 +11,27 @@ apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   build-essential
-  ca-certificates
+  ca-certificates           # HTTPS接続に必要
   curl
-  file
-  fzf
+  file                      # Shrineによる画像アップロードに必要 (Rails)
+  fzf                       # Claude Codeで使用
   git
-  gnupg
-  jq
-  libffi-dev
-  libglib2.0-0
-  libreadline-dev
-  libssl-dev
-  libvips42
-  libyaml-dev
-  lsb-release
-  nano
-  ripgrep
+  gnupg                     # PostgreSQLのGPGキーとaptリポジトリに必要
+  jq                        # Claude Codeで使用
+  libffi-dev                # Ruby拡張のビルドに必要
+  libglib2.0-0              # libvipsの依存パッケージ (Rails)
+  libreadline-dev           # Rubyのreadline拡張に必要
+  libssl-dev                # SSL関連のビルドに必要
+  libvips42                 # 画像処理ライブラリ (Rails)
+  libyaml-dev               # psych gemのインストールに必要 (Rails)
+  lsb-release               # PostgreSQLのaptリポジトリ設定に必要
+  nano                      # Claude Codeで使用
+  ripgrep                   # Claude Codeで使用
   sudo
-  tree
+  tree                      # Claude Codeで使用
   unzip
-  vim
+  vim                       # Claude Codeで使用
+  zlib1g-dev                # Rubyのzlib拡張に必要 (gem installに必須)
   zsh
 PKGLIST
 )
@@ -94,14 +95,16 @@ WORKDIR /workspace
 USER ${USERNAME}
 
 # --- mise シェル設定 ---
-RUN echo 'eval "$(mise activate zsh)"' >> /home/${USERNAME}/.zshrc
+# Docker環境ではshims方式を使用（PATH="/mise/shims:..."で設定済み）
+# mise activateはshimsをバイパスしてグローバルデフォルトの直接パスをPATHに追加するため、
+# ディレクトリごとのバージョン切り替えが効かなくなる。shims方式では不要。
+RUN mise reshim
 
 # --- 1Password CLI ---
 COPY --from=1password/op:2 /usr/local/bin/op /usr/local/bin/op
 
 # --- Claude Code ---
-RUN npm install -g @anthropic-ai/claude-code@latest && \
-    npm install -g @modelcontextprotocol/server-filesystem
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # --- Go ツール ---
 ENV GOCACHE=/go/.cache/go-build
