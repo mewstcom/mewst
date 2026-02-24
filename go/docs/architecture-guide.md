@@ -653,7 +653,7 @@ func (h *Handler) ProcessPasswordReset(w http.ResponseWriter, r *http.Request) {
 ```go
 func TestCreatePasswordResetTokenUsecase_Execute(t *testing.T) {
     // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
     queries := repository.New(db).WithTx(tx)
 
     // テストユーザーを作成

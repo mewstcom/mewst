@@ -104,31 +104,16 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "HandlerはQueryに直接依存できません。Repositoryを経由してください。"
 
-        # FormatValidatorのルール: 形式バリデーション（DBアクセス禁止）
-        # 入力値の形式チェックのみを行い、DBにアクセスしない
-        format-validator:
+        # Validator層のルール: 形式バリデーション+状態バリデーションを統合
+        # Queryへの直接アクセスは禁止、Repositoryを経由
+        validator-layer:
           files:
-            - "**/internal/handler/**/format_validator.go"
+            - "**/internal/handler/**/validator.go"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "FormatValidatorはQueryに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "FormatValidatorはRepositoryに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/model
-              desc: "FormatValidatorはModelに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
+              desc: "ValidatorはQueryに直接依存できません。Repositoryを経由してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "FormatValidatorはUseCaseに依存できません。"
-
-        # StateValidatorのルール: 状態バリデーション（Repository/Modelは許可）
-        # DBの状態を使った検証を行い、Repositoryを経由してアクセス
-        state-validator:
-          files:
-            - "**/internal/handler/**/state_validator.go"
-          deny:
-            - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "StateValidatorはQueryに直接依存できません。Repositoryを経由してください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "StateValidatorはUseCaseに依存できません。"
+              desc: "ValidatorはUseCaseに依存できません。"
 
         # Middleware層のルール: 共通処理のみ
         # 他のPresentation層パッケージ、Application層、Domain/Infrastructure層に依存しない
