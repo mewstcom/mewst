@@ -78,14 +78,14 @@
 ## 実装ガイドラインの参照
 
 <!--
-**重要**: 設計を行う前に、対象プラットフォームのガイドラインを必ず確認してください。
+**重要**: 作業計画書を作成する前に、対象プラットフォームのガイドラインを必ず確認してください。
 特に以下の点に注意してください：
 - ディレクトリ構造・ファイル名の命名規則
 - コーディング規約
 - アーキテクチャパターン
 
 ガイドラインに沿わない設計は、実装時にそのまま実装されてしまうため、
-設計の段階でガイドラインに準拠していることを確認してください。
+作業計画書作成の段階でガイドラインに準拠していることを確認してください。
 -->
 
 ### Go版の実装の場合
@@ -94,7 +94,7 @@
 
 - [@go/CLAUDE.md](/workspace/go/CLAUDE.md) - 全体的なコーディング規約
 - [@go/docs/architecture-guide.md](/workspace/go/docs/architecture-guide.md) - アーキテクチャガイド
-- [@go/docs/handler-guide.md](/workspace/go/docs/handler-guide.md) - HTTPハンドラーガイドライン（**ファイル名は標準の8種類のみ**）
+- [@go/docs/handler-guide.md](/workspace/go/docs/handler-guide.md) - HTTPハンドラーガイドライン（**ファイル名は標準の9種類のみ**）
 - [@go/docs/i18n-guide.md](/workspace/go/docs/i18n-guide.md) - 国際化ガイド
 - [@go/docs/security-guide.md](/workspace/go/docs/security-guide.md) - セキュリティガイドライン
 - [@go/docs/templ-guide.md](/workspace/go/docs/templ-guide.md) - templテンプレートガイド

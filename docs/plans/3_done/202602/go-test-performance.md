@@ -672,18 +672,15 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
   DBを使うテストがCIで一切実行されていない
 -->
 
-- [ ] **5-1**: [Go/Mewst] `SetupTestDB` から `testing.Short()` を削除し、Makefileを統一
+- [x] **5-1**: [Go/Mewst] `SetupTestDB` から `testing.Short()` を削除
 
   - `/mewst/go/internal/testutil/db.go` の `testing.Short()` によるスキップを削除
-  - `/mewst/go/Makefile` の `test` ターゲットの `if [ "$$CI" = "true" ]` 分岐を削除
-  - `-short` フラグを削除し、CI・ローカルで統一されたテスト実行コマンドにする
-  - `op run --env-file=".env"` のラッパーを削除
+  - Makefileの `test` ターゲットのCI分岐・`-short` フラグ・`op run` ラッパーは既に除去済みのため変更不要
   - `db-setup-test` のCI分岐（PostgreSQLホスト名）はそのまま維持
-  - **注意**: この変更により、CIで今まで実行されていなかったDBテストが実行されるようになる。失敗するテストがあれば修正が必要
-  - **想定ファイル数**: 約 2 ファイル（実装 2）
-  - **想定行数**: 約 15 行（実装 15 行）
+  - **想定ファイル数**: 約 1 ファイル（実装 1）
+  - **想定行数**: 約 5 行（実装 5 行）
 
-- [ ] **5-2**: [Go/Mewst] DB接続プール化（sync.Onceパターン）の導入
+- [x] **5-2**: [Go/Mewst] DB接続プール化（sync.Onceパターン）の導入
 
   - `internal/testutil/db.go` の `SetupTestDB` を `sync.Once` パターンに変更（Annictの実装を参考）
   - テストごとの `sql.Open` + `Ping` + `db.Close()` を廃止
@@ -692,7 +689,7 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
   - **想定ファイル数**: 約 1 ファイル（実装 1）
   - **想定行数**: 約 40 行（実装 40 行）
 
-- [ ] **5-3**: [Go/Mewst] テスト用bcryptコストの低減
+- [x] **5-3**: [Go/Mewst] テスト用bcryptコストの低減
 
   - `internal/auth/password.go` の `HashPassword` を変数化されたコストで呼ぶように修正
   - `BcryptCost` 変数と `TestBcryptCost` 定数を追加

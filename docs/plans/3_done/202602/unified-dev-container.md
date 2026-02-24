@@ -544,7 +544,7 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 
 ### フェーズ 2: Go 版の動作確認と調整
 
-- [ ] **2-1**: [Go] 統合コンテナでの Go 版動作確認と調整
+- [x] **2-1**: [Go] 統合コンテナでの Go 版動作確認と調整
 
   - `cd /workspace/go && make test` が通ることを確認
   - `cd /workspace/go && make lint` が通ることを確認
@@ -556,7 +556,7 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 
 ### フェーズ 3: Rails 版の動作確認と調整
 
-- [ ] **3-1**: [Rails] 統合コンテナでの Rails 版動作確認と調整
+- [x] **3-1**: [Rails] 統合コンテナでの Rails 版動作確認と調整
 
   - `cd /workspace/rails && make test` が通ることを確認
   - `cd /workspace/rails && make lint` が通ることを確認
@@ -569,7 +569,7 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 
 ### フェーズ 4: クリーンアップ
 
-- [ ] **4-1**: 旧 Dockerfile の削除とドキュメント更新
+- [x] **4-1**: 旧 Dockerfile の削除とドキュメント更新
 
   - `go/Dockerfile.dev` を削除
   - `rails/Dockerfile.dev` を削除
