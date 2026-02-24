@@ -36,13 +36,7 @@ build: templ-generate ## バイナリをビルド（templ-generateがgoimports�
 .PHONY: test
 test: db-setup-test ## テストを実行
 	@which tparse > /dev/null || (echo "Installing tparse from go.mod..." && go install github.com/mfridman/tparse)
-	@if [ "$$CI" = "true" ]; then \
-		echo "CI環境: 短時間テストのみ実行 (-short)"; \
-		bash -c 'set -o pipefail && go test -json -race -short ./... | tparse'; \
-	else \
-		echo "ローカル環境: 全テストを実行"; \
-		bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./... | tparse'; \
-	fi
+	@bash -c 'set -o pipefail && go test -json -race ./... | tparse -all'
 
 .PHONY: test-pkg
 test-pkg: db-setup-test ## 特定のパッケージのテストを実行（使用例: make test-pkg PKG=internal/handler/sign_in）
@@ -99,7 +93,7 @@ clean: ## ビルド成果物をクリーン
 .PHONY: db-migrate
 db-migrate: ## データベースマイグレーションを実行
 	APP_ENV=dev op run --env-file=".env" -- dbmate up
-	# PostgreSQL 17.6のpg_dumpが生成するランダムな\restrict行を削除
+	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
 	# https://github.com/amacneil/dbmate/issues/678
 	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
 
@@ -126,7 +120,7 @@ db-new: ## 新しいマイグレーションファイルを作成（使用法: m
 .PHONY: db-dump
 db-dump: ## データベーススキーマをdb/schema.sqlにダンプ
 	APP_ENV=dev op run --env-file=".env" -- dbmate dump
-	# PostgreSQL 17.6のpg_dumpが生成するランダムな\restrict行を削除
+	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
 	# https://github.com/amacneil/dbmate/issues/678
 	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
 
