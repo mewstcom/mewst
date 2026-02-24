@@ -29,13 +29,17 @@ jobs:
           make templ-generate
           git diff --exit-code internal/templates/
 
+      - name: Check goimports
+        run: |
+          make goimports-check
+
       - name: Check go mod tidy
         run: |
           go mod tidy
           git diff --exit-code go.mod go.sum
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v9.1.0
+        uses: golangci/golangci-lint-action@v9.2.0
         with:
           version: v2.6.2
           working-directory: go
