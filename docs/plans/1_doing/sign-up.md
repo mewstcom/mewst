@@ -177,14 +177,14 @@ CREATE INDEX idx_rate_limits_window_start ON rate_limits(window_start);
 
 ### API 設計（ルーティング）
 
-| URL                      | メソッド | ハンドラー          | 説明                                     |
-| ------------------------ | -------- | ------------------- | ---------------------------------------- |
-| `/sign_up`               | GET      | `sign_up.New`       | メールアドレス入力フォーム表示           |
-| `/sign_up`               | POST     | `sign_up.Create`    | 確認コード送信処理                       |
-| `/email_confirmation`    | GET      | （既存）            | 確認コード入力フォーム表示               |
-| `/email_confirmation`    | POST     | （既存を拡張）      | 確認コード検証処理                       |
-| `/accounts/new`          | GET      | `accounts.New`      | アカウント詳細入力フォーム表示           |
-| `/accounts`              | POST     | `accounts.Create`   | アカウント作成処理                       |
+| URL                   | メソッド | ハンドラー        | 説明                           |
+| --------------------- | -------- | ----------------- | ------------------------------ |
+| `/sign_up`            | GET      | `sign_up.New`     | メールアドレス入力フォーム表示 |
+| `/sign_up`            | POST     | `sign_up.Create`  | 確認コード送信処理             |
+| `/email_confirmation` | GET      | （既存）          | 確認コード入力フォーム表示     |
+| `/email_confirmation` | POST     | （既存を拡張）    | 確認コード検証処理             |
+| `/accounts/new`       | GET      | `accounts.New`    | アカウント詳細入力フォーム表示 |
+| `/accounts`           | POST     | `accounts.Create` | アカウント作成処理             |
 
 ### コード設計
 
@@ -385,11 +385,13 @@ func HashPassword(password string) (string, error) {
 #### バリデーションルール
 
 **メールアドレス**:
+
 - 必須
 - メール形式チェック（`net/mail.ParseAddress`）
 - 重複チェック（users テーブル検索）
 
 **アットネーム**:
+
 - 必須
 - フォーマット: `/^[A-Za-z0-9_]+$/`（半角英数字とアンダースコアのみ）
 - 長さ: 最大20文字
@@ -397,6 +399,7 @@ func HashPassword(password string) (string, error) {
 - 予約名チェック（admin, support, help など）
 
 **パスワード**:
+
 - 必須
 - 最小長: 8文字
 - 最大長: 72文字（bcrypt の制限）
@@ -428,7 +431,6 @@ var ReservedAtnames = []string{
 ### フェーズ 1: 基盤整備
 
 - [x] **1-1**: [Go] リポジトリ層の実装（Profile, UserProfile）
-
   - `internal/repository/profile_repository.go` の作成
   - `internal/repository/user_profile_repository.go` の作成
   - `internal/model/profile.go` の作成
@@ -438,7 +440,6 @@ var ReservedAtnames = []string{
   - **想定行数**: 約 400 行（実装 250 行 + テスト 150 行）
 
 - [x] **1-2**: [Go] アカウント作成ユースケースの実装
-
   - `internal/usecase/create_account.go` の作成
   - トランザクション管理
   - Profile, User, UserProfile, Actor の一括作成
@@ -450,7 +451,6 @@ var ReservedAtnames = []string{
     - 既に使用されているアットネームでの登録エラー
 
 - [x] **1-3**: [Go] レート制限の実装（Wikino の実装を移植）
-
   - `db/migrations/YYYYMMDDHHMMSS_create_rate_limits.sql` の作成
   - `db/queries/rate_limits.sql` の作成
   - `internal/ratelimit/limiter.go` の作成
@@ -461,7 +461,6 @@ var ReservedAtnames = []string{
 ### フェーズ 2: サインアップフォーム（メールアドレス入力）
 
 - [x] **2-1**: [Go] サインアップハンドラーの実装
-
   - `internal/handler/sign_up/handler.go` の作成
   - `internal/handler/sign_up/new.go` の作成
   - `internal/handler/sign_up/create.go` の作成
@@ -470,7 +469,6 @@ var ReservedAtnames = []string{
   - **想定行数**: 約 500 行（実装 200 行 + テスト 300 行）
 
 - [x] **2-2**: [Go] サインアップテンプレートの実装
-
   - `internal/templates/pages/sign_up/new.templ` の作成
   - 国際化対応（`ja.toml`, `en.toml` への追加）
   - **想定ファイル数**: 約 3 ファイル（実装 3 + テスト 0）
@@ -479,7 +477,6 @@ var ReservedAtnames = []string{
 ### フェーズ 3: メール確認フローの拡張
 
 - [x] **3-1**: [Go] email_confirmation ハンドラーの拡張
-
   - event が "sign_up" の場合のリダイレクト先を `/accounts/new` に変更
   - セッションへの email_confirmation_id 保存処理の追加
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
@@ -487,8 +484,7 @@ var ReservedAtnames = []string{
 
 ### フェーズ 4: アカウント作成フォーム
 
-- [ ] **4-1**: [Go] アカウントハンドラーの実装
-
+- [x] **4-1**: [Go] アカウントハンドラーの実装
   - `internal/handler/accounts/handler.go` の作成
   - `internal/handler/accounts/new.go` の作成
   - `internal/handler/accounts/create.go` の作成
@@ -497,8 +493,7 @@ var ReservedAtnames = []string{
   - **想定ファイル数**: 約 8 ファイル（実装 4 + テスト 4）
   - **想定行数**: 約 600 行（実装 250 行 + テスト 350 行）
 
-- [ ] **4-2**: [Go] アカウントテンプレートの実装
-
+- [x] **4-2**: [Go] アカウントテンプレートの実装
   - `internal/templates/pages/accounts/new.templ` の作成
   - 国際化対応（`ja.toml`, `en.toml` への追加）
   - **想定ファイル数**: 約 3 ファイル（実装 3 + テスト 0）
@@ -506,8 +501,7 @@ var ReservedAtnames = []string{
 
 ### フェーズ 5: 統合とルーティング
 
-- [ ] **5-1**: [Go] ルーティング設定とミドルウェア更新
-
+- [x] **5-1**: [Go] ルーティング設定とミドルウェア更新
   - ルーティング設定（`/sign_up`, `/accounts/new`, `/accounts`）
   - リバースプロキシのホワイトリスト更新
   - RequireNoAuth ミドルウェアの適用
@@ -521,8 +515,7 @@ var ReservedAtnames = []string{
 `@docs/designs/3_done/202601/go.md` の「Rails版: セッションクッキーの署名を削除」セクションを参照してください。
 -->
 
-- [ ] **6-1**: [Rails] セッションクッキーの署名削除
-
+- [x] **6-1**: [Rails] セッションクッキーの署名削除
   - `cookies.signed` を `cookies` に変更
   - 既存ユーザーへの影響確認（再ログインが必要になる）
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
