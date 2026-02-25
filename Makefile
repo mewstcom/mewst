@@ -8,8 +8,8 @@ dev: ## 全サービスの開発サーバーを起動
 
 .PHONY: fmt
 fmt: ## コードをフォーマット（Oxfmt）
-	pnpm oxfmt
+	pnpm fmt
 
 .PHONY: fmt-check
 fmt-check: ## フォーマットチェック（Oxfmt）
-	pnpm oxfmt:check
+	pnpm fmt:check

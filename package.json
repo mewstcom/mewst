@@ -1,9 +1,10 @@
 {
+  "name": "mewst",
   "private": true,
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "oxfmt": "oxfmt --ignore-path .oxfmtignore",
-    "oxfmt:check": "oxfmt --ignore-path .oxfmtignore --check"
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
     "oxfmt": "^0.35.0"
