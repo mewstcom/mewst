@@ -127,8 +127,6 @@ func TestCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			input := CreateValidatorInput{
 				ID:   testutil.MustParseUUID("00000000-0000-0000-0000-000000000000"),
 				Code: tt.code,

@@ -82,6 +82,26 @@ func TestCheckPassword_RailsCompatibility(t *testing.T) {
 	}
 }
 
+func TestBcryptCostValues(t *testing.T) {
+	t.Parallel()
+
+	t.Run("デフォルトのコストはbcrypt.DefaultCost", func(t *testing.T) {
+		t.Parallel()
+
+		if BcryptCost != bcrypt.DefaultCost {
+			t.Errorf("BcryptCost = %d, want %d", BcryptCost, bcrypt.DefaultCost)
+		}
+	})
+
+	t.Run("TestBcryptCostはbcrypt.MinCost", func(t *testing.T) {
+		t.Parallel()
+
+		if TestBcryptCost != bcrypt.MinCost {
+			t.Errorf("TestBcryptCost = %d, want %d", TestBcryptCost, bcrypt.MinCost)
+		}
+	})
+}
+
 func TestHashPassword(t *testing.T) {
 	t.Parallel()
 

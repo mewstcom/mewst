@@ -63,11 +63,11 @@ Repository と Model を同じ層として扱うことで、依存関係がシ�
 
 Model と Repository のファイル名・構造体名は統一します：
 
-| Model          | Repository                 | ファイル名           |
-| -------------- | -------------------------- | -------------------- |
-| `Work`         | `WorkRepository`           | `work.go`            |
-| `User`         | `UserRepository`           | `user.go`            |
-| `UserCalendar` | `UserCalendarRepository`   | `user_calendar.go`   |
+| Model          | Repository               | ファイル名         |
+| -------------- | ------------------------ | ------------------ |
+| `Work`         | `WorkRepository`         | `work.go`          |
+| `User`         | `UserRepository`         | `user.go`          |
+| `UserCalendar` | `UserCalendarRepository` | `user_calendar.go` |
 
 **命名のルール**:
 
@@ -183,7 +183,7 @@ Presentation層 → Application層 → Domain/Infrastructure層
 - **Templates**: `ViewModel` を通じてデータを表示。データアクセス（`repository`, `query`）、ビジネスロジック（`usecase`）、`Model` への直接依存は禁止。
 - **ViewModel**: `Model` → `ViewModel` の変換のみ。`repository`, `query` に依存しない
 - **Handler**: `query` への直接アクセス禁止。データアクセスは `repository` を経由
-- **Middleware**: 共通処理のみ。`query`, `repository`, `usecase`、他の Presentation 層パッケージに依存しない
+- **Middleware**: エラーページ・メンテナンスページ等のレンダリングのため `templates` への依存は許可。`query`, `repository`, `usecase`, `handler`, `viewmodel` に依存しない
 
 **依存関係の図解**:
 
@@ -194,7 +194,7 @@ ViewModel → Model (OK: ドメインデータを表示用に変換)
               ↓
 Handler → UseCase, Repository, ViewModel
   ↑
-Middleware (独立、他のPresentation層パッケージに依存しない)
+Middleware → Templates (OK: エラーページ等のレンダリング)
 ```
 
 **重要**: Templates は ViewModel に依存できますが、Model に直接依存することは禁止です。必ず ViewModel を経由してください。
@@ -442,6 +442,79 @@ func (r *UserCalendarRepository) GetByUsername(ctx context.Context, username str
 
 **判断基準**: 読み取り専用の処理は Repository で完結させ、Usecase を作成しない。Usecase はトランザクションを伴う永続化処理のために使用する。
 
+### Repository の WithTx パターン
+
+Usecase でトランザクションを使用する場合、Repository の `WithTx` メソッドを使ってトランザクション内で操作を行います。
+
+#### 目的
+
+- Repository をコンストラクタで受け取り、`Execute` 内で `WithTx(tx)` を呼び出すことで、トランザクション内で安全にデータ操作を行う
+- 同じ Repository インターフェースを、通常時（DB 直接）とトランザクション時（tx 経由）の両方で使用できる
+
+#### メリット
+
+- **トランザクション境界の明確化**: `BeginTx` から `Commit` までのスコープが Usecase 内で完結する
+- **ロールバック安全性**: `defer func() { _ = tx.Rollback() }()` により、エラー時に確実にロールバックされる
+- **Repository の再利用**: 同じ Repository を通常の読み取りとトランザクション内の書き込みの両方で使用できる
+
+#### 実装例
+
+```go
+type CreateAccountUsecase struct {
+    db          *sql.DB
+    userRepo    *repository.UserRepository
+    profileRepo *repository.ProfileRepository
+}
+
+func NewCreateAccountUsecase(
+    db *sql.DB,
+    userRepo *repository.UserRepository,
+    profileRepo *repository.ProfileRepository,
+) *CreateAccountUsecase {
+    return &CreateAccountUsecase{
+        db:          db,
+        userRepo:    userRepo,
+        profileRepo: profileRepo,
+    }
+}
+
+func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
+    tx, err := uc.db.BeginTx(ctx, nil)
+    if err != nil {
+        return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
+    }
+    defer func() { _ = tx.Rollback() }()
+
+    // トランザクション内で操作するためのリポジトリを取得
+    userRepo := uc.userRepo.WithTx(tx)
+    profileRepo := uc.profileRepo.WithTx(tx)
+
+    // ユーザーを作成
+    user, err := userRepo.Create(ctx, input.Email, input.PasswordDigest)
+    if err != nil {
+        return nil, fmt.Errorf("ユーザーの作成に失敗: %w", err)
+    }
+
+    // プロフィールを作成
+    _, err = profileRepo.Create(ctx, user.ID, input.Atname)
+    if err != nil {
+        return nil, fmt.Errorf("プロフィールの作成に失敗: %w", err)
+    }
+
+    if err := tx.Commit(); err != nil {
+        return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
+    }
+
+    return &CreateAccountOutput{UserID: user.ID}, nil
+}
+```
+
+#### 重要なポイント
+
+- **`defer func() { _ = tx.Rollback() }()`**: `Commit` 成功後の `Rollback` は no-op なので、常に defer で呼び出して安全にロールバックを保証する
+- **`WithTx(tx)` の呼び出しタイミング**: `BeginTx` の後、実際のデータ操作の前に呼び出す
+- **元の Repository は変更されない**: `WithTx` は新しいインスタンスを返すため、元の Repository はトランザクションに影響されない
+
 ### 責務
 
 - トランザクション管理（`db.BeginTx` から `tx.Commit` まで）
@@ -653,7 +726,7 @@ func (h *Handler) ProcessPasswordReset(w http.ResponseWriter, r *http.Request) {
 ```go
 func TestCreatePasswordResetTokenUsecase_Execute(t *testing.T) {
     // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
     queries := repository.New(db).WithTx(tx)
 
     // テストユーザーを作成

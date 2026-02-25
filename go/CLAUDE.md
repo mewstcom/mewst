@@ -119,7 +119,7 @@ cat /workspace/rails/app/models/work.rb
 
 > **Note**: 開発環境の基本的なセットアップ手順は [/CLAUDE.md](../CLAUDE.md#開発環境のセットアップ) を参照してください。
 
-- Dev Container を使って開発します
+- Docker Compose を使って開発します
 - Claude Code はコンテナ内で実行されているため、ホスト側のコマンドの実行は不要です
 - 共通インフラ（PostgreSQL、Redis、imgproxy）は `/workspace/docker-compose.yml` で管理されており、ホスト側で起動済みのはずです
 - 画像ストレージは Cloudflare R2 を使用（開発環境・本番環境ともに）
@@ -133,6 +133,7 @@ cat /workspace/rails/app/models/work.rb
   - ✅ `MEWST_PORT`, `MEWST_DOMAIN`, `MEWST_RAILS_APP_URL`
   - ❌ `PORT`, `DOMAIN`, `RAILS_APP_URL`
 - 外部ライブラリが要求する環境変数はそのまま使用（例: `DATABASE_URL`, `REDIS_URL`）
+- **例外**: `APP_ENV` は他プロジェクトでも使われている名前のため、`MEWST_` プレフィックスなしで使用する
 
 環境変数の設定には 2 つの方法があります：
 
@@ -760,27 +761,77 @@ templ New(ctx context.Context, formErrors *session.FormErrors, csrfToken string,
 - **可読性**: 呼び出し側でフィールド名が明確になる
 - **Go の慣習**: 引数が多い関数には構造体を使用するのが Go の標準的なパターン
 
+#### テンプレートデータ構造体と ViewModel の関係
+
+テンプレートに渡すデータ構造体（`EditPageData` など）では、モデルのフィールドを個別のプリミティブ値として展開せず、ViewModel を構成要素として使用する。
+
+- ✅ **ViewModel を構成要素にする**: `User viewmodel.User`
+- ❌ **モデルのフィールドを個別に並べない**: `Name string`, `Email string`
+
+モデルからテンプレート表示用データへの変換ロジック（フォールバック、デフォルト値の決定など）は ViewModel のコンストラクタに配置し、ハンドラーには書かない。派生的な判定（例: タイトルが空ならオートフォーカス）は ViewModel のメソッドとして提供する。
+
+**良い例**:
+
+```go
+// テンプレートデータ構造体にViewModelを使用
+type EditProfileData struct {
+    CSRFToken string
+    User      viewmodel.User
+}
+
+// ハンドラーではViewModelのコンストラクタを呼ぶだけ
+userVM := viewmodel.NewUserForEdit(user)
+```
+
+**悪い例**:
+
+```go
+// ❌ モデルのフィールドを個別に展開している
+type EditProfileData struct {
+    CSRFToken string
+    Name      string
+    Email     string
+    Bio       string
+}
+
+// ❌ ハンドラーで変換・判定ロジックを書いている
+var name string
+if user.Name != nil {
+    name = *user.Name
+}
+```
+
 #### 詳細ドキュメント
 
 テンプレートの詳しい書き方、レイアウトの継承、コンポーネントの再利用、テストの書き方などは以下のドキュメントを参照してください：
 
 📖 **[@go/docs/templ-guide.md](docs/templ-guide.md)** - templ テンプレートガイド
 
-### リクエストバリデーション（Request Validation）
+### バリデーション
 
 フォームからの入力値の検証は、**1 つのバリデーター**（`validator.go`）で実装します。形式バリデーション（入力値の形式チェック）と状態バリデーション（DB を使った検証）を同じファイルに配置することで、「どこに書くべきか」の判断コストを削減します。
 
-#### 基本情報
+#### バリデーターの構成
 
-- **ファイル配置**: ハンドラーと同じディレクトリに `validator.go` として配置
+- **ファイル**: `validator.go`（形式チェック + DB を使った検証を統合）
 - **命名規則**: `{Action}Validator`（例: `CreateValidator`, `UpdateValidator`）
-- **バリデーション範囲**: 形式チェック（必須、フォーマット、文字数）と状態チェック（DB 検証）を統合
+- **入力**: `{Action}ValidatorInput` 構造体
+- **出力**: `{Action}ValidatorResult` 構造体
+
+#### バリデーションの分類
+
+バリデーションは以下の 2 種類に分類されますが、同じファイル（`validator.go`）に実装します：
+
+| 種類               | 責務                  | 特徴            |
+| ------------------ | --------------------- | --------------- |
+| 形式バリデーション | 入力値の形式チェック  | DB アクセス不要 |
+| 状態バリデーション | DB の状態を使った検証 | DB アクセス必要 |
 
 #### 詳細ドキュメント
 
-バリデーションの詳しい実装方法、複雑なバリデーション例、テストの書き方については以下を参照してください：
+バリデーションの詳しい実装方法、配置場所の判断基準、テストの書き方については以下を参照してください：
 
-📖 **[@go/docs/validation-guide.md](docs/validation-guide.md)** - リクエストバリデーションガイド
+📖 **[@go/docs/validation-guide.md](docs/validation-guide.md)** - バリデーションガイド
 
 ### HTTP メソッドとルーティング
 
@@ -975,7 +1026,9 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 ### 基本方針
 
 - **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL データベースを使用してテストを実行
+- **DB接続プールの共有**: `TestMain` パターンでパッケージ単位でDB接続を1回だけ確立し、全テストで共有
 - **トランザクションでの分離**: 各テストはトランザクション内で実行し、テスト終了時に自動ロールバックすることでデータをクリーンアップ
+- **テスト用bcryptコストの低減**: テスト時はbcryptコストを最小値（4）に設定し、パスワードハッシュの計算を高速化
 - **テストヘルパーの活用**: `internal/testutil` パッケージのヘルパー関数とビルダーパターンを使用してテストデータを作成
 - **自動スキーマセットアップ**: `make test` を実行すると、テスト用データベースが自動的にリセットされ、`db/schema.sql` が適用されます（常にクリーンな状態でテストが実行される）
 
@@ -985,10 +1038,71 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 - **テスト関数**: `Test` で始まる名前（例: `TestPopularWorks`）
 - **ベンチマーク関数**: `Benchmark` で始まる名前（例: `BenchmarkPopularWorks`）
 
+### DB接続の共有化（TestMainパターン）
+
+各テストパッケージでは `TestMain` を使用し、DB接続を1回だけ確立してパッケージ内の全テストで共有します。
+
+**セットアップの流れ**:
+
+```
+TestMain: sql.Open → Ping → bcryptコスト設定
+テスト1: Begin → テスト実行 → Rollback
+テスト2: Begin → テスト実行 → Rollback
+TestMain: Close
+```
+
+**新規テストパッケージの作成手順**:
+
+1. `main_test.go` を作成し、`TestMain` で `testutil.SetupTestMain` を呼び出す
+2. 各テスト関数では `testutil.SetupTx(t)` でトランザクションを取得
+3. Usecaseなどトランザクション管理を自前で行うテストでは `testutil.GetTestDB()` を使用
+
+**`SetupTx` と `GetTestDB` の使い分け**:
+
+| 関数                   | 用途                                                     | トランザクション管理                     |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------- |
+| `testutil.SetupTx(t)`  | Repository テスト等、トランザクション内で完結するテスト  | テストヘルパーが管理（自動ロールバック） |
+| `testutil.GetTestDB()` | Usecase テスト等、自前でトランザクション管理を行うテスト | テスト対象コードが管理                   |
+
+- **`SetupTx(t)`**: テスト用のトランザクションを開始し、テスト終了時に自動ロールバック。Repository の読み書きテストに最適
+- **`GetTestDB()`**: 共有 DB 接続プールを直接取得。Usecase が `db.BeginTx` で独自にトランザクションを管理するテストで使用
+
+```go
+// main_test.go
+package handler_test
+
+import (
+    "os"
+    "testing"
+
+    "github.com/mewstcom/mewst/go/internal/testutil"
+)
+
+func TestMain(m *testing.M) {
+    os.Exit(testutil.SetupTestMain(m))
+}
+```
+
+```go
+// create_test.go
+func TestCreate_Success(t *testing.T) {
+    t.Parallel()
+
+    db, tx := testutil.SetupTx(t)
+    // 以降は既存のテストコードと同じ
+}
+```
+
+**`SetupTestMain` が行う初期化**:
+
+- テスト用にbcryptコストを下げる（DefaultCost 10 → MinCost 4 で約64倍高速化）
+- DB接続プールを1回だけ確立し、パッケージ内の全テストで共有
+
 ### テストのベストプラクティス
 
 - **実データベースを使用**: モックではなく実際の PostgreSQL データベースでテスト
-- **トランザクション分離**: `testutil.SetupTestDB(t)` でテスト用 DB とトランザクションをセットアップ
+- **TestMainパターン**: 各テストパッケージに `main_test.go` を作成し、`testutil.SetupTestMain(m)` でDB接続を共有
+- **トランザクション分離**: `testutil.SetupTx(t)` でテスト用トランザクションをセットアップ
 - **テーブル駆動テスト**: 複数のテストケースを効率的に実行
 - **並行テスト**: `t.Parallel()` で並行実行可能なテストを高速化（トランザクション分離により安全）
 - **テストヘルパー**: 共通のセットアップコードをヘルパー関数に抽出
@@ -997,34 +1111,28 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 ### 実データベーステストの例
 
 ```go
-func TestPopularWorks(t *testing.T) {
+func TestCreate_Success(t *testing.T) {
+    t.Parallel()
+
     // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
 
     // テストデータを作成（ビルダーパターン）
-    workID := testutil.NewWorkBuilder(t, tx).
-        WithTitle("テストアニメ").
-        WithSeason(2024, testutil.SeasonSpring).
+    userID := testutil.NewUserBuilder(t, tx).
+        WithEmail("test@example.com").
         Build()
 
-    // sqlcリポジトリを作成（トランザクションを使用）
-    queries := repository.New(db).WithTx(tx)
+    // リポジトリを作成（トランザクションを使用）
+    userRepo := repository.NewUserRepository(db).WithTx(tx)
 
-    // ハンドラーを作成してテスト実行
-    handler := &Handler{
-        queries: queries,
-        cfg:     cfg,
-        templates: templates,
+    // テスト実行
+    user, err := userRepo.FindByID(context.Background(), userID)
+    if err != nil {
+        t.Fatalf("unexpected error: %v", err)
     }
 
-    // HTTPリクエストとレスポンスのテスト
-    req := httptest.NewRequest("GET", "/works/popular", nil)
-    rr := httptest.NewRecorder()
-    handler.PopularWorks(rr, req)
-
-    // アサーション
-    if rr.Code != http.StatusOK {
-        t.Errorf("wrong status code: got %v want %v", rr.Code, http.StatusOK)
+    if user.Email != "test@example.com" {
+        t.Errorf("wrong email: got %v want %v", user.Email, "test@example.com")
     }
 
     // テスト終了時にトランザクションは自動的にロールバックされる
@@ -1041,7 +1149,7 @@ func TestPopularWorks(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
     t.Parallel()
 
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
     ctx := context.Background()
 
     // テスト対象のセットアップ（共通部分）
@@ -1114,7 +1222,6 @@ func TestCreateAccount(t *testing.T) {
 
 `internal/testutil` パッケージには以下のヘルパーが用意されています：
 
-- **`SetupTestDB(t)`**: テスト用データベース接続とトランザクションのセットアップ
 - **`NewWorkBuilder(t, tx)`**: 作品データのビルダー
 - **`NewEpisodeBuilder(t, tx, workID)`**: エピソードデータのビルダー
 - **`NewUserBuilder(t, tx)`**: ユーザーデータのビルダー

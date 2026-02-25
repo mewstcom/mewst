@@ -375,7 +375,6 @@ cookie := &http.Cookie{
 -->
 
 - [x] **1-0**: 開発環境コマンド（Makefile）の作成
-
   - `Makefile` の作成（run, build, test, fmt, lint など）
   - `.golangci.yml` の作成（golangci-lint 設定）
   - `tools.go` の作成（開発ツールの依存関係管理）
@@ -384,7 +383,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 250 行（実装 250 行 + テスト 0 行）
 
 - [x] **1-0-1**: GitHub Actions CI の設定
-
   - `.github/workflows/go-ci.yml` の作成（Go 版 CI）
     - Lint ジョブ: templ generate チェック、go mod tidy チェック、golangci-lint
     - Test ジョブ: PostgreSQL サービス、テスト実行
@@ -397,7 +395,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 300 行（実装 300 行 + テスト 0 行）
 
 - [x] **1-1**: Go プロジェクトの初期化
-
   - `go.mod`, `go.sum` の作成
   - 基本的なディレクトリ構造の作成
   - 必要なライブラリのインストール（chi, sqlc, templ, bcrypt など）
@@ -406,7 +403,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 250 行（実装 250 行 + テスト 0 行）
 
 - [x] **1-2**: 設定管理の実装
-
   - `internal/config/config.go` の作成
   - 環境変数からの設定読み込み
   - `.env.example` の作成
@@ -414,7 +410,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 200 行（実装 100 行 + テスト 100 行）
 
 - [x] **1-3**: データベース接続とマイグレーション
-
   - DB 接続設定
   - `db/schema.sql` の作成（Rails 版から移植）
   - `sqlc.yaml` の設定
@@ -425,7 +420,6 @@ cookie := &http.Cookie{
 ### フェーズ 2: 認証基盤の実装
 
 - [x] **2-1**: リポジトリ層の実装
-
   - `internal/repository/user_repository.go`
   - `internal/repository/session_repository.go`
   - `internal/repository/actor_repository.go`
@@ -433,14 +427,12 @@ cookie := &http.Cookie{
   - **想定行数**: 約 400 行（実装 150 行 + テスト 250 行）
 
 - [x] **2-2**: パスワード検証の実装
-
   - `internal/auth/password.go`
   - bcrypt によるパスワード検証
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 100 行（実装 30 行 + テスト 70 行）
 
 - [x] **2-3**: セッション管理の実装
-
   - `internal/session/manager.go`
   - `internal/session/flash.go`
   - セッショントークン生成
@@ -450,7 +442,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 400 行（実装 200 行 + テスト 200 行）
 
 - [x] **2-4**: 認証ミドルウェアの実装
-
   - `internal/middleware/auth.go`
   - `RequireAuth` ミドルウェア
   - `RequireNoAuth` ミドルウェア
@@ -461,21 +452,18 @@ cookie := &http.Cookie{
 ### フェーズ 3: ログイン機能の実装
 
 - [x] **3-1**: CSRF ミドルウェアの実装
-
   - `internal/middleware/csrf.go`
   - CSRF トークン生成・検証
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 150 行（実装 60 行 + テスト 90 行）
 
 - [x] **3-2**: Turnstile クライアントの実装
-
   - `internal/turnstile/client.go`
   - Cloudflare Turnstile API との連携
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 150 行（実装 60 行 + テスト 90 行）
 
 - [x] **3-3**: セッション作成ユースケースの実装
-
   - `internal/usecase/create_session.go`
   - セッショントークン生成
   - sessions テーブルへの INSERT
@@ -483,7 +471,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 200 行（実装 80 行 + テスト 120 行）
 
 - [x] **3-4**: ログインフォームテンプレートの実装
-
   - `internal/templates/pages/sign_in/new.templ`
   - `internal/templates/layouts/simple.templ`
   - `internal/templates/components/` 共通コンポーネント
@@ -492,7 +479,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 250 行（実装 250 行 + テスト 0 行）
 
 - [x] **3-5**: ログインハンドラーの実装
-
   - `internal/handler/sign_in/handler.go`
   - `internal/handler/sign_in/new.go`
   - `internal/handler/sign_in/create.go`
@@ -503,7 +489,6 @@ cookie := &http.Cookie{
 ### フェーズ 4: ログアウト機能の実装
 
 - [x] **4-1**: ログアウトハンドラーの実装
-
   - `internal/handler/sign_out/handler.go`
   - `internal/handler/sign_out/delete.go`
   - **想定ファイル数**: 約 4 ファイル（実装 2 + テスト 2）
@@ -512,7 +497,6 @@ cookie := &http.Cookie{
 ### フェーズ 5: 統合とルーティング
 
 - [x] **5-1**: ルーティング設定とリバースプロキシミドルウェアの更新
-
   - ルーティング設定（`/sign_in`, `/sign_out`）
   - リバースプロキシのホワイトリスト更新
   - Method Override ミドルウェア
@@ -520,7 +504,6 @@ cookie := &http.Cookie{
   - **想定行数**: 約 200 行（実装 100 行 + テスト 100 行）
 
 - [x] **5-2**: 国際化（I18n）の実装
-
   - `internal/i18n/i18n.go`
   - `internal/i18n/locales/ja.toml`
   - `internal/i18n/locales/en.toml`
@@ -530,7 +513,6 @@ cookie := &http.Cookie{
 ### フェーズ 6: フロントエンド基盤の整備
 
 - [x] **6-1**: JS/CSS ビルド環境の構築
-
   - `package.json` の作成（pnpm 設定、scripts、devDependencies）
     - `@tailwindcss/cli`: Tailwind CSS v4 CLI
     - `tailwindcss`: Tailwind CSS v4

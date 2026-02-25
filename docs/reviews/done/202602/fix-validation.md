@@ -2,14 +2,14 @@
 
 ## レビュー情報
 
-| 項目             | 内容                           |
-| ---------------- | ------------------------------ |
-| レビュー日       | 2026-02-03                     |
-| 対象ブランチ     | fix-validation                 |
-| ベースブランチ   | go                             |
-| 変更ファイル数   | 87 ファイル                    |
-| 変更行数（実装） | +3383 / -964 行                |
-| 変更行数（テスト）| 上記に含まれる                 |
+| 項目               | 内容            |
+| ------------------ | --------------- |
+| レビュー日         | 2026-02-03      |
+| 対象ブランチ       | fix-validation  |
+| ベースブランチ     | go              |
+| 変更ファイル数     | 87 ファイル     |
+| 変更行数（実装）   | +3383 / -964 行 |
+| 変更行数（テスト） | 上記に含まれる  |
 
 ## 参照するガイドライン
 
@@ -135,6 +135,7 @@
   ガイドラインでは `{Action}Validator` 構造体と `{Action}ValidatorInput`、`{Action}ValidatorResult` を使用し、`Validate(ctx, input)` メソッドを持つパターンを推奨しています。
 
   現在の実装:
+
   ```go
   type CreateValidator struct {
       Email string  // 入力値を構造体に直接持っている
@@ -146,6 +147,7 @@
   ```
 
   ガイドラインに従った形式:
+
   ```go
   type CreateValidator struct{}
 
@@ -177,6 +179,7 @@
 - **[@go/docs/validation-guide.md#命名規則]**: 上記 `password_reset/validator.go` と同様の問題
 
   現在の実装:
+
   ```go
   type UpdateValidator struct {
       Password string  // 入力値を構造体に直接持っている
@@ -512,12 +515,14 @@
 **背景**:
 
 `sign_in/validator.go` と `email_confirmation/validator.go` では、以下のパターンが使われています:
+
 - `{Action}Validator` 構造体（依存性のみを持つ）
 - `{Action}ValidatorInput` 構造体（入力データ）
 - `{Action}ValidatorResult` 構造体（結果）
 - `Validate(ctx, input) *Result` メソッド
 
 一方、`password_reset/validator.go` と `password/validator.go` では:
+
 - `{Action}Validator` 構造体（入力データを直接持つ）
 - `Validate(ctx) *session.FormErrors` メソッド
 

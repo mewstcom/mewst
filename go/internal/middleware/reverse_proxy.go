@@ -27,10 +27,12 @@ var goHandledPaths = []string{
 	"/health",             // ヘルスチェックエンドポイント
 	"/manifest.json",      // Web App Manifest
 	"/sign_in",            // ログインページ・処理
+	"/sign_up",            // サインアップページ・処理
 	"/sign_out",           // ログアウト処理
 	"/password_reset",     // パスワードリセット開始
 	"/email_confirmation", // メール確認
 	"/password",           // パスワード更新
+	"/accounts",           // アカウント作成
 }
 
 // NewReverseProxyMiddleware は新しいReverseProxyMiddlewareを作成

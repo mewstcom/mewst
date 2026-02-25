@@ -88,28 +88,6 @@ jobs:
           working-directory: rails
       - run: bin/erb_lint --lint-all
 
-  prettier:
-    name: Prettier
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: rails
-    steps:
-      - uses: actions/checkout@v6
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.11.1
-      - name: Install Yarn
-        run: |
-          npm install --global yarn@1.22.19
-      - name: Install npm packages
-        run: |
-          yarn install
-      - name: Prettier check
-        run: |
-          yarn prettier . --check
-
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
@@ -119,9 +97,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20.11.1
+          package-manager-cache: false
       - name: Install Yarn
         run: |
           npm install --global yarn@1.22.19
@@ -159,9 +138,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20.11.1
+          package-manager-cache: false
       - name: Install Yarn
         run: |
           npm install --global yarn@1.22.19

@@ -38,7 +38,7 @@ Rails 版は既存の本番システムであり、以下の方針で開発・�
 - **バンドラー**: esbuild
 - **パッケージマネージャー**: Yarn
 - **リント**: ESLint
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **テンプレート**: ERB
 - **コンポーネント**: ViewComponent
 
@@ -95,7 +95,7 @@ Rails 標準の MVC アーキテクチャに加え、ユースケース層やコ
 
 > **Note**: 開発環境の基本的なセットアップ手順は [/CLAUDE.md](../CLAUDE.md#開発環境のセットアップ) を参照してください。
 
-- Dev Container を使って開発します
+- Docker Compose を使って開発します
 - Claude Code はコンテナ内で実行されているため、ホスト側のコマンドの実行は不要です
 - 共通インフラ（PostgreSQL）は `/docker-compose.yml` で管理されており、ホスト側で起動済みのはずです
 
@@ -114,7 +114,7 @@ Rails 標準の MVC アーキテクチャに加え、ユースケース層やコ
 docker compose up
 
 # 特定のサービスのログを確認
-docker compose logs -f rails-app
+docker compose logs -f app
 ```
 
 ### コンテナ内で実行するコマンド (Claude Code が実行できるコマンド)
@@ -146,7 +146,7 @@ make test-file FILE=spec/system/
 
 # コードフォーマット
 make fmt                           # Ruby（自動修正）
-yarn prettier --write "**/*.js"    # JavaScript
+make -C /workspace fmt # JavaScript/CSS/JSON/YAML/Markdown
 
 # リント
 make lint                          # Ruby
@@ -199,14 +199,17 @@ make fmt
 # 4. ERBリント
 bin/erb_lint --lint-all
 
-# 5. Prettier（JavaScript/CSS）
-yarn prettier . --check
+# 5. Oxfmt（JavaScript/CSS/JSON/YAML/Markdown）
+make -C /workspace fmt-check
 
 # 6. ESLint
 yarn eslint .
 
 # 7. テストを実行
 make test
+
+# 全ての検証を実行（ワンライナー）
+bin/check
 ```
 
 ## Pull Request のガイドライン
@@ -228,17 +231,64 @@ Pull Request のガイドラインは [/CLAUDE.md](../CLAUDE.md#pull-requestの�
 - **スタイルガイド**: Standard（RuboCop）に従う
 - **自動フォーマット**: `make fmt`を使用
 - **コメント**: 日本語で記述（複雑なロジックの説明）
+- **1行100文字以内**: 長い行は適切に改行する
 - **型注釈**: Sorbet の型注釈を可能な限り追加
 
-  ```ruby
-  # typed: true
-  extend T::Sig
+```ruby
+# typed: strict
+# frozen_string_literal: true
 
-  sig { params(user_id: String).returns(UserRecord) }
-  def find_user(user_id)
-    UserRecord.find(user_id)
+class Example
+  # ✅ 文字列はダブルクオート
+  name = "example"
+
+  # ✅ ハッシュの省略記法
+  {user:, name:}
+
+  # ❌
+  {user: user, name: name}
+
+  # ✅ プライベートメソッドは private def
+  private def process_value(value)
+    value.upcase
   end
-  ```
+
+  # ✅ プロテクテッドメソッドは protected def
+  protected def shared_method(value)
+    value.downcase
+  end
+
+  # ❌ 後置ifは使用しない
+  # return if value.nil? # 悪い例
+
+  # ✅
+  if value.nil?
+    return
+  end
+
+  # ❌ attr_readerにprivateブロックを使用しない
+  # private
+  # attr_reader :user_record
+
+  # ✅ attr_readerは個別にprivate指定
+  attr_reader :user_record
+  private :user_record
+
+  # ✅ T.mustではなくnot_nil!を使用
+  value.not_nil!
+end
+```
+
+### ActiveRecord
+
+```ruby
+# ❌ includesは使用禁止
+Model.includes(:association)
+
+# ✅ 明示的にpreloadまたはeager_loadを使用
+Model.preload(:association)   # 別クエリで取得（基本はこちら）
+Model.eager_load(:association) # JOINで取得（関連テーブルでフィルタリング時）
+```
 
 #### コメントのガイドライン
 
@@ -295,7 +345,7 @@ user_id = user.discarded? ? nil : user.id
 
 - **インデント**: 2 スペースを使用
 - **スタイルガイド**: ESLint に従う
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **フレームワーク**: Stimulus Controller を優先的に使用
 
 ### アーキテクチャパターン
@@ -369,6 +419,96 @@ expect(page).not_to have_css(".loading-spinner")
 
 **重要**: システムテストでは`sleep`の使用を避け、Capybaraの自動待機機能を活用すること
 
+### クラス間の依存関係ルール
+
+| クラス     | 依存可能な先                                   |
+| ---------- | ---------------------------------------------- |
+| Component  | Component, Form, Model                         |
+| Controller | Form, Model, Record, Repository, UseCase, View |
+| Form       | Record, Validator                              |
+| Job        | UseCase                                        |
+| Mailer     | Model, Record, Repository, View                |
+| Model      | Model                                          |
+| Policy     | Record                                         |
+| Record     | Record                                         |
+| Repository | Model, Record, Policy                          |
+| UseCase    | Job, Mailer, Record                            |
+| Validator  | Record                                         |
+| View       | Component, Form, Model                         |
+
+#### UseCaseとJobの依存関係について
+
+UseCaseとJobの間には相互依存が存在しますが、以下のルールで循環依存を回避します：
+
+- **UseCase → Job**: `perform_later`メソッドによるキューへの追加のみ許可
+- **Job → UseCase**: ジョブ実行時のUseCase呼び出しは許可
+- **重要**: UseCaseからJobインスタンスの直接実行（`perform`メソッド）は禁止
+
+```ruby
+# ✅ 良い例：UseCaseからジョブをキューに追加
+class Users::CreateUseCase < ApplicationUseCase
+  def call
+    user = UserRecord.create!(...)
+    Users::SendWelcomeEmailJob.perform_later(user.id)  # キューに追加のみ
+  end
+end
+
+# ❌ 悪い例：UseCaseからジョブを直接実行
+class Users::CreateUseCase < ApplicationUseCase
+  def call
+    user = UserRecord.create!(...)
+    Users::SendWelcomeEmailJob.new.perform(user.id)  # 直接実行は禁止
+  end
+end
+```
+
+#### UseCaseクラスを使用する場合
+
+- ✅ データベースへの永続化を伴う処理
+- ✅ 複数のモデル/レコードにまたがる複雑なビジネスロジックで永続化を伴うもの
+- ✅ トランザクション管理が必要な処理
+
+#### UseCaseクラスを使用しない場合
+
+- ❌ データベースへの永続化を伴わない処理（URL生成、データ変換など）
+- ❌ 単一のモデル/レコードに閉じた処理（モデルやレコードのメソッドとして定義）
+
+#### トランザクション処理
+
+**重要**: UseCaseクラスでトランザクションを張る場合は、必ず `#with_transaction` メソッドを使用すること
+
+```ruby
+# ✅ 良い例：with_transactionを使用
+class Users::CreateUseCase < ApplicationUseCase
+  def call
+    with_transaction do
+      user = UserRecord.create!(...)
+      ProfileRecord.create!(user:, ...)
+    end
+  end
+end
+
+# ❌ 悪い例：transactionを直接使用
+class Users::CreateUseCase < ApplicationUseCase
+  def call
+    ApplicationRecord.transaction do
+      # with_transactionを使うべき
+    end
+  end
+end
+```
+
+**重要**: Controller、Job、Rakeタスク内で永続化処理を書く場合は、必ずUseCaseクラスを定義すること
+
+### 命名規則
+
+- Controller: `(ModelPlural)::(ActionName)Controller`
+- UseCase: `(ModelPlural)::(Verb)UseCase`
+- Form: `(ModelPlural)::(Noun)Form`
+- Repository: `(Model)Repository`
+- View: `(ModelPlural)::(ActionName)View`
+- Component: `(UIComponentPlural)::(Noun)Component`
+
 ### 国際化（I18n）
 
 すべてのユーザー向けメッセージは**必ず国際化対応**します：
@@ -439,6 +579,16 @@ bin/rspec spec/requests/posts_spec.rb:10
 bin/rspec spec/system/
 ```
 
+## 重要な原則
+
+- ネストしたトランザクションを避ける
+- レコードのコールバックを避ける
+- View/Componentでのデータベースアクセスを防ぐ
+- 問題が解決されるなら、レイヤーを跨いだ依存も許可
+- 説明的な命名規則
+- コメントは日本語で記載
+- 1行100文字以内
+
 ## セキュリティガイドライン
 
 Web アプリケーションのセキュリティは**最優先事項**です。
@@ -482,7 +632,7 @@ Web アプリケーションのセキュリティは**最優先事項**です。
   - 関連するテストが通ること（`make test-file FILE=spec/path/to/xxx_spec.rb`）
   - 明らかなランタイムエラーがないこと
 - **ドキュメント編集**: Markdown ファイルを編集した後は、必ず以下を行う:
-  - Prettier の実行 (`yarn prettier . --write`)
+  - Oxfmt の実行 (`make -C /workspace fmt`)
 - **リトライポリシー**: 問題発生時は自動で最大 5 回まで再試行し、それでも解消できない場合にのみユーザーへ連絡する（途中経過は報告しない）
 - **以下の状態では絶対に完了報告をしない**:
   - テストが失敗している（未実装機能のテストを意図的に作成している場合を除く）
@@ -501,8 +651,11 @@ make zeitwerk
 make test
 
 # JavaScript を編集したとき実行する
-yarn prettier . --write
+make -C /workspace fmt
 yarn eslint .
+
+# 全ての検証を実行
+bin/check
 ```
 
 ## データベース管理
@@ -535,7 +688,7 @@ make db-migrate
 
 - **Sorbet エラー**: `make sorbet-update` で型定義を更新
 - **オートローディングエラー**: `make zeitwerk` でチェック
-- **フォーマットエラー**: `make fmt` または `yarn prettier . --write` で修正
+- **フォーマットエラー**: `make fmt` または `make -C /workspace fmt` で修正
 - **Lint エラー**: 各種 Lint コマンド（`make lint`, `bin/erb_lint --lint-all`, `yarn eslint .`）で修正
 
 ## 関連ドキュメント

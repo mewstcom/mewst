@@ -92,7 +92,6 @@ import (
 ### フェーズ 1: tparse の導入
 
 - [x] **1-1**: tparse を tools.go に追加し、go.mod に依存関係を追加する
-
   - tools.go に `_ "github.com/mfridman/tparse"` を追加
   - `go get github.com/mfridman/tparse@v0.18.0` を実行
   - `go mod tidy` で依存関係を整理
@@ -100,7 +99,6 @@ import (
   - **想定行数**: 約 5 行（実装 5 行 + テスト 0 行）
 
 - [x] **1-2**: Makefile の test 関連タスクを tparse を使用するように変更する
-
   - `make test` を tparse 経由に変更
   - `make test-pkg` を tparse 経由に変更
   - `make test-run` を tparse 経由に変更

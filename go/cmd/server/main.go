@@ -16,13 +16,16 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
 	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/handler/accounts"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
 	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
+	"github.com/mewstcom/mewst/go/internal/handler/sign_up"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/turnstile"
@@ -58,6 +61,9 @@ func main() {
 	sessionRepo := repository.NewSessionRepository(db)
 	actorRepo := repository.NewActorRepository(db)
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db)
+	profileRepo := repository.NewProfileRepository(db)
+	userProfileRepo := repository.NewUserProfileRepository(db)
+	rateLimitRepo := repository.NewRateLimitRepository(db)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
@@ -87,11 +93,15 @@ func main() {
 	}
 	slog.Info("Workerを開始しました")
 
+	// レートリミッターの初期化
+	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
+
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(sessionRepo)
 	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, workerClient)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
 	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmationRepo)
+	createAccountUC := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo, userProfileRepo, actorRepo)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -99,10 +109,12 @@ func main() {
 	// ハンドラーの初期化
 	manifestHandler := manifest.NewHandler(cfg)
 	signInHandler := sign_in.NewHandler(cfg, sessionMgr, userRepo, actorRepo, createSessionUC, turnstileClient)
+	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, userRepo, createEmailConfirmationUC, turnstileClient, rateLimiter)
 	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
 	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createEmailConfirmationUC, turnstileClient)
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, emailConfirmationRepo, markEmailAsConfirmedUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, emailConfirmationRepo, updatePasswordUC)
+	accountsHandler := accounts.NewHandler(cfg, sessionMgr, emailConfirmationRepo, userRepo, profileRepo, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -146,12 +158,14 @@ func main() {
 	// Web App Manifest
 	r.Get("/manifest.json", manifestHandler.Show)
 
-	// ログインページ（未認証ユーザーのみ）
+	// ログイン・サインアップページ（未認証ユーザーのみ）
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
 		r.Get("/sign_in", signInHandler.New)
 		r.Post("/sign_in", signInHandler.Create)
+		r.Get("/sign_up", signUpHandler.New)
+		r.Post("/sign_up", signUpHandler.Create)
 	})
 
 	// ログアウト（認証済みユーザーのみ）
@@ -166,7 +180,7 @@ func main() {
 		r.Post("/sign_out", signOutHandler.Delete)
 	})
 
-	// パスワードリセット機能（未認証ユーザーのみ）
+	// パスワードリセット・メール確認・アカウント作成（未認証ユーザーのみ）
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
@@ -183,6 +197,10 @@ func main() {
 		r.Get("/password/edit", passwordHandler.Edit)
 		r.Patch("/password", passwordHandler.Update)
 		r.Post("/password", passwordHandler.Update) // HTMLフォームからのPOST対応（_method=PATCH）
+
+		// アカウント作成（メール確認後）
+		r.Get("/accounts/new", accountsHandler.New)
+		r.Post("/accounts", accountsHandler.Create)
 	})
 
 	// サーバー起動
