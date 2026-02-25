@@ -100,6 +100,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 20.11.1
+          package-manager-cache: false
       - name: Install Yarn
         run: |
           npm install --global yarn@1.22.19
@@ -140,6 +141,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 20.11.1
+          package-manager-cache: false
       - name: Install Yarn
         run: |
           npm install --global yarn@1.22.19
