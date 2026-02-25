@@ -38,7 +38,7 @@ Rails 版は既存の本番システムであり、以下の方針で開発・�
 - **バンドラー**: esbuild
 - **パッケージマネージャー**: Yarn
 - **リント**: ESLint
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **テンプレート**: ERB
 - **コンポーネント**: ViewComponent
 
@@ -146,7 +146,7 @@ make test-file FILE=spec/system/
 
 # コードフォーマット
 make fmt                           # Ruby（自動修正）
-yarn prettier --write "**/*.js"    # JavaScript
+make -C /workspace fmt # JavaScript/CSS/JSON/YAML/Markdown
 
 # リント
 make lint                          # Ruby
@@ -199,8 +199,8 @@ make fmt
 # 4. ERBリント
 bin/erb_lint --lint-all
 
-# 5. Prettier（JavaScript/CSS）
-yarn prettier . --check
+# 5. Oxfmt（JavaScript/CSS/JSON/YAML/Markdown）
+make -C /workspace fmt-check
 
 # 6. ESLint
 yarn eslint .
@@ -345,7 +345,7 @@ user_id = user.discarded? ? nil : user.id
 
 - **インデント**: 2 スペースを使用
 - **スタイルガイド**: ESLint に従う
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **フレームワーク**: Stimulus Controller を優先的に使用
 
 ### アーキテクチャパターン
@@ -632,7 +632,7 @@ Web アプリケーションのセキュリティは**最優先事項**です。
   - 関連するテストが通ること（`make test-file FILE=spec/path/to/xxx_spec.rb`）
   - 明らかなランタイムエラーがないこと
 - **ドキュメント編集**: Markdown ファイルを編集した後は、必ず以下を行う:
-  - Prettier の実行 (`yarn prettier . --write`)
+  - Oxfmt の実行 (`make -C /workspace fmt`)
 - **リトライポリシー**: 問題発生時は自動で最大 5 回まで再試行し、それでも解消できない場合にのみユーザーへ連絡する（途中経過は報告しない）
 - **以下の状態では絶対に完了報告をしない**:
   - テストが失敗している（未実装機能のテストを意図的に作成している場合を除く）
@@ -651,7 +651,7 @@ make zeitwerk
 make test
 
 # JavaScript を編集したとき実行する
-yarn prettier . --write
+make -C /workspace fmt
 yarn eslint .
 
 # 全ての検証を実行
@@ -688,7 +688,7 @@ make db-migrate
 
 - **Sorbet エラー**: `make sorbet-update` で型定義を更新
 - **オートローディングエラー**: `make zeitwerk` でチェック
-- **フォーマットエラー**: `make fmt` または `yarn prettier . --write` で修正
+- **フォーマットエラー**: `make fmt` または `make -C /workspace fmt` で修正
 - **Lint エラー**: 各種 Lint コマンド（`make lint`, `bin/erb_lint --lint-all`, `yarn eslint .`）で修正
 
 ## 関連ドキュメント

@@ -184,13 +184,13 @@ docker-compose.yml
 
 **mise で管理するツール**:
 
-| ツール  | バージョン | 用途                    |
-| ------- | ---------- | ----------------------- |
-| Go      | 1.25.4     | Go 版の開発             |
-| Ruby    | 3.3.6      | Rails 版の開発          |
-| Node.js | 24.11.1    | Go 版のフロントエンド   |
+| ツール  | バージョン | 用途                     |
+| ------- | ---------- | ------------------------ |
+| Go      | 1.25.4     | Go 版の開発              |
+| Ruby    | 3.3.6      | Rails 版の開発           |
+| Node.js | 24.11.1    | Go 版のフロントエンド    |
 | Node.js | 20.11.1    | Rails 版のフロントエンド |
-| pnpm    | 10.24.0    | Go 版のパッケージ管理   |
+| pnpm    | 10.24.0    | Go 版のパッケージ管理    |
 | Yarn    | 1.22.19    | Rails 版のパッケージ管理 |
 
 **動作の仕組み**:
@@ -534,7 +534,6 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 -->
 
 - [x] **1-1**: 統合 Dockerfile.dev を作成
-
   - ルートに `Dockerfile.dev` を新規作成（上記設計に基づく）
   - `mise.toml`（ルート）、`go/mise.toml`、`rails/mise.toml` を作成
   - `docker-compose.yml` を更新（`go-app` + `rails-app` → `app` に統合）
@@ -545,7 +544,6 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 ### フェーズ 2: Go 版の動作確認と調整
 
 - [x] **2-1**: [Go] 統合コンテナでの Go 版動作確認と調整
-
   - `cd /workspace/go && make test` が通ることを確認
   - `cd /workspace/go && make lint` が通ることを確認
   - `cd /workspace/go && make fmt` が動作することを確認
@@ -557,7 +555,6 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 ### フェーズ 3: Rails 版の動作確認と調整
 
 - [x] **3-1**: [Rails] 統合コンテナでの Rails 版動作確認と調整
-
   - `cd /workspace/rails && make test` が通ることを確認
   - `cd /workspace/rails && make lint` が通ることを確認
   - `cd /workspace/rails && bin/check` が動作することを確認
@@ -570,7 +567,6 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 ### フェーズ 4: クリーンアップ
 
 - [x] **4-1**: 旧 Dockerfile の削除とドキュメント更新
-
   - `go/Dockerfile.dev` を削除
   - `rails/Dockerfile.dev` を削除
   - `CLAUDE.md` の Docker 関連セクションを更新

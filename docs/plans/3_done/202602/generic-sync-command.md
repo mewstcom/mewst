@@ -41,11 +41,11 @@
 
 ### 対象プロジェクト
 
-| プロジェクト | ディレクトリ                  |
-| ------------ | ----------------------------- |
+| プロジェクト | ディレクトリ                   |
+| ------------ | ------------------------------ |
 | Mewst        | `/workspace/` (自プロジェクト) |
-| Annict       | `/annict/`                    |
-| Wikino       | `/wikino/`                    |
+| Annict       | `/annict/`                     |
+| Wikino       | `/wikino/`                     |
 
 ※ groobb は CLAUDE.md が未整備のため同期対象外
 
@@ -77,31 +77,31 @@
 
 #### カテゴリ 3: ビルド・CI 設定
 
-| ファイル                          | Mewst | Annict | Wikino |
-| --------------------------------- | ----- | ------ | ------ |
-| `go/.golangci.yml`                | ✅    | ✅     | ✅     |
-| `go/Makefile`                     | ✅    | ✅     | ✅     |
-| `rails/Makefile`                  | ✅    | ✅     | ✅     |
+| ファイル                         | Mewst | Annict | Wikino |
+| -------------------------------- | ----- | ------ | ------ |
+| `go/.golangci.yml`               | ✅    | ✅     | ✅     |
+| `go/Makefile`                    | ✅    | ✅     | ✅     |
+| `rails/Makefile`                 | ✅    | ✅     | ✅     |
 | `.github/workflows/go-ci.yml`    | ✅    | ✅     | ✅     |
 | `.github/workflows/rails-ci.yml` | ✅    | ✅     | ✅     |
 
 #### カテゴリ 4: ツール設定
 
-| ファイル                                  | Mewst | Annict | Wikino |
-| ----------------------------------------- | ----- | ------ | ------ |
-| `rails/.prettierrc`                       | ✅    | ✅     | ✅     |
-| `rails/.rspec`                            | ✅    | ✅     | ✅     |
-| `rails/eslint.config.mjs`                 | ✅    | ✅     | ✅     |
+| ファイル                  | Mewst | Annict | Wikino |
+| ------------------------- | ----- | ------ | ------ |
+| `rails/.prettierrc`       | ✅    | ✅     | ✅     |
+| `rails/.rspec`            | ✅    | ✅     | ✅     |
+| `rails/eslint.config.mjs` | ✅    | ✅     | ✅     |
 
 ※ 3 プロジェクト間で完全一致が確認されたファイル（`go/.air.toml`、`rails/.standard.yml`、`rails/.standard_rubocop_extensions.yml`、`rails/.erb_lint.yml`）は同期対象外とする
 
 #### カテゴリ 5: Claude Code 設定
 
-| ファイル                              | Mewst | Annict | Wikino |
-| ------------------------------------- | ----- | ------ | ------ |
-| `.claude/commands/commit.md`          | ❌    | ✅     | ✅     |
-| `.claude/commands/review.md`          | ❌    | ✅     | ✅     |
-| `.claude/commands/sync.md`            | ✅    | ✅     | ✅     |
+| ファイル                     | Mewst | Annict | Wikino |
+| ---------------------------- | ----- | ------ | ------ |
+| `.claude/commands/commit.md` | ❌    | ✅     | ✅     |
+| `.claude/commands/review.md` | ❌    | ✅     | ✅     |
+| `.claude/commands/sync.md`   | ✅    | ✅     | ✅     |
 
 ### コマンドの構成
 
@@ -154,11 +154,13 @@ docs/plans/1_doing/sync-YYYYMMDD.md
 **対象ファイル**: `go/docs/validation-guide.md`
 
 **差分の内容**:
+
 - **Mewst**: [Mewst での記述内容の要約]
 - **Annict**: [Annict での記述内容の要約]
 - **Wikino**: [Wikino での記述内容の要約]
 
 **採用方針**:
+
 - [ ] Mewst の方式を採用（他プロジェクトに反映）
 - [ ] Annict の方式を採用（他プロジェクトに反映）
 - [ ] Wikino の方式を採用（他プロジェクトに反映）

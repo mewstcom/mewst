@@ -59,14 +59,14 @@ CIでの `-short` フラグによる短時間テスト限定実行の廃止、DB
 
 **プロジェクト別の現状**:
 
-| 項目 | Wikino | Annict | Mewst |
-|------|--------|--------|-------|
-| テスト数 | 596 | - | - |
-| DB接続プール化 | ❌ 未実装 | ✅ `sync.Once` で実装済み | ❌ 未実装 |
-| `testing.Short()` 使用 | ❌ 未使用（`-short` が無意味） | seedテスト2ファイルのみ | `SetupTestDB` 内（全DBテストをスキップ） |
-| CIでのDBテスト | ✅ 実行される（`-short` が無意味のため） | ✅ 実行される（seedテスト以外） | ❌ **全DBテストがスキップされている** |
-| bcryptコスト | DefaultCost (10) | DefaultCost (10) | DefaultCost (10) |
-| テストごとのDB接続 | `sql.Open` + `Ping` + `Close` | `Begin` + `Rollback` のみ | `sql.Open` + `Ping` + `Close` |
+| 項目                   | Wikino                                   | Annict                          | Mewst                                    |
+| ---------------------- | ---------------------------------------- | ------------------------------- | ---------------------------------------- |
+| テスト数               | 596                                      | -                               | -                                        |
+| DB接続プール化         | ❌ 未実装                                | ✅ `sync.Once` で実装済み       | ❌ 未実装                                |
+| `testing.Short()` 使用 | ❌ 未使用（`-short` が無意味）           | seedテスト2ファイルのみ         | `SetupTestDB` 内（全DBテストをスキップ） |
+| CIでのDBテスト         | ✅ 実行される（`-short` が無意味のため） | ✅ 実行される（seedテスト以外） | ❌ **全DBテストがスキップされている**    |
+| bcryptコスト           | DefaultCost (10)                         | DefaultCost (10)                | DefaultCost (10)                         |
+| テストごとのDB接続     | `sql.Open` + `Ping` + `Close`            | `Begin` + `Rollback` のみ       | `sql.Open` + `Ping` + `Close`            |
 
 ## 要件
 
@@ -95,15 +95,15 @@ CIでの `-short` フラグによる短時間テスト限定実行の廃止、DB
 
 #### テスト実行時間の内訳（キャッシュなし）
 
-| パッケージ | テスト数 | 実行時間 | 推定ボトルネック |
-|-----------|---------|---------|---------------|
-| `usecase` | 26 | 5.85s | bcrypt + DB接続 + トランザクション管理 |
-| `handler/sign_in` | 28 | 4.86s | bcrypt + DB接続 |
-| `handler/password_reset` | 23 | 4.31s | bcrypt + DB接続 |
-| `auth` | 17 | 3.95s | bcrypt（DB不使用） |
-| `handler/account` | 38 | 3.21s | bcrypt + DB接続 |
-| `turnstile` | 9 | 3.01s | HTTPモック |
-| その他 | 各1〜1.6s | - | コンパイル + 基本オーバーヘッド |
+| パッケージ               | テスト数  | 実行時間 | 推定ボトルネック                       |
+| ------------------------ | --------- | -------- | -------------------------------------- |
+| `usecase`                | 26        | 5.85s    | bcrypt + DB接続 + トランザクション管理 |
+| `handler/sign_in`        | 28        | 4.86s    | bcrypt + DB接続                        |
+| `handler/password_reset` | 23        | 4.31s    | bcrypt + DB接続                        |
+| `auth`                   | 17        | 3.95s    | bcrypt（DB不使用）                     |
+| `handler/account`        | 38        | 3.21s    | bcrypt + DB接続                        |
+| `turnstile`              | 9         | 3.01s    | HTTPモック                             |
+| その他                   | 各1〜1.6s | -        | コンパイル + 基本オーバーヘッド        |
 
 #### 現状の `SetupTestDB` の動作
 
@@ -445,12 +445,12 @@ func TestCreate_Success(t *testing.T) {
 
 **共有fixturesとビルダーの使い分け**:
 
-| データ種別 | 方法 | 理由 |
-|-----------|------|------|
-| 認証済みユーザー（ログインテスト用） | 共有fixtures | 多くのテストで同じデータが必要 |
-| パスワードリセットトークン | ビルダー | テストケースごとに状態が異なる |
-| 「ユーザーが存在しない」テスト | ビルダー不使用 | fixturesは使わず、存在しないメールで検証 |
-| 2FA設定済みユーザー | 共有fixtures（別ユーザー） | 2FA関連テストで頻繁に使用 |
+| データ種別                           | 方法                       | 理由                                     |
+| ------------------------------------ | -------------------------- | ---------------------------------------- |
+| 認証済みユーザー（ログインテスト用） | 共有fixtures               | 多くのテストで同じデータが必要           |
+| パスワードリセットトークン           | ビルダー                   | テストケースごとに状態が異なる           |
+| 「ユーザーが存在しない」テスト       | ビルダー不使用             | fixturesは使わず、存在しないメールで検証 |
+| 2FA設定済みユーザー                  | 共有fixtures（別ユーザー） | 2FA関連テストで頻繁に使用                |
 
 ### 並列テストとの整合性
 
@@ -509,7 +509,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
 -->
 
 - [x] **0-1**: [Go] Makefileの `test` ターゲットからCI分岐と `-short` フラグを削除
-
   - `test` ターゲットの `if [ "$$CI" = "true" ]` 分岐を削除
   - `-short` フラグを削除し、CI・ローカルで統一されたテスト実行コマンドにする
   - `op run --env-file=".env"` のラッパーを削除（環境変数は実行前に設定済みの前提）
@@ -526,7 +525,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
 -->
 
 - [x] **1-1**: [Go] テスト用DB接続プール化（TestMainパターン）の導入
-
   - `testutil.SetupTestMain(m *testing.M)` を追加
   - `testutil.SetupTx(t *testing.T)` を追加（プール化されたDBからトランザクションを取得）
   - `testutil.GetTestDB()` を追加（プール化されたDBへの参照を取得）
@@ -535,7 +533,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 100 行（実装 60 行 + テスト 40 行）
 
 - [x] **1-2**: [Go] テスト用bcryptコストの低減
-
   - `auth.BcryptCost` 変数を導入（デフォルト: `bcrypt.DefaultCost`）
   - `auth.TestBcryptCost` 定数を追加（値: `bcrypt.MinCost`）
   - `HashPassword` を `BcryptCost` 変数を使用するように修正
@@ -545,7 +542,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 50 行（実装 30 行 + テスト 20 行）
 
 - [x] **1-3**: [Go] 既存テストをTestMainパターンに移行（handlerパッケージ）
-
   - `handler/sign_in`, `handler/password_reset`, `handler/account` に `TestMain` を追加
   - `SetupTestDB` → `SetupTx` に置き換え
   - テストが正常に動作することを確認
@@ -553,7 +549,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 60 行（実装 60 行 + テスト 0 行）
 
 - [x] **1-4**: [Go] 残りのテストをTestMainパターンに移行
-
   - `handler/password`, `handler/email_confirmation`, `handler/sign_in_two_factor` 等に `TestMain` を追加
   - `usecase`, `repository` パッケージのテストも移行
   - `SetupTestDB` を非推奨にする（コメントで案内）
@@ -561,7 +556,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 100 行（実装 100 行 + テスト 0 行）
 
 - [x] **1-5**: [Go] 非推奨テストヘルパー (`SetupTestDB`, `SetupTestDBWithoutTx`) の削除
-
   - タスク 1-4 で全テストが `SetupTx` / `GetTestDB` に移行済みのため、非推奨メソッドを削除可能
   - `internal/testutil/db.go` から `SetupTestDB` と `SetupTestDBWithoutTx` を削除
   - `internal/testutil/db_test.go` から関連テストを削除
@@ -578,7 +572,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
 -->
 
 - [ ] **2-1**: [Go] Fixtures基盤の実装
-
   - `testutil.Fixtures` 構造体の定義
   - `testutil.SetupFixtures(db)` 関数の実装（共通テストデータのINSERT）
   - クリーンアップ関数の実装
@@ -587,7 +580,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 150 行（実装 100 行 + テスト 50 行）
 
 - [ ] **2-2**: [Go] sign_inテストをFixturesパターンに移行（パイロット）
-
   - `handler/sign_in` の `TestMain` にFixturesセットアップを追加
   - 認証成功テストをFixturesのユーザーを使用するように変更
   - ビルダーで作成していた共通ユーザーをFixturesに置き換え
@@ -597,7 +589,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
   - **想定行数**: 約 100 行（実装 80 行 + テスト 20 行）
 
 - [ ] **2-3**: [Go] 他のhandlerテストをFixturesパターンに移行
-
   - `handler/password_reset`, `handler/account`, `handler/password` 等を移行
   - 共通パターンのドキュメントを `go/CLAUDE.md` のテスト戦略セクションに追加
   - **想定ファイル数**: 約 8 ファイル（実装 6 + テスト 0 + ドキュメント 2）
@@ -606,7 +597,6 @@ DB状態: [共有fixtures: ユーザーA, セッションA]
 ### フェーズ 3: ドキュメント整備と計測
 
 - [x] **3-1**: [Go] テスト基盤のドキュメント更新
-
   - `go/CLAUDE.md` のテスト戦略セクションを更新
   - `SetupTestMain` / `SetupTx` / Fixtures の使い方を記載
   - 新規テスト作成時のガイドライン追加
@@ -627,7 +617,6 @@ Annict (`/annict/go/`) のテスト基盤を改善する。
 -->
 
 - [x] **4-1**: [Go/Annict] Makefileの `test` ターゲットからCI分岐と `-short` フラグを削除
-
   - `/annict/go/Makefile` の `test` ターゲットの `if [ "$$CI" = "true" ]` 分岐を削除
   - `-short` フラグを削除し、CI・ローカルで統一されたテスト実行コマンドにする
   - `op run --env-file=".env"` のラッパーを削除
@@ -636,7 +625,6 @@ Annict (`/annict/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 10 行（実装 10 行）
 
 - [x] **4-2**: [Go/Annict] seedテストの `testing.Short()` を削除
-
   - `internal/usecase/seed/create_user_test.go` の `testing.Short()` 分岐を削除
   - `internal/usecase/seed/create_work_test.go` の `testing.Short()` 分岐を削除
   - `-short` フラグが廃止されるため、条件分岐が不要になる
@@ -644,7 +632,6 @@ Annict (`/annict/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 10 行（実装 10 行）
 
 - [x] **4-3**: [Go/Annict] テスト用bcryptコストの低減
-
   - `internal/auth/password.go` の `HashPassword` を変数化されたコストで呼ぶように修正
   - `BcryptCost` 変数と `TestBcryptCost` 定数を追加
   - `verification_code.go` のbcrypt使用箇所も同様に修正
@@ -653,7 +640,6 @@ Annict (`/annict/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 50 行（実装 30 行 + テスト 20 行）
 
 - [ ] **4-4**: [Go/Annict] 共有fixturesの導入（必要に応じて）
-
   - フェーズ4-3まで実施した後の計測結果を踏まえて判断
   - Annict は既にDB接続プール化済みのため、bcryptコスト低減だけで十分な改善が得られる可能性が高い
   - **想定ファイル数**: 未定
@@ -673,7 +659,6 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
 -->
 
 - [x] **5-1**: [Go/Mewst] `SetupTestDB` から `testing.Short()` を削除
-
   - `/mewst/go/internal/testutil/db.go` の `testing.Short()` によるスキップを削除
   - Makefileの `test` ターゲットのCI分岐・`-short` フラグ・`op run` ラッパーは既に除去済みのため変更不要
   - `db-setup-test` のCI分岐（PostgreSQLホスト名）はそのまま維持
@@ -681,7 +666,6 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 5 行（実装 5 行）
 
 - [x] **5-2**: [Go/Mewst] DB接続プール化（sync.Onceパターン）の導入
-
   - `internal/testutil/db.go` の `SetupTestDB` を `sync.Once` パターンに変更（Annictの実装を参考）
   - テストごとの `sql.Open` + `Ping` + `db.Close()` を廃止
   - 接続プールの設定を追加（`SetMaxOpenConns`, `SetMaxIdleConns`）
@@ -690,7 +674,6 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 40 行（実装 40 行）
 
 - [x] **5-3**: [Go/Mewst] テスト用bcryptコストの低減
-
   - `internal/auth/password.go` の `HashPassword` を変数化されたコストで呼ぶように修正
   - `BcryptCost` 変数と `TestBcryptCost` 定数を追加
   - `SetupTestDB` の `sync.Once` 内でテスト用コストに設定
@@ -698,7 +681,6 @@ Mewst (`/mewst/go/`) のテスト基盤を改善する。
   - **想定行数**: 約 50 行（実装 30 行 + テスト 20 行）
 
 - [ ] **5-4**: [Go/Mewst] 共有fixturesの導入（必要に応じて）
-
   - フェーズ5-3まで実施した後の計測結果を踏まえて判断
   - **想定ファイル数**: 未定
   - **想定行数**: 未定

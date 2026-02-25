@@ -203,7 +203,6 @@ Go版/Rails版の両方を修正する場合は別タスクに分けてくださ
 -->
 
 - [x] **1-1**: [Go] モジュールパスを `github.com/mewstcom/mewst/go` に変更
-
   - `go.mod` のモジュール宣言を変更
   - 全 Go ソースファイルのインポート文を一括置換
   - `.golangci.yml` の depguard パッケージパスを `/go` 付きに戻す

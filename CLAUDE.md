@@ -206,7 +206,17 @@ docker compose exec app zsh
 - リント
 - テスト
 
-Rails 版の具体的なコマンドは `rails/CLAUDE.md` を参照してください。
+JavaScript、CSS、JSON、YAML、Markdown、TOML ファイルのフォーマットは、プロジェクトルートの Oxfmt で管理しています：
+
+```sh
+# フォーマットチェック
+make fmt-check
+
+# 自動フォーマット
+make fmt
+```
+
+各サブプロジェクト固有のコマンド（Go の `make fmt` や Rails の `make fmt` など）は、それぞれの CLAUDE.md を参照してください。
 
 ### 修正後のコミット
 
@@ -346,7 +356,8 @@ Pull Request を作成する際は、以下のルールを遵守してくださ�
 このモノレポの CI/CD 設定は`.github/workflows/`ディレクトリに配置されています：
 
 - `go-ci.yml`: Go 版の CI（lint、test、build）
-- `rails-ci.yml`: Rails 版の CI（zeitwerk、sorbet、standard、erb_lint、prettier、eslint、rspec）
+- `rails-ci.yml`: Rails 版の CI（zeitwerk、sorbet、standard、erb_lint、eslint、rspec）
+- `fmt-ci.yml`: プロジェクト全体のフォーマットチェック（Oxfmt）
 
 各 CI は対応するファイルが変更されたときに実行されます。
 

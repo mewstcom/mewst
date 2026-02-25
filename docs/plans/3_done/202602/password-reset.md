@@ -138,14 +138,14 @@
 
 ### ルーティング設計
 
-| メソッド | パス | ハンドラー | 説明 |
-|---------|------|-----------|------|
-| GET | `/password_reset` | `password_reset.New` | メールアドレス入力フォーム表示 |
-| POST | `/password_reset` | `password_reset.Create` | 確認コード生成・メール送信 |
-| GET | `/email_confirmation` | `email_confirmation.New` | 確認コード入力フォーム表示 |
-| POST | `/email_confirmation` | `email_confirmation.Create` | 確認コード検証 |
-| GET | `/password/edit` | `password.Edit` | 新しいパスワード入力フォーム表示 |
-| PATCH | `/password` | `password.Update` | パスワード更新 |
+| メソッド | パス                  | ハンドラー                  | 説明                             |
+| -------- | --------------------- | --------------------------- | -------------------------------- |
+| GET      | `/password_reset`     | `password_reset.New`        | メールアドレス入力フォーム表示   |
+| POST     | `/password_reset`     | `password_reset.Create`     | 確認コード生成・メール送信       |
+| GET      | `/email_confirmation` | `email_confirmation.New`    | 確認コード入力フォーム表示       |
+| POST     | `/email_confirmation` | `email_confirmation.Create` | 確認コード検証                   |
+| GET      | `/password/edit`      | `password.Edit`             | 新しいパスワード入力フォーム表示 |
+| PATCH    | `/password`           | `password.Update`           | パスワード更新                   |
 
 ### データベース設計
 
@@ -153,17 +153,18 @@ Rails版の既存テーブル `email_confirmations` を共有して使用しま�
 
 **email_confirmations テーブル**（既存）
 
-| カラム | 型 | 説明 |
-|--------|------|------|
-| id | uuid (ULID) | 主キー |
-| email | citext | メールアドレス（大文字小文字区別なし） |
-| event | varchar | イベント種別（`password_reset`, `sign_up`, `email_update`） |
-| code | varchar | 6桁の確認コード |
-| succeeded_at | timestamp | 確認成功日時（NULL=未確認） |
-| created_at | timestamp | 作成日時 |
-| updated_at | timestamp | 更新日時 |
+| カラム       | 型          | 説明                                                        |
+| ------------ | ----------- | ----------------------------------------------------------- |
+| id           | uuid (ULID) | 主キー                                                      |
+| email        | citext      | メールアドレス（大文字小文字区別なし）                      |
+| event        | varchar     | イベント種別（`password_reset`, `sign_up`, `email_update`） |
+| code         | varchar     | 6桁の確認コード                                             |
+| succeeded_at | timestamp   | 確認成功日時（NULL=未確認）                                 |
+| created_at   | timestamp   | 作成日時                                                    |
+| updated_at   | timestamp   | 更新日時                                                    |
 
 **インデックス**:
+
 - `email_confirmations_pkey` - PRIMARY KEY (id)
 - `index_email_confirmations_on_created_at` - created_at
 - `index_email_confirmations_on_email_and_code` - UNIQUE (email, code)
@@ -317,6 +318,7 @@ type SendEmailConfirmationInput struct {
 ```
 
 **メールテンプレート（日本語）**:
+
 ```
 件名: [Mewst] 確認用コード
 
@@ -355,16 +357,19 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 ### バリデーション
 
 **メールアドレス入力（CreateRequest）**:
+
 - 必須チェック
 - メールアドレス形式チェック
 
 **確認コード入力（ConfirmRequest）**:
+
 - 必須チェック
 - 6桁の数字形式チェック
 - コードの一致確認
 - 有効期限チェック（15分）
 
 **パスワード入力（UpdateRequest）**:
+
 - 必須チェック
 - 最小文字数チェック（8文字以上）
 - 最大バイト数チェック（72バイト以下、bcrypt制限）
@@ -374,16 +379,19 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 各コンポーネントに対してユニットテストと統合テストを実装します。
 
 **ハンドラーテスト**:
+
 - 正常系: フォーム表示、リダイレクト動作
 - 異常系: バリデーションエラー、認証エラー
 - 認証ガード: ログイン済みユーザーのリダイレクト
 
 **ユースケーステスト**:
+
 - 確認コード生成のランダム性
 - メール送信の呼び出し
 - トランザクション管理
 
 **リポジトリテスト**:
+
 - CRUD操作
 - 有効期限フィルタリング
 
@@ -418,7 +426,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 -->
 
 - [x] **1-1**: SQLクエリとリポジトリの実装
-
   - `internal/query/queries/email_confirmations.sql` にSQLクエリを定義
   - `sqlc generate` でGoコードを生成
   - `internal/repository/email_confirmation_repository.go` を実装
@@ -427,7 +434,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
   - **想定行数**: 約 300 行（実装 200 行 + テスト 100 行）
 
 - [x] **1-2**: メール送信機能の実装
-
   - `internal/email/sender.go` にSenderインターフェースと実装を追加
   - `internal/email/templates/email_confirmation.templ` にメールテンプレートを追加
   - Resend APIとの連携を実装
@@ -438,7 +444,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 ### フェーズ 2: パスワードリセット開始機能
 
 - [x] **2-1**: パスワードリセット開始ハンドラーの実装
-
   - `internal/handler/password_reset/handler.go` を実装
   - `internal/handler/password_reset/new.go` を実装（GET /password_reset）
   - `internal/handler/password_reset/create.go` を実装（POST /password_reset）
@@ -447,14 +452,12 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
   - **想定行数**: 約 350 行（実装 250 行 + テスト 100 行）
 
 - [x] **2-2**: パスワードリセットユースケースの実装
-
   - `internal/usecase/create_email_confirmation.go` を実装
   - トランザクション管理とメール送信を実装
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 200 行（実装 100 行 + テスト 100 行）
 
 - [x] **2-3**: パスワードリセットテンプレートの実装
-
   - `internal/templates/pages/password_reset/new.templ` を実装
   - Turnstileコンポーネントを組み込み
   - i18n翻訳キーを追加
@@ -464,7 +467,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 ### フェーズ 3: メール確認機能
 
 - [x] **3-1**: メール確認ハンドラーの実装
-
   - `internal/handler/email_confirmation/handler.go` を実装
   - `internal/handler/email_confirmation/new.go` を実装（GET /email_confirmation）
   - `internal/handler/email_confirmation/create.go` を実装（POST /email_confirmation）
@@ -473,14 +475,12 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
   - **想定行数**: 約 350 行（実装 250 行 + テスト 100 行）
 
 - [x] **3-2**: メール確認ユースケースの実装
-
   - `internal/usecase/confirm_email.go` を実装
   - 確認コード検証と成功マーク処理を実装
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 150 行（実装 80 行 + テスト 70 行）
 
 - [x] **3-3**: メール確認テンプレートの実装
-
   - `internal/templates/pages/email_confirmation/new.templ` を実装
   - i18n翻訳キーを追加
   - **想定ファイル数**: 約 4 ファイル（実装 3 + テスト 1）
@@ -489,7 +489,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 ### フェーズ 4: パスワード更新機能
 
 - [x] **4-1**: パスワード更新ハンドラーの実装
-
   - `internal/handler/password/handler.go` を実装
   - `internal/handler/password/edit.go` を実装（GET /password/edit）
   - `internal/handler/password/update.go` を実装（PATCH /password）
@@ -498,14 +497,12 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
   - **想定行数**: 約 350 行（実装 250 行 + テスト 100 行）
 
 - [x] **4-2**: パスワード更新ユースケースの実装
-
   - `internal/usecase/update_password.go` を実装
   - bcryptでのハッシュ化とDB更新を実装
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 150 行（実装 80 行 + テスト 70 行）
 
 - [x] **4-3**: パスワード更新テンプレートの実装
-
   - `internal/templates/pages/password/edit.templ` を実装
   - パスワード要件の表示
   - i18n翻訳キーを追加
@@ -515,7 +512,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
 ### フェーズ 5: 統合とルーティング
 
 - [x] **5-1**: ルーティング設定と統合
-
   - `cmd/server/main.go` にルーティングを追加
   - ミドルウェアの適用（認証ガード、Method Override）
   - リバースプロキシのホワイトリストを更新
@@ -523,7 +519,6 @@ sessionMgr.ResetSession(ctx, w)  // 全セッション無効化
   - **想定行数**: 約 150 行（実装 100 行 + テスト 50 行）
 
 - [ ] **5-2**: E2Eテストの実装
-
   - パスワードリセットフロー全体の統合テスト
   - 正常系・異常系のシナリオをカバー
   - **想定ファイル数**: 約 2 ファイル（実装 0 + テスト 2）

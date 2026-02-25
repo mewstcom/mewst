@@ -54,12 +54,12 @@ Go 版 Mewst の既存エンドポイントに PostgreSQL ベースのレート�
 
 ### レート制限の設定
 
-| エンドポイント | キー | 制限 | ウィンドウ |
-|--------------|------|------|-----------|
-| `POST /sign_in` | IP アドレス | 10 回 | 15 分 |
-| `POST /password_reset` | IP アドレス | 5 回 | 15 分 |
-| `POST /password_reset` | メールアドレス | 3 回 | 15 分 |
-| `POST /email_confirmation` | IP アドレス | 10 回 | 15 分 |
+| エンドポイント             | キー           | 制限  | ウィンドウ |
+| -------------------------- | -------------- | ----- | ---------- |
+| `POST /sign_in`            | IP アドレス    | 10 回 | 15 分      |
+| `POST /password_reset`     | IP アドレス    | 5 回  | 15 分      |
+| `POST /password_reset`     | メールアドレス | 3 回  | 15 分      |
+| `POST /email_confirmation` | IP アドレス    | 10 回 | 15 分      |
 
 ### コード設計
 
@@ -128,7 +128,6 @@ rate_limit_exceeded = "Too many requests. Please wait a moment and try again."
 ### フェーズ 1: ログインへのレート制限追加
 
 - [ ] **1-1**: [Go] ログインハンドラーへのレート制限追加
-
   - `internal/handler/sign_in/handler.go` に `rateLimiter` を追加
   - `internal/handler/sign_in/create.go` でレート制限チェックを実装
   - 国際化メッセージの追加（`ja.toml`, `en.toml`）
@@ -139,7 +138,6 @@ rate_limit_exceeded = "Too many requests. Please wait a moment and try again."
 ### フェーズ 2: パスワードリセットへのレート制限追加
 
 - [ ] **2-1**: [Go] パスワードリセットハンドラーへのレート制限追加
-
   - `internal/handler/password_reset/handler.go` に `rateLimiter` を追加
   - `internal/handler/password_reset/create.go` でレート制限チェックを実装（IP + メールアドレスの二重チェック）
   - テストの追加
@@ -149,7 +147,6 @@ rate_limit_exceeded = "Too many requests. Please wait a moment and try again."
 ### フェーズ 3: メール確認へのレート制限追加
 
 - [ ] **3-1**: [Go] メール確認ハンドラーへのレート制限追加
-
   - `internal/handler/email_confirmation/handler.go` に `rateLimiter` を追加
   - `internal/handler/email_confirmation/create.go` でレート制限チェックを実装
   - テストの追加
