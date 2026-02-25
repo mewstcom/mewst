@@ -2,9 +2,16 @@ name: Formatter
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    paths:
+      - "**.js"
+      - "**.ts"
+      - "**.tsx"
+      - "**.css"
+      - "**.json"
+      - "**.yaml"
+      - "**.yml"
+      - "**.md"
+      - "**.toml"
 
 jobs:
   oxfmt:
