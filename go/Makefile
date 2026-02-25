@@ -47,7 +47,7 @@ test-pkg: db-setup-test ## 特定のパッケージのテストを実行（使�
 		exit 1; \
 	fi
 	@echo "パッケージ $(PKG) のテストを実行"
-	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) | tparse'
+	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) | tparse -all'
 
 .PHONY: test-run
 test-run: db-setup-test ## 特定のテストを実行（使用例: make test-run PKG=internal/handler/sign_in RUN=TestCreate）
@@ -63,7 +63,7 @@ test-run: db-setup-test ## 特定のテストを実行（使用例: make test-ru
 		exit 1; \
 	fi
 	@echo "パッケージ $(PKG) のテスト $(RUN) を実行"
-	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) -run $(RUN) | tparse'
+	@bash -c 'set -o pipefail && APP_ENV=test op run --env-file=".env" -- go test -json -race ./$(PKG) -run $(RUN) | tparse -all'
 
 .PHONY: test-verbose
 test-verbose: db-setup-test ## 詳細ログ付きで全テストを実行（デバッグ用）
