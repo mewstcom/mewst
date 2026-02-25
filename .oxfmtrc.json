@@ -5,8 +5,15 @@
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "all",
-  "sortTailwindcss": {},
   "sortPackageJson": false,
+  "overrides": [
+    {
+      "files": ["go/**"],
+      "options": {
+        "sortTailwindcss": {}
+      }
+    }
+  ],
   "ignorePatterns": [
     "**/node_modules/",
     "**/vendor/",
