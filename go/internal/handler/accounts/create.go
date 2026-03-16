@@ -80,7 +80,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	if result.FormErrors.HasErrors() {
+	if result.FormErrors != nil && result.FormErrors.HasErrors() {
 		h.renderForm(w, ctx, csrfToken, input.Email, input.Atname, result.FormErrors)
 		return
 	}

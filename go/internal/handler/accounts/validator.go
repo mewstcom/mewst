@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
@@ -24,7 +25,6 @@ var reservedAtnames = map[string]bool{
 	"sales":         true,
 	"marketing":     true,
 	"noreply":       true,
-	"no-reply":      true,
 	"postmaster":    true,
 	"webmaster":     true,
 	"root":          true,
@@ -130,7 +130,7 @@ func (v *CreateValidator) validatePassword(ctx context.Context, formErrors *sess
 		return
 	}
 
-	if len(password) < minPasswordLength {
+	if utf8.RuneCountInString(password) < minPasswordLength {
 		formErrors.AddFieldError("password", templates.T(ctx, "error_password_too_short"))
 		return
 	}

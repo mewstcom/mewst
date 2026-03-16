@@ -55,13 +55,13 @@ type CheckResult struct {
 // リクエストが許可された場合はtrueを、Rate Limitを超えた場合はfalseを返す
 func (l *Limiter) Check(ctx context.Context, input CheckInput) (*CheckResult, error) {
 	if input.Key == "" {
-		return nil, fmt.Errorf("key is required")
+		return nil, fmt.Errorf("keyは必須です")
 	}
 	if input.Limit <= 0 {
-		return nil, fmt.Errorf("limit must be positive")
+		return nil, fmt.Errorf("limitは正の値である必要があります")
 	}
 	if input.Window <= 0 {
-		return nil, fmt.Errorf("window must be positive")
+		return nil, fmt.Errorf("windowは正の値である必要があります")
 	}
 
 	// 現在のウィンドウ開始時刻を計算（時間枠の切り捨て）
@@ -75,7 +75,7 @@ func (l *Limiter) Check(ctx context.Context, input CheckInput) (*CheckResult, er
 		WindowStart: windowStart,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to increment rate limit: %w", err)
+		return nil, fmt.Errorf("レート制限カウンターのインクリメントに失敗: %w", err)
 	}
 
 	count := int(result.Count)
