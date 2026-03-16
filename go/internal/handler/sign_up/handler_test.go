@@ -302,6 +302,57 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 	}
 }
 
+func TestCreate_RateLimitExceeded(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, cfg := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = templates.WithLocale(ctx, "ja")
+	ctx = templates.WithConfig(ctx, cfg)
+
+	// レート制限を超過するためにリクエストを5回送信（制限: 5回/分）
+	for i := 0; i < 5; i++ {
+		form := url.Values{}
+		form.Set("email", "ratelimit@example.com")
+		form.Set("csrf_token", "test-csrf-token")
+		form.Set("cf-turnstile-response", "test-token")
+
+		req := httptest.NewRequest(http.MethodPost, "/sign_up", strings.NewReader(form.Encode()))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req = req.WithContext(ctx)
+		rr := httptest.NewRecorder()
+
+		h.Create(rr, req)
+	}
+
+	// 6回目のリクエストでレート制限超過
+	form := url.Values{}
+	form.Set("email", "ratelimit@example.com")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+
+	req := httptest.NewRequest(http.MethodPost, "/sign_up", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	// ステータスコードを検証
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+	}
+
+	// レート制限エラーメッセージが表示されているか確認
+	body := rr.Body.String()
+	if !strings.Contains(body, "リクエストが多すぎます") {
+		t.Error("レート制限エラーメッセージが表示されていません")
+	}
+}
+
 func TestCreate_EmailAlreadyTaken(t *testing.T) {
 	t.Parallel()
 

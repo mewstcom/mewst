@@ -1,6 +1,6 @@
 
 -- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
--- Dumped by pg_dump version 16.11 (Debian 16.11-1.pgdg13+1)
+-- Dumped by pg_dump version 16.12 (Debian 16.12-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -878,13 +878,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: idx_rate_limits_key_window_start; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_rate_limits_key_window_start ON public.rate_limits USING btree (key, window_start);
-
-
---
 -- Name: idx_rate_limits_window_start; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1602,4 +1595,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20250719190947'),
     ('20250719190948'),
     ('20260202095123'),
-    ('20260204100000');
+    ('20260204100000'),
+    ('20260226100000');
