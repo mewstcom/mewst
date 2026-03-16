@@ -1,10 +1,9 @@
-package sign_up_test
+package sign_up
 
 import (
 	"context"
 	"testing"
 
-	handler "github.com/mewstcom/mewst/go/internal/handler/sign_up"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
@@ -15,12 +14,12 @@ func TestCreateValidator_EmptyEmail(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, handler.CreateValidatorInput{
+	result := validator.Validate(ctx, CreateValidatorInput{
 		Email: "",
 	})
 
@@ -43,7 +42,7 @@ func TestCreateValidator_InvalidEmailFormat(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
@@ -56,22 +55,24 @@ func TestCreateValidator_InvalidEmailFormat(t *testing.T) {
 	}
 
 	for _, email := range invalidEmails {
-		result := validator.Validate(ctx, handler.CreateValidatorInput{
-			Email: email,
+		t.Run(email, func(t *testing.T) {
+			result := validator.Validate(ctx, CreateValidatorInput{
+				Email: email,
+			})
+
+			if result.Err != nil {
+				t.Fatalf("予期しないエラー: %v", result.Err)
+			}
+
+			if !result.FormErrors.HasErrors() {
+				t.Error("バリデーションエラーが発生するべきです")
+			}
+
+			emailErrors := result.FormErrors.Fields["email"]
+			if len(emailErrors) == 0 {
+				t.Error("emailフィールドのエラーが発生するべきです")
+			}
 		})
-
-		if result.Err != nil {
-			t.Fatalf("予期しないエラー (email=%s): %v", email, result.Err)
-		}
-
-		if !result.FormErrors.HasErrors() {
-			t.Errorf("バリデーションエラーが発生するべきです (email=%s)", email)
-		}
-
-		emailErrors := result.FormErrors.Fields["email"]
-		if len(emailErrors) == 0 {
-			t.Errorf("emailフィールドのエラーが発生するべきです (email=%s)", email)
-		}
 	}
 }
 
@@ -80,7 +81,7 @@ func TestCreateValidator_ValidEmail(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
@@ -93,17 +94,19 @@ func TestCreateValidator_ValidEmail(t *testing.T) {
 	}
 
 	for _, email := range validEmails {
-		result := validator.Validate(ctx, handler.CreateValidatorInput{
-			Email: email,
+		t.Run(email, func(t *testing.T) {
+			result := validator.Validate(ctx, CreateValidatorInput{
+				Email: email,
+			})
+
+			if result.Err != nil {
+				t.Fatalf("予期しないエラー: %v", result.Err)
+			}
+
+			if result.FormErrors.HasErrors() {
+				t.Errorf("バリデーションエラーが発生すべきではありません: %v", result.FormErrors.Fields)
+			}
 		})
-
-		if result.Err != nil {
-			t.Fatalf("予期しないエラー (email=%s): %v", email, result.Err)
-		}
-
-		if result.FormErrors.HasErrors() {
-			t.Errorf("バリデーションエラーが発生すべきではありません (email=%s): %v", email, result.FormErrors.Fields)
-		}
 	}
 }
 
@@ -112,7 +115,7 @@ func TestCreateValidator_EmailAlreadyTaken(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	// 既存のユーザーを作成
 	testutil.NewUserBuilder(t, tx).
@@ -123,7 +126,7 @@ func TestCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, handler.CreateValidatorInput{
+	result := validator.Validate(ctx, CreateValidatorInput{
 		Email: "existing@example.com",
 	})
 
@@ -146,12 +149,12 @@ func TestCreateValidator_EmailNotTaken(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, handler.CreateValidatorInput{
+	result := validator.Validate(ctx, CreateValidatorInput{
 		Email: "newuser@example.com",
 	})
 
@@ -169,7 +172,7 @@ func TestCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := handler.NewCreateValidator(userRepo)
+	validator := NewCreateValidator(userRepo)
 
 	// 小文字のメールアドレスで既存ユーザーを作成
 	testutil.NewUserBuilder(t, tx).
@@ -181,7 +184,7 @@ func TestCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	// 大文字で同じメールアドレスを試行
-	result := validator.Validate(ctx, handler.CreateValidatorInput{
+	result := validator.Validate(ctx, CreateValidatorInput{
 		Email: "EXISTING@EXAMPLE.COM",
 	})
 
