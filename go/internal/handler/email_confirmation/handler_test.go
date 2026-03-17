@@ -57,7 +57,6 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -164,7 +163,6 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithCreatedAt(expiredTime).
@@ -204,7 +202,6 @@ func TestCreate_Success(t *testing.T) {
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -263,7 +260,6 @@ func TestCreate_IncorrectCode(t *testing.T) {
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -309,7 +305,6 @@ func TestCreate_EmptyCode(t *testing.T) {
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -355,7 +350,6 @@ func TestCreate_InvalidCodeFormat(t *testing.T) {
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -436,7 +430,6 @@ func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 
 	// sign_upイベントのメール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("sign_up").
 		Build()
@@ -496,7 +489,6 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithCreatedAt(expiredTime).

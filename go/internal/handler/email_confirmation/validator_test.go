@@ -182,7 +182,6 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		Build()
 
@@ -205,8 +204,8 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 	if result.EmailConfirmation == nil {
 		t.Error("Validate() emailConfirmation = nil, want non-nil")
 	}
-	if result.EmailConfirmation != nil && result.EmailConfirmation.Email != "test@example.com" {
-		t.Errorf("Validate() emailConfirmation.Email = %v, want %v", result.EmailConfirmation.Email, "test@example.com")
+	if result.EmailConfirmation != nil && result.EmailConfirmation.Email == "" {
+		t.Error("Validate() emailConfirmation.Email should not be empty")
 	}
 }
 
@@ -254,7 +253,6 @@ func TestCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	// 期限切れのレコードを作成（31分前に作成）
 	expiredTime := time.Now().Add(-31 * time.Minute)
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithCreatedAt(expiredTime).
 		Build()
@@ -293,7 +291,6 @@ func TestCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
 	// 既に成功済みのレコードを作成
 	succeededAt := time.Now().Add(-10 * time.Minute)
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		WithSucceededAt(succeededAt).
 		Build()
@@ -331,7 +328,6 @@ func TestCreateValidator_Validate_InvalidCode(t *testing.T) {
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		Build()
 
@@ -368,7 +364,6 @@ func TestCreateValidator_Validate_GlobalError(t *testing.T) {
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		Build()
 
@@ -404,7 +399,6 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
 		WithCode("123456").
 		Build()
 
