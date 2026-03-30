@@ -174,10 +174,19 @@ docker compose exec app zsh
 - [@rails/CLAUDE.md](/workspace/rails/CLAUDE.md) - Rails版の開発ガイド
   - プロジェクト構造（app/ディレクトリの構成と責務）
   - コーディング規約（Ruby、テンプレート、JavaScript）
-  - アーキテクチャパターン（ViewComponent、ユースケース）
   - 国際化（I18n）
-  - セキュリティガイドライン
+- [@rails/docs/architecture-guide.md](/workspace/rails/docs/architecture-guide.md) - アーキテクチャガイド
+  - アーキテクチャパターン（Records、UseCase、ViewComponent）
+  - クラス間の依存関係ルール
+  - 命名規則
+- [@rails/docs/testing-guide.md](/workspace/rails/docs/testing-guide.md) - テストガイド
+  - RSpecコーディング規約
   - テスト戦略
+- [@rails/docs/security-guide.md](/workspace/rails/docs/security-guide.md) - セキュリティガイドライン
+  - CSRF対策
+  - XSS対策
+  - SQLインジェクション対策
+  - 認証
 
 ## 開発ワークフロー
 

@@ -350,164 +350,17 @@ user_id = user.discarded? ? nil : user.id
 
 ### アーキテクチャパターン
 
-Rails 版 Mewst は、標準の MVC アーキテクチャに加え、以下のパターンを導入しています：
+Rails 版 Mewst は、標準の MVC アーキテクチャに加え、Records、Use Cases、ViewComponent パターンを導入しています。
 
-#### Records（ActiveRecord モデル）
-
-データベーステーブルに対応する ActiveRecord モデルを配置します。
-
-- **配置**: `app/records/`
-- **命名**: `{Model}Record`（例: `UserRecord`, `PostRecord`）
-- **責務**: データの永続化、リレーション定義、基本的なバリデーション
-
-#### Use Cases（ユースケース）
-
-ビジネスロジックを担当します。
-
-- **配置**: `app/use_cases/`
-- **命名**: `{Action}{Entity}UseCase`（例: `CreatePostUseCase`, `FollowProfileUseCase`）
-- **メソッド**: `call` メソッドを実装
-
-#### ViewComponent
-
-再利用可能な UI コンポーネントを実装します。
-
-- **配置**: `app/components/`
-- **命名**: `{ComponentName}Component`
-- **テンプレート**: ERB を使用
+📖 **詳細については [@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ### RSpec コーディング規約
 
-```ruby
-# ❌ context, let, described_classは使用しない
-context "when xxx" do
-  let(:user) { create(:user) }
-end
+📖 **詳細については [@rails/docs/testing-guide.md](docs/testing-guide.md) を参照してください。**
 
-# ✅ itブロック内で変数定義
-it "xxxのとき、somethingすること" do
-  user = FactoryBot.create(:user)
-  # テスト実装
-end
+### クラス間の依存関係ルール・命名規則
 
-# ✅ FactoryBotで作成したレコードの変数名には_recordサフィックスを付ける
-user_record = FactoryBot.create(:user_record)
-post_record = FactoryBot.create(:post_record)
-
-# ❌ サフィックスなしの変数名は避ける
-user = FactoryBot.create(:user_record)
-```
-
-#### システムテストの待機処理
-
-```ruby
-# ❌ sleepを使用した待機処理は避ける
-button.click
-sleep 2
-expect(page).to have_current_path(some_path)
-
-# ✅ Capybaraの待機機能を活用
-button.click
-# ページ上の要素の変化を待つ（Capybaraが自動的に最大5秒待機）
-expect(page).not_to have_content("削除されたコンテンツ")
-expect(page).to have_content("新しく表示されるコンテンツ")
-
-# ✅ have_css/not_to have_cssで要素の出現/消失を待つ
-expect(page).to have_css(".success-message")
-expect(page).not_to have_css(".loading-spinner")
-```
-
-**重要**: システムテストでは`sleep`の使用を避け、Capybaraの自動待機機能を活用すること
-
-### クラス間の依存関係ルール
-
-| クラス     | 依存可能な先                                   |
-| ---------- | ---------------------------------------------- |
-| Component  | Component, Form, Model                         |
-| Controller | Form, Model, Record, Repository, UseCase, View |
-| Form       | Record, Validator                              |
-| Job        | UseCase                                        |
-| Mailer     | Model, Record, Repository, View                |
-| Model      | Model                                          |
-| Policy     | Record                                         |
-| Record     | Record                                         |
-| Repository | Model, Record, Policy                          |
-| UseCase    | Job, Mailer, Record                            |
-| Validator  | Record                                         |
-| View       | Component, Form, Model                         |
-
-#### UseCaseとJobの依存関係について
-
-UseCaseとJobの間には相互依存が存在しますが、以下のルールで循環依存を回避します：
-
-- **UseCase → Job**: `perform_later`メソッドによるキューへの追加のみ許可
-- **Job → UseCase**: ジョブ実行時のUseCase呼び出しは許可
-- **重要**: UseCaseからJobインスタンスの直接実行（`perform`メソッド）は禁止
-
-```ruby
-# ✅ 良い例：UseCaseからジョブをキューに追加
-class Users::CreateUseCase < ApplicationUseCase
-  def call
-    user = UserRecord.create!(...)
-    Users::SendWelcomeEmailJob.perform_later(user.id)  # キューに追加のみ
-  end
-end
-
-# ❌ 悪い例：UseCaseからジョブを直接実行
-class Users::CreateUseCase < ApplicationUseCase
-  def call
-    user = UserRecord.create!(...)
-    Users::SendWelcomeEmailJob.new.perform(user.id)  # 直接実行は禁止
-  end
-end
-```
-
-#### UseCaseクラスを使用する場合
-
-- ✅ データベースへの永続化を伴う処理
-- ✅ 複数のモデル/レコードにまたがる複雑なビジネスロジックで永続化を伴うもの
-- ✅ トランザクション管理が必要な処理
-
-#### UseCaseクラスを使用しない場合
-
-- ❌ データベースへの永続化を伴わない処理（URL生成、データ変換など）
-- ❌ 単一のモデル/レコードに閉じた処理（モデルやレコードのメソッドとして定義）
-
-#### トランザクション処理
-
-**重要**: UseCaseクラスでトランザクションを張る場合は、必ず `#with_transaction` メソッドを使用すること
-
-```ruby
-# ✅ 良い例：with_transactionを使用
-class Users::CreateUseCase < ApplicationUseCase
-  def call
-    with_transaction do
-      user = UserRecord.create!(...)
-      ProfileRecord.create!(user:, ...)
-    end
-  end
-end
-
-# ❌ 悪い例：transactionを直接使用
-class Users::CreateUseCase < ApplicationUseCase
-  def call
-    ApplicationRecord.transaction do
-      # with_transactionを使うべき
-    end
-  end
-end
-```
-
-**重要**: Controller、Job、Rakeタスク内で永続化処理を書く場合は、必ずUseCaseクラスを定義すること
-
-### 命名規則
-
-- Controller: `(ModelPlural)::(ActionName)Controller`
-- UseCase: `(ModelPlural)::(Verb)UseCase`
-- Form: `(ModelPlural)::(Noun)Form`
-- Repository: `(Model)Repository`
-- View: `(ModelPlural)::(ActionName)View`
-- Component: `(UIComponentPlural)::(Noun)Component`
+📖 **[@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ### 国際化（I18n）
 
@@ -549,57 +402,17 @@ ja:
 
 Rails 版 Mewst は、RSpec を使用した包括的なテストを実施しています。
 
-### 基本方針
-
-- **テストファースト**: 実装前にテストを書くことを推奨
-- **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL を使用
-- **FactoryBot**: テストデータは FactoryBot で作成
-
-### テストの種類
-
-- **モデルテスト**: `spec/models/` - バリデーション、メソッドの動作確認
-- **リクエストテスト**: `spec/requests/` - HTTP リクエスト・レスポンス、認証・認可
-- **システムテスト**: `spec/system/` - ブラウザを使った E2E テスト（Capybara + Cuprite）
-- **フォームテスト**: `spec/forms/` - フォームオブジェクトのテスト
-- **ユースケーステスト**: `spec/use_cases/` - ユースケースのテスト
-
-### テストの実行
-
-```sh
-# 全テスト実行
-bin/rspec
-
-# 特定のファイルを実行
-bin/rspec spec/requests/posts_spec.rb
-
-# 特定の行を実行
-bin/rspec spec/requests/posts_spec.rb:10
-
-# システムテストを実行
-bin/rspec spec/system/
-```
+📖 **詳細については [@rails/docs/testing-guide.md](docs/testing-guide.md) を参照してください。**
 
 ## 重要な原則
 
-- ネストしたトランザクションを避ける
-- レコードのコールバックを避ける
-- View/Componentでのデータベースアクセスを防ぐ
-- 問題が解決されるなら、レイヤーを跨いだ依存も許可
-- 説明的な命名規則
-- コメントは日本語で記載
-- 1行100文字以内
+📖 **[@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ## セキュリティガイドライン
 
 Web アプリケーションのセキュリティは**最優先事項**です。
 
-### 基本対策
-
-- **CSRF 対策**: `protect_from_forgery` がデフォルトで有効、`form_with` ヘルパーを使用
-- **XSS 対策**: ERB の自動エスケープを活用、`raw`/`html_safe` は慎重に使用
-- **SQL インジェクション対策**: ActiveRecord のプリペアドステートメント、プレースホルダーを使用
-- **認証**: bcrypt（`has_secure_password`）で管理
-- **Strong Parameters**: すべてのコントローラーで使用
+📖 **詳細については [@rails/docs/security-guide.md](docs/security-guide.md) を参照してください。**
 
 ## 作業完了ガイドライン
 
