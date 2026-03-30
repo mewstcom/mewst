@@ -39,7 +39,7 @@ templ New(data NewPageData) {
 		<form
 			action="/password_reset"
 			class="form grid gap-6"
-			data-on:submit__passive="$isSubmitting = true"
+			hx-on:submit="disableSubmitButtons(this)"
 			method="POST"
 		>
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
@@ -80,7 +80,6 @@ templ New(data NewPageData) {
 				class="btn rounded-full w-fit text-black"
 				tabindex="2"
 				type="submit"
-				data-attr:disabled="$isSubmitting == true"
 			>
 				@templates.Icon("arrow-right")
 				{ templates.T(ctx, "btn_send_reset_code") }
