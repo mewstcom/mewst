@@ -257,3 +257,35 @@ other = "このアットネームは既に使用されています"
 description = "アットネームが予約されているエラー"
 other = "このアットネームは使用できません"
 
+# ============================================
+# エラーページ
+# ============================================
+
+[error_not_found_title]
+description = "404エラーページのタイトル"
+other = "ページが見つかりませんでした | Mewst"
+
+[error_not_found_message]
+description = "404エラーページのメッセージ"
+other = "お探しのページは見つかりませんでした"
+
+[error_not_found_back_to_home]
+description = "404エラーページのホームリンク"
+other = "ホームに戻る"
+
+[error_bad_gateway_title]
+description = "502エラーページのタイトル"
+other = "サービス接続エラー | Mewst"
+
+[error_bad_gateway_message]
+description = "502エラーページのメッセージ"
+other = "申し訳ございません。現在サービスに接続できません。"
+
+[error_bad_gateway_submessage]
+description = "502エラーページのサブメッセージ"
+other = "しばらくしてから再度お試しください。"
+
+[error_bad_gateway_back_to_home]
+description = "502エラーページのホームリンク"
+other = "ホームに戻る"
+

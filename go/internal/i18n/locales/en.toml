@@ -257,3 +257,35 @@ other = "This username is already taken"
 description = "Username reserved error"
 other = "This username is not available"
 
+# ============================================
+# Error pages
+# ============================================
+
+[error_not_found_title]
+description = "404 error page title"
+other = "Page not found | Mewst"
+
+[error_not_found_message]
+description = "404 error page message"
+other = "The page you are looking for could not be found"
+
+[error_not_found_back_to_home]
+description = "404 error page link to home"
+other = "Back to home"
+
+[error_bad_gateway_title]
+description = "502 error page title"
+other = "Service Connection Error | Mewst"
+
+[error_bad_gateway_message]
+description = "502 error page message"
+other = "Sorry, we are unable to connect to the service."
+
+[error_bad_gateway_submessage]
+description = "502 error page submessage"
+other = "Please try again later."
+
+[error_bad_gateway_back_to_home]
+description = "502 error page link to home"
+other = "Back to home"
+

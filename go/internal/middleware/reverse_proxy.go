@@ -11,6 +11,9 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/i18n"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/pages/errors"
 )
 
 // ReverseProxyMiddleware はRails版へのリバースプロキシミドルウェア
@@ -135,10 +138,15 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 		)
 
 		// 502エラーレスポンスを返す
+		locale := i18n.DetectLanguage(r)
+		ctx = templates.WithLocale(ctx, locale)
+
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusBadGateway)
-		// フォールバックエラーレスポンスなので、書き込みエラーは無視
-		_, _ = w.Write([]byte(render502ErrorHTML()))
+
+		if err := errors.BadGateway().Render(ctx, w); err != nil {
+			slog.ErrorContext(ctx, "502ページのレンダリングに失敗", "error", err)
+		}
 	}
 
 	return &ReverseProxyMiddleware{
@@ -171,67 +179,4 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 		}
 	}
 	return false
-}
-
-// render502ErrorHTML は502エラーページのHTMLを返す
-func render502ErrorHTML() string {
-	return `<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サービス接続エラー - Mewst</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 600px;
-            padding: 2rem;
-            text-align: center;
-        }
-        h1 {
-            font-size: 2rem;
-            color: #333;
-            margin-bottom: 1rem;
-        }
-        p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-        a {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: #3b82f6;
-            color: white;
-            text-decoration: none;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-        }
-        a:hover {
-            background-color: #2563eb;
-        }
-        .icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">⚠️</div>
-        <h1>サービス接続エラー</h1>
-        <p>申し訳ございません。現在サービスに接続できません。<br>しばらくしてから再度お試しください。</p>
-        <a href="/">トップページに戻る</a>
-    </div>
-</body>
-</html>`
 }
