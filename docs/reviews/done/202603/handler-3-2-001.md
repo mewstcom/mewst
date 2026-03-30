@@ -2,15 +2,15 @@
 
 ## レビュー情報
 
-| 項目                       | 内容                                                   |
-| -------------------------- | ------------------------------------------------------ |
-| レビュー日                 | 2026-03-30                                             |
-| 対象ブランチ               | handler-3-2                                            |
-| ベースブランチ             | handler-3-1                                            |
-| 作業計画書（指定があれば） | docs/plans/1_doing/handler-usecase-refactor.md          |
-| 変更ファイル数             | 13 ファイル                                            |
-| 変更行数（実装）           | +128 / -28 行                                          |
-| 変更行数（テスト）         | +214 / -4 行                                           |
+| 項目                       | 内容                                           |
+| -------------------------- | ---------------------------------------------- |
+| レビュー日                 | 2026-03-30                                     |
+| 対象ブランチ               | handler-3-2                                    |
+| ベースブランチ             | handler-3-1                                    |
+| 作業計画書（指定があれば） | docs/plans/1_doing/handler-usecase-refactor.md |
+| 変更ファイル数             | 13 ファイル                                    |
+| 変更行数（実装）           | +128 / -28 行                                  |
+| 変更行数（テスト）         | +214 / -4 行                                   |
 
 ## 参照するガイドライン
 
@@ -51,14 +51,14 @@
 
 ### 作業計画書タスク 3-2 の要件確認
 
-| 要件                                                                | 状態 |
-| ------------------------------------------------------------------- | ---- |
-| `GetActiveEmailConfirmationUsecase` を作成（`email_confirmation/new.go` 用） | ✅    |
-| `GetSucceededEmailConfirmationUsecase` を作成（`password/edit.go` 用）       | ✅    |
-| `email_confirmation/handler.go` から `emailConfirmationRepo` フィールドを削除 | ✅    |
-| `password/handler.go` から `emailConfirmationRepo` フィールドを削除           | ✅    |
-| `main.go` の更新                                                    | ✅    |
-| テスト追加・更新                                                    | ✅    |
+| 要件                                                                          | 状態 |
+| ----------------------------------------------------------------------------- | ---- |
+| `GetActiveEmailConfirmationUsecase` を作成（`email_confirmation/new.go` 用）  | ✅   |
+| `GetSucceededEmailConfirmationUsecase` を作成（`password/edit.go` 用）        | ✅   |
+| `email_confirmation/handler.go` から `emailConfirmationRepo` フィールドを削除 | ✅   |
+| `password/handler.go` から `emailConfirmationRepo` フィールドを削除           | ✅   |
+| `main.go` の更新                                                              | ✅   |
+| テスト追加・更新                                                              | ✅   |
 
 すべての要件が実装されています。設計との乖離はありません。
 
