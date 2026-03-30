@@ -155,7 +155,7 @@ func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	result := validator.Validate(ctx, SignUpCreateValidatorInput{
-		Email: "newuser@example.com",
+		Email: "signup-validator-not-taken@example.com",
 	})
 
 	if result.Err != nil {

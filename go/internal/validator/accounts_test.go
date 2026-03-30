@@ -170,7 +170,7 @@ func TestAccountsCreateValidator_AtnameAlreadyTaken(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	result := validator.Validate(ctx, AccountsCreateValidatorInput{
-		Email:    "newuser@example.com",
+		Email:    "accounts-atname-taken@example.com",
 		Atname:   "existinguser",
 		Password: "password123",
 	})
@@ -334,8 +334,8 @@ func TestAccountsCreateValidator_ValidInput(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	result := validator.Validate(ctx, AccountsCreateValidatorInput{
-		Email:    "newuser@example.com",
-		Atname:   "newuser",
+		Email:    "accounts-valid-input@example.com",
+		Atname:   "accountsvalid",
 		Password: "password123",
 	})
 
