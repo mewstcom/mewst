@@ -15,6 +15,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	accounts_page "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -40,7 +41,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	input := CreateValidatorInput{
+	input := validator.AccountsCreateValidatorInput{
 		Email:    emailConfirmation.Email,
 		Atname:   r.FormValue("atname"),
 		Password: r.FormValue("password"),
@@ -102,7 +103,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// セッションを作成
 	userAgent := r.UserAgent()
 	sessionResult, err := h.createSessionUC.Execute(ctx, usecase.CreateSessionInput{
-		ActorID:   accountResult.Actor.ID,
+		UserID:    accountResult.Actor.UserID,
 		IPAddress: ipAddress,
 		UserAgent: userAgent,
 	})

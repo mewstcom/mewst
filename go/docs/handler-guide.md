@@ -44,22 +44,16 @@ internal/handler/
 │   ├── handler.go              # Handler構造体と依存性
 │   ├── new.go                  # New (GET /password/reset) - リセット申請フォーム
 │   ├── create.go               # Create (POST /password/reset)
-│   ├── validator.go            # バリデーション（形式チェック + DBを使った検証）
-│   ├── validator_test.go       # バリデーションのテスト
 │   └── handler_test.go         # ハンドラーの統合テスト
 ├── password/
 │   ├── handler.go              # Handler構造体と依存性
 │   ├── edit.go                 # Edit (GET /password/edit)
 │   ├── update.go               # Update (PATCH /password)
-│   ├── validator.go            # バリデーション
-│   ├── validator_test.go       # バリデーションのテスト
 │   └── handler_test.go         # ハンドラーの統合テスト
 ├── sign_in/
 │   ├── handler.go              # Handler構造体と依存性
 │   ├── new.go                  # New (GET /sign_in) - サインインフォーム
 │   ├── create.go               # Create (POST /sign_in)
-│   ├── validator.go            # バリデーション（形式チェック + ユーザー検索、パスワード照合）
-│   ├── validator_test.go       # バリデーションのテスト
 │   └── handler_test.go         # ハンドラーの統合テスト
 ├── health/
 │   ├── handler.go       # Handler構造体と依存性
@@ -100,11 +94,9 @@ internal/handler/
 
 ## ファイル命名規則
 
-### 標準ファイル名（9 種類のみ）
+### 標準ファイル名（8 種類のみ）
 
 リソースディレクトリ内には、以下の標準的なファイル名**のみ**を使用します：
-
-**ハンドラー関連**:
 
 - `handler.go` - Handler 構造体と依存性の定義
 - `index.go` - 一覧ページ表示 (GET /resources)
@@ -115,21 +107,20 @@ internal/handler/
 - `update.go` - 更新処理 (PATCH /resources/:id)
 - `delete.go` - 削除処理 (DELETE /resources/:id)
 
-**バリデーション関連**:
-
-- `validator.go` - バリデーション（形式チェック + DB を使った検証を統合）
+バリデーションは `internal/validator/` パッケージに配置します。詳細は [@go/docs/validation-guide.md](validation-guide.md) を参照してください。
 
 ### 重要な原則
 
-- 上記 9 種類以外のファイル名は**使用しない**
+- 上記 8 種類以外のファイル名は**使用しない**
 - 複雑な名前（`show_reset_form.go`, `process_reset.go` など）が必要な場合は、**新しいリソースディレクトリを作成する**
 - 例: `password/show_reset_form.go` ではなく、`password_reset/new.go` を使用
 
 ### テストファイル
 
 - **ハンドラーテスト**: `handler_test.go`（ハンドラー全体の統合テスト）
-- **バリデーションテスト**: `validator_test.go`（形式バリデーション + 状態バリデーション）
 - **個別ハンドラーテスト**: `{action}_test.go`（例: `index_test.go`, `show_test.go`）も許可
+
+バリデーションのテストは `internal/validator/` パッケージ内に配置します。
 
 ## メソッド命名規則
 
@@ -304,43 +295,22 @@ password_reset/
 
 ## バリデーターの配置
 
-バリデーション用のファイルは、各リソースディレクトリに `validator.go` として配置します。
+バリデーションは `internal/validator/` パッケージに配置します。`main.go` で構築し、Handler に注入します。
 
-### バリデーター（validator.go）
-
-形式チェック（必須チェック、メール形式、文字数制限など）と DB を使った検証（ユーザー存在チェック、パスワード照合など）を 1 つのファイルに統合します。
-
-- **構造体名**: `{Action}Validator`（例: `CreateValidator`, `UpdateValidator`）
-- **メソッド**: `Validate(ctx context.Context, input {Action}ValidatorInput) *{Action}ValidatorResult`
+- **構造体名**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
+- **メソッド**: `Validate(ctx context.Context, input {Handler}{Action}ValidatorInput) *{Handler}{Action}ValidatorResult`
 
 ### 配置例
 
 ```
-internal/handler/
-├── sign_in/
-│   ├── handler.go
-│   ├── new.go
-│   ├── create.go
-│   ├── validator.go            # バリデーション（形式チェック + ユーザー検索、パスワード照合）
-│   ├── validator_test.go       # バリデーションのテスト
-│   └── handler_test.go         # ハンドラーの統合テスト
-├── password_reset/
-│   ├── handler.go
-│   ├── new.go
-│   ├── create.go
-│   ├── validator.go            # バリデーション（形式チェックのみの場合もあり）
-│   ├── validator_test.go       # バリデーションのテスト
-│   └── handler_test.go         # ハンドラーの統合テスト
-├── password/
-│   ├── handler.go
-│   ├── edit.go
-│   ├── update.go
-│   ├── validator.go            # バリデーション
-│   ├── validator_test.go       # バリデーションのテスト
-│   └── handler_test.go         # ハンドラーの統合テスト
+internal/validator/
+├── sign_in.go              # サインインのバリデーション（形式チェック + ユーザー検索、パスワード照合）
+├── sign_in_test.go         # サインインのバリデーションテスト
+├── password_reset.go       # パスワードリセットのバリデーション
+├── password_reset_test.go  # パスワードリセットのバリデーションテスト
+├── password.go             # パスワード更新のバリデーション
+└── password_test.go        # パスワード更新のバリデーションテスト
 ```
-
-**注**: すべてのリソースに `validator.go` が必要なわけではありません。バリデーションが必要な場合のみ作成します。
 
 詳細なバリデーション実装については、[@go/docs/validation-guide.md](validation-guide.md) を参照してください。
 
@@ -351,11 +321,16 @@ internal/handler/
 ### 基本的な登録方法
 
 ```go
-// ハンドラーの初期化
-popularWorkHandler := popular_work.NewHandler(cfg, queries)
-passwordResetHandler := password_reset.NewHandler(cfg, db, queries, sessionMgr, limiter, riverClient)
-passwordHandler := password.NewHandler(cfg, db, queries, sessionMgr)
-signInHandler := sign_in.NewHandler(cfg, queries, sessionMgr)
+// Validatorの構築（main.goで構築し、Handlerに注入）
+signInValidator := validator.NewSignInCreateValidator(userRepo)
+passwordResetValidator := validator.NewPasswordResetCreateValidator()
+passwordValidator := validator.NewPasswordUpdateValidator()
+
+// ハンドラーの初期化（UseCaseとValidatorを注入）
+popularWorkHandler := popular_work.NewHandler(cfg, getPopularWorksUC)
+passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, passwordResetValidator, createPasswordResetTokenUC)
+passwordHandler := password.NewHandler(cfg, sessionMgr, passwordValidator, updatePasswordUC)
+signInHandler := sign_in.NewHandler(cfg, sessionMgr, signInValidator, createSessionUC)
 
 // ルーティング登録
 r.Get("/works/popular", popularWorkHandler.Index)
@@ -420,40 +395,32 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 package password_reset
 
 import (
-    "database/sql"
     "github.com/mewstcom/mewst/internal/config"
-    repository "github.com/mewstcom/mewst/internal/repository/sqlc"
     "github.com/mewstcom/mewst/internal/session"
-    "github.com/mewstcom/mewst/pkg/ratelimit"
-    "github.com/riverqueue/river"
+    "github.com/mewstcom/mewst/internal/usecase"
+    "github.com/mewstcom/mewst/internal/validator"
 )
 
 // Handler はパスワードリセット関連のHTTPハンドラーです
 type Handler struct {
-    cfg         *config.Config
-    db          *sql.DB
-    queries     *repository.Queries
-    sessionMgr  *session.Manager
-    limiter     *ratelimit.Limiter
-    riverClient *river.Client
+    cfg                          *config.Config
+    sessionMgr                   *session.Manager
+    validator                    *validator.PasswordResetCreateValidator
+    createPasswordResetTokenUC   *usecase.CreatePasswordResetTokenUsecase
 }
 
 // NewHandler は新しいHandlerを作成します
 func NewHandler(
     cfg *config.Config,
-    db *sql.DB,
-    queries *repository.Queries,
     sessionMgr *session.Manager,
-    limiter *ratelimit.Limiter,
-    riverClient *river.Client,
+    v *validator.PasswordResetCreateValidator,
+    createPasswordResetTokenUC *usecase.CreatePasswordResetTokenUsecase,
 ) *Handler {
     return &Handler{
-        cfg:         cfg,
-        db:          db,
-        queries:     queries,
-        sessionMgr:  sessionMgr,
-        limiter:     limiter,
-        riverClient: riverClient,
+        cfg:                        cfg,
+        sessionMgr:                 sessionMgr,
+        validator:                  v,
+        createPasswordResetTokenUC: createPasswordResetTokenUC,
     }
 }
 ```
@@ -487,55 +454,6 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-```go
-// internal/handler/password_reset/validator.go
-package password_reset
-
-import (
-    "context"
-    "regexp"
-
-    "github.com/mewstcom/mewst/internal/session"
-    "github.com/mewstcom/mewst/internal/templates"
-)
-
-var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-
-// CreateValidator はパスワードリセット申請のバリデーションを行う
-type CreateValidator struct{}
-
-// NewCreateValidator は CreateValidator を生成する
-func NewCreateValidator() *CreateValidator {
-    return &CreateValidator{}
-}
-
-// CreateValidatorInput はバリデーションの入力パラメータ
-type CreateValidatorInput struct {
-    Email string
-}
-
-// CreateValidatorResult はバリデーションの結果
-type CreateValidatorResult struct {
-    FormErrors *session.FormErrors
-}
-
-// Validate はバリデーションを行う
-func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInput) *CreateValidatorResult {
-    formErrors := session.NewFormErrors()
-
-    if input.Email == "" {
-        formErrors.AddFieldError("email", templates.T(ctx, "error_required"))
-        return &CreateValidatorResult{FormErrors: formErrors}
-    }
-
-    if !emailRegex.MatchString(input.Email) {
-        formErrors.AddFieldError("email", templates.T(ctx, "error_invalid_email_format"))
-    }
-
-    return &CreateValidatorResult{FormErrors: formErrors}
-}
-```
-
 ## 設計思想
 
 この命名規則は、以下の設計思想に基づいています：
@@ -551,12 +469,11 @@ func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInp
 HTTP ハンドラーを実装する際は、以下のポイントを守ってください：
 
 1. **すべてのエンドポイントをディレクトリ化**: 例外なく、リソースディレクトリを作成
-2. **標準的なファイル名を使用**: 9 種類のファイル名のみを使用
-   - ハンドラー関連: `handler.go`, `index.go`, `show.go`, `new.go`, `create.go`, `edit.go`, `update.go`, `delete.go`
-   - バリデーション関連: `validator.go`
+2. **標準的なファイル名を使用**: 8 種類のファイル名のみを使用
+   - `handler.go`, `index.go`, `show.go`, `new.go`, `create.go`, `edit.go`, `update.go`, `delete.go`
 3. **ファイル名とメソッド名を一致させる**: 可読性と保守性を向上
 4. **依存性注入を適切に管理**: 8 個以下のフィールドを目安に、必要に応じてリソースを分割
-5. **バリデーションは `validator.go` に統合**: 形式バリデーションと状態バリデーションを 1 ファイルで管理
+5. **バリデーションは `internal/validator/` パッケージに配置**: `main.go` で構築して Handler に注入
 
 これらの規則を守ることで、以下のメリットが得られます：
 

@@ -16,6 +16,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	sign_up_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_up"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -31,7 +32,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	// フォームデータを取得
-	input := CreateValidatorInput{
+	input := validator.SignUpCreateValidatorInput{
 		Email: r.FormValue("email"),
 	}
 

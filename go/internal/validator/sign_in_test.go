@@ -1,4 +1,4 @@
-package sign_in
+package validator
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
+func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -19,17 +19,17 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
 	tests := []struct {
 		name          string
-		input         CreateValidatorInput
+		input         SignInCreateValidatorInput
 		wantErrors    bool
 		expectedField string
 	}{
 		{
 			name: "異常系: メールアドレスが空",
-			input: CreateValidatorInput{
+			input: SignInCreateValidatorInput{
 				Email:    "",
 				Password: "password123",
 			},
@@ -38,7 +38,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 		},
 		{
 			name: "異常系: パスワードが空",
-			input: CreateValidatorInput{
+			input: SignInCreateValidatorInput{
 				Email:    "user@example.com",
 				Password: "",
 			},
@@ -47,7 +47,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 		},
 		{
 			name: "異常系: 両方が空",
-			input: CreateValidatorInput{
+			input: SignInCreateValidatorInput{
 				Email:    "",
 				Password: "",
 			},
@@ -56,7 +56,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 		},
 		{
 			name: "異常系: 無効なメールアドレス形式",
-			input: CreateValidatorInput{
+			input: SignInCreateValidatorInput{
 				Email:    "invalid-email",
 				Password: "password123",
 			},
@@ -65,7 +65,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 		},
 		{
 			name: "異常系: @マークがないメールアドレス",
-			input: CreateValidatorInput{
+			input: SignInCreateValidatorInput{
 				Email:    "userexample.com",
 				Password: "password123",
 			},
@@ -92,7 +92,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
+func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -100,12 +100,12 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
 	t.Run("メールアドレス必須エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := CreateValidatorInput{
+		input := SignInCreateValidatorInput{
 			Email:    "",
 			Password: "password123",
 		}
@@ -129,7 +129,7 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Run("メールアドレス形式エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := CreateValidatorInput{
+		input := SignInCreateValidatorInput{
 			Email:    "invalid-email",
 			Password: "password123",
 		}
@@ -151,7 +151,7 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	})
 }
 
-func TestCreateValidator_Validate_Success(t *testing.T) {
+func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -166,9 +166,9 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
-	input := CreateValidatorInput{
+	input := SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "password123",
 	}
@@ -189,7 +189,7 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_UserNotFound(t *testing.T) {
+func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -199,9 +199,9 @@ func TestCreateValidator_Validate_UserNotFound(t *testing.T) {
 	// ユーザーを作成しない
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
-	input := CreateValidatorInput{
+	input := SignInCreateValidatorInput{
 		Email:    "nonexistent@example.com",
 		Password: "password123",
 	}
@@ -222,7 +222,7 @@ func TestCreateValidator_Validate_UserNotFound(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_InvalidPassword(t *testing.T) {
+func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -237,9 +237,9 @@ func TestCreateValidator_Validate_InvalidPassword(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
-	input := CreateValidatorInput{
+	input := SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "wrongpassword",
 	}
@@ -260,7 +260,7 @@ func TestCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
+func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -275,12 +275,12 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
 	t.Run("ユーザーが存在しない場合も同じエラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := CreateValidatorInput{
+		input := SignInCreateValidatorInput{
 			Email:    "nonexistent@example.com",
 			Password: "anypassword",
 		}
@@ -294,7 +294,7 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		notFoundMsg := result.FormErrors.Global[0]
 
 		// パスワードが間違っている場合
-		input2 := CreateValidatorInput{
+		input2 := SignInCreateValidatorInput{
 			Email:    "test@example.com",
 			Password: "wrongpassword",
 		}
@@ -314,7 +314,7 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	})
 }
 
-func TestCreateValidator_Validate_GlobalError(t *testing.T) {
+func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -322,9 +322,9 @@ func TestCreateValidator_Validate_GlobalError(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
-	input := CreateValidatorInput{
+	input := SignInCreateValidatorInput{
 		Email:    "nonexistent@example.com",
 		Password: "password123",
 	}
@@ -344,7 +344,7 @@ func TestCreateValidator_Validate_GlobalError(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
+func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -352,7 +352,7 @@ func TestCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewCreateValidator(userRepo)
+	validator := NewSignInCreateValidator(userRepo)
 
 	tests := []struct {
 		name  string
@@ -372,7 +372,7 @@ func TestCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			input := CreateValidatorInput{
+			input := SignInCreateValidatorInput{
 				Email:    tt.email,
 				Password: "password123",
 			}

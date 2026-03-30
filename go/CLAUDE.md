@@ -69,7 +69,7 @@ cat /workspace/rails/app/models/work.rb
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層                                          │
-│ - Handler, ViewModel, Template, Middleware            │
+│ - Handler, Validator, ViewModel, Template, Middleware │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存
 ┌─────────────────────────────────────────────────────────┐
@@ -90,6 +90,7 @@ cat /workspace/rails/app/models/work.rb
 - **internal/middleware**: HTTP ミドルウェア（Presentation 層）
 - **internal/templates**: templ テンプレート（Presentation 層）
 - **internal/viewmodel**: プレゼンテーション層のデータ変換（Presentation 層）
+- **internal/validator**: バリデーション（Presentation 層）
 - **internal/usecase**: ビジネスロジック層（Application 層）
 - **internal/query**: sqlc 生成コード（Domain/Infrastructure 層）
 - **internal/repository**: Repository 層（Domain/Infrastructure 層）
@@ -103,15 +104,17 @@ cat /workspace/rails/app/models/work.rb
 
 - **依存の方向**: Presentation 層 → Application 層 → Domain/Infrastructure 層
 - **Query への依存は Repository のみ**: Handler/UseCase が Query に直接依存することは禁止
+- **Handler は Repository に直接依存しない**: データアクセスは UseCase を経由し、バリデーションは `internal/validator/` パッケージを使用
 - **Model と Repository は 1:1 の関係**: 各ドメインエンティティに対応する Repository を作成
 - **Domain/Infrastructure 層の統合**: データベース変更はほぼ起こらないため、シンプルさを優先
 
 ### UsecaseとRepositoryの使い分け
 
-- **Usecase**: トランザクションを伴う永続化処理（作成・更新・削除）、複数Repositoryを跨ぐ操作
-- **Repository**: 読み取り専用の処理、単一エンティティの操作、トランザクション不要な処理
+- **Usecase（書き込み）**: トランザクションを伴う永続化処理（作成・更新・削除）、複数Repositoryを跨ぐ操作
+- **Usecase（読み取り）**: Handler が必要とするデータ取得、複数 Repository の集約（トランザクションなし）
+- **Repository**: データアクセスの実装。UseCase または Validator から使用される
 
-**判断基準**: 読み取り専用の処理はRepositoryで完結させ、Usecaseを作成しない。
+**判断基準**: Handler はすべてのデータアクセスを UseCase 経由で行う。Handler から Repository への直接依存は禁止。
 
 📖 **詳細なアーキテクチャについては [@go/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
@@ -648,11 +651,9 @@ HTTP リクエストを処理するハンドラーは、統一された規則に
 - **統一された命名規則**: ファイル名とメソッド名に一貫性を持たせる
 - **例外なくディレクトリ化**: 単独のエンドポイントでも必ずディレクトリを作成（例: `health/`, `home/`）
 
-#### 標準ファイル名（9 種類のみ）
+#### 標準ファイル名（8 種類のみ）
 
 リソースディレクトリ内には、以下の標準的なファイル名**のみ**を使用します：
-
-**ハンドラー関連**:
 
 - `handler.go` - Handler 構造体と依存性の定義
 - `index.go` - 一覧ページ表示 (GET /resources)
@@ -663,9 +664,7 @@ HTTP リクエストを処理するハンドラーは、統一された規則に
 - `update.go` - 更新処理（既存リソースの永続化） (PATCH /resources/:id)
 - `delete.go` - 削除処理 (DELETE /resources/:id)
 
-**バリデーション関連**:
-
-- `validator.go` - バリデーション（形式チェック + DB を使った検証を統合）
+バリデーションは `internal/validator/` パッケージに配置します。
 
 **重要な区別**:
 
@@ -809,18 +808,18 @@ if user.Name != nil {
 
 ### バリデーション
 
-フォームからの入力値の検証は、**1 つのバリデーター**（`validator.go`）で実装します。形式バリデーション（入力値の形式チェック）と状態バリデーション（DB を使った検証）を同じファイルに配置することで、「どこに書くべきか」の判断コストを削減します。
+フォームからの入力値の検証は、`internal/validator/` パッケージにバリデーターとして実装します。形式バリデーション（入力値の形式チェック）と状態バリデーション（DB を使った検証）を同じバリデーターに配置することで、「どこに書くべきか」の判断コストを削減します。
 
 #### バリデーターの構成
 
-- **ファイル**: `validator.go`（形式チェック + DB を使った検証を統合）
-- **命名規則**: `{Action}Validator`（例: `CreateValidator`, `UpdateValidator`）
-- **入力**: `{Action}ValidatorInput` 構造体
-- **出力**: `{Action}ValidatorResult` 構造体
+- **パッケージ**: `internal/validator/`（`main.go` で構築し Handler に注入）
+- **命名規則**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
+- **入力**: `{Handler}{Action}ValidatorInput` 構造体
+- **出力**: `{Handler}{Action}ValidatorResult` 構造体
 
 #### バリデーションの分類
 
-バリデーションは以下の 2 種類に分類されますが、同じファイル（`validator.go`）に実装します：
+バリデーションは以下の 2 種類に分類されますが、同じバリデーターに実装します：
 
 | 種類               | 責務                  | 特徴            |
 | ------------------ | --------------------- | --------------- |

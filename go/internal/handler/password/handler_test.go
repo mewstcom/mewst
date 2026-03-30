@@ -18,6 +18,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
@@ -40,9 +41,11 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, emailConfirmRepo, updatePasswordUC)
+	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
+	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC, passwordUpdateValidator)
 
 	return h, cfg
 }

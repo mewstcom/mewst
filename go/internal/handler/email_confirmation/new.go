@@ -7,11 +7,11 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -40,9 +40,9 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 有効な確認レコードを取得
-	_, err = h.emailConfirmationRepo.GetActiveByID(ctx, id)
+	_, err = h.getActiveEmailConfirmationUC.Execute(ctx, usecase.GetActiveEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, usecase.ErrNotFound) {
 			// 見つからないまたは期限切れの場合はルートにリダイレクト
 			http.Redirect(w, r, "/", http.StatusFound)
 			return

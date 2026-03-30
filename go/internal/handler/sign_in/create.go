@@ -13,6 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	sign_in_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_in"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -31,7 +32,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	backURL := r.FormValue("back")
 
 	// フォームデータを取得
-	input := CreateValidatorInput{
+	input := validator.SignInCreateValidatorInput{
 		Email:    r.FormValue("email"),
 		Password: r.FormValue("password"),
 	}
@@ -63,21 +64,13 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	user := result.User
 
-	// アクターを取得
-	actor, err := h.actorRepo.GetByUserID(ctx, user.ID)
-	if err != nil {
-		slog.ErrorContext(ctx, "アクター取得中にエラーが発生", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
 	// IPアドレスとUser-Agentを取得
 	ipAddress := clientip.GetClientIP(r)
 	userAgent := r.UserAgent()
 
 	// セッションを作成
 	sessionResult, err := h.createSessionUC.Execute(ctx, usecase.CreateSessionInput{
-		ActorID:   actor.ID,
+		UserID:    user.ID,
 		IPAddress: ipAddress,
 		UserAgent: userAgent,
 	})

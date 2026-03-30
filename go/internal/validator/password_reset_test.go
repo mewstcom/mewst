@@ -1,4 +1,4 @@
-package password_reset
+package validator
 
 import (
 	"context"
@@ -8,53 +8,53 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-func TestCreateValidator_Validate(t *testing.T) {
+func TestPasswordResetCreateValidator_Validate(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name          string
-		input         CreateValidatorInput
+		input         PasswordResetCreateValidatorInput
 		wantErrors    bool
 		expectedField string
 	}{
 		{
 			name: "正常系: 有効なメールアドレス",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: サブドメインを含むメールアドレス",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user@mail.example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: 日本語ドメインのメールアドレス",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user@example.co.jp",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: プラス記号を含むメールアドレス",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user+tag@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "正常系: ドットを含むローカルパート",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user.name@example.com",
 			},
 			wantErrors: false,
 		},
 		{
 			name: "異常系: メールアドレスが空",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "",
 			},
 			wantErrors:    true,
@@ -62,7 +62,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: @マークがない",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "userexample.com",
 			},
 			wantErrors:    true,
@@ -70,7 +70,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: ドメイン部分がない",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user@",
 			},
 			wantErrors:    true,
@@ -78,7 +78,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: ローカルパート部分がない",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "@example.com",
 			},
 			wantErrors:    true,
@@ -86,7 +86,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 		{
 			name: "異常系: 無効な文字を含む",
-			input: CreateValidatorInput{
+			input: PasswordResetCreateValidatorInput{
 				Email: "user name@example.com",
 			},
 			wantErrors:    true,
@@ -94,7 +94,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 		},
 	}
 
-	validator := NewCreateValidator()
+	v := NewPasswordResetCreateValidator()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestCreateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = templates.WithLocale(ctx, "ja")
 
-			result := validator.Validate(ctx, tt.input)
+			result := v.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
 				if !result.FormErrors.HasErrors() {
@@ -121,19 +121,19 @@ func TestCreateValidator_Validate(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
+func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	validator := NewCreateValidator()
+	v := NewPasswordResetCreateValidator()
 
 	t.Run("メールアドレス必須エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := CreateValidatorInput{Email: ""}
-		result := validator.Validate(ctx, input)
+		input := PasswordResetCreateValidatorInput{Email: ""}
+		result := v.Validate(ctx, input)
 
 		if !result.FormErrors.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
@@ -153,8 +153,8 @@ func TestCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Run("メールアドレス形式エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := CreateValidatorInput{Email: "invalid-email"}
-		result := validator.Validate(ctx, input)
+		input := PasswordResetCreateValidatorInput{Email: "invalid-email"}
+		result := v.Validate(ctx, input)
 
 		if !result.FormErrors.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")

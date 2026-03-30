@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -8,11 +9,11 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
-	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	accounts_page "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -71,17 +72,17 @@ func (h *Handler) getVerifiedEmailConfirmation(r *http.Request) (*model.EmailCon
 		return nil, nil
 	}
 
-	ec, err := h.emailConfirmationRepo.GetSucceededByID(r.Context(), ecUUID)
+	output, err := h.getSucceededEmailConfirmationUC.Execute(r.Context(), usecase.GetSucceededEmailConfirmationInput{ID: ecUUID})
 	if err != nil {
-		if err == repository.ErrNotFound {
+		if errors.Is(err, usecase.ErrNotFound) {
 			return nil, nil
 		}
 		return nil, err
 	}
 
-	if ec.Event != model.EmailConfirmationEventSignUp {
+	if output.EmailConfirmation.Event != model.EmailConfirmationEventSignUp {
 		return nil, nil
 	}
 
-	return ec, nil
+	return output.EmailConfirmation, nil
 }

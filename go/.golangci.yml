@@ -96,19 +96,21 @@ linters:
               desc: "ViewModelはTemplatesに依存できません。"
 
         # Handler層のルール: HTTPリクエスト処理
-        # QueryへのアクセスはRepositoryを経由
+        # データアクセスはUseCaseを経由
         handler-layer:
           files:
             - "**/internal/handler/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "HandlerはQueryに直接依存できません。Repositoryを経由してください。"
+              desc: "HandlerはQueryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "HandlerはRepositoryに直接依存できません。UseCaseを経由してください。"
 
         # Validator層のルール: 形式バリデーション+状態バリデーションを統合
         # Queryへの直接アクセスは禁止、Repositoryを経由
         validator-layer:
           files:
-            - "**/internal/handler/**/validator.go"
+            - "**/internal/validator/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "ValidatorはQueryに直接依存できません。Repositoryを経由してください。"

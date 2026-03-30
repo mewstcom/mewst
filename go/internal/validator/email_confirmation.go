@@ -1,4 +1,4 @@
-package email_confirmation
+package validator
 
 import (
 	"context"
@@ -16,31 +16,31 @@ import (
 // 確認コードは6桁の数字
 var codeRegex = regexp.MustCompile(`^\d{6}$`)
 
-// CreateValidator はメール確認のバリデーションを行う
-type CreateValidator struct {
+// EmailConfirmationCreateValidator はメール確認のバリデーションを行う
+type EmailConfirmationCreateValidator struct {
 	emailConfirmationRepo *repository.EmailConfirmationRepository
 }
 
-// NewCreateValidator はCreateValidatorを生成する
-func NewCreateValidator(emailConfirmationRepo *repository.EmailConfirmationRepository) *CreateValidator {
-	return &CreateValidator{emailConfirmationRepo: emailConfirmationRepo}
+// NewEmailConfirmationCreateValidator はEmailConfirmationCreateValidatorを生成する
+func NewEmailConfirmationCreateValidator(emailConfirmationRepo *repository.EmailConfirmationRepository) *EmailConfirmationCreateValidator {
+	return &EmailConfirmationCreateValidator{emailConfirmationRepo: emailConfirmationRepo}
 }
 
-// CreateValidatorInput はバリデーションの入力パラメータ
-type CreateValidatorInput struct {
+// EmailConfirmationCreateValidatorInput はバリデーションの入力パラメータ
+type EmailConfirmationCreateValidatorInput struct {
 	ID   uuid.UUID
 	Code string
 }
 
-// CreateValidatorResult はバリデーションの結果
-type CreateValidatorResult struct {
+// EmailConfirmationCreateValidatorResult はバリデーションの結果
+type EmailConfirmationCreateValidatorResult struct {
 	EmailConfirmation *model.EmailConfirmation
 	FormErrors        *session.FormErrors
 	Err               error
 }
 
 // Validate はバリデーションを行う
-func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInput) *CreateValidatorResult {
+func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input EmailConfirmationCreateValidatorInput) *EmailConfirmationCreateValidatorResult {
 	// 1. 形式バリデーション
 	formErrors := session.NewFormErrors()
 
@@ -55,7 +55,7 @@ func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInp
 	}
 
 	if formErrors.HasErrors() {
-		return &CreateValidatorResult{FormErrors: formErrors}
+		return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
 	}
 
 	// 2. 状態バリデーション（DB検証）
@@ -63,16 +63,16 @@ func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInp
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-			return &CreateValidatorResult{FormErrors: formErrors}
+			return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
 		}
-		return &CreateValidatorResult{Err: err}
+		return &EmailConfirmationCreateValidatorResult{Err: err}
 	}
 
 	// 確認コードを検証
 	if emailConfirmation.Code != input.Code {
 		formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-		return &CreateValidatorResult{FormErrors: formErrors}
+		return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
 	}
 
-	return &CreateValidatorResult{EmailConfirmation: emailConfirmation}
+	return &EmailConfirmationCreateValidatorResult{EmailConfirmation: emailConfirmation}
 }

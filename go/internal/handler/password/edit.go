@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	password_page "github.com/mewstcom/mewst/go/internal/templates/pages/password"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -41,9 +41,9 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 確認済みのメール確認レコードを取得
-	_, err = h.emailConfirmationRepo.GetSucceededByID(ctx, id)
+	_, err = h.getSucceededEmailConfirmationUC.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, usecase.ErrNotFound) {
 			// 未確認または期限切れの場合はルートにリダイレクト
 			http.Redirect(w, r, "/", http.StatusFound)
 			return

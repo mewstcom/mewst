@@ -14,6 +14,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -45,7 +46,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	input := CreateValidatorInput{
+	input := validator.EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: r.FormValue("code"),
 	}

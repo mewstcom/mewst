@@ -14,19 +14,21 @@ import (
 
 // CreateSessionUsecase はセッション作成のユースケース
 type CreateSessionUsecase struct {
+	actorRepo   *repository.ActorRepository
 	sessionRepo *repository.SessionRepository
 }
 
 // NewCreateSessionUsecase はCreateSessionUsecaseを生成する
-func NewCreateSessionUsecase(sessionRepo *repository.SessionRepository) *CreateSessionUsecase {
+func NewCreateSessionUsecase(actorRepo *repository.ActorRepository, sessionRepo *repository.SessionRepository) *CreateSessionUsecase {
 	return &CreateSessionUsecase{
+		actorRepo:   actorRepo,
 		sessionRepo: sessionRepo,
 	}
 }
 
 // CreateSessionInput はセッション作成の入力パラメータ
 type CreateSessionInput struct {
-	ActorID   uuid.UUID
+	UserID    uuid.UUID
 	IPAddress string
 	UserAgent string
 }
@@ -39,6 +41,12 @@ type CreateSessionResult struct {
 
 // Execute はセッションを作成する
 func (uc *CreateSessionUsecase) Execute(ctx context.Context, input CreateSessionInput) (*CreateSessionResult, error) {
+	// ユーザーIDからアクターを取得
+	actor, err := uc.actorRepo.GetByUserID(ctx, input.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("アクターの取得に失敗: %w", err)
+	}
+
 	// セッショントークンを生成
 	token, err := session.GenerateToken()
 	if err != nil {
@@ -47,7 +55,7 @@ func (uc *CreateSessionUsecase) Execute(ctx context.Context, input CreateSession
 
 	// セッションを作成
 	s, err := uc.sessionRepo.Create(ctx, repository.CreateSessionParams{
-		ActorID:   input.ActorID,
+		ActorID:   actor.ID,
 		Token:     token,
 		IPAddress: input.IPAddress,
 		UserAgent: input.UserAgent,

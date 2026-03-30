@@ -1,4 +1,4 @@
-package email_confirmation
+package validator
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -18,7 +18,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
 	tests := []struct {
 		name          string
@@ -74,7 +74,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			input := CreateValidatorInput{
+			input := EmailConfirmationCreateValidatorInput{
 				ID:   testutil.MustParseUUID("00000000-0000-0000-0000-000000000000"),
 				Code: tt.code,
 			}
@@ -93,7 +93,7 @@ func TestCreateValidator_Validate_FormatValidation(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -101,7 +101,7 @@ func TestCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
 	tests := []struct {
 		name string
@@ -127,7 +127,7 @@ func TestCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			input := CreateValidatorInput{
+			input := EmailConfirmationCreateValidatorInput{
 				ID:   testutil.MustParseUUID("00000000-0000-0000-0000-000000000000"),
 				Code: tt.code,
 			}
@@ -173,7 +173,7 @@ func TestCodeRegex(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_Success(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -186,9 +186,9 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: "123456",
 	}
@@ -209,7 +209,7 @@ func TestCreateValidator_Validate_Success(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_RecordNotFound(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -219,10 +219,10 @@ func TestCreateValidator_Validate_RecordNotFound(t *testing.T) {
 	// レコードを作成しない
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
 	// 存在しないIDを使用
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   testutil.MustParseUUID("00000000-0000-0000-0000-000000000000"),
 		Code: "123456",
 	}
@@ -243,7 +243,7 @@ func TestCreateValidator_Validate_RecordNotFound(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ExpiredRecord(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -258,9 +258,9 @@ func TestCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: "123456",
 	}
@@ -281,7 +281,7 @@ func TestCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -296,9 +296,9 @@ func TestCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: "123456",
 	}
@@ -319,7 +319,7 @@ func TestCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_InvalidCode(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -332,9 +332,9 @@ func TestCreateValidator_Validate_InvalidCode(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: "654321", // 異なるコード
 	}
@@ -355,7 +355,7 @@ func TestCreateValidator_Validate_InvalidCode(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_GlobalError(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -368,9 +368,9 @@ func TestCreateValidator_Validate_GlobalError(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
-	input := CreateValidatorInput{
+	input := EmailConfirmationCreateValidatorInput{
 		ID:   id,
 		Code: "654321", // 異なるコード
 	}
@@ -390,7 +390,7 @@ func TestCreateValidator_Validate_GlobalError(t *testing.T) {
 	}
 }
 
-func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
+func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
@@ -403,13 +403,13 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		Build()
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	validator := NewCreateValidator(emailConfirmationRepo)
+	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
 
 	t.Run("コードが一致しない場合も期限切れと同じエラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
 		// コードが一致しない場合
-		input := CreateValidatorInput{
+		input := EmailConfirmationCreateValidatorInput{
 			ID:   id,
 			Code: "654321",
 		}
@@ -423,7 +423,7 @@ func TestCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		invalidCodeMsg := result.FormErrors.Global[0]
 
 		// 存在しないIDの場合
-		input2 := CreateValidatorInput{
+		input2 := EmailConfirmationCreateValidatorInput{
 			ID:   testutil.MustParseUUID("00000000-0000-0000-0000-000000000001"),
 			Code: "123456",
 		}

@@ -1,4 +1,5 @@
-package sign_in
+// Package validator はフォーム入力のバリデーションを提供します
+package validator
 
 import (
 	"context"
@@ -12,31 +13,31 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// CreateValidator はサインインのバリデーションを行う
-type CreateValidator struct {
+// SignInCreateValidator はサインインのバリデーションを行う
+type SignInCreateValidator struct {
 	userRepo *repository.UserRepository
 }
 
-// NewCreateValidator はCreateValidatorを生成する
-func NewCreateValidator(userRepo *repository.UserRepository) *CreateValidator {
-	return &CreateValidator{userRepo: userRepo}
+// NewSignInCreateValidator はSignInCreateValidatorを生成する
+func NewSignInCreateValidator(userRepo *repository.UserRepository) *SignInCreateValidator {
+	return &SignInCreateValidator{userRepo: userRepo}
 }
 
-// CreateValidatorInput はバリデーションの入力パラメータ
-type CreateValidatorInput struct {
+// SignInCreateValidatorInput はバリデーションの入力パラメータ
+type SignInCreateValidatorInput struct {
 	Email    string
 	Password string
 }
 
-// CreateValidatorResult はバリデーションの結果
-type CreateValidatorResult struct {
+// SignInCreateValidatorResult はバリデーションの結果
+type SignInCreateValidatorResult struct {
 	User       *model.User
 	FormErrors *session.FormErrors
 	Err        error
 }
 
 // Validate はバリデーションを行う
-func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInput) *CreateValidatorResult {
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) *SignInCreateValidatorResult {
 	// 1. 形式バリデーション
 	formErrors := session.NewFormErrors()
 
@@ -56,7 +57,7 @@ func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInp
 	}
 
 	if formErrors.HasErrors() {
-		return &CreateValidatorResult{FormErrors: formErrors}
+		return &SignInCreateValidatorResult{FormErrors: formErrors}
 	}
 
 	// 2. 状態バリデーション（DB検証）
@@ -64,16 +65,16 @@ func (v *CreateValidator) Validate(ctx context.Context, input CreateValidatorInp
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-			return &CreateValidatorResult{FormErrors: formErrors}
+			return &SignInCreateValidatorResult{FormErrors: formErrors}
 		}
-		return &CreateValidatorResult{Err: err}
+		return &SignInCreateValidatorResult{Err: err}
 	}
 
 	// パスワードを検証
 	if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
 		formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-		return &CreateValidatorResult{FormErrors: formErrors}
+		return &SignInCreateValidatorResult{FormErrors: formErrors}
 	}
 
-	return &CreateValidatorResult{User: user}
+	return &SignInCreateValidatorResult{User: user}
 }

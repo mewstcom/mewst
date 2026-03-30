@@ -20,6 +20,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // mockTurnstile はテスト用のTurnstile検証モック
@@ -63,7 +64,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	createEmailConfirmUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
-	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile)
+	passwordResetValidator := validator.NewPasswordResetCreateValidator()
+	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile, passwordResetValidator)
 
 	return h, cfg
 }

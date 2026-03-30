@@ -12,6 +12,7 @@ Go 版 Mewst は、関心の分離を意識した**3 層アーキテクチャ**�
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層（プレゼンテーション層）                    │
 │ - Handler                                              │
+│ - Validator                                            │
 │ - ViewModel                                            │
 │ - Template                                             │
 │ - Middleware                                           │
@@ -103,7 +104,7 @@ internal/query/queries/
 1. **Query** (Domain/Infrastructure 層): SQL クエリを実行し、クエリ結果（`query.GetPopularWorksRow`など）を返す
 2. **Repository** (Domain/Infrastructure 層): Query 結果を Model に変換し、複数のクエリを組み合わせる
 3. **Model** (Domain/Infrastructure 層): ページに依存しない汎用的なドメインエンティティ（`model.Work`など）
-4. **Handler** (Presentation 層): Repository から Model を取得し、Model を ViewModel に変換
+4. **Handler** (Presentation 層): UseCase から Model を取得し、Model を ViewModel に変換
 5. **ViewModel** (Presentation 層): 表示用のデータ構造（画像 URL 生成、言語切り替えなど）
 6. **Template** (Presentation 層): ViewModel を受け取って HTML を生成
 
@@ -133,6 +134,7 @@ internal/query/queries/
   - `auth.go`: 認証ミドルウェア
   - `csrf.go`: CSRF 保護ミドルウェア
   - `method_override.go`: HTTP メソッドオーバーライドミドルウェア
+- **internal/validator**: バリデーション（形式チェック + DB を使った状態検証を統合。`main.go` で構築し Handler に注入）
 
 **Presentation 層のヘルパー**（Presentation 層内で使用可能）:
 
@@ -182,7 +184,7 @@ Presentation層 → Application層 → Domain/Infrastructure層
 
 - **Templates**: `ViewModel` を通じてデータを表示。データアクセス（`repository`, `query`）、ビジネスロジック（`usecase`）、`Model` への直接依存は禁止。
 - **ViewModel**: `Model` → `ViewModel` の変換のみ。`repository`, `query` に依存しない
-- **Handler**: `query` への直接アクセス禁止。データアクセスは `repository` を経由
+- **Handler**: `query`, `repository` への直接アクセス禁止。データアクセスは `usecase` を経由。バリデーションは `validator`（`internal/validator/`）を使用
 - **Middleware**: エラーページ・メンテナンスページ等のレンダリングのため `templates` への依存は許可。`query`, `repository`, `usecase`, `handler`, `viewmodel` に依存しない
 
 **依存関係の図解**:
@@ -192,7 +194,7 @@ Templates → ViewModel (OK: 表示用データを受け取る)
               ↓
 ViewModel → Model (OK: ドメインデータを表示用に変換)
               ↓
-Handler → UseCase, Repository, ViewModel
+Handler → UseCase, Validator, ViewModel
   ↑
 Middleware → Templates (OK: エラーページ等のレンダリング)
 ```
@@ -227,9 +229,11 @@ Model (独立、他に依存しない)
 ### 重要なルール
 
 1. **Query への依存は Repository のみ**: Handler/UseCase が Query に直接依存することは禁止
-2. **すべてのデータアクセスは Repository を経由**: データ取得は Repository または UseCase を使う
+2. **Handler のデータアクセスは UseCase を経由**: Handler は Repository に直接依存せず、すべてのデータアクセスを UseCase 経由で行う
 3. **下位層は上位層に依存しない**: Domain/Infrastructure 層は Presentation 層に依存しない
 4. **関心の分離**: 各パッケージは明確な責務を持ち、その責務に集中する
+
+**依存関係の強制**: ルール 1, 2 は `.golangci.yml` の depguard 設定により静的解析レベルで強制されています。`make lint` で違反を検出できます。
 
 ### なぜ Repository のみが Query に依存すべきか
 
@@ -400,9 +404,16 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 
 ビジネスロジックとトランザクション管理は `internal/usecase` パッケージで行います。
 
-### Usecase と Repository の使い分け
+### UseCase の種類
 
-**Usecase を使う場合**:
+Handler はすべてのデータアクセスを UseCase 経由で行う。UseCase は以下の 2 種類に分類される：
+
+| 種類             | 責務                               | トランザクション        |
+| ---------------- | ---------------------------------- | ----------------------- |
+| 書き込み UseCase | 永続化処理、ビジネスロジック       | あり（WithTx パターン） |
+| 読み取り UseCase | データ取得、複数 Repository の集約 | なし                    |
+
+**書き込み UseCase**:
 
 - トランザクションを伴う永続化処理（作成・更新・削除）
 - 複数の Repository を跨ぐビジネスロジック
@@ -422,25 +433,42 @@ func (uc *DeleteStripeSubscriberUsecase) Execute(ctx context.Context, input Inpu
 }
 ```
 
-**Repository で完結する場合（Usecase を作成しない）**:
+**読み取り UseCase**:
 
-- 読み取り専用の処理（参照系 API、データ取得）
-- 単一のエンティティに対する操作
-- トランザクション不要な処理
+- Handler が必要とするデータ取得
+- 複数の Repository を組み合わせたデータ集約
+- トランザクション不要な参照処理
 
 ```go
-// 例: カレンダーデータの取得（読み取り専用）
-type UserCalendarRepository struct {
-    queries *query.Queries
+// 例: メール確認データの取得（読み取り専用）
+type GetActiveEmailConfirmationUsecase struct {
+    emailConfirmationRepo *repository.EmailConfirmationRepository
 }
 
-func (r *UserCalendarRepository) GetByUsername(ctx context.Context, username string) (*model.UserCalendar, error) {
-    // 複数のクエリを実行してModelを組み立てて返す
-    // トランザクション不要、Usecaseを経由しない
+func NewGetActiveEmailConfirmationUsecase(
+    emailConfirmationRepo *repository.EmailConfirmationRepository,
+) *GetActiveEmailConfirmationUsecase {
+    return &GetActiveEmailConfirmationUsecase{
+        emailConfirmationRepo: emailConfirmationRepo,
+    }
+}
+
+type GetActiveEmailConfirmationInput struct {
+    ID uuid.UUID
+}
+
+type GetActiveEmailConfirmationOutput struct {
+    EmailConfirmation *model.EmailConfirmation
+}
+
+func (uc *GetActiveEmailConfirmationUsecase) Execute(ctx context.Context, input GetActiveEmailConfirmationInput) (*GetActiveEmailConfirmationOutput, error) {
+    ec, err := uc.emailConfirmationRepo.GetActiveByID(ctx, input.ID)
+    if err != nil {
+        return nil, fmt.Errorf("メール確認の取得に失敗: %w", err)
+    }
+    return &GetActiveEmailConfirmationOutput{EmailConfirmation: ec}, nil
 }
 ```
-
-**判断基準**: 読み取り専用の処理は Repository で完結させ、Usecase を作成しない。Usecase はトランザクションを伴う永続化処理のために使用する。
 
 ### Repository の WithTx パターン
 
@@ -881,6 +909,38 @@ func (h *Handler) ProcessPasswordReset(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/password/reset_sent", http.StatusSeeOther)
 }
 ```
+
+## 採用しなかった方針
+
+### Handler → Repository を引き続き許可する（現状維持）
+
+Handler が Repository を直接呼び出すことを許可し、規約とコードレビューで書き込み呼び出しを防止する方針。
+
+**不採用の理由**:
+
+- 規約だけでは書き込みメソッドの呼び出しを防止できない
+- Handler の依存先が UseCase と Repository の 2 つに分散し、ルールが複雑になる
+- 依存グラフが一方向に統一されず、アーキテクチャの見通しが悪い
+
+### Repository を ReadRepository と WriteRepository に分離する
+
+Repository をインターフェースで分離し、Handler には ReadRepository のみ注入する方針。
+
+**不採用の理由**:
+
+- インターフェースの管理コストが増える
+- Go のプラグマティックな哲学に反する（過度な抽象化）
+- UseCase 経由に統一するほうがルールとしてシンプル
+
+### Validator を handler パッケージ内に残す
+
+Validator を `internal/handler/` 内に配置したまま、depguard による強制は諦めて構造的な規約とコードレビューで対応する方針。
+
+**不採用の理由**:
+
+- depguard で強制できないと、違反が再発する可能性がある
+- 「Handler パッケージは repository を import しない」というルールを完全に強制できるメリットが大きい
+- Validator を独立パッケージにすることで、将来的に Worker からもバリデーションを再利用できる
 
 ## まとめ
 

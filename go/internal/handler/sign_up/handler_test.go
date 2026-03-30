@@ -21,6 +21,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // mockTurnstile はテスト用のTurnstile検証モック
@@ -66,7 +67,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, userRepo, createEmailConfirmUC, turnstile, rateLimiter)
+	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
+	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile, rateLimiter, signUpValidator)
 
 	return h, cfg
 }
