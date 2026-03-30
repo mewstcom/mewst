@@ -48,7 +48,10 @@ func TestReverseProxyMiddleware_GoHandledPaths(t *testing.T) {
 		{"ヘルスチェック", "/health", "Go response"},
 		{"ログインページ", "/sign_in", "Go response"},
 		{"ログイン処理", "/sign_in", "Go response"},
+		{"サインアップページ", "/sign_up", "Go response"},
 		{"ログアウト", "/sign_out", "Go response"},
+		{"アカウント作成フォーム", "/accounts/new", "Go response"},
+		{"アカウント作成処理", "/accounts", "Go response"},
 	}
 
 	for _, tc := range testCases {
@@ -161,8 +164,12 @@ func TestIsGoHandledPath(t *testing.T) {
 		{"/health", true},
 		{"/sign_in", true},
 		{"/sign_in/", true},
+		{"/sign_up", true},
+		{"/sign_up/", true},
 		{"/sign_out", true},
 		{"/sign_out/", true},
+		{"/accounts", true},
+		{"/accounts/new", true},
 		{"/", false},
 		{"/@username", false},
 		{"/settings", false},

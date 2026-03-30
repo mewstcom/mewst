@@ -38,7 +38,7 @@ Rails 版は既存の本番システムであり、以下の方針で開発・�
 - **バンドラー**: esbuild
 - **パッケージマネージャー**: Yarn
 - **リント**: ESLint
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **テンプレート**: ERB
 - **コンポーネント**: ViewComponent
 
@@ -95,7 +95,7 @@ Rails 標準の MVC アーキテクチャに加え、ユースケース層やコ
 
 > **Note**: 開発環境の基本的なセットアップ手順は [/CLAUDE.md](../CLAUDE.md#開発環境のセットアップ) を参照してください。
 
-- Dev Container を使って開発します
+- Docker Compose を使って開発します
 - Claude Code はコンテナ内で実行されているため、ホスト側のコマンドの実行は不要です
 - 共通インフラ（PostgreSQL）は `/docker-compose.yml` で管理されており、ホスト側で起動済みのはずです
 
@@ -114,7 +114,7 @@ Rails 標準の MVC アーキテクチャに加え、ユースケース層やコ
 docker compose up
 
 # 特定のサービスのログを確認
-docker compose logs -f rails-app
+docker compose logs -f app
 ```
 
 ### コンテナ内で実行するコマンド (Claude Code が実行できるコマンド)
@@ -146,7 +146,7 @@ make test-file FILE=spec/system/
 
 # コードフォーマット
 make fmt                           # Ruby（自動修正）
-yarn prettier --write "**/*.js"    # JavaScript
+make -C /workspace fmt # JavaScript/CSS/JSON/YAML/Markdown
 
 # リント
 make lint                          # Ruby
@@ -199,14 +199,17 @@ make fmt
 # 4. ERBリント
 bin/erb_lint --lint-all
 
-# 5. Prettier（JavaScript/CSS）
-yarn prettier . --check
+# 5. Oxfmt（JavaScript/CSS/JSON/YAML/Markdown）
+make -C /workspace fmt-check
 
 # 6. ESLint
 yarn eslint .
 
 # 7. テストを実行
 make test
+
+# 全ての検証を実行（ワンライナー）
+bin/check
 ```
 
 ## Pull Request のガイドライン
@@ -228,17 +231,64 @@ Pull Request のガイドラインは [/CLAUDE.md](../CLAUDE.md#pull-requestの�
 - **スタイルガイド**: Standard（RuboCop）に従う
 - **自動フォーマット**: `make fmt`を使用
 - **コメント**: 日本語で記述（複雑なロジックの説明）
+- **1行100文字以内**: 長い行は適切に改行する
 - **型注釈**: Sorbet の型注釈を可能な限り追加
 
-  ```ruby
-  # typed: true
-  extend T::Sig
+```ruby
+# typed: strict
+# frozen_string_literal: true
 
-  sig { params(user_id: String).returns(UserRecord) }
-  def find_user(user_id)
-    UserRecord.find(user_id)
+class Example
+  # ✅ 文字列はダブルクオート
+  name = "example"
+
+  # ✅ ハッシュの省略記法
+  {user:, name:}
+
+  # ❌
+  {user: user, name: name}
+
+  # ✅ プライベートメソッドは private def
+  private def process_value(value)
+    value.upcase
   end
-  ```
+
+  # ✅ プロテクテッドメソッドは protected def
+  protected def shared_method(value)
+    value.downcase
+  end
+
+  # ❌ 後置ifは使用しない
+  # return if value.nil? # 悪い例
+
+  # ✅
+  if value.nil?
+    return
+  end
+
+  # ❌ attr_readerにprivateブロックを使用しない
+  # private
+  # attr_reader :user_record
+
+  # ✅ attr_readerは個別にprivate指定
+  attr_reader :user_record
+  private :user_record
+
+  # ✅ T.mustではなくnot_nil!を使用
+  value.not_nil!
+end
+```
+
+### ActiveRecord
+
+```ruby
+# ❌ includesは使用禁止
+Model.includes(:association)
+
+# ✅ 明示的にpreloadまたはeager_loadを使用
+Model.preload(:association)   # 別クエリで取得（基本はこちら）
+Model.eager_load(:association) # JOINで取得（関連テーブルでフィルタリング時）
+```
 
 #### コメントのガイドライン
 
@@ -295,79 +345,22 @@ user_id = user.discarded? ? nil : user.id
 
 - **インデント**: 2 スペースを使用
 - **スタイルガイド**: ESLint に従う
-- **フォーマッター**: Prettier
+- **フォーマッター**: Oxfmt（プロジェクトルートで管理）
 - **フレームワーク**: Stimulus Controller を優先的に使用
 
 ### アーキテクチャパターン
 
-Rails 版 Mewst は、標準の MVC アーキテクチャに加え、以下のパターンを導入しています：
+Rails 版 Mewst は、標準の MVC アーキテクチャに加え、Records、Use Cases、ViewComponent パターンを導入しています。
 
-#### Records（ActiveRecord モデル）
-
-データベーステーブルに対応する ActiveRecord モデルを配置します。
-
-- **配置**: `app/records/`
-- **命名**: `{Model}Record`（例: `UserRecord`, `PostRecord`）
-- **責務**: データの永続化、リレーション定義、基本的なバリデーション
-
-#### Use Cases（ユースケース）
-
-ビジネスロジックを担当します。
-
-- **配置**: `app/use_cases/`
-- **命名**: `{Action}{Entity}UseCase`（例: `CreatePostUseCase`, `FollowProfileUseCase`）
-- **メソッド**: `call` メソッドを実装
-
-#### ViewComponent
-
-再利用可能な UI コンポーネントを実装します。
-
-- **配置**: `app/components/`
-- **命名**: `{ComponentName}Component`
-- **テンプレート**: ERB を使用
+📖 **詳細については [@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ### RSpec コーディング規約
 
-```ruby
-# ❌ context, let, described_classは使用しない
-context "when xxx" do
-  let(:user) { create(:user) }
-end
+📖 **詳細については [@rails/docs/testing-guide.md](docs/testing-guide.md) を参照してください。**
 
-# ✅ itブロック内で変数定義
-it "xxxのとき、somethingすること" do
-  user = FactoryBot.create(:user)
-  # テスト実装
-end
+### クラス間の依存関係ルール・命名規則
 
-# ✅ FactoryBotで作成したレコードの変数名には_recordサフィックスを付ける
-user_record = FactoryBot.create(:user_record)
-post_record = FactoryBot.create(:post_record)
-
-# ❌ サフィックスなしの変数名は避ける
-user = FactoryBot.create(:user_record)
-```
-
-#### システムテストの待機処理
-
-```ruby
-# ❌ sleepを使用した待機処理は避ける
-button.click
-sleep 2
-expect(page).to have_current_path(some_path)
-
-# ✅ Capybaraの待機機能を活用
-button.click
-# ページ上の要素の変化を待つ（Capybaraが自動的に最大5秒待機）
-expect(page).not_to have_content("削除されたコンテンツ")
-expect(page).to have_content("新しく表示されるコンテンツ")
-
-# ✅ have_css/not_to have_cssで要素の出現/消失を待つ
-expect(page).to have_css(".success-message")
-expect(page).not_to have_css(".loading-spinner")
-```
-
-**重要**: システムテストでは`sleep`の使用を避け、Capybaraの自動待機機能を活用すること
+📖 **[@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ### 国際化（I18n）
 
@@ -409,47 +402,17 @@ ja:
 
 Rails 版 Mewst は、RSpec を使用した包括的なテストを実施しています。
 
-### 基本方針
+📖 **詳細については [@rails/docs/testing-guide.md](docs/testing-guide.md) を参照してください。**
 
-- **テストファースト**: 実装前にテストを書くことを推奨
-- **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL を使用
-- **FactoryBot**: テストデータは FactoryBot で作成
+## 重要な原則
 
-### テストの種類
-
-- **モデルテスト**: `spec/models/` - バリデーション、メソッドの動作確認
-- **リクエストテスト**: `spec/requests/` - HTTP リクエスト・レスポンス、認証・認可
-- **システムテスト**: `spec/system/` - ブラウザを使った E2E テスト（Capybara + Cuprite）
-- **フォームテスト**: `spec/forms/` - フォームオブジェクトのテスト
-- **ユースケーステスト**: `spec/use_cases/` - ユースケースのテスト
-
-### テストの実行
-
-```sh
-# 全テスト実行
-bin/rspec
-
-# 特定のファイルを実行
-bin/rspec spec/requests/posts_spec.rb
-
-# 特定の行を実行
-bin/rspec spec/requests/posts_spec.rb:10
-
-# システムテストを実行
-bin/rspec spec/system/
-```
+📖 **[@rails/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
 ## セキュリティガイドライン
 
 Web アプリケーションのセキュリティは**最優先事項**です。
 
-### 基本対策
-
-- **CSRF 対策**: `protect_from_forgery` がデフォルトで有効、`form_with` ヘルパーを使用
-- **XSS 対策**: ERB の自動エスケープを活用、`raw`/`html_safe` は慎重に使用
-- **SQL インジェクション対策**: ActiveRecord のプリペアドステートメント、プレースホルダーを使用
-- **認証**: bcrypt（`has_secure_password`）で管理
-- **Strong Parameters**: すべてのコントローラーで使用
+📖 **詳細については [@rails/docs/security-guide.md](docs/security-guide.md) を参照してください。**
 
 ## 作業完了ガイドライン
 
@@ -482,7 +445,7 @@ Web アプリケーションのセキュリティは**最優先事項**です。
   - 関連するテストが通ること（`make test-file FILE=spec/path/to/xxx_spec.rb`）
   - 明らかなランタイムエラーがないこと
 - **ドキュメント編集**: Markdown ファイルを編集した後は、必ず以下を行う:
-  - Prettier の実行 (`yarn prettier . --write`)
+  - Oxfmt の実行 (`make -C /workspace fmt`)
 - **リトライポリシー**: 問題発生時は自動で最大 5 回まで再試行し、それでも解消できない場合にのみユーザーへ連絡する（途中経過は報告しない）
 - **以下の状態では絶対に完了報告をしない**:
   - テストが失敗している（未実装機能のテストを意図的に作成している場合を除く）
@@ -501,8 +464,11 @@ make zeitwerk
 make test
 
 # JavaScript を編集したとき実行する
-yarn prettier . --write
+make -C /workspace fmt
 yarn eslint .
+
+# 全ての検証を実行
+bin/check
 ```
 
 ## データベース管理
@@ -535,7 +501,7 @@ make db-migrate
 
 - **Sorbet エラー**: `make sorbet-update` で型定義を更新
 - **オートローディングエラー**: `make zeitwerk` でチェック
-- **フォーマットエラー**: `make fmt` または `yarn prettier . --write` で修正
+- **フォーマットエラー**: `make fmt` または `make -C /workspace fmt` で修正
 - **Lint エラー**: 各種 Lint コマンド（`make lint`, `bin/erb_lint --lint-all`, `yarn eslint .`）で修正
 
 ## 関連ドキュメント

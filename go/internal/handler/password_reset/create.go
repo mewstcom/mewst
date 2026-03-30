@@ -12,6 +12,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	password_reset_page "github.com/mewstcom/mewst/go/internal/templates/pages/password_reset"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -27,7 +28,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	// フォームデータを取得
-	input := CreateValidatorInput{
+	input := validator.PasswordResetCreateValidatorInput{
 		Email: r.FormValue("email"),
 	}
 
@@ -45,8 +46,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームバリデーション
-	validator := NewCreateValidator()
-	result := validator.Validate(ctx, input)
+	result := h.validator.Validate(ctx, input)
 	if result.FormErrors.HasErrors() {
 		h.renderForm(w, ctx, csrfToken, input.Email, result.FormErrors)
 		return

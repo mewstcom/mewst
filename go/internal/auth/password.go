@@ -5,9 +5,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// BcryptCost はbcryptのコスト値。テスト時はTestBcryptCostに変更される
+var BcryptCost = bcrypt.DefaultCost
+
+// TestBcryptCost はテスト用の低コスト値
+const TestBcryptCost = bcrypt.MinCost
+
 // HashPassword はパスワードをbcryptでハッシュ化する
 func HashPassword(plainPassword string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(plainPassword), BcryptCost)
 	if err != nil {
 		return "", err
 	}

@@ -12,7 +12,7 @@ import (
 func TestCreateSessionUsecase_Execute(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -30,12 +30,13 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 		Build()
 
 	// リポジトリを作成（トランザクションを使用）
+	actorRepo := repository.NewActorRepository(db).WithTx(tx)
 	sessionRepo := repository.NewSessionRepository(tx)
 
 	// ユースケースを実行
-	uc := usecase.NewCreateSessionUsecase(sessionRepo)
+	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 	result, err := uc.Execute(ctx, usecase.CreateSessionInput{
-		ActorID:   actorID,
+		UserID:    userID,
 		IPAddress: "192.168.1.1",
 		UserAgent: "Mozilla/5.0 (Test)",
 	})
@@ -87,23 +88,24 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).Build()
 	profileID := testutil.NewProfileBuilder(t, tx).Build()
-	actorID := testutil.NewActorBuilder(t, tx).
+	testutil.NewActorBuilder(t, tx).
 		WithUserID(userID).
 		WithProfileID(profileID).
 		Build()
 
+	actorRepo := repository.NewActorRepository(db).WithTx(tx)
 	sessionRepo := repository.NewSessionRepository(tx)
-	uc := usecase.NewCreateSessionUsecase(sessionRepo)
+	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 
 	// IPアドレスとUser-Agentが空の場合でも正常に動作することを確認
 	result, err := uc.Execute(ctx, usecase.CreateSessionInput{
-		ActorID:   actorID,
+		UserID:    userID,
 		IPAddress: "",
 		UserAgent: "",
 	})
@@ -124,25 +126,26 @@ func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 func TestCreateSessionUsecase_Execute_TokenUniqueness(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).Build()
 	profileID := testutil.NewProfileBuilder(t, tx).Build()
-	actorID := testutil.NewActorBuilder(t, tx).
+	testutil.NewActorBuilder(t, tx).
 		WithUserID(userID).
 		WithProfileID(profileID).
 		Build()
 
+	actorRepo := repository.NewActorRepository(db).WithTx(tx)
 	sessionRepo := repository.NewSessionRepository(tx)
-	uc := usecase.NewCreateSessionUsecase(sessionRepo)
+	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 
 	// 複数のセッションを作成してトークンが一意であることを確認
 	tokens := make(map[string]bool)
 	for i := 0; i < 10; i++ {
 		result, err := uc.Execute(ctx, usecase.CreateSessionInput{
-			ActorID:   actorID,
+			UserID:    userID,
 			IPAddress: "127.0.0.1",
 			UserAgent: "Test",
 		})

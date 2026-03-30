@@ -40,7 +40,7 @@ templ Edit(data EditPageData) {
 		<form
 			action="/password"
 			class="form grid gap-6"
-			data-on:submit__passive="$isSubmitting = true"
+			hx-on:submit="disableSubmitButtons(this)"
 			method="POST"
 		>
 			<input type="hidden" name="_method" value="PATCH"/>
@@ -84,7 +84,6 @@ templ Edit(data EditPageData) {
 				class="btn rounded-full w-fit text-black"
 				tabindex="2"
 				type="submit"
-				data-attr:disabled="$isSubmitting == true"
 			>
 				@templates.Icon("arrow-right")
 				{ templates.T(ctx, "btn_reset_password") }

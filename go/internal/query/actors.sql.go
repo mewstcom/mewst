@@ -11,6 +11,30 @@ import (
 	"github.com/google/uuid"
 )
 
+const createActor = `-- name: CreateActor :one
+INSERT INTO actors (user_id, profile_id, created_at, updated_at)
+VALUES ($1, $2, NOW(), NOW())
+RETURNING id, user_id, profile_id, created_at, updated_at
+`
+
+type CreateActorParams struct {
+	UserID    uuid.UUID `db:"user_id"`
+	ProfileID uuid.UUID `db:"profile_id"`
+}
+
+func (q *Queries) CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error) {
+	row := q.db.QueryRowContext(ctx, createActor, arg.UserID, arg.ProfileID)
+	var i Actor
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ProfileID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getActorByID = `-- name: GetActorByID :one
 SELECT id, user_id, profile_id, created_at, updated_at
 FROM actors

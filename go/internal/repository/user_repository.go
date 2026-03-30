@@ -99,3 +99,40 @@ func (r *UserRepository) UpdatePasswordByEmail(ctx context.Context, email string
 		PasswordDigest: passwordDigest,
 	})
 }
+
+// ExistsByEmail はメールアドレスでユーザーの存在を確認する
+func (r *UserRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	return r.queries.ExistsUserByEmail(ctx, email)
+}
+
+// CreateUserParams はユーザー作成のパラメータ
+type CreateUserParams struct {
+	Email          string
+	PasswordDigest string
+	Locale         string
+	TimeZone       string
+}
+
+// Create はユーザーを作成する
+func (r *UserRepository) Create(ctx context.Context, params CreateUserParams) (*model.User, error) {
+	row, err := r.queries.CreateUser(ctx, query.CreateUserParams{
+		Email:          params.Email,
+		PasswordDigest: params.PasswordDigest,
+		Locale:         params.Locale,
+		TimeZone:       params.TimeZone,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:             row.ID,
+		Email:          row.Email,
+		PasswordDigest: row.PasswordDigest,
+		Locale:         row.Locale,
+		TimeZone:       row.TimeZone,
+		SignedUpAt:     row.SignedUpAt,
+		CreatedAt:      row.CreatedAt,
+		UpdatedAt:      row.UpdatedAt,
+	}, nil
+}

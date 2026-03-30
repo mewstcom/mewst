@@ -185,3 +185,107 @@ other = "Failed to update password. Please try again."
 description = "Password reset success message"
 other = "Password updated. Please sign in with your new password."
 
+# ============================================
+# Sign up
+# ============================================
+
+[sign_up_description]
+description = "Sign up description"
+other = "Enter your email address. We will send you a confirmation code."
+
+[btn_send_confirmation_code]
+description = "Send confirmation code button"
+other = "Send confirmation code"
+
+[already_have_account]
+description = "Already have an account"
+other = "Already have an account? Sign in"
+
+[flash_sign_up_email_sent]
+description = "Sign up email sent success message"
+other = "Confirmation code sent. Please check your email."
+
+[error_email_already_taken]
+description = "Email already taken error"
+other = "This email is already registered"
+
+[error_rate_limit_exceeded]
+description = "Rate limit exceeded error"
+other = "Too many requests. Please try again later."
+
+# ============================================
+# Account creation
+# ============================================
+
+[accounts_new_title]
+description = "Account creation page title"
+other = "Create your account"
+
+[accounts_new_description]
+description = "Account creation page description"
+other = "Set your username and password."
+
+[label_atname]
+description = "Username label"
+other = "Username"
+
+[atname_hint]
+description = "Username hint"
+other = "Alphanumeric characters and underscores only (max 20 characters)"
+
+[btn_create_account]
+description = "Create account button"
+other = "Create account"
+
+[flash_account_created]
+description = "Account created success message"
+other = "Account created successfully."
+
+[error_atname_format]
+description = "Username format error"
+other = "Only alphanumeric characters and underscores are allowed"
+
+[error_atname_too_long]
+description = "Username too long error"
+other = "Must be 20 characters or less"
+
+[error_atname_already_taken]
+description = "Username already taken error"
+other = "This username is already taken"
+
+[error_atname_reserved]
+description = "Username reserved error"
+other = "This username is not available"
+
+# ============================================
+# Error pages
+# ============================================
+
+[error_not_found_title]
+description = "404 error page title"
+other = "Page not found | Mewst"
+
+[error_not_found_message]
+description = "404 error page message"
+other = "The page you are looking for could not be found"
+
+[error_not_found_back_to_home]
+description = "404 error page link to home"
+other = "Back to home"
+
+[error_bad_gateway_title]
+description = "502 error page title"
+other = "Service Connection Error | Mewst"
+
+[error_bad_gateway_message]
+description = "502 error page message"
+other = "Sorry, we are unable to connect to the service."
+
+[error_bad_gateway_submessage]
+description = "502 error page submessage"
+other = "Please try again later."
+
+[error_bad_gateway_back_to_home]
+description = "502 error page link to home"
+other = "Back to home"
+

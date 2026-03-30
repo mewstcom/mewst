@@ -185,3 +185,107 @@ other = "パスワードの更新に失敗しました。もう一度お試し�
 description = "パスワードリセット成功メッセージ"
 other = "パスワードを更新しました。新しいパスワードでログインしてください。"
 
+# ============================================
+# サインアップ
+# ============================================
+
+[sign_up_description]
+description = "サインアップの説明"
+other = "メールアドレスを入力してください。確認コードをお送りします。"
+
+[btn_send_confirmation_code]
+description = "確認コード送信ボタン"
+other = "確認コードを送信"
+
+[already_have_account]
+description = "既にアカウントをお持ちの方"
+other = "既にアカウントをお持ちの方はログイン"
+
+[flash_sign_up_email_sent]
+description = "サインアップメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
+[error_email_already_taken]
+description = "メールアドレスが既に使用されているエラー"
+other = "このメールアドレスは既に登録されています"
+
+[error_rate_limit_exceeded]
+description = "レート制限超過エラー"
+other = "リクエストが多すぎます。しばらく経ってからお試しください。"
+
+# ============================================
+# アカウント作成
+# ============================================
+
+[accounts_new_title]
+description = "アカウント作成ページのタイトル"
+other = "アカウントを作成"
+
+[accounts_new_description]
+description = "アカウント作成ページの説明"
+other = "アットネームとパスワードを設定してください。"
+
+[label_atname]
+description = "アットネームラベル"
+other = "アットネーム"
+
+[atname_hint]
+description = "アットネームのヒント"
+other = "半角英数字とアンダースコアのみ（最大20文字）"
+
+[btn_create_account]
+description = "アカウント作成ボタン"
+other = "アカウントを作成"
+
+[flash_account_created]
+description = "アカウント作成成功メッセージ"
+other = "アカウントを作成しました。"
+
+[error_atname_format]
+description = "アットネームの形式エラー"
+other = "半角英数字とアンダースコアのみ使用できます"
+
+[error_atname_too_long]
+description = "アットネームが長すぎるエラー"
+other = "20文字以内で入力してください"
+
+[error_atname_already_taken]
+description = "アットネームが既に使用されているエラー"
+other = "このアットネームは既に使用されています"
+
+[error_atname_reserved]
+description = "アットネームが予約されているエラー"
+other = "このアットネームは使用できません"
+
+# ============================================
+# エラーページ
+# ============================================
+
+[error_not_found_title]
+description = "404エラーページのタイトル"
+other = "ページが見つかりませんでした | Mewst"
+
+[error_not_found_message]
+description = "404エラーページのメッセージ"
+other = "お探しのページは見つかりませんでした"
+
+[error_not_found_back_to_home]
+description = "404エラーページのホームリンク"
+other = "ホームに戻る"
+
+[error_bad_gateway_title]
+description = "502エラーページのタイトル"
+other = "サービス接続エラー | Mewst"
+
+[error_bad_gateway_message]
+description = "502エラーページのメッセージ"
+other = "申し訳ございません。現在サービスに接続できません。"
+
+[error_bad_gateway_submessage]
+description = "502エラーページのサブメッセージ"
+other = "しばらくしてから再度お試しください。"
+
+[error_bad_gateway_back_to_home]
+description = "502エラーページのホームリンク"
+other = "ホームに戻る"
+

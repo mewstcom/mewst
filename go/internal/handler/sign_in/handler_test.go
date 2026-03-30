@@ -17,6 +17,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // mockTurnstile はテスト用のTurnstile検証モック
@@ -48,10 +49,11 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
-	createSessionUC := usecase.NewCreateSessionUsecase(sessionRepo)
+	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
-	h := handler.NewHandler(cfg, sessionMgr, userRepo, actorRepo, createSessionUC, turnstile)
+	signInValidator := validator.NewSignInCreateValidator(userRepo)
+	h := handler.NewHandler(cfg, sessionMgr, createSessionUC, turnstile, signInValidator)
 
 	return h, cfg
 }

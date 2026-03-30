@@ -12,6 +12,64 @@ import (
 	"github.com/google/uuid"
 )
 
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at)
+VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
+RETURNING id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
+`
+
+type CreateUserParams struct {
+	Email          string `db:"email"`
+	PasswordDigest string `db:"password_digest"`
+	Locale         string `db:"locale"`
+	TimeZone       string `db:"time_zone"`
+}
+
+type CreateUserRow struct {
+	ID             uuid.UUID `db:"id"`
+	Email          string    `db:"email"`
+	PasswordDigest string    `db:"password_digest"`
+	Locale         string    `db:"locale"`
+	TimeZone       string    `db:"time_zone"`
+	SignedUpAt     time.Time `db:"signed_up_at"`
+	CreatedAt      time.Time `db:"created_at"`
+	UpdatedAt      time.Time `db:"updated_at"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.Email,
+		arg.PasswordDigest,
+		arg.Locale,
+		arg.TimeZone,
+	)
+	var i CreateUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordDigest,
+		&i.Locale,
+		&i.TimeZone,
+		&i.SignedUpAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const existsUserByEmail = `-- name: ExistsUserByEmail :one
+SELECT EXISTS(
+    SELECT 1 FROM users WHERE email = $1
+) AS exists
+`
+
+func (q *Queries) ExistsUserByEmail(ctx context.Context, email string) (bool, error) {
+	row := q.db.QueryRowContext(ctx, existsUserByEmail, email)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
 FROM users

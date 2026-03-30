@@ -1,6 +1,6 @@
 
 -- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
--- Dumped by pg_dump version 16.11 (Debian 16.11-1.pgdg13+1)
+-- Dumped by pg_dump version 16.12 (Debian 16.12-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -396,6 +396,20 @@ CREATE TABLE public.profiles (
 
 
 --
+-- Name: rate_limits; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rate_limits (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    key character varying NOT NULL,
+    window_start timestamp with time zone NOT NULL,
+    count integer DEFAULT 1 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: river_client; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -752,6 +766,22 @@ ALTER TABLE ONLY public.profiles
 
 
 --
+-- Name: rate_limits rate_limits_key_window_start_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rate_limits
+    ADD CONSTRAINT rate_limits_key_window_start_key UNIQUE (key, window_start);
+
+
+--
+-- Name: rate_limits rate_limits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rate_limits
+    ADD CONSTRAINT rate_limits_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: river_client river_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -845,6 +875,13 @@ ALTER TABLE ONLY public.user_profiles
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_rate_limits_window_start; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_rate_limits_window_start ON public.rate_limits USING btree (window_start);
 
 
 --
@@ -1557,4 +1594,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20250719190946'),
     ('20250719190947'),
     ('20250719190948'),
-    ('20260202095123');
+    ('20260202095123'),
+    ('20260204100000'),
+    ('20260226100000');

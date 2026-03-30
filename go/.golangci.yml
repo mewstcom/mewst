@@ -14,13 +14,13 @@ run:
 linters:
   # 有効化するリンター
   enable:
-    - govet         # Go標準静的解析
-    - staticcheck   # 高度な静的解析
-    - gosec         # セキュリティチェック
-    - depguard      # 依存関係のルール強制
-    - errcheck      # エラーチェック漏れ
-    - ineffassign   # 無駄な代入
-    - unused        # 未使用コード
+    - govet # Go標準静的解析
+    - staticcheck # 高度な静的解析
+    - gosec # セキュリティチェック
+    - depguard # 依存関係のルール強制
+    - errcheck # エラーチェック漏れ
+    - ineffassign # 無駄な代入
+    - unused # 未使用コード
 
   # リンター除外ルール（v2形式）
   exclusions:
@@ -63,7 +63,7 @@ linters:
         # 直接のデータアクセスとビジネスロジックに依存しない
         templates-layer:
           files:
-            - "**/internal/templates/**/*.go"
+            - "**/internal/templates/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "TemplatesはQueryに依存できません。"
@@ -82,7 +82,7 @@ linters:
         # 他のPresentation層パッケージに依存しない
         viewmodel-layer:
           files:
-            - "**/internal/viewmodel/**/*.go"
+            - "**/internal/viewmodel/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "ViewModelはQueryに依存できません。"
@@ -96,45 +96,32 @@ linters:
               desc: "ViewModelはTemplatesに依存できません。"
 
         # Handler層のルール: HTTPリクエスト処理
-        # QueryへのアクセスはRepositoryを経由
+        # データアクセスはUseCaseを経由
         handler-layer:
           files:
-            - "**/internal/handler/**/*.go"
+            - "**/internal/handler/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "HandlerはQueryに直接依存できません。Repositoryを経由してください。"
-
-        # FormatValidatorのルール: 形式バリデーション（DBアクセス禁止）
-        # 入力値の形式チェックのみを行い、DBにアクセスしない
-        format-validator:
-          files:
-            - "**/internal/handler/**/format_validator.go"
-          deny:
-            - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "FormatValidatorはQueryに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
+              desc: "HandlerはQueryに直接依存できません。UseCaseを経由してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "FormatValidatorはRepositoryに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/model
-              desc: "FormatValidatorはModelに依存できません。形式バリデーションはDBアクセスなしで行ってください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "FormatValidatorはUseCaseに依存できません。"
+              desc: "HandlerはRepositoryに直接依存できません。UseCaseを経由してください。"
 
-        # StateValidatorのルール: 状態バリデーション（Repository/Modelは許可）
-        # DBの状態を使った検証を行い、Repositoryを経由してアクセス
-        state-validator:
+        # Validator層のルール: 形式バリデーション+状態バリデーションを統合
+        # Queryへの直接アクセスは禁止、Repositoryを経由
+        validator-layer:
           files:
-            - "**/internal/handler/**/state_validator.go"
+            - "**/internal/validator/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "StateValidatorはQueryに直接依存できません。Repositoryを経由してください。"
+              desc: "ValidatorはQueryに直接依存できません。Repositoryを経由してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "StateValidatorはUseCaseに依存できません。"
+              desc: "ValidatorはUseCaseに依存できません。"
 
-        # Middleware層のルール: 共通処理のみ
-        # 他のPresentation層パッケージ、Application層、Domain/Infrastructure層に依存しない
+        # Middleware層のルール
+        # エラーページ・メンテナンスページ等のレンダリングのためTemplatesへの依存は許可
         middleware-layer:
           files:
-            - "**/internal/middleware/**/*.go"
+            - "**/internal/middleware/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "MiddlewareはQueryに依存できません。"
@@ -146,14 +133,12 @@ linters:
               desc: "MiddlewareはHandlerに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
               desc: "MiddlewareはViewModelに依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/templates
-              desc: "MiddlewareはTemplatesに依存できません。"
 
         # Application層のルール（UseCase）
         # Presentation層に依存しない
         application-layer:
           files:
-            - "**/internal/usecase/**/*.go"
+            - "**/internal/usecase/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "Application層はQueryに直接依存できません。Repositoryを経由してください。"
@@ -170,7 +155,7 @@ linters:
         # データアクセス層、上位層に依存しない
         model-layer:
           files:
-            - "**/internal/model/**/*.go"
+            - "**/internal/model/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
               desc: "ModelはQueryに依存できません。"
@@ -187,11 +172,30 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "ModelはPresentation層に依存できません。"
 
+        # RateLimit層のルール: インフラストラクチャユーティリティ
+        # Queryに直接依存せず、Repositoryを経由する
+        ratelimit-layer:
+          files:
+            - "**/internal/ratelimit/*.go"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RateLimitはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RateLimitはPresentation層に依存できません。"
+
         # Repository層のルール: データアクセス層
         # 上位層に依存しない
         repository-layer:
           files:
-            - "**/internal/repository/**/*.go"
+            - "**/internal/repository/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
               desc: "RepositoryはApplication層に依存できません。"
@@ -208,7 +212,7 @@ linters:
         # 上位層に依存しない
         query-layer:
           files:
-            - "**/internal/query/**/*.go"
+            - "**/internal/query/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/repository
               desc: "QueryはRepositoryに依存できません。"
@@ -234,8 +238,8 @@ linters:
 formatters:
   # 有効化するフォーマッター
   enable:
-    - gofmt         # Go標準フォーマッター
-    - goimports     # import文の整理
+    - gofmt # Go標準フォーマッター
+    - goimports # import文の整理
 
   # フォーマッター除外パス
   exclusions:
@@ -244,7 +248,7 @@ formatters:
       - vendor/.*
       - static/.*
       - node_modules/.*
-      - '(.+)_templ\.go'  # templ 自動生成ファイル
+      - '(.+)_templ\.go' # templ 自動生成ファイル
 
   settings:
     # goimports の設定

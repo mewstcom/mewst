@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // Update はパスワードを更新する (PATCH /password)
@@ -42,9 +42,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 確認済みのメール確認レコードを取得
-	emailConfirmation, err := h.emailConfirmationRepo.GetSucceededByID(ctx, id)
+	ecResult, err := h.getSucceededEmailConfirmationUC.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, usecase.ErrNotFound) {
 			// 未確認または期限切れの場合はルートにリダイレクト
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
@@ -55,13 +55,12 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	input := UpdateValidatorInput{
+	input := validator.PasswordUpdateValidatorInput{
 		Password: r.FormValue("password"),
 	}
 
 	// フォームバリデーション
-	validator := NewUpdateValidator()
-	result := validator.Validate(ctx, input)
+	result := h.validator.Validate(ctx, input)
 	if result.FormErrors.HasErrors() {
 		h.renderEditForm(w, ctx, csrfToken, result.FormErrors)
 		return
@@ -69,11 +68,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	// パスワードを更新
 	ucInput := usecase.UpdatePasswordInput{
-		Email:    emailConfirmation.Email,
+		Email:    ecResult.EmailConfirmation.Email,
 		Password: input.Password,
 	}
 	if err := h.updatePasswordUC.Execute(ctx, ucInput); err != nil {
-		slog.ErrorContext(ctx, "パスワードの更新に失敗", "error", err, "email", emailConfirmation.Email)
+		slog.ErrorContext(ctx, "パスワードの更新に失敗", "error", err, "email", ecResult.EmailConfirmation.Email)
 		formErrors := session.NewFormErrors()
 		formErrors.AddGlobalError(templates.T(ctx, "error_password_update_failed"))
 		h.renderEditForm(w, ctx, csrfToken, formErrors)
