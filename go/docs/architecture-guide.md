@@ -11,7 +11,7 @@ Go 版 Mewst は、関心の分離を意識した**3 層アーキテクチャ**�
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層（プレゼンテーション層）                    │
-│ - Handler                                              │
+│ - Handler, Worker, Email                               │
 │ - Validator                                            │
 │ - ViewModel                                            │
 │ - Template                                             │
@@ -21,14 +21,14 @@ Go 版 Mewst は、関心の分離を意識した**3 層アーキテクチャ**�
          ↓ 依存（OK）
 ┌─────────────────────────────────────────────────────────┐
 │ Application層（アプリケーション層）                        │
-│ - UseCase（ビジネスフロー、トランザクション管理）           │
+│ - UseCase（ビジネスフロー、トランザクション管理、          │
+│   バリデーション統合）                                    │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存（OK）
 ┌─────────────────────────────────────────────────────────┐
 │ Domain/Infrastructure層（統合）                          │
-│ - Query (sqlc)                                         │
-│ - Repository                                           │
-│ - Model                                                │
+│ - Query (sqlc), Repository, Model                      │
+│ - Dispatcher                                           │
 │ （同じ層なので相互に依存できる）                          │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -134,7 +134,13 @@ internal/query/queries/
   - `auth.go`: 認証ミドルウェア
   - `csrf.go`: CSRF 保護ミドルウェア
   - `method_override.go`: HTTP メソッドオーバーライドミドルウェア
-- **internal/validator**: バリデーション（形式チェック + DB を使った状態検証を統合。`main.go` で構築し Handler に注入）
+- **internal/validator**: バリデーション（形式チェック + DB を使った状態検証を統合。`main.go` で構築し UseCase に注入）
+- **internal/worker**: バックグラウンドジョブの実行（river ベース）
+  - UseCase を呼ぶだけの薄い Adapter として実装
+- **internal/email**: メール送信（テンプレートレンダリング + Resend API 送信）
+  - `sender.go`: メール送信の基盤（Resend API 連携）
+  - `confirmation.go`: メール確認コード送信（テンプレートレンダリング + i18n を内包）
+  - `templates`, `i18n` に依存可能。`handler`, `usecase`, `worker` には依存しない
 
 **Presentation 層のヘルパー**（Presentation 層内で使用可能）:
 
@@ -146,6 +152,7 @@ internal/query/queries/
 - **internal/usecase**: ビジネスロジック層（フラットなファイル配置）
   - ビジネスフロー、トランザクション管理を担当
   - 複数の Repository を組み合わせた処理
+  - Validator を統合し、バリデーション → 永続化をオーケストレーション
 
 ### Domain/Infrastructure 層（統合）
 
@@ -161,12 +168,19 @@ internal/query/queries/
   - 複数のクエリを組み合わせて Model を構築
   - **Model と Repository は 1:1 の関係**（例: `model.Work` ↔ `repository.WorkRepository`）
 
+- **internal/dispatcher**: ジョブキューへの投入を抽象化（UseCase ↔ Worker 間の循環依存を解消）
+  - Args 型の定義と Enqueue メソッドを提供
+  - 依存先は river（外部ライブラリ）のみ
+
 ### その他
 
 - **cmd/server/main.go**: エントリポイント。設定、データベース接続、Chi ルーターを使用した HTTP サーバーを初期化
 - **internal/config**: 環境変数から設定を読み込む設定管理。`.env.{environment}` ファイルを使用
-- **internal/auth**: 認証ロジック
+- **internal/auth**: 認証ロジック（セキュアトークン生成、パスワードハッシュ）
 - **internal/turnstile**: Cloudflare Turnstile 連携
+- **internal/ratelimit**: レートリミット（`query` への直接依存は禁止、`repository` を経由）
+- **internal/database**: データベース接続管理
+- **internal/clientip**: クライアント IP アドレス検出
 
 ## レイヤー間の依存関係
 
@@ -178,13 +192,16 @@ Presentation層 → Application層 → Domain/Infrastructure層
 
 下位層は上位層に依存しません（依存の方向は一方通行）。
 
-### Presentation 層（Handler, ViewModel, Template, Middleware）
+### Presentation 層（Handler, Worker, Email, Validator, ViewModel, Template, Middleware）
 
 各パッケージの依存関係：
 
 - **Templates**: `ViewModel` を通じてデータを表示。データアクセス（`repository`, `query`）、ビジネスロジック（`usecase`）、`Model` への直接依存は禁止。
 - **ViewModel**: `Model` → `ViewModel` の変換のみ。`repository`, `query` に依存しない
-- **Handler**: `query`, `repository` への直接アクセス禁止。データアクセスは `usecase` を経由。バリデーションは `validator`（`internal/validator/`）を使用
+- **Handler**: `query`, `repository`, `validator` への直接アクセス禁止。すべて `usecase` を経由する
+- **Worker**: UseCase を呼ぶだけの薄い Adapter。`query`, `handler`, `middleware`, `viewmodel`, `templates` に依存しない
+- **Email**: テンプレートレンダリング + API 送信を内包。`templates`, `i18n` に依存可能。`handler`, `usecase`, `worker`, `validator`, `dispatcher`, `session` には依存しない
+- **Validator**: 形式チェック + 状態バリデーションを統合。`repository`, `model` に依存可能。`query` への直接アクセスは禁止（Repository を経由）。`usecase` には依存しない（UseCase が Validator を呼び出す方向）
 - **Middleware**: エラーページ・メンテナンスページ等のレンダリングのため `templates` への依存は許可。`query`, `repository`, `usecase`, `handler`, `viewmodel` に依存しない
 
 **依存関係の図解**:
@@ -194,7 +211,9 @@ Templates → ViewModel (OK: 表示用データを受け取る)
               ↓
 ViewModel → Model (OK: ドメインデータを表示用に変換)
               ↓
-Handler → UseCase, Validator, ViewModel
+Handler → UseCase, ViewModel
+Worker  → UseCase, Dispatcher
+Email   → Templates, i18n (OK: テンプレートレンダリング)
   ↑
 Middleware → Templates (OK: エラーページ等のレンダリング)
 ```
@@ -204,7 +223,9 @@ Middleware → Templates (OK: エラーページ等のレンダリング)
 ### Application 層（UseCase）
 
 - `query` への直接アクセス禁止。データアクセスは `repository` を経由
+- `session` への直接アクセス禁止。session は Presentation 層のヘルパー
 - Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない
+- Validator を統合し、バリデーション → 永続化をオーケストレーション（詳細は[UseCaseオーケストレーション](#usecaseオーケストレーション)を参照）
 
 ### Domain/Infrastructure 層（Query, Repository, Model）
 
@@ -229,11 +250,13 @@ Model (独立、他に依存しない)
 ### 重要なルール
 
 1. **Query への依存は Repository のみ**: Handler/UseCase が Query に直接依存することは禁止
-2. **Handler のデータアクセスは UseCase を経由**: Handler は Repository に直接依存せず、すべてのデータアクセスを UseCase 経由で行う
-3. **下位層は上位層に依存しない**: Domain/Infrastructure 層は Presentation 層に依存しない
-4. **関心の分離**: 各パッケージは明確な責務を持ち、その責務に集中する
+2. **Handler は UseCase のみを経由**: Handler は Repository、Validator に直接依存せず、すべて UseCase 経由で行う
+3. **UseCase が Validator を統合**: バリデーションは UseCase 内で実行し、`*model.ValidationError` として Handler に返す
+4. **Worker は薄い Adapter**: UseCase を呼ぶだけの実装にし、ビジネスロジックを持たない
+5. **下位層は上位層に依存しない**: Domain/Infrastructure 層は Presentation 層に依存しない
+6. **関心の分離**: 各パッケージは明確な責務を持ち、その責務に集中する
 
-**依存関係の強制**: ルール 1, 2 は `.golangci.yml` の depguard 設定により静的解析レベルで強制されています。`make lint` で違反を検出できます。
+**依存関係の強制**: これらのルールは `.golangci.yml` の depguard 設定により静的解析レベルで強制されています。`make lint` で違反を検出できます。
 
 ### なぜ Repository のみが Query に依存すべきか
 
@@ -406,12 +429,13 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 
 ### UseCase の種類
 
-Handler はすべてのデータアクセスを UseCase 経由で行う。UseCase は以下の 2 種類に分類される：
+Handler はすべてのデータアクセスを UseCase 経由で行う。UseCase は以下の 3 種類に分類される：
 
-| 種類             | 責務                               | トランザクション        |
-| ---------------- | ---------------------------------- | ----------------------- |
-| 書き込み UseCase | 永続化処理、ビジネスロジック       | あり（WithTx パターン） |
-| 読み取り UseCase | データ取得、複数 Repository の集約 | なし                    |
+| 種類                         | 責務                                            | トランザクション        |
+| ---------------------------- | ----------------------------------------------- | ----------------------- |
+| オーケストレーション UseCase | バリデーション → 永続化の統合（フォーム送信系） | あり（WithTx パターン） |
+| 書き込み UseCase             | 永続化処理、ビジネスロジック                    | あり（WithTx パターン） |
+| 読み取り UseCase             | データ取得、複数 Repository の集約              | なし                    |
 
 **書き込み UseCase**:
 
@@ -827,6 +851,138 @@ func TestCreatePasswordResetTokenUsecase_Execute(t *testing.T) {
 - **シンプルさ**: ディレクトリ階層が深くならず、import パスがシンプル
 - **スケーラビリティ**: ファイル数が増えても管理しやすい
 
+## UseCase オーケストレーション
+
+Handler は Validator に直接依存せず、UseCase がバリデーション → 永続化を統括する。
+
+### フロー
+
+```
+Handler → UseCase.Execute(input)
+            ↓
+          Validator.Validate(input)
+            ↓ エラー時: *model.ValidationError を返す
+          Repository（永続化処理）
+            ↓
+          Handler ← (*Output, error)
+```
+
+### 実装例
+
+```go
+// UseCase がバリデーションを統合
+func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInInput) (*CreateSignInOutput, error) {
+    // 1. バリデーション（Validator を内部で呼び出し）
+    validateOutput, err := uc.signInValidator.Validate(ctx, validator.SignInCreateValidatorInput{
+        Email:    input.Email,
+        Password: input.Password,
+    })
+    if err != nil {
+        return nil, err // *model.ValidationError または素の error
+    }
+
+    // 2. ビジネスロジック（セッション作成等）
+    // ...
+    return &CreateSignInOutput{...}, nil
+}
+```
+
+### Handler でのエラー判別
+
+Handler は `model.AsValidationError` / `model.AsAppError` でエラー種別を判別する。
+
+```go
+output, err := h.signInUC.Execute(ctx, input)
+if err != nil {
+    if ve := model.AsValidationError(err); ve != nil {
+        // フォームを再表示（422 Unprocessable Entity）
+        w.WriteHeader(http.StatusUnprocessableEntity)
+        h.renderForm(w, r, ve, ...)
+        return
+    }
+    if ae := model.AsAppError(err); ae != nil {
+        slog.ErrorContext(ctx, ae.LogString())
+        // ae.Code に応じた HTTP ステータスコードを返す
+    }
+    // 予期しないエラー → 500
+    slog.ErrorContext(ctx, "予期しないエラー", "error", err)
+    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    return
+}
+```
+
+## エラー型
+
+`internal/model/errors.go` に定義されたエラー型を使用してレイヤー間のエラー伝搬を行う。
+
+### エラー型の使い分け
+
+| エラー型                 | 生成元    | 意味                             | Handler の対応                          |
+| ------------------------ | --------- | -------------------------------- | --------------------------------------- |
+| `*model.ValidationError` | Validator | 入力が不正（ユーザーが修正可能） | フォーム再描画（422）                   |
+| `*model.AppError`        | UseCase   | 業務レベルの既知の失敗           | エラーコードに応じた処理（403, 404 等） |
+| 素の `error`             | どこでも  | 予期しないシステムエラー         | 500                                     |
+
+### ValidationError
+
+バリデーションエラー。Handler はフォームを再描画する。
+
+```go
+type ValidationError struct {
+    Global []string            // フォーム全体のエラー
+    Fields map[string][]string // フィールドごとのエラー
+}
+```
+
+Validator は `(*ValidatorOutput, error)` の 2 値を返し、バリデーション失敗時は `*model.ValidationError`（`error` を満たす）を返す。
+
+### AppError（SafeError パターン）
+
+アプリケーションエラー。`Error()` はユーザー安全なメッセージのみを返し、内部エラーの露出を構造的に防止する。
+
+```go
+type AppError struct {
+    Code     AppErrorCode      // Handler がステータスコードを決定するために使用
+    UserMsg  string            // ユーザーに表示する安全なメッセージ
+    Internal error             // ログ出力用の内部エラー
+    Metadata map[string]string // 構造化ログ用のメタデータ
+}
+```
+
+### ヘルパー関数
+
+```go
+// エラーから特定の型を取り出す（errors.As のラッパー）
+model.AsValidationError(err) *ValidationError // nil ならその型ではない
+model.AsAppError(err) *AppError               // nil ならその型ではない
+```
+
+## Worker と Dispatcher
+
+### Worker（Presentation 層）
+
+バックグラウンドジョブを実行する薄い Adapter。UseCase を呼ぶだけの実装にし、ビジネスロジックを持たない。
+
+```go
+// Worker は UseCase を呼ぶだけ
+func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[...]) error {
+    return w.uc.Execute(ctx, usecase.SendEmailConfirmationInput{...})
+}
+```
+
+### Dispatcher（Domain/Infrastructure 層）
+
+ジョブキューへの投入を抽象化し、UseCase ↔ Worker 間の循環依存を解消する。
+
+```
+依存の方向:
+Worker (Presentation)     → dispatcher + usecase
+UseCase (Application)     → dispatcher
+Dispatcher (Domain/Infra) → river（外部ライブラリのみ）
+```
+
+UseCase がジョブをエンキューする場合は Dispatcher 経由で行い、Worker を直接 import しない。
+
 ## ベストプラクティス
 
 ### 1. ViewModel と UseCase の使い分け
@@ -886,27 +1042,31 @@ func (h *Handler) CreateWork(w http.ResponseWriter, r *http.Request) {
 ### 3. ハンドラーは HTTP 処理に専念
 
 ```go
-// ✅ Good: ハンドラーの責務は明確
-func (h *Handler) ProcessPasswordReset(w http.ResponseWriter, r *http.Request) {
+// ✅ Good: ハンドラーは UseCase を呼び、エラー型で分岐する
+func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
 
-    // 1. リクエストバリデーション（Request DTO）
-    req := &PasswordResetRequest{Email: r.FormValue("email")}
-    if formErrors := req.Validate(ctx); formErrors != nil {
-        // エラーレスポンス
-        return
-    }
+    // 1. フォームデータの取得
+    email := r.FormValue("email")
+    password := r.FormValue("password")
 
-    // 2. ビジネスロジック（UseCase）
-    uc := usecase.NewCreatePasswordResetTokenUsecase(h.db, h.queries)
-    result, err := uc.Execute(ctx, userID)
+    // 2. UseCase を実行（バリデーション込み）
+    output, err := h.signInUC.Execute(ctx, usecase.CreateSignInInput{
+        Email: email, Password: password,
+    })
     if err != nil {
-        // エラーレスポンス
+        if ve := model.AsValidationError(err); ve != nil {
+            w.WriteHeader(http.StatusUnprocessableEntity)
+            h.renderForm(w, r, ve, email)
+            return
+        }
+        slog.ErrorContext(ctx, "処理に失敗", "error", err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
 
     // 3. レスポンス
-    http.Redirect(w, r, "/password/reset_sent", http.StatusSeeOther)
+    http.Redirect(w, r, "/", http.StatusFound)
 }
 ```
 
@@ -940,12 +1100,55 @@ Validator を `internal/handler/` 内に配置したまま、depguard による�
 
 - depguard で強制できないと、違反が再発する可能性がある
 - 「Handler パッケージは repository を import しない」というルールを完全に強制できるメリットが大きい
-- Validator を独立パッケージにすることで、将来的に Worker からもバリデーションを再利用できる
+- Validator を独立パッケージにすることで、UseCase からバリデーションを再利用できる
+
+### Handler が Validator を直接呼び出す
+
+Handler が `internal/validator/` を直接 import してバリデーションを実行し、結果に応じて UseCase を呼び出す方針。
+
+**不採用の理由**:
+
+- Handler の責務が「HTTP 処理」と「バリデーション呼び出し」の 2 つに分散する
+- UseCase にバリデーションを統合することで、Handler は UseCase のみに依存するシンプルな構造になる
+- depguard で handler → validator の依存を禁止できるため、ルールが静的に強制される
+- Worker からも UseCase を経由してバリデーション付きの処理を再利用できる
+
+### ValidationError と AppError を Application 層に配置する
+
+`internal/usecase/errors.go` または新設の `internal/apperror/` にエラー型を定義する方針。
+
+**不採用の理由**:
+
+- Validator が `ValidationError` を生成するために `usecase` パッケージを import すると、UseCase → Validator の依存方向に対して Validator → UseCase の逆方向依存が発生し、循環依存のリスクがある
+- 新設パッケージ（`internal/apperror/`）を作ると、パッケージが増えて複雑になる
+- Model（Domain/Infrastructure 層）は依存グラフの最下層にあり、すべての層から自然に参照できるため、エラー型の配置先として適切
+
+### UseCase が templates を直接 import してメールをレンダリングする
+
+UseCase（Application 層）が `internal/templates`（Presentation 層）を直接 import してメールテンプレートをレンダリングする方針。
+
+**不採用の理由**:
+
+- UseCase が Presentation 層に依存するのは、レイヤー間の依存方向に反する
+- email パッケージに型固有の Sender（`ConfirmationSender`）を新設し、テンプレートレンダリングを email パッケージ側に閉じ込めることで、UseCase の `templates` 依存を回避できる
+- UseCase は自前で定義した小さい interface（`EmailConfirmationSender`）に依存するだけでよく、よりシンプルになる
+
+### session.GenerateToken() を repository に移動する
+
+セッショントークン生成を Repository に移動する方針。
+
+**不採用の理由**:
+
+- Repository はデータアクセスの抽象化であり、トークン生成は Repository の責務ではない
+- セッショントークンの生成は認証ロジックの一部であり、`internal/auth` パッケージが適切な配置先
 
 ## まとめ
 
 - **ViewModel**: リポジトリ層のデータをテンプレート表示用に変換
-- **UseCase**: ビジネスロジックとトランザクション管理
-- **Handler**: HTTP 処理に専念し、ViewModel と UseCase を活用してシンプルに保つ
+- **UseCase**: ビジネスロジック、トランザクション管理、バリデーション統合（オーケストレーション）
+- **Handler**: HTTP 処理に専念し、UseCase のみを呼び出して `errors.As` でエラー種別を判別
+- **Worker**: バックグラウンドジョブの実行。UseCase を呼ぶだけの薄い Adapter
+- **Dispatcher**: ジョブキューへの投入を抽象化し、UseCase ↔ Worker 間の循環依存を解消
+- **エラー型**: `ValidationError`（フォーム再描画）と `AppError`（SafeError パターン）で型安全なエラー伝搬
 
 この構造により、コードの見通しが良く、テストしやすく、保守しやすいアーキテクチャを実現できます。
