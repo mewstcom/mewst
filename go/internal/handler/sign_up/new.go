@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	sign_up_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_up"
@@ -26,7 +25,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	data := sign_up_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       session.NewFormErrors(),
+		FormErrors:       nil,
 		Email:            "",
 	}
 

@@ -9,7 +9,6 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -32,47 +31,45 @@ type EmailConfirmationCreateValidatorInput struct {
 	Code string
 }
 
-// EmailConfirmationCreateValidatorResult はバリデーションの結果
-type EmailConfirmationCreateValidatorResult struct {
+// EmailConfirmationCreateValidatorOutput はバリデーション成功時の出力
+type EmailConfirmationCreateValidatorOutput struct {
 	EmailConfirmation *model.EmailConfirmation
-	FormErrors        *session.FormErrors
-	Err               error
 }
 
 // Validate はバリデーションを行う
-func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input EmailConfirmationCreateValidatorInput) *EmailConfirmationCreateValidatorResult {
+func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input EmailConfirmationCreateValidatorInput) (*EmailConfirmationCreateValidatorOutput, error) {
 	// 1. 形式バリデーション
-	formErrors := session.NewFormErrors()
+	ve := model.NewValidationError()
 
 	// 確認コードの必須チェック
 	if input.Code == "" {
-		formErrors.AddFieldError("code", templates.T(ctx, "error_required"))
+		ve.AddField("code", templates.T(ctx, "error_required"))
 	} else {
 		// 6桁の数字形式チェック
 		if !codeRegex.MatchString(input.Code) {
-			formErrors.AddFieldError("code", templates.T(ctx, "error_invalid_code_format"))
+			ve.AddField("code", templates.T(ctx, "error_invalid_code_format"))
 		}
 	}
 
-	if formErrors.HasErrors() {
-		return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
+	if ve.HasErrors() {
+		return nil, ve
 	}
 
 	// 2. 状態バリデーション（DB検証）
 	emailConfirmation, err := v.emailConfirmationRepo.GetActiveByID(ctx, input.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-			return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
+			ve.AddGlobal(templates.T(ctx, "error_code_incorrect_or_expired"))
+			return nil, ve
 		}
-		return &EmailConfirmationCreateValidatorResult{Err: err}
+		return nil, err
 	}
 
 	// 確認コードを検証
 	if emailConfirmation.Code != input.Code {
-		formErrors.AddGlobalError(templates.T(ctx, "error_code_incorrect_or_expired"))
-		return &EmailConfirmationCreateValidatorResult{FormErrors: formErrors}
+		ve.AddGlobal(templates.T(ctx, "error_code_incorrect_or_expired"))
+		return nil, ve
 	}
 
-	return &EmailConfirmationCreateValidatorResult{EmailConfirmation: emailConfirmation}
+	return &EmailConfirmationCreateValidatorOutput{EmailConfirmation: emailConfirmation}, nil
 }

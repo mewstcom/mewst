@@ -1,14 +1,12 @@
 package password
 
 import (
-	"context"
 	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	password_page "github.com/mewstcom/mewst/go/internal/templates/pages/password"
@@ -61,7 +59,7 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	// ページデータを作成
 	data := password_page.EditPageData{
 		CSRFToken:  csrfToken,
-		FormErrors: session.NewFormErrors(),
+		FormErrors: nil,
 		Flash:      flash,
 	}
 
@@ -73,28 +71,6 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	content := password_page.Edit(data)
 	layout := layouts.Simple(meta, content)
 
-	if err := layout.Render(ctx, w); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-}
-
-// renderEditForm は新しいパスワード入力フォームを再表示する
-func (h *Handler) renderEditForm(w http.ResponseWriter, ctx context.Context, csrfToken string, formErrors *session.FormErrors) {
-	data := password_page.EditPageData{
-		CSRFToken:  csrfToken,
-		FormErrors: formErrors,
-		Flash:      nil,
-	}
-
-	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "password_edit_title")
-	meta.SetOGURL(h.cfg, "/password/edit")
-
-	content := password_page.Edit(data)
-	layout := layouts.Simple(meta, content)
-
-	w.WriteHeader(http.StatusUnprocessableEntity)
 	if err := layout.Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

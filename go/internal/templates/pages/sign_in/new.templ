@@ -1,7 +1,7 @@
 package sign_in
 
 import (
-	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
@@ -10,7 +10,7 @@ import (
 type NewPageData struct {
 	CSRFToken        string
 	TurnstileSiteKey string
-	FormErrors       *session.FormErrors
+	FormErrors       *model.ValidationError
 	Email            string
 	BackURL          string
 }
@@ -51,7 +51,7 @@ templ New(data NewPageData) {
 				</label>
 
 				<input
-					if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
 						aria-invalid="true"
 					} else {
 						aria-invalid="false"
@@ -66,8 +66,8 @@ templ New(data NewPageData) {
 					value={ data.Email }
 				/>
 
-				if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
-					for _, errorMsg := range data.FormErrors.Fields["email"] {
+				if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
+					for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
 						<p class="text-sm text-(--error)">
 							{ errorMsg }
 						</p>
@@ -87,7 +87,7 @@ templ New(data NewPageData) {
 				</div>
 
 				<input
-					if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
 						aria-invalid="true"
 					} else {
 						aria-invalid="false"
@@ -100,8 +100,8 @@ templ New(data NewPageData) {
 					type="password"
 				/>
 
-				if data.FormErrors != nil && data.FormErrors.Fields["password"] != nil {
-					for _, errorMsg := range data.FormErrors.Fields["password"] {
+				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
+					for _, errorMsg := range data.FormErrors.GetFieldErrors("password") {
 						<p class="text-sm text-(--error)">
 							{ errorMsg }
 						</p>

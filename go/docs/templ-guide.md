@@ -89,7 +89,7 @@ templ SignIn(ctx context.Context, csrfToken string) {
 ### 条件分岐
 
 ```templ
-templ SignIn(ctx context.Context, formErrors *session.FormErrors) {
+templ SignIn(ctx context.Context, formErrors *model.ValidationError) {
     <div>
         // if文
         if formErrors != nil && formErrors.HasErrors() {
@@ -229,11 +229,11 @@ package components
 
 import (
     "context"
-    "github.com/mewstcom/mewst/internal/session"
+    "github.com/mewstcom/mewst/internal/model"
     "github.com/mewstcom/mewst/internal/templates"
 )
 
-templ FormErrors(ctx context.Context, formErrors *session.FormErrors) {
+templ FormErrors(ctx context.Context, formErrors *model.ValidationError) {
     if formErrors != nil && formErrors.HasErrors() {
         <div class="alert alert-danger">
             <p><strong>{ templates.T(ctx, "form_errors_found") }</strong></p>
@@ -255,11 +255,11 @@ package pages
 
 import (
     "context"
-    "github.com/mewstcom/mewst/internal/session"
+    "github.com/mewstcom/mewst/internal/model"
     "github.com/mewstcom/mewst/internal/templates/components"
 )
 
-templ SignIn(ctx context.Context, formErrors *session.FormErrors) {
+templ SignIn(ctx context.Context, formErrors *model.ValidationError) {
     <div>
         // コンポーネントを呼び出し
         @components.FormErrors(ctx, formErrors)
@@ -417,8 +417,8 @@ func TestFormErrorsComponent(t *testing.T) {
     ctx := context.Background()
     ctx = i18n.WithLocale(ctx, "ja")
 
-    // エラーを含むFormErrorsを作成
-    formErrors := &session.FormErrors{}
+    // エラーを含むValidationErrorを作成
+    formErrors := model.NewValidationError()
     formErrors.AddFieldError("email", "メールアドレスを入力してください")
 
     // コンポーネントをレンダリング

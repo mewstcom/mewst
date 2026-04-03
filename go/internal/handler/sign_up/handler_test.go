@@ -13,6 +13,7 @@ import (
 	"github.com/riverqueue/river/rivertype"
 
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	handler "github.com/mewstcom/mewst/go/internal/handler/sign_up"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
@@ -63,12 +64,13 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	inserter := &mockInserter{}
-	createEmailConfirmUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	d := dispatcher.NewDispatcher(inserter)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
 	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
-	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile, rateLimiter, signUpValidator)
+	createSignUpUC := usecase.NewCreateSignUpUsecase(signUpValidator, emailConfirmRepo, d)
+	h := handler.NewHandler(cfg, sessionMgr, createSignUpUC, turnstile, rateLimiter)
 
 	return h, cfg
 }

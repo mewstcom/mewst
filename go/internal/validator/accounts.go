@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -67,101 +67,102 @@ type AccountsCreateValidatorInput struct {
 	Password string
 }
 
-// AccountsCreateValidatorResult はバリデーションの結果
-type AccountsCreateValidatorResult struct {
-	FormErrors *session.FormErrors
-	Err        error
-}
+// AccountsCreateValidatorOutput はバリデーション成功時の出力
+type AccountsCreateValidatorOutput struct{}
 
 // Validate は入力値をチェックする（形式チェック + DB検証）
-func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCreateValidatorInput) *AccountsCreateValidatorResult {
-	formErrors := session.NewFormErrors()
+func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCreateValidatorInput) (*AccountsCreateValidatorOutput, error) {
+	ve := model.NewValidationError()
 
 	// アットネームのバリデーション
-	v.validateAtname(ctx, formErrors, input.Atname)
+	v.validateAtname(ctx, ve, input.Atname)
 
 	// パスワードのバリデーション
-	v.validatePassword(ctx, formErrors, input.Password)
+	v.validatePassword(ctx, ve, input.Password)
 
 	// 形式バリデーションでエラーがあれば早期リターン
-	if formErrors.HasErrors() {
-		return &AccountsCreateValidatorResult{FormErrors: formErrors}
+	if ve.HasErrors() {
+		return nil, ve
 	}
 
 	// 状態バリデーション（DB検証）
-	if err := v.validateAtnameUniqueness(ctx, formErrors, input.Atname); err != nil {
-		return &AccountsCreateValidatorResult{Err: err}
+	if err := v.validateAtnameUniqueness(ctx, ve, input.Atname); err != nil {
+		return nil, err
 	}
 
-	if err := v.validateEmailUniqueness(ctx, formErrors, input.Email); err != nil {
-		return &AccountsCreateValidatorResult{Err: err}
+	if err := v.validateEmailUniqueness(ctx, ve, input.Email); err != nil {
+		return nil, err
 	}
 
-	return &AccountsCreateValidatorResult{FormErrors: formErrors}
+	if ve.HasErrors() {
+		return nil, ve
+	}
+
+	return &AccountsCreateValidatorOutput{}, nil
 }
 
 // validateAtname はアットネームの形式バリデーションを行う
-func (v *AccountsCreateValidator) validateAtname(ctx context.Context, formErrors *session.FormErrors, atname string) {
+func (v *AccountsCreateValidator) validateAtname(ctx context.Context, ve *model.ValidationError, atname string) {
 	if atname == "" {
-		formErrors.AddFieldError("atname", templates.T(ctx, "error_required"))
+		ve.AddField("atname", templates.T(ctx, "error_required"))
 		return
 	}
 
 	if !atnameRegex.MatchString(atname) {
-		formErrors.AddFieldError("atname", templates.T(ctx, "error_atname_format"))
+		ve.AddField("atname", templates.T(ctx, "error_atname_format"))
 		return
 	}
 
 	if len(atname) > maxAtnameLength {
-		formErrors.AddFieldError("atname", templates.T(ctx, "error_atname_too_long"))
+		ve.AddField("atname", templates.T(ctx, "error_atname_too_long"))
 		return
 	}
 
 	if reservedAtnames[strings.ToLower(atname)] {
-		formErrors.AddFieldError("atname", templates.T(ctx, "error_atname_reserved"))
+		ve.AddField("atname", templates.T(ctx, "error_atname_reserved"))
 		return
 	}
 }
 
 // validatePassword はパスワードの形式バリデーションを行う
-func (v *AccountsCreateValidator) validatePassword(ctx context.Context, formErrors *session.FormErrors, password string) {
+func (v *AccountsCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
 	if password == "" {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_required"))
+		ve.AddField("password", templates.T(ctx, "error_required"))
 		return
 	}
 
 	if utf8.RuneCountInString(password) < minPasswordLength {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_password_too_short"))
+		ve.AddField("password", templates.T(ctx, "error_password_too_short"))
 		return
 	}
 
 	if len(password) > maxPasswordLength {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_password_too_long"))
+		ve.AddField("password", templates.T(ctx, "error_password_too_long"))
 		return
 	}
 }
 
 // validateAtnameUniqueness はアットネームの重複チェックを行う
-func (v *AccountsCreateValidator) validateAtnameUniqueness(ctx context.Context, formErrors *session.FormErrors, atname string) error {
+func (v *AccountsCreateValidator) validateAtnameUniqueness(ctx context.Context, ve *model.ValidationError, atname string) error {
 	exists, err := v.profileRepo.ExistsByAtname(ctx, atname)
 	if err != nil {
 		return err
 	}
 	if exists {
-		formErrors.AddFieldError("atname", templates.T(ctx, "error_atname_already_taken"))
+		ve.AddField("atname", templates.T(ctx, "error_atname_already_taken"))
 	}
 	return nil
 }
 
 // validateEmailUniqueness はメールアドレスの重複チェックを行う
 // アカウント作成フォームではメールアドレスは編集不可のため、グローバルエラーとして表示する
-func (v *AccountsCreateValidator) validateEmailUniqueness(ctx context.Context, formErrors *session.FormErrors, email string) error {
+func (v *AccountsCreateValidator) validateEmailUniqueness(ctx context.Context, ve *model.ValidationError, email string) error {
 	exists, err := v.userRepo.ExistsByEmail(ctx, email)
 	if err != nil {
 		return err
 	}
 	if exists {
-		formErrors.AddGlobalError(templates.T(ctx, "error_email_already_taken"))
+		ve.AddGlobal(templates.T(ctx, "error_email_already_taken"))
 	}
 	return nil
 }

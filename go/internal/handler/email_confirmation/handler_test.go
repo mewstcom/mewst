@@ -44,10 +44,10 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *
 
 	// UseCaseの初期化
 	getActiveEmailConfirmationUC := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmRepo)
-	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmRepo)
 	ecValidator := validator.NewEmailConfirmationCreateValidator(emailConfirmRepo)
+	verifyEmailConfirmationUC := usecase.NewVerifyEmailConfirmationUsecase(ecValidator, emailConfirmRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, markEmailAsConfirmedUC, ecValidator)
+	h := handler.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 
 	return h, cfg
 }

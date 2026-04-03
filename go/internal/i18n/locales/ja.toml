@@ -117,6 +117,10 @@ other = "確認コードを送信しました。メールをご確認くださ�
 # メール確認
 # ============================================
 
+[email_confirmation_subject]
+description = "メール確認コードのメール件名"
+other = "[Mewst] 確認用コード"
+
 [email_confirmation_title]
 description = "メール確認ページのタイトル"
 other = "確認コードを入力"

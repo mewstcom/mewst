@@ -16,8 +16,6 @@ import (
 type Sender interface {
 	// Send はメールを送信する（templ.Componentを使用）
 	Send(ctx context.Context, input SendInput) error
-	// SendRaw はレンダリング済みの文字列でメールを送信する（Worker用）
-	SendRaw(ctx context.Context, input SendRawInput) error
 }
 
 // SendInput はメール送信の入力（templ.Componentを使用）
@@ -26,14 +24,6 @@ type SendInput struct {
 	Subject  string          // 件名
 	HTMLBody templ.Component // メール本文（HTML形式）
 	TextBody templ.Component // メール本文（テキスト形式）
-}
-
-// SendRawInput はレンダリング済み文字列でのメール送信の入力（Worker用）
-type SendRawInput struct {
-	To       string // 送信先メールアドレス
-	Subject  string // 件名
-	HTMLBody string // メール本文（HTML形式、レンダリング済み）
-	TextBody string // メール本文（テキスト形式、レンダリング済み）
 }
 
 // ResendSender はResend APIを使用してメールを送信する
@@ -78,23 +68,12 @@ func (s *ResendSender) Send(ctx context.Context, input SendInput) error {
 		return fmt.Errorf("テキストテンプレートのレンダリングに失敗しました: %w", err)
 	}
 
-	// SendRawを呼び出して実際に送信
-	return s.SendRaw(ctx, SendRawInput{
-		To:       input.To,
-		Subject:  input.Subject,
-		HTMLBody: htmlBuf.String(),
-		TextBody: textBuf.String(),
-	})
-}
-
-// SendRaw はレンダリング済みの文字列でメールを送信する（Worker用）
-func (s *ResendSender) SendRaw(ctx context.Context, input SendRawInput) error {
 	params := &resend.SendEmailRequest{
 		From:    s.from(),
 		To:      []string{input.To},
 		Subject: input.Subject,
-		Html:    input.HTMLBody,
-		Text:    input.TextBody,
+		Html:    htmlBuf.String(),
+		Text:    textBuf.String(),
 	}
 
 	_, err := s.client.Emails.SendWithContext(ctx, params)
@@ -107,28 +86,19 @@ func (s *ResendSender) SendRaw(ctx context.Context, input SendRawInput) error {
 
 // NoopSender はメールを送信しないダミー実装（テスト用）
 type NoopSender struct {
-	// SentEmails は送信されたメールを記録する（テスト用、templ.Component使用時）
+	// SentEmails は送信されたメールを記録する（テスト用）
 	SentEmails []SendInput
-	// SentRawEmails はレンダリング済み文字列で送信されたメールを記録する（テスト用、Worker経由時）
-	SentRawEmails []SendRawInput
 }
 
 // NewNoopSender は新しいNoopSenderを作成する
 func NewNoopSender() *NoopSender {
 	return &NoopSender{
-		SentEmails:    make([]SendInput, 0),
-		SentRawEmails: make([]SendRawInput, 0),
+		SentEmails: make([]SendInput, 0),
 	}
 }
 
-// Send はメールを送信せず、記録のみ行う（templ.Component使用時）
+// Send はメールを送信せず、記録のみ行う（テスト用）
 func (s *NoopSender) Send(_ context.Context, input SendInput) error {
 	s.SentEmails = append(s.SentEmails, input)
-	return nil
-}
-
-// SendRaw はレンダリング済み文字列でのメール送信を記録する（Worker経由時）
-func (s *NoopSender) SendRaw(_ context.Context, input SendRawInput) error {
-	s.SentRawEmails = append(s.SentRawEmails, input)
 	return nil
 }

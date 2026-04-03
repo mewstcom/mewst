@@ -5,7 +5,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // Handler はメール確認機能のHTTPハンドラー
@@ -13,8 +12,7 @@ type Handler struct {
 	cfg                          *config.Config
 	sessionMgr                   *session.Manager
 	getActiveEmailConfirmationUC *usecase.GetActiveEmailConfirmationUsecase
-	markEmailAsConfirmedUC       *usecase.MarkEmailAsConfirmedUsecase
-	validator                    *validator.EmailConfirmationCreateValidator
+	verifyEmailConfirmationUC    *usecase.VerifyEmailConfirmationUsecase
 }
 
 // NewHandler はHandlerを生成する
@@ -22,14 +20,12 @@ func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,
 	getActiveEmailConfirmationUC *usecase.GetActiveEmailConfirmationUsecase,
-	markEmailAsConfirmedUC *usecase.MarkEmailAsConfirmedUsecase,
-	ecValidator *validator.EmailConfirmationCreateValidator,
+	verifyEmailConfirmationUC *usecase.VerifyEmailConfirmationUsecase,
 ) *Handler {
 	return &Handler{
 		cfg:                          cfg,
 		sessionMgr:                   sessionMgr,
 		getActiveEmailConfirmationUC: getActiveEmailConfirmationUC,
-		markEmailAsConfirmedUC:       markEmailAsConfirmedUC,
-		validator:                    ecValidator,
+		verifyEmailConfirmationUC:    verifyEmailConfirmationUC,
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -103,18 +104,19 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = templates.WithLocale(ctx, "ja")
 
-			result := v.Validate(ctx, tt.input)
+			_, err := v.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
-				if !result.FormErrors.HasErrors() {
+				ve := model.AsValidationError(err)
+				if ve == nil {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
-				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
+				if tt.expectedField != "" && ve != nil && !ve.HasFieldError(tt.expectedField) {
 					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
-				if result.FormErrors.HasErrors() {
-					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", result.FormErrors)
+				if err != nil {
+					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", err)
 				}
 			}
 		})
@@ -133,9 +135,10 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "1234567"}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if !result.FormErrors.HasFieldError("password") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("password") {
 			t.Error("7文字のパスワードはエラーになるべき")
 		}
 	})
@@ -144,9 +147,9 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "12345678"}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if result.FormErrors.HasErrors() {
+		if err != nil {
 			t.Error("8文字のパスワードはエラーにならないべき")
 		}
 	})
@@ -155,9 +158,9 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 72)}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if result.FormErrors.HasErrors() {
+		if err != nil {
 			t.Error("72バイトのパスワードはエラーにならないべき")
 		}
 	})
@@ -166,9 +169,10 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 73)}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if !result.FormErrors.HasFieldError("password") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("password") {
 			t.Error("73バイトのパスワードはエラーになるべき")
 		}
 	})

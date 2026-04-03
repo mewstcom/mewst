@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/mail"
 
-	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -21,25 +21,27 @@ type PasswordResetCreateValidatorInput struct {
 	Email string
 }
 
-// PasswordResetCreateValidatorResult はバリデーションの結果
-type PasswordResetCreateValidatorResult struct {
-	FormErrors *session.FormErrors
-}
+// PasswordResetCreateValidatorOutput はバリデーション成功時の出力
+type PasswordResetCreateValidatorOutput struct{}
 
 // Validate は入力値の形式をチェックする（DBアクセスなし）
 // 形式バリデーションのみを行い、ユーザー存在チェックは行わない
-func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) *PasswordResetCreateValidatorResult {
-	formErrors := session.NewFormErrors()
+func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) (*PasswordResetCreateValidatorOutput, error) {
+	ve := model.NewValidationError()
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		formErrors.AddFieldError("email", templates.T(ctx, "error_required"))
+		ve.AddField("email", templates.T(ctx, "error_required"))
 	} else {
 		// メールアドレス形式チェック
 		if _, err := mail.ParseAddress(input.Email); err != nil {
-			formErrors.AddFieldError("email", templates.T(ctx, "error_invalid_email"))
+			ve.AddField("email", templates.T(ctx, "error_invalid_email"))
 		}
 	}
 
-	return &PasswordResetCreateValidatorResult{FormErrors: formErrors}
+	if ve.HasErrors() {
+		return nil, ve
+	}
+
+	return &PasswordResetCreateValidatorOutput{}, nil
 }

@@ -10,90 +10,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 )
 
-func TestFormErrors(t *testing.T) {
-	t.Parallel()
-
-	t.Run("NewFormErrorsは空のエラーを返す", func(t *testing.T) {
-		t.Parallel()
-
-		fe := NewFormErrors()
-		if fe.HasErrors() {
-			t.Error("NewFormErrors().HasErrors() = true, want false")
-		}
-	})
-
-	t.Run("AddGlobalErrorでグローバルエラーを追加できる", func(t *testing.T) {
-		t.Parallel()
-
-		fe := NewFormErrors()
-		fe.AddGlobalError("エラー1")
-		fe.AddGlobalError("エラー2")
-
-		if !fe.HasErrors() {
-			t.Error("HasErrors() = false, want true")
-		}
-		if len(fe.Global) != 2 {
-			t.Errorf("len(Global) = %d, want 2", len(fe.Global))
-		}
-		if fe.Global[0] != "エラー1" {
-			t.Errorf("Global[0] = %q, want %q", fe.Global[0], "エラー1")
-		}
-	})
-
-	t.Run("AddFieldErrorでフィールドエラーを追加できる", func(t *testing.T) {
-		t.Parallel()
-
-		fe := NewFormErrors()
-		fe.AddFieldError("email", "メールアドレスを入力してください")
-		fe.AddFieldError("email", "メールアドレスの形式が不正です")
-		fe.AddFieldError("password", "パスワードを入力してください")
-
-		if !fe.HasErrors() {
-			t.Error("HasErrors() = false, want true")
-		}
-		if !fe.HasFieldError("email") {
-			t.Error("HasFieldError(email) = false, want true")
-		}
-		if !fe.HasFieldError("password") {
-			t.Error("HasFieldError(password) = false, want true")
-		}
-		if fe.HasFieldError("unknown") {
-			t.Error("HasFieldError(unknown) = true, want false")
-		}
-	})
-
-	t.Run("GetFieldErrorsでフィールドエラーを取得できる", func(t *testing.T) {
-		t.Parallel()
-
-		fe := NewFormErrors()
-		fe.AddFieldError("email", "エラー1")
-		fe.AddFieldError("email", "エラー2")
-
-		errors := fe.GetFieldErrors("email")
-		if len(errors) != 2 {
-			t.Errorf("len(GetFieldErrors(email)) = %d, want 2", len(errors))
-		}
-
-		notFound := fe.GetFieldErrors("unknown")
-		if notFound != nil {
-			t.Errorf("GetFieldErrors(unknown) = %v, want nil", notFound)
-		}
-	})
-
-	t.Run("FieldErrorsでフィールドエラーをスライスで取得できる", func(t *testing.T) {
-		t.Parallel()
-
-		fe := NewFormErrors()
-		fe.AddFieldError("email", "メールエラー")
-		fe.AddFieldError("password", "パスワードエラー")
-
-		errors := fe.FieldErrors()
-		if len(errors) != 2 {
-			t.Errorf("len(FieldErrors()) = %d, want 2", len(errors))
-		}
-	})
-}
-
 func TestFlashContext(t *testing.T) {
 	t.Parallel()
 
@@ -127,42 +43,6 @@ func TestFlashContext(t *testing.T) {
 		got := GetFlashFromContext(ctx)
 		if got != nil {
 			t.Errorf("GetFlashFromContext() = %v, want nil", got)
-		}
-	})
-}
-
-func TestFormErrorsContext(t *testing.T) {
-	t.Parallel()
-
-	t.Run("SetFormErrorsToContextとGetFormErrorsFromContextでエラーを保存・取得できる", func(t *testing.T) {
-		t.Parallel()
-
-		errors := NewFormErrors()
-		errors.AddGlobalError("グローバルエラー")
-		errors.AddFieldError("email", "メールエラー")
-
-		ctx := context.Background()
-		ctx = SetFormErrorsToContext(ctx, errors)
-
-		got := GetFormErrorsFromContext(ctx)
-		if got == nil {
-			t.Fatal("GetFormErrorsFromContext() = nil, want errors")
-		}
-		if len(got.Global) != 1 {
-			t.Errorf("len(Global) = %d, want 1", len(got.Global))
-		}
-		if !got.HasFieldError("email") {
-			t.Error("HasFieldError(email) = false, want true")
-		}
-	})
-
-	t.Run("GetFormErrorsFromContextはエラーがない場合nilを返す", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		got := GetFormErrorsFromContext(ctx)
-		if got != nil {
-			t.Errorf("GetFormErrorsFromContext() = %v, want nil", got)
 		}
 	})
 }

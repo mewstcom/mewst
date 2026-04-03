@@ -91,19 +91,23 @@ templ は自動でエスケープ処理を行うため、基本的に安全で�
 
 ```go
 // ✅ Good: バリデーションを実施
-func (req *CommentRequest) Validate(ctx context.Context) *session.FormErrors {
-    errors := &session.FormErrors{}
+func (v *CommentCreateValidator) Validate(ctx context.Context, input CommentCreateValidatorInput) error {
+    ve := model.NewValidationError()
 
-    if req.Comment == "" {
-        errors.AddFieldError("comment", i18n.T(ctx, "comment_required"))
+    if input.Comment == "" {
+        ve.AddFieldError("comment", i18n.T(ctx, "comment_required"))
     }
 
     // 文字数制限
-    if len(req.Comment) > 1000 {
-        errors.AddFieldError("comment", i18n.T(ctx, "comment_too_long"))
+    if len(input.Comment) > 1000 {
+        ve.AddFieldError("comment", i18n.T(ctx, "comment_too_long"))
     }
 
-    return errors
+    if ve.HasErrors() {
+        return ve
+    }
+
+    return nil
 }
 ```
 
@@ -189,19 +193,23 @@ slog.InfoContext(ctx, "ユーザーログイン試行", "email", email)
 ```
 
 ```go
-// バックエンド: Request DTOでバリデーション
-func (req *SignUpRequest) Validate(ctx context.Context) *session.FormErrors {
-    errors := &session.FormErrors{}
+// バックエンド: Validatorでバリデーション
+func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreateValidatorInput) error {
+    ve := model.NewValidationError()
 
-    if req.Email == "" {
-        errors.AddFieldError("email", i18n.T(ctx, "email_required"))
+    if input.Email == "" {
+        ve.AddFieldError("email", i18n.T(ctx, "email_required"))
     }
 
-    if !emailRegex.MatchString(req.Email) {
-        errors.AddFieldError("email", i18n.T(ctx, "email_invalid"))
+    if !emailRegex.MatchString(input.Email) {
+        ve.AddFieldError("email", i18n.T(ctx, "email_invalid"))
     }
 
-    return errors
+    if ve.HasErrors() {
+        return ve
+    }
+
+    return nil
 }
 ```
 
@@ -218,14 +226,18 @@ var allowedSeasons = map[string]bool{
     "winter": true,
 }
 
-func (req *CreateWorkRequest) Validate(ctx context.Context) *session.FormErrors {
-    errors := &session.FormErrors{}
+func (v *WorkCreateValidator) Validate(ctx context.Context, input WorkCreateValidatorInput) error {
+    ve := model.NewValidationError()
 
-    if req.Season != "" && !allowedSeasons[req.Season] {
-        errors.AddFieldError("season", i18n.T(ctx, "season_invalid"))
+    if input.Season != "" && !allowedSeasons[input.Season] {
+        ve.AddFieldError("season", i18n.T(ctx, "season_invalid"))
     }
 
-    return errors
+    if ve.HasErrors() {
+        return ve
+    }
+
+    return nil
 }
 ```
 

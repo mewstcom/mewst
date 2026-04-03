@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
@@ -14,63 +15,41 @@ import (
 func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
-
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
-
 	tests := []struct {
-		name          string
-		input         SignInCreateValidatorInput
-		wantErrors    bool
-		expectedField string
+		name           string
+		email          string
+		password       string
+		wantFieldError string
 	}{
 		{
-			name: "異常系: メールアドレスが空",
-			input: SignInCreateValidatorInput{
-				Email:    "",
-				Password: "password123",
-			},
-			wantErrors:    true,
-			expectedField: "email",
+			name:           "異常系: メールアドレスが空",
+			email:          "",
+			password:       "password123",
+			wantFieldError: "email",
 		},
 		{
-			name: "異常系: パスワードが空",
-			input: SignInCreateValidatorInput{
-				Email:    "user@example.com",
-				Password: "",
-			},
-			wantErrors:    true,
-			expectedField: "password",
+			name:           "異常系: パスワードが空",
+			email:          "user@example.com",
+			password:       "",
+			wantFieldError: "password",
 		},
 		{
-			name: "異常系: 両方が空",
-			input: SignInCreateValidatorInput{
-				Email:    "",
-				Password: "",
-			},
-			wantErrors:    true,
-			expectedField: "email",
+			name:           "異常系: 両方が空",
+			email:          "",
+			password:       "",
+			wantFieldError: "email",
 		},
 		{
-			name: "異常系: 無効なメールアドレス形式",
-			input: SignInCreateValidatorInput{
-				Email:    "invalid-email",
-				Password: "password123",
-			},
-			wantErrors:    true,
-			expectedField: "email",
+			name:           "異常系: 無効なメールアドレス形式",
+			email:          "invalid-email",
+			password:       "password123",
+			wantFieldError: "email",
 		},
 		{
-			name: "異常系: @マークがないメールアドレス",
-			input: SignInCreateValidatorInput{
-				Email:    "userexample.com",
-				Password: "password123",
-			},
-			wantErrors:    true,
-			expectedField: "email",
+			name:           "異常系: @マークがないメールアドレス",
+			email:          "userexample.com",
+			password:       "password123",
+			wantFieldError: "email",
 		},
 	}
 
@@ -78,15 +57,24 @@ func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := validator.Validate(ctx, tt.input)
+			ctx := context.Background()
+			ctx = templates.WithLocale(ctx, "ja")
 
-			if tt.wantErrors {
-				if result.FormErrors == nil || !result.FormErrors.HasErrors() {
-					t.Error("エラーが期待されたが、エラーがありません")
-				}
-				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
-					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
-				}
+			v := NewSignInCreateValidator(nil)
+			output, err := v.Validate(ctx, SignInCreateValidatorInput{
+				Email:    tt.email,
+				Password: tt.password,
+			})
+
+			if output != nil {
+				t.Error("expected nil output for validation error")
+			}
+			ve := model.AsValidationError(err)
+			if ve == nil {
+				t.Fatal("expected ValidationError, got nil")
+			}
+			if tt.wantFieldError != "" && !ve.HasFieldError(tt.wantFieldError) {
+				t.Errorf("expected field error for %s, but not found", tt.wantFieldError)
 			}
 		})
 	}
@@ -95,32 +83,28 @@ func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
-
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
 
 	t.Run("メールアドレス必須エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := SignInCreateValidatorInput{
+		v := NewSignInCreateValidator(nil)
+		_, err := v.Validate(ctx, SignInCreateValidatorInput{
 			Email:    "",
 			Password: "password123",
-		}
-		result := validator.Validate(ctx, input)
+		})
 
-		if result.FormErrors == nil || !result.FormErrors.HasFieldError("email") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := result.FormErrors.GetFieldErrors("email")
+		emailErrors := ve.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}
 
-		// エラーメッセージが空でないことを確認
 		if emailErrors[0] == "" {
 			t.Error("エラーメッセージが空です")
 		}
@@ -129,22 +113,22 @@ func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Run("メールアドレス形式エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := SignInCreateValidatorInput{
+		v := NewSignInCreateValidator(nil)
+		_, err := v.Validate(ctx, SignInCreateValidatorInput{
 			Email:    "invalid-email",
 			Password: "password123",
-		}
-		result := validator.Validate(ctx, input)
+		})
 
-		if result.FormErrors == nil || !result.FormErrors.HasFieldError("email") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := result.FormErrors.GetFieldErrors("email")
+		emailErrors := ve.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}
 
-		// メール形式エラーであることを確認
 		if !strings.Contains(emailErrors[0], "メール") && !strings.Contains(emailErrors[0], "形式") {
 			t.Errorf("メール形式エラーメッセージが期待されましたが、取得: %s", emailErrors[0])
 		}
@@ -158,7 +142,6 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	// テストユーザーを作成
 	passwordDigest, _ := auth.HashPassword("password123")
 	testutil.NewUserBuilder(t, tx).
 		WithEmail("test@example.com").
@@ -166,26 +149,24 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
-	input := SignInCreateValidatorInput{
+	output, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "password123",
-	}
+	})
 
-	result := validator.Validate(ctx, input)
-
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v", result.Err)
+	if err != nil {
+		t.Fatalf("Validate() error = %v", err)
 	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		t.Errorf("Validate() formErrors = %v, want nil", result.FormErrors)
+	if output == nil {
+		t.Fatal("Validate() output = nil, want non-nil")
 	}
-	if result.User == nil {
-		t.Error("Validate() user = nil, want non-nil")
+	if output.User == nil {
+		t.Error("Validate() output.User = nil, want non-nil")
 	}
-	if result.User != nil && result.User.Email != "test@example.com" {
-		t.Errorf("Validate() user.Email = %v, want %v", result.User.Email, "test@example.com")
+	if output.User != nil && output.User.Email != "test@example.com" {
+		t.Errorf("Validate() output.User.Email = %v, want %v", output.User.Email, "test@example.com")
 	}
 }
 
@@ -196,29 +177,23 @@ func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	// ユーザーを作成しない
-
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
-	input := SignInCreateValidatorInput{
+	output, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "nonexistent@example.com",
 		Password: "password123",
-	}
+	})
 
-	result := validator.Validate(ctx, input)
-
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("expected nil output")
 	}
-	if result.User != nil {
-		t.Error("Validate() user should be nil for non-existent user")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("expected ValidationError, got nil")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+	if len(ve.Global) == 0 {
+		t.Error("expected global error")
 	}
 }
 
@@ -229,7 +204,6 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	// テストユーザーを作成
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
 		WithEmail("test@example.com").
@@ -237,26 +211,22 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
-	input := SignInCreateValidatorInput{
+	output, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "wrongpassword",
-	}
+	})
 
-	result := validator.Validate(ctx, input)
-
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("expected nil output")
 	}
-	if result.User != nil {
-		t.Error("Validate() user should be nil for invalid password")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("expected ValidationError, got nil")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+	if len(ve.Global) == 0 {
+		t.Error("expected global error")
 	}
 }
 
@@ -267,7 +237,6 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	// テストユーザーを作成
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
 		WithEmail("test@example.com").
@@ -275,37 +244,30 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		Build()
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
 	t.Run("ユーザーが存在しない場合も同じエラーメッセージ", func(t *testing.T) {
 		t.Parallel()
 
-		input := SignInCreateValidatorInput{
+		_, err1 := v.Validate(ctx, SignInCreateValidatorInput{
 			Email:    "nonexistent@example.com",
 			Password: "anypassword",
-		}
-
-		result := validator.Validate(ctx, input)
-
-		if result.FormErrors == nil || len(result.FormErrors.Global) == 0 {
+		})
+		ve1 := model.AsValidationError(err1)
+		if ve1 == nil || len(ve1.Global) == 0 {
 			t.Fatal("expected global error message")
 		}
+		notFoundMsg := ve1.Global[0]
 
-		notFoundMsg := result.FormErrors.Global[0]
-
-		// パスワードが間違っている場合
-		input2 := SignInCreateValidatorInput{
+		_, err2 := v.Validate(ctx, SignInCreateValidatorInput{
 			Email:    "test@example.com",
 			Password: "wrongpassword",
-		}
-
-		result2 := validator.Validate(ctx, input2)
-
-		if result2.FormErrors == nil || len(result2.FormErrors.Global) == 0 {
+		})
+		ve2 := model.AsValidationError(err2)
+		if ve2 == nil || len(ve2.Global) == 0 {
 			t.Fatal("expected global error message")
 		}
-
-		wrongPasswordMsg := result2.FormErrors.Global[0]
+		wrongPasswordMsg := ve2.Global[0]
 
 		// セキュリティ上、両方のエラーメッセージが同じであることを確認
 		if notFoundMsg != wrongPasswordMsg {
@@ -322,24 +284,23 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
-	input := SignInCreateValidatorInput{
+	_, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "nonexistent@example.com",
 		Password: "password123",
-	}
+	})
 
-	result := validator.Validate(ctx, input)
-
-	if result.FormErrors == nil {
-		t.Fatal("formErrors should not be nil")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("expected ValidationError")
 	}
 
 	// グローバルエラーとして返されることを確認（フィールドエラーではない）
-	if len(result.FormErrors.Global) == 0 {
+	if len(ve.Global) == 0 {
 		t.Error("expected global error, not field error")
 	}
-	if len(result.FormErrors.Fields) > 0 {
+	if len(ve.Fields) > 0 {
 		t.Error("should not have field errors for credential validation")
 	}
 }
@@ -352,7 +313,7 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	validator := NewSignInCreateValidator(userRepo)
+	v := NewSignInCreateValidator(userRepo)
 
 	tests := []struct {
 		name  string
@@ -372,17 +333,16 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			input := SignInCreateValidatorInput{
+			_, err := v.Validate(ctx, SignInCreateValidatorInput{
 				Email:    tt.email,
 				Password: "password123",
-			}
-
-			result := validator.Validate(ctx, input)
+			})
 
 			// 形式バリデーションでエラーにならないことを確認
 			// （ユーザーが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない）
-			if result.FormErrors != nil && result.FormErrors.HasFieldError("email") {
-				t.Errorf("email形式バリデーションでエラーが発生: %v", result.FormErrors.GetFieldErrors("email"))
+			ve := model.AsValidationError(err)
+			if ve != nil && ve.HasFieldError("email") {
+				t.Errorf("email形式バリデーションでエラーが発生: %v", ve.GetFieldErrors("email"))
 			}
 		})
 	}

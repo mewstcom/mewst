@@ -69,17 +69,19 @@ cat /workspace/rails/app/models/work.rb
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層                                          │
-│ - Handler, Validator, ViewModel, Template, Middleware │
+│ - Handler, Worker, Validator, ViewModel, Template,    │
+│   Middleware, Email                                    │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存
 ┌─────────────────────────────────────────────────────────┐
 │ Application層                                           │
-│ - UseCase（ビジネスフロー、トランザクション管理）           │
+│ - UseCase（ビジネスフロー、トランザクション管理、          │
+│   バリデーション統合）                                    │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存
 ┌─────────────────────────────────────────────────────────┐
 │ Domain/Infrastructure層（統合）                          │
-│ - Query (sqlc), Repository, Model                     │
+│ - Query (sqlc), Repository, Model, Dispatcher         │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -87,6 +89,7 @@ cat /workspace/rails/app/models/work.rb
 
 - **cmd/server/main.go**: エントリポイント
 - **internal/handler**: HTTP リクエストハンドラー（Presentation 層）
+- **internal/worker**: バックグラウンドジョブ実行（Presentation 層）
 - **internal/middleware**: HTTP ミドルウェア（Presentation 層）
 - **internal/templates**: templ テンプレート（Presentation 層）
 - **internal/viewmodel**: プレゼンテーション層のデータ変換（Presentation 層）
@@ -94,7 +97,9 @@ cat /workspace/rails/app/models/work.rb
 - **internal/usecase**: ビジネスロジック層（Application 層）
 - **internal/query**: sqlc 生成コード（Domain/Infrastructure 層）
 - **internal/repository**: Repository 層（Domain/Infrastructure 層）
-- **internal/model**: ドメインモデル（Domain/Infrastructure 層）
+- **internal/model**: ドメインモデル・エラー型（Domain/Infrastructure 層）
+- **internal/dispatcher**: ジョブキュー投入の抽象化（Domain/Infrastructure 層）
+- **internal/email**: メール送信（Presentation 層）
 - **internal/config**: 設定管理
 - **internal/i18n**: 国際化
 - **internal/image**: 画像 URL 生成
@@ -104,17 +109,20 @@ cat /workspace/rails/app/models/work.rb
 
 - **依存の方向**: Presentation 層 → Application 層 → Domain/Infrastructure 層
 - **Query への依存は Repository のみ**: Handler/UseCase が Query に直接依存することは禁止
-- **Handler は Repository に直接依存しない**: データアクセスは UseCase を経由し、バリデーションは `internal/validator/` パッケージを使用
+- **Handler は UseCase のみを経由**: Handler は Repository、Validator に直接依存せず、すべて UseCase 経由で行う
+- **UseCase が Validator を統合**: バリデーション → 永続化を UseCase 内でオーケストレーション
+- **Worker は薄い Adapter**: UseCase を呼ぶだけの実装にし、ビジネスロジックを持たない
 - **Model と Repository は 1:1 の関係**: 各ドメインエンティティに対応する Repository を作成
 - **Domain/Infrastructure 層の統合**: データベース変更はほぼ起こらないため、シンプルさを優先
 
 ### UsecaseとRepositoryの使い分け
 
+- **Usecase（オーケストレーション）**: バリデーション → 永続化の統合（フォーム送信系）。Validator を内部で呼び出し、`*model.ValidationError` を返す
 - **Usecase（書き込み）**: トランザクションを伴う永続化処理（作成・更新・削除）、複数Repositoryを跨ぐ操作
 - **Usecase（読み取り）**: Handler が必要とするデータ取得、複数 Repository の集約（トランザクションなし）
 - **Repository**: データアクセスの実装。UseCase または Validator から使用される
 
-**判断基準**: Handler はすべてのデータアクセスを UseCase 経由で行う。Handler から Repository への直接依存は禁止。
+**判断基準**: Handler はすべてのデータアクセスを UseCase 経由で行う。Handler から Repository、Validator への直接依存は禁止。
 
 📖 **詳細なアーキテクチャについては [@go/docs/architecture-guide.md](docs/architecture-guide.md) を参照してください。**
 
@@ -730,7 +738,7 @@ Go 版では、型安全なテンプレートエンジン [templ](https://templ.
 type NewPageData struct {
     CSRFToken        string
     TurnstileSiteKey string
-    FormErrors       *session.FormErrors
+    FormErrors       *model.ValidationError
     Email            string
 }
 
@@ -749,7 +757,7 @@ templ New(data NewPageData) {
 ```templ
 // ❌ context.Contextを明示的に渡している
 // ❌ 複数の引数を個別に渡している
-templ New(ctx context.Context, formErrors *session.FormErrors, csrfToken string, turnstileSiteKey string) {
+templ New(ctx context.Context, formErrors *model.ValidationError, csrfToken string, turnstileSiteKey string) {
     // ...
 }
 ```
@@ -812,10 +820,10 @@ if user.Name != nil {
 
 #### バリデーターの構成
 
-- **パッケージ**: `internal/validator/`（`main.go` で構築し Handler に注入）
+- **パッケージ**: `internal/validator/`（`main.go` で構築し UseCase に注入）
 - **命名規則**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
 - **入力**: `{Handler}{Action}ValidatorInput` 構造体
-- **出力**: `{Handler}{Action}ValidatorResult` 構造体
+- **出力**: `{Handler}{Action}ValidatorOutput` 構造体
 
 #### バリデーションの分類
 

@@ -16,7 +16,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	sign_up_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_up"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -28,21 +27,16 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx = templates.WithLocale(ctx, "ja")
 	ctx = templates.WithConfig(ctx, h.cfg)
 
-	// CSRFトークンを取得
-	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
-
 	// フォームデータを取得
-	input := validator.SignUpCreateValidatorInput{
-		Email: r.FormValue("email"),
-	}
+	email := r.FormValue("email")
 
 	// IPアドレスベースのレート制限
 	ipAddress := clientip.GetClientIP(r)
 	if err := h.checkRateLimit(ctx, ipAddress); err != nil {
 		if errors.Is(err, ratelimit.ErrRateLimitExceeded) {
-			formErrors := session.NewFormErrors()
-			formErrors.AddGlobalError(templates.T(ctx, "error_rate_limit_exceeded"))
-			h.renderForm(w, ctx, csrfToken, input.Email, formErrors)
+			ve := model.NewValidationError()
+			ve.AddGlobal(templates.T(ctx, "error_rate_limit_exceeded"))
+			h.renderForm(w, r, ve, email)
 			return
 		}
 		slog.ErrorContext(ctx, "レート制限チェックでエラー", "error", err)
@@ -57,33 +51,19 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		slog.WarnContext(ctx, "Turnstile検証でエラーが発生", "error", err)
 	}
 	if !turnstileValid {
-		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, input.Email, formErrors)
+		ve := model.NewValidationError()
+		ve.AddGlobal(templates.T(ctx, "error_turnstile_failed"))
+		h.renderForm(w, r, ve, email)
 		return
 	}
 
-	// フォームバリデーション
-	result := h.validator.Validate(ctx, input)
-	if result.Err != nil {
-		slog.ErrorContext(ctx, "バリデーション中にエラー", "error", result.Err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, input.Email, result.FormErrors)
-		return
-	}
-
-	// メール確認レコードを作成し、確認メールを送信
-	ucResult, err := h.createEmailConfirmationUC.Execute(ctx, usecase.CreateEmailConfirmationInput{
-		Email:  input.Email,
-		Event:  model.EmailConfirmationEventSignUp,
+	// UseCase を実行（バリデーション + メール確認レコード作成）
+	ucResult, err := h.createSignUp.Execute(ctx, usecase.CreateSignUpInput{
+		Email:  email,
 		Locale: "ja",
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, "メール確認レコードの作成に失敗", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		h.handleCreateError(w, r, err, email)
 		return
 	}
 
@@ -96,6 +76,19 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/email_confirmation", http.StatusFound)
 }
 
+// handleCreateError はサインアップ処理のエラーを処理する
+func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email string) {
+	ctx := r.Context()
+
+	if ve := model.AsValidationError(err); ve != nil {
+		h.renderForm(w, r, ve, email)
+		return
+	}
+
+	slog.ErrorContext(ctx, "サインアップ処理に失敗", "error", err)
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+}
+
 // checkRateLimit はIPアドレスベースのレート制限をチェックする
 func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	return h.rateLimiter.Allow(ctx, ratelimit.CheckInput{
@@ -106,11 +99,14 @@ func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 }
 
 // renderForm はサインアップフォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, email string, formErrors *session.FormErrors) {
+func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email string) {
+	ctx := r.Context()
+	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
+
 	data := sign_up_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       formErrors,
+		FormErrors:       ve,
 		Email:            email,
 	}
 

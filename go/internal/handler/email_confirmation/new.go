@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
@@ -60,7 +59,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	// ページデータを作成
 	data := email_confirmation_page.NewPageData{
 		CSRFToken:  csrfToken,
-		FormErrors: session.NewFormErrors(),
+		FormErrors: nil,
 		Code:       "",
 		Flash:      flash,
 	}

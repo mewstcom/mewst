@@ -295,10 +295,10 @@ password_reset/
 
 ## バリデーターの配置
 
-バリデーションは `internal/validator/` パッケージに配置します。`main.go` で構築し、Handler に注入します。
+バリデーションは `internal/validator/` パッケージに配置します。`main.go` で構築し、UseCase に注入します。Handler は Validator を直接 import せず、すべて UseCase 経由でバリデーションを実行します。
 
 - **構造体名**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
-- **メソッド**: `Validate(ctx context.Context, input {Handler}{Action}ValidatorInput) *{Handler}{Action}ValidatorResult`
+- **戻り値**: Go の慣習に従った `(*Output, error)` の 2 値返し。バリデーション失敗時は `*model.ValidationError` を返す
 
 ### 配置例
 
@@ -321,16 +321,21 @@ internal/validator/
 ### 基本的な登録方法
 
 ```go
-// Validatorの構築（main.goで構築し、Handlerに注入）
+// Validatorの構築（main.goで構築し、UseCaseに注入）
 signInValidator := validator.NewSignInCreateValidator(userRepo)
 passwordResetValidator := validator.NewPasswordResetCreateValidator()
 passwordValidator := validator.NewPasswordUpdateValidator()
 
-// ハンドラーの初期化（UseCaseとValidatorを注入）
+// UseCaseの初期化（Validatorを注入）
+createSignInUC := usecase.NewCreateSignInUsecase(db, sessionRepo, signInValidator)
+createPasswordResetUC := usecase.NewCreatePasswordResetUsecase(db, userRepo, passwordResetValidator)
+updatePasswordUC := usecase.NewUpdatePasswordUsecase(db, userRepo, passwordValidator)
+
+// ハンドラーの初期化（UseCaseのみを注入）
 popularWorkHandler := popular_work.NewHandler(cfg, getPopularWorksUC)
-passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, passwordResetValidator, createPasswordResetTokenUC)
-passwordHandler := password.NewHandler(cfg, sessionMgr, passwordValidator, updatePasswordUC)
-signInHandler := sign_in.NewHandler(cfg, sessionMgr, signInValidator, createSessionUC)
+passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createPasswordResetUC)
+passwordHandler := password.NewHandler(cfg, sessionMgr, updatePasswordUC)
+signInHandler := sign_in.NewHandler(cfg, sessionMgr, createSignInUC)
 
 // ルーティング登録
 r.Get("/works/popular", popularWorkHandler.Index)
@@ -398,29 +403,25 @@ import (
     "github.com/mewstcom/mewst/internal/config"
     "github.com/mewstcom/mewst/internal/session"
     "github.com/mewstcom/mewst/internal/usecase"
-    "github.com/mewstcom/mewst/internal/validator"
 )
 
 // Handler はパスワードリセット関連のHTTPハンドラーです
 type Handler struct {
-    cfg                          *config.Config
-    sessionMgr                   *session.Manager
-    validator                    *validator.PasswordResetCreateValidator
-    createPasswordResetTokenUC   *usecase.CreatePasswordResetTokenUsecase
+    cfg                    *config.Config
+    sessionMgr             *session.Manager
+    createPasswordResetUC  *usecase.CreatePasswordResetUsecase  // UseCase のみに依存
 }
 
 // NewHandler は新しいHandlerを作成します
 func NewHandler(
     cfg *config.Config,
     sessionMgr *session.Manager,
-    v *validator.PasswordResetCreateValidator,
-    createPasswordResetTokenUC *usecase.CreatePasswordResetTokenUsecase,
+    createPasswordResetUC *usecase.CreatePasswordResetUsecase,
 ) *Handler {
     return &Handler{
-        cfg:                        cfg,
-        sessionMgr:                 sessionMgr,
-        validator:                  v,
-        createPasswordResetTokenUC: createPasswordResetTokenUC,
+        cfg:                   cfg,
+        sessionMgr:            sessionMgr,
+        createPasswordResetUC: createPasswordResetUC,
     }
 }
 ```
@@ -473,7 +474,7 @@ HTTP ハンドラーを実装する際は、以下のポイントを守ってく
    - `handler.go`, `index.go`, `show.go`, `new.go`, `create.go`, `edit.go`, `update.go`, `delete.go`
 3. **ファイル名とメソッド名を一致させる**: 可読性と保守性を向上
 4. **依存性注入を適切に管理**: 8 個以下のフィールドを目安に、必要に応じてリソースを分割
-5. **バリデーションは `internal/validator/` パッケージに配置**: `main.go` で構築して Handler に注入
+5. **バリデーションは `internal/validator/` パッケージに配置**: `main.go` で構築して UseCase に注入（Handler は Validator に直接依存しない）
 
 これらの規則を守ることで、以下のメリットが得られます：
 

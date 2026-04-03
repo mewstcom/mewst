@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
@@ -79,13 +80,14 @@ func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T
 				Code: tt.code,
 			}
 
-			result := validator.Validate(ctx, input)
+			_, err := validator.Validate(ctx, input)
 
 			if tt.wantErrors {
-				if result.FormErrors == nil || !result.FormErrors.HasErrors() {
+				ve := model.AsValidationError(err)
+				if ve == nil {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
-				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
+				if tt.expectedField != "" && !ve.HasFieldError(tt.expectedField) {
 					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			}
@@ -132,12 +134,13 @@ func TestEmailConfirmationCreateValidator_Validate_ValidCodeFormats(t *testing.T
 				Code: tt.code,
 			}
 
-			result := validator.Validate(ctx, input)
+			_, err := validator.Validate(ctx, input)
 
 			// 形式バリデーションでエラーにならないことを確認
 			// （レコードが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない）
-			if result.FormErrors != nil && result.FormErrors.HasFieldError("code") {
-				t.Errorf("code形式バリデーションでエラーが発生: %v", result.FormErrors.GetFieldErrors("code"))
+			ve := model.AsValidationError(err)
+			if ve != nil && ve.HasFieldError("code") {
+				t.Errorf("code形式バリデーションでエラーが発生: %v", ve.GetFieldErrors("code"))
 			}
 		})
 	}
@@ -193,18 +196,18 @@ func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 		Code: "123456",
 	}
 
-	result := validator.Validate(ctx, input)
+	output, err := validator.Validate(ctx, input)
 
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v", result.Err)
+	if err != nil {
+		t.Fatalf("Validate() error = %v", err)
 	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		t.Errorf("Validate() formErrors = %v, want nil", result.FormErrors)
+	if output == nil {
+		t.Fatal("Validate() output = nil, want non-nil")
 	}
-	if result.EmailConfirmation == nil {
+	if output.EmailConfirmation == nil {
 		t.Error("Validate() emailConfirmation = nil, want non-nil")
 	}
-	if result.EmailConfirmation != nil && result.EmailConfirmation.Email == "" {
+	if output.EmailConfirmation != nil && output.EmailConfirmation.Email == "" {
 		t.Error("Validate() emailConfirmation.Email should not be empty")
 	}
 }
@@ -227,18 +230,16 @@ func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) 
 		Code: "123456",
 	}
 
-	result := validator.Validate(ctx, input)
+	output, err := validator.Validate(ctx, input)
 
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("Validate() output should be nil for non-existent record")
 	}
-	if result.EmailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for non-existent record")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("Validate() expected ValidationError")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
+	if !ve.HasErrors() {
 		t.Error("Validate() formErrors should have errors")
 	}
 }
@@ -265,18 +266,16 @@ func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 		Code: "123456",
 	}
 
-	result := validator.Validate(ctx, input)
+	output, err := validator.Validate(ctx, input)
 
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("Validate() output should be nil for expired record")
 	}
-	if result.EmailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for expired record")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("Validate() expected ValidationError")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
+	if !ve.HasErrors() {
 		t.Error("Validate() formErrors should have errors")
 	}
 }
@@ -303,18 +302,16 @@ func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T
 		Code: "123456",
 	}
 
-	result := validator.Validate(ctx, input)
+	output, err := validator.Validate(ctx, input)
 
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("Validate() output should be nil for already succeeded record")
 	}
-	if result.EmailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for already succeeded record")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("Validate() expected ValidationError")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
+	if !ve.HasErrors() {
 		t.Error("Validate() formErrors should have errors")
 	}
 }
@@ -339,18 +336,16 @@ func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 		Code: "654321", // 異なるコード
 	}
 
-	result := validator.Validate(ctx, input)
+	output, err := validator.Validate(ctx, input)
 
-	if result.Err != nil {
-		t.Fatalf("Validate() error = %v, want nil", result.Err)
+	if output != nil {
+		t.Error("Validate() output should be nil for invalid code")
 	}
-	if result.EmailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for invalid code")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("Validate() expected ValidationError")
 	}
-	if result.FormErrors == nil {
-		t.Fatal("Validate() formErrors = nil, want non-nil")
-	}
-	if !result.FormErrors.HasErrors() {
+	if !ve.HasErrors() {
 		t.Error("Validate() formErrors should have errors")
 	}
 }
@@ -375,17 +370,18 @@ func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 		Code: "654321", // 異なるコード
 	}
 
-	result := validator.Validate(ctx, input)
+	_, err := validator.Validate(ctx, input)
 
-	if result.FormErrors == nil {
-		t.Fatal("formErrors should not be nil")
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("expected ValidationError")
 	}
 
 	// グローバルエラーとして返されることを確認（フィールドエラーではない）
-	if len(result.FormErrors.Global) == 0 {
+	if len(ve.Global) == 0 {
 		t.Error("expected global error, not field error")
 	}
-	if len(result.FormErrors.Fields) > 0 {
+	if len(ve.Fields) > 0 {
 		t.Error("should not have field errors for code validation")
 	}
 }
@@ -414,13 +410,14 @@ func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *test
 			Code: "654321",
 		}
 
-		result := validator.Validate(ctx, input)
+		_, err := validator.Validate(ctx, input)
 
-		if result.FormErrors == nil || len(result.FormErrors.Global) == 0 {
+		ve := model.AsValidationError(err)
+		if ve == nil || len(ve.Global) == 0 {
 			t.Fatal("expected global error message")
 		}
 
-		invalidCodeMsg := result.FormErrors.Global[0]
+		invalidCodeMsg := ve.Global[0]
 
 		// 存在しないIDの場合
 		input2 := EmailConfirmationCreateValidatorInput{
@@ -428,13 +425,14 @@ func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *test
 			Code: "123456",
 		}
 
-		result2 := validator.Validate(ctx, input2)
+		_, err2 := validator.Validate(ctx, input2)
 
-		if result2.FormErrors == nil || len(result2.FormErrors.Global) == 0 {
+		ve2 := model.AsValidationError(err2)
+		if ve2 == nil || len(ve2.Global) == 0 {
 			t.Fatal("expected global error message")
 		}
 
-		notFoundMsg := result2.FormErrors.Global[0]
+		notFoundMsg := ve2.Global[0]
 
 		// セキュリティ上、両方のエラーメッセージが同じであることを確認
 		if invalidCodeMsg != notFoundMsg {

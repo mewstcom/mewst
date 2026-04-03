@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	password_reset_page "github.com/mewstcom/mewst/go/internal/templates/pages/password_reset"
@@ -26,7 +25,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	data := password_reset_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       session.NewFormErrors(),
+		FormErrors:       nil,
 		Email:            "",
 	}
 

@@ -6,7 +6,9 @@ import (
 
 	"github.com/riverqueue/river"
 
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 func TestSendEmailConfirmationWorker_Work(t *testing.T) {
@@ -14,12 +16,12 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		args    SendEmailConfirmationArgs
+		args    dispatcher.SendEmailConfirmationArgs
 		wantErr bool
 	}{
 		{
 			name: "正常系: 日本語ロケールでメール送信",
-			args: SendEmailConfirmationArgs{
+			args: dispatcher.SendEmailConfirmationArgs{
 				Email:  "test@example.com",
 				Code:   "123456",
 				Locale: "ja",
@@ -28,7 +30,7 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 		},
 		{
 			name: "正常系: 英語ロケールでメール送信",
-			args: SendEmailConfirmationArgs{
+			args: dispatcher.SendEmailConfirmationArgs{
 				Email:  "test@example.com",
 				Code:   "123456",
 				Locale: "en",
@@ -37,7 +39,7 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 		},
 		{
 			name: "正常系: 未知のロケールは日本語にフォールバック",
-			args: SendEmailConfirmationArgs{
+			args: dispatcher.SendEmailConfirmationArgs{
 				Email:  "test@example.com",
 				Code:   "123456",
 				Locale: "unknown",
@@ -46,7 +48,7 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 		},
 		{
 			name: "異常系: 空のメールアドレス",
-			args: SendEmailConfirmationArgs{
+			args: dispatcher.SendEmailConfirmationArgs{
 				Email:  "",
 				Code:   "123456",
 				Locale: "ja",
@@ -59,27 +61,29 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			sender := email.NewNoopSender()
-			worker := NewSendEmailConfirmationWorker(sender)
+			noopSender := email.NewNoopSender()
+			confirmationSender := email.NewConfirmationSender(noopSender)
+			uc := usecase.NewSendEmailConfirmationUsecase(confirmationSender)
+			w := NewSendEmailConfirmationWorker(uc)
 
-			job := &river.Job[SendEmailConfirmationArgs]{
+			job := &river.Job[dispatcher.SendEmailConfirmationArgs]{
 				Args: tt.args,
 			}
 
-			err := worker.Work(context.Background(), job)
+			err := w.Work(context.Background(), job)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Work() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if !tt.wantErr {
-				// メールが送信されたことを確認（SendRawを使用しているためSentRawEmailsをチェック）
-				if len(sender.SentRawEmails) != 1 {
-					t.Errorf("SentRawEmails count = %v, want 1", len(sender.SentRawEmails))
+				// メールが送信されたことを確認
+				if len(noopSender.SentEmails) != 1 {
+					t.Errorf("SentEmails count = %v, want 1", len(noopSender.SentEmails))
 					return
 				}
 
-				sentEmail := sender.SentRawEmails[0]
+				sentEmail := noopSender.SentEmails[0]
 				if sentEmail.To != tt.args.Email {
 					t.Errorf("SentEmail.To = %v, want %v", sentEmail.To, tt.args.Email)
 				}
@@ -94,25 +98,5 @@ func TestSendEmailConfirmationWorker_Work(t *testing.T) {
 				}
 			}
 		})
-	}
-}
-
-func TestSendEmailConfirmationArgs_Kind(t *testing.T) {
-	args := SendEmailConfirmationArgs{}
-	if args.Kind() != "send_email_confirmation" {
-		t.Errorf("Kind() = %v, want send_email_confirmation", args.Kind())
-	}
-}
-
-func TestSendEmailConfirmationArgs_InsertOpts(t *testing.T) {
-	args := SendEmailConfirmationArgs{}
-	opts := args.InsertOpts()
-
-	if opts.Queue != river.QueueDefault {
-		t.Errorf("InsertOpts().Queue = %v, want %v", opts.Queue, river.QueueDefault)
-	}
-
-	if opts.MaxAttempts != 5 {
-		t.Errorf("InsertOpts().MaxAttempts = %v, want 5", opts.MaxAttempts)
 	}
 }

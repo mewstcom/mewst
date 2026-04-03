@@ -13,12 +13,12 @@ import (
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/riverqueue/river/rivertype"
 
-	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
 // Dependencies はWorkerクライアントの依存関係を保持する
 type Dependencies struct {
-	EmailSender email.Sender
+	SendEmailConfirmationUC *usecase.SendEmailConfirmationUsecase
 }
 
 // Client はジョブキューのクライアント
@@ -47,8 +47,7 @@ func NewClient(ctx context.Context, databaseURL string, deps Dependencies) (*Cli
 
 	// ワーカーの登録
 	workers := river.NewWorkers()
-	river.AddWorker(workers, NewSendEmailWorker(deps.EmailSender))
-	river.AddWorker(workers, NewSendEmailConfirmationWorker(deps.EmailSender))
+	river.AddWorker(workers, NewSendEmailConfirmationWorker(deps.SendEmailConfirmationUC))
 
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
 		Queues: map[string]river.QueueConfig{

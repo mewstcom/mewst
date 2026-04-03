@@ -1,19 +1,18 @@
 package sign_in
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	sign_in_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_in"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -25,17 +24,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx = templates.WithLocale(ctx, "ja")
 	ctx = templates.WithConfig(ctx, h.cfg)
 
-	// CSRFトークンを取得
-	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
-
 	// backパラメータを取得（ログイン後のリダイレクト先）
 	backURL := r.FormValue("back")
 
 	// フォームデータを取得
-	input := validator.SignInCreateValidatorInput{
-		Email:    r.FormValue("email"),
-		Password: r.FormValue("password"),
-	}
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
 	// Turnstileトークンを検証
 	turnstileToken := r.FormValue("cf-turnstile-response")
@@ -44,44 +38,26 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		slog.WarnContext(ctx, "Turnstile検証でエラーが発生", "error", err)
 	}
 	if !turnstileValid {
-		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, input.Email, backURL, formErrors)
+		ve := model.NewValidationError()
+		ve.AddGlobal(templates.T(ctx, "error_turnstile_failed"))
+		h.renderForm(w, r, ve, email, backURL)
 		return
 	}
 
-	// バリデーション（形式バリデーション + 状態バリデーション）
-	result := h.validator.Validate(ctx, input)
-	if result.Err != nil {
-		slog.ErrorContext(ctx, "ユーザー検索中にエラーが発生", "error", result.Err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, input.Email, backURL, result.FormErrors)
-		return
-	}
-
-	user := result.User
-
-	// IPアドレスとUser-Agentを取得
-	ipAddress := clientip.GetClientIP(r)
-	userAgent := r.UserAgent()
-
-	// セッションを作成
-	sessionResult, err := h.createSessionUC.Execute(ctx, usecase.CreateSessionInput{
-		UserID:    user.ID,
-		IPAddress: ipAddress,
-		UserAgent: userAgent,
+	// UseCase を実行
+	output, err := h.signInUC.Execute(ctx, usecase.CreateSignInInput{
+		Email:     email,
+		Password:  password,
+		IPAddress: clientip.GetClientIP(r),
+		UserAgent: r.UserAgent(),
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, "セッション作成中にエラーが発生", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		h.handleCreateError(w, r, err, email, backURL)
 		return
 	}
 
 	// セッションクッキーを設定
-	h.sessionMgr.SetSessionCookie(w, r, sessionResult.Token)
+	h.sessionMgr.SetSessionCookie(w, r, output.Token)
 
 	// フラッシュメッセージを設定
 	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_sign_in_success"))
@@ -95,12 +71,29 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
+// handleCreateError はログイン処理のエラーを処理する
+func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email string, backURL string) {
+	ctx := r.Context()
+
+	if ve := model.AsValidationError(err); ve != nil {
+		h.renderForm(w, r, ve, email, backURL)
+		return
+	}
+
+	slog.ErrorContext(ctx, "ログイン処理に失敗", "error", err)
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+}
+
 // renderForm はログインフォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, email, backURL string, formErrors *session.FormErrors) {
+func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, backURL string) {
+	ctx := r.Context()
+
+	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
+
 	data := sign_in_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       formErrors,
+		FormErrors:       ve,
 		Email:            email,
 		BackURL:          backURL,
 	}

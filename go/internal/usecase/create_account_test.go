@@ -8,6 +8,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // setupCreateAccountTest はテスト用のユースケースとリポジトリをセットアップする
@@ -29,7 +30,8 @@ func setupCreateAccountTest(t *testing.T) (
 	userProfileRepo := repository.NewUserProfileRepository(db).WithTx(tx)
 	actorRepo := repository.NewActorRepository(db).WithTx(tx)
 
-	uc := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo, userProfileRepo, actorRepo)
+	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
+	uc := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 
 	return uc, userRepo, profileRepo, userProfileRepo, actorRepo, ctx
 }
