@@ -46,14 +46,14 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	// トランザクションを使用するリポジトリを作成
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
 	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
+	sessionRepo := repository.NewSessionRepository(tx)
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
-	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
+	signInValidator := validator.NewSignInCreateValidator(userRepo)
+	signInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
-	signInValidator := validator.NewSignInCreateValidator(userRepo)
-	h := handler.NewHandler(cfg, sessionMgr, createSessionUC, turnstile, signInValidator)
+	h := handler.NewHandler(cfg, sessionMgr, signInUC, turnstile)
 
 	return h, cfg
 }

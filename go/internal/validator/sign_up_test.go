@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
@@ -19,19 +20,16 @@ func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, SignUpCreateValidatorInput{
+	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "",
 	})
 
-	if result.Err != nil {
-		t.Fatalf("予期しないエラー: %v", result.Err)
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("バリデーションエラーが発生するべきです")
 	}
 
-	if !result.FormErrors.HasErrors() {
-		t.Error("バリデーションエラーが発生するべきです")
-	}
-
-	emailErrors := result.FormErrors.Fields["email"]
+	emailErrors := ve.GetFieldErrors("email")
 	if len(emailErrors) == 0 {
 		t.Error("emailフィールドのエラーが発生するべきです")
 	}
@@ -56,19 +54,16 @@ func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 
 	for _, email := range invalidEmails {
 		t.Run(email, func(t *testing.T) {
-			result := validator.Validate(ctx, SignUpCreateValidatorInput{
+			_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 				Email: email,
 			})
 
-			if result.Err != nil {
-				t.Fatalf("予期しないエラー: %v", result.Err)
+			ve := model.AsValidationError(err)
+			if ve == nil {
+				t.Fatal("バリデーションエラーが発生するべきです")
 			}
 
-			if !result.FormErrors.HasErrors() {
-				t.Error("バリデーションエラーが発生するべきです")
-			}
-
-			emailErrors := result.FormErrors.Fields["email"]
+			emailErrors := ve.GetFieldErrors("email")
 			if len(emailErrors) == 0 {
 				t.Error("emailフィールドのエラーが発生するべきです")
 			}
@@ -95,16 +90,12 @@ func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 
 	for _, email := range validEmails {
 		t.Run(email, func(t *testing.T) {
-			result := validator.Validate(ctx, SignUpCreateValidatorInput{
+			_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 				Email: email,
 			})
 
-			if result.Err != nil {
-				t.Fatalf("予期しないエラー: %v", result.Err)
-			}
-
-			if result.FormErrors.HasErrors() {
-				t.Errorf("バリデーションエラーが発生すべきではありません: %v", result.FormErrors.Fields)
+			if err != nil {
+				t.Errorf("バリデーションエラーが発生すべきではありません: %v", err)
 			}
 		})
 	}
@@ -126,19 +117,16 @@ func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, SignUpCreateValidatorInput{
+	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "existing@example.com",
 	})
 
-	if result.Err != nil {
-		t.Fatalf("予期しないエラー: %v", result.Err)
+	ve := model.AsValidationError(err)
+	if ve == nil {
+		t.Fatal("バリデーションエラーが発生するべきです")
 	}
 
-	if !result.FormErrors.HasErrors() {
-		t.Error("バリデーションエラーが発生するべきです")
-	}
-
-	emailErrors := result.FormErrors.Fields["email"]
+	emailErrors := ve.GetFieldErrors("email")
 	if len(emailErrors) == 0 {
 		t.Error("emailフィールドのエラーが発生するべきです")
 	}
@@ -154,16 +142,12 @@ func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = templates.WithLocale(ctx, "ja")
 
-	result := validator.Validate(ctx, SignUpCreateValidatorInput{
+	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "signup-validator-not-taken@example.com",
 	})
 
-	if result.Err != nil {
-		t.Fatalf("予期しないエラー: %v", result.Err)
-	}
-
-	if result.FormErrors.HasErrors() {
-		t.Errorf("バリデーションエラーが発生すべきではありません: %v", result.FormErrors.Fields)
+	if err != nil {
+		t.Errorf("バリデーションエラーが発生すべきではありません: %v", err)
 	}
 }
 
@@ -184,16 +168,13 @@ func TestSignUpCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 	ctx = templates.WithLocale(ctx, "ja")
 
 	// 大文字で同じメールアドレスを試行
-	result := validator.Validate(ctx, SignUpCreateValidatorInput{
+	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "EXISTING@EXAMPLE.COM",
 	})
 
-	if result.Err != nil {
-		t.Fatalf("予期しないエラー: %v", result.Err)
-	}
-
 	// メールアドレスの重複は大文字小文字を区別しないので、エラーになるべき
-	if !result.FormErrors.HasErrors() {
+	ve := model.AsValidationError(err)
+	if ve == nil {
 		t.Error("大文字小文字を区別しない重複チェックが必要です")
 	}
 }

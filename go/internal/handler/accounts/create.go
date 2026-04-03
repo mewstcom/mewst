@@ -9,13 +9,13 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	accounts_page "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -25,8 +25,6 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	ctx = templates.WithLocale(ctx, "ja")
 	ctx = templates.WithConfig(ctx, h.cfg)
-
-	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	// セッションからemail_confirmation_idを取得
 	emailConfirmation, err := h.getVerifiedEmailConfirmation(r)
@@ -41,19 +39,17 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// フォームデータを取得
-	input := validator.AccountsCreateValidatorInput{
-		Email:    emailConfirmation.Email,
-		Atname:   r.FormValue("atname"),
-		Password: r.FormValue("password"),
-	}
+	email := emailConfirmation.Email
+	atname := r.FormValue("atname")
+	password := r.FormValue("password")
 
 	// IPアドレスベースのレート制限
 	ipAddress := clientip.GetClientIP(r)
 	if err := h.checkRateLimit(ctx, ipAddress); err != nil {
 		if errors.Is(err, ratelimit.ErrRateLimitExceeded) {
-			formErrors := session.NewFormErrors()
-			formErrors.AddGlobalError(templates.T(ctx, "error_rate_limit_exceeded"))
-			h.renderForm(w, ctx, csrfToken, input.Email, input.Atname, formErrors)
+			ve := model.NewValidationError()
+			ve.AddGlobal(templates.T(ctx, "error_rate_limit_exceeded"))
+			h.renderForm(w, r, ve, email, atname)
 			return
 		}
 		slog.ErrorContext(ctx, "レート制限チェックでエラー", "error", err)
@@ -68,35 +64,22 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		slog.WarnContext(ctx, "Turnstile検証でエラーが発生", "error", err)
 	}
 	if !turnstileValid {
-		formErrors := session.NewFormErrors()
-		formErrors.AddGlobalError(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, ctx, csrfToken, input.Email, input.Atname, formErrors)
+		ve := model.NewValidationError()
+		ve.AddGlobal(templates.T(ctx, "error_turnstile_failed"))
+		h.renderForm(w, r, ve, email, atname)
 		return
 	}
 
-	// フォームバリデーション
-	result := h.validator.Validate(ctx, input)
-	if result.Err != nil {
-		slog.ErrorContext(ctx, "バリデーション中にエラー", "error", result.Err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, input.Email, input.Atname, result.FormErrors)
-		return
-	}
-
-	// アカウントを作成
+	// UseCase を実行（バリデーション + アカウント作成）
 	accountResult, err := h.createAccountUC.Execute(ctx, usecase.CreateAccountInput{
-		Email:    input.Email,
-		Atname:   input.Atname,
-		Password: input.Password,
+		Email:    email,
+		Atname:   atname,
+		Password: password,
 		Locale:   "ja",
 		TimeZone: "Asia/Tokyo",
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, "アカウントの作成に失敗", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		h.handleCreateError(w, r, err, email, atname)
 		return
 	}
 
@@ -134,12 +117,28 @@ func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	})
 }
 
+// handleCreateError はアカウント作成処理のエラーを処理する
+func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email, atname string) {
+	ctx := r.Context()
+
+	if ve := model.AsValidationError(err); ve != nil {
+		h.renderForm(w, r, ve, email, atname)
+		return
+	}
+
+	slog.ErrorContext(ctx, "アカウント作成に失敗", "error", err)
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+}
+
 // renderForm はアカウント作成フォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, email, atname string, formErrors *session.FormErrors) {
+func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, atname string) {
+	ctx := r.Context()
+	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
+
 	data := accounts_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       formErrors,
+		FormErrors:       ve,
 		Email:            email,
 		Atname:           atname,
 	}

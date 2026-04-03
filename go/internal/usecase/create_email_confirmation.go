@@ -7,33 +7,25 @@ import (
 	"log/slog"
 	"math/big"
 
-	"github.com/riverqueue/river"
-	"github.com/riverqueue/river/rivertype"
-
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/worker"
 )
-
-// JobInserter はジョブをキューに追加するインターフェース
-type JobInserter interface {
-	Insert(ctx context.Context, args river.JobArgs) (*rivertype.JobInsertResult, error)
-}
 
 // CreateEmailConfirmationUsecase はメール確認作成のユースケース
 type CreateEmailConfirmationUsecase struct {
 	emailConfirmRepo *repository.EmailConfirmationRepository
-	inserter         JobInserter
+	dispatcher       *dispatcher.Dispatcher
 }
 
 // NewCreateEmailConfirmationUsecase はCreateEmailConfirmationUsecaseを生成する
 func NewCreateEmailConfirmationUsecase(
 	emailConfirmRepo *repository.EmailConfirmationRepository,
-	inserter JobInserter,
+	d *dispatcher.Dispatcher,
 ) *CreateEmailConfirmationUsecase {
 	return &CreateEmailConfirmationUsecase{
 		emailConfirmRepo: emailConfirmRepo,
-		inserter:         inserter,
+		dispatcher:       d,
 	}
 }
 
@@ -68,7 +60,7 @@ func (uc *CreateEmailConfirmationUsecase) Execute(ctx context.Context, input Cre
 	}
 
 	// メール送信ジョブをエンキュー（テンプレートのレンダリングはWorkerで行う）
-	_, err = uc.inserter.Insert(ctx, worker.SendEmailConfirmationArgs{
+	err = uc.dispatcher.EnqueueEmailConfirmation(ctx, dispatcher.SendEmailConfirmationArgs{
 		Email:  input.Email,
 		Code:   code,
 		Locale: input.Locale,

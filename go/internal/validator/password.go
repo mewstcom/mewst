@@ -3,7 +3,7 @@ package validator
 import (
 	"context"
 
-	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -20,31 +20,30 @@ type PasswordUpdateValidatorInput struct {
 	Password string
 }
 
-// PasswordUpdateValidatorResult はバリデーションの結果
-type PasswordUpdateValidatorResult struct {
-	FormErrors *session.FormErrors
-}
+// PasswordUpdateValidatorOutput はバリデーション成功時の出力
+type PasswordUpdateValidatorOutput struct{}
 
 // Validate は入力値の形式をチェックする（DBアクセスなし）
-func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) *PasswordUpdateValidatorResult {
-	formErrors := session.NewFormErrors()
+func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) (*PasswordUpdateValidatorOutput, error) {
+	ve := model.NewValidationError()
 
 	// パスワードの必須チェック
 	if input.Password == "" {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_required"))
-		return &PasswordUpdateValidatorResult{FormErrors: formErrors}
+		ve.AddField("password", templates.T(ctx, "error_required"))
+		return nil, ve
 	}
 
 	// 最小文字数チェック（8文字以上）
 	if len([]rune(input.Password)) < 8 {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_password_too_short"))
-		return &PasswordUpdateValidatorResult{FormErrors: formErrors}
+		ve.AddField("password", templates.T(ctx, "error_password_too_short"))
+		return nil, ve
 	}
 
 	// 最大バイト数チェック（72バイト以下、bcrypt制限）
 	if len(input.Password) > 72 {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_password_too_long"))
+		ve.AddField("password", templates.T(ctx, "error_password_too_long"))
+		return nil, ve
 	}
 
-	return &PasswordUpdateValidatorResult{FormErrors: formErrors}
+	return &PasswordUpdateValidatorOutput{}, nil
 }

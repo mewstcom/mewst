@@ -9,6 +9,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // ProfileOwnerTypeUser はプロフィールの所有者タイプ（ユーザー）
@@ -19,27 +20,30 @@ const DefaultAvatarKind = "default"
 
 // CreateAccountUsecase はアカウント作成のユースケース
 type CreateAccountUsecase struct {
-	db              *sql.DB
-	userRepo        *repository.UserRepository
-	profileRepo     *repository.ProfileRepository
-	userProfileRepo *repository.UserProfileRepository
-	actorRepo       *repository.ActorRepository
+	db                *sql.DB
+	accountsValidator *validator.AccountsCreateValidator
+	userRepo          *repository.UserRepository
+	profileRepo       *repository.ProfileRepository
+	userProfileRepo   *repository.UserProfileRepository
+	actorRepo         *repository.ActorRepository
 }
 
 // NewCreateAccountUsecase はCreateAccountUsecaseを生成する
 func NewCreateAccountUsecase(
 	db *sql.DB,
+	accountsValidator *validator.AccountsCreateValidator,
 	userRepo *repository.UserRepository,
 	profileRepo *repository.ProfileRepository,
 	userProfileRepo *repository.UserProfileRepository,
 	actorRepo *repository.ActorRepository,
 ) *CreateAccountUsecase {
 	return &CreateAccountUsecase{
-		db:              db,
-		userRepo:        userRepo,
-		profileRepo:     profileRepo,
-		userProfileRepo: userProfileRepo,
-		actorRepo:       actorRepo,
+		db:                db,
+		accountsValidator: accountsValidator,
+		userRepo:          userRepo,
+		profileRepo:       profileRepo,
+		userProfileRepo:   userProfileRepo,
+		actorRepo:         actorRepo,
 	}
 }
 
@@ -60,6 +64,17 @@ type CreateAccountResult struct {
 // Execute はアカウントを作成する
 // Profile, User, UserProfile, Actor を一括で作成し、トランザクション管理を行う
 func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountResult, error) {
+	// 1. バリデーション
+	_, err := uc.accountsValidator.Validate(ctx, validator.AccountsCreateValidatorInput{
+		Email:    input.Email,
+		Atname:   input.Atname,
+		Password: input.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. トランザクションを開始
 	tx, err := uc.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
@@ -74,7 +89,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 
 	currentTime := time.Now()
 
-	// 1. Profile を作成
+	// 3. Profile を作成
 	profile, err := profileRepo.Create(ctx, repository.CreateProfileParams{
 		OwnerType:     ProfileOwnerTypeUser,
 		Atname:        input.Atname,
@@ -90,13 +105,13 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("プロフィールの作成に失敗: %w", err)
 	}
 
-	// 2. パスワードをハッシュ化
+	// 4. パスワードをハッシュ化
 	passwordDigest, err := auth.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
 	}
 
-	// 3. User を作成
+	// 5. User を作成
 	user, err := userRepo.Create(ctx, repository.CreateUserParams{
 		Email:          input.Email,
 		PasswordDigest: passwordDigest,
@@ -107,7 +122,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("ユーザーの作成に失敗: %w", err)
 	}
 
-	// 4. UserProfile を作成
+	// 6. UserProfile を作成
 	_, err = userProfileRepo.Create(ctx, repository.CreateUserProfileParams{
 		UserID:    user.ID,
 		ProfileID: profile.ID,
@@ -116,7 +131,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("ユーザープロフィール関連付けの作成に失敗: %w", err)
 	}
 
-	// 5. Actor を作成
+	// 7. Actor を作成
 	actor, err := actorRepo.Create(ctx, repository.CreateActorParams{
 		UserID:    user.ID,
 		ProfileID: profile.ID,

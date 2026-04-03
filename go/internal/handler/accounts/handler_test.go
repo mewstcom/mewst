@@ -56,14 +56,14 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	rateLimitRepo := repository.NewRateLimitRepository(db).WithTx(tx)
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
-	createAccountUC := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo, userProfileRepo, actorRepo)
+	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
+	createAccountUC := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
-	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstile, rateLimiter, accountsValidator)
+	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstile, rateLimiter)
 
 	return h, cfg
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 func TestUpdatePasswordUsecase_Execute(t *testing.T) {
@@ -25,7 +26,8 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 
 		// Usecaseを作成
 		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		uc := NewUpdatePasswordUsecase(userRepo)
+		passwordValidator := validator.NewPasswordUpdateValidator()
+		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
 		// パスワードを更新
 		newPassword := "newPassword123"
@@ -62,7 +64,8 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 
 		// Usecaseを作成
 		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		uc := NewUpdatePasswordUsecase(userRepo)
+		passwordValidator := validator.NewPasswordUpdateValidator()
+		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
 		// パスワードを更新
 		newPassword := "newPassword456"
@@ -101,7 +104,8 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 
 		// Usecaseを作成
 		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		uc := NewUpdatePasswordUsecase(userRepo)
+		passwordValidator := validator.NewPasswordUpdateValidator()
+		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
 		// 日本語を含むパスワードで更新
 		newPassword := "パスワード123abc"

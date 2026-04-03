@@ -15,6 +15,7 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/email"
 	"github.com/mewstcom/mewst/go/internal/handler"
 	"github.com/mewstcom/mewst/go/internal/handler/accounts"
@@ -79,9 +80,13 @@ func main() {
 		slog.Warn("Resend APIキーまたは送信元メールアドレスが設定されていないため、メール送信は無効です")
 	}
 
+	// メール確認コード送信の初期化
+	confirmationSender := email.NewConfirmationSender(emailSender)
+	sendEmailConfirmationUC := usecase.NewSendEmailConfirmationUsecase(confirmationSender)
+
 	// Workerの初期化
 	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), worker.Dependencies{
-		EmailSender: emailSender,
+		SendEmailConfirmationUC: sendEmailConfirmationUC,
 	})
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
@@ -98,17 +103,8 @@ func main() {
 	// レートリミッターの初期化
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
-	// ユースケースの初期化
-	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
-	createEmailConfirmationUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmationRepo, workerClient)
-	getActiveEmailConfirmationUC := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmationRepo)
-	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmationRepo)
-	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
-	markEmailAsConfirmedUC := usecase.NewMarkEmailAsConfirmedUsecase(emailConfirmationRepo)
-	createAccountUC := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo, userProfileRepo, actorRepo)
-
-	// Turnstileクライアントの初期化
-	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
+	// Dispatcherの初期化
+	jobDispatcher := dispatcher.NewDispatcher(workerClient)
 
 	// バリデーターの初期化
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
@@ -118,15 +114,29 @@ func main() {
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
 	passwordResetCreateValidator := validator.NewPasswordResetCreateValidator()
 
+	// ユースケースの初期化
+	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
+	createSignInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
+	createSignUpUC := usecase.NewCreateSignUpUsecase(signUpValidator, emailConfirmationRepo, jobDispatcher)
+	createPasswordResetUC := usecase.NewCreatePasswordResetUsecase(passwordResetCreateValidator, emailConfirmationRepo, jobDispatcher)
+	verifyEmailConfirmationUC := usecase.NewVerifyEmailConfirmationUsecase(emailConfirmationValidator, emailConfirmationRepo)
+	getActiveEmailConfirmationUC := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmationRepo)
+	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmationRepo)
+	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
+	createAccountUC := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+
+	// Turnstileクライアントの初期化
+	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
+
 	// ハンドラーの初期化
 	manifestHandler := manifest.NewHandler(cfg)
-	signInHandler := sign_in.NewHandler(cfg, sessionMgr, createSessionUC, turnstileClient, signInValidator)
-	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, createEmailConfirmationUC, turnstileClient, rateLimiter, signUpValidator)
+	signInHandler := sign_in.NewHandler(cfg, sessionMgr, createSignInUC, turnstileClient)
+	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, createSignUpUC, turnstileClient, rateLimiter)
 	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
-	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createEmailConfirmationUC, turnstileClient, passwordResetCreateValidator)
-	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, markEmailAsConfirmedUC, emailConfirmationValidator)
-	passwordHandler := password.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC, passwordUpdateValidator)
-	accountsHandler := accounts.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter, accountsValidator)
+	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createPasswordResetUC, turnstileClient)
+	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
+	passwordHandler := password.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
+	accountsHandler := accounts.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)

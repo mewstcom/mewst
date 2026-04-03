@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/session"
 )
 
 // CreateSessionUsecase はセッション作成のユースケース
@@ -48,7 +48,7 @@ func (uc *CreateSessionUsecase) Execute(ctx context.Context, input CreateSession
 	}
 
 	// セッショントークンを生成
-	token, err := session.GenerateToken()
+	token, err := auth.GenerateSecureToken()
 	if err != nil {
 		return nil, fmt.Errorf("セッショントークンの生成に失敗: %w", err)
 	}

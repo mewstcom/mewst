@@ -8,7 +8,7 @@ package password_reset
 import (
 	"github.com/a-h/templ"
 	templruntime "github.com/a-h/templ/runtime"
-	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
@@ -17,7 +17,7 @@ import (
 type NewPageData struct {
 	CSRFToken        string
 	TurnstileSiteKey string
-	FormErrors       *session.FormErrors
+	FormErrors       *model.ValidationError
 	Email            string
 }
 
@@ -115,7 +115,7 @@ func New(data NewPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
+		if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " aria-invalid=\"true\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -143,8 +143,8 @@ func New(data NewPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.FormErrors != nil && data.FormErrors.Fields["email"] != nil {
-			for _, errorMsg := range data.FormErrors.Fields["email"] {
+		if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
+			for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<p class=\"text-sm text-(--error)\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

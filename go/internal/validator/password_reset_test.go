@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -103,18 +104,19 @@ func TestPasswordResetCreateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = templates.WithLocale(ctx, "ja")
 
-			result := v.Validate(ctx, tt.input)
+			_, err := v.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
-				if !result.FormErrors.HasErrors() {
+				ve := model.AsValidationError(err)
+				if ve == nil {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
-				if tt.expectedField != "" && !result.FormErrors.HasFieldError(tt.expectedField) {
+				if tt.expectedField != "" && ve != nil && !ve.HasFieldError(tt.expectedField) {
 					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
-				if result.FormErrors.HasErrors() {
-					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", result.FormErrors)
+				if err != nil {
+					t.Errorf("エラーが期待されなかったが、エラーがあります: %v", err)
 				}
 			}
 		})
@@ -133,13 +135,14 @@ func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordResetCreateValidatorInput{Email: ""}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if !result.FormErrors.HasFieldError("email") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := result.FormErrors.GetFieldErrors("email")
+		emailErrors := ve.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}
@@ -154,13 +157,14 @@ func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordResetCreateValidatorInput{Email: "invalid-email"}
-		result := v.Validate(ctx, input)
+		_, err := v.Validate(ctx, input)
 
-		if !result.FormErrors.HasFieldError("email") {
+		ve := model.AsValidationError(err)
+		if ve == nil || !ve.HasFieldError("email") {
 			t.Fatal("emailフィールドにエラーがありません")
 		}
 
-		emailErrors := result.FormErrors.GetFieldErrors("email")
+		emailErrors := ve.GetFieldErrors("email")
 		if len(emailErrors) == 0 {
 			t.Fatal("emailエラーが空です")
 		}

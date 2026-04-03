@@ -9,7 +9,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
@@ -29,52 +28,51 @@ type SignInCreateValidatorInput struct {
 	Password string
 }
 
-// SignInCreateValidatorResult はバリデーションの結果
-type SignInCreateValidatorResult struct {
-	User       *model.User
-	FormErrors *session.FormErrors
-	Err        error
+// SignInCreateValidatorOutput はバリデーション成功時の出力
+type SignInCreateValidatorOutput struct {
+	User *model.User
 }
 
 // Validate はバリデーションを行う
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) *SignInCreateValidatorResult {
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidatorOutput, error) {
 	// 1. 形式バリデーション
-	formErrors := session.NewFormErrors()
+	ve := model.NewValidationError()
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		formErrors.AddFieldError("email", templates.T(ctx, "error_required"))
+		ve.AddField("email", templates.T(ctx, "error_required"))
 	} else {
 		// メールアドレス形式チェック
 		if _, err := mail.ParseAddress(input.Email); err != nil {
-			formErrors.AddFieldError("email", templates.T(ctx, "error_invalid_email"))
+			ve.AddField("email", templates.T(ctx, "error_invalid_email"))
 		}
 	}
 
 	// パスワードの必須チェック
 	if input.Password == "" {
-		formErrors.AddFieldError("password", templates.T(ctx, "error_required"))
+		ve.AddField("password", templates.T(ctx, "error_required"))
 	}
 
-	if formErrors.HasErrors() {
-		return &SignInCreateValidatorResult{FormErrors: formErrors}
+	if ve.HasErrors() {
+		return nil, ve
 	}
 
 	// 2. 状態バリデーション（DB検証）
 	user, err := v.userRepo.GetByEmailForSignIn(ctx, input.Email)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-			return &SignInCreateValidatorResult{FormErrors: formErrors}
+			// セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
+			ve.AddGlobal(templates.T(ctx, "error_invalid_credentials"))
+			return nil, ve
 		}
-		return &SignInCreateValidatorResult{Err: err}
+		return nil, err
 	}
 
 	// パスワードを検証
 	if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
-		formErrors.AddGlobalError(templates.T(ctx, "error_invalid_credentials"))
-		return &SignInCreateValidatorResult{FormErrors: formErrors}
+		ve.AddGlobal(templates.T(ctx, "error_invalid_credentials"))
+		return nil, ve
 	}
 
-	return &SignInCreateValidatorResult{User: user}
+	return &SignInCreateValidatorOutput{User: user}, nil
 }

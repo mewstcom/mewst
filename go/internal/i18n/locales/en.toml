@@ -117,6 +117,10 @@ other = "Confirmation code sent. Please check your email."
 # Email confirmation
 # ============================================
 
+[email_confirmation_subject]
+description = "Email confirmation code email subject"
+other = "[Mewst] Confirmation code"
+
 [email_confirmation_title]
 description = "Email confirmation page title"
 other = "Enter confirmation code"

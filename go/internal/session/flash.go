@@ -26,75 +26,6 @@ type Flash struct {
 // flashContextKey はコンテキストに保存するフラッシュメッセージのキー
 type flashContextKey struct{}
 
-// formErrorsContextKey はコンテキストに保存するフォームエラーのキー
-type formErrorsContextKey struct{}
-
-// FormErrors はフォームバリデーションエラーを表す
-type FormErrors struct {
-	Global []string            // フィールド横断のグローバルエラー
-	Fields map[string][]string // フィールドごとのエラー
-}
-
-// NewFormErrors は新しいFormErrorsを作成する
-func NewFormErrors() *FormErrors {
-	return &FormErrors{
-		Global: []string{},
-		Fields: make(map[string][]string),
-	}
-}
-
-// AddGlobalError はグローバルエラーを追加する
-func (fe *FormErrors) AddGlobalError(message string) {
-	fe.Global = append(fe.Global, message)
-}
-
-// AddFieldError はフィールドエラーを追加する
-func (fe *FormErrors) AddFieldError(field, message string) {
-	if fe.Fields == nil {
-		fe.Fields = make(map[string][]string)
-	}
-	fe.Fields[field] = append(fe.Fields[field], message)
-}
-
-// HasErrors はエラーが存在するかを返す
-func (fe *FormErrors) HasErrors() bool {
-	return len(fe.Global) > 0 || len(fe.Fields) > 0
-}
-
-// HasFieldError は特定のフィールドにエラーがあるかを返す
-func (fe *FormErrors) HasFieldError(field string) bool {
-	_, exists := fe.Fields[field]
-	return exists
-}
-
-// GetFieldErrors は特定のフィールドのエラーを返す
-func (fe *FormErrors) GetFieldErrors(field string) []string {
-	if fe.Fields == nil {
-		return nil
-	}
-	return fe.Fields[field]
-}
-
-// FieldError はフィールドエラーを表す構造体（テンプレート用）
-type FieldError struct {
-	Field   string
-	Message string
-}
-
-// FieldErrors はフィールドエラーを列挙可能な形式で取得する
-func (fe *FormErrors) FieldErrors() []FieldError {
-	var errors []FieldError
-	for field, messages := range fe.Fields {
-		for _, message := range messages {
-			errors = append(errors, FieldError{
-				Field:   field,
-				Message: message,
-			})
-		}
-	}
-	return errors
-}
-
 // SetFlashToContext はコンテキストにフラッシュメッセージを設定する
 func SetFlashToContext(ctx context.Context, flash *Flash) context.Context {
 	return context.WithValue(ctx, flashContextKey{}, flash)
@@ -107,20 +38,6 @@ func GetFlashFromContext(ctx context.Context) *Flash {
 		return nil
 	}
 	return flash
-}
-
-// SetFormErrorsToContext はコンテキストにフォームエラーを設定する
-func SetFormErrorsToContext(ctx context.Context, errors *FormErrors) context.Context {
-	return context.WithValue(ctx, formErrorsContextKey{}, errors)
-}
-
-// GetFormErrorsFromContext はコンテキストからフォームエラーを取得する
-func GetFormErrorsFromContext(ctx context.Context) *FormErrors {
-	errors, ok := ctx.Value(formErrorsContextKey{}).(*FormErrors)
-	if !ok {
-		return nil
-	}
-	return errors
 }
 
 // FlashCookieName はフラッシュメッセージ用クッキー名

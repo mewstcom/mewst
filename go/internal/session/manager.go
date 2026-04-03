@@ -3,8 +3,6 @@ package session
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"net/http"
 
 	"github.com/mewstcom/mewst/go/internal/config"
@@ -45,16 +43,6 @@ func NewManager(
 		userRepo:    userRepo,
 		cfg:         cfg,
 	}
-}
-
-// GenerateToken はRailsのhas_secure_token互換のトークンを生成する
-// 24バイトのランダムデータをBase64 URL-safeエンコードした32文字の文字列を返す
-func GenerateToken() (string, error) {
-	b := make([]byte, 24)
-	if _, err := rand.Read(b); err != nil {
-		return "", err
-	}
-	return base64.URLEncoding.EncodeToString(b), nil
 }
 
 // GetSessionToken はクッキーからセッショントークンを取得する

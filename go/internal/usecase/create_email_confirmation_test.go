@@ -7,11 +7,11 @@ import (
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/rivertype"
 
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/worker"
 )
 
 // mockInserter はテスト用のモック inserter
@@ -35,9 +35,10 @@ func TestCreateEmailConfirmationUsecase_Execute(t *testing.T) {
 	// リポジトリとモックinserterを作成
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
 	inserter := &mockInserter{}
+	d := dispatcher.NewDispatcher(inserter)
 
 	// ユースケースを実行
-	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, d)
 	result, err := uc.Execute(ctx, usecase.CreateEmailConfirmationInput{
 		Email:  "test@example.com",
 		Event:  model.EmailConfirmationEventPasswordReset,
@@ -85,7 +86,7 @@ func TestCreateEmailConfirmationUsecase_Execute(t *testing.T) {
 	}
 
 	// SendEmailConfirmationArgs の検証
-	emailArgs, ok := inserter.args.(worker.SendEmailConfirmationArgs)
+	emailArgs, ok := inserter.args.(dispatcher.SendEmailConfirmationArgs)
 	if !ok {
 		t.Fatalf("args の型が SendEmailConfirmationArgs ではありません: %T", inserter.args)
 	}
@@ -108,8 +109,9 @@ func TestCreateEmailConfirmationUsecase_Execute_EnglishLocale(t *testing.T) {
 
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
 	inserter := &mockInserter{}
+	d := dispatcher.NewDispatcher(inserter)
 
-	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, d)
 	result, err := uc.Execute(ctx, usecase.CreateEmailConfirmationInput{
 		Email:  "test@example.com",
 		Event:  model.EmailConfirmationEventPasswordReset,
@@ -130,7 +132,7 @@ func TestCreateEmailConfirmationUsecase_Execute_EnglishLocale(t *testing.T) {
 	}
 
 	// 英語ロケールでエンキューされたことを確認
-	emailArgs, ok := inserter.args.(worker.SendEmailConfirmationArgs)
+	emailArgs, ok := inserter.args.(dispatcher.SendEmailConfirmationArgs)
 	if !ok {
 		t.Fatalf("args の型が SendEmailConfirmationArgs ではありません: %T", inserter.args)
 	}
@@ -147,8 +149,9 @@ func TestCreateEmailConfirmationUsecase_Execute_CodeUniqueness(t *testing.T) {
 
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
 	inserter := &mockInserter{}
+	d := dispatcher.NewDispatcher(inserter)
 
-	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, d)
 
 	// 複数のメール確認を作成してコードが一意であることを確認
 	codes := make(map[string]bool)
@@ -179,8 +182,9 @@ func TestCreateEmailConfirmationUsecase_Execute_RecordPersistence(t *testing.T) 
 
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
 	inserter := &mockInserter{}
+	d := dispatcher.NewDispatcher(inserter)
 
-	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, d)
 	result, err := uc.Execute(ctx, usecase.CreateEmailConfirmationInput{
 		Email:  "persist@example.com",
 		Event:  model.EmailConfirmationEventPasswordReset,
@@ -214,8 +218,9 @@ func TestCreateEmailConfirmationUsecase_Execute_SignUpEvent(t *testing.T) {
 
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
 	inserter := &mockInserter{}
+	d := dispatcher.NewDispatcher(inserter)
 
-	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	uc := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, d)
 	result, err := uc.Execute(ctx, usecase.CreateEmailConfirmationInput{
 		Email:  "signup@example.com",
 		Event:  model.EmailConfirmationEventSignUp,

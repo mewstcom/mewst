@@ -13,6 +13,7 @@ import (
 	"github.com/riverqueue/river/rivertype"
 
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	handler "github.com/mewstcom/mewst/go/internal/handler/password_reset"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/repository"
@@ -61,11 +62,12 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	inserter := &mockInserter{}
-	createEmailConfirmUC := usecase.NewCreateEmailConfirmationUsecase(emailConfirmRepo, inserter)
+	d := dispatcher.NewDispatcher(inserter)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
 	passwordResetValidator := validator.NewPasswordResetCreateValidator()
-	h := handler.NewHandler(cfg, sessionMgr, createEmailConfirmUC, turnstile, passwordResetValidator)
+	createPasswordResetUC := usecase.NewCreatePasswordResetUsecase(passwordResetValidator, emailConfirmRepo, d)
+	h := handler.NewHandler(cfg, sessionMgr, createPasswordResetUC, turnstile)
 
 	return h, cfg
 }

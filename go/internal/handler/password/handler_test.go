@@ -42,10 +42,10 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
-	updatePasswordUC := usecase.NewUpdatePasswordUsecase(userRepo)
-
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
-	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC, passwordUpdateValidator)
+	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
+
+	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 
 	return h, cfg
 }

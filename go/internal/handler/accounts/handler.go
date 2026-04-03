@@ -7,7 +7,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/turnstile"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // Handler はアカウント作成機能のHTTPハンドラー
@@ -19,7 +18,6 @@ type Handler struct {
 	createSessionUC                 *usecase.CreateSessionUsecase
 	turnstile                       turnstile.Verifier
 	rateLimiter                     *ratelimit.Limiter
-	validator                       *validator.AccountsCreateValidator
 }
 
 // NewHandler はHandlerを生成する
@@ -31,7 +29,6 @@ func NewHandler(
 	createSessionUC *usecase.CreateSessionUsecase,
 	turnstile turnstile.Verifier,
 	rateLimiter *ratelimit.Limiter,
-	accountsValidator *validator.AccountsCreateValidator,
 ) *Handler {
 	return &Handler{
 		cfg:                             cfg,
@@ -41,6 +38,5 @@ func NewHandler(
 		createSessionUC:                 createSessionUC,
 		turnstile:                       turnstile,
 		rateLimiter:                     rateLimiter,
-		validator:                       accountsValidator,
 	}
 }

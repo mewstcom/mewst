@@ -1,7 +1,6 @@
 package email_confirmation
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 
@@ -14,7 +13,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/usecase"
-	"github.com/mewstcom/mewst/go/internal/validator"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
@@ -26,13 +24,9 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx = templates.WithLocale(ctx, "ja")
 	ctx = templates.WithConfig(ctx, h.cfg)
 
-	// CSRFトークンを取得
-	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
-
 	// クッキーからemail_confirmation_idを取得
 	emailConfirmationID := h.sessionMgr.GetEmailConfirmationID(r)
 	if emailConfirmationID == "" {
-		// IDがない場合はルートにリダイレクト
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -40,48 +34,43 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// UUIDをパース
 	id, err := uuid.Parse(emailConfirmationID)
 	if err != nil {
-		// 無効なIDの場合はルートにリダイレクト
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
 	// フォームデータを取得
-	input := validator.EmailConfirmationCreateValidatorInput{
+	code := r.FormValue("code")
+
+	// UseCase を実行（バリデーション + 確認成功マーク）
+	ucResult, err := h.verifyEmailConfirmationUC.Execute(ctx, usecase.VerifyEmailConfirmationInput{
 		ID:   id,
-		Code: r.FormValue("code"),
-	}
-
-	// バリデーション（形式バリデーション + 状態バリデーション）
-	result := h.validator.Validate(ctx, input)
-	if result.Err != nil {
-		slog.ErrorContext(ctx, "メール確認レコードの取得に失敗", "error", result.Err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if result.FormErrors != nil && result.FormErrors.HasErrors() {
-		h.renderForm(w, ctx, csrfToken, input.Code, result.FormErrors)
-		return
-	}
-
-	emailConfirmation := result.EmailConfirmation
-
-	// UseCaseで確認を成功としてマーク
-	_, err = h.markEmailAsConfirmedUC.Execute(ctx, usecase.MarkEmailAsConfirmedInput{
-		EmailConfirmationID: id,
+		Code: code,
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, "メール確認の成功マークに失敗", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		h.handleCreateError(w, r, err, code)
 		return
 	}
 
 	// イベントに応じたリダイレクト先を決定
-	redirectPath := h.getRedirectPath(emailConfirmation.Event)
+	redirectPath := h.getRedirectPath(ucResult.EmailConfirmation.Event)
 
 	// フラッシュメッセージを設定
 	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_email_confirmed"))
 
 	http.Redirect(w, r, redirectPath, http.StatusFound)
+}
+
+// handleCreateError はメール確認処理のエラーを処理する
+func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, code string) {
+	ctx := r.Context()
+
+	if ve := model.AsValidationError(err); ve != nil {
+		h.renderForm(w, r, ve, code)
+		return
+	}
+
+	slog.ErrorContext(ctx, "メール確認処理に失敗", "error", err)
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
 // getRedirectPath はイベントに応じたリダイレクト先を返す
@@ -99,10 +88,13 @@ func (h *Handler) getRedirectPath(event model.EmailConfirmationEvent) string {
 }
 
 // renderForm は確認コード入力フォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, ctx context.Context, csrfToken, code string, formErrors *session.FormErrors) {
+func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, code string) {
+	ctx := r.Context()
+	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
+
 	data := email_confirmation_page.NewPageData{
 		CSRFToken:  csrfToken,
-		FormErrors: formErrors,
+		FormErrors: ve,
 		Code:       code,
 		Flash:      nil,
 	}

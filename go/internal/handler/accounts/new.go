@@ -9,7 +9,6 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	accounts_page "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
@@ -41,7 +40,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	data := accounts_page.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
-		FormErrors:       session.NewFormErrors(),
+		FormErrors:       nil,
 		Email:            emailConfirmation.Email,
 		Atname:           "",
 	}
