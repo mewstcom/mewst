@@ -521,6 +521,22 @@ var ReservedAtnames = []string{
   - **想定ファイル数**: 約 2 ファイル（実装 1 + テスト 1）
   - **想定行数**: 約 50 行（実装 10 行 + テスト 40 行）
 
+### フェーズ 7: フラッシュメッセージの toast 化
+
+- [x] **7-1**: [Go] フラッシュメッセージコンポーネントを Wikino 方式の toast に更新
+  - `internal/templates/components/flash.templ` を更新
+    - `FlashMessage` コンポーネント: DaisyUI の `alert` スタイルから basecoat-css の `toaster > toast > toast-content` パターンに変更
+    - タイプ別アイコン表示（`success`, `error`, `warning`, `info`）を追加
+    - 閉じるボタン（`data-toast-action`）を追加
+    - アクセシビリティ属性（`role`, `aria-atomic`, `aria-hidden`）を追加
+    - `Flash` コンポーネント: コンテナの ID とクラスを `id="toaster" class="toaster"` に変更
+  - `flash_dismiss` 翻訳キーを `ja.toml` / `en.toml` に追加
+  - `make templ-generate` でコード再生成
+  - 既存の `FlashMessage` 呼び出し箇所（`email_confirmation/new.templ`, `password/edit.templ`）は変更不要（引数は同じ）
+  - **参考**: Wikino のフラッシュ実装 `/wikino/go/internal/templates/components/flash.templ`
+  - **想定ファイル数**: 約 3 ファイル（flash.templ + ja.toml + en.toml）
+  - **想定行数**: 約 50 行
+
 ### 実装しない機能（スコープ外）
 
 以下の機能は今回の実装では**実装しません**：
