@@ -2,7 +2,6 @@ package password
 
 import (
 	"github.com/mewstcom/mewst/go/internal/model"
-	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
@@ -11,7 +10,6 @@ import (
 type EditPageData struct {
 	CSRFToken  string
 	FormErrors *model.ValidationError
-	Flash      *session.Flash
 }
 
 // Edit はパスワード更新フォームを表示する
@@ -19,7 +17,7 @@ templ Edit(data EditPageData) {
 	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
 		<div class="text-center">
 			<a href="/" class="inline-block">
-				<div class="bg-(--primary) rounded-xl">
+				<div class="bg-primary rounded-xl">
 					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
 				</div>
 			</a>
@@ -33,8 +31,6 @@ templ Edit(data EditPageData) {
 				{ templates.T(ctx, "password_edit_description") }
 			</p>
 		</div>
-
-		@components.FlashMessage(data.Flash)
 
 		@components.FormErrors(data.FormErrors)
 
@@ -74,7 +70,7 @@ templ Edit(data EditPageData) {
 
 				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
 					for _, errorMsg := range data.FormErrors.GetFieldErrors("password") {
-						<p class="text-sm text-(--error)">
+						<p class="text-sm text-error">
 							{ errorMsg }
 						</p>
 					}
@@ -82,7 +78,7 @@ templ Edit(data EditPageData) {
 			</div>
 
 			<button
-				class="btn rounded-full w-fit text-black"
+				class="btn-primary rounded-full w-fit"
 				tabindex="2"
 				type="submit"
 			>

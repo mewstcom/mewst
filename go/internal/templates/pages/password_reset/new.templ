@@ -19,7 +19,7 @@ templ New(data NewPageData) {
 	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
 		<div class="text-center">
 			<a href="/" class="inline-block">
-				<div class="bg-(--primary) rounded-xl">
+				<div class="bg-primary rounded-xl">
 					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
 				</div>
 			</a>
@@ -67,7 +67,7 @@ templ New(data NewPageData) {
 
 				if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
 					for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
-						<p class="text-sm text-(--error)">
+						<p class="text-sm text-error">
 							{ errorMsg }
 						</p>
 					}
@@ -77,7 +77,7 @@ templ New(data NewPageData) {
 			@components.Turnstile(data.TurnstileSiteKey)
 
 			<button
-				class="btn rounded-full w-fit text-black"
+				class="btn-primary rounded-full w-fit"
 				tabindex="2"
 				type="submit"
 			>

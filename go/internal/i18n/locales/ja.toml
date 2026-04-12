@@ -23,7 +23,7 @@ other = "Mewstにログイン"
 
 [sign_up_title]
 description = "新規登録ページのタイトル"
-other = "新規登録"
+other = "Mewstに新規登録"
 
 [password_reset_title]
 description = "パスワードリセットページのタイトル"
@@ -64,6 +64,10 @@ other = "アカウントをお持ちでない方は"
 # ============================================
 # フラッシュメッセージ
 # ============================================
+
+[flash_dismiss]
+description = "フラッシュメッセージの閉じるボタン"
+other = "閉じる"
 
 [flash_sign_in_success]
 description = "ログイン成功メッセージ"
@@ -127,7 +131,7 @@ other = "確認コードを入力"
 
 [email_confirmation_description]
 description = "メール確認ページの説明"
-other = "メールで届いた6桁の確認コードを入力してください。"
+other = "メールアドレスに送信された6桁の確認コードを入力してください"
 
 [label_confirmation_code]
 description = "確認コードラベル"
@@ -195,15 +199,19 @@ other = "パスワードを更新しました。新しいパスワードでロ�
 
 [sign_up_description]
 description = "サインアップの説明"
-other = "メールアドレスを入力してください。確認コードをお送りします。"
+other = "メールアドレスの確認のため、\n入力したメールアドレス宛てに確認コードをお送りします"
 
 [btn_send_confirmation_code]
 description = "確認コード送信ボタン"
 other = "確認コードを送信"
 
-[already_have_account]
-description = "既にアカウントをお持ちの方"
-other = "既にアカウントをお持ちの方はログイン"
+[sign_up_have_account]
+description = "サインアップページで既にアカウントをお持ちの方へのテキスト"
+other = "アカウントをお持ちの方は"
+
+[sign_up_sign_in]
+description = "サインアップページのログインリンクテキスト"
+other = "ログイン"
 
 [flash_sign_up_email_sent]
 description = "サインアップメール送信成功メッセージ"
@@ -292,4 +300,3 @@ other = "しばらくしてから再度お試しください。"
 [error_bad_gateway_back_to_home]
 description = "502エラーページのホームリンク"
 other = "ホームに戻る"
-

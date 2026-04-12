@@ -96,7 +96,6 @@ func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.V
 		CSRFToken:  csrfToken,
 		FormErrors: ve,
 		Code:       code,
-		Flash:      nil,
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
@@ -104,7 +103,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.V
 	meta.SetOGURL(h.cfg, "/email_confirmation")
 
 	content := email_confirmation_page.New(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 	if err := layout.Render(ctx, w); err != nil {
