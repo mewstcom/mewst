@@ -2,6 +2,13 @@ name: Rails CI
 
 on:
   push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "rails/**"
+      - ".github/workflows/rails-ci.yml"
+  pull_request:
     paths:
       - "rails/**"
       - ".github/workflows/rails-ci.yml"
@@ -162,7 +169,7 @@ jobs:
           bin/rails assets:precompile
       - run: bin/rspec
       - name: Upload Capybara screenshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: capybara-screenshots
