@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/mail"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // SignUpCreateValidator はサインアップフォームのバリデーションを行う
@@ -35,13 +35,13 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		ve.AddField("email", templates.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "error_required"))
 		return nil, ve
 	}
 
 	// メールアドレス形式チェック
 	if _, err := mail.ParseAddress(input.Email); err != nil {
-		ve.AddField("email", templates.T(ctx, "error_invalid_email"))
+		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
 		return nil, ve
 	}
 
@@ -51,7 +51,7 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 		return nil, err
 	}
 	if exists {
-		ve.AddField("email", templates.T(ctx, "error_email_already_taken"))
+		ve.AddField("email", i18n.T(ctx, "error_email_already_taken"))
 		return nil, ve
 	}
 

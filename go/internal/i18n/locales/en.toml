@@ -23,7 +23,7 @@ other = "Sign in to Mewst"
 
 [sign_up_title]
 description = "Sign up page title"
-other = "Sign up"
+other = "Sign up to Mewst"
 
 [password_reset_title]
 description = "Password reset page title"
@@ -64,6 +64,10 @@ other = "Don't have an account?"
 # ============================================
 # Flash messages
 # ============================================
+
+[flash_dismiss]
+description = "Flash message dismiss button"
+other = "Dismiss"
 
 [flash_sign_in_success]
 description = "Sign in success message"
@@ -201,9 +205,13 @@ other = "Enter your email address. We will send you a confirmation code."
 description = "Send confirmation code button"
 other = "Send confirmation code"
 
-[already_have_account]
-description = "Already have an account"
-other = "Already have an account? Sign in"
+[sign_up_have_account]
+description = "Text for users who already have an account on sign up page"
+other = "Already have an account?"
+
+[sign_up_sign_in]
+description = "Sign in link text on sign up page"
+other = "Sign in"
 
 [flash_sign_up_email_sent]
 description = "Sign up email sent success message"
@@ -292,4 +300,3 @@ other = "Please try again later."
 [error_bad_gateway_back_to_home]
 description = "502 error page link to home"
 other = "Back to home"
-

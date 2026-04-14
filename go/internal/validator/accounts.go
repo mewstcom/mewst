@@ -6,9 +6,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // atnameRegex はアットネームの形式チェック用正規表現
@@ -104,22 +104,22 @@ func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCr
 // validateAtname はアットネームの形式バリデーションを行う
 func (v *AccountsCreateValidator) validateAtname(ctx context.Context, ve *model.ValidationError, atname string) {
 	if atname == "" {
-		ve.AddField("atname", templates.T(ctx, "error_required"))
+		ve.AddField("atname", i18n.T(ctx, "error_required"))
 		return
 	}
 
 	if !atnameRegex.MatchString(atname) {
-		ve.AddField("atname", templates.T(ctx, "error_atname_format"))
+		ve.AddField("atname", i18n.T(ctx, "error_atname_format"))
 		return
 	}
 
 	if len(atname) > maxAtnameLength {
-		ve.AddField("atname", templates.T(ctx, "error_atname_too_long"))
+		ve.AddField("atname", i18n.T(ctx, "error_atname_too_long"))
 		return
 	}
 
 	if reservedAtnames[strings.ToLower(atname)] {
-		ve.AddField("atname", templates.T(ctx, "error_atname_reserved"))
+		ve.AddField("atname", i18n.T(ctx, "error_atname_reserved"))
 		return
 	}
 }
@@ -127,17 +127,17 @@ func (v *AccountsCreateValidator) validateAtname(ctx context.Context, ve *model.
 // validatePassword はパスワードの形式バリデーションを行う
 func (v *AccountsCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
 	if password == "" {
-		ve.AddField("password", templates.T(ctx, "error_required"))
+		ve.AddField("password", i18n.T(ctx, "error_required"))
 		return
 	}
 
 	if utf8.RuneCountInString(password) < minPasswordLength {
-		ve.AddField("password", templates.T(ctx, "error_password_too_short"))
+		ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
 		return
 	}
 
 	if len(password) > maxPasswordLength {
-		ve.AddField("password", templates.T(ctx, "error_password_too_long"))
+		ve.AddField("password", i18n.T(ctx, "error_password_too_long"))
 		return
 	}
 }
@@ -149,7 +149,7 @@ func (v *AccountsCreateValidator) validateAtnameUniqueness(ctx context.Context, 
 		return err
 	}
 	if exists {
-		ve.AddField("atname", templates.T(ctx, "error_atname_already_taken"))
+		ve.AddField("atname", i18n.T(ctx, "error_atname_already_taken"))
 	}
 	return nil
 }
@@ -162,7 +162,7 @@ func (v *AccountsCreateValidator) validateEmailUniqueness(ctx context.Context, v
 		return err
 	}
 	if exists {
-		ve.AddGlobal(templates.T(ctx, "error_email_already_taken"))
+		ve.AddGlobal(i18n.T(ctx, "error_email_already_taken"))
 	}
 	return nil
 }

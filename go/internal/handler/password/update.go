@@ -98,7 +98,6 @@ func (h *Handler) renderEditForm(w http.ResponseWriter, r *http.Request, ve *mod
 	data := password_page.EditPageData{
 		CSRFToken:  csrfToken,
 		FormErrors: ve,
-		Flash:      nil,
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
@@ -106,7 +105,7 @@ func (h *Handler) renderEditForm(w http.ResponseWriter, r *http.Request, ve *mod
 	meta.SetOGURL(h.cfg, "/password/edit")
 
 	content := password_page.Edit(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 	if err := layout.Render(ctx, w); err != nil {

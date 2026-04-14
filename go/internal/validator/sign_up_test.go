@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -18,7 +18,7 @@ func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "",
@@ -43,7 +43,7 @@ func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	invalidEmails := []string{
 		"invalid",
@@ -79,7 +79,7 @@ func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	validEmails := []string{
 		"user@example.com",
@@ -115,7 +115,7 @@ func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 		Build()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "existing@example.com",
@@ -140,7 +140,7 @@ func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "signup-validator-not-taken@example.com",
@@ -165,7 +165,7 @@ func TestSignUpCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 		Build()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// 大文字で同じメールアドレスを試行
 	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{

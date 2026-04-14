@@ -148,7 +148,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.V
 	meta.SetOGURL(h.cfg, "/accounts/new")
 
 	content := accounts_page.New(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 	if err := layout.Render(ctx, w); err != nil {

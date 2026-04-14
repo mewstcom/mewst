@@ -103,7 +103,7 @@ func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.V
 	meta.SetOGURL(h.cfg, "/sign_in")
 
 	content := sign_in_page.New(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 	if err := layout.Render(ctx, w); err != nil {

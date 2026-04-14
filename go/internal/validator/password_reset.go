@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/mail"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // PasswordResetCreateValidator はパスワードリセット開始フォームのバリデーションを行う
@@ -31,11 +31,11 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		ve.AddField("email", templates.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "error_required"))
 	} else {
 		// メールアドレス形式チェック
 		if _, err := mail.ParseAddress(input.Email); err != nil {
-			ve.AddField("email", templates.T(ctx, "error_invalid_email"))
+			ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
 		}
 	}
 

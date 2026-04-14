@@ -34,9 +34,12 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	meta.SetTitle(ctx, "sign_up_title")
 	meta.SetOGURL(h.cfg, r.URL.Path)
 
+	// フラッシュメッセージを取得
+	flash := h.sessionMgr.GetFlashFromCookie(w, r)
+
 	// テンプレートをレンダリング
 	content := sign_up_page.New(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta, Flash: flash}, content)
 
 	if err := layout.Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

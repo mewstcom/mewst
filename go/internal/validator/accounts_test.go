@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -19,7 +19,7 @@ func TestAccountsCreateValidator_EmptyAtname(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
@@ -47,7 +47,7 @@ func TestAccountsCreateValidator_InvalidAtnameFormat(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	invalidAtnames := []string{
 		"user name",
@@ -86,7 +86,7 @@ func TestAccountsCreateValidator_AtnameTooLong(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
@@ -114,7 +114,7 @@ func TestAccountsCreateValidator_ReservedAtname(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	reservedNames := []string{
 		"admin",
@@ -158,7 +158,7 @@ func TestAccountsCreateValidator_AtnameAlreadyTaken(t *testing.T) {
 		Build()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "accounts-atname-taken@example.com",
@@ -192,7 +192,7 @@ func TestAccountsCreateValidator_EmailAlreadyTaken(t *testing.T) {
 		Build()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "existing@example.com",
@@ -220,7 +220,7 @@ func TestAccountsCreateValidator_EmptyPassword(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
@@ -248,7 +248,7 @@ func TestAccountsCreateValidator_PasswordTooShort(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
@@ -276,7 +276,7 @@ func TestAccountsCreateValidator_PasswordTooLong(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// 73文字のパスワード（bcryptの72文字制限を超える）
 	longPassword := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1"
@@ -307,7 +307,7 @@ func TestAccountsCreateValidator_ValidInput(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "accounts-valid-input@example.com",
@@ -329,7 +329,7 @@ func TestAccountsCreateValidator_ValidAtnameFormats(t *testing.T) {
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	validAtnames := []string{
 		"user123",

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -16,7 +16,7 @@ func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
 	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
@@ -100,7 +100,7 @@ func TestEmailConfirmationCreateValidator_Validate_ValidCodeFormats(t *testing.T
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
 	validator := NewEmailConfirmationCreateValidator(emailConfirmationRepo)
@@ -181,7 +181,7 @@ func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -217,7 +217,7 @@ func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) 
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// レコードを作成しない
 
@@ -249,7 +249,7 @@ func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// 期限切れのレコードを作成（31分前に作成）
 	expiredTime := time.Now().Add(-31 * time.Minute)
@@ -285,7 +285,7 @@ func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// 既に成功済みのレコードを作成
 	succeededAt := time.Now().Add(-10 * time.Minute)
@@ -321,7 +321,7 @@ func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -355,7 +355,7 @@ func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -391,7 +391,7 @@ func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *test
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	// テスト用のメール確認レコードを作成
 	id := testutil.NewEmailConfirmationBuilder(t, tx).

@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -58,7 +58,7 @@ func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 			t.Parallel()
 
 			ctx := context.Background()
-			ctx = templates.WithLocale(ctx, "ja")
+			ctx = i18n.SetLocale(ctx, "ja")
 
 			v := NewSignInCreateValidator(nil)
 			output, err := v.Validate(ctx, SignInCreateValidatorInput{
@@ -84,7 +84,7 @@ func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	t.Run("メールアドレス必須エラーメッセージ", func(t *testing.T) {
 		t.Parallel()
@@ -140,7 +140,7 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	passwordDigest, _ := auth.HashPassword("password123")
 	testutil.NewUserBuilder(t, tx).
@@ -175,7 +175,7 @@ func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
 	v := NewSignInCreateValidator(userRepo)
@@ -202,7 +202,7 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
@@ -235,7 +235,7 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
@@ -281,7 +281,7 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
 	v := NewSignInCreateValidator(userRepo)
@@ -310,7 +310,7 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	userRepo := repository.NewUserRepository(db).WithTx(tx)
 	v := NewSignInCreateValidator(userRepo)

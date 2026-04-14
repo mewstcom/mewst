@@ -465,6 +465,53 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 - **Rails からの移行に最適**: 既存の Rails 開発者が即座に理解できる命名
 - **MPA 向け最適化**: HTML レンダリング型 Web アプリケーションに適した命名
 
+## エラーハンドリング
+
+Handler は UseCase から返されるエラーを `errors.As` で型判別し、適切な HTTP レスポンスを返します。
+
+### エラー型の使い分け
+
+| エラー型                 | 生成元    | 意味                             | Handler の対応                          |
+| ------------------------ | --------- | -------------------------------- | --------------------------------------- |
+| `*model.ValidationError` | Validator | 入力が不正（ユーザーが修正可能） | フォーム再描画（422）                   |
+| `*model.AppError`        | UseCase   | 業務レベルの既知の失敗           | エラーコードに応じた処理（403, 404 等） |
+| 素の `error`             | どこでも  | 予期しないシステムエラー         | 500                                     |
+
+### 実装パターン
+
+```go
+output, err := h.createUC.Execute(ctx, input)
+if err != nil {
+    // 1. バリデーションエラー → フォーム再描画（422）
+    var ve *model.ValidationError
+    if errors.As(err, &ve) {
+        w.WriteHeader(http.StatusUnprocessableEntity)
+        h.renderForm(w, r, ve)
+        return
+    }
+
+    // 2. アプリケーションエラー → エラーコードに応じた処理
+    var ae *model.AppError
+    if errors.As(err, &ae) {
+        slog.ErrorContext(ctx, ae.LogString())
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    // 3. 予期しないエラー → 500
+    slog.ErrorContext(ctx, "予期しないエラー", "error", err)
+    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    return
+}
+```
+
+### 重要なルール
+
+- **Handler はエラーの型を判別するだけ**: どのエラーを返すかは UseCase と Validator の責務
+- **`*model.ValidationError`**: Validator が生成し、UseCase がそのまま返す
+- **`*model.AppError`**: UseCase が業務文脈に基づいて生成する（例: リソースが見つからない、権限がない）
+- **素の `error`**: ユーザーには汎用的なエラーメッセージを表示し、詳細はログに記録する
+
 ## まとめ
 
 HTTP ハンドラーを実装する際は、以下のポイントを守ってください：

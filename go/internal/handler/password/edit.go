@@ -60,7 +60,6 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	data := password_page.EditPageData{
 		CSRFToken:  csrfToken,
 		FormErrors: nil,
-		Flash:      flash,
 	}
 
 	// テンプレートをレンダリング
@@ -69,7 +68,7 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	meta.SetOGURL(h.cfg, r.URL.Path)
 
 	content := password_page.Edit(data)
-	layout := layouts.Simple(meta, content)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta, Flash: flash}, content)
 
 	if err := layout.Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

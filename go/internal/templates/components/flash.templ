@@ -2,41 +2,63 @@ package components
 
 import (
 	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// Flash はフラッシュメッセージを表示する
+// Flash はフラッシュメッセージ用のtoasterコンテナを表示する
 templ Flash() {
-	// フラッシュメッセージはJavaScriptで表示制御される
-	// クッキーからフラッシュを取得し、トースト表示する
-	<div id="flash-container" class="toast toast-end toast-bottom">
-		// フラッシュメッセージがある場合は表示
-		// 実際の表示はハンドラーでコンテキストにセットされたFlashから行う
-	</div>
+	<div id="toaster" class="toaster"></div>
 }
 
-// FlashMessage はフラッシュメッセージを表示する（明示的なメッセージ表示用）
+// FlashMessage はフラッシュメッセージをtoastとして表示する
 templ FlashMessage(flash *session.Flash) {
 	if flash != nil {
-		<div id="flash-container" class="toast toast-end toast-bottom">
-			<div class={ flashAlertClass(flash.Type) } role="alert">
-				<span>{ flash.Message }</span>
+		<div id="toaster" class="toaster">
+			<div
+				class="toast"
+				role="status"
+				aria-atomic="true"
+				aria-hidden="false"
+				data-category={ flashCategory(flash.Type) }
+			>
+				<div class="toast-content">
+					@flashIcon(flash.Type)
+					<section>
+						<p class="whitespace-pre-line">{ flash.Message }</p>
+					</section>
+					<footer>
+						<button type="button" class="btn" data-toast-action>{ templates.T(ctx, "flash_dismiss") }</button>
+					</footer>
+				</div>
 			</div>
 		</div>
 	}
 }
 
-// flashAlertClass はフラッシュタイプに応じたCSSクラスを返す
-func flashAlertClass(flashType session.FlashType) string {
+// flashCategory はフラッシュタイプに応じたdata-category属性値を返す
+func flashCategory(flashType session.FlashType) string {
 	switch flashType {
 	case session.FlashSuccess:
-		return "alert alert-success"
+		return "success"
 	case session.FlashError:
-		return "alert alert-error"
+		return "error"
 	case session.FlashWarning:
-		return "alert alert-warning"
-	case session.FlashInfo:
-		return "alert alert-info"
+		return "warning"
 	default:
-		return "alert"
+		return "info"
+	}
+}
+
+// flashIcon はフラッシュタイプに応じたアイコンを返す
+templ flashIcon(flashType session.FlashType) {
+	switch flashType {
+		case session.FlashSuccess:
+			@templates.Icon("success", "fill-success")
+		case session.FlashError:
+			@templates.Icon("error", "fill-error")
+		case session.FlashWarning:
+			@templates.Icon("warning", "fill-warning")
+		default:
+			@templates.Icon("info", "fill-info")
 	}
 }

@@ -2,21 +2,28 @@ package layouts
 
 import (
 	"github.com/a-h/templ"
+	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
+// SimpleLayoutData はシンプルレイアウトに渡すデータ構造体
+type SimpleLayoutData struct {
+	Meta  viewmodel.PageMeta
+	Flash *session.Flash
+}
+
 // Simple はシンプルなレイアウトを提供する（ログインページ等で使用）
-templ Simple(meta viewmodel.PageMeta, content templ.Component) {
+templ Simple(data SimpleLayoutData, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang={ templates.Locale(ctx) }>
 		<head>
-			@components.Head(meta)
+			@components.Head(data.Meta)
 		</head>
 
 		<body class="min-h-screen flex items-center justify-center">
-			@components.Flash()
+			@components.FlashMessage(data.Flash)
 			@content
 		</body>
 	</html>

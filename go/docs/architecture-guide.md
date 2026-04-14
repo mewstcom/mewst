@@ -12,7 +12,6 @@ Go 版 Mewst は、関心の分離を意識した**3 層アーキテクチャ**�
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層（プレゼンテーション層）                    │
 │ - Handler, Worker, Email                               │
-│ - Validator                                            │
 │ - ViewModel                                            │
 │ - Template                                             │
 │ - Middleware                                           │
@@ -21,8 +20,7 @@ Go 版 Mewst は、関心の分離を意識した**3 層アーキテクチャ**�
          ↓ 依存（OK）
 ┌─────────────────────────────────────────────────────────┐
 │ Application層（アプリケーション層）                        │
-│ - UseCase（ビジネスフロー、トランザクション管理、          │
-│   バリデーション統合）                                    │
+│ - UseCase, Validator                                  │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存（OK）
 ┌─────────────────────────────────────────────────────────┐
@@ -76,6 +74,37 @@ Model と Repository のファイル名・構造体名は統一します：
 - **構造体名**: パスカルケース（`UserCalendar`, `UserCalendarRepository`）
 - **Model と Repository は同じ名前**: `model/user_calendar.go` ↔ `repository/user_calendar.go`
 
+#### モデルの重複を避ける
+
+クエリの結果や状態ごとに新しいモデルを作らず、既存のモデルを再利用します。関連エンティティのデータが必要な場合は、ポインタ型のフィールドでモデル間の参照を表現します。
+
+```go
+// ✅ 良い例: 既存の Work モデルに User への参照を持たせる
+type Work struct {
+    ID    int64
+    User  *User  // 関連エンティティへのポインタ参照
+    Title string
+}
+
+// ❌ 悪い例: クエリ結果に合わせた専用モデルを作る
+type JoinedWork struct {
+    WorkID    int64
+    WorkTitle string
+    UserID    int64
+    UserName  string
+}
+```
+
+Repository ではクエリ結果ごとに変換メソッドを用意し、同じモデルに変換します：
+
+```go
+// 単純なクエリ結果 → Work（User は ID のみ）
+func (r *WorkRepository) toModel(row query.Work) *model.Work { ... }
+
+// JOINクエリ結果 → Work（User のフィールドをより多く設定）
+func (r *WorkRepository) toWorksFromJoinedRows(rows []query.ListJoinedWorksByUserRow) []*model.Work { ... }
+```
+
 #### Query ファイルの命名
 
 Query ファイルは用途に応じて 2 つのパターンがあります：
@@ -104,9 +133,10 @@ internal/query/queries/
 1. **Query** (Domain/Infrastructure 層): SQL クエリを実行し、クエリ結果（`query.GetPopularWorksRow`など）を返す
 2. **Repository** (Domain/Infrastructure 層): Query 結果を Model に変換し、複数のクエリを組み合わせる
 3. **Model** (Domain/Infrastructure 層): ページに依存しない汎用的なドメインエンティティ（`model.Work`など）
-4. **Handler** (Presentation 層): UseCase から Model を取得し、Model を ViewModel に変換
-5. **ViewModel** (Presentation 層): 表示用のデータ構造（画像 URL 生成、言語切り替えなど）
-6. **Template** (Presentation 層): ViewModel を受け取って HTML を生成
+4. **UseCase** (Application 層): Repository 経由で Model を取得し、ビジネスロジックを実行して結果を返す
+5. **Handler** (Presentation 層): UseCase を呼び出して Model を取得し、Model を ViewModel に変換
+6. **ViewModel** (Presentation 層): 表示用のデータ構造（画像 URL 生成、言語切り替えなど）
+7. **Template** (Presentation 層): ViewModel を受け取って HTML を生成
 
 ### 主要なレイヤー
 
@@ -134,7 +164,6 @@ internal/query/queries/
   - `auth.go`: 認証ミドルウェア
   - `csrf.go`: CSRF 保護ミドルウェア
   - `method_override.go`: HTTP メソッドオーバーライドミドルウェア
-- **internal/validator**: バリデーション（形式チェック + DB を使った状態検証を統合。`main.go` で構築し UseCase に注入）
 - **internal/worker**: バックグラウンドジョブの実行（river ベース）
   - UseCase を呼ぶだけの薄い Adapter として実装
 - **internal/email**: メール送信（テンプレートレンダリング + Resend API 送信）
@@ -153,6 +182,7 @@ internal/query/queries/
   - ビジネスフロー、トランザクション管理を担当
   - 複数の Repository を組み合わせた処理
   - Validator を統合し、バリデーション → 永続化をオーケストレーション
+- **internal/validator**: バリデーション（形式チェック + DB を使った状態検証を統合。`main.go` で構築し UseCase に注入）
 
 ### Domain/Infrastructure 層（統合）
 
@@ -192,7 +222,7 @@ Presentation層 → Application層 → Domain/Infrastructure層
 
 下位層は上位層に依存しません（依存の方向は一方通行）。
 
-### Presentation 層（Handler, Worker, Email, Validator, ViewModel, Template, Middleware）
+### Presentation 層（Handler, Worker, Email, ViewModel, Template, Middleware）
 
 各パッケージの依存関係：
 
@@ -201,7 +231,6 @@ Presentation層 → Application層 → Domain/Infrastructure層
 - **Handler**: `query`, `repository`, `validator` への直接アクセス禁止。すべて `usecase` を経由する
 - **Worker**: UseCase を呼ぶだけの薄い Adapter。`query`, `handler`, `middleware`, `viewmodel`, `templates` に依存しない
 - **Email**: テンプレートレンダリング + API 送信を内包。`templates`, `i18n` に依存可能。`handler`, `usecase`, `worker`, `validator`, `dispatcher`, `session` には依存しない
-- **Validator**: 形式チェック + 状態バリデーションを統合。`repository`, `model` に依存可能。`query` への直接アクセスは禁止（Repository を経由）。`usecase` には依存しない（UseCase が Validator を呼び出す方向）
 - **Middleware**: エラーページ・メンテナンスページ等のレンダリングのため `templates` への依存は許可。`query`, `repository`, `usecase`, `handler`, `viewmodel` に依存しない
 
 **依存関係の図解**:
@@ -220,12 +249,10 @@ Middleware → Templates (OK: エラーページ等のレンダリング)
 
 **重要**: Templates は ViewModel に依存できますが、Model に直接依存することは禁止です。必ず ViewModel を経由してください。
 
-### Application 層（UseCase）
+### Application 層（UseCase, Validator）
 
-- `query` への直接アクセス禁止。データアクセスは `repository` を経由
-- `session` への直接アクセス禁止。session は Presentation 層のヘルパー
-- Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない
-- Validator を統合し、バリデーション → 永続化をオーケストレーション（詳細は[UseCaseオーケストレーション](#usecaseオーケストレーション)を参照）
+- **UseCase**: `query` への直接アクセス禁止。データアクセスは `repository` を経由。`session` への直接アクセス禁止。Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない。Validator を統合し、バリデーション → 永続化をオーケストレーション（詳細は[UseCaseオーケストレーション](#usecaseオーケストレーション)を参照）
+- **Validator**: 形式チェック + 状態バリデーションを統合。`repository`, `model` に依存可能。`query` への直接アクセスは禁止（Repository を経由）。`usecase` には依存しない（UseCase が Validator を呼び出す方向）。Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない（翻訳は `i18n.T()` を直接使用）
 
 ### Domain/Infrastructure 層（Query, Repository, Model）
 
