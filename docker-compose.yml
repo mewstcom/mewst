@@ -13,8 +13,8 @@ services:
       - go-build-cache:/go/.cache/go-build
       - app-gems-data:/mise/installs/ruby/3.3.6/lib/ruby/gems/3.3.0
     ports:
-      - "4100:8080"
-      - "4101:3000"
+      - "4100:8080" # Go
+      - "4101:3000" # Rails
     stdin_open: true
     tty: true
     working_dir: /workspace
