@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // 確認コードは6桁の数字
@@ -43,11 +43,11 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 
 	// 確認コードの必須チェック
 	if input.Code == "" {
-		ve.AddField("code", templates.T(ctx, "error_required"))
+		ve.AddField("code", i18n.T(ctx, "error_required"))
 	} else {
 		// 6桁の数字形式チェック
 		if !codeRegex.MatchString(input.Code) {
-			ve.AddField("code", templates.T(ctx, "error_invalid_code_format"))
+			ve.AddField("code", i18n.T(ctx, "error_invalid_code_format"))
 		}
 	}
 
@@ -59,7 +59,7 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 	emailConfirmation, err := v.emailConfirmationRepo.GetActiveByID(ctx, input.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			ve.AddGlobal(templates.T(ctx, "error_code_incorrect_or_expired"))
+			ve.AddGlobal(i18n.T(ctx, "error_code_incorrect_or_expired"))
 			return nil, ve
 		}
 		return nil, err
@@ -67,7 +67,7 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 
 	// 確認コードを検証
 	if emailConfirmation.Code != input.Code {
-		ve.AddGlobal(templates.T(ctx, "error_code_incorrect_or_expired"))
+		ve.AddGlobal(i18n.T(ctx, "error_code_incorrect_or_expired"))
 		return nil, ve
 	}
 

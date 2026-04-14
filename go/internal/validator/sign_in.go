@@ -7,9 +7,9 @@ import (
 	"net/mail"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 // SignInCreateValidator はサインインのバリデーションを行う
@@ -40,17 +40,17 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		ve.AddField("email", templates.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "error_required"))
 	} else {
 		// メールアドレス形式チェック
 		if _, err := mail.ParseAddress(input.Email); err != nil {
-			ve.AddField("email", templates.T(ctx, "error_invalid_email"))
+			ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
 		}
 	}
 
 	// パスワードの必須チェック
 	if input.Password == "" {
-		ve.AddField("password", templates.T(ctx, "error_required"))
+		ve.AddField("password", i18n.T(ctx, "error_required"))
 	}
 
 	if ve.HasErrors() {
@@ -62,7 +62,7 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			// セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
-			ve.AddGlobal(templates.T(ctx, "error_invalid_credentials"))
+			ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
 			return nil, ve
 		}
 		return nil, err
@@ -70,7 +70,7 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 
 	// パスワードを検証
 	if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
-		ve.AddGlobal(templates.T(ctx, "error_invalid_credentials"))
+		ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
 		return nil, ve
 	}
 

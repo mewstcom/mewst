@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
-	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
 func TestPasswordResetCreateValidator_Validate(t *testing.T) {
@@ -102,7 +102,7 @@ func TestPasswordResetCreateValidator_Validate(t *testing.T) {
 			t.Parallel()
 
 			ctx := context.Background()
-			ctx = templates.WithLocale(ctx, "ja")
+			ctx = i18n.SetLocale(ctx, "ja")
 
 			_, err := v.Validate(ctx, tt.input)
 
@@ -127,7 +127,7 @@ func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
+	ctx = i18n.SetLocale(ctx, "ja")
 
 	v := NewPasswordResetCreateValidator()
 
