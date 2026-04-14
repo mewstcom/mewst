@@ -55,6 +55,8 @@ cat /workspace/rails/app/models/work.rb
   - templ: 型安全な HTML テンプレートエンジン
   - resend-go/v2: メール送信ライブラリ（Resend API）
 - PostgreSQL 17.3
+- htmx 4: ハイパーメディアフレームワーク（HTML フラグメント返却によるサーバードリブン UI）
+  - htmx の実装時は `/htmx4` スキルを使用すること
 - Cloudflare Turnstile: Bot 対策サービス（ログイン・サインアップフォームなど）
 - pnpm
   - @tailwindcss/cli: Tailwind CSS v4 CLI ツール
@@ -69,14 +71,13 @@ cat /workspace/rails/app/models/work.rb
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Presentation層                                          │
-│ - Handler, Worker, Validator, ViewModel, Template,    │
-│   Middleware, Email                                    │
+│ - Handler, Worker, ViewModel, Template, Middleware,   │
+│   Email                                               │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存
 ┌─────────────────────────────────────────────────────────┐
 │ Application層                                           │
-│ - UseCase（ビジネスフロー、トランザクション管理、          │
-│   バリデーション統合）                                    │
+│ - UseCase, Validator                                  │
 └─────────────────────────────────────────────────────────┘
          ↓ 依存
 ┌─────────────────────────────────────────────────────────┐
@@ -93,8 +94,8 @@ cat /workspace/rails/app/models/work.rb
 - **internal/middleware**: HTTP ミドルウェア（Presentation 層）
 - **internal/templates**: templ テンプレート（Presentation 層）
 - **internal/viewmodel**: プレゼンテーション層のデータ変換（Presentation 層）
-- **internal/validator**: バリデーション（Presentation 層）
 - **internal/usecase**: ビジネスロジック層（Application 層）
+- **internal/validator**: バリデーション（Application 層）
 - **internal/query**: sqlc 生成コード（Domain/Infrastructure 層）
 - **internal/repository**: Repository 層（Domain/Infrastructure 層）
 - **internal/model**: ドメインモデル・エラー型（Domain/Infrastructure 層）
@@ -114,6 +115,55 @@ cat /workspace/rails/app/models/work.rb
 - **Worker は薄い Adapter**: UseCase を呼ぶだけの実装にし、ビジネスロジックを持たない
 - **Model と Repository は 1:1 の関係**: 各ドメインエンティティに対応する Repository を作成
 - **Domain/Infrastructure 層の統合**: データベース変更はほぼ起こらないため、シンプルさを優先
+- **ドメイン ID 型の使用**: モデルの ID フィールドには `uuid.UUID` ではなく専用のドメイン ID 型を使用
+
+### ドメイン ID 型
+
+モデルの ID フィールドには `uuid.UUID` ではなく、`internal/model/id.go` に定義された専用のドメイン ID 型（`type UserID uuid.UUID` 等）を使用します。これにより、異なるエンティティの ID を取り違える問題をコンパイル時に検出できます。
+
+**基本ルール**:
+
+- ✅ **モデルの ID フィールドには専用型を使用**: `ID UserID`、`ID ActorID` など
+- ✅ **外部キーにも専用型を使用**: `UserID model.UserID`、`ActorID model.ActorID` など
+- ✅ **新しいモデルを追加する場合は対応する ID 型も追加**: `id.go` に型と `String()` メソッドを定義
+- ❌ **ID フィールドに `uuid.UUID` を直接使用しない**
+
+**実装パターン**:
+
+```go
+// internal/model/id.go - 型定義
+type UserID uuid.UUID
+func (id UserID) String() string { return uuid.UUID(id).String() }
+
+// internal/model/user.go - モデルでの使用
+type User struct {
+    ID    UserID
+    Email string
+}
+
+// internal/repository/user.go - リポジトリでの変換（sqlcのuuid.UUIDから専用型へ）
+func toModel(row query.GetUserRow) *model.User {
+    return &model.User{
+        ID:    model.UserID(row.ID),
+        Email: row.Email,
+    }
+}
+
+// internal/testutil/user_builder.go - テストビルダーの戻り値
+func (b *UserBuilder) Build() model.UserID {
+    // ...
+    return model.UserID(id)
+}
+```
+
+**スライス変換ヘルパー**:
+
+ID のスライスと `[]uuid.UUID` の相互変換が必要な場合は、`id.go` にヘルパー関数を定義します：
+
+```go
+func UserIDsToUUIDs(ids []UserID) []uuid.UUID { ... }
+func UUIDsToUserIDs(us []uuid.UUID) []UserID { ... }
+```
 
 ### UsecaseとRepositoryの使い分け
 
@@ -721,94 +771,9 @@ Go 版では、型安全なテンプレートエンジン [templ](https://templ.
 - **コンポーネント化**: `@componentName()` で他のコンポーネントを呼び出し
 - **国際化対応**: `templates.T(ctx, "message_id")` で翻訳を取得
 
-#### テンプレート関数の引数パターン
-
-テンプレート関数の引数は**構造体ベースのパターン**を使用します。
-
-**基本ルール**:
-
-- ✅ **構造体を使用**: テンプレートに渡すデータは専用の構造体にまとめる
-- ❌ **`context.Context` を明示的に渡さない**: templ は `ctx` を暗黙的に提供するため不要
-- ❌ **複数の引数を個別に渡さない**: 引数が増えるたびにシグネチャ変更が必要になる
-
-**良い例**:
-
-```templ
-// ページデータ構造体を定義
-type NewPageData struct {
-    CSRFToken        string
-    TurnstileSiteKey string
-    FormErrors       *model.ValidationError
-    Email            string
-}
-
-// 構造体のみを引数に取る（ctxはtemplが暗黙的に提供）
-templ New(data NewPageData) {
-    <form>
-        <input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-        // templates.T(ctx, "key") で翻訳を取得（ctxは暗黙的に利用可能）
-        <label>{ templates.T(ctx, "email_label") }</label>
-    </form>
-}
-```
-
-**悪い例**:
-
-```templ
-// ❌ context.Contextを明示的に渡している
-// ❌ 複数の引数を個別に渡している
-templ New(ctx context.Context, formErrors *model.ValidationError, csrfToken string, turnstileSiteKey string) {
-    // ...
-}
-```
-
-**メリット**:
-
-- **拡張性**: 新しいフィールドを追加してもシグネチャが変わらない
-- **可読性**: 呼び出し側でフィールド名が明確になる
-- **Go の慣習**: 引数が多い関数には構造体を使用するのが Go の標準的なパターン
-
-#### テンプレートデータ構造体と ViewModel の関係
-
-テンプレートに渡すデータ構造体（`EditPageData` など）では、モデルのフィールドを個別のプリミティブ値として展開せず、ViewModel を構成要素として使用する。
-
-- ✅ **ViewModel を構成要素にする**: `User viewmodel.User`
-- ❌ **モデルのフィールドを個別に並べない**: `Name string`, `Email string`
-
-モデルからテンプレート表示用データへの変換ロジック（フォールバック、デフォルト値の決定など）は ViewModel のコンストラクタに配置し、ハンドラーには書かない。派生的な判定（例: タイトルが空ならオートフォーカス）は ViewModel のメソッドとして提供する。
-
-**良い例**:
-
-```go
-// テンプレートデータ構造体にViewModelを使用
-type EditProfileData struct {
-    CSRFToken string
-    User      viewmodel.User
-}
-
-// ハンドラーではViewModelのコンストラクタを呼ぶだけ
-userVM := viewmodel.NewUserForEdit(user)
-```
-
-**悪い例**:
-
-```go
-// ❌ モデルのフィールドを個別に展開している
-type EditProfileData struct {
-    CSRFToken string
-    Name      string
-    Email     string
-    Bio       string
-}
-
-// ❌ ハンドラーで変換・判定ロジックを書いている
-var name string
-if user.Name != nil {
-    name = *user.Name
-}
-```
-
 #### 詳細ドキュメント
+
+テンプレート関数の引数パターン、テンプレートデータ構造体と ViewModel の関係については templ-guide.md を参照してください。
 
 テンプレートの詳しい書き方、レイアウトの継承、コンポーネントの再利用、テストの書き方などは以下のドキュメントを参照してください：
 
@@ -1033,7 +998,7 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 ### 基本方針
 
 - **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL データベースを使用してテストを実行
-- **DB接続プールの共有**: `TestMain` パターンでパッケージ単位でDB接続を1回だけ確立し、全テストで共有
+- **DB接続プールの共有**: `sync.Once` パターンでDB接続を1回だけ確立し、全テストで共有（`main_test.go` 不要）
 - **トランザクションでの分離**: 各テストはトランザクション内で実行し、テスト終了時に自動ロールバックすることでデータをクリーンアップ
 - **テスト用bcryptコストの低減**: テスト時はbcryptコストを最小値（4）に設定し、パスワードハッシュの計算を高速化
 - **テストヘルパーの活用**: `internal/testutil` パッケージのヘルパー関数とビルダーパターンを使用してテストデータを作成
@@ -1045,71 +1010,38 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 - **テスト関数**: `Test` で始まる名前（例: `TestPopularWorks`）
 - **ベンチマーク関数**: `Benchmark` で始まる名前（例: `BenchmarkPopularWorks`）
 
-### DB接続の共有化（TestMainパターン）
+### DB接続の共有化（SetupTestDBパターン）
 
-各テストパッケージでは `TestMain` を使用し、DB接続を1回だけ確立してパッケージ内の全テストで共有します。
+`testutil.SetupTestDB(t)` は `sync.Once` を使用してDB接続を1回だけ確立します。`main_test.go` や `TestMain` は不要です。
 
 **セットアップの流れ**:
 
 ```
-TestMain: sql.Open → Ping → bcryptコスト設定
-テスト1: Begin → テスト実行 → Rollback
-テスト2: Begin → テスト実行 → Rollback
-TestMain: Close
+SetupTestDB(初回呼び出し): sql.Open → Ping → bcryptコスト設定
+テスト1: SetupTestDB → Begin → テスト実行 → Rollback
+テスト2: SetupTestDB → Begin → テスト実行 → Rollback
 ```
 
-**新規テストパッケージの作成手順**:
-
-1. `main_test.go` を作成し、`TestMain` で `testutil.SetupTestMain` を呼び出す
-2. 各テスト関数では `testutil.SetupTx(t)` でトランザクションを取得
-3. Usecaseなどトランザクション管理を自前で行うテストでは `testutil.GetTestDB()` を使用
-
-**`SetupTx` と `GetTestDB` の使い分け**:
-
-| 関数                   | 用途                                                     | トランザクション管理                     |
-| ---------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| `testutil.SetupTx(t)`  | Repository テスト等、トランザクション内で完結するテスト  | テストヘルパーが管理（自動ロールバック） |
-| `testutil.GetTestDB()` | Usecase テスト等、自前でトランザクション管理を行うテスト | テスト対象コードが管理                   |
-
-- **`SetupTx(t)`**: テスト用のトランザクションを開始し、テスト終了時に自動ロールバック。Repository の読み書きテストに最適
-- **`GetTestDB()`**: 共有 DB 接続プールを直接取得。Usecase が `db.BeginTx` で独自にトランザクションを管理するテストで使用
+**テストの書き方**:
 
 ```go
-// main_test.go
-package handler_test
-
-import (
-    "os"
-    "testing"
-
-    "github.com/mewstcom/mewst/go/internal/testutil"
-)
-
-func TestMain(m *testing.M) {
-    os.Exit(testutil.SetupTestMain(m))
-}
-```
-
-```go
-// create_test.go
 func TestCreate_Success(t *testing.T) {
     t.Parallel()
 
-    db, tx := testutil.SetupTx(t)
-    // 以降は既存のテストコードと同じ
+    db, tx := testutil.SetupTestDB(t)
+    // db: 共有DB接続プール、tx: テスト用トランザクション（自動ロールバック）
 }
 ```
 
-**`SetupTestMain` が行う初期化**:
+**`SetupTestDB` が行う初期化**（`sync.Once` で1回のみ実行）:
 
 - テスト用にbcryptコストを下げる（DefaultCost 10 → MinCost 4 で約64倍高速化）
-- DB接続プールを1回だけ確立し、パッケージ内の全テストで共有
+- DB接続プールを1回だけ確立し、全テストで共有
 
 ### テストのベストプラクティス
 
 - **実データベースを使用**: モックではなく実際の PostgreSQL データベースでテスト
-- **TestMainパターン**: 各テストパッケージに `main_test.go` を作成し、`testutil.SetupTestMain(m)` でDB接続を共有
-- **トランザクション分離**: `testutil.SetupTx(t)` でテスト用トランザクションをセットアップ
+- **SetupTestDBパターン**: `testutil.SetupTestDB(t)` でDB接続とトランザクションをセットアップ（`main_test.go` 不要）
 - **テーブル駆動テスト**: 複数のテストケースを効率的に実行
 - **並行テスト**: `t.Parallel()` で並行実行可能なテストを高速化（トランザクション分離により安全）
 - **テストヘルパー**: 共通のセットアップコードをヘルパー関数に抽出
@@ -1122,7 +1054,7 @@ func TestCreate_Success(t *testing.T) {
     t.Parallel()
 
     // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTx(t)
+    db, tx := testutil.SetupTestDB(t)
 
     // テストデータを作成（ビルダーパターン）
     userID := testutil.NewUserBuilder(t, tx).
@@ -1156,7 +1088,7 @@ func TestCreate_Success(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
     t.Parallel()
 
-    db, tx := testutil.SetupTx(t)
+    db, tx := testutil.SetupTestDB(t)
     ctx := context.Background()
 
     // テスト対象のセットアップ（共通部分）
