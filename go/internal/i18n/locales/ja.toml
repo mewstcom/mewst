@@ -103,7 +103,7 @@ other = "ロボット検証に失敗しました。もう一度お試しくだ�
 
 [password_reset_description]
 description = "パスワードリセットの説明"
-other = "登録したメールアドレスを入力してください。確認コードをお送りします。"
+other = "登録したメールアドレスを入力してください\n確認コードをお送りします"
 
 [btn_send_reset_code]
 description = "確認コード送信ボタン"
