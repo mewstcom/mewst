@@ -21,24 +21,6 @@ func (q *Queries) DeleteOldRateLimits(ctx context.Context, windowStart time.Time
 	return err
 }
 
-const getRateLimitCount = `-- name: GetRateLimitCount :one
-SELECT count FROM rate_limits
-WHERE key = $1 AND window_start = $2
-`
-
-type GetRateLimitCountParams struct {
-	Key         string    `db:"key"`
-	WindowStart time.Time `db:"window_start"`
-}
-
-// 指定されたkeyとウィンドウ開始時刻でのカウントを取得する
-func (q *Queries) GetRateLimitCount(ctx context.Context, arg GetRateLimitCountParams) (int32, error) {
-	row := q.db.QueryRowContext(ctx, getRateLimitCount, arg.Key, arg.WindowStart)
-	var count int32
-	err := row.Scan(&count)
-	return count, err
-}
-
 const incrementRateLimit = `-- name: IncrementRateLimit :one
 INSERT INTO rate_limits (key, window_start, count, created_at, updated_at)
 VALUES ($1, $2, 1, NOW(), NOW())

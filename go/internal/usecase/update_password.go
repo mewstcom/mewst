@@ -32,22 +32,23 @@ func NewUpdatePasswordUsecase(
 	}
 }
 
-// Execute はパスワード更新を実行する
+// Execute はパスワード更新を実行する。
+// バリデーション → ハッシュ化 → UPDATE の 1 ステップ書き込みで完結するため、
+// オーケストレーションすべき対象がなく Execute 内で完結させている。
 func (uc *UpdatePasswordUsecase) Execute(ctx context.Context, input UpdatePasswordInput) error {
-	// 1. バリデーション
-	_, err := uc.passwordValidator.Validate(ctx, validator.PasswordUpdateValidatorInput{
+	if err := uc.passwordValidator.Validate(ctx, validator.PasswordUpdateValidatorInput{
 		Password: input.Password,
-	})
-	if err != nil {
+	}); err != nil {
 		return err
 	}
 
-	// 2. パスワードをbcryptでハッシュ化
 	passwordDigest, err := auth.HashPassword(input.Password)
 	if err != nil {
 		return fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
 	}
 
-	// 3. パスワードを更新
-	return uc.userRepo.UpdatePasswordByEmail(ctx, input.Email, passwordDigest)
+	if err := uc.userRepo.UpdatePasswordByEmail(ctx, input.Email, passwordDigest); err != nil {
+		return fmt.Errorf("パスワードの更新に失敗: %w", err)
+	}
+	return nil
 }

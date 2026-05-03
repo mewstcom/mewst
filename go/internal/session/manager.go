@@ -5,6 +5,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
@@ -62,31 +64,28 @@ func (m *Manager) GetCurrentUser(ctx context.Context, r *http.Request) (*model.U
 		return nil, nil
 	}
 
-	// セッションを取得
-	session, err := m.sessionRepo.GetByToken(ctx, token)
+	session, err := m.sessionRepo.FindByToken(ctx, token)
 	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
-
-	// セッションからアクターを取得
-	actor, err := m.actorRepo.GetByID(ctx, session.ActorID)
-	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, nil
-		}
-		return nil, err
+	if session == nil {
+		return nil, nil
 	}
 
-	// アクターからユーザーを取得
-	user, err := m.userRepo.GetByID(ctx, actor.UserID)
+	actor, err := m.actorRepo.FindByID(ctx, session.ActorID)
 	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, nil
-		}
 		return nil, err
+	}
+	if actor == nil {
+		return nil, nil
+	}
+
+	user, err := m.userRepo.FindByID(ctx, actor.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
 	}
 
 	return user, nil
@@ -100,41 +99,33 @@ func (m *Manager) GetCurrentActor(ctx context.Context, r *http.Request) (*model.
 		return nil, nil
 	}
 
-	// セッションを取得
-	session, err := m.sessionRepo.GetByToken(ctx, token)
+	session, err := m.sessionRepo.FindByToken(ctx, token)
 	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
+	if session == nil {
+		return nil, nil
+	}
 
-	// セッションからアクターを取得
-	actor, err := m.actorRepo.GetByID(ctx, session.ActorID)
+	actor, err := m.actorRepo.FindByID(ctx, session.ActorID)
 	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, nil
-		}
 		return nil, err
+	}
+	if actor == nil {
+		return nil, nil
 	}
 
 	return actor, nil
 }
 
 // SetSessionCookie はセッションクッキーを設定する
-func (m *Manager) SetSessionCookie(w http.ResponseWriter, r *http.Request, token string) {
-	secure := m.cfg.SessionSecure
-	// リバースプロキシ経由のHTTPS接続を検出
-	if r.Header.Get("X-Forwarded-Proto") == "https" {
-		secure = true
-	}
-
+func (m *Manager) SetSessionCookie(w http.ResponseWriter, token string) {
 	cookie := &http.Cookie{
 		Name:     CookieName,
 		Value:    token,
 		Path:     "/",
 		Domain:   m.cfg.CookieDomain,
-		Secure:   secure,
+		Secure:   m.cfg.SessionSecure,
 		HttpOnly: m.cfg.SessionHTTPOnly,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   MaxAge,
@@ -143,22 +134,16 @@ func (m *Manager) SetSessionCookie(w http.ResponseWriter, r *http.Request, token
 }
 
 // DeleteSessionCookie はセッションクッキーを削除する
-func (m *Manager) DeleteSessionCookie(w http.ResponseWriter, r *http.Request) {
-	secure := m.cfg.SessionSecure
-	// リバースプロキシ経由のHTTPS接続を検出
-	if r.Header.Get("X-Forwarded-Proto") == "https" {
-		secure = true
-	}
-
+func (m *Manager) DeleteSessionCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:     CookieName,
 		Value:    "",
 		Path:     "/",
 		Domain:   m.cfg.CookieDomain,
-		Secure:   secure,
+		Secure:   m.cfg.SessionSecure,
 		HttpOnly: m.cfg.SessionHTTPOnly,
 		SameSite: http.SameSiteLaxMode,
-		MaxAge:   -1, // 即座に削除
+		MaxAge:   -1,
 	}
 	http.SetCookie(w, cookie)
 }
@@ -170,19 +155,13 @@ func (m *Manager) IsLoggedIn(ctx context.Context, r *http.Request) bool {
 }
 
 // SetEmailConfirmationID はメール確認IDをクッキーに保存する
-func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, r *http.Request, id string) {
-	secure := m.cfg.SessionSecure
-	// リバースプロキシ経由のHTTPS接続を検出
-	if r.Header.Get("X-Forwarded-Proto") == "https" {
-		secure = true
-	}
-
+func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, id model.EmailConfirmationID) {
 	cookie := &http.Cookie{
 		Name:     EmailConfirmationCookieName,
-		Value:    id,
+		Value:    id.String(),
 		Path:     "/",
 		Domain:   m.cfg.CookieDomain,
-		Secure:   secure,
+		Secure:   m.cfg.SessionSecure,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   EmailConfirmationMaxAge,
@@ -190,32 +169,31 @@ func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, r *http.Request,
 	http.SetCookie(w, cookie)
 }
 
-// GetEmailConfirmationID はクッキーからメール確認IDを取得する
-func (m *Manager) GetEmailConfirmationID(r *http.Request) string {
+// GetEmailConfirmationID はクッキーからメール確認IDを取得する。
+// クッキー不在または値が不正な UUID の場合は ok=false を返す。
+func (m *Manager) GetEmailConfirmationID(r *http.Request) (model.EmailConfirmationID, bool) {
 	cookie, err := r.Cookie(EmailConfirmationCookieName)
 	if err != nil {
-		return ""
+		return model.EmailConfirmationID{}, false
 	}
-	return cookie.Value
+	parsed, err := uuid.Parse(cookie.Value)
+	if err != nil {
+		return model.EmailConfirmationID{}, false
+	}
+	return model.EmailConfirmationID(parsed), true
 }
 
 // DeleteEmailConfirmationID はメール確認IDクッキーを削除する
-func (m *Manager) DeleteEmailConfirmationID(w http.ResponseWriter, r *http.Request) {
-	secure := m.cfg.SessionSecure
-	// リバースプロキシ経由のHTTPS接続を検出
-	if r.Header.Get("X-Forwarded-Proto") == "https" {
-		secure = true
-	}
-
+func (m *Manager) DeleteEmailConfirmationID(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:     EmailConfirmationCookieName,
 		Value:    "",
 		Path:     "/",
 		Domain:   m.cfg.CookieDomain,
-		Secure:   secure,
+		Secure:   m.cfg.SessionSecure,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		MaxAge:   -1, // 即座に削除
+		MaxAge:   -1,
 	}
 	http.SetCookie(w, cookie)
 }

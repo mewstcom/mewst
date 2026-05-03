@@ -118,15 +118,6 @@ func (e *AppError) LogString() string {
 		e.Code, e.UserMsg, e.Internal, e.Metadata)
 }
 
-// NewAppError は新しい AppError を生成する
-func NewAppError(code AppErrorCode, userMsg string, internal error) *AppError {
-	return &AppError{
-		Code:     code,
-		UserMsg:  userMsg,
-		Internal: internal,
-	}
-}
-
 // AsValidationError は err から *ValidationError を取り出す。
 // 取り出せない場合は nil を返す。
 func AsValidationError(err error) *ValidationError {

@@ -67,11 +67,8 @@ type AccountsCreateValidatorInput struct {
 	Password string
 }
 
-// AccountsCreateValidatorOutput はバリデーション成功時の出力
-type AccountsCreateValidatorOutput struct{}
-
 // Validate は入力値をチェックする（形式チェック + DB検証）
-func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCreateValidatorInput) (*AccountsCreateValidatorOutput, error) {
+func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCreateValidatorInput) error {
 	ve := model.NewValidationError()
 
 	// アットネームのバリデーション
@@ -82,23 +79,23 @@ func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCr
 
 	// 形式バリデーションでエラーがあれば早期リターン
 	if ve.HasErrors() {
-		return nil, ve
+		return ve
 	}
 
 	// 状態バリデーション（DB検証）
 	if err := v.validateAtnameUniqueness(ctx, ve, input.Atname); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := v.validateEmailUniqueness(ctx, ve, input.Email); err != nil {
-		return nil, err
+		return err
 	}
 
 	if ve.HasErrors() {
-		return nil, ve
+		return ve
 	}
 
-	return &AccountsCreateValidatorOutput{}, nil
+	return nil
 }
 
 // validateAtname はアットネームの形式バリデーションを行う

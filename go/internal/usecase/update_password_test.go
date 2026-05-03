@@ -16,7 +16,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("パスワードを更新できる", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 
 		// テストユーザーを作成
 		email := "test-update-password@example.com"
@@ -25,7 +25,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Build()
 
 		// Usecaseを作成
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 		passwordValidator := validator.NewPasswordUpdateValidator()
 		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
@@ -40,9 +40,9 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 		}
 
 		// 更新後のパスワードで検証できることを確認
-		user, err := userRepo.GetByEmail(context.Background(), email)
+		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("GetByEmail failed: %v", err)
+			t.Fatalf("FindByEmail failed: %v", err)
 		}
 
 		err = auth.CheckPassword(user.PasswordDigest, newPassword)
@@ -54,7 +54,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("古いパスワードでは検証できなくなる", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 
 		// テストユーザーを作成（デフォルトパスワードは "password"）
 		email := "test-old-password@example.com"
@@ -63,7 +63,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Build()
 
 		// Usecaseを作成
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 		passwordValidator := validator.NewPasswordUpdateValidator()
 		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
@@ -78,9 +78,9 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 		}
 
 		// 更新後のユーザーを取得
-		user, err := userRepo.GetByEmail(context.Background(), email)
+		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("GetByEmail failed: %v", err)
+			t.Fatalf("FindByEmail failed: %v", err)
 		}
 
 		// 古いパスワードでは検証できないことを確認
@@ -94,7 +94,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("日本語を含むパスワードで更新できる", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 
 		// テストユーザーを作成
 		email := "test-japanese-password@example.com"
@@ -103,7 +103,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Build()
 
 		// Usecaseを作成
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 		passwordValidator := validator.NewPasswordUpdateValidator()
 		uc := NewUpdatePasswordUsecase(passwordValidator, userRepo)
 
@@ -118,9 +118,9 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 		}
 
 		// 更新後のパスワードで検証できることを確認
-		user, err := userRepo.GetByEmail(context.Background(), email)
+		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("GetByEmail failed: %v", err)
+			t.Fatalf("FindByEmail failed: %v", err)
 		}
 
 		err = auth.CheckPassword(user.PasswordDigest, newPassword)

@@ -2,8 +2,6 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // EmailConfirmationEvent はメール確認のイベント種別
@@ -20,7 +18,7 @@ const (
 
 // EmailConfirmation はメール確認のドメインモデル
 type EmailConfirmation struct {
-	ID          uuid.UUID
+	ID          EmailConfirmationID
 	Email       string
 	Event       EmailConfirmationEvent
 	Code        string

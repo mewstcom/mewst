@@ -4,12 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/google/uuid"
-
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
-	email_confirmation_page "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
+	emailconfirmationpages "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
@@ -18,31 +15,17 @@ import (
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// コンテキストにロケールと設定を設定（テンプレート内での翻訳用）
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, h.cfg)
-
 	// クッキーからemail_confirmation_idを取得
-	emailConfirmationID := h.sessionMgr.GetEmailConfirmationID(r)
-	if emailConfirmationID == "" {
-		// IDがない場合はルートにリダイレクト
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-
-	// UUIDをパース
-	id, err := uuid.Parse(emailConfirmationID)
-	if err != nil {
-		// 無効なIDの場合はルートにリダイレクト
+	id, ok := h.sessionMgr.GetEmailConfirmationID(r)
+	if !ok {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
 	// 有効な確認レコードを取得
-	_, err = h.getActiveEmailConfirmationUC.Execute(ctx, usecase.GetActiveEmailConfirmationInput{ID: id})
+	_, err := h.getActiveEmailConfirmationUC.Execute(ctx, usecase.GetActiveEmailConfirmationInput{ID: id})
 	if err != nil {
 		if errors.Is(err, usecase.ErrNotFound) {
-			// 見つからないまたは期限切れの場合はルートにリダイレクト
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
@@ -53,23 +36,20 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	// CSRFトークンを取得
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
-	// フラッシュメッセージを取得
-	flash := h.sessionMgr.GetFlashFromCookie(w, r)
-
 	// ページデータを作成
-	data := email_confirmation_page.NewPageData{
+	data := emailconfirmationpages.NewPageData{
 		CSRFToken:  csrfToken,
 		FormErrors: nil,
 		Code:       "",
+		BackURL:    r.URL.Query().Get("back"),
 	}
 
 	// テンプレートをレンダリング
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "email_confirmation_title")
-	meta.SetOGURL(h.cfg, r.URL.Path)
 
-	content := email_confirmation_page.New(data)
-	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta, Flash: flash}, content)
+	content := emailconfirmationpages.New(data)
+	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	if err := layout.Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

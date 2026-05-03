@@ -9,9 +9,9 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/config"
 	handler "github.com/mewstcom/mewst/go/internal/handler/sign_out"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
@@ -19,39 +19,38 @@ import (
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
-	cfg := &config.Config{
-		Env:             "test",
-		Port:            "3000",
-		Domain:          "localhost",
-		CookieDomain:    "localhost",
-		SessionSecure:   false,
-		SessionHTTPOnly: true,
-	}
+	cfg := testutil.NewTestConfig(t)
 
-	// トランザクションを使用するリポジトリを作成
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
-	h := handler.NewHandler(cfg, sessionMgr)
+	h := handler.NewHandler(cfg, sessionMgr, flashMgr)
 
 	return h, cfg
+}
+
+// findCookie はレスポンスから指定名のCookieを返す（無ければnil）
+func findCookie(cookies []*http.Cookie, name string) *http.Cookie {
+	for _, c := range cookies {
+		if c.Name == name {
+			return c
+		}
+	}
+	return nil
 }
 
 func TestDelete_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
-	// コンテキストをセットアップ
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
-	// セッションクッキー付きのリクエストを作成
 	req := httptest.NewRequest(http.MethodDelete, "/sign_out", nil)
 	req.AddCookie(&http.Cookie{
 		Name:  session.CookieName,
@@ -62,41 +61,24 @@ func TestDelete_Success(t *testing.T) {
 
 	h.Delete(rr, req)
 
-	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
 	}
 
-	// リダイレクト先を検証
-	location := rr.Header().Get("Location")
-	if location != "/" {
+	if location := rr.Header().Get("Location"); location != "/" {
 		t.Errorf("リダイレクト先が不正: got %v, want /", location)
 	}
 
-	// セッションクッキーが削除されているか確認
 	cookies := rr.Result().Cookies()
-	var sessionCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.CookieName {
-			sessionCookie = c
-			break
-		}
-	}
+
+	sessionCookie := findCookie(cookies, session.CookieName)
 	if sessionCookie == nil {
 		t.Error("セッションクッキーがレスポンスに含まれていません")
 	} else if sessionCookie.MaxAge != -1 {
 		t.Errorf("セッションクッキーのMaxAgeが不正: got %v, want -1", sessionCookie.MaxAge)
 	}
 
-	// フラッシュメッセージクッキーが設定されているか確認
-	var flashCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.FlashCookieName {
-			flashCookie = c
-			break
-		}
-	}
-	if flashCookie == nil {
+	if findCookie(cookies, session.FlashCookieName) == nil {
 		t.Error("フラッシュメッセージクッキーが設定されていません")
 	}
 }
@@ -105,120 +87,81 @@ func TestDelete_WithoutSession(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
-	// コンテキストをセットアップ
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
-	// セッションクッキーなしのリクエストを作成
 	req := httptest.NewRequest(http.MethodDelete, "/sign_out", nil)
 	req = req.WithContext(ctx)
 	rr := httptest.NewRecorder()
 
 	h.Delete(rr, req)
 
-	// リダイレクトを検証（セッションがなくてもエラーにならない）
 	if rr.Code != http.StatusFound {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
 	}
 
-	// リダイレクト先を検証
-	location := rr.Header().Get("Location")
-	if location != "/" {
+	if location := rr.Header().Get("Location"); location != "/" {
 		t.Errorf("リダイレクト先が不正: got %v, want /", location)
 	}
 
-	// フラッシュメッセージクッキーが設定されているか確認
 	cookies := rr.Result().Cookies()
-	var flashCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.FlashCookieName {
-			flashCookie = c
-			break
-		}
-	}
-	if flashCookie == nil {
+	if findCookie(cookies, session.FlashCookieName) == nil {
 		t.Error("フラッシュメッセージクッキーが設定されていません")
 	}
 }
 
-func TestDelete_FlashMessage_Japanese(t *testing.T) {
+func TestDelete_FlashMessage(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
-
-	// 日本語ロケールでコンテキストをセットアップ
-	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
-
-	req := httptest.NewRequest(http.MethodDelete, "/sign_out", nil)
-	req = req.WithContext(ctx)
-	rr := httptest.NewRecorder()
-
-	h.Delete(rr, req)
-
-	// フラッシュメッセージの内容を検証
-	cookies := rr.Result().Cookies()
-	var flashCookie *http.Cookie
-	var flashTypeCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.FlashCookieName {
-			flashCookie = c
-		}
-		if c.Name == session.FlashTypeCookieName {
-			flashTypeCookie = c
-		}
+	tests := []struct {
+		name   string
+		locale string
+	}{
+		{name: "日本語ロケール", locale: "ja"},
+		{name: "英語ロケール", locale: "en"},
 	}
 
-	if flashCookie == nil {
-		t.Fatal("フラッシュメッセージクッキーが見つかりません")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	// フラッシュタイプがsuccessであることを確認
-	if flashTypeCookie == nil {
-		t.Fatal("フラッシュタイプクッキーが見つかりません")
-	}
-	if flashTypeCookie.Value != string(session.FlashSuccess) {
-		t.Errorf("フラッシュタイプが不正: got %v, want %v", flashTypeCookie.Value, session.FlashSuccess)
-	}
-}
+			db, tx := testutil.SetupTestDB(t)
+			h, cfg := setupTestHandler(t, db, tx)
 
-func TestDelete_FlashMessage_English(t *testing.T) {
-	t.Parallel()
+			ctx := context.Background()
+			ctx = i18n.SetLocale(ctx, tt.locale)
 
-	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+			req := httptest.NewRequest(http.MethodDelete, "/sign_out", nil)
+			req = req.WithContext(ctx)
+			rr := httptest.NewRecorder()
 
-	// 英語ロケールでコンテキストをセットアップ
-	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "en")
-	ctx = templates.WithConfig(ctx, cfg)
+			h.Delete(rr, req)
 
-	req := httptest.NewRequest(http.MethodDelete, "/sign_out", nil)
-	req = req.WithContext(ctx)
-	rr := httptest.NewRecorder()
+			flashCookie := findCookie(rr.Result().Cookies(), session.FlashCookieName)
+			if flashCookie == nil {
+				t.Fatal("フラッシュメッセージクッキーが見つかりません")
+			}
 
-	h.Delete(rr, req)
-
-	// フラッシュメッセージの内容を検証
-	cookies := rr.Result().Cookies()
-	var flashTypeCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.FlashTypeCookieName {
-			flashTypeCookie = c
-			break
-		}
-	}
-
-	if flashTypeCookie == nil {
-		t.Fatal("フラッシュタイプクッキーが見つかりません")
-	}
-	if flashTypeCookie.Value != string(session.FlashSuccess) {
-		t.Errorf("フラッシュタイプが不正: got %v, want %v", flashTypeCookie.Value, session.FlashSuccess)
+			// FlashManager 経由で同じ Cookie をデコードしてタイプとメッセージを検証する
+			fm := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
+			verifyReq := httptest.NewRequest(http.MethodGet, "/", nil)
+			verifyReq.AddCookie(flashCookie)
+			flash := fm.GetFlash(httptest.NewRecorder(), verifyReq)
+			if flash == nil {
+				t.Fatal("フラッシュメッセージのデコードに失敗")
+			}
+			if flash.Type != session.FlashSuccess {
+				t.Errorf("フラッシュタイプが不正: got %v, want %v", flash.Type, session.FlashSuccess)
+			}
+			// handler が ctx の locale を尊重し、ロケールごとに翻訳されたメッセージが Cookie に書かれていることを確認する
+			// 翻訳ファイルの文言変更に追従できるよう、期待値はリテラルではなく i18n.T 経由で生成する
+			expectedCtx := i18n.SetLocale(context.Background(), tt.locale)
+			want := i18n.T(expectedCtx, "flash_sign_out_success")
+			if flash.Message != want {
+				t.Errorf("フラッシュメッセージが不正: got %q, want %q", flash.Message, want)
+			}
+		})
 	}
 }
 
@@ -226,14 +169,10 @@ func TestDelete_POSTMethod(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
-	// コンテキストをセットアップ
 	ctx := context.Background()
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
-	// POSTメソッドでリクエストを作成（HTMLフォームからの呼び出しを想定）
 	req := httptest.NewRequest(http.MethodPost, "/sign_out", nil)
 	req.AddCookie(&http.Cookie{
 		Name:  session.CookieName,
@@ -244,26 +183,14 @@ func TestDelete_POSTMethod(t *testing.T) {
 
 	h.Delete(rr, req)
 
-	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
 	}
-
-	// リダイレクト先を検証
-	location := rr.Header().Get("Location")
-	if location != "/" {
+	if location := rr.Header().Get("Location"); location != "/" {
 		t.Errorf("リダイレクト先が不正: got %v, want /", location)
 	}
 
-	// セッションクッキーが削除されているか確認
-	cookies := rr.Result().Cookies()
-	var sessionCookie *http.Cookie
-	for _, c := range cookies {
-		if c.Name == session.CookieName {
-			sessionCookie = c
-			break
-		}
-	}
+	sessionCookie := findCookie(rr.Result().Cookies(), session.CookieName)
 	if sessionCookie == nil {
 		t.Error("セッションクッキーがレスポンスに含まれていません")
 	} else if sessionCookie.MaxAge != -1 {

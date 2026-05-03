@@ -4,11 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestActorRepository_GetByID(t *testing.T) {
+func TestActorRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -26,12 +28,12 @@ func TestActorRepository_GetByID(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	repo := repository.NewActorRepository(tx)
+	repo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するアクターを取得できる", func(t *testing.T) {
-		actor, err := repo.GetByID(ctx, actorID)
+		actor, err := repo.FindByID(ctx, actorID)
 		if err != nil {
-			t.Fatalf("GetByID() error = %v", err)
+			t.Fatalf("FindByID() error = %v", err)
 		}
 
 		if actor.ID != actorID {
@@ -45,7 +47,7 @@ func TestActorRepository_GetByID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないアクターはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("存在しないアクターはnilを返す", func(t *testing.T) {
 		// 一時的にアクターを作成して削除
 		tempUserID := testutil.NewUserBuilder(t, tx).
 			WithEmail("actor-temp@example.com").
@@ -59,22 +61,22 @@ func TestActorRepository_GetByID(t *testing.T) {
 			Build()
 
 		// 削除
-		_, err := tx.Exec("DELETE FROM actors WHERE id = $1", tempActorID)
+		_, err := tx.Exec("DELETE FROM actors WHERE id = $1", uuid.UUID(tempActorID))
 		if err != nil {
 			t.Fatalf("アクター削除に失敗: %v", err)
 		}
 
-		_, err = repo.GetByID(ctx, tempActorID)
-		if err == nil {
-			t.Error("GetByID() should return error for non-existent actor")
+		actor, err := repo.FindByID(ctx, tempActorID)
+		if err != nil {
+			t.Errorf("FindByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByID() error = %v, want ErrNotFound", err)
+		if actor != nil {
+			t.Errorf("FindByID() actor = %v, want nil", actor)
 		}
 	})
 }
 
-func TestActorRepository_GetByUserID(t *testing.T) {
+func TestActorRepository_FindByUserID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -92,12 +94,12 @@ func TestActorRepository_GetByUserID(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	repo := repository.NewActorRepository(tx)
+	repo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するアクターをユーザーIDで取得できる", func(t *testing.T) {
-		actor, err := repo.GetByUserID(ctx, userID)
+		actor, err := repo.FindByUserID(ctx, userID)
 		if err != nil {
-			t.Fatalf("GetByUserID() error = %v", err)
+			t.Fatalf("FindByUserID() error = %v", err)
 		}
 
 		if actor.ID != actorID {
@@ -111,18 +113,18 @@ func TestActorRepository_GetByUserID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないユーザーIDはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("存在しないユーザーIDはnilを返す", func(t *testing.T) {
 		// アクターを持たないユーザーを作成
 		noActorUserID := testutil.NewUserBuilder(t, tx).
 			WithEmail("noactor@example.com").
 			Build()
 
-		_, err := repo.GetByUserID(ctx, noActorUserID)
-		if err == nil {
-			t.Error("GetByUserID() should return error for user without actor")
+		actor, err := repo.FindByUserID(ctx, noActorUserID)
+		if err != nil {
+			t.Errorf("FindByUserID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByUserID() error = %v, want ErrNotFound", err)
+		if actor != nil {
+			t.Errorf("FindByUserID() actor = %v, want nil", actor)
 		}
 	})
 }

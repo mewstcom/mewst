@@ -8,9 +8,17 @@ import (
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/handler"
-	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/templates/pages/errors"
 )
+
+// serveWithI18n は i18n.Middleware を経由したリクエストを実行してレスポンスを返す
+func serveWithI18n(t *testing.T, h http.HandlerFunc, req *http.Request) *httptest.ResponseRecorder {
+	t.Helper()
+	rr := httptest.NewRecorder()
+	i18n.Middleware(h).ServeHTTP(rr, req)
+	return rr
+}
 
 func TestNotFound(t *testing.T) {
 	t.Parallel()
@@ -19,9 +27,7 @@ func TestNotFound(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/nonexistent", nil)
-		rr := httptest.NewRecorder()
-
-		handler.NotFound(rr, req)
+		rr := serveWithI18n(t, handler.NotFound, req)
 
 		if rr.Code != http.StatusNotFound {
 			t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusNotFound)
@@ -33,9 +39,7 @@ func TestNotFound(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/nonexistent", nil)
 		req.Header.Set("Accept-Language", "ja")
-		rr := httptest.NewRecorder()
-
-		handler.NotFound(rr, req)
+		rr := serveWithI18n(t, handler.NotFound, req)
 
 		body := rr.Body.String()
 
@@ -58,9 +62,7 @@ func TestNotFound(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/nonexistent", nil)
 		req.Header.Set("Accept-Language", "en")
-		rr := httptest.NewRecorder()
-
-		handler.NotFound(rr, req)
+		rr := serveWithI18n(t, handler.NotFound, req)
 
 		body := rr.Body.String()
 
@@ -82,9 +84,7 @@ func TestNotFound(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/nonexistent", nil)
-		rr := httptest.NewRecorder()
-
-		handler.NotFound(rr, req)
+		rr := serveWithI18n(t, handler.NotFound, req)
 
 		body := rr.Body.String()
 		if !strings.Contains(body, `href="/"`) {
@@ -100,9 +100,7 @@ func TestBadGateway(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/some-path", nil)
-		rr := httptest.NewRecorder()
-
-		handler.BadGateway(rr, req)
+		rr := serveWithI18n(t, handler.BadGateway, req)
 
 		if rr.Code != http.StatusBadGateway {
 			t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusBadGateway)
@@ -114,9 +112,7 @@ func TestBadGateway(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/some-path", nil)
 		req.Header.Set("Accept-Language", "ja")
-		rr := httptest.NewRecorder()
-
-		handler.BadGateway(rr, req)
+		rr := serveWithI18n(t, handler.BadGateway, req)
 
 		body := rr.Body.String()
 
@@ -140,9 +136,7 @@ func TestBadGateway(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/some-path", nil)
 		req.Header.Set("Accept-Language", "en")
-		rr := httptest.NewRecorder()
-
-		handler.BadGateway(rr, req)
+		rr := serveWithI18n(t, handler.BadGateway, req)
 
 		body := rr.Body.String()
 
@@ -165,9 +159,7 @@ func TestBadGateway(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/some-path", nil)
-		rr := httptest.NewRecorder()
-
-		handler.BadGateway(rr, req)
+		rr := serveWithI18n(t, handler.BadGateway, req)
 
 		body := rr.Body.String()
 		if !strings.Contains(body, `href="/"`) {
@@ -214,7 +206,7 @@ func TestBadGatewayTemplate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := templates.WithLocale(t.Context(), tt.locale)
+			ctx := i18n.SetLocale(t.Context(), tt.locale)
 
 			var buf bytes.Buffer
 			err := errors.BadGateway().Render(ctx, &buf)
@@ -268,7 +260,7 @@ func TestNotFoundTemplate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := templates.WithLocale(t.Context(), tt.locale)
+			ctx := i18n.SetLocale(t.Context(), tt.locale)
 
 			var buf bytes.Buffer
 			err := errors.NotFound().Render(ctx, &buf)

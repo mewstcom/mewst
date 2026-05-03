@@ -7,7 +7,6 @@ package query
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +14,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at)
 VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
-RETURNING id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
+RETURNING id, email, password_digest, locale, signed_up_at, created_at, updated_at, time_zone
 `
 
 type CreateUserParams struct {
@@ -25,34 +24,23 @@ type CreateUserParams struct {
 	TimeZone       string `db:"time_zone"`
 }
 
-type CreateUserRow struct {
-	ID             uuid.UUID `db:"id"`
-	Email          string    `db:"email"`
-	PasswordDigest string    `db:"password_digest"`
-	Locale         string    `db:"locale"`
-	TimeZone       string    `db:"time_zone"`
-	SignedUpAt     time.Time `db:"signed_up_at"`
-	CreatedAt      time.Time `db:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at"`
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.PasswordDigest,
 		arg.Locale,
 		arg.TimeZone,
 	)
-	var i CreateUserRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
 		&i.PasswordDigest,
 		&i.Locale,
-		&i.TimeZone,
 		&i.SignedUpAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.TimeZone,
 	)
 	return i, err
 }
@@ -71,89 +59,41 @@ func (q *Queries) ExistsUserByEmail(ctx context.Context, email string) (bool, er
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
-FROM users
-WHERE email = $1
-LIMIT 1
+SELECT id, email, password_digest, locale, signed_up_at, created_at, updated_at, time_zone FROM users WHERE email = $1 LIMIT 1
 `
 
-type GetUserByEmailRow struct {
-	ID             uuid.UUID `db:"id"`
-	Email          string    `db:"email"`
-	PasswordDigest string    `db:"password_digest"`
-	Locale         string    `db:"locale"`
-	TimeZone       string    `db:"time_zone"`
-	SignedUpAt     time.Time `db:"signed_up_at"`
-	CreatedAt      time.Time `db:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at"`
-}
-
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
-	var i GetUserByEmailRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
 		&i.PasswordDigest,
 		&i.Locale,
-		&i.TimeZone,
 		&i.SignedUpAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.TimeZone,
 	)
 	return i, err
 }
 
-const getUserByEmailForSignIn = `-- name: GetUserByEmailForSignIn :one
-SELECT id, email, password_digest
-FROM users
-WHERE email = $1
-LIMIT 1
-`
-
-type GetUserByEmailForSignInRow struct {
-	ID             uuid.UUID `db:"id"`
-	Email          string    `db:"email"`
-	PasswordDigest string    `db:"password_digest"`
-}
-
-func (q *Queries) GetUserByEmailForSignIn(ctx context.Context, email string) (GetUserByEmailForSignInRow, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmailForSignIn, email)
-	var i GetUserByEmailForSignInRow
-	err := row.Scan(&i.ID, &i.Email, &i.PasswordDigest)
-	return i, err
-}
-
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, password_digest, locale, time_zone, signed_up_at, created_at, updated_at
-FROM users
-WHERE id = $1
-LIMIT 1
+SELECT id, email, password_digest, locale, signed_up_at, created_at, updated_at, time_zone FROM users WHERE id = $1 LIMIT 1
 `
 
-type GetUserByIDRow struct {
-	ID             uuid.UUID `db:"id"`
-	Email          string    `db:"email"`
-	PasswordDigest string    `db:"password_digest"`
-	Locale         string    `db:"locale"`
-	TimeZone       string    `db:"time_zone"`
-	SignedUpAt     time.Time `db:"signed_up_at"`
-	CreatedAt      time.Time `db:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at"`
-}
-
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, id)
-	var i GetUserByIDRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
 		&i.PasswordDigest,
 		&i.Locale,
-		&i.TimeZone,
 		&i.SignedUpAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.TimeZone,
 	)
 	return i, err
 }

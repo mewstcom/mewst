@@ -6,7 +6,6 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -18,9 +17,8 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("正常系: サインインしてセッションを作成できる", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 		ctx := context.Background()
-		ctx = templates.WithLocale(ctx, "ja")
 
 		// テストデータを作成
 		testEmail := "signin-uc-success@example.com"
@@ -38,9 +36,9 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 			Build()
 
 		// リポジトリを作成
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		actorRepo := repository.NewActorRepository(db).WithTx(tx)
-		sessionRepo := repository.NewSessionRepository(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+		actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+		sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 		signInValidator := validator.NewSignInCreateValidator(userRepo)
 		uc := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
@@ -69,9 +67,8 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("正常系: 各呼び出しで異なるトークンが生成される", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 		ctx := context.Background()
-		ctx = templates.WithLocale(ctx, "ja")
 
 		testEmail := "signin-uc-unique@example.com"
 		userID := testutil.NewUserBuilder(t, tx).
@@ -87,9 +84,9 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 			WithProfileID(profileID).
 			Build()
 
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		actorRepo := repository.NewActorRepository(db).WithTx(tx)
-		sessionRepo := repository.NewSessionRepository(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+		actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+		sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 		signInValidator := validator.NewSignInCreateValidator(userRepo)
 		uc := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
@@ -119,13 +116,12 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: バリデーションエラー", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 		ctx := context.Background()
-		ctx = templates.WithLocale(ctx, "ja")
 
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		actorRepo := repository.NewActorRepository(db).WithTx(tx)
-		sessionRepo := repository.NewSessionRepository(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+		actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+		sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 		signInValidator := validator.NewSignInCreateValidator(userRepo)
 		uc := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
@@ -152,13 +148,12 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: ユーザーが見つからない場合", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 		ctx := context.Background()
-		ctx = templates.WithLocale(ctx, "ja")
 
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		actorRepo := repository.NewActorRepository(db).WithTx(tx)
-		sessionRepo := repository.NewSessionRepository(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+		actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+		sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 		signInValidator := validator.NewSignInCreateValidator(userRepo)
 		uc := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
@@ -185,18 +180,17 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: パスワードが正しくない場合", func(t *testing.T) {
 		t.Parallel()
 
-		db, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTestDB(t)
 		ctx := context.Background()
-		ctx = templates.WithLocale(ctx, "ja")
 
 		testEmail := "signin-uc-wrongpw@example.com"
 		testutil.NewUserBuilder(t, tx).
 			WithEmail(testEmail).
 			Build()
 
-		userRepo := repository.NewUserRepository(db).WithTx(tx)
-		actorRepo := repository.NewActorRepository(db).WithTx(tx)
-		sessionRepo := repository.NewSessionRepository(tx)
+		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+		actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+		sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 		signInValidator := validator.NewSignInCreateValidator(userRepo)
 		uc := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)

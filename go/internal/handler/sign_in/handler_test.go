@@ -14,7 +14,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -33,27 +32,20 @@ func (m *mockTurnstile) Verify(ctx context.Context, token string) (bool, error) 
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
-	cfg := &config.Config{
-		Env:              "test",
-		Port:             "3000",
-		Domain:           "localhost",
-		CookieDomain:     "localhost",
-		SessionSecure:    false,
-		SessionHTTPOnly:  true,
-		TurnstileSiteKey: "test-site-key",
-	}
+	cfg := testutil.NewTestConfig(t)
 
 	// トランザクションを使用するリポジトリを作成
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
 	signInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 
-	h := handler.NewHandler(cfg, sessionMgr, signInUC, turnstile)
+	h := handler.NewHandler(cfg, sessionMgr, flashMgr, signInUC, turnstile)
 
 	return h, cfg
 }
@@ -83,13 +75,11 @@ func TestNew(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/sign_in", nil)
 	req = req.WithContext(ctx)
@@ -119,7 +109,7 @@ func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-success@example.com"
@@ -128,8 +118,6 @@ func TestCreate_Success(t *testing.T) {
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -186,12 +174,10 @@ func TestCreate_InvalidEmail(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 不正なメールアドレスでログイン試行
 	form := url.Values{}
@@ -223,12 +209,10 @@ func TestCreate_UserNotFound(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 存在しないユーザーでログイン試行
 	form := url.Values{}
@@ -260,7 +244,7 @@ func TestCreate_WrongPassword(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-wrongpass@example.com"
@@ -268,8 +252,6 @@ func TestCreate_WrongPassword(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 間違ったパスワードでログイン試行
 	form := url.Values{}
@@ -301,7 +283,7 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
+	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
 
 	// テストユーザーを作成
 	testEmail := "test-turnstile@example.com"
@@ -309,8 +291,6 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("email", testEmail)
@@ -341,12 +321,10 @@ func TestCreate_EmptyFields(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 空のフィールドでログイン試行
 	form := url.Values{}
@@ -378,12 +356,10 @@ func TestNew_WithBackParameter(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// backパラメータ付きでリクエスト
 	req := httptest.NewRequest(http.MethodGet, "/sign_in?back=/settings", nil)
@@ -406,8 +382,8 @@ func TestNew_WithBackParameter(t *testing.T) {
 		t.Error("back hiddenフィールドの値が正しくありません")
 	}
 
-	// サインアップリンクにbackパラメータが含まれているか確認
-	if !strings.Contains(body, `/sign_up?back=/settings`) {
+	// サインアップリンクにbackパラメータが含まれているか確認（URLクエリエスケープ済み）
+	if !strings.Contains(body, `/sign_up?back=%2Fsettings`) {
 		t.Error("サインアップリンクにbackパラメータが含まれていません")
 	}
 }
@@ -416,7 +392,7 @@ func TestCreate_SuccessWithBackParameter(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-back-success@example.com"
@@ -424,8 +400,6 @@ func TestCreate_SuccessWithBackParameter(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// backパラメータ付きでログイン
 	form := url.Values{}
@@ -494,7 +468,7 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 			t.Parallel()
 
 			db, tx := testutil.SetupTestDB(t)
-			h, cfg := setupTestHandler(t, db, tx, true)
+			h, _ := setupTestHandler(t, db, tx, true)
 
 			// テストユーザーを作成
 			testEmail := "test-invalid-back-" + tc.name + "@example.com"
@@ -502,8 +476,6 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 
 			ctx := context.Background()
 			ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-			ctx = templates.WithLocale(ctx, "ja")
-			ctx = templates.WithConfig(ctx, cfg)
 
 			form := url.Values{}
 			form.Set("email", testEmail)
@@ -537,12 +509,10 @@ func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// backパラメータ付きで無効なメールアドレスでログイン試行
 	form := url.Values{}

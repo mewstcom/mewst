@@ -1,197 +1,290 @@
-package session
+package session_test
 
 import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
-	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/session"
 )
 
-func TestFlashContext(t *testing.T) {
+func TestFlashManager_SetSuccess(t *testing.T) {
 	t.Parallel()
 
-	t.Run("SetFlashToContextとGetFlashFromContextでフラッシュを保存・取得できる", func(t *testing.T) {
-		t.Parallel()
+	fm := session.NewFlashManager(".example.com", true, true)
 
-		flash := &Flash{
-			Type:    FlashSuccess,
-			Message: "成功しました",
-		}
+	rr := httptest.NewRecorder()
+	fm.SetSuccess(rr, "ログインしました")
 
-		ctx := context.Background()
-		ctx = SetFlashToContext(ctx, flash)
-
-		got := GetFlashFromContext(ctx)
-		if got == nil {
-			t.Fatal("GetFlashFromContext() = nil, want flash")
-		}
-		if got.Type != FlashSuccess {
-			t.Errorf("Flash.Type = %v, want %v", got.Type, FlashSuccess)
-		}
-		if got.Message != "成功しました" {
-			t.Errorf("Flash.Message = %q, want %q", got.Message, "成功しました")
-		}
-	})
-
-	t.Run("GetFlashFromContextはフラッシュがない場合nilを返す", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		got := GetFlashFromContext(ctx)
-		if got != nil {
-			t.Errorf("GetFlashFromContext() = %v, want nil", got)
-		}
-	})
-}
-
-func TestManager_FlashCookie(t *testing.T) {
-	t.Parallel()
-
-	cfg := &config.Config{
-		CookieDomain:    "example.com",
-		SessionSecure:   true,
-		SessionHTTPOnly: true,
+	cookies := rr.Result().Cookies()
+	if len(cookies) != 1 {
+		t.Fatalf("Cookieの数が不正: got %d, want 1", len(cookies))
 	}
 
-	manager := NewManager(nil, nil, nil, cfg)
+	cookie := cookies[0]
+	if cookie.Name != session.FlashCookieName {
+		t.Errorf("Cookie名が不正: got %s, want %s", cookie.Name, session.FlashCookieName)
+	}
+	if cookie.Value == "" {
+		t.Error("Cookie値が空です")
+	}
 
-	t.Run("SetFlashCookieでフラッシュクッキーを設定できる", func(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(cookie)
+
+	rr2 := httptest.NewRecorder()
+	flash := fm.GetFlash(rr2, req)
+
+	if flash == nil {
+		t.Fatal("フラッシュメッセージがnilです")
+	}
+	if flash.Type != session.FlashSuccess {
+		t.Errorf("タイプが不正: got %s, want %s", flash.Type, session.FlashSuccess)
+	}
+	if flash.Message != "ログインしました" {
+		t.Errorf("メッセージが不正: got %s, want ログインしました", flash.Message)
+	}
+}
+
+func TestFlashManager_SetError(t *testing.T) {
+	t.Parallel()
+
+	fm := session.NewFlashManager(".example.com", true, true)
+
+	rr := httptest.NewRecorder()
+	fm.SetError(rr, "エラーが発生しました")
+
+	cookie := rr.Result().Cookies()[0]
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(cookie)
+
+	rr2 := httptest.NewRecorder()
+	flash := fm.GetFlash(rr2, req)
+
+	if flash == nil {
+		t.Fatal("フラッシュメッセージがnilです")
+	}
+	if flash.Type != session.FlashError {
+		t.Errorf("タイプが不正: got %s, want %s", flash.Type, session.FlashError)
+	}
+	if flash.Message != "エラーが発生しました" {
+		t.Errorf("メッセージが不正: got %s, want エラーが発生しました", flash.Message)
+	}
+}
+
+func TestFlashManager_SetWarning(t *testing.T) {
+	t.Parallel()
+
+	fm := session.NewFlashManager(".example.com", true, true)
+
+	rr := httptest.NewRecorder()
+	fm.SetWarning(rr, "注意が必要です")
+
+	cookie := rr.Result().Cookies()[0]
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(cookie)
+
+	rr2 := httptest.NewRecorder()
+	flash := fm.GetFlash(rr2, req)
+
+	if flash == nil {
+		t.Fatal("フラッシュメッセージがnilです")
+	}
+	if flash.Type != session.FlashWarning {
+		t.Errorf("タイプが不正: got %s, want %s", flash.Type, session.FlashWarning)
+	}
+	if flash.Message != "注意が必要です" {
+		t.Errorf("メッセージが不正: got %s, want 注意が必要です", flash.Message)
+	}
+}
+
+func TestFlashManager_SetInfo(t *testing.T) {
+	t.Parallel()
+
+	fm := session.NewFlashManager(".example.com", true, true)
+
+	rr := httptest.NewRecorder()
+	fm.SetInfo(rr, "お知らせがあります")
+
+	cookie := rr.Result().Cookies()[0]
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(cookie)
+
+	rr2 := httptest.NewRecorder()
+	flash := fm.GetFlash(rr2, req)
+
+	if flash == nil {
+		t.Fatal("フラッシュメッセージがnilです")
+	}
+	if flash.Type != session.FlashInfo {
+		t.Errorf("タイプが不正: got %s, want %s", flash.Type, session.FlashInfo)
+	}
+	if flash.Message != "お知らせがあります" {
+		t.Errorf("メッセージが不正: got %s, want お知らせがあります", flash.Message)
+	}
+}
+
+func TestFlashManager_GetFlash(t *testing.T) {
+	t.Parallel()
+
+	fm := session.NewFlashManager(".example.com", true, true)
+
+	t.Run("Cookieがない場合はnilを返すこと", func(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		rr := httptest.NewRecorder()
 
-		manager.SetFlashCookie(rr, req, FlashSuccess, "ログインしました")
+		flash := fm.GetFlash(rr, req)
 
-		cookies := rr.Result().Cookies()
-		if len(cookies) != 2 {
-			t.Fatalf("SetFlashCookie() set %d cookies, want 2", len(cookies))
-		}
-
-		// メッセージクッキーを確認
-		var messageCookie, typeCookie *http.Cookie
-		for _, c := range cookies {
-			switch c.Name {
-			case FlashCookieName:
-				messageCookie = c
-			case FlashTypeCookieName:
-				typeCookie = c
-			}
-		}
-
-		if messageCookie == nil {
-			t.Fatal("FlashCookieName cookie not found")
-		}
-		// メッセージはURLエンコードされている
-		expectedEncoded := url.QueryEscape("ログインしました")
-		if messageCookie.Value != expectedEncoded {
-			t.Errorf("messageCookie.Value = %q, want %q", messageCookie.Value, expectedEncoded)
-		}
-		if messageCookie.MaxAge != 60 {
-			t.Errorf("messageCookie.MaxAge = %d, want 60", messageCookie.MaxAge)
-		}
-
-		if typeCookie == nil {
-			t.Fatal("FlashTypeCookieName cookie not found")
-		}
-		if typeCookie.Value != string(FlashSuccess) {
-			t.Errorf("typeCookie.Value = %q, want %q", typeCookie.Value, FlashSuccess)
+		if flash != nil {
+			t.Errorf("フラッシュメッセージがnilではありません: %+v", flash)
 		}
 	})
 
-	t.Run("GetFlashFromCookieでフラッシュを取得し削除できる", func(t *testing.T) {
+	t.Run("フラッシュ取得後にCookieが削除されること", func(t *testing.T) {
 		t.Parallel()
 
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		// クッキーにはURLエンコードされた値を設定
-		req.AddCookie(&http.Cookie{
-			Name:  FlashCookieName,
-			Value: url.QueryEscape("テストメッセージ"),
-		})
-		req.AddCookie(&http.Cookie{
-			Name:  FlashTypeCookieName,
-			Value: string(FlashInfo),
-		})
-
 		rr := httptest.NewRecorder()
-		flash := manager.GetFlashFromCookie(rr, req)
+		fm.SetSuccess(rr, "テストメッセージ")
+		cookie := rr.Result().Cookies()[0]
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.AddCookie(cookie)
+
+		rr2 := httptest.NewRecorder()
+		flash := fm.GetFlash(rr2, req)
 
 		if flash == nil {
-			t.Fatal("GetFlashFromCookie() = nil, want flash")
-		}
-		if flash.Type != FlashInfo {
-			t.Errorf("flash.Type = %v, want %v", flash.Type, FlashInfo)
-		}
-		// デコードされたメッセージを返す
-		if flash.Message != "テストメッセージ" {
-			t.Errorf("flash.Message = %q, want %q", flash.Message, "テストメッセージ")
+			t.Fatal("フラッシュメッセージがnilです")
 		}
 
-		// 削除クッキーが設定されているか確認
-		cookies := rr.Result().Cookies()
-		if len(cookies) != 2 {
-			t.Fatalf("GetFlashFromCookie() set %d delete cookies, want 2", len(cookies))
+		deleteCookies := rr2.Result().Cookies()
+		if len(deleteCookies) != 1 {
+			t.Fatalf("削除用Cookieの数が不正: got %d, want 1", len(deleteCookies))
 		}
-		for _, c := range cookies {
-			if c.MaxAge != -1 {
-				t.Errorf("Delete cookie MaxAge = %d, want -1", c.MaxAge)
-			}
+
+		if deleteCookies[0].MaxAge != -1 {
+			t.Errorf("MaxAgeが不正: got %d, want -1", deleteCookies[0].MaxAge)
 		}
 	})
 
-	t.Run("GetFlashFromCookieはフラッシュがない場合nilを返す", func(t *testing.T) {
-		t.Parallel()
-
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		rr := httptest.NewRecorder()
-
-		flash := manager.GetFlashFromCookie(rr, req)
-		if flash != nil {
-			t.Errorf("GetFlashFromCookie() = %v, want nil", flash)
-		}
-	})
-
-	t.Run("GetFlashFromCookieはメッセージクッキーのみの場合nilを返す", func(t *testing.T) {
+	t.Run("不正なBase64の場合はnilを返してCookieを削除すること", func(t *testing.T) {
 		t.Parallel()
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		req.AddCookie(&http.Cookie{
-			Name:  FlashCookieName,
-			Value: url.QueryEscape("テストメッセージ"),
+			Name:  session.FlashCookieName,
+			Value: "!!! invalid base64 !!!",
 		})
-		// タイプクッキーがない
 
 		rr := httptest.NewRecorder()
-		flash := manager.GetFlashFromCookie(rr, req)
+		flash := fm.GetFlash(rr, req)
+
 		if flash != nil {
-			t.Errorf("GetFlashFromCookie() = %v, want nil", flash)
+			t.Errorf("フラッシュメッセージがnilではありません: %+v", flash)
+		}
+
+		deleteCookies := rr.Result().Cookies()
+		if len(deleteCookies) != 1 {
+			t.Fatalf("削除用Cookieの数が不正: got %d, want 1", len(deleteCookies))
+		}
+		if deleteCookies[0].MaxAge != -1 {
+			t.Errorf("MaxAgeが不正: got %d, want -1", deleteCookies[0].MaxAge)
 		}
 	})
 }
 
-func TestFlashTypes(t *testing.T) {
+func TestFlashManager_CookieAttributes(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		flashType FlashType
-		expected  string
-	}{
-		{FlashSuccess, "success"},
-		{FlashError, "error"},
-		{FlashInfo, "info"},
-		{FlashWarning, "warning"},
-	}
+	t.Run("HttpOnlyがfalseであること", func(t *testing.T) {
+		t.Parallel()
 
-	for _, tt := range tests {
-		t.Run(string(tt.flashType), func(t *testing.T) {
-			t.Parallel()
+		fm := session.NewFlashManager(".example.com", true, true)
+		rr := httptest.NewRecorder()
+		fm.SetSuccess(rr, "テスト")
 
-			if string(tt.flashType) != tt.expected {
-				t.Errorf("FlashType = %q, want %q", string(tt.flashType), tt.expected)
+		cookie := rr.Result().Cookies()[0]
+		if cookie.HttpOnly {
+			t.Error("HttpOnlyフラグがtrueです（falseであるべき）")
+		}
+	})
+
+	t.Run("SameSiteがLaxであること", func(t *testing.T) {
+		t.Parallel()
+
+		fm := session.NewFlashManager(".example.com", true, true)
+		rr := httptest.NewRecorder()
+		fm.SetSuccess(rr, "テスト")
+
+		cookie := rr.Result().Cookies()[0]
+		if cookie.SameSite != http.SameSiteLaxMode {
+			t.Errorf("SameSiteが不正: got %v, want %v", cookie.SameSite, http.SameSiteLaxMode)
+		}
+	})
+}
+
+func TestFlashManager_Middleware(t *testing.T) {
+	t.Parallel()
+
+	fm := session.NewFlashManager(".example.com", true, true)
+
+	t.Run("Cookieにフラッシュメッセージがあるとcontextに設定されること", func(t *testing.T) {
+		t.Parallel()
+
+		// フラッシュをセットして cookie を取り出す
+		rr := httptest.NewRecorder()
+		fm.SetSuccess(rr, "ようこそ")
+		cookie := rr.Result().Cookies()[0]
+
+		var observed *session.FlashMessage
+		next := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+			observed = session.FlashFromContext(r.Context())
+		})
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.AddCookie(cookie)
+		rr2 := httptest.NewRecorder()
+		fm.Middleware(next).ServeHTTP(rr2, req)
+
+		if observed == nil {
+			t.Fatal("contextからフラッシュが取得できませんでした")
+		}
+		if observed.Type != session.FlashSuccess {
+			t.Errorf("タイプが不正: got %s, want %s", observed.Type, session.FlashSuccess)
+		}
+		if observed.Message != "ようこそ" {
+			t.Errorf("メッセージが不正: got %s, want ようこそ", observed.Message)
+		}
+	})
+
+	t.Run("Cookieがなければcontextには何も入らないこと", func(t *testing.T) {
+		t.Parallel()
+
+		called := false
+		next := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+			called = true
+			if flash := session.FlashFromContext(r.Context()); flash != nil {
+				t.Errorf("フラッシュが残っています: %+v", flash)
 			}
 		})
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		rr := httptest.NewRecorder()
+		fm.Middleware(next).ServeHTTP(rr, req)
+
+		if !called {
+			t.Fatal("next ハンドラーが呼ばれませんでした")
+		}
+	})
+}
+
+func TestFlashFromContext_NoValue(t *testing.T) {
+	t.Parallel()
+
+	if flash := session.FlashFromContext(context.Background()); flash != nil {
+		t.Errorf("フラッシュメッセージがnilではありません: %+v", flash)
 	}
 }

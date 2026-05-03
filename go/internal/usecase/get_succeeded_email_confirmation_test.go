@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -29,7 +30,7 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 		Build()
 
 	// ユースケースを実行
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	result, err := uc.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{
 		ID: emailConfirmationID,
@@ -63,10 +64,10 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 	ctx := context.Background()
 
 	// 存在しないIDで実行
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	_, err := uc.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{
-		ID: uuid.New(),
+		ID: model.EmailConfirmationID(uuid.New()),
 	})
 
 	if err == nil {
@@ -91,7 +92,7 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotSucceeded(t *testing.T)
 		WithCode("123456").
 		Build()
 
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	_, err := uc.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{
 		ID: emailConfirmationID,

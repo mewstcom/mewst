@@ -46,8 +46,8 @@ type CreateSignInOutput struct {
 
 // Execute はサインイン処理を実行する
 func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInInput) (*CreateSignInOutput, error) {
-	// 1. バリデーション
-	validateOutput, err := uc.signInValidator.Validate(ctx, validator.SignInCreateValidatorInput{
+	// 1. バリデーション (トランザクション外)
+	user, err := uc.signInValidator.Validate(ctx, validator.SignInCreateValidatorInput{
 		Email:    input.Email,
 		Password: input.Password,
 	})
@@ -55,21 +55,28 @@ func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInIn
 		return nil, err
 	}
 
-	// 2. アクターを取得
-	actor, err := uc.actorRepo.GetByUserID(ctx, validateOutput.User.ID)
+	// 2. データ取得: Validator が引いたユーザーを使ってアクターを取得 (トランザクション外)
+	actor, err := uc.actorRepo.FindByUserID(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("アクターの取得に失敗: %w", err)
 	}
+	if actor == nil {
+		return nil, ErrNotFound
+	}
 
-	// 3. セッショントークンを生成
+	// 3. ビジネスロジック + 永続化
+	return uc.createSignIn(ctx, actor.ID, input)
+}
+
+// createSignIn はトークンを生成しセッションを作成する
+func (uc *CreateSignInUsecase) createSignIn(ctx context.Context, actorID model.ActorID, input CreateSignInInput) (*CreateSignInOutput, error) {
 	token, err := auth.GenerateSecureToken()
 	if err != nil {
 		return nil, fmt.Errorf("セッショントークンの生成に失敗: %w", err)
 	}
 
-	// 4. セッションを作成
-	s, err := uc.sessionRepo.Create(ctx, repository.CreateSessionParams{
-		ActorID:   actor.ID,
+	s, err := uc.sessionRepo.Create(ctx, repository.CreateSessionInput{
+		ActorID:   actorID,
 		Token:     token,
 		IPAddress: input.IPAddress,
 		UserAgent: input.UserAgent,

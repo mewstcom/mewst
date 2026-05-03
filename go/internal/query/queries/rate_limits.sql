@@ -9,11 +9,6 @@ DO UPDATE SET
     updated_at = NOW()
 RETURNING *;
 
--- name: GetRateLimitCount :one
--- 指定されたkeyとウィンドウ開始時刻でのカウントを取得する
-SELECT count FROM rate_limits
-WHERE key = $1 AND window_start = $2;
-
 -- name: DeleteOldRateLimits :exec
 -- 指定された時刻より古いRate Limitレコードを削除する
 DELETE FROM rate_limits

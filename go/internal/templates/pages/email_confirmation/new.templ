@@ -11,6 +11,7 @@ type NewPageData struct {
 	CSRFToken  string
 	FormErrors *model.ValidationError
 	Code       string
+	BackURL    string
 }
 
 // New は確認コード入力フォームを表示する
@@ -43,6 +44,9 @@ templ New(data NewPageData) {
 			method="POST"
 		>
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+			if data.BackURL != "" {
+				<input type="hidden" name="back" value={ data.BackURL }/>
+			}
 
 			<div class="grid gap-2">
 				<label for="code">
@@ -82,7 +86,7 @@ templ New(data NewPageData) {
 				tabindex="2"
 				type="submit"
 			>
-				@templates.Icon("arrow-right")
+				@templates.Icon("arrow-right-regular")
 				{ templates.T(ctx, "btn_verify_code") }
 			</button>
 		</form>

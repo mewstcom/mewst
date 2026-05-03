@@ -5,11 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestProfileRepository_GetByID(t *testing.T) {
+func TestProfileRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -21,12 +23,12 @@ func TestProfileRepository_GetByID(t *testing.T) {
 		WithName("Test User").
 		Build()
 
-	repo := repository.NewProfileRepository(tx)
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するプロフィールを取得できる", func(t *testing.T) {
-		profile, err := repo.GetByID(ctx, profileID)
+		profile, err := repo.FindByID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("GetByID() error = %v", err)
+			t.Fatalf("FindByID() error = %v", err)
 		}
 
 		if profile.ID != profileID {
@@ -40,24 +42,24 @@ func TestProfileRepository_GetByID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないプロフィールはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("存在しないプロフィールはnilを返す", func(t *testing.T) {
 		nonExistentID := testutil.NewProfileBuilder(t, tx).Build()
-		_, err := tx.Exec("DELETE FROM profiles WHERE id = $1", nonExistentID)
+		_, err := tx.Exec("DELETE FROM profiles WHERE id = $1", uuid.UUID(nonExistentID))
 		if err != nil {
 			t.Fatalf("プロフィール削除に失敗: %v", err)
 		}
 
-		_, err = repo.GetByID(ctx, nonExistentID)
-		if err == nil {
-			t.Error("GetByID() should return error for non-existent profile")
+		profile, err := repo.FindByID(ctx, nonExistentID)
+		if err != nil {
+			t.Errorf("FindByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByID() error = %v, want ErrNotFound", err)
+		if profile != nil {
+			t.Errorf("FindByID() profile = %v, want nil", profile)
 		}
 	})
 }
 
-func TestProfileRepository_GetByAtname(t *testing.T) {
+func TestProfileRepository_FindByAtname(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -69,12 +71,12 @@ func TestProfileRepository_GetByAtname(t *testing.T) {
 		WithName("Find By Atname").
 		Build()
 
-	repo := repository.NewProfileRepository(tx)
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するプロフィールをアットネームで取得できる", func(t *testing.T) {
-		profile, err := repo.GetByAtname(ctx, "findbyatname")
+		profile, err := repo.FindByAtname(ctx, "findbyatname")
 		if err != nil {
-			t.Fatalf("GetByAtname() error = %v", err)
+			t.Fatalf("FindByAtname() error = %v", err)
 		}
 
 		if profile.ID != profileID {
@@ -85,13 +87,13 @@ func TestProfileRepository_GetByAtname(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないアットネームはErrNotFoundを返す", func(t *testing.T) {
-		_, err := repo.GetByAtname(ctx, "nonexistent")
-		if err == nil {
-			t.Error("GetByAtname() should return error for non-existent atname")
+	t.Run("存在しないアットネームはnilを返す", func(t *testing.T) {
+		profile, err := repo.FindByAtname(ctx, "nonexistent")
+		if err != nil {
+			t.Errorf("FindByAtname() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByAtname() error = %v, want ErrNotFound", err)
+		if profile != nil {
+			t.Errorf("FindByAtname() profile = %v, want nil", profile)
 		}
 	})
 }
@@ -107,7 +109,7 @@ func TestProfileRepository_ExistsByAtname(t *testing.T) {
 		WithAtname("existstest").
 		Build()
 
-	repo := repository.NewProfileRepository(tx)
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するアットネームはtrueを返す", func(t *testing.T) {
 		exists, err := repo.ExistsByAtname(ctx, "existstest")
@@ -136,11 +138,11 @@ func TestProfileRepository_Create(t *testing.T) {
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewProfileRepository(tx)
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("プロフィールを作成できる", func(t *testing.T) {
 		joinedAt := time.Now()
-		profile, err := repo.Create(ctx, repository.CreateProfileParams{
+		profile, err := repo.Create(ctx, repository.CreateProfileInput{
 			OwnerType:     "Actor",
 			Atname:        "newuser",
 			Name:          "New User",
@@ -179,13 +181,13 @@ func TestProfileRepository_WithTx(t *testing.T) {
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewProfileRepository(tx)
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	// WithTxでトランザクションを設定したリポジトリを取得
 	txRepo := repo.WithTx(tx)
 
 	t.Run("トランザクション内でプロフィールを作成できる", func(t *testing.T) {
-		profile, err := txRepo.Create(ctx, repository.CreateProfileParams{
+		profile, err := txRepo.Create(ctx, repository.CreateProfileInput{
 			OwnerType:     "Actor",
 			Atname:        "txuser",
 			Name:          "Transaction User",
@@ -201,9 +203,9 @@ func TestProfileRepository_WithTx(t *testing.T) {
 		}
 
 		// 作成したプロフィールを取得できることを確認
-		fetched, err := txRepo.GetByID(ctx, profile.ID)
+		fetched, err := txRepo.FindByID(ctx, profile.ID)
 		if err != nil {
-			t.Fatalf("GetByID() error = %v", err)
+			t.Fatalf("FindByID() error = %v", err)
 		}
 		if fetched.Atname != "txuser" {
 			t.Errorf("fetched.Atname = %v, want txuser", fetched.Atname)

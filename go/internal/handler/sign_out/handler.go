@@ -10,15 +10,18 @@ import (
 type Handler struct {
 	cfg        *config.Config
 	sessionMgr *session.Manager
+	flashMgr   *session.FlashManager
 }
 
 // NewHandler はHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,
+	flashMgr *session.FlashManager,
 ) *Handler {
 	return &Handler{
 		cfg:        cfg,
 		sessionMgr: sessionMgr,
+		flashMgr:   flashMgr,
 	}
 }

@@ -25,10 +25,10 @@ func setupCreateAccountTest(t *testing.T) (
 	db, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
-	userProfileRepo := repository.NewUserProfileRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
+	userProfileRepo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 
 	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
 	uc := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
@@ -105,9 +105,9 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 			}
 
 			// Actorの検証
-			actor, err := actorRepo.GetByID(ctx, result.Actor.ID)
+			actor, err := actorRepo.FindByID(ctx, result.Actor.ID)
 			if err != nil {
-				t.Fatalf("GetByID() error = %v", err)
+				t.Fatalf("FindByID() error = %v", err)
 			}
 
 			if actor.UserID != result.Actor.UserID {
@@ -119,9 +119,9 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 			}
 
 			// Userの検証
-			user, err := userRepo.GetByID(ctx, result.Actor.UserID)
+			user, err := userRepo.FindByID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("GetByID() error = %v", err)
+				t.Fatalf("FindByID() error = %v", err)
 			}
 
 			if user.Email != tt.input.Email {
@@ -137,9 +137,9 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 			}
 
 			// Profileの検証
-			profile, err := profileRepo.GetByID(ctx, result.Actor.ProfileID)
+			profile, err := profileRepo.FindByID(ctx, result.Actor.ProfileID)
 			if err != nil {
-				t.Fatalf("GetByID() error = %v", err)
+				t.Fatalf("FindByID() error = %v", err)
 			}
 
 			if profile.Atname != tt.input.Atname {
@@ -159,9 +159,9 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 			}
 
 			// UserProfileの検証
-			userProfile, err := userProfileRepo.GetByUserID(ctx, result.Actor.UserID)
+			userProfile, err := userProfileRepo.FindByUserID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("GetByUserID() error = %v", err)
+				t.Fatalf("FindByUserID() error = %v", err)
 			}
 
 			if userProfile.UserID != result.Actor.UserID {
@@ -222,9 +222,9 @@ func TestCreateAccountUsecase_Execute_HashesPassword(t *testing.T) {
 				t.Fatalf("Execute() error = %v", err)
 			}
 
-			user, err := userRepo.GetByID(ctx, result.Actor.UserID)
+			user, err := userRepo.FindByID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("GetByID() error = %v", err)
+				t.Fatalf("FindByID() error = %v", err)
 			}
 
 			// パスワードが平文で保存されていないことを確認

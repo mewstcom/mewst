@@ -17,7 +17,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -36,26 +35,19 @@ func (m *mockTurnstile) Verify(_ context.Context, _ string) (bool, error) {
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
-	cfg := &config.Config{
-		Env:              "test",
-		Port:             "3000",
-		Domain:           "localhost",
-		CookieDomain:     "localhost",
-		SessionSecure:    false,
-		SessionHTTPOnly:  true,
-		TurnstileSiteKey: "test-site-key",
-	}
+	cfg := testutil.NewTestConfig(t)
 
 	// トランザクションを使用するリポジトリを作成
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
-	userProfileRepo := repository.NewUserProfileRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	rateLimitRepo := repository.NewRateLimitRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
+	userProfileRepo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
+	rateLimitRepo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
@@ -63,7 +55,7 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstile, rateLimiter)
+	h := handler.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstile, rateLimiter)
 
 	return h, cfg
 }
@@ -88,13 +80,11 @@ func TestNew(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 確認済みメール確認を作成
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/accounts/new", nil)
 	req = req.WithContext(ctx)
@@ -129,12 +119,10 @@ func TestNew_WithoutEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// メール確認クッキーなしでリクエスト
 	req := httptest.NewRequest(http.MethodGet, "/accounts/new", nil)
@@ -154,16 +142,51 @@ func TestNew_WithoutEmailConfirmation(t *testing.T) {
 	}
 }
 
+func TestNew_WithMismatchedEvent(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, _ := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	// sign_up 以外のイベント（password_reset）の確認済みレコードを作成
+	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
+		WithEmail("mismatched@example.com").
+		WithEvent("password_reset").
+		WithSucceededAt(time.Now()).
+		Build()
+
+	req := httptest.NewRequest(http.MethodGet, "/accounts/new", nil)
+	req.AddCookie(&http.Cookie{
+		Name:  session.EmailConfirmationCookieName,
+		Value: ecID.String(),
+	})
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	h.New(rr, req)
+
+	// イベント種別が異なるためルートへリダイレクトされることを検証
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	location := rr.Header().Get("Location")
+	if location != "/" {
+		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+	}
+}
+
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -236,12 +259,10 @@ func TestCreate_WithoutEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("atname", "newuser")
@@ -268,16 +289,58 @@ func TestCreate_WithoutEmailConfirmation(t *testing.T) {
 	}
 }
 
+func TestCreate_WithMismatchedEvent(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, _ := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	form := url.Values{}
+	form.Set("atname", "mismatched")
+	form.Set("password", "password123")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+
+	req := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+
+	// sign_up 以外のイベント（password_reset）の確認済みレコードを設定
+	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
+		WithEmail("mismatched-create@example.com").
+		WithEvent("password_reset").
+		WithSucceededAt(time.Now()).
+		Build()
+	req.AddCookie(&http.Cookie{
+		Name:  session.EmailConfirmationCookieName,
+		Value: ecID.String(),
+	})
+
+	rr := httptest.NewRecorder()
+	h.Create(rr, req)
+
+	// イベント種別が異なるためルートへリダイレクトされることを検証
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	location := rr.Header().Get("Location")
+	if location != "/" {
+		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+	}
+}
+
 func TestCreate_RateLimitExceeded(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// レート制限を超過するためにリクエストを5回送信（制限: 5回/分）
 	for i := 0; i < 5; i++ {
@@ -330,12 +393,10 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
+	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("atname", "newuser")
@@ -368,12 +429,10 @@ func TestCreate_ValidationError_EmptyAtname(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("atname", "")
@@ -406,7 +465,7 @@ func TestCreate_ValidationError_DuplicateAtname(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 既存のプロフィールを作成
 	testutil.NewProfileBuilder(t, tx).
@@ -415,8 +474,6 @@ func TestCreate_ValidationError_DuplicateAtname(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("atname", "existinguser")
@@ -449,7 +506,7 @@ func TestCreate_ValidationError_DuplicateEmail(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 既存のユーザーを作成
 	testutil.NewUserBuilder(t, tx).
@@ -459,8 +516,6 @@ func TestCreate_ValidationError_DuplicateEmail(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("atname", "newuser")

@@ -2,13 +2,11 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Profile はプロフィールを表す
 type Profile struct {
-	ID            uuid.UUID
+	ID            ProfileID
 	OwnerType     string
 	Atname        string
 	Name          string

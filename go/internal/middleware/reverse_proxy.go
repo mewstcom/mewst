@@ -12,7 +12,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/i18n"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/pages/errors"
 )
 
@@ -139,7 +138,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 
 		// 502エラーレスポンスを返す
 		locale := i18n.DetectLanguage(r)
-		ctx = templates.WithLocale(ctx, locale)
+		ctx = i18n.SetLocale(ctx, locale)
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusBadGateway)

@@ -16,10 +16,10 @@ func TestEmailConfirmationRepository_Create(t *testing.T) {
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewEmailConfirmationRepository(tx)
+	repo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("メール確認を作成できる", func(t *testing.T) {
-		params := repository.CreateEmailConfirmationParams{
+		params := repository.CreateEmailConfirmationInput{
 			Email: "create-test@example.com",
 			Event: model.EmailConfirmationEventPasswordReset,
 			Code:  "123456",
@@ -48,7 +48,7 @@ func TestEmailConfirmationRepository_Create(t *testing.T) {
 	})
 }
 
-func TestEmailConfirmationRepository_GetByID(t *testing.T) {
+func TestEmailConfirmationRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -61,12 +61,12 @@ func TestEmailConfirmationRepository_GetByID(t *testing.T) {
 		WithCode("111111").
 		Build()
 
-	repo := repository.NewEmailConfirmationRepository(tx)
+	repo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("IDでメール確認を取得できる", func(t *testing.T) {
-		ec, err := repo.GetByID(ctx, id)
+		ec, err := repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("GetByID() error = %v", err)
+			t.Fatalf("FindByID() error = %v", err)
 		}
 
 		if ec.ID != id {
@@ -77,25 +77,25 @@ func TestEmailConfirmationRepository_GetByID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないIDはErrNotFoundを返す", func(t *testing.T) {
-		nonExistentID := testutil.MustParseUUID("01234567-89ab-cdef-0123-456789abcdef")
-		_, err := repo.GetByID(ctx, nonExistentID)
-		if err == nil {
-			t.Error("GetByID() should return error for non-existent ID")
+	t.Run("存在しないIDはnilを返す", func(t *testing.T) {
+		nonExistentID := model.EmailConfirmationID(testutil.MustParseUUID("01234567-89ab-cdef-0123-456789abcdef"))
+		ec, err := repo.FindByID(ctx, nonExistentID)
+		if err != nil {
+			t.Errorf("FindByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByID() error = %v, want ErrNotFound", err)
+		if ec != nil {
+			t.Errorf("FindByID() ec = %v, want nil", ec)
 		}
 	})
 }
 
-func TestEmailConfirmationRepository_GetActiveByID(t *testing.T) {
+func TestEmailConfirmationRepository_FindActiveByID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewEmailConfirmationRepository(tx)
+	repo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("有効期限内かつ未確認のレコードを取得できる", func(t *testing.T) {
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -104,9 +104,9 @@ func TestEmailConfirmationRepository_GetActiveByID(t *testing.T) {
 			WithCode("222222").
 			Build()
 
-		ec, err := repo.GetActiveByID(ctx, id)
+		ec, err := repo.FindActiveByID(ctx, id)
 		if err != nil {
-			t.Fatalf("GetActiveByID() error = %v", err)
+			t.Fatalf("FindActiveByID() error = %v", err)
 		}
 
 		if ec.ID != id {
@@ -114,7 +114,7 @@ func TestEmailConfirmationRepository_GetActiveByID(t *testing.T) {
 		}
 	})
 
-	t.Run("有効期限切れのレコードはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("有効期限切れのレコードはnilを返す", func(t *testing.T) {
 		// 20分前に作成されたレコード（15分で期限切れ）
 		expiredTime := time.Now().Add(-20 * time.Minute)
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -124,16 +124,16 @@ func TestEmailConfirmationRepository_GetActiveByID(t *testing.T) {
 			WithCreatedAt(expiredTime).
 			Build()
 
-		_, err := repo.GetActiveByID(ctx, id)
-		if err == nil {
-			t.Error("GetActiveByID() should return error for expired record")
+		ec, err := repo.FindActiveByID(ctx, id)
+		if err != nil {
+			t.Errorf("FindActiveByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetActiveByID() error = %v, want ErrNotFound", err)
+		if ec != nil {
+			t.Errorf("FindActiveByID() ec = %v, want nil", ec)
 		}
 	})
 
-	t.Run("確認済みのレコードはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("確認済みのレコードはnilを返す", func(t *testing.T) {
 		succeededAt := time.Now()
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
 			WithEmail("succeeded-test@example.com").
@@ -142,23 +142,23 @@ func TestEmailConfirmationRepository_GetActiveByID(t *testing.T) {
 			WithSucceededAt(succeededAt).
 			Build()
 
-		_, err := repo.GetActiveByID(ctx, id)
-		if err == nil {
-			t.Error("GetActiveByID() should return error for succeeded record")
+		ec, err := repo.FindActiveByID(ctx, id)
+		if err != nil {
+			t.Errorf("FindActiveByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetActiveByID() error = %v, want ErrNotFound", err)
+		if ec != nil {
+			t.Errorf("FindActiveByID() ec = %v, want nil", ec)
 		}
 	})
 }
 
-func TestEmailConfirmationRepository_GetSucceededByID(t *testing.T) {
+func TestEmailConfirmationRepository_FindSucceededByID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewEmailConfirmationRepository(tx)
+	repo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("確認済みのレコードを取得できる", func(t *testing.T) {
 		succeededAt := time.Now()
@@ -169,9 +169,9 @@ func TestEmailConfirmationRepository_GetSucceededByID(t *testing.T) {
 			WithSucceededAt(succeededAt).
 			Build()
 
-		ec, err := repo.GetSucceededByID(ctx, id)
+		ec, err := repo.FindSucceededByID(ctx, id)
 		if err != nil {
-			t.Fatalf("GetSucceededByID() error = %v", err)
+			t.Fatalf("FindSucceededByID() error = %v", err)
 		}
 
 		if ec.ID != id {
@@ -182,30 +182,30 @@ func TestEmailConfirmationRepository_GetSucceededByID(t *testing.T) {
 		}
 	})
 
-	t.Run("未確認のレコードはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("未確認のレコードはnilを返す", func(t *testing.T) {
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
 			WithEmail("not-succeeded-test@example.com").
 			WithEvent("password_reset").
 			WithCode("666666").
 			Build()
 
-		_, err := repo.GetSucceededByID(ctx, id)
-		if err == nil {
-			t.Error("GetSucceededByID() should return error for not succeeded record")
+		ec, err := repo.FindSucceededByID(ctx, id)
+		if err != nil {
+			t.Errorf("FindSucceededByID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetSucceededByID() error = %v, want ErrNotFound", err)
+		if ec != nil {
+			t.Errorf("FindSucceededByID() ec = %v, want nil", ec)
 		}
 	})
 }
 
-func TestEmailConfirmationRepository_MarkAsSucceeded(t *testing.T) {
+func TestEmailConfirmationRepository_Succeed(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewEmailConfirmationRepository(tx)
+	repo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("メール確認を成功済みとしてマークできる", func(t *testing.T) {
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -215,24 +215,24 @@ func TestEmailConfirmationRepository_MarkAsSucceeded(t *testing.T) {
 			Build()
 
 		// マーク前は未確認
-		ec, err := repo.GetByID(ctx, id)
+		ec, err := repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("GetByID() error = %v", err)
+			t.Fatalf("FindByID() error = %v", err)
 		}
 		if ec.SucceededAt != nil {
 			t.Error("ec.SucceededAt should be nil before marking")
 		}
 
 		// 成功済みとしてマーク
-		err = repo.MarkAsSucceeded(ctx, id)
+		err = repo.Succeed(ctx, id)
 		if err != nil {
-			t.Fatalf("MarkAsSucceeded() error = %v", err)
+			t.Fatalf("Succeed() error = %v", err)
 		}
 
 		// マーク後は確認済み
-		ec, err = repo.GetByID(ctx, id)
+		ec, err = repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("GetByID() after mark error = %v", err)
+			t.Fatalf("FindByID() after mark error = %v", err)
 		}
 		if ec.SucceededAt == nil {
 			t.Error("ec.SucceededAt should not be nil after marking")

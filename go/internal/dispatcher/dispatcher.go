@@ -1,4 +1,6 @@
-// Package dispatcher はジョブキューへの投入を抽象化し、UseCase ↔ Worker 間の循環依存を解消します
+// Package dispatcher はジョブキューへの投入を抽象化する。
+// Repository がデータベースアクセスを抽象化するのと同じ発想で、
+// Dispatcher がジョブキューアクセスを抽象化する。
 package dispatcher
 
 import (
@@ -8,23 +10,44 @@ import (
 	"github.com/riverqueue/river/rivertype"
 )
 
+// --- ジョブ引数型 ---
+
+// SendEmailConfirmationArgs はメール確認コード送信ジョブの引数
+type SendEmailConfirmationArgs struct {
+	Email  string `json:"email"`
+	Code   string `json:"code"`
+	Locale string `json:"locale"`
+}
+
+// Kind はジョブの種類を返す
+func (SendEmailConfirmationArgs) Kind() string { return "send_email_confirmation" }
+
+// InsertOpts はジョブの Insert オプションを返す
+func (SendEmailConfirmationArgs) InsertOpts() river.InsertOpts {
+	return river.InsertOpts{Queue: river.QueueDefault, MaxAttempts: 5}
+}
+
+// --- Dispatcher ---
+
 // JobInserter はジョブをキューに追加するインターフェース
 type JobInserter interface {
-	Insert(ctx context.Context, args river.JobArgs) (*rivertype.JobInsertResult, error)
+	Insert(ctx context.Context, args river.JobArgs, opts *river.InsertOpts) (*rivertype.JobInsertResult, error)
 }
 
-// Dispatcher はジョブのエンキューを管理する
+// Dispatcher はジョブキューへの投入を抽象化する
 type Dispatcher struct {
-	inserter JobInserter
+	client JobInserter
 }
 
-// NewDispatcher は新しいDispatcherを作成する
-func NewDispatcher(inserter JobInserter) *Dispatcher {
-	return &Dispatcher{inserter: inserter}
+// NewDispatcher は新しい Dispatcher を生成する
+func NewDispatcher(client JobInserter) *Dispatcher {
+	return &Dispatcher{client: client}
 }
 
-// EnqueueEmailConfirmation はメール確認コード送信ジョブをエンキューする
-func (d *Dispatcher) EnqueueEmailConfirmation(ctx context.Context, args SendEmailConfirmationArgs) error {
-	_, err := d.inserter.Insert(ctx, args)
+// EnqueueEmailConfirmation はメール確認コード送信ジョブをキューに追加する
+func (d *Dispatcher) EnqueueEmailConfirmation(ctx context.Context, email, code, locale string) error {
+	args := SendEmailConfirmationArgs{Email: email, Code: code, Locale: locale}
+	opts := args.InsertOpts()
+	_, err := d.client.Insert(ctx, args, &opts)
 	return err
 }

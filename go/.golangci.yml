@@ -96,7 +96,7 @@ linters:
               desc: "ViewModelはTemplatesに依存できません。"
 
         # Handler層のルール: HTTPリクエスト処理
-        # データアクセスはUseCaseを経由
+        # データアクセス・バリデーションはUseCaseを経由
         handler-layer:
           files:
             - "**/internal/handler/**"
@@ -146,7 +146,7 @@ linters:
               desc: "MiddlewareはViewModelに依存できません。"
 
         # Application層のルール（UseCase）
-        # Presentation層に依存しない
+        # Presentation層に依存しない（メール送信はemail パッケージが担当し、UseCase は interface 経由で呼び出す）
         application-layer:
           files:
             - "**/internal/usecase/**"
@@ -160,84 +160,38 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
               desc: "Application層はPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/templates
-              desc: "Application層はPresentation層に依存できません。テンプレートレンダリングはemailパッケージを使用してください。"
+              desc: "Application層はPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/worker
-              desc: "Application層はWorker（Presentation層）に依存できません。Dispatcher経由でジョブを投入してください。"
+              desc: "Application層はWorker(Presentation層)に依存できません。Dispatcher経由でジョブを投入してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/session
               desc: "Application層はPresentation層のヘルパーに依存できません。トークン生成はauthパッケージを使用してください。"
 
-        # Worker層のルール: バックグラウンドジョブ処理
-        # UseCaseを呼ぶだけの薄いAdapter。Presentation層やRepository/Queryに直接依存しない
-        worker-layer:
-          files:
-            - "**/internal/worker/**"
-          deny:
-            - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "WorkerはQueryに直接依存できません。UseCaseを経由してください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "WorkerはRepositoryに直接依存できません。UseCaseを経由してください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/handler
-              desc: "WorkerはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/middleware
-              desc: "WorkerはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
-              desc: "WorkerはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/templates
-              desc: "WorkerはPresentation層に依存できません。テンプレートレンダリングはemailパッケージを使用してください。"
-
-        # Email層のルール: メール送信とテンプレートレンダリング
-        # 上位層（Handler, UseCase, Worker等）に依存しない
+        # Email層のルール: テンプレートレンダリング + メール送信
+        # templates, i18n, Sender に依存可能。上位層や他のPresentation層パッケージに依存しない
         email-layer:
           files:
             - "**/internal/email/**"
           deny:
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "emailパッケージはQueryに依存できません。"
+              desc: "EmailはQueryに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "emailパッケージはRepositoryに依存できません。"
+              desc: "EmailはRepositoryに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/handler
-              desc: "emailパッケージはHandlerに依存できません。"
+              desc: "EmailはHandlerに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/middleware
-              desc: "emailパッケージはMiddlewareに依存できません。"
+              desc: "EmailはMiddlewareに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
-              desc: "emailパッケージはViewModelに依存できません。"
+              desc: "EmailはViewModelに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "emailパッケージはUseCaseに依存できません。"
+              desc: "EmailはUseCaseに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/validator
-              desc: "emailパッケージはValidatorに依存できません。"
+              desc: "EmailはValidatorに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/worker
-              desc: "emailパッケージはWorkerに依存できません。"
+              desc: "EmailはWorkerに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
-              desc: "emailパッケージはDispatcherに依存できません。"
+              desc: "EmailはDispatcherに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/session
-              desc: "emailパッケージはSessionに依存できません。"
-
-        # Dispatcher層のルール: ジョブキューへの投入を抽象化（Domain/Infrastructure層）
-        # 外部ライブラリ（river）のみに依存
-        dispatcher-layer:
-          files:
-            - "**/internal/dispatcher/**"
-          deny:
-            - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "DispatcherはApplication層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/validator
-              desc: "DispatcherはApplication層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/worker
-              desc: "DispatcherはWorkerに依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/handler
-              desc: "DispatcherはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/middleware
-              desc: "DispatcherはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
-              desc: "DispatcherはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/templates
-              desc: "DispatcherはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "DispatcherはQueryに依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "DispatcherはRepositoryに依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/model
-              desc: "DispatcherはModelに依存できません。"
+              desc: "EmailはSessionに依存できません。"
 
         # Model層のルール: 純粋なドメインエンティティ
         # データアクセス層、上位層に依存しない
@@ -259,25 +213,6 @@ linters:
               desc: "ModelはPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "ModelはPresentation層に依存できません。"
-
-        # RateLimit層のルール: インフラストラクチャユーティリティ
-        # Queryに直接依存せず、Repositoryを経由する
-        ratelimit-layer:
-          files:
-            - "**/internal/ratelimit/*.go"
-          deny:
-            - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
-            - pkg: github.com/mewstcom/mewst/go/internal/usecase
-              desc: "RateLimitはApplication層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/handler
-              desc: "RateLimitはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/middleware
-              desc: "RateLimitはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
-              desc: "RateLimitはPresentation層に依存できません。"
-            - pkg: github.com/mewstcom/mewst/go/internal/templates
-              desc: "RateLimitはPresentation層に依存できません。"
 
         # Repository層のルール: データアクセス層
         # 上位層に依存しない
@@ -316,6 +251,71 @@ linters:
               desc: "QueryはPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "QueryはPresentation層に依存できません。"
+
+        # Worker層のルール: バックグラウンドジョブ処理（Presentation層）
+        # UseCaseを呼ぶだけの薄いAdapter。他のPresentation層パッケージやRepository/Queryに直接依存しない
+        worker-layer:
+          files:
+            - "**/internal/worker/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "WorkerはQueryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "WorkerはRepositoryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "WorkerはPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
+
+        # Dispatcher層のルール: ジョブキューへの投入を抽象化（Domain/Infrastructure層）
+        # 上位層や同レイヤーの他パッケージに依存しない
+        dispatcher-layer:
+          files:
+            - "**/internal/dispatcher/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "DispatcherはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "DispatcherはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "DispatcherはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "DispatcherはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "DispatcherはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "DispatcherはModelに依存できません。"
+
+        # RateLimit層のルール: インフラストラクチャユーティリティ
+        # Queryに直接依存せず、Repositoryを経由する
+        ratelimit-layer:
+          files:
+            - "**/internal/ratelimit/*.go"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RateLimitはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RateLimitはPresentation層に依存できません。"
 
     # staticcheck の設定
     staticcheck:

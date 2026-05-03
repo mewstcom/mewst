@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"context"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
@@ -276,5 +277,66 @@ func TestNewLocalizer(t *testing.T) {
 	localizer := NewLocalizer(LangJa)
 	if localizer == nil {
 		t.Error("NewLocalizer() returned nil")
+	}
+}
+
+func TestMiddleware(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name           string
+		acceptLanguage string
+		wantLocale     string
+		wantTranslated string
+	}{
+		{
+			name:           "日本語ヘッダー",
+			acceptLanguage: "ja",
+			wantLocale:     LangJa,
+			wantTranslated: "Mewstにログイン",
+		},
+		{
+			name:           "英語ヘッダー",
+			acceptLanguage: "en",
+			wantLocale:     LangEn,
+			wantTranslated: "Sign in to Mewst",
+		},
+		{
+			name:           "ヘッダーなしはデフォルト言語",
+			acceptLanguage: "",
+			wantLocale:     DefaultLang,
+			wantTranslated: "Mewstにログイン",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var capturedLocale string
+			var capturedTranslation string
+
+			testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				capturedLocale = GetLocale(r.Context())
+				capturedTranslation = T(r.Context(), "sign_in_title")
+				w.WriteHeader(http.StatusOK)
+			})
+
+			req := httptest.NewRequest(http.MethodGet, "/", nil)
+			if tt.acceptLanguage != "" {
+				req.Header.Set("Accept-Language", tt.acceptLanguage)
+			}
+			rr := httptest.NewRecorder()
+
+			Middleware(testHandler).ServeHTTP(rr, req)
+
+			if capturedLocale != tt.wantLocale {
+				t.Errorf("Middleware() locale = %q, want %q", capturedLocale, tt.wantLocale)
+			}
+
+			if capturedTranslation != tt.wantTranslated {
+				t.Errorf("Middleware() translation = %q, want %q", capturedTranslation, tt.wantTranslated)
+			}
+		})
 	}
 }

@@ -1,15 +1,11 @@
 // Package model はドメインモデルを定義する
 package model
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
+import "time"
 
 // User はユーザーのドメインモデル
 type User struct {
-	ID             uuid.UUID
+	ID             UserID
 	Email          string
 	PasswordDigest string
 	Locale         string

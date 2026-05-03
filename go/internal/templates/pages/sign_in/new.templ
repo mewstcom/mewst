@@ -13,6 +13,7 @@ type NewPageData struct {
 	FormErrors       *model.ValidationError
 	Email            string
 	BackURL          string
+	SignUpHref       string
 }
 
 // New はログインフォームを表示する
@@ -116,7 +117,7 @@ templ New(data NewPageData) {
 				tabindex="3"
 				type="submit"
 			>
-				@templates.Icon("arrow-right")
+				@templates.Icon("arrow-right-regular")
 				{ templates.T(ctx, "btn_sign_in") }
 			</button>
 		</form>
@@ -124,15 +125,9 @@ templ New(data NewPageData) {
 		<div class="text-center text-muted-foreground">
 			{ templates.T(ctx, "sign_in_no_account") }
 			{ " " }
-			if data.BackURL != "" {
-				<a class="link" href={ templ.SafeURL("/sign_up?back=" + data.BackURL) }>
-					{ templates.T(ctx, "sign_up_title") }
-				</a>
-			} else {
-				<a class="link" href="/sign_up">
-					{ templates.T(ctx, "sign_up_title") }
-				</a>
-			}
+			<a class="link" href={ templ.SafeURL(data.SignUpHref) }>
+				{ templates.T(ctx, "sign_up_title") }
+			</a>
 		</div>
 	</div>
 }
