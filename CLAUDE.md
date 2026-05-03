@@ -182,6 +182,11 @@ make dev
 - [@go/docs/architecture-guide.md](/workspace/go/docs/architecture-guide.md) - アーキテクチャガイド
   - 3層アーキテクチャの依存関係ルール
   - Usecase、Repositoryの使い分け
+- [@go/docs/usecase-guide.md](/workspace/go/docs/usecase-guide.md) - UseCase ガイド
+  - 3 種類の分類(読み取り / 書き込み / オーケストレーション)
+  - UseCase 内の処理順序(5 ステップ)
+  - 書き込み UseCase の 2 つのルール
+  - Validator のデータ取得パターン
 - [@go/docs/handler-guide.md](/workspace/go/docs/handler-guide.md) - HTTPハンドラーガイドライン
   - ディレクトリ構造
   - 標準ファイル名（8種類のみ）

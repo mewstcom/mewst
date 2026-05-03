@@ -99,12 +99,12 @@ func (v *CommentCreateValidator) Validate(ctx context.Context, input CommentCrea
     ve := model.NewValidationError()
 
     if input.Comment == "" {
-        ve.AddFieldError("comment", i18n.T(ctx, "comment_required"))
+        ve.AddField("comment", i18n.T(ctx, "comment_required"))
     }
 
     // 文字数制限
     if len(input.Comment) > 1000 {
-        ve.AddFieldError("comment", i18n.T(ctx, "comment_too_long"))
+        ve.AddField("comment", i18n.T(ctx, "comment_too_long"))
     }
 
     if ve.HasErrors() {
@@ -202,11 +202,11 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
     ve := model.NewValidationError()
 
     if input.Email == "" {
-        ve.AddFieldError("email", i18n.T(ctx, "email_required"))
+        ve.AddField("email", i18n.T(ctx, "email_required"))
     }
 
     if !emailRegex.MatchString(input.Email) {
-        ve.AddFieldError("email", i18n.T(ctx, "email_invalid"))
+        ve.AddField("email", i18n.T(ctx, "email_invalid"))
     }
 
     if ve.HasErrors() {
@@ -234,7 +234,7 @@ func (v *WorkCreateValidator) Validate(ctx context.Context, input WorkCreateVali
     ve := model.NewValidationError()
 
     if input.Season != "" && !allowedSeasons[input.Season] {
-        ve.AddFieldError("season", i18n.T(ctx, "season_invalid"))
+        ve.AddField("season", i18n.T(ctx, "season_invalid"))
     }
 
     if ve.HasErrors() {
