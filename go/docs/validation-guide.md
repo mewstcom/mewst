@@ -32,6 +32,11 @@ internal/validator/
 
 - **命名規則**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
 - **コンストラクタ**: `New{Handler}{Action}Validator()`（例: `NewSignInCreateValidator()`）
+- **入力**: `{Handler}{Action}ValidatorInput` 構造体
+- **戻り値**: Go の慣習に従った `(data, error)` の 2 値返し。データを返す必要がない場合は `error` のみ
+  - データ不要 → `error` のみ
+  - 単一モデルを返す → `(*model.X, error)` 直接（例: `SignInCreateValidator` → `(*model.User, error)`）
+  - 複数フィールドを返す → `(*{Handler}{Action}ValidateOutput, error)`
 - **1 つの構造体で両方のバリデーションを担当**: 形式バリデーションと状態バリデーションを `Validate` メソッド内で順次実行
 - **`main.go` で構築し UseCase に注入**: UseCase がバリデーション → 永続化をオーケストレーションする
 
@@ -81,8 +86,8 @@ internal/validator/
 ```
 フォームを再表示する？
 ├─ Yes → ValidationError（Fields または Global）
-│    └─ 特定フィールドに関連？ → AddFieldError（例: ユーザー名重複）
-│    └─ フォーム全体に関連？  → AddGlobalError（例: 確認コード不一致）
+│    └─ 特定フィールドに関連？ → AddField（例: ユーザー名重複）
+│    └─ フォーム全体に関連？  → AddGlobal（例: 確認コード不一致）
 └─ No（リダイレクトする）→ Flash
      └─ 成功 → FlashSuccess
      └─ エラー → FlashError
@@ -94,92 +99,11 @@ internal/validator/
 
 ## 実装例
 
-### 基本的なバリデーター（状態バリデーションあり）
+実装例は戻り値パターンの 3 分類で示します。
 
-```go
-// internal/validator/sign_in.go
-package validator
+### データを返さないバリデーター（`error` のみ）
 
-import (
-    "context"
-    "net/mail"
-
-    "github.com/mewstcom/mewst/internal/auth"
-    "github.com/mewstcom/mewst/internal/model"
-    "github.com/mewstcom/mewst/internal/repository"
-    "github.com/mewstcom/mewst/internal/i18n"
-)
-
-// SignInCreateValidator はサインインのバリデーションを行う
-type SignInCreateValidator struct {
-    userRepo *repository.UserRepository
-}
-
-// NewSignInCreateValidator は SignInCreateValidator を生成する
-func NewSignInCreateValidator(userRepo *repository.UserRepository) *SignInCreateValidator {
-    return &SignInCreateValidator{
-        userRepo: userRepo,
-    }
-}
-
-// SignInCreateValidatorInput はバリデーションの入力パラメータ
-type SignInCreateValidatorInput struct {
-    Email    string
-    Password string
-}
-
-// SignInCreateValidatorOutput はバリデーション成功時の出力
-type SignInCreateValidatorOutput struct {
-    User *model.User
-}
-
-// Validate はバリデーションを行い、失敗時は *model.ValidationError を返す
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidatorOutput, error) {
-    // 1. 形式バリデーション
-    ve := model.NewValidationError()
-
-    if input.Email == "" {
-        ve.AddFieldError("email", i18n.T(ctx, "error_required"))
-    } else if !isValidEmail(input.Email) {
-        ve.AddFieldError("email", i18n.T(ctx, "error_invalid_email_format"))
-    }
-
-    if input.Password == "" {
-        ve.AddFieldError("password", i18n.T(ctx, "error_required"))
-    }
-
-    if ve.HasErrors() {
-        return nil, ve
-    }
-
-    // 2. 状態バリデーション（DB検証）
-    user, err := v.userRepo.GetByEmailForSignIn(ctx, input.Email)
-    if err != nil {
-        if err == repository.ErrNotFound {
-            ve.AddGlobalError(i18n.T(ctx, "error_invalid_credentials"))
-            return nil, ve
-        }
-        return nil, err
-    }
-
-    // パスワード検証
-    if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
-        ve.AddGlobalError(i18n.T(ctx, "error_invalid_credentials"))
-        return nil, ve
-    }
-
-    return &SignInCreateValidatorOutput{User: user}, nil
-}
-
-func isValidEmail(email string) bool {
-    _, err := mail.ParseAddress(email)
-    return err == nil
-}
-```
-
-### 形式バリデーションのみのバリデーター
-
-DB を使った検証が不要な場合は、形式バリデーションのみを実装します。
+DB を使った検証が不要な場合や、検証成功時にデータを返す必要がない場合は `error` のみを返します。
 
 ```go
 // internal/validator/password_reset.go
@@ -187,13 +111,11 @@ package validator
 
 import (
     "context"
-    "regexp"
+    "net/mail"
 
-    "github.com/mewstcom/mewst/internal/i18n"
-    "github.com/mewstcom/mewst/internal/model"
+    "github.com/mewstcom/mewst/go/internal/i18n"
+    "github.com/mewstcom/mewst/go/internal/model"
 )
-
-var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 // PasswordResetCreateValidator はパスワードリセット申請のバリデーションを行う
 type PasswordResetCreateValidator struct{}
@@ -214,18 +136,13 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 
     // 必須チェック
     if input.Email == "" {
-        ve.AddFieldError("email", i18n.T(ctx, "error_required"))
+        ve.AddField("email", i18n.T(ctx, "error_required"))
         return ve
     }
 
     // フォーマットチェック
-    if !emailRegex.MatchString(input.Email) {
-        ve.AddFieldError("email", i18n.T(ctx, "error_invalid_email_format"))
-    }
-
-    // 文字数制限
-    if len(input.Email) > 255 {
-        ve.AddFieldError("email", i18n.T(ctx, "error_email_too_long"))
+    if _, err := mail.ParseAddress(input.Email); err != nil {
+        ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
     }
 
     if ve.HasErrors() {
@@ -236,54 +153,169 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 }
 ```
 
-### 複数フィールドのバリデーター
+### 状態バリデーションで取得した単一モデルを返すバリデーター（`(*model.X, error)`）
+
+状態バリデーションの過程で取得したモデルを戻り値として返すと、UseCase 内でデータを二重に取得する必要がなくなります。出力が単一のモデルだけで済む場合は、Output 構造体を作らずモデルを直接返します。
 
 ```go
-// internal/validator/password.go
+// internal/validator/sign_in.go
+package validator
+
+import (
+    "context"
+    "net/mail"
+
+    "github.com/mewstcom/mewst/go/internal/auth"
+    "github.com/mewstcom/mewst/go/internal/i18n"
+    "github.com/mewstcom/mewst/go/internal/model"
+    "github.com/mewstcom/mewst/go/internal/repository"
+)
+
+// SignInCreateValidator はサインインのバリデーションを行う
+type SignInCreateValidator struct {
+    userRepo *repository.UserRepository
+}
+
+// NewSignInCreateValidator は SignInCreateValidator を生成する
+func NewSignInCreateValidator(userRepo *repository.UserRepository) *SignInCreateValidator {
+    return &SignInCreateValidator{
+        userRepo: userRepo,
+    }
+}
+
+// SignInCreateValidatorInput はバリデーションの入力パラメータ
+type SignInCreateValidatorInput struct {
+    Email    string
+    Password string
+}
+
+// Validate はバリデーションを行い、成功時はユーザーを返す
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*model.User, error) {
+    ve := model.NewValidationError()
+
+    // 1. 形式バリデーション
+    v.validateEmail(ctx, ve, input.Email)
+    v.validatePassword(ctx, ve, input.Password)
+
+    if ve.HasErrors() {
+        return nil, ve
+    }
+
+    // 2. 状態バリデーション（DB検証）
+    user, err := v.userRepo.FindByEmail(ctx, input.Email)
+    if err != nil {
+        return nil, err
+    }
+    // セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
+    if user == nil {
+        ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
+        return nil, ve
+    }
+
+    // パスワードを検証
+    if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
+        ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
+        return nil, ve
+    }
+
+    return user, nil
+}
+
+// validateEmail はメールアドレスの形式バリデーションを行う
+func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.ValidationError, email string) {
+    if email == "" {
+        ve.AddField("email", i18n.T(ctx, "error_required"))
+        return
+    }
+
+    if _, err := mail.ParseAddress(email); err != nil {
+        ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
+        return
+    }
+}
+
+// validatePassword はパスワードの形式バリデーションを行う
+func (v *SignInCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
+    if password == "" {
+        ve.AddField("password", i18n.T(ctx, "error_required"))
+        return
+    }
+}
+```
+
+### 複数フィールドを返すバリデーター（`(*{Handler}{Action}ValidateOutput, error)`）
+
+検証成功時に複数のデータを返したい場合は専用の `{Handler}{Action}ValidateOutput` 構造体を定義します（命名は `Validator` ではなく `Validate` + `Output`）。Mewst には現状該当する validator はありませんが、将来 2FA 等で必要になった場合に以下のパターンで追加します。
+
+```go
+// SignInCreateValidateOutput はバリデーション成功時の出力（複数フィールドが必要な場合の例）
+type SignInCreateValidateOutput struct {
+    User              *model.User
+    UserTwoFactorAuth *model.UserTwoFactorAuth
+}
+
+// Validate はバリデーションを行い、成功時はユーザーと 2FA 情報を返す
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidateOutput, error) {
+    // ...バリデーション処理...
+
+    return &SignInCreateValidateOutput{
+        User:              user,
+        UserTwoFactorAuth: twoFactor,
+    }, nil
+}
+```
+
+### 複数フィールドだが Output を作らない場合（複数チェックの validator）
+
+入力に対して複数のフィールドを横断的にチェックするだけで成功時にデータを返さない場合は、`error` のみで十分です。
+
+以下は複数フィールドの組み合わせをチェックする validator の架空の例です（Mewst の現行 `PasswordUpdateValidator` は単一フィールドのみのため、教育用の例として `Password` + `PasswordConfirmation` の 2 フィールドを持つ架空の `PasswordChangeFormValidator` を示します）。
+
+```go
 package validator
 
 import (
     "context"
 
-    "github.com/mewstcom/mewst/internal/i18n"
-    "github.com/mewstcom/mewst/internal/model"
+    "github.com/mewstcom/mewst/go/internal/i18n"
+    "github.com/mewstcom/mewst/go/internal/model"
 )
 
-// PasswordUpdateValidator はパスワード更新のバリデーションを行う
-type PasswordUpdateValidator struct{}
+// PasswordChangeFormValidator はパスワード変更フォームのバリデーションを行う（架空の例）
+type PasswordChangeFormValidator struct{}
 
-// NewPasswordUpdateValidator は PasswordUpdateValidator を生成する
-func NewPasswordUpdateValidator() *PasswordUpdateValidator {
-    return &PasswordUpdateValidator{}
+// NewPasswordChangeFormValidator は PasswordChangeFormValidator を生成する
+func NewPasswordChangeFormValidator() *PasswordChangeFormValidator {
+    return &PasswordChangeFormValidator{}
 }
 
-// PasswordUpdateValidatorInput はバリデーションの入力パラメータ
-type PasswordUpdateValidatorInput struct {
+// PasswordChangeFormValidatorInput はバリデーションの入力パラメータ
+type PasswordChangeFormValidatorInput struct {
     Password             string
     PasswordConfirmation string
 }
 
 // Validate はバリデーションを行い、失敗時は *model.ValidationError を返す
-func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) error {
+func (v *PasswordChangeFormValidator) Validate(ctx context.Context, input PasswordChangeFormValidatorInput) error {
     ve := model.NewValidationError()
 
     // 必須チェック
     if input.Password == "" {
-        ve.AddFieldError("password", i18n.T(ctx, "error_required"))
+        ve.AddField("password", i18n.T(ctx, "error_required"))
     }
 
     if input.PasswordConfirmation == "" {
-        ve.AddFieldError("password_confirmation", i18n.T(ctx, "error_required"))
+        ve.AddField("password_confirmation", i18n.T(ctx, "error_required"))
     }
 
-    // 文字数チェック
-    if len(input.Password) > 0 && len(input.Password) < 8 {
-        ve.AddFieldError("password", i18n.T(ctx, "error_password_too_short"))
+    // 文字数チェック（rune 数で計測）
+    if len(input.Password) > 0 && len([]rune(input.Password)) < 8 {
+        ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
     }
 
     // パスワード一致チェック
     if input.Password != "" && input.PasswordConfirmation != "" && input.Password != input.PasswordConfirmation {
-        ve.AddFieldError("password_confirmation", i18n.T(ctx, "error_password_mismatch"))
+        ve.AddField("password_confirmation", i18n.T(ctx, "error_password_mismatch"))
     }
 
     if ve.HasErrors() {
@@ -308,9 +340,10 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
     // 1. フォームデータの取得
     email := r.FormValue("email")
     password := r.FormValue("password")
+    backURL := r.FormValue("back")
 
     // 2. UseCase を実行（バリデーション込み）
-    output, err := h.createSignInUC.Execute(ctx, usecase.CreateSignInInput{
+    output, err := h.signInUC.Execute(ctx, usecase.CreateSignInInput{
         Email:    email,
         Password: password,
     })
@@ -318,7 +351,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
         if ve := model.AsValidationError(err); ve != nil {
             // バリデーションエラー → フォームを再表示
             w.WriteHeader(http.StatusUnprocessableEntity)
-            h.renderForm(w, r, ve, email)
+            h.renderSignInForm(w, r, ve, email, backURL)
             return
         }
         // システムエラー → 500
@@ -327,9 +360,9 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // 3. 成功 → リダイレクト
-    h.sessionMgr.SetUserID(ctx, output.UserID)
-    http.Redirect(w, r, "/", http.StatusFound)
+    // 3. 成功 → セッションクッキーを設定してリダイレクト
+    h.sessionMgr.SetSessionCookie(w, output.Token)
+    http.Redirect(w, r, redirect.GetSafeRedirectURL(backURL), http.StatusFound)
 }
 ```
 
@@ -340,27 +373,34 @@ Handler は UseCase のみに依存します。Validator は `main.go` で構築
 ```go
 // main.go
 signInValidator := validator.NewSignInCreateValidator(userRepo)
-createSignInUC := usecase.NewCreateSignInUsecase(db, sessionRepo, signInValidator)
-signInHandler := sign_in.NewHandler(cfg, sessionMgr, createSignInUC)
+createSignInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
+turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
+signInHandler := sign_in.NewHandler(cfg, sessionMgr, flashMgr, createSignInUC, turnstileClient)
 ```
 
 ```go
 // internal/handler/sign_in/handler.go
 type Handler struct {
-    cfg             *config.Config
-    sessionMgr      *session.Manager
-    createSignInUC  *usecase.CreateSignInUsecase  // UseCase のみに依存
+    cfg               *config.Config
+    sessionMgr        *session.Manager
+    flashMgr          *session.FlashManager
+    signInUC          *usecase.CreateSignInUsecase  // UseCase のみに依存
+    turnstileVerifier turnstile.Verifier
 }
 
 func NewHandler(
     cfg *config.Config,
     sessionMgr *session.Manager,
-    createSignInUC *usecase.CreateSignInUsecase,
+    flashMgr *session.FlashManager,
+    signInUC *usecase.CreateSignInUsecase,
+    turnstileVerifier turnstile.Verifier,
 ) *Handler {
     return &Handler{
-        cfg:            cfg,
-        sessionMgr:     sessionMgr,
-        createSignInUC: createSignInUC,
+        cfg:               cfg,
+        sessionMgr:        sessionMgr,
+        flashMgr:          flashMgr,
+        signInUC:          signInUC,
+        turnstileVerifier: turnstileVerifier,
     }
 }
 ```
@@ -429,7 +469,7 @@ func TestSignInCreateValidator_Validate(t *testing.T) {
         for _, tt := range tests {
             t.Run(tt.name, func(t *testing.T) {
                 ctx := context.Background()
-                ctx = i18n.WithLocale(ctx, "ja")
+                ctx = i18n.SetLocale(ctx, "ja")
 
                 _, err := v.Validate(ctx, tt.input)
 
@@ -451,15 +491,16 @@ func TestSignInCreateValidator_Validate(t *testing.T) {
     // 状態バリデーションのテスト（DB必要）
     t.Run("状態バリデーション", func(t *testing.T) {
         // 共有DB接続プールからトランザクションをセットアップ
-        db, tx := testutil.SetupTx(t)
+        _, tx := testutil.SetupTestDB(t)
 
-        // テストユーザーを作成
+        // テストユーザーを作成（auth.HashPassword でダイジェスト化してから渡す）
+        passwordDigest, _ := auth.HashPassword("password123")
         testutil.NewUserBuilder(t, tx).
             WithEmail("test@example.com").
-            WithPassword("password123").
+            WithPasswordDigest(passwordDigest).
             Build()
 
-        userRepo := repository.NewUserRepository(db).WithTx(tx)
+        userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
         v := NewSignInCreateValidator(userRepo)
 
         t.Run("有効な認証情報", func(t *testing.T) {
@@ -469,12 +510,12 @@ func TestSignInCreateValidator_Validate(t *testing.T) {
                 Password: "password123",
             }
 
-            output, err := v.Validate(ctx, input)
+            user, err := v.Validate(ctx, input)
 
             if err != nil {
                 t.Errorf("unexpected error: %v", err)
             }
-            if output == nil || output.User == nil {
+            if user == nil {
                 t.Error("expected user, got nil")
             }
         })
@@ -486,10 +527,10 @@ func TestSignInCreateValidator_Validate(t *testing.T) {
                 Password: "wrongpassword",
             }
 
-            output, err := v.Validate(ctx, input)
+            user, err := v.Validate(ctx, input)
 
-            if output != nil {
-                t.Error("expected nil output")
+            if user != nil {
+                t.Error("expected nil user")
             }
             if ve := model.AsValidationError(err); ve == nil {
                 t.Error("expected validation error")
@@ -538,14 +579,15 @@ type SignInCreateValidator struct {
     userRepo *repository.UserRepository
 }
 
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidatorOutput, error) {
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*model.User, error) {
     // 1. 形式バリデーション（DB不要）
     ve := model.NewValidationError()
     // ...
 
     // 2. 状態バリデーション（DB必要）
-    user, err := v.userRepo.GetByEmailForSignIn(ctx, input.Email)
+    user, err := v.userRepo.FindByEmail(ctx, input.Email)
     // ...
+    return user, nil
 }
 ```
 
@@ -553,10 +595,10 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 
 ```go
 // ❌ Bad: ハードコードされたメッセージ
-ve.AddFieldError("email", "メールアドレスを入力してください")
+ve.AddField("email", "メールアドレスを入力してください")
 
 // ✅ Good: 国際化された翻訳
-ve.AddFieldError("email", i18n.T(ctx, "error_required"))
+ve.AddField("email", i18n.T(ctx, "error_required"))
 ```
 
 ### 3. 早期リターンでネストを減らす
@@ -569,10 +611,10 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
         if emailRegex.MatchString(input.Email) {
             // OK
         } else {
-            ve.AddFieldError("email", "...")
+            ve.AddField("email", "...")
         }
     } else {
-        ve.AddFieldError("email", "...")
+        ve.AddField("email", "...")
     }
     if ve.HasErrors() {
         return ve
@@ -585,12 +627,12 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
     ve := model.NewValidationError()
 
     if input.Email == "" {
-        ve.AddFieldError("email", i18n.T(ctx, "error_required"))
+        ve.AddField("email", i18n.T(ctx, "error_required"))
         return ve
     }
 
     if !emailRegex.MatchString(input.Email) {
-        ve.AddFieldError("email", i18n.T(ctx, "error_invalid_email_format"))
+        ve.AddField("email", i18n.T(ctx, "error_invalid_email_format"))
     }
 
     if ve.HasErrors() {
@@ -612,19 +654,36 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 }
 ```
 
-### 5. Go の慣習に従った (output, error) の 2 値返し
+### 5. Go の慣習に従った `(data, error)` の 2 値返し
+
+戻り値はバリデーターが返すデータの有無で使い分けます。
 
 ```go
-// ✅ Good: Go 標準の (output, error) パターン
-// 成功時のデータは Output 構造体で返す
-type SignInCreateValidatorOutput struct {
-    User *model.User
+// ✅ Good: データを返す場合は (data, error)
+// 単一モデルなら専用の Output 構造体を作らずモデル直接返し
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*model.User, error) {
+    ve := model.NewValidationError()
+    // ...
+    if ve.HasErrors() {
+        return nil, ve  // *model.ValidationError は error を満たす
+    }
+
+    user, err := v.userRepo.FindByEmail(ctx, input.Email)
+    if err != nil {
+        return nil, err  // システムエラー
+    }
+
+    return user, nil
 }
 
-// バリデーション失敗時は *model.ValidationError を error として返す
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidatorOutput, error) {
+// ✅ Good: データを返さない場合は error のみ
+func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) error {
+    ve := model.NewValidationError()
     // ...
-    return &SignInCreateValidatorOutput{User: user}, nil
+    if ve.HasErrors() {
+        return ve
+    }
+    return nil
 }
 ```
 

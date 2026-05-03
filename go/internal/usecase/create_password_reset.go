@@ -44,22 +44,25 @@ type CreatePasswordResetOutput struct {
 
 // Execute はパスワードリセット処理を実行する
 func (uc *CreatePasswordResetUsecase) Execute(ctx context.Context, input CreatePasswordResetInput) (*CreatePasswordResetOutput, error) {
-	// 1. バリデーション
-	_, err := uc.passwordResetValidator.Validate(ctx, validator.PasswordResetCreateValidatorInput{
+	// 1. バリデーション (トランザクション外)
+	if err := uc.passwordResetValidator.Validate(ctx, validator.PasswordResetCreateValidatorInput{
 		Email: input.Email,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
-	// 2. 確認コードを生成
+	// 2. ビジネスロジック + 永続化
+	return uc.createPasswordReset(ctx, input)
+}
+
+// createPasswordReset は確認コードを生成し、メール確認レコードの作成とメール送信ジョブのエンキューを行う
+func (uc *CreatePasswordResetUsecase) createPasswordReset(ctx context.Context, input CreatePasswordResetInput) (*CreatePasswordResetOutput, error) {
 	code, err := generateConfirmationCode()
 	if err != nil {
 		return nil, fmt.Errorf("確認コードの生成に失敗: %w", err)
 	}
 
-	// 3. メール確認レコードを作成
-	ec, err := uc.emailConfirmRepo.Create(ctx, repository.CreateEmailConfirmationParams{
+	ec, err := uc.emailConfirmRepo.Create(ctx, repository.CreateEmailConfirmationInput{
 		Email: input.Email,
 		Event: model.EmailConfirmationEventPasswordReset,
 		Code:  code,
@@ -68,13 +71,10 @@ func (uc *CreatePasswordResetUsecase) Execute(ctx context.Context, input CreateP
 		return nil, fmt.Errorf("メール確認レコードの作成に失敗: %w", err)
 	}
 
-	// 4. メール送信ジョブをエンキュー
-	err = uc.dispatcher.EnqueueEmailConfirmation(ctx, dispatcher.SendEmailConfirmationArgs{
-		Email:  input.Email,
-		Code:   code,
-		Locale: input.Locale,
-	})
-	if err != nil {
+	// メール送信ジョブをエンキュー。
+	// 失敗時はログのみ残して正常完了する: 確認レコードは作成済みのためユーザーは再申請で回復可能であり、
+	// ジョブキュー障害で 500 を返すのは過剰な扱いになるため。
+	if err := uc.dispatcher.EnqueueEmailConfirmation(ctx, input.Email, code, input.Locale); err != nil {
 		slog.ErrorContext(ctx, "メール送信ジョブのエンキューに失敗しました",
 			"email", input.Email,
 			"error", err,

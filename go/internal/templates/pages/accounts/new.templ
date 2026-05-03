@@ -13,6 +13,7 @@ type NewPageData struct {
 	FormErrors       *model.ValidationError
 	Email            string
 	Atname           string
+	BackURL          string
 }
 
 // New はアカウント作成フォームを表示する
@@ -44,6 +45,9 @@ templ New(data NewPageData) {
 			method="POST"
 		>
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+			if data.BackURL != "" {
+				<input type="hidden" name="back" value={ data.BackURL }/>
+			}
 
 			<div class="grid gap-2">
 				<label for="email">
@@ -131,7 +135,7 @@ templ New(data NewPageData) {
 				tabindex="3"
 				type="submit"
 			>
-				@templates.Icon("arrow-right")
+				@templates.Icon("arrow-right-regular")
 				{ templates.T(ctx, "btn_create_account") }
 			</button>
 		</form>

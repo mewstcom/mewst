@@ -56,10 +56,7 @@ func (q *Queries) DeleteSessionByToken(ctx context.Context, token string) error 
 }
 
 const getSessionByToken = `-- name: GetSessionByToken :one
-SELECT id, actor_id, token, ip_address, user_agent, signed_in_at, created_at, updated_at
-FROM sessions
-WHERE token = $1
-LIMIT 1
+SELECT id, actor_id, token, ip_address, user_agent, signed_in_at, created_at, updated_at FROM sessions WHERE token = $1 LIMIT 1
 `
 
 func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session, error) {

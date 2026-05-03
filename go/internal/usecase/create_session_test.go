@@ -12,7 +12,7 @@ import (
 func TestCreateSessionUsecase_Execute(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -30,8 +30,8 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 		Build()
 
 	// リポジトリを作成（トランザクションを使用）
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(tx)
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	// ユースケースを実行
 	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
@@ -75,9 +75,9 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 	}
 
 	// 作成されたセッションがDBに存在するか確認
-	createdSession, err := sessionRepo.GetByToken(ctx, result.Token)
+	createdSession, err := sessionRepo.FindByToken(ctx, result.Token)
 	if err != nil {
-		t.Fatalf("GetByToken() error = %v", err)
+		t.Fatalf("FindByToken() error = %v", err)
 	}
 
 	if createdSession.ID != result.Session.ID {
@@ -88,7 +88,7 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -99,8 +99,8 @@ func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(tx)
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 
 	// IPアドレスとUser-Agentが空の場合でも正常に動作することを確認
@@ -126,7 +126,7 @@ func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 func TestCreateSessionUsecase_Execute_TokenUniqueness(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -137,8 +137,8 @@ func TestCreateSessionUsecase_Execute_TokenUniqueness(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(tx)
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 
 	// 複数のセッションを作成してトークンが一意であることを確認

@@ -11,6 +11,7 @@ import (
 type Handler struct {
 	cfg                          *config.Config
 	sessionMgr                   *session.Manager
+	flashMgr                     *session.FlashManager
 	getActiveEmailConfirmationUC *usecase.GetActiveEmailConfirmationUsecase
 	verifyEmailConfirmationUC    *usecase.VerifyEmailConfirmationUsecase
 }
@@ -19,12 +20,14 @@ type Handler struct {
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,
+	flashMgr *session.FlashManager,
 	getActiveEmailConfirmationUC *usecase.GetActiveEmailConfirmationUsecase,
 	verifyEmailConfirmationUC *usecase.VerifyEmailConfirmationUsecase,
 ) *Handler {
 	return &Handler{
 		cfg:                          cfg,
 		sessionMgr:                   sessionMgr,
+		flashMgr:                     flashMgr,
 		getActiveEmailConfirmationUC: getActiveEmailConfirmationUC,
 		verifyEmailConfirmationUC:    verifyEmailConfirmationUC,
 	}

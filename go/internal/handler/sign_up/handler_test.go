@@ -19,7 +19,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -37,7 +36,7 @@ func (m *mockTurnstile) Verify(_ context.Context, _ string) (bool, error) {
 // mockInserter はテスト用のモック inserter
 type mockInserter struct{}
 
-func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs) (*rivertype.JobInsertResult, error) {
+func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs, _ *river.InsertOpts) (*rivertype.JobInsertResult, error) {
 	return &rivertype.JobInsertResult{}, nil
 }
 
@@ -45,24 +44,17 @@ func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs) (*rivertype.Jo
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
-	cfg := &config.Config{
-		Env:              "test",
-		Port:             "3000",
-		Domain:           "localhost",
-		CookieDomain:     "localhost",
-		SessionSecure:    false,
-		SessionHTTPOnly:  true,
-		TurnstileSiteKey: "test-site-key",
-	}
+	cfg := testutil.NewTestConfig(t)
 
 	// トランザクションを使用するリポジトリを作成
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
-	rateLimitRepo := repository.NewRateLimitRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
+	rateLimitRepo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	inserter := &mockInserter{}
 	d := dispatcher.NewDispatcher(inserter)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
@@ -70,7 +62,7 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 
 	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
 	createSignUpUC := usecase.NewCreateSignUpUsecase(signUpValidator, emailConfirmRepo, d)
-	h := handler.NewHandler(cfg, sessionMgr, createSignUpUC, turnstile, rateLimiter)
+	h := handler.NewHandler(cfg, sessionMgr, flashMgr, createSignUpUC, turnstile, rateLimiter)
 
 	return h, cfg
 }
@@ -79,13 +71,11 @@ func TestNew(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/sign_up", nil)
 	req = req.WithContext(ctx)
@@ -112,12 +102,10 @@ func TestNew_ContainsSignInLink(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/sign_up", nil)
 	req = req.WithContext(ctx)
@@ -141,13 +129,11 @@ func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -203,12 +189,10 @@ func TestCreate_EmptyEmail(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 空のメールアドレスで送信試行
 	form := url.Values{}
@@ -239,12 +223,10 @@ func TestCreate_InvalidEmail(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 不正なメールアドレスで送信試行
 	form := url.Values{}
@@ -275,12 +257,10 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
+	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	form := url.Values{}
 	form.Set("email", "newuser@example.com")
@@ -310,12 +290,10 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// レート制限を超過するためにリクエストを5回送信（制限: 5回/分）
 	for i := 0; i < 5; i++ {
@@ -357,11 +335,106 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	}
 }
 
+func TestNew_WithBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, _ := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	req := httptest.NewRequest(http.MethodGet, "/sign_up?back=/settings", nil)
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.New(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `name="back"`) {
+		t.Error("back hiddenフィールドがフォームに含まれていません")
+	}
+	if !strings.Contains(body, `value="/settings"`) {
+		t.Error("back hiddenフィールドの値が正しくありません")
+	}
+}
+
+func TestCreate_SuccessWithBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, _ := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	form := url.Values{}
+	form.Set("email", "back-success@example.com")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+	form.Set("back", "/settings")
+
+	req := httptest.NewRequest(http.MethodPost, "/sign_up", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// /email_confirmation?back=%2Fsettings へリダイレクトすることを検証
+	location := rr.Header().Get("Location")
+	wantLocation := "/email_confirmation?back=%2Fsettings"
+	if location != wantLocation {
+		t.Errorf("リダイレクト先が不正: got %v, want %v", location, wantLocation)
+	}
+}
+
+func TestCreate_SuccessWithUnsafeBackParameter(t *testing.T) {
+	t.Parallel()
+
+	db, tx := testutil.SetupTestDB(t)
+	h, _ := setupTestHandler(t, db, tx, true)
+
+	ctx := context.Background()
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	form := url.Values{}
+	form.Set("email", "back-unsafe@example.com")
+	form.Set("csrf_token", "test-csrf-token")
+	form.Set("cf-turnstile-response", "test-token")
+	form.Set("back", "https://evil.com")
+
+	req := httptest.NewRequest(http.MethodPost, "/sign_up", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	if rr.Code != http.StatusFound {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// 危険な back URL は破棄して /email_confirmation へ素のリダイレクト
+	location := rr.Header().Get("Location")
+	if location != "/email_confirmation" {
+		t.Errorf("リダイレクト先が不正: got %v, want /email_confirmation", location)
+	}
+}
+
 func TestCreate_EmailAlreadyTaken(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx, true)
+	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 既存のユーザーを作成
 	testutil.NewUserBuilder(t, tx).
@@ -371,8 +444,6 @@ func TestCreate_EmailAlreadyTaken(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 既存のメールアドレスで送信試行
 	form := url.Values{}

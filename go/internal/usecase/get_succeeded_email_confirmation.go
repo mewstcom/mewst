@@ -2,10 +2,7 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
-
-	"github.com/google/uuid"
 
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
@@ -27,7 +24,7 @@ func NewGetSucceededEmailConfirmationUsecase(
 
 // GetSucceededEmailConfirmationInput は確認済みメール確認取得の入力パラメータ
 type GetSucceededEmailConfirmationInput struct {
-	ID uuid.UUID
+	ID model.EmailConfirmationID
 }
 
 // GetSucceededEmailConfirmationOutput は確認済みメール確認取得の結果
@@ -37,12 +34,12 @@ type GetSucceededEmailConfirmationOutput struct {
 
 // Execute は確認済みのメール確認を取得する
 func (uc *GetSucceededEmailConfirmationUsecase) Execute(ctx context.Context, input GetSucceededEmailConfirmationInput) (*GetSucceededEmailConfirmationOutput, error) {
-	ec, err := uc.emailConfirmationRepo.GetSucceededByID(ctx, input.ID)
+	ec, err := uc.emailConfirmationRepo.FindSucceededByID(ctx, input.ID)
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return nil, ErrNotFound
-		}
 		return nil, fmt.Errorf("確認済みメール確認の取得に失敗: %w", err)
+	}
+	if ec == nil {
+		return nil, ErrNotFound
 	}
 
 	return &GetSucceededEmailConfirmationOutput{EmailConfirmation: ec}, nil

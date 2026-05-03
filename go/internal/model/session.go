@@ -2,14 +2,12 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Session はセッションのドメインモデル
 type Session struct {
-	ID         uuid.UUID
-	ActorID    uuid.UUID
+	ID         SessionID
+	ActorID    ActorID
 	Token      string
 	IPAddress  string
 	UserAgent  string

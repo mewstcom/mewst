@@ -329,24 +329,36 @@ templ WorkCard(ctx context.Context, work viewmodel.Work) {
 
 ## ヘルパー関数
 
-`internal/templates/helper.go` にテンプレートで使用するヘルパー関数を定義しています。
+`internal/templates/helper.go` にテンプレートで使用するヘルパー関数を定義しています。アイコンの SVG 定義は `internal/templates/icons_phosphor.go`(Phosphor Icons)と `internal/templates/icons_custom.go`(Mewst 独自アイコン)に分割されています。
 
 ### 利用可能なヘルパー
 
 ```go
-// 翻訳を取得
+// 翻訳を取得(i18n パッケージへ委譲)
 templates.T(ctx, "message_id")
 templates.T(ctx, "message_id", map[string]any{"Key": value})
 
 // 現在のロケールを取得
 templates.Locale(ctx)  // "ja" または "en"
 
-// ポインタの参照外し
-templates.Deref(work.SeasonYear)  // *int32 -> int32
+// ポインタを参照外しする(ジェネリック対応、nil の場合はゼロ値を返す)
+var name *string
+templates.Deref(name)  // *string -> string("" を返す)
 
-// アイコンを表示（SVG）
-templates.Icon("check", "icon-sm")
+// アイコンを表示(SVG)。第1引数は viewmodel.IconName 型
+templates.Icon("arrow-right-regular")
+templates.Icon("logo", "fill-black w-[60px] h-[60px]")
 ```
+
+### アイコンの命名規則
+
+- **Phosphor Icons**: `{name}-{weight}` 形式(例: `arrow-right-regular`, `info-regular`, `check-circle-regular`, `warning-regular`)。`icons_phosphor.go` の `phosphorIcons` map に SVG を追加する
+- **独自アイコン**: ロゴなどプロジェクト固有のアイコン(例: `logo`)。`icons_custom.go` の `customIcons` map に SVG を追加する
+- 両 map のいずれにも見つからない場合は `info-regular` にフォールバックする
+
+### ロケールの設定
+
+ロケールは `internal/i18n` パッケージで管理する。`templates` パッケージにロケール設定用のヘルパー(かつての `WithLocale`)は存在しないため、handler などで明示的にロケールをセットする場合は `i18n.SetLocale(ctx, "ja")` を直接使用する。
 
 ## コード生成
 
@@ -368,8 +380,8 @@ templ generate
 ```go
 func TestSignInPage(t *testing.T) {
     // 共有DB接続プールからトランザクションをセットアップ
-    db, tx := testutil.SetupTx(t)
-    queries := repository.New(db).WithTx(tx)
+    _, tx := testutil.SetupTestDB(t)
+    queries := testutil.QueriesWithTx(tx)
 
     // 設定とハンドラーを作成
     cfg := &config.Config{Domain: "localhost"}
@@ -419,7 +431,7 @@ func TestFormErrorsComponent(t *testing.T) {
 
     // エラーを含むValidationErrorを作成
     formErrors := model.NewValidationError()
-    formErrors.AddFieldError("email", "メールアドレスを入力してください")
+    formErrors.AddField("email", "メールアドレスを入力してください")
 
     // コンポーネントをレンダリング
     var buf bytes.Buffer
@@ -462,8 +474,8 @@ func TestSignInPageMultipleLocales(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            db, tx := testutil.SetupTx(t)
-            queries := repository.New(db).WithTx(tx)
+            _, tx := testutil.SetupTestDB(t)
+            queries := testutil.QueriesWithTx(tx)
 
             cfg := &config.Config{Domain: "localhost"}
             handler := &Handler{queries: queries, cfg: cfg}
@@ -531,43 +543,52 @@ templ New(ctx context.Context, formErrors *model.ValidationError, csrfToken stri
 
 ## テンプレートデータ構造体と ViewModel の関係
 
-テンプレートに渡すデータ構造体（`EditPageData` など）では、モデルのフィールドを個別のプリミティブ値として展開せず、ViewModel を構成要素として使用する。
+テンプレートに渡すデータ構造体 (`EditPageData` など) で、モデルから **複数のフィールド** をテンプレート表示用に取り出す場合は、フィールドを個別のプリミティブ値として並べず、ViewModel を構成要素として使用する。
 
-- ✅ **ViewModel を構成要素にする**: `User viewmodel.User`
-- ❌ **モデルのフィールドを個別に並べない**: `Name string`, `Email string`
+- ✅ **複数フィールドを取り出す場合は ViewModel を構成要素にする**: `Profile viewmodel.Profile`
+- ❌ **モデルの複数フィールドを個別に並べない**: `Name string`, `Description string`, `AvatarURL string`
 
-モデルからテンプレート表示用データへの変換ロジック（フォールバック、デフォルト値の決定など）は ViewModel のコンストラクタに配置し、ハンドラーには書かない。派生的な判定（例: タイトルが空ならオートフォーカス）は ViewModel のメソッドとして提供する。
+モデルからテンプレート表示用データへの変換ロジック (フォールバック、デフォルト値の決定など) は ViewModel のコンストラクタに配置し、ハンドラーには書かない。派生的な判定 (例: タイトルが空ならオートフォーカス) は ViewModel のメソッドとして提供する。
 
-**良い例**:
+### ルールが適用される範囲
+
+ViewModel が必要になるのは「同一モデルから複数フィールドを取り出してテンプレート表示用に並べる」ケースに限定する。以下のケースは ViewModel を作らずプリミティブ値で十分。
+
+- **フォーム入力値の保持**: `Email string` / `Atname string` / `Code string` のようにフォーム再描画のために入力値をエコーバックする値はプリミティブで持つ。Mewst の sign_in / sign_up / password / password_reset / email_confirmation / accounts の各 `NewPageData` / `EditPageData` はすべてこのパターン
+- **モデルから単一フィールドだけをコピーする場合**: `accounts/new.go` で `data.Email = ucResult.EmailConfirmation.Email` のように、モデルから 1 フィールドだけを表示用に渡すケースは ViewModel を介さずプリミティブで持って良い。Wikino の `account/new.go` も同じパターン
+
+**良い例 (将来 Mewst に rich-data ページを追加するときに採用するパターン)**:
 
 ```go
-// テンプレートデータ構造体にViewModelを使用
-type EditProfileData struct {
+// テンプレートデータ構造体に ViewModel を使用 (架空例: プロフィール編集ページ)
+type EditPageData struct {
     CSRFToken string
-    User      viewmodel.User
+    Profile   viewmodel.Profile
 }
 
-// ハンドラーではViewModelのコンストラクタを呼ぶだけ
-userVM := viewmodel.NewUserForEdit(user)
+// ハンドラーでは ViewModel のコンストラクタを呼ぶだけ
+profileVM := viewmodel.NewProfileForEdit(profile)
 ```
 
 **悪い例**:
 
 ```go
-// ❌ モデルのフィールドを個別に展開している
-type EditProfileData struct {
-    CSRFToken string
-    Name      string
-    Email     string
-    Bio       string
+// ❌ モデルの複数フィールドを個別に展開している
+type EditPageData struct {
+    CSRFToken   string
+    Name        string
+    Description string
+    AvatarURL   string
 }
 
 // ❌ ハンドラーで変換・判定ロジックを書いている
 var name string
-if user.Name != nil {
-    name = *user.Name
+if profile.Name != nil {
+    name = *profile.Name
 }
 ```
+
+> **Note**: Mewst の現行ページ (sign_in / sign_up / password / password_reset / accounts / email_confirmation / errors / manifest) はすべて認証フォーム系または静的ページで、モデルから複数フィールドを取り出すケースが存在しないため、`viewmodel/` 配下にページ用 ViewModel は実装されていない (`page_meta.go` と `icon.go` のみ)。Wikino の `viewmodel.Page` / `viewmodel.Space` 等に相当する rich-data ページを Mewst に追加する際は、上記の「良い例」のパターンで ViewModel を導入すること。
 
 ## ベストプラクティス
 

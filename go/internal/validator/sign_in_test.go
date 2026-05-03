@@ -61,13 +61,13 @@ func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 			ctx = i18n.SetLocale(ctx, "ja")
 
 			v := NewSignInCreateValidator(nil)
-			output, err := v.Validate(ctx, SignInCreateValidatorInput{
+			user, err := v.Validate(ctx, SignInCreateValidatorInput{
 				Email:    tt.email,
 				Password: tt.password,
 			})
 
-			if output != nil {
-				t.Error("expected nil output for validation error")
+			if user != nil {
+				t.Error("expected nil user for validation error")
 			}
 			ve := model.AsValidationError(err)
 			if ve == nil {
@@ -138,7 +138,7 @@ func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -148,10 +148,10 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 		WithPasswordDigest(passwordDigest).
 		Build()
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
-	output, err := v.Validate(ctx, SignInCreateValidatorInput{
+	user, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "password123",
 	})
@@ -159,34 +159,31 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Validate() error = %v", err)
 	}
-	if output == nil {
-		t.Fatal("Validate() output = nil, want non-nil")
+	if user == nil {
+		t.Fatal("Validate() user = nil, want non-nil")
 	}
-	if output.User == nil {
-		t.Error("Validate() output.User = nil, want non-nil")
-	}
-	if output.User != nil && output.User.Email != "test@example.com" {
-		t.Errorf("Validate() output.User.Email = %v, want %v", output.User.Email, "test@example.com")
+	if user.Email != "test@example.com" {
+		t.Errorf("Validate() user.Email = %v, want %v", user.Email, "test@example.com")
 	}
 }
 
 func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
-	output, err := v.Validate(ctx, SignInCreateValidatorInput{
+	user, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "nonexistent@example.com",
 		Password: "password123",
 	})
 
-	if output != nil {
-		t.Error("expected nil output")
+	if user != nil {
+		t.Error("expected nil user")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
@@ -200,7 +197,7 @@ func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -210,16 +207,16 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 		WithPasswordDigest(passwordDigest).
 		Build()
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
-	output, err := v.Validate(ctx, SignInCreateValidatorInput{
+	user, err := v.Validate(ctx, SignInCreateValidatorInput{
 		Email:    "test@example.com",
 		Password: "wrongpassword",
 	})
 
-	if output != nil {
-		t.Error("expected nil output")
+	if user != nil {
+		t.Error("expected nil user")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
@@ -233,7 +230,7 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -243,7 +240,7 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		WithPasswordDigest(passwordDigest).
 		Build()
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
 	t.Run("ユーザーが存在しない場合も同じエラーメッセージ", func(t *testing.T) {
@@ -279,11 +276,11 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
 	_, err := v.Validate(ctx, SignInCreateValidatorInput{
@@ -308,11 +305,11 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	v := NewSignInCreateValidator(userRepo)
 
 	tests := []struct {

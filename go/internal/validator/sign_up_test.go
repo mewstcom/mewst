@@ -13,14 +13,14 @@ import (
 func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+	err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "",
 	})
 
@@ -38,8 +38,8 @@ func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
@@ -54,7 +54,7 @@ func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 
 	for _, email := range invalidEmails {
 		t.Run(email, func(t *testing.T) {
-			_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+			err := validator.Validate(ctx, SignUpCreateValidatorInput{
 				Email: email,
 			})
 
@@ -74,8 +74,8 @@ func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
@@ -90,7 +90,7 @@ func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 
 	for _, email := range validEmails {
 		t.Run(email, func(t *testing.T) {
-			_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+			err := validator.Validate(ctx, SignUpCreateValidatorInput{
 				Email: email,
 			})
 
@@ -104,8 +104,8 @@ func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	// 既存のユーザーを作成
@@ -117,7 +117,7 @@ func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+	err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "existing@example.com",
 	})
 
@@ -135,14 +135,14 @@ func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+	err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "signup-validator-not-taken@example.com",
 	})
 
@@ -154,8 +154,8 @@ func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 func TestSignUpCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
 	// 小文字のメールアドレスで既存ユーザーを作成
@@ -168,7 +168,7 @@ func TestSignUpCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 	ctx = i18n.SetLocale(ctx, "ja")
 
 	// 大文字で同じメールアドレスを試行
-	_, err := validator.Validate(ctx, SignUpCreateValidatorInput{
+	err := validator.Validate(ctx, SignUpCreateValidatorInput{
 		Email: "EXISTING@EXAMPLE.COM",
 	})
 

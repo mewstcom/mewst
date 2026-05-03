@@ -141,3 +141,17 @@ func DetectLanguage(r *http.Request) string {
 func NewLocalizer(locale string) *i18n.Localizer {
 	return i18n.NewLocalizer(bundle, locale)
 }
+
+// Middleware はI18nミドルウェアを提供する
+// Accept-Language ヘッダーから言語を決定し、ロケールと Localizer を context にセットする
+func Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		locale := DetectLanguage(r)
+		localizer := i18n.NewLocalizer(bundle, locale)
+
+		ctx := SetLocale(r.Context(), locale)
+		ctx = SetLocalizer(ctx, localizer)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}

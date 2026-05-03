@@ -36,10 +36,7 @@ func (q *Queries) CreateUserProfile(ctx context.Context, arg CreateUserProfilePa
 }
 
 const getUserProfileByProfileID = `-- name: GetUserProfileByProfileID :one
-SELECT id, user_id, profile_id, created_at, updated_at
-FROM user_profiles
-WHERE profile_id = $1
-LIMIT 1
+SELECT id, user_id, profile_id, created_at, updated_at FROM user_profiles WHERE profile_id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserProfileByProfileID(ctx context.Context, profileID uuid.UUID) (UserProfile, error) {
@@ -56,10 +53,7 @@ func (q *Queries) GetUserProfileByProfileID(ctx context.Context, profileID uuid.
 }
 
 const getUserProfileByUserID = `-- name: GetUserProfileByUserID :one
-SELECT id, user_id, profile_id, created_at, updated_at
-FROM user_profiles
-WHERE user_id = $1
-LIMIT 1
+SELECT id, user_id, profile_id, created_at, updated_at FROM user_profiles WHERE user_id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserProfileByUserID(ctx context.Context, userID uuid.UUID) (UserProfile, error) {

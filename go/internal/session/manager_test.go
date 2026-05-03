@@ -90,9 +90,9 @@ func TestManager_GetCurrentUser(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	sessionRepo := repository.NewSessionRepository(tx)
-	actorRepo := repository.NewActorRepository(tx)
-	userRepo := repository.NewUserRepository(tx)
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 
 	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
@@ -185,9 +185,9 @@ func TestManager_GetCurrentActor(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	sessionRepo := repository.NewSessionRepository(tx)
-	actorRepo := repository.NewActorRepository(tx)
-	userRepo := repository.NewUserRepository(tx)
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 
 	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
@@ -254,63 +254,32 @@ func TestManager_SetSessionCookie(t *testing.T) {
 
 	manager := NewManager(nil, nil, nil, cfg)
 
-	tests := []struct {
-		name            string
-		token           string
-		xForwardedProto string
-		wantSecure      bool
-	}{
-		{
-			name:            "通常のリクエストでSecureが設定される",
-			token:           "test-token-1",
-			xForwardedProto: "",
-			wantSecure:      true,
-		},
-		{
-			name:            "X-Forwarded-Proto: https でSecureが設定される",
-			token:           "test-token-2",
-			xForwardedProto: "https",
-			wantSecure:      true,
-		},
+	rr := httptest.NewRecorder()
+	manager.SetSessionCookie(rr, "test-token")
+
+	cookies := rr.Result().Cookies()
+	if len(cookies) != 1 {
+		t.Fatalf("SetSessionCookie() set %d cookies, want 1", len(cookies))
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			if tt.xForwardedProto != "" {
-				req.Header.Set("X-Forwarded-Proto", tt.xForwardedProto)
-			}
-			rr := httptest.NewRecorder()
-
-			manager.SetSessionCookie(rr, req, tt.token)
-
-			cookies := rr.Result().Cookies()
-			if len(cookies) != 1 {
-				t.Fatalf("SetSessionCookie() set %d cookies, want 1", len(cookies))
-			}
-
-			cookie := cookies[0]
-			if cookie.Name != CookieName {
-				t.Errorf("Cookie.Name = %q, want %q", cookie.Name, CookieName)
-			}
-			if cookie.Value != tt.token {
-				t.Errorf("Cookie.Value = %q, want %q", cookie.Value, tt.token)
-			}
-			if cookie.Secure != tt.wantSecure {
-				t.Errorf("Cookie.Secure = %v, want %v", cookie.Secure, tt.wantSecure)
-			}
-			if !cookie.HttpOnly {
-				t.Error("Cookie.HttpOnly = false, want true")
-			}
-			if cookie.SameSite != http.SameSiteLaxMode {
-				t.Errorf("Cookie.SameSite = %v, want %v", cookie.SameSite, http.SameSiteLaxMode)
-			}
-			if cookie.MaxAge != MaxAge {
-				t.Errorf("Cookie.MaxAge = %d, want %d", cookie.MaxAge, MaxAge)
-			}
-		})
+	cookie := cookies[0]
+	if cookie.Name != CookieName {
+		t.Errorf("Cookie.Name = %q, want %q", cookie.Name, CookieName)
+	}
+	if cookie.Value != "test-token" {
+		t.Errorf("Cookie.Value = %q, want %q", cookie.Value, "test-token")
+	}
+	if !cookie.Secure {
+		t.Error("Cookie.Secure = false, want true")
+	}
+	if !cookie.HttpOnly {
+		t.Error("Cookie.HttpOnly = false, want true")
+	}
+	if cookie.SameSite != http.SameSiteLaxMode {
+		t.Errorf("Cookie.SameSite = %v, want %v", cookie.SameSite, http.SameSiteLaxMode)
+	}
+	if cookie.MaxAge != MaxAge {
+		t.Errorf("Cookie.MaxAge = %d, want %d", cookie.MaxAge, MaxAge)
 	}
 }
 
@@ -325,10 +294,8 @@ func TestManager_DeleteSessionCookie(t *testing.T) {
 
 	manager := NewManager(nil, nil, nil, cfg)
 
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rr := httptest.NewRecorder()
-
-	manager.DeleteSessionCookie(rr, req)
+	manager.DeleteSessionCookie(rr)
 
 	cookies := rr.Result().Cookies()
 	if len(cookies) != 1 {
@@ -378,9 +345,9 @@ func TestManager_IsLoggedIn(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	sessionRepo := repository.NewSessionRepository(tx)
-	actorRepo := repository.NewActorRepository(tx)
-	userRepo := repository.NewUserRepository(tx)
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 
 	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 

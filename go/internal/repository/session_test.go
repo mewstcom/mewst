@@ -8,7 +8,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestSessionRepository_GetByToken(t *testing.T) {
+func TestSessionRepository_FindByToken(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -34,12 +34,12 @@ func TestSessionRepository_GetByToken(t *testing.T) {
 		WithUserAgent("Test Browser/1.0").
 		Build()
 
-	repo := repository.NewSessionRepository(tx)
+	repo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するセッションをトークンで取得できる", func(t *testing.T) {
-		session, err := repo.GetByToken(ctx, token)
+		session, err := repo.FindByToken(ctx, token)
 		if err != nil {
-			t.Fatalf("GetByToken() error = %v", err)
+			t.Fatalf("FindByToken() error = %v", err)
 		}
 
 		if session.Token != token {
@@ -56,13 +56,13 @@ func TestSessionRepository_GetByToken(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないトークンはErrNotFoundを返す", func(t *testing.T) {
-		_, err := repo.GetByToken(ctx, "nonexistent-token")
-		if err == nil {
-			t.Error("GetByToken() should return error for non-existent token")
+	t.Run("存在しないトークンはnilを返す", func(t *testing.T) {
+		session, err := repo.FindByToken(ctx, "nonexistent-token")
+		if err != nil {
+			t.Errorf("FindByToken() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByToken() error = %v, want ErrNotFound", err)
+		if session != nil {
+			t.Errorf("FindByToken() session = %v, want nil", session)
 		}
 	})
 }
@@ -85,10 +85,10 @@ func TestSessionRepository_Create(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	repo := repository.NewSessionRepository(tx)
+	repo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("セッションを作成できる", func(t *testing.T) {
-		params := repository.CreateSessionParams{
+		params := repository.CreateSessionInput{
 			ActorID:   actorID,
 			Token:     "new-session-token-create",
 			IPAddress: "10.0.0.1",
@@ -142,11 +142,11 @@ func TestSessionRepository_DeleteByToken(t *testing.T) {
 		WithToken(token).
 		Build()
 
-	repo := repository.NewSessionRepository(tx)
+	repo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("セッションを削除できる", func(t *testing.T) {
 		// 削除前に存在を確認
-		_, err := repo.GetByToken(ctx, token)
+		_, err := repo.FindByToken(ctx, token)
 		if err != nil {
 			t.Fatalf("セッションが存在しません: %v", err)
 		}
@@ -158,9 +158,12 @@ func TestSessionRepository_DeleteByToken(t *testing.T) {
 		}
 
 		// 削除後に存在しないことを確認
-		_, err = repo.GetByToken(ctx, token)
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByToken() after delete should return ErrNotFound, got %v", err)
+		session, err := repo.FindByToken(ctx, token)
+		if err != nil {
+			t.Errorf("FindByToken() after delete error = %v, want nil", err)
+		}
+		if session != nil {
+			t.Errorf("FindByToken() after delete session = %v, want nil", session)
 		}
 	})
 

@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/mewstcom/mewst/go/internal/model"
 )
 
 // UserBuilder はユーザーテストデータのビルダー
@@ -57,7 +59,7 @@ func (b *UserBuilder) WithTimeZone(timeZone string) *UserBuilder {
 }
 
 // Build はユーザーをDBに作成し、IDを返す
-func (b *UserBuilder) Build() uuid.UUID {
+func (b *UserBuilder) Build() model.UserID {
 	b.t.Helper()
 
 	now := time.Now()
@@ -72,7 +74,7 @@ func (b *UserBuilder) Build() uuid.UUID {
 		b.t.Fatalf("ユーザーの作成に失敗: %v", err)
 	}
 
-	return id
+	return model.UserID(id)
 }
 
 // ProfileBuilder はプロフィールテストデータのビルダー
@@ -111,7 +113,7 @@ func (b *ProfileBuilder) WithName(name string) *ProfileBuilder {
 }
 
 // Build はプロフィールをDBに作成し、IDを返す
-func (b *ProfileBuilder) Build() uuid.UUID {
+func (b *ProfileBuilder) Build() model.ProfileID {
 	b.t.Helper()
 
 	now := time.Now()
@@ -126,15 +128,15 @@ func (b *ProfileBuilder) Build() uuid.UUID {
 		b.t.Fatalf("プロフィールの作成に失敗: %v", err)
 	}
 
-	return id
+	return model.ProfileID(id)
 }
 
 // ActorBuilder はアクターテストデータのビルダー
 type ActorBuilder struct {
 	t         *testing.T
 	tx        *sql.Tx
-	userID    uuid.UUID
-	profileID uuid.UUID
+	userID    model.UserID
+	profileID model.ProfileID
 }
 
 // NewActorBuilder はActorBuilderを生成する
@@ -147,19 +149,19 @@ func NewActorBuilder(t *testing.T, tx *sql.Tx) *ActorBuilder {
 }
 
 // WithUserID はユーザーIDを設定する
-func (b *ActorBuilder) WithUserID(userID uuid.UUID) *ActorBuilder {
+func (b *ActorBuilder) WithUserID(userID model.UserID) *ActorBuilder {
 	b.userID = userID
 	return b
 }
 
 // WithProfileID はプロフィールIDを設定する
-func (b *ActorBuilder) WithProfileID(profileID uuid.UUID) *ActorBuilder {
+func (b *ActorBuilder) WithProfileID(profileID model.ProfileID) *ActorBuilder {
 	b.profileID = profileID
 	return b
 }
 
 // Build はアクターをDBに作成し、IDを返す
-func (b *ActorBuilder) Build() uuid.UUID {
+func (b *ActorBuilder) Build() model.ActorID {
 	b.t.Helper()
 
 	now := time.Now()
@@ -168,20 +170,20 @@ func (b *ActorBuilder) Build() uuid.UUID {
 		INSERT INTO actors (user_id, profile_id, created_at, updated_at)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id
-	`, b.userID, b.profileID, now, now).Scan(&id)
+	`, uuid.UUID(b.userID), uuid.UUID(b.profileID), now, now).Scan(&id)
 
 	if err != nil {
 		b.t.Fatalf("アクターの作成に失敗: %v", err)
 	}
 
-	return id
+	return model.ActorID(id)
 }
 
 // SessionBuilder はセッションテストデータのビルダー
 type SessionBuilder struct {
 	t         *testing.T
 	tx        *sql.Tx
-	actorID   uuid.UUID
+	actorID   model.ActorID
 	token     string
 	ipAddress string
 	userAgent string
@@ -200,7 +202,7 @@ func NewSessionBuilder(t *testing.T, tx *sql.Tx) *SessionBuilder {
 }
 
 // WithActorID はアクターIDを設定する
-func (b *SessionBuilder) WithActorID(actorID uuid.UUID) *SessionBuilder {
+func (b *SessionBuilder) WithActorID(actorID model.ActorID) *SessionBuilder {
 	b.actorID = actorID
 	return b
 }
@@ -224,7 +226,7 @@ func (b *SessionBuilder) WithUserAgent(userAgent string) *SessionBuilder {
 }
 
 // Build はセッションをDBに作成し、IDを返す
-func (b *SessionBuilder) Build() uuid.UUID {
+func (b *SessionBuilder) Build() model.SessionID {
 	b.t.Helper()
 
 	now := time.Now()
@@ -233,13 +235,13 @@ func (b *SessionBuilder) Build() uuid.UUID {
 		INSERT INTO sessions (actor_id, token, ip_address, user_agent, signed_in_at, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
-	`, b.actorID, b.token, b.ipAddress, b.userAgent, now, now, now).Scan(&id)
+	`, uuid.UUID(b.actorID), b.token, b.ipAddress, b.userAgent, now, now, now).Scan(&id)
 
 	if err != nil {
 		b.t.Fatalf("セッションの作成に失敗: %v", err)
 	}
 
-	return id
+	return model.SessionID(id)
 }
 
 // EmailConfirmationBuilder はメール確認テストデータのビルダー
@@ -296,7 +298,7 @@ func (b *EmailConfirmationBuilder) WithCreatedAt(createdAt time.Time) *EmailConf
 }
 
 // Build はメール確認をDBに作成し、IDを返す
-func (b *EmailConfirmationBuilder) Build() uuid.UUID {
+func (b *EmailConfirmationBuilder) Build() model.EmailConfirmationID {
 	b.t.Helper()
 
 	now := time.Now()
@@ -316,5 +318,5 @@ func (b *EmailConfirmationBuilder) Build() uuid.UUID {
 		b.t.Fatalf("メール確認の作成に失敗: %v", err)
 	}
 
-	return id
+	return model.EmailConfirmationID(id)
 }

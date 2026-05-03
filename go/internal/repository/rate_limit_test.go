@@ -16,13 +16,13 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		ctx := context.Background()
 
 		now := time.Now().UTC()
 		windowStart := now.Truncate(time.Hour)
 
-		result, err := repo.Increment(ctx, repository.IncrementParams{
+		result, err := repo.Increment(ctx, repository.IncrementInput{
 			Key:         "test:increment_new",
 			WindowStart: windowStart,
 		})
@@ -39,14 +39,14 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		ctx := context.Background()
 
 		now := time.Now().UTC()
 		windowStart := now.Truncate(time.Hour)
 
 		// 1回目のインクリメント
-		_, err := repo.Increment(ctx, repository.IncrementParams{
+		_, err := repo.Increment(ctx, repository.IncrementInput{
 			Key:         "test:increment_existing",
 			WindowStart: windowStart,
 		})
@@ -55,7 +55,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 		}
 
 		// 2回目のインクリメント
-		result, err := repo.Increment(ctx, repository.IncrementParams{
+		result, err := repo.Increment(ctx, repository.IncrementInput{
 			Key:         "test:increment_existing",
 			WindowStart: windowStart,
 		})
@@ -72,7 +72,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		ctx := context.Background()
 
 		now := time.Now().UTC()
@@ -80,7 +80,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 
 		// key1を2回インクリメント
 		for i := 0; i < 2; i++ {
-			_, err := repo.Increment(ctx, repository.IncrementParams{
+			_, err := repo.Increment(ctx, repository.IncrementInput{
 				Key:         "test:diff_key1",
 				WindowStart: windowStart,
 			})
@@ -90,7 +90,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 		}
 
 		// key2を1回インクリメント
-		result, err := repo.Increment(ctx, repository.IncrementParams{
+		result, err := repo.Increment(ctx, repository.IncrementInput{
 			Key:         "test:diff_key2",
 			WindowStart: windowStart,
 		})
@@ -111,14 +111,14 @@ func TestRateLimitRepository_DeleteOldRecords(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		ctx := context.Background()
 
 		now := time.Now().UTC()
 		windowStart := now.Truncate(time.Hour)
 
 		// レコードを作成
-		_, err := repo.Increment(ctx, repository.IncrementParams{
+		_, err := repo.Increment(ctx, repository.IncrementInput{
 			Key:         "test:delete_old",
 			WindowStart: windowStart,
 		})

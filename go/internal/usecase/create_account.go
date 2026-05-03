@@ -56,41 +56,50 @@ type CreateAccountInput struct {
 	TimeZone string
 }
 
-// CreateAccountResult はアカウント作成の結果
-type CreateAccountResult struct {
+// CreateAccountOutput はアカウント作成の出力パラメータ
+type CreateAccountOutput struct {
 	Actor *model.Actor
 }
 
 // Execute はアカウントを作成する
 // Profile, User, UserProfile, Actor を一括で作成し、トランザクション管理を行う
-func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountResult, error) {
-	// 1. バリデーション
-	_, err := uc.accountsValidator.Validate(ctx, validator.AccountsCreateValidatorInput{
+func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
+	// 1. バリデーション (トランザクション外)
+	if err := uc.accountsValidator.Validate(ctx, validator.AccountsCreateValidatorInput{
 		Email:    input.Email,
 		Atname:   input.Atname,
 		Password: input.Password,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
-	// 2. トランザクションを開始
+	// 2. CPU 計算 (bcrypt) と時刻取得をトランザクション外で済ませる。
+	// bcrypt はコスト 10 で 100ms 級の処理になるため、トランザクション内で実行すると
+	// その間 DB 接続を専有してロック競合の原因になる。
+	passwordDigest, err := auth.HashPassword(input.Password)
+	if err != nil {
+		return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
+	}
+	currentTime := time.Now()
+
+	// 3. ビジネスロジック + 永続化
+	return uc.createAccount(ctx, input, passwordDigest, currentTime)
+}
+
+// createAccount は Profile / User / UserProfile / Actor を 1 トランザクションで作成する
+func (uc *CreateAccountUsecase) createAccount(ctx context.Context, input CreateAccountInput, passwordDigest string, currentTime time.Time) (*CreateAccountOutput, error) {
 	tx, err := uc.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	// トランザクション内で操作するためのリポジトリを取得
 	userRepo := uc.userRepo.WithTx(tx)
 	profileRepo := uc.profileRepo.WithTx(tx)
 	userProfileRepo := uc.userProfileRepo.WithTx(tx)
 	actorRepo := uc.actorRepo.WithTx(tx)
 
-	currentTime := time.Now()
-
-	// 3. Profile を作成
-	profile, err := profileRepo.Create(ctx, repository.CreateProfileParams{
+	profile, err := profileRepo.Create(ctx, repository.CreateProfileInput{
 		OwnerType:     ProfileOwnerTypeUser,
 		Atname:        input.Atname,
 		Name:          "",
@@ -105,14 +114,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("プロフィールの作成に失敗: %w", err)
 	}
 
-	// 4. パスワードをハッシュ化
-	passwordDigest, err := auth.HashPassword(input.Password)
-	if err != nil {
-		return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
-	}
-
-	// 5. User を作成
-	user, err := userRepo.Create(ctx, repository.CreateUserParams{
+	user, err := userRepo.Create(ctx, repository.CreateUserInput{
 		Email:          input.Email,
 		PasswordDigest: passwordDigest,
 		Locale:         input.Locale,
@@ -122,17 +124,14 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("ユーザーの作成に失敗: %w", err)
 	}
 
-	// 6. UserProfile を作成
-	_, err = userProfileRepo.Create(ctx, repository.CreateUserProfileParams{
+	if _, err := userProfileRepo.Create(ctx, repository.CreateUserProfileInput{
 		UserID:    user.ID,
 		ProfileID: profile.ID,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, fmt.Errorf("ユーザープロフィール関連付けの作成に失敗: %w", err)
 	}
 
-	// 7. Actor を作成
-	actor, err := actorRepo.Create(ctx, repository.CreateActorParams{
+	actor, err := actorRepo.Create(ctx, repository.CreateActorInput{
 		UserID:    user.ID,
 		ProfileID: profile.ID,
 	})
@@ -144,7 +143,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
 	}
 
-	return &CreateAccountResult{
+	return &CreateAccountOutput{
 		Actor: actor,
 	}, nil
 }

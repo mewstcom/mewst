@@ -2,6 +2,7 @@ package validator
 
 import (
 	"context"
+	"unicode/utf8"
 
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
@@ -20,30 +21,27 @@ type PasswordUpdateValidatorInput struct {
 	Password string
 }
 
-// PasswordUpdateValidatorOutput はバリデーション成功時の出力
-type PasswordUpdateValidatorOutput struct{}
-
 // Validate は入力値の形式をチェックする（DBアクセスなし）
-func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) (*PasswordUpdateValidatorOutput, error) {
+func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) error {
 	ve := model.NewValidationError()
 
 	// パスワードの必須チェック
 	if input.Password == "" {
 		ve.AddField("password", i18n.T(ctx, "error_required"))
-		return nil, ve
+		return ve
 	}
 
-	// 最小文字数チェック（8文字以上）
-	if len([]rune(input.Password)) < 8 {
+	// 最小文字数チェック
+	if utf8.RuneCountInString(input.Password) < minPasswordLength {
 		ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
-		return nil, ve
+		return ve
 	}
 
-	// 最大バイト数チェック（72バイト以下、bcrypt制限）
-	if len(input.Password) > 72 {
+	// 最大バイト数チェック（bcrypt 制限）
+	if len(input.Password) > maxPasswordLength {
 		ve.AddField("password", i18n.T(ctx, "error_password_too_long"))
-		return nil, ve
+		return ve
 	}
 
-	return &PasswordUpdateValidatorOutput{}, nil
+	return nil
 }

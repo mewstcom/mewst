@@ -12,6 +12,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/query"
 )
 
 var (
@@ -70,4 +71,10 @@ func MustParseUUID(s string) uuid.UUID {
 		panic(err)
 	}
 	return id
+}
+
+// QueriesWithTx はトランザクションを使用する*query.Queriesを返す
+// Repository テスト用の DI ヘルパー
+func QueriesWithTx(tx *sql.Tx) *query.Queries {
+	return query.New(tx)
 }

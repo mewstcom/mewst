@@ -21,27 +21,28 @@ type PasswordResetCreateValidatorInput struct {
 	Email string
 }
 
-// PasswordResetCreateValidatorOutput はバリデーション成功時の出力
-type PasswordResetCreateValidatorOutput struct{}
-
 // Validate は入力値の形式をチェックする（DBアクセスなし）
-// 形式バリデーションのみを行い、ユーザー存在チェックは行わない
-func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) (*PasswordResetCreateValidatorOutput, error) {
+//
+// メールアドレスの存在チェックを行わないのは、列挙攻撃（存在するメールアドレスを
+// 推測する攻撃）を防ぐため。存在しないメールでも「リセットメールを送信しました」
+// と返すことで、攻撃者にメールアドレスの存在有無を推測させない。
+func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) error {
 	ve := model.NewValidationError()
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
 		ve.AddField("email", i18n.T(ctx, "error_required"))
-	} else {
-		// メールアドレス形式チェック
-		if _, err := mail.ParseAddress(input.Email); err != nil {
-			ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
-		}
+		return ve
+	}
+
+	// メールアドレス形式チェック
+	if _, err := mail.ParseAddress(input.Email); err != nil {
+		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
 	}
 
 	if ve.HasErrors() {
-		return nil, ve
+		return ve
 	}
 
-	return &PasswordResetCreateValidatorOutput{}, nil
+	return nil
 }

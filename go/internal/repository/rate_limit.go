@@ -10,25 +10,21 @@ import (
 
 // RateLimitRepository はRate Limitのリポジトリ
 type RateLimitRepository struct {
-	queries *query.Queries
+	q *query.Queries
 }
 
 // NewRateLimitRepository はRateLimitRepositoryを生成する
-func NewRateLimitRepository(db query.DBTX) *RateLimitRepository {
-	return &RateLimitRepository{
-		queries: query.New(db),
-	}
+func NewRateLimitRepository(q *query.Queries) *RateLimitRepository {
+	return &RateLimitRepository{q: q}
 }
 
 // WithTx はトランザクションを設定したRateLimitRepositoryを返す
 func (r *RateLimitRepository) WithTx(tx *sql.Tx) *RateLimitRepository {
-	return &RateLimitRepository{
-		queries: r.queries.WithTx(tx),
-	}
+	return &RateLimitRepository{q: r.q.WithTx(tx)}
 }
 
-// IncrementParams はRate Limitカウンターインクリメントのパラメータ
-type IncrementParams struct {
+// IncrementInput はRate Limitカウンターインクリメントの入力パラメータ
+type IncrementInput struct {
 	Key         string
 	WindowStart time.Time
 }
@@ -39,10 +35,10 @@ type IncrementResult struct {
 }
 
 // Increment はRate Limitカウンターをインクリメントする
-func (r *RateLimitRepository) Increment(ctx context.Context, params IncrementParams) (*IncrementResult, error) {
-	row, err := r.queries.IncrementRateLimit(ctx, query.IncrementRateLimitParams{
-		Key:         params.Key,
-		WindowStart: params.WindowStart,
+func (r *RateLimitRepository) Increment(ctx context.Context, input IncrementInput) (*IncrementResult, error) {
+	row, err := r.q.IncrementRateLimit(ctx, query.IncrementRateLimitParams{
+		Key:         input.Key,
+		WindowStart: input.WindowStart,
 	})
 	if err != nil {
 		return nil, err
@@ -55,5 +51,5 @@ func (r *RateLimitRepository) Increment(ctx context.Context, params IncrementPar
 
 // DeleteOldRecords は指定された時刻より古いRate Limitレコードを削除する
 func (r *RateLimitRepository) DeleteOldRecords(ctx context.Context, cutoff time.Time) error {
-	return r.queries.DeleteOldRateLimits(ctx, cutoff)
+	return r.q.DeleteOldRateLimits(ctx, cutoff)
 }

@@ -4,11 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-func TestUserProfileRepository_GetByUserID(t *testing.T) {
+func TestUserProfileRepository_FindByUserID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -28,17 +30,17 @@ func TestUserProfileRepository_GetByUserID(t *testing.T) {
 		INSERT INTO user_profiles (user_id, profile_id, created_at, updated_at)
 		VALUES ($1, $2, NOW(), NOW())
 		RETURNING id
-	`, userID, profileID).Scan(&userProfileID)
+	`, uuid.UUID(userID), uuid.UUID(profileID)).Scan(&userProfileID)
 	if err != nil {
 		t.Fatalf("user_profiles作成に失敗: %v", err)
 	}
 
-	repo := repository.NewUserProfileRepository(tx)
+	repo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するユーザープロフィールをユーザーIDで取得できる", func(t *testing.T) {
-		userProfile, err := repo.GetByUserID(ctx, userID)
+		userProfile, err := repo.FindByUserID(ctx, userID)
 		if err != nil {
-			t.Fatalf("GetByUserID() error = %v", err)
+			t.Fatalf("FindByUserID() error = %v", err)
 		}
 
 		if userProfile.UserID != userID {
@@ -49,20 +51,20 @@ func TestUserProfileRepository_GetByUserID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないユーザーIDはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("存在しないユーザーIDはnilを返す", func(t *testing.T) {
 		nonExistentUserID := testutil.NewUserBuilder(t, tx).Build()
 
-		_, err := repo.GetByUserID(ctx, nonExistentUserID)
-		if err == nil {
-			t.Error("GetByUserID() should return error for non-existent user_id")
+		userProfile, err := repo.FindByUserID(ctx, nonExistentUserID)
+		if err != nil {
+			t.Errorf("FindByUserID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByUserID() error = %v, want ErrNotFound", err)
+		if userProfile != nil {
+			t.Errorf("FindByUserID() userProfile = %v, want nil", userProfile)
 		}
 	})
 }
 
-func TestUserProfileRepository_GetByProfileID(t *testing.T) {
+func TestUserProfileRepository_FindByProfileID(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTestDB(t)
@@ -80,17 +82,17 @@ func TestUserProfileRepository_GetByProfileID(t *testing.T) {
 	_, err := tx.Exec(`
 		INSERT INTO user_profiles (user_id, profile_id, created_at, updated_at)
 		VALUES ($1, $2, NOW(), NOW())
-	`, userID, profileID)
+	`, uuid.UUID(userID), uuid.UUID(profileID))
 	if err != nil {
 		t.Fatalf("user_profiles作成に失敗: %v", err)
 	}
 
-	repo := repository.NewUserProfileRepository(tx)
+	repo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("存在するユーザープロフィールをプロフィールIDで取得できる", func(t *testing.T) {
-		userProfile, err := repo.GetByProfileID(ctx, profileID)
+		userProfile, err := repo.FindByProfileID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("GetByProfileID() error = %v", err)
+			t.Fatalf("FindByProfileID() error = %v", err)
 		}
 
 		if userProfile.UserID != userID {
@@ -101,15 +103,15 @@ func TestUserProfileRepository_GetByProfileID(t *testing.T) {
 		}
 	})
 
-	t.Run("存在しないプロフィールIDはErrNotFoundを返す", func(t *testing.T) {
+	t.Run("存在しないプロフィールIDはnilを返す", func(t *testing.T) {
 		nonExistentProfileID := testutil.NewProfileBuilder(t, tx).Build()
 
-		_, err := repo.GetByProfileID(ctx, nonExistentProfileID)
-		if err == nil {
-			t.Error("GetByProfileID() should return error for non-existent profile_id")
+		userProfile, err := repo.FindByProfileID(ctx, nonExistentProfileID)
+		if err != nil {
+			t.Errorf("FindByProfileID() error = %v, want nil", err)
 		}
-		if err != repository.ErrNotFound {
-			t.Errorf("GetByProfileID() error = %v, want ErrNotFound", err)
+		if userProfile != nil {
+			t.Errorf("FindByProfileID() userProfile = %v, want nil", userProfile)
 		}
 	})
 }
@@ -128,10 +130,10 @@ func TestUserProfileRepository_Create(t *testing.T) {
 		WithAtname("userprofilecreate").
 		Build()
 
-	repo := repository.NewUserProfileRepository(tx)
+	repo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("ユーザープロフィール関連付けを作成できる", func(t *testing.T) {
-		userProfile, err := repo.Create(ctx, repository.CreateUserProfileParams{
+		userProfile, err := repo.Create(ctx, repository.CreateUserProfileInput{
 			UserID:    userID,
 			ProfileID: profileID,
 		})
@@ -154,7 +156,7 @@ func TestUserProfileRepository_WithTx(t *testing.T) {
 	_, tx := testutil.SetupTestDB(t)
 	ctx := context.Background()
 
-	repo := repository.NewUserProfileRepository(tx)
+	repo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
 
 	// WithTxでトランザクションを設定したリポジトリを取得
 	txRepo := repo.WithTx(tx)
@@ -168,7 +170,7 @@ func TestUserProfileRepository_WithTx(t *testing.T) {
 		Build()
 
 	t.Run("トランザクション内でユーザープロフィールを作成できる", func(t *testing.T) {
-		userProfile, err := txRepo.Create(ctx, repository.CreateUserProfileParams{
+		userProfile, err := txRepo.Create(ctx, repository.CreateUserProfileInput{
 			UserID:    userID,
 			ProfileID: profileID,
 		})
@@ -177,9 +179,9 @@ func TestUserProfileRepository_WithTx(t *testing.T) {
 		}
 
 		// 作成したユーザープロフィールを取得できることを確認
-		fetched, err := txRepo.GetByUserID(ctx, userProfile.UserID)
+		fetched, err := txRepo.FindByUserID(ctx, userProfile.UserID)
 		if err != nil {
-			t.Fatalf("GetByUserID() error = %v", err)
+			t.Fatalf("FindByUserID() error = %v", err)
 		}
 		if fetched.ProfileID != profileID {
 			t.Errorf("fetched.ProfileID = %v, want %v", fetched.ProfileID, profileID)

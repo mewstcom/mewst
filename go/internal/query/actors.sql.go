@@ -36,10 +36,7 @@ func (q *Queries) CreateActor(ctx context.Context, arg CreateActorParams) (Actor
 }
 
 const getActorByID = `-- name: GetActorByID :one
-SELECT id, user_id, profile_id, created_at, updated_at
-FROM actors
-WHERE id = $1
-LIMIT 1
+SELECT id, user_id, profile_id, created_at, updated_at FROM actors WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetActorByID(ctx context.Context, id uuid.UUID) (Actor, error) {
@@ -56,10 +53,7 @@ func (q *Queries) GetActorByID(ctx context.Context, id uuid.UUID) (Actor, error)
 }
 
 const getActorByUserID = `-- name: GetActorByUserID :one
-SELECT id, user_id, profile_id, created_at, updated_at
-FROM actors
-WHERE user_id = $1
-LIMIT 1
+SELECT id, user_id, profile_id, created_at, updated_at FROM actors WHERE user_id = $1 LIMIT 1
 `
 
 func (q *Queries) GetActorByUserID(ctx context.Context, userID uuid.UUID) (Actor, error) {

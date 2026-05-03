@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"github.com/mewstcom/mewst/go/internal/clientip"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
-	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/redirect"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
-	sign_up_page "github.com/mewstcom/mewst/go/internal/templates/pages/sign_up"
+	signuppages "github.com/mewstcom/mewst/go/internal/templates/pages/sign_up"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
@@ -23,20 +23,17 @@ import (
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// コンテキストにロケールを設定（テンプレート内での翻訳用）
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, h.cfg)
-
 	// フォームデータを取得
 	email := r.FormValue("email")
+	backURL := r.FormValue("back")
 
 	// IPアドレスベースのレート制限
 	ipAddress := clientip.GetClientIP(r)
 	if err := h.checkRateLimit(ctx, ipAddress); err != nil {
 		if errors.Is(err, ratelimit.ErrRateLimitExceeded) {
 			ve := model.NewValidationError()
-			ve.AddGlobal(templates.T(ctx, "error_rate_limit_exceeded"))
-			h.renderForm(w, r, ve, email)
+			ve.AddGlobal(i18n.T(ctx, "error_rate_limit_exceeded"))
+			h.renderSignUpForm(w, r, ve, email, backURL)
 			return
 		}
 		slog.ErrorContext(ctx, "レート制限チェックでエラー", "error", err)
@@ -52,36 +49,37 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if !turnstileValid {
 		ve := model.NewValidationError()
-		ve.AddGlobal(templates.T(ctx, "error_turnstile_failed"))
-		h.renderForm(w, r, ve, email)
+		ve.AddGlobal(i18n.T(ctx, "error_turnstile_failed"))
+		h.renderSignUpForm(w, r, ve, email, backURL)
 		return
 	}
 
 	// UseCase を実行（バリデーション + メール確認レコード作成）
 	ucResult, err := h.createSignUp.Execute(ctx, usecase.CreateSignUpInput{
 		Email:  email,
-		Locale: "ja",
+		Locale: i18n.GetLocale(ctx),
 	})
 	if err != nil {
-		h.handleCreateError(w, r, err, email)
+		h.handleCreateError(w, r, err, email, backURL)
 		return
 	}
 
 	// セッションにemail_confirmation_idを保存
-	h.sessionMgr.SetEmailConfirmationID(w, r, ucResult.EmailConfirmation.ID.String())
+	h.sessionMgr.SetEmailConfirmationID(w, ucResult.EmailConfirmation.ID)
 
 	// フラッシュメッセージを設定して/email_confirmationへリダイレクト
-	h.sessionMgr.SetFlashCookie(w, r, session.FlashSuccess, templates.T(ctx, "flash_sign_up_email_sent"))
+	h.flashMgr.SetSuccess(w, i18n.T(ctx, "flash_sign_up_email_sent"))
 
-	http.Redirect(w, r, "/email_confirmation", http.StatusFound)
+	http.Redirect(w, r, redirect.AppendSafeBack("/email_confirmation", backURL), http.StatusFound)
 }
 
 // handleCreateError はサインアップ処理のエラーを処理する
-func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email string) {
+func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email, backURL string) {
 	ctx := r.Context()
 
-	if ve := model.AsValidationError(err); ve != nil {
-		h.renderForm(w, r, ve, email)
+	var ve *model.ValidationError
+	if errors.As(err, &ve) {
+		h.renderSignUpForm(w, r, ve, email, backURL)
 		return
 	}
 
@@ -98,23 +96,23 @@ func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	})
 }
 
-// renderForm はサインアップフォームを再表示する
-func (h *Handler) renderForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email string) {
+// renderSignUpForm はサインアップフォームを再表示する
+func (h *Handler) renderSignUpForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, backURL string) {
 	ctx := r.Context()
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
-	data := sign_up_page.NewPageData{
+	data := signuppages.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
 		FormErrors:       ve,
 		Email:            email,
+		BackURL:          backURL,
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "sign_up_title")
-	meta.SetOGURL(h.cfg, "/sign_up")
 
-	content := sign_up_page.New(data)
+	content := signuppages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)

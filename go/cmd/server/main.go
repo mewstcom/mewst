@@ -16,7 +16,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
-	"github.com/mewstcom/mewst/go/internal/email"
 	"github.com/mewstcom/mewst/go/internal/handler"
 	"github.com/mewstcom/mewst/go/internal/handler/accounts"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
@@ -26,7 +25,9 @@ import (
 	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_up"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/query"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
@@ -59,35 +60,24 @@ func main() {
 	}()
 	slog.Info("データベースに接続しました")
 
+	// クエリの初期化
+	queries := query.New(db)
+
 	// リポジトリの初期化
-	userRepo := repository.NewUserRepository(db)
-	sessionRepo := repository.NewSessionRepository(db)
-	actorRepo := repository.NewActorRepository(db)
-	emailConfirmationRepo := repository.NewEmailConfirmationRepository(db)
-	profileRepo := repository.NewProfileRepository(db)
-	userProfileRepo := repository.NewUserProfileRepository(db)
-	rateLimitRepo := repository.NewRateLimitRepository(db)
+	userRepo := repository.NewUserRepository(queries)
+	sessionRepo := repository.NewSessionRepository(queries)
+	actorRepo := repository.NewActorRepository(queries)
+	emailConfirmationRepo := repository.NewEmailConfirmationRepository(queries)
+	profileRepo := repository.NewProfileRepository(queries)
+	userProfileRepo := repository.NewUserProfileRepository(queries)
+	rateLimitRepo := repository.NewRateLimitRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
-
-	// メール送信クライアントの初期化
-	var emailSender email.Sender
-	if cfg.ResendAPIKey != "" && cfg.EmailFrom != "" {
-		emailSender = email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
-	} else {
-		emailSender = email.NewNoopSender()
-		slog.Warn("Resend APIキーまたは送信元メールアドレスが設定されていないため、メール送信は無効です")
-	}
-
-	// メール確認コード送信の初期化
-	confirmationSender := email.NewConfirmationSender(emailSender)
-	sendEmailConfirmationUC := usecase.NewSendEmailConfirmationUsecase(confirmationSender)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
 	// Workerの初期化
-	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), worker.Dependencies{
-		SendEmailConfirmationUC: sendEmailConfirmationUC,
-	})
+	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg)
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
 		os.Exit(1)
@@ -104,7 +94,7 @@ func main() {
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
 	// Dispatcherの初期化
-	jobDispatcher := dispatcher.NewDispatcher(workerClient)
+	jobDispatcher := dispatcher.NewDispatcher(workerClient.Client())
 
 	// バリデーターの初期化
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
@@ -130,13 +120,13 @@ func main() {
 
 	// ハンドラーの初期化
 	manifestHandler := manifest.NewHandler(cfg)
-	signInHandler := sign_in.NewHandler(cfg, sessionMgr, createSignInUC, turnstileClient)
-	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, createSignUpUC, turnstileClient, rateLimiter)
-	signOutHandler := sign_out.NewHandler(cfg, sessionMgr)
-	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, createPasswordResetUC, turnstileClient)
-	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
-	passwordHandler := password.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
-	accountsHandler := accounts.NewHandler(cfg, sessionMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
+	signInHandler := sign_in.NewHandler(cfg, sessionMgr, flashMgr, createSignInUC, turnstileClient)
+	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, flashMgr, createSignUpUC, turnstileClient, rateLimiter)
+	signOutHandler := sign_out.NewHandler(cfg, sessionMgr, flashMgr)
+	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, flashMgr, createPasswordResetUC, turnstileClient)
+	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
+	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
+	accountsHandler := accounts.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -160,6 +150,13 @@ func main() {
 		}
 		r.Use(proxyMiddleware.Middleware)
 	}
+
+	// i18n ミドルウェア(Accept-Language ヘッダーから ctx にロケールをセットする)
+	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには走らせない
+	r.Use(i18n.Middleware)
+
+	// フラッシュメッセージをCookieからcontextへロード（Go版の全ルートに適用）
+	r.Use(flashMgr.Middleware)
 
 	// 404ハンドラーの設定（ルーティングにマッチしないパス用）
 	r.NotFound(handler.NotFound)

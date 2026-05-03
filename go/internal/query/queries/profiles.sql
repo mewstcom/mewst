@@ -1,14 +1,8 @@
 -- name: GetProfileByID :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at
-FROM profiles
-WHERE id = $1
-LIMIT 1;
+SELECT * FROM profiles WHERE id = $1 LIMIT 1;
 
 -- name: GetProfileByAtname :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at
-FROM profiles
-WHERE atname = $1
-LIMIT 1;
+SELECT * FROM profiles WHERE atname = $1 LIMIT 1;
 
 -- name: ExistsProfileByAtname :one
 SELECT EXISTS(
@@ -18,4 +12,4 @@ SELECT EXISTS(
 -- name: CreateProfile :one
 INSERT INTO profiles (owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-RETURNING id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at;
+RETURNING *;

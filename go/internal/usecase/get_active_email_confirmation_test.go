@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -27,7 +28,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 		Build()
 
 	// ユースケースを実行
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmRepo)
 	result, err := uc.Execute(ctx, usecase.GetActiveEmailConfirmationInput{
 		ID: emailConfirmationID,
@@ -61,10 +62,10 @@ func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 	ctx := context.Background()
 
 	// 存在しないIDで実行
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmRepo)
 	_, err := uc.Execute(ctx, usecase.GetActiveEmailConfirmationInput{
-		ID: uuid.New(),
+		ID: model.EmailConfirmationID(uuid.New()),
 	})
 
 	if err == nil {
@@ -91,7 +92,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 		WithCreatedAt(expiredTime).
 		Build()
 
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(tx)
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmRepo)
 	_, err := uc.Execute(ctx, usecase.GetActiveEmailConfirmationInput{
 		ID: emailConfirmationID,

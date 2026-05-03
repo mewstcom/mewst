@@ -70,9 +70,28 @@ Model と Repository のファイル名・構造体名は統一します：
 
 **命名のルール**:
 
-- **ファイル名**: スネークケース（`user_calendar.go`）
+- **ファイル名**: スネークケース（`user_calendar.go`）。`_repository.go` のような suffix は付けない(`{Model}.go ↔ repository/{model}.go` の 1:1 対応を維持する)
 - **構造体名**: パスカルケース（`UserCalendar`, `UserCalendarRepository`）
 - **Model と Repository は同じ名前**: `model/user_calendar.go` ↔ `repository/user_calendar.go`
+
+#### Not Found の表現
+
+Repository の取得系メソッド(`FindByID` 等)は、対象が存在しない場合に `(nil, nil)` を返します。`sql.ErrNoRows` を独自エラー(`ErrNotFound` 等)に変換する設計は採用しません。
+
+```go
+func (r *UserRepository) FindByID(ctx context.Context, id model.UserID) (*model.User, error) {
+    row, err := r.q.GetUserByID(ctx, uuid.UUID(id))
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, nil
+        }
+        return nil, err
+    }
+    return r.toModel(row), nil
+}
+```
+
+呼び出し側(UseCase / Validator / Session Manager 等)は `if user == nil` で未存在を判定します。「未存在」を業務上の異常として扱う場合は、UseCase 側で `*model.AppError`(`AppErrCodeResourceNotFound`)や `usecase.ErrNotFound` に変換して上位層へ伝搬します。
 
 #### モデルの重複を避ける
 
@@ -229,8 +248,8 @@ Presentation層 → Application層 → Domain/Infrastructure層
 - **Templates**: `ViewModel` を通じてデータを表示。データアクセス（`repository`, `query`）、ビジネスロジック（`usecase`）、`Model` への直接依存は禁止。
 - **ViewModel**: `Model` → `ViewModel` の変換のみ。`repository`, `query` に依存しない
 - **Handler**: `query`, `repository`, `validator` への直接アクセス禁止。すべて `usecase` を経由する
-- **Worker**: UseCase を呼ぶだけの薄い Adapter。`query`, `handler`, `middleware`, `viewmodel`, `templates` に依存しない
-- **Email**: テンプレートレンダリング + API 送信を内包。`templates`, `i18n` に依存可能。`handler`, `usecase`, `worker`, `validator`, `dispatcher`, `session` には依存しない
+- **Worker**: UseCase を呼ぶだけの薄い Adapter。`query`, `repository`, `handler`, `middleware`, `viewmodel`, `templates` に依存しない
+- **Email**: テンプレートレンダリング + API 送信を内包。`templates`, `i18n` に依存可能。上位層（`handler`, `middleware`, `usecase`, `validator`, `worker`, `dispatcher`）およびデータアクセス層（`query`, `repository`）、`viewmodel`, `session` には依存しない
 - **Middleware**: エラーページ・メンテナンスページ等のレンダリングのため `templates` への依存は許可。`query`, `repository`, `usecase`, `handler`, `viewmodel` に依存しない
 
 **依存関係の図解**:
@@ -251,7 +270,7 @@ Middleware → Templates (OK: エラーページ等のレンダリング)
 
 ### Application 層（UseCase, Validator）
 
-- **UseCase**: `query` への直接アクセス禁止。データアクセスは `repository` を経由。`session` への直接アクセス禁止。Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない。Validator を統合し、バリデーション → 永続化をオーケストレーション（詳細は[UseCaseオーケストレーション](#usecaseオーケストレーション)を参照）
+- **UseCase**: `query` への直接アクセス禁止。データアクセスは `repository` を経由。`session` への直接アクセス禁止。Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`, `worker`）に依存しない。ジョブのキュー投入は `dispatcher` を経由する。Validator を統合し、バリデーション → 永続化をオーケストレーション（詳細は[UseCaseオーケストレーション](#usecaseオーケストレーション)を参照）
 - **Validator**: 形式チェック + 状態バリデーションを統合。`repository`, `model` に依存可能。`query` への直接アクセスは禁止（Repository を経由）。`usecase` には依存しない（UseCase が Validator を呼び出す方向）。Presentation 層（`handler`, `middleware`, `viewmodel`, `templates`）に依存しない（翻訳は `i18n.T()` を直接使用）
 
 ### Domain/Infrastructure 層（Query, Repository, Model）
@@ -452,437 +471,25 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 
 ### 概要
 
-ビジネスロジックとトランザクション管理は `internal/usecase` パッケージで行います。
+ビジネスロジックとトランザクション管理は `internal/usecase` パッケージで行います。Handler / Worker からのすべてのデータアクセス・認可・バリデーション・永続化は UseCase を経由します。
+
+📖 **詳細な命名規則・実装パターン・処理順序・WithTx パターン・テスト方針については [@go/docs/usecase-guide.md](usecase-guide.md) を参照してください。**
 
 ### UseCase の種類
 
-Handler はすべてのデータアクセスを UseCase 経由で行う。UseCase は以下の 3 種類に分類される：
+Handler はすべてのデータアクセスを UseCase 経由で行う。UseCase は以下の 3 種類に分類される。
 
-| 種類                         | 責務                                            | トランザクション        |
-| ---------------------------- | ----------------------------------------------- | ----------------------- |
-| オーケストレーション UseCase | バリデーション → 永続化の統合（フォーム送信系） | あり（WithTx パターン） |
-| 書き込み UseCase             | 永続化処理、ビジネスロジック                    | あり（WithTx パターン） |
-| 読み取り UseCase             | データ取得、複数 Repository の集約              | なし                    |
+| 種類                         | 責務                                                            | Validator | トランザクション                |
+| ---------------------------- | --------------------------------------------------------------- | --------- | ------------------------------- |
+| 読み取り UseCase             | データ取得、複数 Repository の集約                              | なし      | なし                            |
+| 書き込み UseCase             | 永続化処理 (作成・更新・削除)、ビジネスロジック                 | なし      | あり/なし (必要に応じて WithTx) |
+| オーケストレーション UseCase | Validator を統合し、フォーム送信のバリデーション → 永続化を統括 | あり      | あり/なし (必要に応じて WithTx) |
 
-**書き込み UseCase**:
+オーケストレーション UseCase は書き込み UseCase の特殊形だが、Validator 統合の有無で実装パターンが大きく変わるため独立カテゴリとして扱う。
 
-- トランザクションを伴う永続化処理（作成・更新・削除）
-- 複数の Repository を跨ぐビジネスロジック
-- ロールバックが必要な複合操作
-
-```go
-// 例: StripeサブスクライバーとUserを同時に更新する場合
-type DeleteStripeSubscriberUsecase struct {
-    db                   *sql.DB
-    stripeSubscriberRepo *repository.StripeSubscriberRepository
-    userRepo             *repository.UserRepository
-}
-
-func (uc *DeleteStripeSubscriberUsecase) Execute(ctx context.Context, input Input) (*Result, error) {
-    tx, err := uc.db.BeginTx(ctx, nil)
-    // トランザクション内で複数のRepositoryを操作
-}
-```
-
-**読み取り UseCase**:
-
-- Handler が必要とするデータ取得
-- 複数の Repository を組み合わせたデータ集約
-- トランザクション不要な参照処理
-
-```go
-// 例: メール確認データの取得（読み取り専用）
-type GetActiveEmailConfirmationUsecase struct {
-    emailConfirmationRepo *repository.EmailConfirmationRepository
-}
-
-func NewGetActiveEmailConfirmationUsecase(
-    emailConfirmationRepo *repository.EmailConfirmationRepository,
-) *GetActiveEmailConfirmationUsecase {
-    return &GetActiveEmailConfirmationUsecase{
-        emailConfirmationRepo: emailConfirmationRepo,
-    }
-}
-
-type GetActiveEmailConfirmationInput struct {
-    ID uuid.UUID
-}
-
-type GetActiveEmailConfirmationOutput struct {
-    EmailConfirmation *model.EmailConfirmation
-}
-
-func (uc *GetActiveEmailConfirmationUsecase) Execute(ctx context.Context, input GetActiveEmailConfirmationInput) (*GetActiveEmailConfirmationOutput, error) {
-    ec, err := uc.emailConfirmationRepo.GetActiveByID(ctx, input.ID)
-    if err != nil {
-        return nil, fmt.Errorf("メール確認の取得に失敗: %w", err)
-    }
-    return &GetActiveEmailConfirmationOutput{EmailConfirmation: ec}, nil
-}
-```
-
-### Repository の WithTx パターン
-
-Usecase でトランザクションを使用する場合、Repository の `WithTx` メソッドを使ってトランザクション内で操作を行います。
-
-#### 目的
-
-- Repository をコンストラクタで受け取り、`Execute` 内で `WithTx(tx)` を呼び出すことで、トランザクション内で安全にデータ操作を行う
-- 同じ Repository インターフェースを、通常時（DB 直接）とトランザクション時（tx 経由）の両方で使用できる
-
-#### メリット
-
-- **トランザクション境界の明確化**: `BeginTx` から `Commit` までのスコープが Usecase 内で完結する
-- **ロールバック安全性**: `defer func() { _ = tx.Rollback() }()` により、エラー時に確実にロールバックされる
-- **Repository の再利用**: 同じ Repository を通常の読み取りとトランザクション内の書き込みの両方で使用できる
-
-#### 実装例
-
-```go
-type CreateAccountUsecase struct {
-    db          *sql.DB
-    userRepo    *repository.UserRepository
-    profileRepo *repository.ProfileRepository
-}
-
-func NewCreateAccountUsecase(
-    db *sql.DB,
-    userRepo *repository.UserRepository,
-    profileRepo *repository.ProfileRepository,
-) *CreateAccountUsecase {
-    return &CreateAccountUsecase{
-        db:          db,
-        userRepo:    userRepo,
-        profileRepo: profileRepo,
-    }
-}
-
-func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
-    tx, err := uc.db.BeginTx(ctx, nil)
-    if err != nil {
-        return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
-    }
-    defer func() { _ = tx.Rollback() }()
-
-    // トランザクション内で操作するためのリポジトリを取得
-    userRepo := uc.userRepo.WithTx(tx)
-    profileRepo := uc.profileRepo.WithTx(tx)
-
-    // ユーザーを作成
-    user, err := userRepo.Create(ctx, input.Email, input.PasswordDigest)
-    if err != nil {
-        return nil, fmt.Errorf("ユーザーの作成に失敗: %w", err)
-    }
-
-    // プロフィールを作成
-    _, err = profileRepo.Create(ctx, user.ID, input.Atname)
-    if err != nil {
-        return nil, fmt.Errorf("プロフィールの作成に失敗: %w", err)
-    }
-
-    if err := tx.Commit(); err != nil {
-        return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
-    }
-
-    return &CreateAccountOutput{UserID: user.ID}, nil
-}
-```
-
-#### 重要なポイント
-
-- **`defer func() { _ = tx.Rollback() }()`**: `Commit` 成功後の `Rollback` は no-op なので、常に defer で呼び出して安全にロールバックを保証する
-- **`WithTx(tx)` の呼び出しタイミング**: `BeginTx` の後、実際のデータ操作の前に呼び出す
-- **元の Repository は変更されない**: `WithTx` は新しいインスタンスを返すため、元の Repository はトランザクションに影響されない
-
-### 責務
-
-- トランザクション管理（`db.BeginTx` から `tx.Commit` まで）
-- 複数の repository を跨ぐ処理
-- ビジネスロジックの実装
-
-### ファイル配置
-
-`internal/usecase/` 直下にフラットに配置（サブディレクトリは作成しない）
-
-### 命名規則
-
-- **ファイル名**: `{action}_{entity}.go`
-  - 例: `create_session.go`, `create_password_reset_token.go`, `update_password_reset.go`
-  - **重要**: 動詞（アクション）を必ず先頭に配置する
-- **構造体名**: `{Action}{Entity}Usecase`
-  - 例: `CreateSessionUsecase`, `CreatePasswordResetTokenUsecase`
-  - 注: `Usecase` の `c` は小文字（既存コードとの統一のため）
-- **コンストラクタ**: `New{Action}{Entity}Usecase`
-- **Execute メソッド**: `Execute(ctx context.Context, ...) (*Result, error)`
-
-### 結果型
-
-各 UseCase は専用の Result 構造体を返します。
-
-例: `SessionResult`, `CreatePasswordResetTokenResult`
-
-### 利点
-
-- ハンドラーがシンプルになる（HTTP 処理に専念できる）
-- トランザクション境界が明確
-- テストしやすい構造
-- ビジネスロジックの再利用が可能
-
-### 実装例
-
-#### シンプルなユースケース（トランザクションなし）
-
-```go
-// internal/usecase/create_session.go
-package usecase
-
-import (
-    "context"
-    "github.com/mewstcom/mewst/internal/repository"
-)
-
-type CreateSessionUsecase struct {
-    queries *repository.Queries
-}
-
-func NewCreateSessionUsecase(queries *repository.Queries) *CreateSessionUsecase {
-    return &CreateSessionUsecase{queries: queries}
-}
-
-type SessionResult struct {
-    PublicID string
-    UserID   int64
-}
-
-func (uc *CreateSessionUsecase) Execute(ctx context.Context, userID int64) (*SessionResult, error) {
-    // セッションIDを生成
-    publicID := generateSecureRandomString(32)
-
-    // セッションをDBに保存
-    session, err := uc.queries.CreateSession(ctx, repository.CreateSessionParams{
-        PublicID: publicID,
-        UserID:   userID,
-    })
-    if err != nil {
-        return nil, fmt.Errorf("セッションの作成に失敗: %w", err)
-    }
-
-    return &SessionResult{
-        PublicID: session.PublicID,
-        UserID:   session.UserID,
-    }, nil
-}
-```
-
-#### 複雑なユースケース（トランザクションあり）
-
-```go
-// internal/usecase/create_password_reset_token.go
-package usecase
-
-import (
-    "context"
-    "database/sql"
-    "fmt"
-    "time"
-    "github.com/mewstcom/mewst/internal/repository"
-)
-
-type CreatePasswordResetTokenUsecase struct {
-    db      *sql.DB
-    queries *repository.Queries
-}
-
-func NewCreatePasswordResetTokenUsecase(db *sql.DB, queries *repository.Queries) *CreatePasswordResetTokenUsecase {
-    return &CreatePasswordResetTokenUsecase{
-        db:      db,
-        queries: queries,
-    }
-}
-
-type CreatePasswordResetTokenResult struct {
-    Token  string
-    UserID int64
-}
-
-func (uc *CreatePasswordResetTokenUsecase) Execute(ctx context.Context, userID int64) (*CreatePasswordResetTokenResult, error) {
-    // トランザクション開始
-    tx, err := uc.db.BeginTx(ctx, nil)
-    if err != nil {
-        return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
-    }
-    defer tx.Rollback()
-
-    // トランザクション対応のクエリを作成
-    qtx := uc.queries.WithTx(tx)
-
-    // 既存のトークンを削除
-    err = qtx.DeletePasswordResetTokensByUserID(ctx, userID)
-    if err != nil {
-        return nil, fmt.Errorf("既存トークンの削除に失敗: %w", err)
-    }
-
-    // 新しいトークンを生成
-    token := generateSecureRandomString(32)
-    hashedToken := hashToken(token)
-
-    // トークンをDBに保存
-    expiresAt := time.Now().Add(24 * time.Hour)
-    _, err = qtx.CreatePasswordResetToken(ctx, repository.CreatePasswordResetTokenParams{
-        UserID:      userID,
-        Token:       hashedToken,
-        ExpiresAt:   expiresAt,
-    })
-    if err != nil {
-        return nil, fmt.Errorf("トークンの作成に失敗: %w", err)
-    }
-
-    // トランザクションをコミット
-    if err := tx.Commit(); err != nil {
-        return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
-    }
-
-    return &CreatePasswordResetTokenResult{
-        Token:  token,
-        UserID: userID,
-    }, nil
-}
-```
-
-### ハンドラーでの使用
-
-```go
-// internal/handler/password_reset.go
-package handler
-
-import (
-    "github.com/mewstcom/mewst/internal/usecase"
-)
-
-func (h *Handler) ProcessPasswordReset(w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
-
-    // リクエストバリデーション
-    req := &PasswordResetRequest{
-        Email: r.FormValue("email"),
-    }
-    if formErrors := req.Validate(ctx); formErrors != nil {
-        // エラー処理
-        return
-    }
-
-    // ユーザーを検索
-    user, err := h.queries.GetUserByEmail(ctx, req.Email)
-    if err != nil {
-        // ユーザーが見つからない場合の処理
-        return
-    }
-
-    // ユースケースを実行
-    uc := usecase.NewCreatePasswordResetTokenUsecase(h.db, h.queries)
-    result, err := uc.Execute(ctx, user.ID)
-    if err != nil {
-        slog.ErrorContext(ctx, "トークンの作成に失敗", "error", err)
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-        return
-    }
-
-    // メール送信
-    err = h.sendPasswordResetEmail(ctx, user.Email, result.Token)
-    if err != nil {
-        slog.ErrorContext(ctx, "メール送信に失敗", "error", err)
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-        return
-    }
-
-    // 成功レスポンス
-    http.Redirect(w, r, "/password/reset_sent", http.StatusSeeOther)
-}
-```
-
-### テスト
-
-```go
-func TestCreatePasswordResetTokenUsecase_Execute(t *testing.T) {
-    // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTx(t)
-    queries := repository.New(db).WithTx(tx)
-
-    // テストユーザーを作成
-    userID := testutil.NewUserBuilder(t, tx).
-        WithEmail("test@example.com").
-        Build()
-
-    // ユースケースを実行
-    uc := usecase.NewCreatePasswordResetTokenUsecase(db, queries)
-    result, err := uc.Execute(context.Background(), userID)
-
-    // アサーション
-    if err != nil {
-        t.Fatalf("Execute() error = %v", err)
-    }
-
-    if result.Token == "" {
-        t.Error("Token should not be empty")
-    }
-
-    if result.UserID != userID {
-        t.Errorf("UserID = %d, want %d", result.UserID, userID)
-    }
-
-    // トークンがDBに保存されているか確認
-    tokens, err := queries.GetPasswordResetTokensByUserID(context.Background(), userID)
-    if err != nil {
-        t.Fatalf("GetPasswordResetTokensByUserID() error = %v", err)
-    }
-
-    if len(tokens) != 1 {
-        t.Errorf("len(tokens) = %d, want 1", len(tokens))
-    }
-}
-```
-
-### 命名の注意点
-
-#### ファイル名の順序
-
-`{action}_{entity}` の順（動詞を必ず先頭に）
-
-- ✅ `create_session.go`
-- ❌ `session_create.go`
-- ✅ `create_password_reset_token.go`
-- ❌ `password_reset_create_token.go`
-
-#### 複合エンティティ
-
-エンティティが複数単語の場合はアンダースコアで連結
-
-- ✅ `create_password_reset_token.go` （password_reset_token というエンティティ）
-
-#### 構造体名の大文字化
-
-`Usecase` の `c` は小文字
-
-- ✅ `CreateSessionUsecase`
-- ❌ `CreateSessionUseCase`
-
-### ファイル配置の理由
-
-#### フラット構造
-
-エンティティごとにディレクトリを作らず、`internal/usecase/` 直下にすべてのファイルを配置
-
-理由:
-
-- **検索性**: ファイル名のプレフィックスでグルーピングされるため、エディタで検索しやすい
-- **シンプルさ**: ディレクトリ階層が深くならず、import パスがシンプル
-- **スケーラビリティ**: ファイル数が増えても管理しやすい
-
-## UseCase オーケストレーション
+### UseCase オーケストレーション
 
 Handler は Validator に直接依存せず、UseCase がバリデーション → 永続化を統括する。
-
-### フロー
 
 ```
 Handler → UseCase.Execute(input)
@@ -894,49 +501,7 @@ Handler → UseCase.Execute(input)
           Handler ← (*Output, error)
 ```
 
-### 実装例
-
-```go
-// UseCase がバリデーションを統合
-func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInInput) (*CreateSignInOutput, error) {
-    // 1. バリデーション（Validator を内部で呼び出し）
-    validateOutput, err := uc.signInValidator.Validate(ctx, validator.SignInCreateValidatorInput{
-        Email:    input.Email,
-        Password: input.Password,
-    })
-    if err != nil {
-        return nil, err // *model.ValidationError または素の error
-    }
-
-    // 2. ビジネスロジック（セッション作成等）
-    // ...
-    return &CreateSignInOutput{...}, nil
-}
-```
-
-### Handler でのエラー判別
-
-Handler は `model.AsValidationError` / `model.AsAppError` でエラー種別を判別する。
-
-```go
-output, err := h.signInUC.Execute(ctx, input)
-if err != nil {
-    if ve := model.AsValidationError(err); ve != nil {
-        // フォームを再表示（422 Unprocessable Entity）
-        w.WriteHeader(http.StatusUnprocessableEntity)
-        h.renderForm(w, r, ve, ...)
-        return
-    }
-    if ae := model.AsAppError(err); ae != nil {
-        slog.ErrorContext(ctx, ae.LogString())
-        // ae.Code に応じた HTTP ステータスコードを返す
-    }
-    // 予期しないエラー → 500
-    slog.ErrorContext(ctx, "予期しないエラー", "error", err)
-    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-    return
-}
-```
+Handler は `model.AsValidationError` / `model.AsAppError` でエラー種別を判別する。具体的なエラーハンドリングは [@go/docs/handler-guide.md](handler-guide.md) を参照。
 
 ## エラー型
 
@@ -961,7 +526,7 @@ type ValidationError struct {
 }
 ```
 
-Validator は `(*ValidatorOutput, error)` の 2 値を返し、バリデーション失敗時は `*model.ValidationError`（`error` を満たす）を返す。
+Validator は Go の慣習に従った `(data, error)` の 2 値返しで、データを返さない場合は `error` のみを返す。バリデーション失敗時は `*model.ValidationError`（`error` を満たす）を返す。詳細は [validation-guide.md](validation-guide.md#構造体の命名規則) を参照。
 
 ### AppError（SafeError パターン）
 
@@ -973,6 +538,24 @@ type AppError struct {
     UserMsg  string            // ユーザーに表示する安全なメッセージ
     Internal error             // ログ出力用の内部エラー
     Metadata map[string]string // 構造化ログ用のメタデータ
+}
+```
+
+`AppErrorCode` の現行定数:
+
+| 定数                         | 用途                           |
+| ---------------------------- | ------------------------------ |
+| `AppErrCodeResourceNotFound` | リソース未存在(404 相当)       |
+| `AppErrCodeForbidden`        | 権限不足(403 相当)             |
+| `AppErrCodeConflict`         | 状態の競合(409 相当)           |
+| `AppErrCodeInternal`         | 想定済みの内部エラー(500 相当) |
+
+`AppError` の生成は構造体リテラルで行う(コンストラクタ関数は用意しない):
+
+```go
+return &model.AppError{
+    Code:    model.AppErrCodeResourceNotFound,
+    UserMsg: i18n.T(ctx, "error_not_found_message"),
 }
 ```
 

@@ -13,15 +13,15 @@ import (
 func TestAccountsCreateValidator_EmptyAtname(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
 		Atname:   "",
 		Password: "password123",
@@ -41,9 +41,9 @@ func TestAccountsCreateValidator_EmptyAtname(t *testing.T) {
 func TestAccountsCreateValidator_InvalidAtnameFormat(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
@@ -58,7 +58,7 @@ func TestAccountsCreateValidator_InvalidAtnameFormat(t *testing.T) {
 	}
 
 	for _, atname := range invalidAtnames {
-		_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+		err := validator.Validate(ctx, AccountsCreateValidatorInput{
 			Email:    "test@example.com",
 			Atname:   atname,
 			Password: "password123",
@@ -80,15 +80,15 @@ func TestAccountsCreateValidator_InvalidAtnameFormat(t *testing.T) {
 func TestAccountsCreateValidator_AtnameTooLong(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
 		Atname:   "a23456789012345678901", // 21文字
 		Password: "password123",
@@ -108,9 +108,9 @@ func TestAccountsCreateValidator_AtnameTooLong(t *testing.T) {
 func TestAccountsCreateValidator_ReservedAtname(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
@@ -125,7 +125,7 @@ func TestAccountsCreateValidator_ReservedAtname(t *testing.T) {
 	}
 
 	for _, atname := range reservedNames {
-		_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+		err := validator.Validate(ctx, AccountsCreateValidatorInput{
 			Email:    "test@example.com",
 			Atname:   atname,
 			Password: "password123",
@@ -147,9 +147,9 @@ func TestAccountsCreateValidator_ReservedAtname(t *testing.T) {
 func TestAccountsCreateValidator_AtnameAlreadyTaken(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	// 既存のプロフィールを作成
@@ -160,7 +160,7 @@ func TestAccountsCreateValidator_AtnameAlreadyTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "accounts-atname-taken@example.com",
 		Atname:   "existinguser",
 		Password: "password123",
@@ -180,9 +180,9 @@ func TestAccountsCreateValidator_AtnameAlreadyTaken(t *testing.T) {
 func TestAccountsCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	// 既存のユーザーを作成
@@ -194,7 +194,7 @@ func TestAccountsCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "existing@example.com",
 		Atname:   "newuser",
 		Password: "password123",
@@ -214,15 +214,15 @@ func TestAccountsCreateValidator_EmailAlreadyTaken(t *testing.T) {
 func TestAccountsCreateValidator_EmptyPassword(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
 		Atname:   "testuser",
 		Password: "",
@@ -242,15 +242,15 @@ func TestAccountsCreateValidator_EmptyPassword(t *testing.T) {
 func TestAccountsCreateValidator_PasswordTooShort(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
 		Atname:   "testuser",
 		Password: "short",
@@ -270,9 +270,9 @@ func TestAccountsCreateValidator_PasswordTooShort(t *testing.T) {
 func TestAccountsCreateValidator_PasswordTooLong(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
@@ -281,7 +281,7 @@ func TestAccountsCreateValidator_PasswordTooLong(t *testing.T) {
 	// 73文字のパスワード（bcryptの72文字制限を超える）
 	longPassword := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1"
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "test@example.com",
 		Atname:   "testuser",
 		Password: longPassword,
@@ -301,15 +301,15 @@ func TestAccountsCreateValidator_PasswordTooLong(t *testing.T) {
 func TestAccountsCreateValidator_ValidInput(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+	err := validator.Validate(ctx, AccountsCreateValidatorInput{
 		Email:    "accounts-valid-input@example.com",
 		Atname:   "accountsvalid",
 		Password: "password123",
@@ -323,9 +323,9 @@ func TestAccountsCreateValidator_ValidInput(t *testing.T) {
 func TestAccountsCreateValidator_ValidAtnameFormats(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+	_, tx := testutil.SetupTestDB(t)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 	validator := NewAccountsCreateValidator(userRepo, profileRepo)
 
 	ctx := context.Background()
@@ -340,7 +340,7 @@ func TestAccountsCreateValidator_ValidAtnameFormats(t *testing.T) {
 	}
 
 	for _, atname := range validAtnames {
-		_, err := validator.Validate(ctx, AccountsCreateValidatorInput{
+		err := validator.Validate(ctx, AccountsCreateValidatorInput{
 			Email:    "test@example.com",
 			Atname:   atname,
 			Password: "password123",

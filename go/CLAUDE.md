@@ -115,18 +115,21 @@ cat /workspace/rails/app/models/work.rb
 - **Worker は薄い Adapter**: UseCase を呼ぶだけの実装にし、ビジネスロジックを持たない
 - **Model と Repository は 1:1 の関係**: 各ドメインエンティティに対応する Repository を作成
 - **Domain/Infrastructure 層の統合**: データベース変更はほぼ起こらないため、シンプルさを優先
-- **ドメイン ID 型の使用**: モデルの ID フィールドには `uuid.UUID` ではなく専用のドメイン ID 型を使用
+- **ドメイン ID 型の使用**: モデルの ID フィールドには `uuid.UUID` ではなく専用のドメイン ID 型を使用する（必須）
 
 ### ドメイン ID 型
 
-モデルの ID フィールドには `uuid.UUID` ではなく、`internal/model/id.go` に定義された専用のドメイン ID 型（`type UserID uuid.UUID` 等）を使用します。これにより、異なるエンティティの ID を取り違える問題をコンパイル時に検出できます。
+モデルの ID フィールドには `uuid.UUID` ではなく、`internal/model/id.go` に定義された専用のドメイン ID 型（`type UserID uuid.UUID` 等）を**必ず**使用します。これにより、異なるエンティティの ID を取り違える問題をコンパイル時に検出できます。
 
 **基本ルール**:
 
 - ✅ **モデルの ID フィールドには専用型を使用**: `ID UserID`、`ID ActorID` など
 - ✅ **外部キーにも専用型を使用**: `UserID model.UserID`、`ActorID model.ActorID` など
+- ✅ **Repository / UseCase / Handler / Validator の公開シグネチャも専用型に揃える**: `UserRepository.FindByID(id model.UserID)` など。sqlc 生成コードは `uuid.UUID` のままで、Repository 内部で `uuid.UUID(id)` にキャストして渡す
+- ✅ **testutil ビルダーの戻り値・引数も専用型に揃える**: `UserBuilder.Build() model.UserID` / `ActorBuilder.WithUserID(model.UserID)` など
 - ✅ **新しいモデルを追加する場合は対応する ID 型も追加**: `id.go` に型と `String()` メソッドを定義
 - ❌ **ID フィールドに `uuid.UUID` を直接使用しない**
+- ❌ **Application 層・Presentation 層で `uuid.UUID` を意識した型変換を書かない**: 型変換は Repository 内部に閉じ込める
 
 **実装パターン**:
 
@@ -142,11 +145,15 @@ type User struct {
 }
 
 // internal/repository/user.go - リポジトリでの変換（sqlcのuuid.UUIDから専用型へ）
-func toModel(row query.GetUserRow) *model.User {
-    return &model.User{
-        ID:    model.UserID(row.ID),
-        Email: row.Email,
+func (r *UserRepository) FindByID(ctx context.Context, id model.UserID) (*model.User, error) {
+    row, err := r.q.GetUserByID(ctx, uuid.UUID(id))
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, nil
+        }
+        return nil, err
     }
+    return r.toModel(row), nil
 }
 
 // internal/testutil/user_builder.go - テストビルダーの戻り値
@@ -168,7 +175,7 @@ func UUIDsToUserIDs(us []uuid.UUID) []UserID { ... }
 ### UsecaseとRepositoryの使い分け
 
 - **Usecase（オーケストレーション）**: バリデーション → 永続化の統合（フォーム送信系）。Validator を内部で呼び出し、`*model.ValidationError` を返す
-- **Usecase（書き込み）**: トランザクションを伴う永続化処理（作成・更新・削除）、複数Repositoryを跨ぐ操作
+- **Usecase（書き込み）**: 永続化処理（作成・更新・削除）、ビジネスロジック。複数 Repository を跨ぐ場合や、ロールバックが必要な複合操作ではトランザクションを開く（`CreateSessionUsecase` のように単一の永続化呼び出しで完結する場合はトランザクションなし）
 - **Usecase（読み取り）**: Handler が必要とするデータ取得、複数 Repository の集約（トランザクションなし）
 - **Repository**: データアクセスの実装。UseCase または Validator から使用される
 
@@ -788,7 +795,10 @@ Go 版では、型安全なテンプレートエンジン [templ](https://templ.
 - **パッケージ**: `internal/validator/`（`main.go` で構築し UseCase に注入）
 - **命名規則**: `{Handler}{Action}Validator`（例: `SignInCreateValidator`, `PasswordUpdateValidator`）
 - **入力**: `{Handler}{Action}ValidatorInput` 構造体
-- **出力**: `{Handler}{Action}ValidatorOutput` 構造体
+- **戻り値**: Go の慣習に従った `(data, error)` の 2 値返し。データを返す必要がない場合は `error` のみ
+  - データ不要 → `error` のみ
+  - 単一モデルを返す → `(*model.X, error)` 直接（例: `SignInCreateValidator` → `(*model.User, error)`）
+  - 複数フィールドを返す → `(*{Handler}{Action}ValidateOutput, error)`
 
 #### バリデーションの分類
 
@@ -892,75 +902,122 @@ Go 版 Mewst では、関心の分離を意識したアーキテクチャを採�
 
 - **配置**: `internal/viewmodel`
 - **責務**: リポジトリ層のデータをテンプレート表示用に変換
-- **命名**: `NewWorkFromXXX`, `NewWorksFromXXX`
+- **命名**: `NewXxxFromYyy`(例: `NewProfileForEdit`)
+- **適用範囲**: モデルから複数フィールドをテンプレート表示用に取り出す rich-data ページで使用する。フォーム入力値の保持や、モデルから単一フィールドだけをコピーするケースはプリミティブで持って良い (詳細は [@go/docs/templ-guide.md](docs/templ-guide.md) の「テンプレートデータ構造体と ViewModel の関係」を参照)
 
 #### ユースケース（Use Case）
 
-ビジネスロジックとトランザクション管理を担当します。
+ビジネスロジックとトランザクション管理を担当します。Handler / Worker からのすべてのデータアクセス・認可・バリデーション・永続化は UseCase を経由します。
 
-- **配置**: `internal/usecase` （フラット構造）
-- **責務**: トランザクション管理、複数リポジトリを跨ぐ処理
+- **配置**: `internal/usecase`(フラット構造)
+- **3 種類の分類**: 読み取り UseCase / 書き込み UseCase / オーケストレーション UseCase(Validator 統合)
 - **命名**: ファイル名 `{action}_{entity}.go`、構造体名 `{Action}{Entity}Usecase`
-- **単一責任**: 各 Usecase は **`Execute` メソッドのみ** を公開する（1 Usecase = 1 操作）
-- **トランザクション管理**: Repository の `WithTx` メソッドを使用してトランザクション内で操作する
-
-**重要**: 1 つの Usecase に複数の公開メソッド（`Execute`, `ExecuteDelete` など）を持たせないでください。異なる操作が必要な場合は、別の Usecase として分離します。
-
-**トランザクション管理**: Usecase でトランザクションを使用する場合、Repository をコンストラクタで受け取り、Execute 内で `WithTx(tx)` を呼び出します：
-
-```go
-// ✅ 良い例: Repository の WithTx パターン
-type CreateAccountUsecase struct {
-    db       *sql.DB
-    userRepo *repository.UserRepository
-}
-
-func NewCreateAccountUsecase(db *sql.DB, userRepo *repository.UserRepository) *CreateAccountUsecase {
-    return &CreateAccountUsecase{db: db, userRepo: userRepo}
-}
-
-func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
-    tx, err := uc.db.BeginTx(ctx, nil)
-    if err != nil {
-        return nil, err
-    }
-    defer func() { _ = tx.Rollback() }()
-
-    // トランザクション内で操作するためのリポジトリを取得
-    userRepo := uc.userRepo.WithTx(tx)
-
-    // userRepo を使用して操作...
-
-    if err := tx.Commit(); err != nil {
-        return nil, err
-    }
-    return &CreateAccountOutput{}, nil
-}
-```
-
-```go
-// ✅ 良い例: 各Usecaseが単一のExecuteメソッドを持つ
-type CreateUserUsecase struct { ... }
-func (uc *CreateUserUsecase) Execute(ctx, input) (*Result, error)
-
-type UpdateUserUsecase struct { ... }
-func (uc *UpdateUserUsecase) Execute(ctx, input) (*Result, error)
-
-type DeleteUserUsecase struct { ... }
-func (uc *DeleteUserUsecase) Execute(ctx, input) (*Result, error)
-
-// ❌ 悪い例: 1つのUsecaseに複数の公開メソッド
-type UserUsecase struct { ... }
-func (uc *UserUsecase) Create(ctx, input) (*Result, error)
-func (uc *UserUsecase) Update(ctx, input) (*Result, error)
-func (uc *UserUsecase) Delete(ctx, input) (*Result, error)
-```
+- **読み取り UseCase は `Get` プレフィックスに統一**: 例 `GetActiveEmailConfirmationUsecase`
+- **単一責任**: 各 Usecase は **`Execute` メソッドのみ** を公開する(1 Usecase = 1 操作)
+- **書き込み UseCase の 2 つのルール**: (1) トランザクション開始後はデータの取得や計算を行わない(永続化のみ) (2) `Execute` をオーケストレーションに専念させる(永続化を含む実処理はプライベート関数に切り出す。ただしオーケストレーションすべき対象がない単一ステップ書き込みは Execute 直書きで OK)
+- **トランザクション管理**: Repository の `WithTx` メソッドを使ってトランザクション内で操作する
 
 #### 詳細ドキュメント
 
-ビューモデルとユースケースの詳しい実装方法、命名規則、テストの書き方については以下を参照してください：
+ユースケースの詳しい実装方法、命名規則、処理順序の 5 ステップ、Validator のデータ取得パターン、テストの書き方については以下を参照してください:
 
-📖 **[@go/docs/architecture-guide.md](docs/architecture-guide.md)** - アーキテクチャガイド
+📖 **[@go/docs/usecase-guide.md](docs/usecase-guide.md)** - UseCase ガイド
+📖 **[@go/docs/architecture-guide.md](docs/architecture-guide.md)** - アーキテクチャガイド(レイヤー間関係性、エラー型)
+
+### Worker と Dispatcher
+
+バックグラウンドジョブの投入と実行は `internal/dispatcher`(Domain/Infrastructure 層)と `internal/worker`(Presentation 層)で分担します。UseCase と Worker が互いに直接依存しないよう、Dispatcher がジョブキューアクセスを抽象化します。
+
+#### Dispatcher（ジョブ投入の抽象化）
+
+- **配置**: `internal/dispatcher/dispatcher.go`（ジョブ引数型・`JobInserter` インターフェース・`Dispatcher` 構造体・`Enqueue*` メソッドをすべてこのファイルに集約）
+- **責務**: ジョブ引数型の定義と、UseCase から呼び出される `Enqueue*` メソッドの提供
+- **依存**: `river`（外部ライブラリ）のみ。Presentation 層・Application 層には依存しない
+- **`Dispatcher` のフィールド名**: `client`（`JobInserter` の実体を保持）
+
+**ジョブ引数型の書き方**:
+
+```go
+// SendEmailConfirmationArgs はメール確認コード送信ジョブの引数
+type SendEmailConfirmationArgs struct {
+    Email  string `json:"email"`
+    Code   string `json:"code"`
+    Locale string `json:"locale"`
+}
+
+// Kind はジョブの種類を返す
+func (SendEmailConfirmationArgs) Kind() string { return "send_email_confirmation" }
+
+// InsertOpts はジョブの Insert オプションを返す
+func (SendEmailConfirmationArgs) InsertOpts() river.InsertOpts {
+    return river.InsertOpts{Queue: river.QueueDefault, MaxAttempts: 5}
+}
+```
+
+- **`Kind()` の文字列**: snake_case でジョブ種別を一意に識別する
+- **`InsertOpts()` の置き場所**: 各 Args 型のメソッドとして定義し、`MaxAttempts` などのデフォルト値をここに書く
+
+**`Enqueue*` メソッドの書き方**:
+
+```go
+// EnqueueEmailConfirmation はメール確認コード送信ジョブをキューに追加する
+func (d *Dispatcher) EnqueueEmailConfirmation(ctx context.Context, email, code, locale string) error {
+    args := SendEmailConfirmationArgs{Email: email, Code: code, Locale: locale}
+    opts := args.InsertOpts()
+    _, err := d.client.Insert(ctx, args, &opts)
+    return err
+}
+```
+
+- **引数**: Args 型ではなくプリミティブ値で受け取り、メソッド内で Args を組み立てる(呼び出し側が Args 型を import しなくて済む)
+- **`opts` を明示的に渡す**: `args.InsertOpts()` を呼び出して `&opts` を `Insert` に渡す
+
+**`JobInserter` インターフェース**:
+
+```go
+type JobInserter interface {
+    Insert(ctx context.Context, args river.JobArgs, opts *river.InsertOpts) (*rivertype.JobInsertResult, error)
+}
+```
+
+- `*river.Client[pgx.Tx]` がそのまま満たすシグネチャに揃えている(worker 側で独自ラッパーは用意しない)
+- 初期化は `main.go` で `dispatcher.NewDispatcher(workerClient.Client())` の形で行う
+
+#### Worker（ジョブの実行）
+
+- **配置**: `internal/worker/{job_kind}.go`
+- **責務**: `river.Job` を受け取り、対応する UseCase を呼び出すだけの薄い Adapter (Pure Adapter)
+- **依存**: UseCase と Dispatcher(Args 型の参照)のみ。ビジネスロジックは持たない
+- **Work メソッドは UseCase の戻り値をそのまま return**: ログ出力やエラーラップは Worker 内では行わない。ジョブ実行ログ・リトライは river 側 (`Logger: slog.Default()`) に任せる
+
+```go
+type SendEmailConfirmationWorker struct {
+    river.WorkerDefaults[dispatcher.SendEmailConfirmationArgs]
+    uc *usecase.SendEmailConfirmationUsecase
+}
+
+func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[dispatcher.SendEmailConfirmationArgs]) error {
+    return w.uc.Execute(ctx, usecase.SendEmailConfirmationInput{
+        Email:  job.Args.Email,
+        Code:   job.Args.Code,
+        Locale: job.Args.Locale,
+    })
+}
+```
+
+#### Worker クライアント (`internal/worker/client.go`)
+
+- **責務**: river クライアントのライフサイクル管理 (Pool 構築 / Worker 登録 / Start / Stop)
+- **`NewClient(ctx, databaseURL, cfg)` のシグネチャ**: 依存性 (`email.Sender` / `*usecase.SendEmailConfirmationUsecase` 等) を引数で受け取らず、`cfg` から内部で構築する。Worker からしか使われない依存性は `worker.NewClient` 内に閉じ込める方針
+- **`Logger: slog.Default()` を river.Config に渡す**: river 内部のジョブ実行ログを slog の構造化ログとして出力する。Worker 自身がログを持たなくても観測性が確保される
+
+#### 新しいジョブを追加する手順
+
+1. `internal/dispatcher/dispatcher.go` に `{Name}Args` 構造体と `Kind()` / `InsertOpts()` メソッドを追加
+2. 同ファイルに `Enqueue{Name}` メソッドを追加(引数はプリミティブ値で受け取る)
+3. `internal/worker/{job_kind}.go` に Worker を新設(UseCase を呼ぶだけの薄い Adapter)
+4. `internal/worker/client.go` の `NewClient` 内部に、依存する UseCase の構築と `river.AddWorker(workers, NewXxxWorker(uc))` を追加(必要なら依存先 Sender 等の構築も同関数内で行う)
+5. UseCase から `jobDispatcher.Enqueue{Name}(ctx, ...)` で呼び出す
 
 ## セキュリティガイドライン
 
@@ -1054,7 +1111,7 @@ func TestCreate_Success(t *testing.T) {
     t.Parallel()
 
     // テストDBとトランザクションをセットアップ
-    db, tx := testutil.SetupTestDB(t)
+    _, tx := testutil.SetupTestDB(t)
 
     // テストデータを作成（ビルダーパターン）
     userID := testutil.NewUserBuilder(t, tx).
@@ -1062,7 +1119,7 @@ func TestCreate_Success(t *testing.T) {
         Build()
 
     // リポジトリを作成（トランザクションを使用）
-    userRepo := repository.NewUserRepository(db).WithTx(tx)
+    userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 
     // テスト実行
     user, err := userRepo.FindByID(context.Background(), userID)
@@ -1092,8 +1149,8 @@ func TestCreateAccount(t *testing.T) {
     ctx := context.Background()
 
     // テスト対象のセットアップ（共通部分）
-    userRepo := repository.NewUserRepository(db).WithTx(tx)
-    profileRepo := repository.NewProfileRepository(db).WithTx(tx)
+    userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+    profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
     uc := usecase.NewCreateAccountUsecase(db, userRepo, profileRepo)
 
     // テストケースの定義

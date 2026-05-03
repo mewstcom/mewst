@@ -104,7 +104,7 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = i18n.SetLocale(ctx, "ja")
 
-			_, err := v.Validate(ctx, tt.input)
+			err := v.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
 				ve := model.AsValidationError(err)
@@ -135,7 +135,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "1234567"}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		ve := model.AsValidationError(err)
 		if ve == nil || !ve.HasFieldError("password") {
@@ -147,7 +147,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "12345678"}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		if err != nil {
 			t.Error("8文字のパスワードはエラーにならないべき")
@@ -158,7 +158,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 72)}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		if err != nil {
 			t.Error("72バイトのパスワードはエラーにならないべき")
@@ -169,7 +169,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 73)}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		ve := model.AsValidationError(err)
 		if ve == nil || !ve.HasFieldError("password") {

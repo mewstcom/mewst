@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -30,7 +28,7 @@ func NewVerifyEmailConfirmationUsecase(
 
 // VerifyEmailConfirmationInput はメール確認コード検証の入力パラメータ
 type VerifyEmailConfirmationInput struct {
-	ID   uuid.UUID
+	ID   model.EmailConfirmationID
 	Code string
 }
 
@@ -39,10 +37,11 @@ type VerifyEmailConfirmationOutput struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute はメール確認コード検証を実行する
+// Execute はメール確認コード検証を実行する。
+// バリデーション → 単一の永続化 (Succeed) で完結するため、
+// オーケストレーションすべき対象がなく Execute 内で完結させている。
 func (uc *VerifyEmailConfirmationUsecase) Execute(ctx context.Context, input VerifyEmailConfirmationInput) (*VerifyEmailConfirmationOutput, error) {
-	// 1. バリデーション（形式チェック + コード一致チェック）
-	validateOutput, err := uc.emailConfirmationValidator.Validate(ctx, validator.EmailConfirmationCreateValidatorInput{
+	emailConfirmation, err := uc.emailConfirmationValidator.Validate(ctx, validator.EmailConfirmationCreateValidatorInput{
 		ID:   input.ID,
 		Code: input.Code,
 	})
@@ -50,12 +49,11 @@ func (uc *VerifyEmailConfirmationUsecase) Execute(ctx context.Context, input Ver
 		return nil, err
 	}
 
-	// 2. メール確認を成功としてマーク
-	if err := uc.emailConfirmRepo.MarkAsSucceeded(ctx, input.ID); err != nil {
+	if err := uc.emailConfirmRepo.Succeed(ctx, emailConfirmation.ID); err != nil {
 		return nil, fmt.Errorf("メール確認の成功マークに失敗: %w", err)
 	}
 
 	return &VerifyEmailConfirmationOutput{
-		EmailConfirmation: validateOutput.EmailConfirmation,
+		EmailConfirmation: emailConfirmation,
 	}, nil
 }

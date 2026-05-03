@@ -39,8 +39,7 @@ func (q *Queries) CreateEmailConfirmation(ctx context.Context, arg CreateEmailCo
 }
 
 const getActiveEmailConfirmationByID = `-- name: GetActiveEmailConfirmationByID :one
-SELECT id, email, event, code, succeeded_at, created_at, updated_at
-FROM email_confirmations
+SELECT id, email, event, code, succeeded_at, created_at, updated_at FROM email_confirmations
 WHERE id = $1
   AND succeeded_at IS NULL
   AND created_at > NOW() - INTERVAL '15 minutes'
@@ -63,10 +62,7 @@ func (q *Queries) GetActiveEmailConfirmationByID(ctx context.Context, id uuid.UU
 }
 
 const getEmailConfirmationByID = `-- name: GetEmailConfirmationByID :one
-SELECT id, email, event, code, succeeded_at, created_at, updated_at
-FROM email_confirmations
-WHERE id = $1
-LIMIT 1
+SELECT id, email, event, code, succeeded_at, created_at, updated_at FROM email_confirmations WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error) {
@@ -85,8 +81,7 @@ func (q *Queries) GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (E
 }
 
 const getSucceededEmailConfirmationByID = `-- name: GetSucceededEmailConfirmationByID :one
-SELECT id, email, event, code, succeeded_at, created_at, updated_at
-FROM email_confirmations
+SELECT id, email, event, code, succeeded_at, created_at, updated_at FROM email_confirmations
 WHERE id = $1
   AND succeeded_at IS NOT NULL
 LIMIT 1
@@ -107,13 +102,13 @@ func (q *Queries) GetSucceededEmailConfirmationByID(ctx context.Context, id uuid
 	return i, err
 }
 
-const markEmailConfirmationAsSucceeded = `-- name: MarkEmailConfirmationAsSucceeded :exec
+const updateEmailConfirmationSucceededAt = `-- name: UpdateEmailConfirmationSucceededAt :exec
 UPDATE email_confirmations
 SET succeeded_at = NOW(), updated_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) MarkEmailConfirmationAsSucceeded(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, markEmailConfirmationAsSucceeded, id)
+func (q *Queries) UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, updateEmailConfirmationSucceededAt, id)
 	return err
 }

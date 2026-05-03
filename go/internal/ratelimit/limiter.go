@@ -70,7 +70,7 @@ func (l *Limiter) Check(ctx context.Context, input CheckInput) (*CheckResult, er
 	resetAt := windowStart.Add(input.Window)
 
 	// カウンターをインクリメント（UPSERT）
-	result, err := l.repo.Increment(ctx, repository.IncrementParams{
+	result, err := l.repo.Increment(ctx, repository.IncrementInput{
 		Key:         input.Key,
 		WindowStart: windowStart,
 	})

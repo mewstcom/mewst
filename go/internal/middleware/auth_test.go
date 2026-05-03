@@ -33,9 +33,9 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	sessionBuilder.WithToken(token).Build()
 
 	// リポジトリを作成
-	sessionRepo := repository.NewSessionRepository(tx)
-	actorRepo := repository.NewActorRepository(tx)
-	userRepo := repository.NewUserRepository(tx)
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 
 	// 設定を作成
 	cfg := &config.Config{

@@ -7,7 +7,6 @@ package query
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +15,7 @@ import (
 const createProfile = `-- name: CreateProfile :one
 INSERT INTO profiles (owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-RETURNING id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at
+RETURNING id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind
 `
 
 type CreateProfileParams struct {
@@ -31,24 +30,7 @@ type CreateProfileParams struct {
 	GravatarUrl   string    `db:"gravatar_url"`
 }
 
-type CreateProfileRow struct {
-	ID            uuid.UUID    `db:"id"`
-	OwnerType     string       `db:"owner_type"`
-	Atname        string       `db:"atname"`
-	Name          string       `db:"name"`
-	Description   string       `db:"description"`
-	ImageUrl      string       `db:"image_url"`
-	JoinedAt      time.Time    `db:"joined_at"`
-	AvatarKind    string       `db:"avatar_kind"`
-	GravatarEmail string       `db:"gravatar_email"`
-	GravatarUrl   string       `db:"gravatar_url"`
-	DiscardedAt   sql.NullTime `db:"discarded_at"`
-	LastPostAt    sql.NullTime `db:"last_post_at"`
-	CreatedAt     time.Time    `db:"created_at"`
-	UpdatedAt     time.Time    `db:"updated_at"`
-}
-
-func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (CreateProfileRow, error) {
+func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error) {
 	row := q.db.QueryRowContext(ctx, createProfile,
 		arg.OwnerType,
 		arg.Atname,
@@ -60,7 +42,7 @@ func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (C
 		arg.GravatarEmail,
 		arg.GravatarUrl,
 	)
-	var i CreateProfileRow
+	var i Profile
 	err := row.Scan(
 		&i.ID,
 		&i.OwnerType,
@@ -69,13 +51,13 @@ func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (C
 		&i.Description,
 		&i.ImageUrl,
 		&i.JoinedAt,
-		&i.AvatarKind,
-		&i.GravatarEmail,
-		&i.GravatarUrl,
-		&i.DiscardedAt,
-		&i.LastPostAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DiscardedAt,
+		&i.LastPostAt,
+		&i.GravatarEmail,
+		&i.GravatarUrl,
+		&i.AvatarKind,
 	)
 	return i, err
 }
@@ -94,32 +76,12 @@ func (q *Queries) ExistsProfileByAtname(ctx context.Context, atname string) (boo
 }
 
 const getProfileByAtname = `-- name: GetProfileByAtname :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at
-FROM profiles
-WHERE atname = $1
-LIMIT 1
+SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind FROM profiles WHERE atname = $1 LIMIT 1
 `
 
-type GetProfileByAtnameRow struct {
-	ID            uuid.UUID    `db:"id"`
-	OwnerType     string       `db:"owner_type"`
-	Atname        string       `db:"atname"`
-	Name          string       `db:"name"`
-	Description   string       `db:"description"`
-	ImageUrl      string       `db:"image_url"`
-	JoinedAt      time.Time    `db:"joined_at"`
-	AvatarKind    string       `db:"avatar_kind"`
-	GravatarEmail string       `db:"gravatar_email"`
-	GravatarUrl   string       `db:"gravatar_url"`
-	DiscardedAt   sql.NullTime `db:"discarded_at"`
-	LastPostAt    sql.NullTime `db:"last_post_at"`
-	CreatedAt     time.Time    `db:"created_at"`
-	UpdatedAt     time.Time    `db:"updated_at"`
-}
-
-func (q *Queries) GetProfileByAtname(ctx context.Context, atname string) (GetProfileByAtnameRow, error) {
+func (q *Queries) GetProfileByAtname(ctx context.Context, atname string) (Profile, error) {
 	row := q.db.QueryRowContext(ctx, getProfileByAtname, atname)
-	var i GetProfileByAtnameRow
+	var i Profile
 	err := row.Scan(
 		&i.ID,
 		&i.OwnerType,
@@ -128,44 +90,24 @@ func (q *Queries) GetProfileByAtname(ctx context.Context, atname string) (GetPro
 		&i.Description,
 		&i.ImageUrl,
 		&i.JoinedAt,
-		&i.AvatarKind,
-		&i.GravatarEmail,
-		&i.GravatarUrl,
-		&i.DiscardedAt,
-		&i.LastPostAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DiscardedAt,
+		&i.LastPostAt,
+		&i.GravatarEmail,
+		&i.GravatarUrl,
+		&i.AvatarKind,
 	)
 	return i, err
 }
 
 const getProfileByID = `-- name: GetProfileByID :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, discarded_at, last_post_at, created_at, updated_at
-FROM profiles
-WHERE id = $1
-LIMIT 1
+SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind FROM profiles WHERE id = $1 LIMIT 1
 `
 
-type GetProfileByIDRow struct {
-	ID            uuid.UUID    `db:"id"`
-	OwnerType     string       `db:"owner_type"`
-	Atname        string       `db:"atname"`
-	Name          string       `db:"name"`
-	Description   string       `db:"description"`
-	ImageUrl      string       `db:"image_url"`
-	JoinedAt      time.Time    `db:"joined_at"`
-	AvatarKind    string       `db:"avatar_kind"`
-	GravatarEmail string       `db:"gravatar_email"`
-	GravatarUrl   string       `db:"gravatar_url"`
-	DiscardedAt   sql.NullTime `db:"discarded_at"`
-	LastPostAt    sql.NullTime `db:"last_post_at"`
-	CreatedAt     time.Time    `db:"created_at"`
-	UpdatedAt     time.Time    `db:"updated_at"`
-}
-
-func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (GetProfileByIDRow, error) {
+func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error) {
 	row := q.db.QueryRowContext(ctx, getProfileByID, id)
-	var i GetProfileByIDRow
+	var i Profile
 	err := row.Scan(
 		&i.ID,
 		&i.OwnerType,
@@ -174,13 +116,13 @@ func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (GetProfileB
 		&i.Description,
 		&i.ImageUrl,
 		&i.JoinedAt,
-		&i.AvatarKind,
-		&i.GravatarEmail,
-		&i.GravatarUrl,
-		&i.DiscardedAt,
-		&i.LastPostAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DiscardedAt,
+		&i.LastPostAt,
+		&i.GravatarEmail,
+		&i.GravatarUrl,
+		&i.AvatarKind,
 	)
 	return i, err
 }

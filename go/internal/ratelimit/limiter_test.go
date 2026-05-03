@@ -16,7 +16,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -75,7 +75,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -112,7 +112,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input1 := CheckInput{
@@ -151,7 +151,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -170,7 +170,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -189,7 +189,7 @@ func TestLimiter_Check(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -212,7 +212,7 @@ func TestLimiter_Allow(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -231,7 +231,7 @@ func TestLimiter_Allow(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		input := CheckInput{
@@ -261,7 +261,7 @@ func TestLimiter_CleanupOldRecords(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTestDB(t)
-		repo := repository.NewRateLimitRepository(tx)
+		repo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 		limiter := NewLimiter(repo)
 
 		// レコードを作成

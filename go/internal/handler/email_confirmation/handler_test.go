@@ -15,7 +15,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/session"
-	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -25,29 +24,23 @@ import (
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
-	cfg := &config.Config{
-		Env:             "test",
-		Port:            "3000",
-		Domain:          "localhost",
-		CookieDomain:    "localhost",
-		SessionSecure:   false,
-		SessionHTTPOnly: true,
-	}
+	cfg := testutil.NewTestConfig(t)
 
 	// トランザクションを使用するリポジトリを作成
-	userRepo := repository.NewUserRepository(db).WithTx(tx)
-	actorRepo := repository.NewActorRepository(db).WithTx(tx)
-	sessionRepo := repository.NewSessionRepository(db).WithTx(tx)
-	emailConfirmRepo := repository.NewEmailConfirmationRepository(db).WithTx(tx)
+	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
+	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
 	// UseCaseの初期化
 	getActiveEmailConfirmationUC := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmRepo)
 	ecValidator := validator.NewEmailConfirmationCreateValidator(emailConfirmRepo)
 	verifyEmailConfirmationUC := usecase.NewVerifyEmailConfirmationUsecase(ecValidator, emailConfirmRepo)
 
-	h := handler.NewHandler(cfg, sessionMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
+	h := handler.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 
 	return h, cfg
 }
@@ -56,7 +49,7 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -67,8 +60,6 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/email_confirmation", nil)
 	req.AddCookie(&http.Cookie{
@@ -99,12 +90,10 @@ func TestNew_WithoutEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// クッキーなしでリクエスト
 	req := httptest.NewRequest(http.MethodGet, "/email_confirmation", nil)
@@ -128,12 +117,10 @@ func TestNew_WithInvalidEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 無効なUUIDでリクエスト
 	req := httptest.NewRequest(http.MethodGet, "/email_confirmation", nil)
@@ -161,7 +148,7 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)
@@ -173,8 +160,6 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	req := httptest.NewRequest(http.MethodGet, "/email_confirmation", nil)
 	req.AddCookie(&http.Cookie{
@@ -201,7 +186,7 @@ func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -211,8 +196,6 @@ func TestCreate_Success(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -259,7 +242,7 @@ func TestCreate_IncorrectCode(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -269,8 +252,6 @@ func TestCreate_IncorrectCode(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 間違った確認コードで送信
 	form := url.Values{}
@@ -304,7 +285,7 @@ func TestCreate_EmptyCode(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -314,8 +295,6 @@ func TestCreate_EmptyCode(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 空の確認コードで送信
 	form := url.Values{}
@@ -349,7 +328,7 @@ func TestCreate_InvalidCodeFormat(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -359,8 +338,6 @@ func TestCreate_InvalidCodeFormat(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 不正な形式の確認コードで送信
 	form := url.Values{}
@@ -394,12 +371,10 @@ func TestCreate_WithoutEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -429,7 +404,7 @@ func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// sign_upイベントのメール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -439,8 +414,6 @@ func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// フォームデータを作成
 	form := url.Values{}
@@ -487,7 +460,7 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
 	db, tx := testutil.SetupTestDB(t)
-	h, cfg := setupTestHandler(t, db, tx)
+	h, _ := setupTestHandler(t, db, tx)
 
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)
@@ -499,8 +472,6 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = templates.WithLocale(ctx, "ja")
-	ctx = templates.WithConfig(ctx, cfg)
 
 	// 正しい確認コードで送信
 	form := url.Values{}

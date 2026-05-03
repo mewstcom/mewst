@@ -104,7 +104,7 @@ func TestPasswordResetCreateValidator_Validate(t *testing.T) {
 			ctx := context.Background()
 			ctx = i18n.SetLocale(ctx, "ja")
 
-			_, err := v.Validate(ctx, tt.input)
+			err := v.Validate(ctx, tt.input)
 
 			if tt.wantErrors {
 				ve := model.AsValidationError(err)
@@ -135,7 +135,7 @@ func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordResetCreateValidatorInput{Email: ""}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		ve := model.AsValidationError(err)
 		if ve == nil || !ve.HasFieldError("email") {
@@ -157,7 +157,7 @@ func TestPasswordResetCreateValidator_Validate_ErrorMessages(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordResetCreateValidatorInput{Email: "invalid-email"}
-		_, err := v.Validate(ctx, input)
+		err := v.Validate(ctx, input)
 
 		ve := model.AsValidationError(err)
 		if ve == nil || !ve.HasFieldError("email") {

@@ -3,7 +3,6 @@ package validator
 
 import (
 	"context"
-	"errors"
 	"net/mail"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
@@ -28,44 +27,27 @@ type SignInCreateValidatorInput struct {
 	Password string
 }
 
-// SignInCreateValidatorOutput はバリデーション成功時の出力
-type SignInCreateValidatorOutput struct {
-	User *model.User
-}
-
-// Validate はバリデーションを行う
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidatorOutput, error) {
-	// 1. 形式バリデーション
+// Validate はバリデーションを行い、成功時はユーザーを返す
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*model.User, error) {
 	ve := model.NewValidationError()
 
-	// メールアドレスの必須チェック
-	if input.Email == "" {
-		ve.AddField("email", i18n.T(ctx, "error_required"))
-	} else {
-		// メールアドレス形式チェック
-		if _, err := mail.ParseAddress(input.Email); err != nil {
-			ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
-		}
-	}
-
-	// パスワードの必須チェック
-	if input.Password == "" {
-		ve.AddField("password", i18n.T(ctx, "error_required"))
-	}
+	// 1. 形式バリデーション
+	v.validateEmail(ctx, ve, input.Email)
+	v.validatePassword(ctx, ve, input.Password)
 
 	if ve.HasErrors() {
 		return nil, ve
 	}
 
 	// 2. 状態バリデーション（DB検証）
-	user, err := v.userRepo.GetByEmailForSignIn(ctx, input.Email)
+	user, err := v.userRepo.FindByEmail(ctx, input.Email)
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			// セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
-			ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
-			return nil, ve
-		}
 		return nil, err
+	}
+	// セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
+	if user == nil {
+		ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
+		return nil, ve
 	}
 
 	// パスワードを検証
@@ -74,5 +56,26 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 		return nil, ve
 	}
 
-	return &SignInCreateValidatorOutput{User: user}, nil
+	return user, nil
+}
+
+// validateEmail はメールアドレスの形式バリデーションを行う
+func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.ValidationError, email string) {
+	if email == "" {
+		ve.AddField("email", i18n.T(ctx, "error_required"))
+		return
+	}
+
+	if _, err := mail.ParseAddress(email); err != nil {
+		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
+		return
+	}
+}
+
+// validatePassword はパスワードの形式バリデーションを行う
+func (v *SignInCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
+	if password == "" {
+		ve.AddField("password", i18n.T(ctx, "error_required"))
+		return
+	}
 }
