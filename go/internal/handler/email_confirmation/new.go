@@ -46,7 +46,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 
 	// テンプレートをレンダリング
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "email_confirmation_title")
+	meta.SetTitle(ctx, "email_confirmation_new_title")
 
 	content := emailconfirmationpages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)

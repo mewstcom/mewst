@@ -32,7 +32,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkRateLimit(ctx, ipAddress); err != nil {
 		if errors.Is(err, ratelimit.ErrRateLimitExceeded) {
 			ve := model.NewValidationError()
-			ve.AddGlobal(i18n.T(ctx, "error_rate_limit_exceeded"))
+			ve.AddGlobal(i18n.T(ctx, "validation_rate_limit_exceeded"))
 			h.renderSignUpForm(w, r, ve, email, backURL)
 			return
 		}
@@ -49,7 +49,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if !turnstileValid {
 		ve := model.NewValidationError()
-		ve.AddGlobal(i18n.T(ctx, "error_turnstile_failed"))
+		ve.AddGlobal(i18n.T(ctx, "validation_turnstile_failed"))
 		h.renderSignUpForm(w, r, ve, email, backURL)
 		return
 	}
@@ -110,7 +110,7 @@ func (h *Handler) renderSignUpForm(w http.ResponseWriter, r *http.Request, ve *m
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "sign_up_title")
+	meta.SetTitle(ctx, "sign_up_new_title")
 
 	content := signuppages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)

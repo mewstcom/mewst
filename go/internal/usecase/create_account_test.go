@@ -22,7 +22,7 @@ func setupCreateAccountTest(t *testing.T) (
 ) {
 	t.Helper()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
@@ -30,8 +30,8 @@ func setupCreateAccountTest(t *testing.T) (
 	userProfileRepo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 
-	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
-	uc := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
+	uc := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 
 	return uc, userRepo, profileRepo, userProfileRepo, actorRepo, ctx
 }

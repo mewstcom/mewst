@@ -46,29 +46,29 @@ const minPasswordLength = 8
 // maxPasswordLength はパスワードの最大文字数（bcryptの制限）
 const maxPasswordLength = 72
 
-// AccountsCreateValidator はアカウント作成フォームのバリデーションを行う
-type AccountsCreateValidator struct {
+// AccountCreateValidator はアカウント作成フォームのバリデーションを行う
+type AccountCreateValidator struct {
 	userRepo    *repository.UserRepository
 	profileRepo *repository.ProfileRepository
 }
 
-// NewAccountsCreateValidator はAccountsCreateValidatorを生成する
-func NewAccountsCreateValidator(userRepo *repository.UserRepository, profileRepo *repository.ProfileRepository) *AccountsCreateValidator {
-	return &AccountsCreateValidator{
+// NewAccountCreateValidator はAccountCreateValidatorを生成する
+func NewAccountCreateValidator(userRepo *repository.UserRepository, profileRepo *repository.ProfileRepository) *AccountCreateValidator {
+	return &AccountCreateValidator{
 		userRepo:    userRepo,
 		profileRepo: profileRepo,
 	}
 }
 
-// AccountsCreateValidatorInput はバリデーションの入力パラメータ
-type AccountsCreateValidatorInput struct {
+// AccountCreateValidatorInput はバリデーションの入力パラメータ
+type AccountCreateValidatorInput struct {
 	Email    string
 	Atname   string
 	Password string
 }
 
 // Validate は入力値をチェックする（形式チェック + DB検証）
-func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCreateValidatorInput) error {
+func (v *AccountCreateValidator) Validate(ctx context.Context, input AccountCreateValidatorInput) error {
 	ve := model.NewValidationError()
 
 	// アットネームのバリデーション
@@ -99,67 +99,67 @@ func (v *AccountsCreateValidator) Validate(ctx context.Context, input AccountsCr
 }
 
 // validateAtname はアットネームの形式バリデーションを行う
-func (v *AccountsCreateValidator) validateAtname(ctx context.Context, ve *model.ValidationError, atname string) {
+func (v *AccountCreateValidator) validateAtname(ctx context.Context, ve *model.ValidationError, atname string) {
 	if atname == "" {
-		ve.AddField("atname", i18n.T(ctx, "error_required"))
+		ve.AddField("atname", i18n.T(ctx, "validation_required"))
 		return
 	}
 
 	if !atnameRegex.MatchString(atname) {
-		ve.AddField("atname", i18n.T(ctx, "error_atname_format"))
+		ve.AddField("atname", i18n.T(ctx, "validation_atname_invalid_format"))
 		return
 	}
 
 	if len(atname) > maxAtnameLength {
-		ve.AddField("atname", i18n.T(ctx, "error_atname_too_long"))
+		ve.AddField("atname", i18n.T(ctx, "validation_atname_too_long"))
 		return
 	}
 
 	if reservedAtnames[strings.ToLower(atname)] {
-		ve.AddField("atname", i18n.T(ctx, "error_atname_reserved"))
+		ve.AddField("atname", i18n.T(ctx, "validation_atname_reserved"))
 		return
 	}
 }
 
 // validatePassword はパスワードの形式バリデーションを行う
-func (v *AccountsCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
+func (v *AccountCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
 	if password == "" {
-		ve.AddField("password", i18n.T(ctx, "error_required"))
+		ve.AddField("password", i18n.T(ctx, "validation_required"))
 		return
 	}
 
 	if utf8.RuneCountInString(password) < minPasswordLength {
-		ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
+		ve.AddField("password", i18n.T(ctx, "validation_password_too_short"))
 		return
 	}
 
 	if len(password) > maxPasswordLength {
-		ve.AddField("password", i18n.T(ctx, "error_password_too_long"))
+		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return
 	}
 }
 
 // validateAtnameUniqueness はアットネームの重複チェックを行う
-func (v *AccountsCreateValidator) validateAtnameUniqueness(ctx context.Context, ve *model.ValidationError, atname string) error {
+func (v *AccountCreateValidator) validateAtnameUniqueness(ctx context.Context, ve *model.ValidationError, atname string) error {
 	exists, err := v.profileRepo.ExistsByAtname(ctx, atname)
 	if err != nil {
 		return err
 	}
 	if exists {
-		ve.AddField("atname", i18n.T(ctx, "error_atname_already_taken"))
+		ve.AddField("atname", i18n.T(ctx, "validation_atname_already_taken"))
 	}
 	return nil
 }
 
 // validateEmailUniqueness はメールアドレスの重複チェックを行う
 // アカウント作成フォームではメールアドレスは編集不可のため、グローバルエラーとして表示する
-func (v *AccountsCreateValidator) validateEmailUniqueness(ctx context.Context, ve *model.ValidationError, email string) error {
+func (v *AccountCreateValidator) validateEmailUniqueness(ctx context.Context, ve *model.ValidationError, email string) error {
 	exists, err := v.userRepo.ExistsByEmail(ctx, email)
 	if err != nil {
 		return err
 	}
 	if exists {
-		ve.AddGlobal(i18n.T(ctx, "error_email_already_taken"))
+		ve.AddGlobal(i18n.T(ctx, "validation_email_already_taken"))
 	}
 	return nil
 }

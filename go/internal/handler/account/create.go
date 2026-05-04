@@ -1,4 +1,4 @@
-package accounts
+package account
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/redirect"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
-	accountspages "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
+	accountpages "github.com/mewstcom/mewst/go/internal/templates/pages/account"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
@@ -60,8 +60,8 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkRateLimit(ctx, ipAddress); err != nil {
 		if errors.Is(err, ratelimit.ErrRateLimitExceeded) {
 			ve := model.NewValidationError()
-			ve.AddGlobal(i18n.T(ctx, "error_rate_limit_exceeded"))
-			h.renderAccountsForm(w, r, ve, email, atname, backURL)
+			ve.AddGlobal(i18n.T(ctx, "validation_rate_limit_exceeded"))
+			h.renderAccountForm(w, r, ve, email, atname, backURL)
 			return
 		}
 		slog.ErrorContext(ctx, "レート制限チェックでエラー", "error", err)
@@ -77,8 +77,8 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if !turnstileValid {
 		ve := model.NewValidationError()
-		ve.AddGlobal(i18n.T(ctx, "error_turnstile_failed"))
-		h.renderAccountsForm(w, r, ve, email, atname, backURL)
+		ve.AddGlobal(i18n.T(ctx, "validation_turnstile_failed"))
+		h.renderAccountForm(w, r, ve, email, atname, backURL)
 		return
 	}
 
@@ -136,7 +136,7 @@ func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err 
 
 	var ve *model.ValidationError
 	if errors.As(err, &ve) {
-		h.renderAccountsForm(w, r, ve, email, atname, backURL)
+		h.renderAccountForm(w, r, ve, email, atname, backURL)
 		return
 	}
 
@@ -144,12 +144,12 @@ func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err 
 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
-// renderAccountsForm はアカウント作成フォームを再表示する
-func (h *Handler) renderAccountsForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, atname, backURL string) {
+// renderAccountForm はアカウント作成フォームを再表示する
+func (h *Handler) renderAccountForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, atname, backURL string) {
 	ctx := r.Context()
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
-	data := accountspages.NewPageData{
+	data := accountpages.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
 		FormErrors:       ve,
@@ -159,9 +159,9 @@ func (h *Handler) renderAccountsForm(w http.ResponseWriter, r *http.Request, ve 
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "accounts_new_title")
+	meta.SetTitle(ctx, "account_new_title")
 
-	content := accountspages.New(data)
+	content := accountpages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	w.WriteHeader(http.StatusUnprocessableEntity)

@@ -32,13 +32,13 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		ve.AddField("email", i18n.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "validation_required"))
 		return ve
 	}
 
 	// メールアドレス形式チェック
 	if _, err := mail.ParseAddress(input.Email); err != nil {
-		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
+		ve.AddField("email", i18n.T(ctx, "validation_email_invalid"))
 		return ve
 	}
 
@@ -48,7 +48,7 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 		return err
 	}
 	if exists {
-		ve.AddField("email", i18n.T(ctx, "error_email_already_taken"))
+		ve.AddField("email", i18n.T(ctx, "validation_email_already_taken"))
 		return ve
 	}
 

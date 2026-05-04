@@ -28,11 +28,11 @@ templ New(data NewPageData) {
 
 		<div class="flex flex-col gap-2">
 			<h1 class="text-center text-3xl font-bold antialiased">
-				{ templates.T(ctx, "sign_up_title") }
+				{ templates.T(ctx, "sign_up_new_title") }
 			</h1>
 
 			<p class="text-center text-sm text-muted-foreground whitespace-pre-line">
-				{ templates.T(ctx, "sign_up_description") }
+				{ templates.T(ctx, "sign_up_new_description") }
 			</p>
 		</div>
 
@@ -53,7 +53,7 @@ templ New(data NewPageData) {
 
 					<div class="grid gap-2">
 						<label for="email">
-							{ templates.T(ctx, "label_email") }
+							{ templates.T(ctx, "sign_up_new_email_label") }
 						</label>
 
 						<input
@@ -89,17 +89,17 @@ templ New(data NewPageData) {
 						type="submit"
 					>
 						@templates.Icon("arrow-right-regular")
-						{ templates.T(ctx, "btn_send_confirmation_code") }
+						{ templates.T(ctx, "sign_up_new_submit") }
 					</button>
 				</form>
 			</section>
 		</div>
 
 		<div class="text-center text-muted-foreground">
-			{ templates.T(ctx, "sign_up_have_account") }
+			{ templates.T(ctx, "sign_up_new_have_account") }
 			{ " " }
 			<a class="link" href="/sign_in">
-				{ templates.T(ctx, "sign_up_sign_in") }
+				{ templates.T(ctx, "sign_up_new_sign_in_link") }
 			</a>
 		</div>
 	</div>

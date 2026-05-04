@@ -1,4 +1,4 @@
-package accounts
+package account
 
 import (
 	"github.com/mewstcom/mewst/go/internal/model"
@@ -29,10 +29,10 @@ templ New(data NewPageData) {
 
 		<div class="flex flex-col gap-2">
 			<h1 class="text-center text-3xl font-bold antialiased">
-				{ templates.T(ctx, "accounts_new_title") }
+				{ templates.T(ctx, "account_new_title") }
 			</h1>
 			<p class="text-center text-muted-foreground">
-				{ templates.T(ctx, "accounts_new_description") }
+				{ templates.T(ctx, "account_new_description") }
 			</p>
 		</div>
 
@@ -51,7 +51,7 @@ templ New(data NewPageData) {
 
 			<div class="grid gap-2">
 				<label for="email">
-					{ templates.T(ctx, "label_email") }
+					{ templates.T(ctx, "account_new_email_label") }
 				</label>
 
 				<input
@@ -64,7 +64,7 @@ templ New(data NewPageData) {
 
 			<div class="grid gap-2">
 				<label for="atname">
-					{ templates.T(ctx, "label_atname") }
+					{ templates.T(ctx, "account_new_atname_label") }
 				</label>
 
 				<input
@@ -84,7 +84,7 @@ templ New(data NewPageData) {
 				/>
 
 				<p class="text-sm text-muted-foreground">
-					{ templates.T(ctx, "atname_hint") }
+					{ templates.T(ctx, "account_new_atname_hint") }
 				</p>
 
 				if data.FormErrors != nil && data.FormErrors.HasFieldError("atname") {
@@ -98,7 +98,7 @@ templ New(data NewPageData) {
 
 			<div class="grid gap-2">
 				<label for="password">
-					{ templates.T(ctx, "label_password") }
+					{ templates.T(ctx, "account_new_password_label") }
 				</label>
 
 				<input
@@ -116,7 +116,7 @@ templ New(data NewPageData) {
 				/>
 
 				<p class="text-sm text-muted-foreground">
-					{ templates.T(ctx, "password_hint") }
+					{ templates.T(ctx, "account_new_password_hint") }
 				</p>
 
 				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
@@ -136,7 +136,7 @@ templ New(data NewPageData) {
 				type="submit"
 			>
 				@templates.Icon("arrow-right-regular")
-				{ templates.T(ctx, "btn_create_account") }
+				{ templates.T(ctx, "account_new_submit") }
 			</button>
 		</form>
 	</div>

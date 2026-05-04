@@ -62,7 +62,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	h.sessionMgr.DeleteSessionCookie(w)
 
 	// フラッシュメッセージを設定
-	h.flashMgr.SetSuccess(w, i18n.T(ctx, "flash_password_reset_success"))
+	h.flashMgr.SetSuccess(w, i18n.T(ctx, "flash_password_updated"))
 
 	// ログインページにリダイレクト
 	http.Redirect(w, r, "/sign_in", http.StatusFound)
@@ -81,7 +81,7 @@ func (h *Handler) handleUpdateError(w http.ResponseWriter, r *http.Request, err 
 	slog.ErrorContext(ctx, "パスワードの更新に失敗", "error", err, "email", email)
 	{
 		ve := model.NewValidationError()
-		ve.AddGlobal(i18n.T(ctx, "error_password_update_failed"))
+		ve.AddGlobal(i18n.T(ctx, "validation_password_update_failed"))
 		h.renderPasswordEditForm(w, r, ve)
 	}
 }

@@ -1,4 +1,4 @@
-package accounts
+package account
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
-	accountspages "github.com/mewstcom/mewst/go/internal/templates/pages/accounts"
+	accountpages "github.com/mewstcom/mewst/go/internal/templates/pages/account"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
@@ -45,7 +45,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
-	data := accountspages.NewPageData{
+	data := accountpages.NewPageData{
 		CSRFToken:        csrfToken,
 		TurnstileSiteKey: h.cfg.TurnstileSiteKey,
 		FormErrors:       nil,
@@ -55,9 +55,9 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "accounts_new_title")
+	meta.SetTitle(ctx, "account_new_title")
 
-	content := accountspages.New(data)
+	content := accountpages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)
 
 	if err := layout.Render(ctx, w); err != nil {

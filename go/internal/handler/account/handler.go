@@ -1,5 +1,5 @@
-// Package accounts はアカウント作成ハンドラーを提供します
-package accounts
+// Package account はアカウント作成ハンドラーを提供します
+package account
 
 import (
 	"github.com/mewstcom/mewst/go/internal/config"

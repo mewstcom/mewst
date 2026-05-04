@@ -35,13 +35,13 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 
 	// 確認コードの必須チェック
 	if input.Code == "" {
-		ve.AddField("code", i18n.T(ctx, "error_required"))
+		ve.AddField("code", i18n.T(ctx, "validation_required"))
 		return nil, ve
 	}
 
 	// 6桁の数字形式チェック
 	if !codeRegex.MatchString(input.Code) {
-		ve.AddField("code", i18n.T(ctx, "error_invalid_code_format"))
+		ve.AddField("code", i18n.T(ctx, "validation_code_invalid_format"))
 	}
 
 	if ve.HasErrors() {
@@ -54,13 +54,13 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 		return nil, err
 	}
 	if emailConfirmation == nil {
-		ve.AddGlobal(i18n.T(ctx, "error_code_incorrect_or_expired"))
+		ve.AddGlobal(i18n.T(ctx, "validation_code_incorrect_or_expired"))
 		return nil, ve
 	}
 
 	// 確認コードを検証
 	if emailConfirmation.Code != input.Code {
-		ve.AddGlobal(i18n.T(ctx, "error_code_incorrect_or_expired"))
+		ve.AddGlobal(i18n.T(ctx, "validation_code_incorrect_or_expired"))
 		return nil, ve
 	}
 

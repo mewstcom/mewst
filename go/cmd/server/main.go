@@ -16,7 +16,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
-	"github.com/mewstcom/mewst/go/internal/handler/accounts"
+	"github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
@@ -100,7 +100,7 @@ func main() {
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
 	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
 	emailConfirmationValidator := validator.NewEmailConfirmationCreateValidator(emailConfirmationRepo)
-	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
+	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
 	passwordResetCreateValidator := validator.NewPasswordResetCreateValidator()
 
@@ -113,7 +113,7 @@ func main() {
 	getActiveEmailConfirmationUC := usecase.NewGetActiveEmailConfirmationUsecase(emailConfirmationRepo)
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmationRepo)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
-	createAccountUC := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -126,7 +126,7 @@ func main() {
 	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, flashMgr, createPasswordResetUC, turnstileClient)
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
-	accountsHandler := accounts.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
+	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -221,8 +221,8 @@ func main() {
 		r.Post("/password", passwordHandler.Update) // HTMLフォームからのPOST対応（_method=PATCH）
 
 		// アカウント作成（メール確認後）
-		r.Get("/accounts/new", accountsHandler.New)
-		r.Post("/accounts", accountsHandler.Create)
+		r.Get("/accounts/new", accountHandler.New)
+		r.Post("/accounts", accountHandler.Create)
 	})
 
 	// サーバー起動

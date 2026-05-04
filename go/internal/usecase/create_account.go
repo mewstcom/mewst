@@ -20,30 +20,30 @@ const DefaultAvatarKind = "default"
 
 // CreateAccountUsecase はアカウント作成のユースケース
 type CreateAccountUsecase struct {
-	db                *sql.DB
-	accountsValidator *validator.AccountsCreateValidator
-	userRepo          *repository.UserRepository
-	profileRepo       *repository.ProfileRepository
-	userProfileRepo   *repository.UserProfileRepository
-	actorRepo         *repository.ActorRepository
+	db               *sql.DB
+	accountValidator *validator.AccountCreateValidator
+	userRepo         *repository.UserRepository
+	profileRepo      *repository.ProfileRepository
+	userProfileRepo  *repository.UserProfileRepository
+	actorRepo        *repository.ActorRepository
 }
 
 // NewCreateAccountUsecase はCreateAccountUsecaseを生成する
 func NewCreateAccountUsecase(
 	db *sql.DB,
-	accountsValidator *validator.AccountsCreateValidator,
+	accountValidator *validator.AccountCreateValidator,
 	userRepo *repository.UserRepository,
 	profileRepo *repository.ProfileRepository,
 	userProfileRepo *repository.UserProfileRepository,
 	actorRepo *repository.ActorRepository,
 ) *CreateAccountUsecase {
 	return &CreateAccountUsecase{
-		db:                db,
-		accountsValidator: accountsValidator,
-		userRepo:          userRepo,
-		profileRepo:       profileRepo,
-		userProfileRepo:   userProfileRepo,
-		actorRepo:         actorRepo,
+		db:               db,
+		accountValidator: accountValidator,
+		userRepo:         userRepo,
+		profileRepo:      profileRepo,
+		userProfileRepo:  userProfileRepo,
+		actorRepo:        actorRepo,
 	}
 }
 
@@ -65,7 +65,7 @@ type CreateAccountOutput struct {
 // Profile, User, UserProfile, Actor を一括で作成し、トランザクション管理を行う
 func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
 	// 1. バリデーション (トランザクション外)
-	if err := uc.accountsValidator.Validate(ctx, validator.AccountsCreateValidatorInput{
+	if err := uc.accountValidator.Validate(ctx, validator.AccountCreateValidatorInput{
 		Email:    input.Email,
 		Atname:   input.Atname,
 		Password: input.Password,

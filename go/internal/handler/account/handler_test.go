@@ -1,4 +1,4 @@
-package accounts_test
+package account_test
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/mewstcom/mewst/go/internal/config"
-	handler "github.com/mewstcom/mewst/go/internal/handler/accounts"
+	handler "github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
@@ -48,8 +48,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
-	accountsValidator := validator.NewAccountsCreateValidator(userRepo, profileRepo)
-	createAccountUC := usecase.NewCreateAccountUsecase(db, accountsValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
+	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmRepo)
 	turnstile := &mockTurnstile{shouldSucceed: turnstileSuccess}
@@ -79,7 +79,7 @@ func createVerifiedEmailConfirmation(t *testing.T, tx *sql.Tx, email string, req
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 確認済みメール確認を作成
@@ -118,7 +118,7 @@ func TestNew(t *testing.T) {
 func TestNew_WithoutEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -145,7 +145,7 @@ func TestNew_WithoutEmailConfirmation(t *testing.T) {
 func TestNew_WithMismatchedEvent(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -182,7 +182,7 @@ func TestNew_WithMismatchedEvent(t *testing.T) {
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -258,7 +258,7 @@ func TestCreate_Success(t *testing.T) {
 func TestCreate_WithoutEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -292,7 +292,7 @@ func TestCreate_WithoutEmailConfirmation(t *testing.T) {
 func TestCreate_WithMismatchedEvent(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -336,7 +336,7 @@ func TestCreate_WithMismatchedEvent(t *testing.T) {
 func TestCreate_RateLimitExceeded(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -392,7 +392,7 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
 
 	ctx := context.Background()
@@ -428,7 +428,7 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 func TestCreate_ValidationError_EmptyAtname(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	ctx := context.Background()
@@ -464,7 +464,7 @@ func TestCreate_ValidationError_EmptyAtname(t *testing.T) {
 func TestCreate_ValidationError_DuplicateAtname(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 既存のプロフィールを作成
@@ -505,7 +505,7 @@ func TestCreate_ValidationError_DuplicateAtname(t *testing.T) {
 func TestCreate_ValidationError_DuplicateEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
+	db, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, db, tx, true)
 
 	// 既存のユーザーを作成
