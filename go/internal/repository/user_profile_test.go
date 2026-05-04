@@ -13,7 +13,7 @@ import (
 func TestUserProfileRepository_FindByUserID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -67,7 +67,7 @@ func TestUserProfileRepository_FindByUserID(t *testing.T) {
 func TestUserProfileRepository_FindByProfileID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -119,7 +119,7 @@ func TestUserProfileRepository_FindByProfileID(t *testing.T) {
 func TestUserProfileRepository_Create(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -153,7 +153,7 @@ func TestUserProfileRepository_Create(t *testing.T) {
 func TestUserProfileRepository_WithTx(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	repo := repository.NewUserProfileRepository(testutil.QueriesWithTx(tx))

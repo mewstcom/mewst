@@ -14,7 +14,7 @@ import (
 func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -98,7 +98,7 @@ func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T
 func TestEmailConfirmationCreateValidator_Validate_ValidCodeFormats(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -179,7 +179,7 @@ func TestCodeRegex(t *testing.T) {
 func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -212,7 +212,7 @@ func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -244,7 +244,7 @@ func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) 
 func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -280,7 +280,7 @@ func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -316,7 +316,7 @@ func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T
 func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -350,7 +350,7 @@ func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -386,7 +386,7 @@ func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 

@@ -17,7 +17,7 @@ import (
 func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テスト用メール確認レコードを作成
@@ -58,7 +58,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// 存在しないIDで実行
@@ -80,7 +80,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// 期限切れのメール確認レコードを作成（16分前）

@@ -17,7 +17,7 @@ import (
 func TestGetSucceededEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// 確認済みのメール確認レコードを作成
@@ -60,7 +60,7 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 func TestGetSucceededEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// 存在しないIDで実行
@@ -82,7 +82,7 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 func TestGetSucceededEmailConfirmationUsecase_Execute_NotSucceeded(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// 未確認のメール確認レコードを作成（succeeded_atがNULL）

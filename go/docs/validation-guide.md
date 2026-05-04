@@ -491,7 +491,7 @@ func TestSignInCreateValidator_Validate(t *testing.T) {
     // 状態バリデーションのテスト（DB必要）
     t.Run("状態バリデーション", func(t *testing.T) {
         // 共有DB接続プールからトランザクションをセットアップ
-        _, tx := testutil.SetupTestDB(t)
+        _, tx := testutil.SetupTx(t)
 
         // テストユーザーを作成（auth.HashPassword でダイジェスト化してから渡す）
         passwordDigest, _ := auth.HashPassword("password123")

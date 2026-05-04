@@ -21,7 +21,7 @@ import (
 )
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
-func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *config.Config) {
+func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
 	cfg := testutil.NewTestConfig(t)
@@ -48,8 +48,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *
 func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -89,8 +89,8 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 func TestNew_WithoutEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -116,8 +116,8 @@ func TestNew_WithoutEmailConfirmationID(t *testing.T) {
 func TestNew_WithInvalidEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -147,8 +147,8 @@ func TestNew_WithInvalidEmailConfirmationID(t *testing.T) {
 func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)
@@ -185,8 +185,8 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -241,8 +241,8 @@ func TestCreate_Success(t *testing.T) {
 func TestCreate_IncorrectCode(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -284,8 +284,8 @@ func TestCreate_IncorrectCode(t *testing.T) {
 func TestCreate_EmptyCode(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -327,8 +327,8 @@ func TestCreate_EmptyCode(t *testing.T) {
 func TestCreate_InvalidCodeFormat(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// メール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -370,8 +370,8 @@ func TestCreate_InvalidCodeFormat(t *testing.T) {
 func TestCreate_WithoutEmailConfirmationID(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -403,8 +403,8 @@ func TestCreate_WithoutEmailConfirmationID(t *testing.T) {
 func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// sign_upイベントのメール確認レコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
@@ -459,8 +459,8 @@ func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	// 期限切れのメール確認レコードを作成（16分前）
 	expiredTime := time.Now().Add(-16 * time.Minute)

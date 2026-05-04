@@ -380,7 +380,7 @@ templ generate
 ```go
 func TestSignInPage(t *testing.T) {
     // 共有DB接続プールからトランザクションをセットアップ
-    _, tx := testutil.SetupTestDB(t)
+    _, tx := testutil.SetupTx(t)
     queries := testutil.QueriesWithTx(tx)
 
     // 設定とハンドラーを作成
@@ -474,7 +474,7 @@ func TestSignInPageMultipleLocales(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            _, tx := testutil.SetupTestDB(t)
+            _, tx := testutil.SetupTx(t)
             queries := testutil.QueriesWithTx(tx)
 
             cfg := &config.Config{Domain: "localhost"}

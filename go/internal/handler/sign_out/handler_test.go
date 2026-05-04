@@ -16,7 +16,7 @@ import (
 )
 
 // setupTestHandler はテスト用のハンドラーをセットアップする
-func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx) (*handler.Handler, *config.Config) {
+func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
 	cfg := testutil.NewTestConfig(t)
@@ -46,8 +46,8 @@ func findCookie(cookies []*http.Cookie, name string) *http.Cookie {
 func TestDelete_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 
@@ -86,8 +86,8 @@ func TestDelete_Success(t *testing.T) {
 func TestDelete_WithoutSession(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 
@@ -126,8 +126,8 @@ func TestDelete_FlashMessage(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, tx := testutil.SetupTestDB(t)
-			h, cfg := setupTestHandler(t, db, tx)
+			_, tx := testutil.SetupTx(t)
+			h, cfg := setupTestHandler(t, tx)
 
 			ctx := context.Background()
 			ctx = i18n.SetLocale(ctx, tt.locale)
@@ -168,8 +168,8 @@ func TestDelete_FlashMessage(t *testing.T) {
 func TestDelete_POSTMethod(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx)
 
 	ctx := context.Background()
 

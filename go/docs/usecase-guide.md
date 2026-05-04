@@ -659,7 +659,7 @@ Handler は薄い Adapter として、リクエストのパース → UseCase �
 
 ## テスト
 
-UseCase のテストは `testutil.SetupTestDB(t)` で共有 DB 接続プールからトランザクションを取得し、テスト終了時に自動ロールバックする方式で書きます。Validator もテスト用トランザクションで初期化することで、状態バリデーション込みの統合テストが可能です。
+UseCase のテストは `testutil.SetupTx(t)` で共有 DB 接続プールからトランザクションを取得し、テスト終了時に自動ロールバックする方式で書きます。Validator もテスト用トランザクションで初期化することで、状態バリデーション込みの統合テストが可能です。
 
 ### 読み取り UseCase のテスト例
 
@@ -668,7 +668,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
     t.Parallel()
 
     // テスト DB とトランザクションをセットアップ (テスト終了時に自動ロールバック)
-    _, tx := testutil.SetupTestDB(t)
+    _, tx := testutil.SetupTx(t)
     ctx := context.Background()
 
     // ビルダーでテストデータを作成
@@ -699,7 +699,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
     t.Parallel()
 
-    _, tx := testutil.SetupTestDB(t)
+    _, tx := testutil.SetupTx(t)
     ctx := context.Background()
 
     emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))

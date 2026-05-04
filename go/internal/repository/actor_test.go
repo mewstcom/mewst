@@ -13,7 +13,7 @@ import (
 func TestActorRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成（User → Profile → Actor）
@@ -79,7 +79,7 @@ func TestActorRepository_FindByID(t *testing.T) {
 func TestActorRepository_FindByUserID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成（User → Profile → Actor）

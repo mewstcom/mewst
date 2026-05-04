@@ -62,7 +62,7 @@ func TestManager_GetSessionToken(t *testing.T) {
 func TestManager_GetCurrentUser(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).
@@ -157,7 +157,7 @@ func TestManager_GetCurrentUser(t *testing.T) {
 func TestManager_GetCurrentActor(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).
@@ -317,7 +317,7 @@ func TestManager_DeleteSessionCookie(t *testing.T) {
 func TestManager_IsLoggedIn(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).

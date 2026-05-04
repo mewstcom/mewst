@@ -29,7 +29,7 @@ func (m *mockTurnstile) Verify(ctx context.Context, token string) (bool, error) 
 }
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
-func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
+func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
 	cfg := testutil.NewTestConfig(t)
@@ -74,8 +74,8 @@ func createTestUser(t *testing.T, tx *sql.Tx, email string) {
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
@@ -108,8 +108,8 @@ func TestNew(t *testing.T) {
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-success@example.com"
@@ -173,8 +173,8 @@ func TestCreate_Success(t *testing.T) {
 func TestCreate_InvalidEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -208,8 +208,8 @@ func TestCreate_InvalidEmail(t *testing.T) {
 func TestCreate_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -243,8 +243,8 @@ func TestCreate_UserNotFound(t *testing.T) {
 func TestCreate_WrongPassword(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-wrongpass@example.com"
@@ -282,8 +282,8 @@ func TestCreate_WrongPassword(t *testing.T) {
 func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, false) // Turnstile検証失敗
 
 	// テストユーザーを作成
 	testEmail := "test-turnstile@example.com"
@@ -320,8 +320,8 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 func TestCreate_EmptyFields(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -355,8 +355,8 @@ func TestCreate_EmptyFields(t *testing.T) {
 func TestNew_WithBackParameter(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -391,8 +391,8 @@ func TestNew_WithBackParameter(t *testing.T) {
 func TestCreate_SuccessWithBackParameter(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// テストユーザーを作成
 	testEmail := "test-back-success@example.com"
@@ -467,8 +467,8 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			db, tx := testutil.SetupTestDB(t)
-			h, _ := setupTestHandler(t, db, tx, true)
+			_, tx := testutil.SetupTx(t)
+			h, _ := setupTestHandler(t, tx, true)
 
 			// テストユーザーを作成
 			testEmail := "test-invalid-back-" + tc.name + "@example.com"
@@ -508,8 +508,8 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")

@@ -40,7 +40,7 @@ func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs, _ *river.Inser
 }
 
 // setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
-func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
+func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
 	cfg := testutil.NewTestConfig(t)
@@ -67,8 +67,8 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
@@ -102,8 +102,8 @@ func TestNew(t *testing.T) {
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	// CSRFトークンをコンテキストに設定
 	ctx := context.Background()
@@ -162,8 +162,8 @@ func TestCreate_Success(t *testing.T) {
 func TestCreate_InvalidEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -196,8 +196,8 @@ func TestCreate_InvalidEmail(t *testing.T) {
 func TestCreate_EmptyEmail(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -230,8 +230,8 @@ func TestCreate_EmptyEmail(t *testing.T) {
 func TestCreate_TurnstileFailed(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, false) // Turnstile検証失敗
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, false) // Turnstile検証失敗
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -263,8 +263,8 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 func TestNew_ContainsBackToSignInLink(t *testing.T) {
 	t.Parallel()
 
-	db, tx := testutil.SetupTestDB(t)
-	h, _ := setupTestHandler(t, db, tx, true)
+	_, tx := testutil.SetupTx(t)
+	h, _ := setupTestHandler(t, tx, true)
 
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")

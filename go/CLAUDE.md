@@ -1055,7 +1055,7 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 ### 基本方針
 
 - **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL データベースを使用してテストを実行
-- **DB接続プールの共有**: `sync.Once` パターンでDB接続を1回だけ確立し、全テストで共有（`main_test.go` 不要）
+- **DB接続プールの共有**: `sync.Once` でDB接続を1回だけ確立し、パッケージ内の全テストで共有（`main_test.go` 不要）
 - **トランザクションでの分離**: 各テストはトランザクション内で実行し、テスト終了時に自動ロールバックすることでデータをクリーンアップ
 - **テスト用bcryptコストの低減**: テスト時はbcryptコストを最小値（4）に設定し、パスワードハッシュの計算を高速化
 - **テストヘルパーの活用**: `internal/testutil` パッケージのヘルパー関数とビルダーパターンを使用してテストデータを作成
@@ -1067,16 +1067,16 @@ Web アプリケーションのセキュリティは**最優先事項**です。
 - **テスト関数**: `Test` で始まる名前（例: `TestPopularWorks`）
 - **ベンチマーク関数**: `Benchmark` で始まる名前（例: `BenchmarkPopularWorks`）
 
-### DB接続の共有化（SetupTestDBパターン）
+### DB接続の共有化（`sync.Once` + 3 ヘルパー）
 
-`testutil.SetupTestDB(t)` は `sync.Once` を使用してDB接続を1回だけ確立します。`main_test.go` や `TestMain` は不要です。
+`internal/testutil` パッケージは `sync.Once` でDB接続を1回だけ確立し、`SetupTx` / `GetTestDB` / `SetupTestMain` のいずれから初めて呼ばれた時点で初期化します。`main_test.go` の作成は任意で、置かなくても遅延初期化で安全に動作します。
 
 **セットアップの流れ**:
 
 ```
-SetupTestDB(初回呼び出し): sql.Open → Ping → bcryptコスト設定
-テスト1: SetupTestDB → Begin → テスト実行 → Rollback
-テスト2: SetupTestDB → Begin → テスト実行 → Rollback
+初回呼び出し (sync.Once): sql.Open → Ping → bcryptコスト設定
+テスト1: SetupTx → Begin → テスト実行 → Rollback
+テスト2: SetupTx → Begin → テスト実行 → Rollback
 ```
 
 **テストの書き方**:
@@ -1085,20 +1085,32 @@ SetupTestDB(初回呼び出し): sql.Open → Ping → bcryptコスト設定
 func TestCreate_Success(t *testing.T) {
     t.Parallel()
 
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
     // db: 共有DB接続プール、tx: テスト用トランザクション（自動ロールバック）
 }
 ```
 
-**`SetupTestDB` が行う初期化**（`sync.Once` で1回のみ実行）:
+**初回初期化時に行うこと**（`sync.Once` で1回のみ実行、`SetupTestMain` / `SetupTx` / `GetTestDB` のいずれから呼ばれても同じ接続を共有）:
 
 - テスト用にbcryptコストを下げる（DefaultCost 10 → MinCost 4 で約64倍高速化）
-- DB接続プールを1回だけ確立し、全テストで共有
+- DB接続プールを1回だけ確立し、パッケージ内の全テストで共有
+
+### `SetupTx` と `GetTestDB` の使い分け
+
+| ヘルパー      | 用途                                           | トランザクション                         |
+| ------------- | ---------------------------------------------- | ---------------------------------------- |
+| `SetupTx(t)`  | Handler、Repository、Validator のテスト        | 自動（テスト終了時にロールバック）       |
+| `GetTestDB()` | UseCase のテスト（自前でトランザクション管理） | なし（テストデータは DB に直接コミット） |
+
+**`GetTestDB()` を使う理由**: UseCase が内部で `db.BeginTx` を開く場合、テスト側でアウター Tx を張ると UseCase の内部 Tx から前提データが見えなくなるため、Tx で包まずに DB に直接コミットする `GetTestDB` を使う。テストデータは `make test` 実行時の DB リセットで自動クリーンアップされるため、テストごとにユニークな識別子を使うことで衝突を避ける。
+
+なお Mewst の現状では `GetTestDB()` を必要とするテストは存在せず、すべて `SetupTx(t)` で動いている。`CreateAccountUsecase` のように内部 Tx を開く UseCase でも、前提データを必要としないため、アウター Tx でラップしたリポジトリを使い、UseCase はその Tx 経由で永続化する形で動作している。将来 GetTestDB が必要になったら本ヘルパーを利用する。
 
 ### テストのベストプラクティス
 
 - **実データベースを使用**: モックではなく実際の PostgreSQL データベースでテスト
-- **SetupTestDBパターン**: `testutil.SetupTestDB(t)` でDB接続とトランザクションをセットアップ（`main_test.go` 不要）
+- **`sync.Once` 初期化**: `testutil.SetupTx(t)` / `testutil.GetTestDB()` のいずれも初回呼び出し時に DB 接続を初期化する。`main_test.go` は任意で、必要なら `testutil.SetupTestMain(m)` で eager init できる
+- **トランザクション分離**: `testutil.SetupTx(t)` でテスト用トランザクションをセットアップ
 - **テーブル駆動テスト**: 複数のテストケースを効率的に実行
 - **並行テスト**: `t.Parallel()` で並行実行可能なテストを高速化（トランザクション分離により安全）
 - **テストヘルパー**: 共通のセットアップコードをヘルパー関数に抽出
@@ -1111,7 +1123,7 @@ func TestCreate_Success(t *testing.T) {
     t.Parallel()
 
     // テストDBとトランザクションをセットアップ
-    _, tx := testutil.SetupTestDB(t)
+    _, tx := testutil.SetupTx(t)
 
     // テストデータを作成（ビルダーパターン）
     userID := testutil.NewUserBuilder(t, tx).
@@ -1145,7 +1157,7 @@ func TestCreate_Success(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
     t.Parallel()
 
-    db, tx := testutil.SetupTestDB(t)
+    db, tx := testutil.SetupTx(t)
     ctx := context.Background()
 
     // テスト対象のセットアップ（共通部分）
