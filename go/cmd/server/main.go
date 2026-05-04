@@ -16,7 +16,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
-	"github.com/mewstcom/mewst/go/internal/handler"
 	"github.com/mewstcom/mewst/go/internal/handler/accounts"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
@@ -25,6 +24,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_up"
+	"github.com/mewstcom/mewst/go/internal/httperror"
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/query"
@@ -159,7 +159,7 @@ func main() {
 	r.Use(flashMgr.Middleware)
 
 	// 404ハンドラーの設定（ルーティングにマッチしないパス用）
-	r.NotFound(handler.NotFound)
+	r.NotFound(httperror.NotFound)
 
 	// 静的ファイルの配信 (Tailwind CLI + esbuild のビルド結果)
 	fileServer := http.FileServer(http.Dir("./static"))

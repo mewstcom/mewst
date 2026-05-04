@@ -1,5 +1,6 @@
-// Package handler はHTTPハンドラーの共通機能を提供します
-package handler
+// Package httperror は全リソース共通の HTTP エラーレスポンスヘルパーを提供します。
+// リソースディレクトリには属さない、404 や 502 などの汎用エラーページのレンダリングを担当します。
+package httperror
 
 import (
 	"log/slog"
