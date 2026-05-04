@@ -17,6 +17,8 @@
   "ignorePatterns": [
     "**/node_modules/",
     "**/vendor/",
+    "apm.lock.yaml",
+    "apm_modules/",
     "rails/db/",
     "rails/docs/",
     "rails/fixtures/",
