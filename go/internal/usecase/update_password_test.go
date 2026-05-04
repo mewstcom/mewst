@@ -16,7 +16,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("パスワードを更新できる", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 
 		// テストユーザーを作成
 		email := "test-update-password@example.com"
@@ -54,7 +54,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("古いパスワードでは検証できなくなる", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 
 		// テストユーザーを作成（デフォルトパスワードは "password"）
 		email := "test-old-password@example.com"
@@ -94,7 +94,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 	t.Run("日本語を含むパスワードで更新できる", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 
 		// テストユーザーを作成
 		email := "test-japanese-password@example.com"

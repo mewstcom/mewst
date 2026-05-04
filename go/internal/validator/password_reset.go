@@ -31,13 +31,13 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 
 	// メールアドレスの必須チェック
 	if input.Email == "" {
-		ve.AddField("email", i18n.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "validation_required"))
 		return ve
 	}
 
 	// メールアドレス形式チェック
 	if _, err := mail.ParseAddress(input.Email); err != nil {
-		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
+		ve.AddField("email", i18n.T(ctx, "validation_email_invalid"))
 	}
 
 	if ve.HasErrors() {

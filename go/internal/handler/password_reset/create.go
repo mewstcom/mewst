@@ -29,7 +29,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if !valid {
 		ve := model.NewValidationError()
-		ve.AddGlobal(i18n.T(ctx, "error_turnstile_failed"))
+		ve.AddGlobal(i18n.T(ctx, "validation_turnstile_failed"))
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		h.renderPasswordResetForm(w, r, ve, email)
 		return

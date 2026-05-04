@@ -12,7 +12,7 @@ import (
 func TestCreateSessionUsecase_Execute(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -88,7 +88,7 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成
@@ -126,7 +126,7 @@ func TestCreateSessionUsecase_Execute_EmptyIPAddress(t *testing.T) {
 func TestCreateSessionUsecase_Execute_TokenUniqueness(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成

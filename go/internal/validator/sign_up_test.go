@@ -13,7 +13,7 @@ import (
 func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
@@ -38,7 +38,7 @@ func TestSignUpCreateValidator_EmptyEmail(t *testing.T) {
 func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
@@ -74,7 +74,7 @@ func TestSignUpCreateValidator_InvalidEmailFormat(t *testing.T) {
 func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
@@ -104,7 +104,7 @@ func TestSignUpCreateValidator_ValidEmail(t *testing.T) {
 func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
@@ -135,7 +135,7 @@ func TestSignUpCreateValidator_EmailAlreadyTaken(t *testing.T) {
 func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 
@@ -154,7 +154,7 @@ func TestSignUpCreateValidator_EmailNotTaken(t *testing.T) {
 func TestSignUpCreateValidator_CaseInsensitiveEmail(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	validator := NewSignUpCreateValidator(userRepo)
 

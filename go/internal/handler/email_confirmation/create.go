@@ -94,7 +94,7 @@ func (h *Handler) renderEmailConfirmationForm(w http.ResponseWriter, r *http.Req
 	}
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "email_confirmation_title")
+	meta.SetTitle(ctx, "email_confirmation_new_title")
 
 	content := emailconfirmationpages.New(data)
 	layout := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, content)

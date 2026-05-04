@@ -298,6 +298,33 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/model
               desc: "DispatcherはModelに依存できません。"
 
+        # HTTPError層のルール: 全リソース共通のHTTPエラーレスポンスヘルパー
+        # templates / i18n に依存可能。リソース固有のハンドラーやビジネスロジック層には依存しない
+        httperror-layer:
+          files:
+            - "**/internal/httperror/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "HTTPErrorはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "HTTPErrorはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "HTTPErrorはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "HTTPErrorはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "HTTPErrorはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "HTTPErrorはMiddlewareに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "HTTPErrorはViewModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "HTTPErrorはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "HTTPErrorはDispatcherに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "HTTPErrorはSessionに依存できません。"
+
         # RateLimit層のルール: インフラストラクチャユーティリティ
         # Queryに直接依存せず、Repositoryを経由する
         ratelimit-layer:
@@ -316,6 +343,56 @@ linters:
               desc: "RateLimitはPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "RateLimitはPresentation層に依存できません。"
+
+        # Auth層のルール: 横断的な技術ユーティリティ
+        # 標準ライブラリと外部ライブラリ(bcryptなど)のみに依存し、プロジェクト内部のパッケージには一切依存しない
+        # 純粋な技術ユーティリティとして保ち、循環依存を防ぐ
+        auth-layer:
+          files:
+            - "**/internal/auth/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/i18n
+              desc: "Authはi18nに依存できません。auth → i18n → middleware → session → auth の循環依存を防ぎ、純粋な技術ユーティリティとして保つためです。バリデーション失敗は sentinel error で返し、翻訳の解決は呼び出し元(validatorなど)の責務とします。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "AuthはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "AuthはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/email
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/config
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/turnstile
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/ratelimit
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/clientip
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/database
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/redirect
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/testutil
+              desc: "Authはテスト用ヘルパーに依存できません。純粋な技術ユーティリティとして保つためです。"
 
     # staticcheck の設定
     staticcheck:

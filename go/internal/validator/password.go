@@ -27,19 +27,19 @@ func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUp
 
 	// パスワードの必須チェック
 	if input.Password == "" {
-		ve.AddField("password", i18n.T(ctx, "error_required"))
+		ve.AddField("password", i18n.T(ctx, "validation_required"))
 		return ve
 	}
 
 	// 最小文字数チェック
 	if utf8.RuneCountInString(input.Password) < minPasswordLength {
-		ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
+		ve.AddField("password", i18n.T(ctx, "validation_password_too_short"))
 		return ve
 	}
 
 	// 最大バイト数チェック（bcrypt 制限）
 	if len(input.Password) > maxPasswordLength {
-		ve.AddField("password", i18n.T(ctx, "error_password_too_long"))
+		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return ve
 	}
 

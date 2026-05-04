@@ -14,7 +14,7 @@ import (
 func TestProfileRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストプロフィールを作成
@@ -62,7 +62,7 @@ func TestProfileRepository_FindByID(t *testing.T) {
 func TestProfileRepository_FindByAtname(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストプロフィールを作成
@@ -101,7 +101,7 @@ func TestProfileRepository_FindByAtname(t *testing.T) {
 func TestProfileRepository_ExistsByAtname(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストプロフィールを作成
@@ -135,7 +135,7 @@ func TestProfileRepository_ExistsByAtname(t *testing.T) {
 func TestProfileRepository_Create(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
@@ -178,7 +178,7 @@ func TestProfileRepository_Create(t *testing.T) {
 func TestProfileRepository_WithTx(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))

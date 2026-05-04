@@ -31,6 +31,31 @@ Mewst はマイクロブログサービスです。
 - **Go 版**: `go/CLAUDE.md` - Go 版固有の開発ガイド
 - **Rails 版**: `rails/CLAUDE.md` - Rails 版固有の開発ガイド
 
+## 主要な技術スタックのバージョン
+
+Mewst で使用している主要なランタイム・ミドルウェアのバージョンは以下の通りです。各サブプロジェクト固有のライブラリ・ツールのバージョンは各サブプロジェクトの CLAUDE.md を参照してください。
+
+| 項目       | バージョン | 備考                                              |
+| ---------- | ---------- | ------------------------------------------------- |
+| Go         | 1.25.4     | Go 版で使用 (`/workspace/go/`)                    |
+| Ruby       | 3.3.6      | Rails 版で使用 (`/workspace/rails/`)              |
+| Rails      | 7.1.x      | Rails 版で使用 (`/workspace/rails/`)              |
+| PostgreSQL | 16.2       | Go 版と Rails 版で共有 (詳細は「共通インフラ」節) |
+
+なお、APM 経由で配信される共通ガイドライン (`korylus/guidelines`) はバージョン中立な記述としており、具体的なバージョンは本ファイルおよび各サブプロジェクトの CLAUDE.md で管理しています。
+
+## APM (Agent Package Manager) について
+
+このリポジトリでは [APM (Agent Package Manager)](https://github.com/microsoft/apm) を使い、Korylus プロダクト共通の AI 向けガイドラインとスキルを `korylus/guidelines` リポジトリから取得しています。`.claude/rules/` 配下のルールと `.claude/skills/` 配下のスキルは APM 経由で配信され、`apm install` 実行時にリポジトリへ配置されます。
+
+### 運用ルール
+
+- **`apm install` で更新する**: `apm.yml` の依存定義 (`github.com/korylus/guidelines#vX.Y.Z`) に従って `apm install` または `apm install --update` を実行し、`.claude/rules/` および `.claude/skills/` を最新化します
+- **`apm.lock.yaml` の `deployed_files` に列挙されたファイルは編集禁止**: これらのファイル (例: `.claude/rules/common.md`、`.claude/skills/commit/SKILL.md`) は次回の `apm install` で上書きされるため、Mewst リポジトリ側で直接編集しても次回更新時に元に戻ります
+- **共通ガイドラインの修正は単方向フロー**: 共通ガイドラインを変更したい場合は `korylus/guidelines` 側 (`.apm/instructions/` または `.apm/skills/`) を編集してバージョンタグを切り、Mewst の `apm.yml` を新バージョンに更新してから `apm install` を実行します。Mewst から共通ガイドラインへ直接コミットを書き戻す運用は行いません
+
+詳細な APM のコマンド一覧、フォーマット運用、診断メッセージの読み方、トラブルシューティングについては [@.claude/rules/apm.md](/workspace/.claude/rules/apm.md) を参照してください。
+
 ## Rails から Go への移行について
 
 現在、既存の Rails 実装の Mewst を Go で段階的に再実装するプロジェクトが進行中です。
@@ -57,6 +82,15 @@ Rails 版のソースコードは `/workspace/rails/` 配下に格納されて�
 ```
 
 Go 版を実装する際は、Rails 版のコードを参考にすることで既存の仕様を理解できます。
+
+## フィーチャーフラグによる開発
+
+Mewst ではフィーチャーブランチではなく **フィーチャーフラグ** を使って機能の公開を制御しています。基本方針・運用ルールは [@.claude/rules/common.md](/workspace/.claude/rules/common.md) の「フィーチャーフラグによる開発」セクションを参照してください。
+
+Mewst で利用しているフラグの種類は次の 2 つです。
+
+- **ルーティング制御 (Rails→Go 移行)**: Go 版のリバースプロキシミドルウェア ([@go/internal/middleware/reverse_proxy.go](/workspace/go/internal/middleware/reverse_proxy.go)) で、Go 版で処理するパスをホワイトリスト (`goHandledPaths`) に追加することで切り替えます。Go 版で未実装のパスは自動的に Rails 版にプロキシされます。新規機能を段階的にリリースする際もこの仕組みで制御します
+- **アプリケーション内制御**: 現状 Mewst にはアプリケーション内フィーチャーフラグの専用機構 (Flipper / GrowthBook など) は **未導入** です。必要になった時点で導入方針を検討します
 
 ## 共通インフラ
 

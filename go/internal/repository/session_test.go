@@ -11,7 +11,7 @@ import (
 func TestSessionRepository_FindByToken(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成（User → Profile → Actor → Session）
@@ -70,7 +70,7 @@ func TestSessionRepository_FindByToken(t *testing.T) {
 func TestSessionRepository_Create(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成（User → Profile → Actor）
@@ -121,7 +121,7 @@ func TestSessionRepository_Create(t *testing.T) {
 func TestSessionRepository_DeleteByToken(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストデータを作成（User → Profile → Actor → Session）

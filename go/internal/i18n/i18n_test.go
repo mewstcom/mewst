@@ -17,22 +17,22 @@ func TestT_Japanese(t *testing.T) {
 	}{
 		{
 			name:      "ログインページタイトル",
-			messageID: "sign_in_title",
+			messageID: "sign_in_new_title",
 			expected:  "Mewstにログイン",
 		},
 		{
 			name:      "メールアドレスラベル",
-			messageID: "label_email",
+			messageID: "sign_in_new_email_label",
 			expected:  "メールアドレス",
 		},
 		{
 			name:      "パスワードラベル",
-			messageID: "label_password",
+			messageID: "sign_in_new_password_label",
 			expected:  "パスワード",
 		},
 		{
 			name:      "ログインボタン",
-			messageID: "btn_sign_in",
+			messageID: "sign_in_new_submit",
 			expected:  "ログインする",
 		},
 		{
@@ -42,7 +42,7 @@ func TestT_Japanese(t *testing.T) {
 		},
 		{
 			name:      "必須バリデーションエラー",
-			messageID: "error_required",
+			messageID: "validation_required",
 			expected:  "入力してください",
 		},
 	}
@@ -72,22 +72,22 @@ func TestT_English(t *testing.T) {
 	}{
 		{
 			name:      "Sign in page title",
-			messageID: "sign_in_title",
+			messageID: "sign_in_new_title",
 			expected:  "Sign in to Mewst",
 		},
 		{
 			name:      "Email label",
-			messageID: "label_email",
+			messageID: "sign_in_new_email_label",
 			expected:  "Email",
 		},
 		{
 			name:      "Password label",
-			messageID: "label_password",
+			messageID: "sign_in_new_password_label",
 			expected:  "Password",
 		},
 		{
 			name:      "Sign in button",
-			messageID: "btn_sign_in",
+			messageID: "sign_in_new_submit",
 			expected:  "Sign in",
 		},
 		{
@@ -97,7 +97,7 @@ func TestT_English(t *testing.T) {
 		},
 		{
 			name:      "Required validation error",
-			messageID: "error_required",
+			messageID: "validation_required",
 			expected:  "is required",
 		},
 	}
@@ -136,10 +136,10 @@ func TestT_DefaultLocale(t *testing.T) {
 	// ロケールが設定されていない場合、デフォルト（日本語）が使われる
 	ctx := context.Background()
 
-	got := T(ctx, "sign_in_title")
+	got := T(ctx, "sign_in_new_title")
 	expected := "Mewstにログイン"
 	if got != expected {
-		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "sign_in_title", got, expected)
+		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "sign_in_new_title", got, expected)
 	}
 }
 
@@ -318,7 +318,7 @@ func TestMiddleware(t *testing.T) {
 
 			testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				capturedLocale = GetLocale(r.Context())
-				capturedTranslation = T(r.Context(), "sign_in_title")
+				capturedTranslation = T(r.Context(), "sign_in_new_title")
 				w.WriteHeader(http.StatusOK)
 			})
 

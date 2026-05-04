@@ -45,7 +45,7 @@ templ Edit(data EditPageData) {
 
 			<div class="grid gap-2">
 				<label for="password">
-					{ templates.T(ctx, "label_new_password") }
+					{ templates.T(ctx, "password_edit_password_label") }
 				</label>
 
 				<input
@@ -65,7 +65,7 @@ templ Edit(data EditPageData) {
 				/>
 
 				<p class="text-sm text-muted-foreground">
-					{ templates.T(ctx, "password_hint") }
+					{ templates.T(ctx, "password_edit_password_hint") }
 				</p>
 
 				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
@@ -83,13 +83,13 @@ templ Edit(data EditPageData) {
 				type="submit"
 			>
 				@templates.Icon("arrow-right-regular")
-				{ templates.T(ctx, "btn_reset_password") }
+				{ templates.T(ctx, "password_edit_submit") }
 			</button>
 		</form>
 
 		<div class="text-center text-muted-foreground">
 			<a class="link" href="/sign_in">
-				{ templates.T(ctx, "back_to_sign_in") }
+				{ templates.T(ctx, "password_edit_back_to_sign_in") }
 			</a>
 		</div>
 	</div>

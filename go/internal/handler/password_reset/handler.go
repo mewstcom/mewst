@@ -50,7 +50,7 @@ func (h *Handler) renderPasswordResetForm(w http.ResponseWriter, r *http.Request
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "password_reset_title")
+	meta.SetTitle(ctx, "password_reset_new_title")
 
 	content := passwordresetpages.New(passwordresetpages.NewPageData{
 		CSRFToken:        csrfToken,

@@ -17,7 +17,7 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("正常系: サインインしてセッションを作成できる", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 		ctx := context.Background()
 
 		// テストデータを作成
@@ -67,7 +67,7 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("正常系: 各呼び出しで異なるトークンが生成される", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 		ctx := context.Background()
 
 		testEmail := "signin-uc-unique@example.com"
@@ -116,7 +116,7 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: バリデーションエラー", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 		ctx := context.Background()
 
 		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
@@ -148,7 +148,7 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: ユーザーが見つからない場合", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 		ctx := context.Background()
 
 		userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
@@ -180,7 +180,7 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 	t.Run("異常系: パスワードが正しくない場合", func(t *testing.T) {
 		t.Parallel()
 
-		_, tx := testutil.SetupTestDB(t)
+		_, tx := testutil.SetupTx(t)
 		ctx := context.Background()
 
 		testEmail := "signin-uc-wrongpw@example.com"

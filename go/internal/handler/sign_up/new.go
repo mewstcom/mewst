@@ -27,7 +27,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 
 	// メタ情報を設定
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
-	meta.SetTitle(ctx, "sign_up_title")
+	meta.SetTitle(ctx, "sign_up_new_title")
 
 	// テンプレートをレンダリング
 	content := signuppages.New(data)

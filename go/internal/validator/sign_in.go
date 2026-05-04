@@ -46,13 +46,13 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 	}
 	// セキュリティ対策: 存在しないメールアドレスでも同じエラーメッセージを表示
 	if user == nil {
-		ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
+		ve.AddGlobal(i18n.T(ctx, "validation_credentials_invalid"))
 		return nil, ve
 	}
 
 	// パスワードを検証
 	if err := auth.CheckPassword(user.PasswordDigest, input.Password); err != nil {
-		ve.AddGlobal(i18n.T(ctx, "error_invalid_credentials"))
+		ve.AddGlobal(i18n.T(ctx, "validation_credentials_invalid"))
 		return nil, ve
 	}
 
@@ -62,12 +62,12 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 // validateEmail はメールアドレスの形式バリデーションを行う
 func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.ValidationError, email string) {
 	if email == "" {
-		ve.AddField("email", i18n.T(ctx, "error_required"))
+		ve.AddField("email", i18n.T(ctx, "validation_required"))
 		return
 	}
 
 	if _, err := mail.ParseAddress(email); err != nil {
-		ve.AddField("email", i18n.T(ctx, "error_invalid_email"))
+		ve.AddField("email", i18n.T(ctx, "validation_email_invalid"))
 		return
 	}
 }
@@ -75,7 +75,7 @@ func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.Val
 // validatePassword はパスワードの形式バリデーションを行う
 func (v *SignInCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
 	if password == "" {
-		ve.AddField("password", i18n.T(ctx, "error_required"))
+		ve.AddField("password", i18n.T(ctx, "validation_required"))
 		return
 	}
 }

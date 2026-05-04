@@ -11,8 +11,8 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/httperror"
 	"github.com/mewstcom/mewst/go/internal/i18n"
-	"github.com/mewstcom/mewst/go/internal/templates/pages/errors"
 )
 
 // ReverseProxyMiddleware はRails版へのリバースプロキシミドルウェア
@@ -136,16 +136,10 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 			"remote_addr", r.RemoteAddr,
 		)
 
-		// 502エラーレスポンスを返す
+		// reverse_proxy は i18n.Middleware より前に動くため、ロケールを検出して context に載せ替えてから httperror に委譲する
 		locale := i18n.DetectLanguage(r)
 		ctx = i18n.SetLocale(ctx, locale)
-
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusBadGateway)
-
-		if err := errors.BadGateway().Render(ctx, w); err != nil {
-			slog.ErrorContext(ctx, "502ページのレンダリングに失敗", "error", err)
-		}
+		httperror.BadGateway(w, r.WithContext(ctx))
 	}
 
 	return &ReverseProxyMiddleware{

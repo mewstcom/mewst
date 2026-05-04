@@ -13,7 +13,7 @@ import (
 func TestUserRepository_FindByID(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストユーザーを作成
@@ -66,7 +66,7 @@ func TestUserRepository_FindByID(t *testing.T) {
 func TestUserRepository_FindByEmail(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
 	// テストユーザーを作成（パスワードダイジェストも検証）

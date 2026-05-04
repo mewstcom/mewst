@@ -138,7 +138,7 @@ func TestSignInCreateValidator_Validate_ErrorMessages(t *testing.T) {
 func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -170,7 +170,7 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -197,7 +197,7 @@ func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -230,7 +230,7 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -276,7 +276,7 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
@@ -305,7 +305,7 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 	t.Parallel()
 
-	_, tx := testutil.SetupTestDB(t)
+	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
