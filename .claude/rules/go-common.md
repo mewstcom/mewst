@@ -25,14 +25,16 @@ Go 版の実装時には、各プロジェクトの Rails 版コードを参考�
 
 ## 技術スタック
 
-- Go 1.26.2
+主要ランタイム・ミドルウェアの具体的なバージョンは各プロジェクトの CLAUDE.md を参照してください。
+
+- Go
   - chi/v5: HTTP ルーターとミドルウェア
   - lib/pq: PostgreSQL ドライバー
   - sqlc: SQL クエリからタイプセーフな Go コードを生成
   - templ: 型安全な HTML テンプレートエンジン
   - resend-go/v2: メール送信ライブラリ（Resend API）
   - river: バックグラウンドジョブキュー（PostgreSQL ベース）
-- PostgreSQL 18.1
+- PostgreSQL
 - htmx 4: ハイパーメディアフレームワーク（HTML フラグメント返却によるサーバードリブン UI）
   - htmx の実装時は `/htmx4` スキルを使用すること
 - Cloudflare Turnstile: Bot 対策サービス

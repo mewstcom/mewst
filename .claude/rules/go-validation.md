@@ -53,6 +53,9 @@ internal/handler/sign_in/
 - **命名規則**: `{Resource}{Action}Validator`（例: `SignInCreateValidator`, `PasswordResetCreateValidator`）
 - **コンストラクタ**: `New{Resource}{Action}Validator`（例: `NewSignInCreateValidator`）
 - **戻り値**: Go の慣習に従った `(data, error)` の 2 値返し。データを返す必要がない場合は `error` のみ
+  - データ不要 → `error` のみ
+  - 単一の値を返す → `(T, error)` 直接（`T` は `*model.X` や `[]*model.X` などのプリミティブ型。Output 構造体を作らずモデル/スライスを直接返す）
+  - 複数フィールドを返す → `(*{Resource}{Action}ValidateOutput, error)`（Output 構造体は `Validator` ではなく `Validate` + `Output` の命名を使う）
 - **呼び出し元**: UseCase から呼び出される（Handler からの直接呼び出しは禁止）
 - **1 つの構造体で両方のバリデーションを担当**: 形式バリデーションと状態バリデーションを `Validate` メソッド内で順次実行
 
@@ -125,103 +128,11 @@ Validator は `error` インターフェースを返します。エラーの具�
 
 ## 実装例
 
-### データを返すバリデーター（状態バリデーションあり）
+実装例は戻り値パターンの 3 分類で示します。
 
-状態バリデーションの過程で取得したデータを戻り値として返します。これにより UseCase 内でデータを二重に取得する必要がなくなります。
+### データを返さないバリデーター（`error` のみ）
 
-```go
-// internal/validator/sign_in.go
-package validator
-
-import (
-    "context"
-    "net/mail"
-
-    "example.com/app/internal/auth"
-    "example.com/app/internal/i18n"
-    "example.com/app/internal/model"
-    "example.com/app/internal/repository"
-)
-
-// SignInCreateValidator はサインインのバリデーションを行う
-type SignInCreateValidator struct {
-    userRepo         *repository.UserRepository
-    userPasswordRepo *repository.UserPasswordRepository
-}
-
-// NewSignInCreateValidator は SignInCreateValidator を生成する
-func NewSignInCreateValidator(
-    userRepo *repository.UserRepository,
-    userPasswordRepo *repository.UserPasswordRepository,
-) *SignInCreateValidator {
-    return &SignInCreateValidator{
-        userRepo:         userRepo,
-        userPasswordRepo: userPasswordRepo,
-    }
-}
-
-// SignInCreateValidatorInput はバリデーションの入力パラメータ
-type SignInCreateValidatorInput struct {
-    Email    string
-    Password string
-}
-
-// SignInCreateValidateOutput はバリデーション成功時の出力
-type SignInCreateValidateOutput struct {
-    User *model.User
-}
-
-// Validate はバリデーションを行い、成功時はデータを返す
-func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidateOutput, error) {
-    // 1. 形式バリデーション
-    ve := model.NewValidationError()
-
-    if input.Email == "" {
-        ve.AddField("email", i18n.T(ctx, "validation_required"))
-    } else if !isValidEmail(input.Email) {
-        ve.AddField("email", i18n.T(ctx, "validation_email_invalid"))
-    }
-
-    if input.Password == "" {
-        ve.AddField("password", i18n.T(ctx, "validation_required"))
-    }
-
-    if ve.HasErrors() {
-        return nil, ve
-    }
-
-    // 2. 状態バリデーション（DB検証）
-    user, err := v.userRepo.FindByEmail(ctx, input.Email)
-    if err != nil {
-        return nil, err
-    }
-    if user == nil {
-        ve.AddGlobal(i18n.T(ctx, "validation_email_or_password_invalid"))
-        return nil, ve
-    }
-
-    // パスワード検証
-    userPassword, err := v.userPasswordRepo.FindByUserID(ctx, user.ID)
-    if err != nil {
-        return nil, err
-    }
-    if userPassword == nil || !auth.VerifyPassword(userPassword.PasswordDigest, input.Password) {
-        ve.AddGlobal(i18n.T(ctx, "validation_email_or_password_invalid"))
-        return nil, ve
-    }
-
-    return &SignInCreateValidateOutput{User: user}, nil
-}
-
-func isValidEmail(email string) bool {
-    _, err := mail.ParseAddress(email)
-    return err == nil
-}
-```
-
-### データを返さないバリデーター（形式バリデーションのみ）
-
-DB を使った検証が不要な場合でも、`internal/validator/` パッケージに配置します。データを返す必要がない場合は `error` のみを返します。
+DB を使った検証が不要な場合や、検証成功時にデータを返す必要がない場合は `error` のみを返します。
 
 ```go
 // Wikino の例
@@ -271,9 +182,9 @@ func (v *SuggestionCommentCreateValidator) Validate(ctx context.Context, input S
 }
 ```
 
-### 状態バリデーションで取得したデータを返すバリデーター
+### 状態バリデーションで取得した単一の値を返すバリデーター（`(T, error)` 直接）
 
-Validator は状態バリデーションの過程でデータを取得し、検証後にそのデータを戻り値として返します。これにより UseCase 内でデータを二重に取得する必要がなくなります。
+状態バリデーションの過程で取得した値を戻り値として返すと、UseCase 内でデータを二重に取得する必要がなくなります。出力が単一の値（`*model.X` や `[]*model.X` など）だけで済む場合は、Output 構造体を作らずモデル/スライスを直接返します。
 
 ```go
 // Wikino の例
@@ -334,6 +245,93 @@ func (v *SuggestionCreateValidator) Validate(ctx context.Context, input Suggesti
     }
 
     return draftPages, nil
+}
+```
+
+### 複数フィールドを返すバリデーター（`(*{Resource}{Action}ValidateOutput, error)`）
+
+検証成功時に複数のデータを返したい場合は、専用の `{Resource}{Action}ValidateOutput` 構造体を定義します（命名は `Validator` ではなく `Validate` + `Output`）。以下は将来 2FA 等で必要になった場合の架空例です。
+
+```go
+// 架空の例: 2FA 認証情報を併せて返すケース
+
+// SignInCreateValidateOutput はバリデーション成功時の出力（複数フィールドが必要な場合の例）
+type SignInCreateValidateOutput struct {
+    User              *model.User
+    UserTwoFactorAuth *model.UserTwoFactorAuth
+}
+
+// Validate はバリデーションを行い、成功時はユーザーと 2FA 情報を返す
+func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*SignInCreateValidateOutput, error) {
+    // ...バリデーション処理...
+
+    return &SignInCreateValidateOutput{
+        User:              user,
+        UserTwoFactorAuth: twoFactor,
+    }, nil
+}
+```
+
+### 複数フィールドだが Output を作らない場合（複数チェックの validator）
+
+入力に対して複数のフィールドを横断的にチェックするだけで、成功時にデータを返さない場合は `error` のみで十分です。
+
+以下は複数フィールドの組み合わせをチェックする validator の架空例で、`Password` + `PasswordConfirmation` の 2 フィールドを持つ `PasswordChangeFormValidator` を示します。
+
+```go
+// 架空の例: パスワード変更フォームのバリデーション
+
+package validator
+
+import (
+    "context"
+
+    "example.com/app/internal/i18n"
+    "example.com/app/internal/model"
+)
+
+// PasswordChangeFormValidator はパスワード変更フォームのバリデーションを行う（架空の例）
+type PasswordChangeFormValidator struct{}
+
+// NewPasswordChangeFormValidator は PasswordChangeFormValidator を生成する
+func NewPasswordChangeFormValidator() *PasswordChangeFormValidator {
+    return &PasswordChangeFormValidator{}
+}
+
+// PasswordChangeFormValidatorInput はバリデーションの入力パラメータ
+type PasswordChangeFormValidatorInput struct {
+    Password             string
+    PasswordConfirmation string
+}
+
+// Validate はバリデーションを行い、失敗時は *model.ValidationError を返す
+func (v *PasswordChangeFormValidator) Validate(ctx context.Context, input PasswordChangeFormValidatorInput) error {
+    ve := model.NewValidationError()
+
+    // 必須チェック
+    if input.Password == "" {
+        ve.AddField("password", i18n.T(ctx, "error_required"))
+    }
+
+    if input.PasswordConfirmation == "" {
+        ve.AddField("password_confirmation", i18n.T(ctx, "error_required"))
+    }
+
+    // 文字数チェック（rune 数で計測）
+    if len(input.Password) > 0 && len([]rune(input.Password)) < 8 {
+        ve.AddField("password", i18n.T(ctx, "error_password_too_short"))
+    }
+
+    // パスワード一致チェック
+    if input.Password != "" && input.PasswordConfirmation != "" && input.Password != input.PasswordConfirmation {
+        ve.AddField("password_confirmation", i18n.T(ctx, "error_password_mismatch"))
+    }
+
+    if ve.HasErrors() {
+        return ve
+    }
+
+    return nil
 }
 ```
 
@@ -398,7 +396,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
             return
         }
         if ae := model.AsAppError(err); ae != nil {
-            handler.NotFound(w, r)
+            httperror.NotFound(w, r)
             return
         }
         slog.ErrorContext(ctx, "編集提案コメントの作成に失敗", "error", err)
@@ -693,9 +691,12 @@ func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input Passw
 
 ### 5. Go の慣習に従った `(data, error)` の 2 値返し
 
+戻り値はバリデーターが返すデータの有無で使い分けます。
+
 ```go
 // Wikino の例
 // ✅ Good: データを返す場合は (data, error)
+// 単一の値（モデル/スライス）なら専用の Output 構造体を作らず直接返す
 func (v *SuggestionCreateValidator) Validate(ctx context.Context, input SuggestionCreateValidatorInput) ([]*model.DraftPage, error) {
     ve := model.NewValidationError()
     // ...

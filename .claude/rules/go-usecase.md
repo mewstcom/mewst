@@ -20,25 +20,61 @@ UseCase はアプリケーションのオーケストレーターです。Handle
 
 ## UseCase の役割
 
-Handler/Worker からのすべてのデータアクセスは UseCase を経由する。UseCase は読み取りと書き込みの両方を担当する。
+Handler/Worker からのすべてのデータアクセスは UseCase を経由する。UseCase は以下の 3 種類に分類される。
 
-| 種類             | 責務                                                 | トランザクション        |
-| ---------------- | ---------------------------------------------------- | ----------------------- |
-| 書き込み UseCase | 認可・バリデーション・ビジネスロジック・永続化を統括 | あり（WithTx パターン） |
-| 読み取り UseCase | データ取得、複数 Repository の集約                   | なし                    |
+### UseCase の分類
+
+| 種類                         | 責務                                                            | Validator | トランザクション                |
+| ---------------------------- | --------------------------------------------------------------- | --------- | ------------------------------- |
+| 読み取り UseCase             | データ取得、複数 Repository の集約                              | なし      | なし                            |
+| 書き込み UseCase             | 永続化処理 (作成・更新・削除)、ビジネスロジック                 | なし      | あり/なし (必要に応じて WithTx) |
+| オーケストレーション UseCase | Validator を統合し、フォーム送信のバリデーション → 永続化を統括 | あり      | あり/なし (必要に応じて WithTx) |
+
+オーケストレーション UseCase は書き込み UseCase の特殊形だが、Validator 統合の有無で実装パターンが大きく変わるため独立カテゴリとして扱う。
+
+書き込み UseCase / オーケストレーション UseCase は、複数の永続化を跨ぐ場合やロールバックが必要な複合操作のときのみトランザクションを開く。単一の永続化呼び出しで完結する場合はトランザクションを伴わない。
+
+### 各分類の役割
+
+**読み取り UseCase**:
+
+- Handler が必要とするデータ取得ロジックを集約する
+- 複数の Repository を組み合わせてデータを取得する
+- トランザクションは不要
 
 **書き込み UseCase**:
 
-- 認可チェック・バリデーション・ビジネスロジック・永続化を統括するオーケストレーター
-- トランザクションを伴う永続化処理（作成・更新・削除）
-- 複数の Repository を跨ぐビジネスロジック
-- ロールバックが必要な複合操作
-- **書き込み UseCase のルール**（詳細は「UseCase 内の処理順序」を参照）:
-  1. トランザクション開始後はデータの取得や計算処理を行わない。永続化処理のみ行う（トランザクション前のデータ取得は許可）
+- 永続化処理 (作成・更新・削除) とビジネスロジック
+- 複数の Repository を跨ぐ場合や、ロールバックが必要な複合操作ではトランザクションを開く
+- 単一の永続化呼び出しで完結する場合はトランザクションを伴わない (例: `CreateSessionUsecase` のように単一の永続化で完結する UseCase)
+- **書き込み UseCase のルール**(詳細は「UseCase 内の処理順序」を参照):
+  1. トランザクション開始後はデータの取得や計算処理を行わない。永続化処理のみ行う(トランザクション前のデータ取得は許可)
   2. Execute 内にロジックを直接書かない。ロジックは関数やメソッドとして定義し、Execute 内ではそれを呼び出すだけにする
 
+**オーケストレーション UseCase**:
+
+- 書き込み UseCase の中でも、Validator を統合してフォーム送信全体を統括するもの
+- Handler は HTTP の入出力変換に徹し、認可・バリデーション・ビジネスロジック・永続化は UseCase 内部で完結する
+- 書き込み UseCase のルールに加えて、Validator の戻り値 (`*model.ValidationError` または取得済みデータ) を扱う
+
+### どの分類にすべきかの判断フロー
+
+新しい UseCase を追加するときは、以下の順で判断する。
+
+1. Repository の取得系メソッド (`Find*`) のみを呼ぶ?
+   → **読み取り UseCase** (プレフィックス: `Get`)
+2. Validator を統合する? (フォーム送信の入口を担う)
+   → **オーケストレーション UseCase**
+3. 上記以外 (永続化を伴うが Validator なし)
+   → **書き込み UseCase**
+   - 例: `CreateSessionUsecase` のように、Handler 側で先にバリデーションが終わっている前提でセッションを作成するだけの UseCase。または別の UseCase の内部から呼ばれる純粋な永続化 UseCase
+
+### 実装パターンの例
+
+書き込み UseCase の例:
+
 ```go
-// Wikino の例: ページとスペースメンバーを同時に更新する場合
+// Wikino の例: ページとスペースメンバーを同時に更新する書き込み UseCase
 type CreatePageUsecase struct {
     db              *sql.DB
     pageRepo        *repository.PageRepository
@@ -51,14 +87,30 @@ func (uc *CreatePageUsecase) Execute(ctx context.Context, input Input) (*Result,
 }
 ```
 
-**読み取り UseCase**:
-
-- Handler が必要とするデータ取得ロジックを集約する
-- 複数の Repository を組み合わせてデータを取得する
-- トランザクションは不要
+オーケストレーション UseCase の例:
 
 ```go
-// Wikino の例: トピック詳細ページのデータ取得
+// Wikino の例: Validator を統合してフォーム送信を統括するオーケストレーション UseCase
+type CreateSuggestionUsecase struct {
+    db             *sql.DB
+    validator      *validator.SuggestionCreateValidator
+    suggestionRepo *repository.SuggestionRepository
+}
+
+func (uc *CreateSuggestionUsecase) Execute(ctx context.Context, input CreateSuggestionInput) (*CreateSuggestionOutput, error) {
+    // Validator を統合: 失敗時は *model.ValidationError を返す
+    if _, err := uc.validator.Validate(ctx, validatorInput); err != nil {
+        return nil, err
+    }
+    // バリデーション成功後に永続化
+    return uc.createSuggestion(ctx, input)
+}
+```
+
+読み取り UseCase の例:
+
+```go
+// Wikino の例: トピック詳細ページのデータを集約する読み取り UseCase
 type GetTopicDetailUsecase struct {
     spaceRepo       *repository.SpaceRepository
     spaceMemberRepo *repository.SpaceMemberRepository
@@ -143,8 +195,28 @@ func (uc *GetTopicDetailUsecase) Execute(ctx context.Context, input GetTopicDeta
 
 書き込み UseCase は以下の 2 つのルールを守る:
 
-1. **トランザクション開始後はデータの取得や計算処理を行わない**: トランザクション内は永続化処理のみ行う。ただし、トランザクション開始前であればデータの取得や計算処理を行ってよい
-2. **Execute 内にロジックを直接書かない**: ロジックは関数やメソッドとして定義し、Execute 内ではそれを呼び出すだけにする
+1. **トランザクション開始後はデータの取得や計算処理を行わない**: トランザクション内は永続化処理のみ行う。データ取得は `BeginTx` の前で済ませ、`auth.HashPassword` (bcrypt) のような重い CPU 計算もトランザクション開始前に実行する。トランザクションを長時間保持しないことで、ロックや競合の発生を抑える
+2. **Execute をオーケストレーションに専念させる**: 永続化を含む実処理はプライベート関数 (またはメソッド) として定義し、Execute 内ではそれを呼び出すだけにする。Execute は「データ取得・認可・バリデーション・永続化関数の呼び出し」のオーケストレーションのみに専念する
+
+   **例外**: ルール 2 の主旨は「Execute をオーケストレーションに専念させる」ことであり、オーケストレーションすべき対象がない場合は本ルールの適用範囲外となる。具体的には、単一の永続化呼び出し + 必要最小限の前処理だけで完結する書き込み UseCase は、プライベート関数化を省略して Execute に直接書いてよい。例: パスワード更新 UseCase のように「バリデーション → ハッシュ化 → UPDATE」だけで他にオーケストレーションするものがない場合、Execute 内で完結させる
+
+   **関数切り出しが必要かどうかの判断フロー**:
+
+   ```
+   1. トランザクション内で永続化処理が 2 つ以上ある?
+      → 必要 (プライベート関数化)
+      例: 複数リソース (Profile / User / UserProfile / Actor 等) を 1 トランザクションで作成する UseCase
+
+   2. 永続化前にロジック (計算・変換) が 2 行以上ある?
+      → 必要 (プライベート関数化)
+      例: 確認コード生成 + 永続化を行う UseCase
+
+   3. 上記以外 (バリデーション → 1 つの永続化、または最小限の変換 → 1 つの永続化)
+      → 不要 (Execute 直書きで OK)
+      例: パスワード更新 UseCase (バリデーション → ハッシュ化 → 1 回の UPDATE)
+   ```
+
+   閾値 (「2 つ以上」「2 行以上」) は機械的に守るべき絶対値ではなく、「Execute がオーケストレーターとしての役割を持つかどうか」を見極めるための目安として扱う。境界例ではプロジェクトに既存する近い UseCase の書き方に合わせる
 
 ```go
 // Wikino の例
@@ -153,14 +225,14 @@ func (uc *CreateSuggestionUsecase) Execute(ctx context.Context, input CreateSugg
     // 1. データ取得（トランザクション外）
     space, err := uc.spaceRepo.FindByIdentifier(ctx, input.SpaceIdentifier)
     if err != nil {
-        if errors.Is(err, repository.ErrNotFound) {
-            return nil, &model.AppError{
-                Code:     model.AppErrCodeResourceNotFound,
-                UserMsg:  i18n.T(ctx, "error_space_not_found"),
-                Internal: err,
-            }
+        return nil, fmt.Errorf("スペースの取得に失敗: %w", err)
+    }
+    // 未存在を業務上の異常として扱う場合は AppError に変換 ((nil, nil) パターンの判定方法)
+    if space == nil {
+        return nil, &model.AppError{
+            Code:    model.AppErrCodeResourceNotFound,
+            UserMsg: i18n.T(ctx, "error_space_not_found"),
         }
-        return nil, err
     }
 
     // 2. 認可チェック
@@ -181,14 +253,93 @@ func (uc *CreateSuggestionUsecase) Execute(ctx context.Context, input CreateSugg
     return uc.createSuggestion(ctx, input, draftPages)
 }
 
-// ❌ 悪い例: トランザクション内でデータ取得を行っている
+// ❌ 悪い例: トランザクション内でデータ取得や CPU 計算を行っている
 func (uc *WriteUsecase) Execute(ctx context.Context, input Input) error {
     tx, err := uc.db.BeginTx(ctx, nil)
     // トランザクション内でデータ取得 → トランザクション前に行うべき
     page, err := pageRepo.FindByID(ctx, input.PageID, input.SpaceID)
     // ...
+    // bcrypt のハッシュ化もトランザクション内で実行 → トランザクション前に行うべき
+    digest, err := auth.HashPassword(input.Password)
+    // ...
 }
 ```
+
+```go
+// Mewst の例: bcrypt のような重い CPU 計算をトランザクション開始前に済ませてから永続化関数を呼ぶ
+import (
+    "context"
+    "fmt"
+    "time"
+
+    "example.com/app/internal/auth"
+    "example.com/app/internal/validator"
+)
+
+func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
+    // 1. バリデーション (トランザクション外)
+    if err := uc.accountValidator.Validate(ctx, validator.AccountCreateValidatorInput{
+        Email:    input.Email,
+        Atname:   input.Atname,
+        Password: input.Password,
+    }); err != nil {
+        return nil, err
+    }
+
+    // 2. CPU 計算 (bcrypt) と時刻取得をトランザクション外で済ませる (ルール 1)。
+    // bcrypt はコスト 10 で 100ms 級の処理になるため、トランザクション内で実行すると
+    // その間 DB 接続を専有してロック競合の原因になる。
+    passwordDigest, err := auth.HashPassword(input.Password)
+    if err != nil {
+        return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
+    }
+    currentTime := time.Now()
+
+    // 3. ビジネスロジック + 永続化 (関数として切り出す)。
+    // createAccount の内側で BeginTx → 各 Repository の WithTx(tx) → Commit を行う。
+    return uc.createAccount(ctx, input, passwordDigest, currentTime)
+}
+```
+
+```go
+// Mewst の例: 単一永続化で完結するため、ルール 2 の例外として Execute 直書き
+type UpdatePasswordUsecase struct {
+    passwordValidator *validator.PasswordUpdateValidator
+    userRepo          *repository.UserRepository
+}
+
+type UpdatePasswordInput struct {
+    Email    string
+    Password string
+}
+
+// Execute はパスワード更新を実行する。
+// バリデーション → ハッシュ化 → UPDATE の 1 ステップ書き込みで完結するため、
+// オーケストレーションすべき対象がなく Execute 内で完結させている。
+func (uc *UpdatePasswordUsecase) Execute(ctx context.Context, input UpdatePasswordInput) error {
+    if err := uc.passwordValidator.Validate(ctx, validator.PasswordUpdateValidatorInput{
+        Password: input.Password,
+    }); err != nil {
+        return err
+    }
+
+    passwordDigest, err := auth.HashPassword(input.Password)
+    if err != nil {
+        return fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
+    }
+
+    if err := uc.userRepo.UpdatePasswordByEmail(ctx, input.Email, passwordDigest); err != nil {
+        return fmt.Errorf("パスワードの更新に失敗: %w", err)
+    }
+    return nil
+}
+```
+
+### 永続化関数の粒度
+
+ロジック + 永続化を切り出すプライベート関数は、原則として **1 つの UseCase につき 1 関数** にまとめる。複数リソースを作成する UseCase でも、`createXxx` のような単一の関数の中にトランザクション開始から Commit までを集約する。
+
+リソースごとに細かく関数を切り出す (例: `createProfile`, `createUser`, `createUserProfile` 等) と、関数間でデータを受け渡すコストが増え、トランザクション境界が見えにくくなるため避ける。
 
 ### エラー型の使い分け
 
@@ -199,6 +350,8 @@ UseCase は以下の 3 種類のエラーを返す。Handler は `errors.As` で
 | `*model.ValidationError` | Validator | 入力が不正（ユーザーが修正可能） | フォーム再描画（422）                   |
 | `*model.AppError`        | UseCase   | 業務レベルの既知の失敗           | エラーコードに応じた処理（403, 404 等） |
 | 素の `error`             | どこでも  | 予期しないシステムエラー         | 500                                     |
+
+各エラー型の詳細（フィールド構成、`AppError` の生成ルール、`AppErrorCode` 定数、ヘルパー関数）は [architecture-guide.md の「エラー型」節](architecture-guide.md#エラー型) を参照。
 
 ### Handler の実装パターン
 
@@ -397,88 +550,143 @@ Handler は薄い Adapter として UseCase を呼び出すだけです。具体
 
 ## Repository の WithTx パターン
 
-Usecase でトランザクションを使用する場合、**Repository の `WithTx` メソッド**を使用してトランザクション内で操作するリポジトリを取得します。
+Usecase でトランザクションを使用する場合、**Repository の `WithTx` メソッド**を使用してトランザクション内で操作するリポジトリを取得します。WithTx パターンの基本ルール (なぜ使うのか / Repository への実装 / Usecase での基本的な使い方 / 重要なポイント) は [architecture-guide.md](architecture-guide.md#repository-の-withtx-パターン) の「Repository の WithTx パターン」節を参照してください。
 
-### なぜ WithTx パターンを使うのか
+このセクションでは、書き込み UseCase の[ルール 1](#書き込み-usecase-のルール) (重い CPU 計算をトランザクション開始前に実行する) と組み合わせる発展的なパターンを示します。
 
-**メリット**:
+### bcrypt と複数リソース作成を組み合わせる例
 
-- **依存性注入**: Repository をコンストラクタで受け取るため、テストでモックに差し替えやすい
-- **意図が明確**: `WithTx(tx)` の呼び出しで「このリポジトリはトランザクション内で操作する」という意図が明確
-- **一貫性**: すべての Usecase で同じパターンを使用することで、コードの読みやすさが向上
-
-### Repository に WithTx を実装する
-
-各 Repository には `WithTx` メソッドを実装します：
+bcrypt のような重い CPU 計算と複数リソースの作成を組み合わせる場合は、書き込み UseCase のルール 1 (重い CPU 計算はトランザクション開始前に実行する) に従い、`Execute` 側で計算を済ませてからトランザクションを開く `createAccount` プライベート関数に値を渡します。
 
 ```go
-// internal/repository/user_repository.go
+// Mewst の例: Profile / User / UserProfile / Actor の 4 リソースを 1 トランザクションで作成する
+package usecase
 
-// WithTx はトランザクションを使用する新しいRepositoryを返す
-func (r *UserRepository) WithTx(tx *sql.Tx) *UserRepository {
-    return &UserRepository{q: r.q.WithTx(tx)}
-}
-```
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "time"
 
-### Usecase で WithTx を使用する
+    "example.com/app/internal/auth"
+    "example.com/app/internal/model"
+    "example.com/app/internal/repository"
+    "example.com/app/internal/validator"
+)
 
-```go
-// internal/usecase/create_account.go
+const (
+    ProfileOwnerTypeUser = "User"
+    DefaultAvatarKind    = "default"
+)
 
 type CreateAccountUsecase struct {
-    db                    *sql.DB
-    emailConfirmationRepo *repository.EmailConfirmationRepository
-    userRepo              *repository.UserRepository
-    userPasswordRepo      *repository.UserPasswordRepository
+    db               *sql.DB
+    accountValidator *validator.AccountCreateValidator
+    userRepo         *repository.UserRepository
+    profileRepo      *repository.ProfileRepository
+    userProfileRepo  *repository.UserProfileRepository
+    actorRepo        *repository.ActorRepository
 }
 
-func NewCreateAccountUsecase(
-    db *sql.DB,
-    emailConfirmationRepo *repository.EmailConfirmationRepository,
-    userRepo *repository.UserRepository,
-    userPasswordRepo *repository.UserPasswordRepository,
-) *CreateAccountUsecase {
-    return &CreateAccountUsecase{
-        db:                    db,
-        emailConfirmationRepo: emailConfirmationRepo,
-        userRepo:              userRepo,
-        userPasswordRepo:      userPasswordRepo,
-    }
+type CreateAccountInput struct {
+    Email    string
+    Atname   string
+    Password string
+    Locale   string
+    TimeZone string
 }
 
+type CreateAccountOutput struct {
+    Actor *model.Actor
+}
+
+// Execute はバリデーション → bcrypt → createAccount のオーケストレーションのみを担当する。
+// bcrypt と時刻取得は createAccount を呼ぶ前 (=トランザクション外) に済ませている。
 func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
-    // トランザクションを開始
+    // 1. バリデーション (トランザクション外)
+    if err := uc.accountValidator.Validate(ctx, validator.AccountCreateValidatorInput{
+        Email:    input.Email,
+        Atname:   input.Atname,
+        Password: input.Password,
+    }); err != nil {
+        return nil, err
+    }
+
+    // 2. CPU 計算 (bcrypt) と時刻取得をトランザクション外で済ませる (ルール 1)。
+    // bcrypt はコスト 10 で 100ms 級の処理になるため、トランザクション内で実行すると
+    // その間 DB 接続を専有してロック競合の原因になる。
+    passwordDigest, err := auth.HashPassword(input.Password)
+    if err != nil {
+        return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
+    }
+    currentTime := time.Now()
+
+    // 3. ビジネスロジック + 永続化 (関数として切り出す)
+    return uc.createAccount(ctx, input, passwordDigest, currentTime)
+}
+
+// createAccount は Profile / User / UserProfile / Actor を 1 トランザクションで作成する。
+// 引数として受け取った passwordDigest / currentTime は Execute 側で計算済みのため、
+// 本関数内ではトランザクション内で重い処理を行わない。
+func (uc *CreateAccountUsecase) createAccount(
+    ctx context.Context,
+    input CreateAccountInput,
+    passwordDigest string,
+    currentTime time.Time,
+) (*CreateAccountOutput, error) {
     tx, err := uc.db.BeginTx(ctx, nil)
     if err != nil {
-        return nil, fmt.Errorf("トランザクションの開始に失敗しました: %w", err)
+        return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
     }
-    defer func() {
-        _ = tx.Rollback()
-    }()
+    defer func() { _ = tx.Rollback() }()
 
-    // トランザクション内で操作するためのリポジトリを取得
-    emailConfirmationRepo := uc.emailConfirmationRepo.WithTx(tx)
     userRepo := uc.userRepo.WithTx(tx)
-    userPasswordRepo := uc.userPasswordRepo.WithTx(tx)
+    profileRepo := uc.profileRepo.WithTx(tx)
+    userProfileRepo := uc.userProfileRepo.WithTx(tx)
+    actorRepo := uc.actorRepo.WithTx(tx)
 
-    // 以降の処理はトランザクション内のリポジトリを使用
-    // ...
-
-    // トランザクションをコミット
-    if err := tx.Commit(); err != nil {
-        return nil, fmt.Errorf("トランザクションのコミットに失敗しました: %w", err)
+    profile, err := profileRepo.Create(ctx, repository.CreateProfileInput{
+        OwnerType:  ProfileOwnerTypeUser,
+        Atname:     input.Atname,
+        JoinedAt:   currentTime,
+        AvatarKind: DefaultAvatarKind,
+    })
+    if err != nil {
+        return nil, fmt.Errorf("プロフィールの作成に失敗: %w", err)
     }
 
-    return &CreateAccountOutput{UserID: user.ID}, nil
+    user, err := userRepo.Create(ctx, repository.CreateUserInput{
+        Email:          input.Email,
+        PasswordDigest: passwordDigest,
+        Locale:         input.Locale,
+        TimeZone:       input.TimeZone,
+    })
+    if err != nil {
+        return nil, fmt.Errorf("ユーザーの作成に失敗: %w", err)
+    }
+
+    if _, err := userProfileRepo.Create(ctx, repository.CreateUserProfileInput{
+        UserID:    user.ID,
+        ProfileID: profile.ID,
+    }); err != nil {
+        return nil, fmt.Errorf("ユーザープロフィール関連付けの作成に失敗: %w", err)
+    }
+
+    actor, err := actorRepo.Create(ctx, repository.CreateActorInput{
+        UserID:    user.ID,
+        ProfileID: profile.ID,
+    })
+    if err != nil {
+        return nil, fmt.Errorf("アクターの作成に失敗: %w", err)
+    }
+
+    if err := tx.Commit(); err != nil {
+        return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
+    }
+
+    return &CreateAccountOutput{Actor: actor}, nil
 }
 ```
-
-### 重要なポイント
-
-1. **Repository はコンストラクタで受け取る**: `NewXxxUsecase` で Repository を引数として受け取る
-2. **Execute 内で WithTx を呼び出す**: トランザクションを開始した後、各 Repository の `WithTx(tx)` を呼び出す
-3. **元の Repository は変更しない**: `WithTx` は新しい Repository インスタンスを返すため、元の Repository には影響しない
-4. **すべての Repository で WithTx を使う**: トランザクション内で使用するすべての Repository に対して `WithTx` を呼び出す
 
 ## テスト
 
@@ -592,3 +800,15 @@ GET と POST で同じ UseCase を呼び、引数で動作を切り替える方�
 
 - GET（フォーム表示）と POST（作成処理）で責務が異なるため、1つの UseCase に統合すると不自然になる
 - 読み取り UseCase はフォーム表示専用として残すほうが、責務が明確でシンプル
+
+### D. 書き込み UseCase とオーケストレーション UseCase を一本化する
+
+Validator を必須にした書き込み UseCase に統合し、3 分類を「読み取り / 書き込み (Validator 必須)」の 2 分類にする方針。「書き込み UseCase は必ず Validator を持つ」というルールが分類にエンコードされ、概念がシンプルになる。
+
+**不採用の理由**:
+
+- **Validator を持たない書き込み UseCase が現実に必要**: セッション作成 (例: `CreateSessionUsecase`) のように、入力が「別 UseCase の戻り値 + HTTP コンテキスト由来の確定済みデータ (UserID / IPAddress / UserAgent)」だけで、ユーザー入力のバリデーションが不要な書き込み UseCase が存在する。バックグラウンドジョブから呼ばれる UseCase (例: メール送信) も、入力が別 UseCase で確定済みのため Validator は不要。これらに対してダミー Validator を作るのは過剰
+- **Handler の前処理は UseCase に押し込めない**: Bot 対策トークン検証 (例: Cloudflare Turnstile)・IP アドレスベースのレート制限・クッキーからの ID 取得などは「HTTP リクエスト固有の制御」であり、ユーザー入力のバリデーションとは性質が異なる (フォームに依存せず複数機能で再利用、HTTP コンテキスト依存)。これらまで UseCase に入れると、UseCase が HTTP 文脈を背負い、Worker から再利用しにくくなる
+- **判断軸が分類にエンコードされる利点を失う**: 3 分類は「Validator の有無」という実装判断を分類名にエンコードしているため、「フォームの入口なら必ずオーケストレーション」「内部呼び出しの純粋永続化なら書き込み」と判断軸が明確。一本化すると「この UseCase は Validator を持つべきか?」を毎回判断する必要が生じる
+
+**将来検討する余地**: 「内部から呼ばれる純粋永続化 UseCase」を別パッケージ (例: `internal/service/`) に分離すれば、`internal/usecase/` に残るのはすべて Validator を統合する書き込み UseCase に一本化できる可能性がある。ただしこれは現行コードベース全体に影響する再設計であり、内部呼び出し UseCase の数が増えて分離のメリットが見えてきた段階で改めて検討する
