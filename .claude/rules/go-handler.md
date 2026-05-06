@@ -95,18 +95,23 @@ internal/validator/
 ### リソース名の命名規則
 
 - リソース名は**名詞**にする（例: `popular_work`, `password_reset`, `sign_in`）
+- リソース名は**常に単数形**を使用する（例: `account` ⭕️、`accounts` ❌）。URL が RESTful 慣習で複数形（`/accounts`）であっても、Go のディレクトリ名・パッケージ名は単数形に揃える
 - 形容詞+名詞の組み合わせの場合は英語の自然な語順にする（例: `popular_work` ⭕️、`work_popular` ❌）
 - URL パターンから名詞を抽出してリソース名を決定
 
+**単数形に統一する理由**: 単語ごとに異なる複数形のイレギュラーさ（`category` → `categories`、`person` → `people` など）を考慮する必要がなくなり、「どちらにすべきか」の判断コストがゼロになる。URL は別の規則（RESTful 慣習）で複数形を使ってよい。
+
 **命名例**:
 
-| URL パターン    | リソース名（推奨）   | 理由                         |
-| --------------- | -------------------- | ---------------------------- |
-| /works/popular  | `popular_work/` ⭕️   | 形容詞+名詞の自然な語順      |
-| /works/popular  | `work_popular/` ❌   | 「作品\_人気」は不自然       |
-| /password/reset | `password_reset/` ⭕️ | 名詞として成立               |
-| /users/me       | `current_user/` ⭕️   | 「現在のユーザー」という名詞 |
-| /search         | `search/` ⭕️         | 「検索」という名詞           |
+| URL パターン    | リソース名（推奨）   | 理由                                 |
+| --------------- | -------------------- | ------------------------------------ |
+| /works/popular  | `popular_work/` ⭕️   | 形容詞+名詞の自然な語順、単数形      |
+| /works/popular  | `work_popular/` ❌   | 「作品\_人気」は不自然               |
+| /accounts       | `account/` ⭕️        | URL が複数形でもディレクトリは単数形 |
+| /accounts       | `accounts/` ❌       | 単数形に統一する                     |
+| /password/reset | `password_reset/` ⭕️ | 名詞として成立、単数形               |
+| /users/me       | `current_user/` ⭕️   | 「現在のユーザー」という名詞、単数形 |
+| /search         | `search/` ⭕️         | 「検索」という名詞                   |
 
 ## ファイル命名規則
 
@@ -123,13 +128,22 @@ internal/validator/
 - `update.go` - 更新処理 (PATCH /resources/:id)
 - `delete.go` - 削除処理 (DELETE /resources/:id)
 
+**重要な区別**:
+
+- **`new.go`**: 新規作成フォームを表示し、その後 `create.go` で永続化する（例: ユーザー登録フォーム → ユーザー作成）
+- **`edit.go`**: 編集フォームを表示し、その後 `update.go` で永続化する（例: プロフィール編集フォーム → プロフィール更新）
+- **`show.go`**: フォームを含まない、既存リソースの詳細表示のみ（例: ユーザープロフィール表示）
+
 **バリデーション**: すべてのバリデーターは `internal/validator/` パッケージに配置します。詳細は [@.claude/rules/go-validation.md](go-validation.md) を参照してください。
+
+**全リソース共通の HTTP エラーレスポンスヘルパー**: 404 / 502 などの汎用エラーページをレンダリングするヘルパー（`NotFound`、`BadGateway` など）は、リソースディレクトリには属さないため `internal/httperror/` パッケージに配置します。`internal/handler/` ルート直下にファイルを置くことは禁止（8 種類縛りを保つため）。Handler から呼び出すときは `httperror.NotFound(w, r)` のようにパッケージを経由します。詳細は [go-architecture.instructions.md](go-architecture.instructions.md) の Presentation 層ヘルパー節を参照してください。
 
 ### 重要な原則
 
 - 上記 8 種類以外のファイル名は**使用しない**
 - 複雑な名前（`show_reset_form.go`, `process_reset.go` など）が必要な場合は、**新しいリソースディレクトリを作成する**
 - 例: `password/show_reset_form.go` ではなく、`password_reset/new.go` を使用
+- 全リソース共通のヘルパー（404 ページ等）は `internal/handler/` 直下ではなく `internal/httperror/` パッケージへ
 
 ### テストファイル
 
@@ -545,9 +559,9 @@ if err != nil {
     if errors.As(err, &ae) {
         switch ae.Code {
         case model.AppErrCodeResourceNotFound:
-            handler.NotFound(w, r)
+            httperror.NotFound(w, r)
         case model.AppErrCodeForbidden:
-            handler.NotFound(w, r)
+            httperror.NotFound(w, r)
         default:
             slog.ErrorContext(ctx, ae.LogString())
             http.Error(w, "Internal Server Error", http.StatusInternalServerError)
