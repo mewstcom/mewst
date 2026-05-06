@@ -371,19 +371,12 @@ templ New(ctx context.Context, formErrors *model.ValidationError, csrfToken stri
 
 ## テンプレートデータ構造体と ViewModel の関係
 
-テンプレートに渡すデータ構造体（`EditPageData` など）で、モデルから **複数のフィールド** をテンプレート表示用に取り出す場合は、フィールドを個別のプリミティブ値として並べず、ViewModel を構成要素として使用する。
+テンプレートに渡すデータ構造体（`EditPageData` など）では、モデルのフィールドを個別のプリミティブ値として展開せず、ViewModel を構成要素として使用する。
 
-- ✅ **複数フィールドを取り出す場合は ViewModel を構成要素にする**: `Page viewmodel.Page`
-- ❌ **モデルの複数フィールドを個別に並べない**: `Title string`, `Body string`, `PageNumber int32`
+- ✅ **ViewModel を構成要素にする**: `Page viewmodel.Page`
+- ❌ **モデルのフィールドを個別に並べない**: `Title string`, `Body string`, `PageNumber int32`
 
 モデルからテンプレート表示用データへの変換ロジック（フォールバック、デフォルト値の決定など）は ViewModel のコンストラクタに配置し、ハンドラーには書かない。派生的な判定（例: タイトルが空ならオートフォーカス）は ViewModel のメソッドとして提供する。
-
-### ルールが適用される範囲
-
-ViewModel が必要になるのは「同一モデルから複数フィールドを取り出してテンプレート表示用に並べる」ケースに限定する。以下のケースは ViewModel を作らずプリミティブ値で十分。
-
-- **フォーム入力値の保持**: `Email string` / `Atname string` / `Code string` のようにフォーム再描画のために入力値をエコーバックする値はプリミティブで持つ。認証フォーム系ページの `NewPageData` / `EditPageData` はこのパターン
-- **モデルから単一フィールドだけをコピーする場合**: 例えばアカウント作成フォームでメール確認モデルから Email フィールドだけを表示用に渡すケースは、ViewModel を介さずプリミティブで持って良い
 
 **良い例**:
 
@@ -413,40 +406,26 @@ type EditPageData struct {
 }
 ```
 
-> **Note**: プロジェクトに rich-data ページがまだ存在しない場合は、`viewmodel/` 配下にページ用 ViewModel を実装しなくてよい。認証フォーム系ページや静的ページしか持たないプロジェクトでは、`viewmodel/` には `page_meta.go` のような共通部品だけが置かれる構成も自然。rich-data ページを追加する際に、上記の「良い例」のパターンで ViewModel を導入すること。
-
 ## ヘルパー関数
 
-`internal/templates/helper.go` にテンプレートで使用するヘルパー関数を定義しています。アイコンの SVG 定義は `internal/templates/icons_phosphor.go`（Phosphor Icons）と `internal/templates/icons_custom.go`（プロジェクト固有のアイコン）に分割されています。
+`internal/templates/helper.go` にテンプレートで使用するヘルパー関数を定義しています。
 
 ### 利用可能なヘルパー
 
 ```go
-// 翻訳を取得（i18n パッケージへ委譲）
+// 翻訳を取得
 templates.T(ctx, "message_id")
 templates.T(ctx, "message_id", map[string]any{"Key": value})
 
-// 現在のロケールを取得（i18n パッケージへ委譲）
+// 現在のロケールを取得
 templates.Locale(ctx)  // "ja" または "en"
 
-// ポインタを参照外しする（ジェネリック対応、nil の場合はゼロ値を返す）
-var name *string
-templates.Deref(name)  // *string -> string("" を返す)
+// ポインタの参照外し
+templates.Deref(work.SeasonYear)  // *int32 -> int32
 
-// アイコンを表示（SVG）。第 1 引数は viewmodel.IconName 型
-templates.Icon("arrow-right-regular")
-templates.Icon("logo", "fill-black w-[60px] h-[60px]")
+// アイコンを表示（SVG）
+templates.Icon("check", "icon-sm")
 ```
-
-### アイコンの命名規則
-
-- **Phosphor Icons**: `{name}-{weight}` 形式（例: `arrow-right-regular`, `info-regular`, `check-circle-regular`, `warning-regular`）。`icons_phosphor.go` の `phosphorIcons` map に SVG を追加する
-- **独自アイコン**: ロゴなどプロジェクト固有のアイコン（例: `logo`）。`icons_custom.go` の `customIcons` map に SVG を追加する
-- 両 map のいずれにも見つからない場合は `info-regular` にフォールバックする
-
-### ロケールの設定
-
-ロケールは `internal/i18n` パッケージで管理する。`templates` パッケージにロケール設定用のヘルパーは存在しないため、handler などで明示的にロケールをセットする場合は `i18n.SetLocale(ctx, "ja")` を直接使用する。
 
 ## コード生成
 

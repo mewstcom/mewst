@@ -11,7 +11,7 @@ GitHub の PR URL を受け取り、以下を自動で行ってください:
 1. PR 情報の取得
 2. ローカルへのチェックアウト・最新 base への rebase
 3. CI 状態の取得
-4. **Dependabot PR の場合は、`/summarize-dependency-diff` スキルに委譲して依存ライブラリの実差分を取得する**(後述)
+4. **Dependabot PR の場合は、PR 本文の "compare view" リンクから依存ライブラリの実差分を取得する**(後述)
 5. PR 情報・CI 状態・(Dependabot の場合は)実差分サマリーを一時ドキュメントにまとめて `/review` スキルに渡す
 6. Dependabot かつ CI 失敗時は修正ループを実行してから `/review` を呼び出す
 7. `/review` のレビュー結果に基づいてマージ可否を判断し報告する
@@ -120,29 +120,42 @@ CI 状態は後続のフロー分岐（ステップ 8）と一時ドキュメン
 
 > パッチアップデートでも behavior change や Breaking change を取り込むライブラリは多い（Rails、Sentry、grpc、AWS SDK など）。SemVer の表面的な情報だけで「パッチだから安全」と判断してはいけない。
 
-実差分サマリーの取得は `/summarize-dependency-diff` スキルに委譲する。以下の手順で必要な情報を抽出した上でスキルを呼び出す:
+以下を一時ドキュメントに含めるために実施する:
 
-1. **PR タイトル・本文から ecosystem / package / old_version / new_version を抽出**:
-   - Dependabot の PR タイトルは `Bump <package> from <old> to <new> in /<dir>` のような定形になっており、ここから `package` / `old_version` / `new_version` を抽出できる
-   - `ecosystem` は manifest path（例: `Gemfile.lock` → `rubygems`、`pnpm-lock.yaml` / `package-lock.json` → `npm`、`go.sum` / `go.mod` → `gomod`、`composer.lock` → `composer`、`requirements.txt` / `Pipfile.lock` → `pip`）から判定する
-   - 1 PR 内で複数パッケージがアップデートされている grouped update の場合は、それぞれに対して `/summarize-dependency-diff` を呼び出す
+1. **Compare view URL の抽出**:
+   - PR 本文（`gh pr view --json body` の `body` フィールド）から `https://github.com/<owner>/<repo>/compare/<base>...<head>` 形式の URL を探す。Dependabot は本文中の "Commits" セクションで `compare view` リンクとして必ず提示する
+   - URL から `<owner>`, `<repo>`, `<base_tag>`, `<head_tag>` を抽出する
 
-2. **`/summarize-dependency-diff` スキルの呼び出し**:
+2. **実差分の規模把握**:
 
-   Skill ツール経由で次の引数を渡す:
-
-   ```
-   <ecosystem> <package> <old_version> <new_version> tmp/review-pr/pr-<番号>.md
+   ```sh
+   gh api repos/<owner>/<repo>/compare/<base_tag>...<head_tag> --jq '{total_commits: .total_commits, files_count: (.files | length)}'
    ```
 
-   スキルが GitHub の compare API を叩いて CHANGELOG / Releases / commit log から CVE 修正・Breaking change・推移的依存の変化を抽出し、`tmp/review-pr/pr-<番号>.md` に `## バージョン間差分サマリー` セクションを追記する。
+   - 総コミット数とファイル数を取得し、規模感を把握する
+   - パッチアップデートでも数百コミット含まれることがある（マイナーリリースを跨ぐ場合）
 
-3. **PR タイトルから抽出できない場合の fallback**:
-   - PR 本文の "Commits" セクションに含まれる `https://github.com/<owner>/<repo>/compare/<base>...<head>` 形式の URL を探す
-   - URL から `<owner>/<repo>` および `<base_tag>` / `<head_tag>` を抽出し、タグ名から `package` / `old_version` / `new_version` を逆算する
-   - それでも抽出できない場合は、一時ドキュメントに「PR 本文から実差分情報を抽出できませんでした」と明記して `/summarize-dependency-diff` の呼び出しはスキップする（`/review` 側に grep を促す）
+3. **CHANGELOG.md / CHANGES.md の差分取得**:
 
-ドキュメントの内容（`/summarize-dependency-diff` が `## バージョン間差分サマリー` セクションを別途追記する）:
+   ```sh
+   gh api repos/<owner>/<repo>/compare/<base_tag>...<head_tag> \
+     --jq '.files[] | select(.filename | test("(?i)CHANGELOG\\.md$|CHANGES\\.md$|HISTORY\\.md$")) | "=== \(.filename) ===\n\(.patch)\n"'
+   ```
+
+   - 多くのライブラリでは CHANGELOG ファイルにバージョンごとの変更点・CVE・breaking change が記載されている
+   - 出力が大きい場合（数千行を超える）は `head` などで分割して取得する
+
+4. **CHANGELOG から以下を抽出して一時ドキュメントに記載**:
+   - **追加されている CVE 修正**: PR 本文の Release notes が truncated されている場合、本文に出ていない CVE がここで見つかることがある
+   - **Breaking change と明記された変更**: 「BREAKING」「breaking change」「removed」「Note that this change breaks」などの文言を探す
+   - **挙動が変わる修正**: 「Fix」「Change」のうち、ユーザーコードの動作に影響する可能性があるもの（例: `Fix XX to return ...` のような戻り値変更、SQL 生成パターンの変更、バリデーション条件の変更）
+   - **新規依存・依存削除**: 推移的依存の追加・削除
+
+5. **CHANGELOG が存在しない場合**: GitHub Releases（`gh api repos/<owner>/<repo>/releases`）や リリースタグの commit log を代替として確認する
+
+6. **PR 本文に compare view URL がない場合**: PR 本文に十分な情報がないことを一時ドキュメントに明記し、コードベースで grep による広めの確認を `/review` 側に促す
+
+ドキュメントの内容:
 
 ```markdown
 # PR #<番号>: <タイトル>
@@ -169,15 +182,33 @@ CI 状態は後続のフロー分岐（ステップ 8）と一時ドキュメン
 
 <PR の body をそのまま転記>
 
-<!--
-Dependabot PR の場合、この後に `/summarize-dependency-diff` スキルが
-`## バージョン間差分サマリー` セクションを追記する。
-複数パッケージがアップデートされている grouped update の場合は、
-パッケージごとに `## バージョン間差分サマリー` セクションが繰り返し追記される。
--->
+## Dependabot 実差分サマリー（Dependabot PR の場合のみ）
+
+- **Compare view URL**: <https://github.com/...compare/...>
+- **実差分の規模**: <N commits / N files>
+- **間に含まれるリリース**: <例: 8.0.3, 8.0.4, 8.0.4.1>
+
+### CHANGELOG から抽出した CVE 修正
+
+| CVE            | 内容         | 出典 component                   |
+| -------------- | ------------ | -------------------------------- |
+| CVE-XXXX-XXXXX | <内容の要約> | <component 名（例: actionview）> |
+| ...            | ...          | ...                              |
+
+### CHANGELOG から抽出した Breaking change / 挙動変更
+
+| 変更         | 出典 component / バージョン | 影響を受けるパターン（grep キーワード等） |
+| ------------ | --------------------------- | ----------------------------------------- |
+| <変更の要約> | <component@version>         | <検索キーワード>                          |
+| ...          | ...                         | ...                                       |
+
+### 推移的依存の追加・削除・メジャーアップ
+
+- <依存名> <旧バージョン> → <新バージョン>（<patch / minor / **major**>）— <備考>
+- ...
 ```
 
-この一時ドキュメントを `/review` スキルに参考ドキュメントとして渡すことで、レビュー実行時に PR 本文（Dependabot の Changelog・CVE 情報など）と CI 状態、そして **依存ライブラリの実差分**（`/summarize-dependency-diff` が追記する「バージョン間差分サマリー」）を考慮したレビューが可能になる。`/review` 側ではこのサマリーの「Breaking change / 挙動変更」テーブルの各項目について、コードベースで `Grep` による影響範囲確認を行う。
+この一時ドキュメントを `/review` スキルに参考ドキュメントとして渡すことで、レビュー実行時に PR 本文（Dependabot の Changelog・CVE 情報など）と CI 状態、そして **依存ライブラリの実差分** を考慮したレビューが可能になる。`/review` 側ではこの「Breaking change / 挙動変更」テーブルの各項目について、コードベースで `Grep` による影響範囲確認を行う。
 
 ### ステップ 8: フロー分岐
 

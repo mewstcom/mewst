@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-05-06T10:11:30.156399+00:00'
-apm_version: 0.12.2
+generated_at: '2026-05-03T05:39:01.356510+00:00'
+apm_version: 0.11.0
 dependencies:
 - repo_url: korylus/guidelines
   host: github.com
-  resolved_commit: a42ff7a690b4d7d896c819b2143fe85c9197a367
-  resolved_ref: v1.4.0
+  resolved_commit: 409f5b7e8c367b9bd38b601acbb875414cf43a78
+  resolved_ref: v1.1.0
   package_type: apm_package
   deployed_files:
   - .claude/rules/apm.md
@@ -31,26 +31,25 @@ dependencies:
   - .claude/skills/htmx4
   - .claude/skills/review
   - .claude/skills/review-pr
-  - .claude/skills/summarize-dependency-diff
   - .claude/skills/sync
   - .claude/skills/write-help-page
   deployed_file_hashes:
     .claude/rules/apm.md: sha256:12085669d1359b920ccad15cc364a3550d6eb4a14d34b61a33a5054637217b63
-    .claude/rules/common.md: sha256:df68f510e15b0718b2f493056177078fe258e520a133a36a87fb8f5be96aa851
-    .claude/rules/go-architecture.md: sha256:2096c6b2a9d834b9ff31c88b165ad09bf79907e8a8557e00d98731b17cedef11
+    .claude/rules/common.md: sha256:4ff0a327b13a002043a48f8b49529b66a53e3603dd522e728922e331d2553fd0
+    .claude/rules/go-architecture.md: sha256:6bff5a6789e701ac4663bcd923a8edc8deb2eac95d410f54d8c90be93bef9ce1
     .claude/rules/go-coding.md: sha256:ab5e37f3802874437f6b08a46998b5970b3cbedb2d48eaceed52748789dc15f1
-    .claude/rules/go-common.md: sha256:44b21e9956a3687bd6384e8f77cfcacc65efc1493eafeae9394987ad8ae6d261
+    .claude/rules/go-common.md: sha256:a3681285bfdbcfde9e37ab001dd6253c6cbfb07d01f64c3d2fd2039c11882c6e
     .claude/rules/go-development.md: sha256:eb453111a410a9c7791e136119ebf76e87ffef1f8f70a3721ba472b66dc8c8c9
-    .claude/rules/go-handler.md: sha256:5c1fd41ff12d49768c42a8e022b8e6cbbb4c4dfb7960c88f435f1a80d416643c
-    .claude/rules/go-i18n.md: sha256:21c6dac7b07203d2d8482c1ab93c3ec71d1fc81612af01b06b7c1caaf2cf6a1a
-    .claude/rules/go-security.md: sha256:802712c12a566be313cf7958318bf3f0addcb6082ddd8c4c4cf5dbafdc393ab2
-    .claude/rules/go-templ.md: sha256:dc428bfdfeb0fb6296a3a8139cfed1d314d355054f36ebd135f2f467f2b7a926
-    .claude/rules/go-testing.md: sha256:d8001f662867846abeecc45d146e56693038c3f8331a4d09cb55473e50e47d42
-    .claude/rules/go-usecase.md: sha256:19841b3a6660f9e0bfcac456e9e2c252b56cd1611a9b978574cbb98b01d391db
-    .claude/rules/go-validation.md: sha256:d9069472b0adbe7ca0db5fa2de35c5fff350121463e8b92bc216988d4e18a442
+    .claude/rules/go-handler.md: sha256:4d06acb412263cbd88fc0d734b122c55a1a5274385ff7442a8da68b94e506038
+    .claude/rules/go-i18n.md: sha256:53ecb2c8dbe00f621a39c6ccf422d585ab4f96b1882bec298264fecf49b6047f
+    .claude/rules/go-security.md: sha256:c1be0e2f0959e6ff1b4614a4b2dcbe701987034677f3f1cd2543bfd567150d48
+    .claude/rules/go-templ.md: sha256:ebbe66c0efecb6d4e7b5a2f28b34085ed8a50e17c356104c7b3d28f43be6c060
+    .claude/rules/go-testing.md: sha256:866e2227b63f7ef78666a5b2e3eab0544d6614c8feaef1a27a9a08b556f0c974
+    .claude/rules/go-usecase.md: sha256:34ac78f52baccec9255744043caef368f990550228f58b5424bc97dbce0d9a9e
+    .claude/rules/go-validation.md: sha256:e798f5ed86211c2e66044dff58daf345c4e4eb04d552ccfe4600a434f2d7298f
     .claude/rules/guidelines-authoring.md: sha256:0a4a93d16063efc3026ae2e2059c5161fdbbbbebe8a1ee819f3ce0d284262ebe
     .claude/rules/rails-architecture.md: sha256:326075d2d3a999fe8e1edc46c33dea3bd79ebd24c1e173333d325bc9460b3f56
-    .claude/rules/rails-common.md: sha256:5db3d23561201331d2e9632451885eda17206e383ddaf0457cf8846664723ae8
+    .claude/rules/rails-common.md: sha256:8346c10a6253bc4dc323490bb66306d09446b66cebb5f57e8b10359bf627d70c
     .claude/rules/rails-security.md: sha256:d410bb4d9f401a071fefe863c5ae7ac1b3864a8567dfcc13f7ada55d326f7b5b
     .claude/rules/rails-testing.md: sha256:6375be24036a797e497cf706247cb9db312f8effa905b9db321b4056c1febb9b
-  content_hash: sha256:d336927bf0cc611b0451f89ad525479a84ba648bf9cdfefc19a1e3ea6ce66f02
+  content_hash: sha256:56e963c09832c4b681c5443edd3533e1ab52f635e187cf9ac8ab7d1f8e5f6a1c

@@ -23,12 +23,10 @@ Rails 版は既存の本番システムであり、以下の方針で開発・�
 
 ## 技術スタック
 
-主要ランタイム・ミドルウェアの具体的なバージョンは各プロジェクトの CLAUDE.md を参照してください。
-
 ### バックエンド
 
-- Ruby
-- Ruby on Rails
+- Ruby 3.4.4
+- Ruby on Rails 8.0.0
 - PostgreSQL
 - Sorbet（型検査）
 - Active Job（Solid Queue）
