@@ -21,7 +21,7 @@ Go 版プロジェクトは、関心の分離を意識した**3層アーキテ�
 │ - ViewModel                                            │
 │ - Template                                             │
 │ - Middleware                                           │
-│ - Presentation層のヘルパー（image, i18n, session）       │
+│ - Presentation層のヘルパー（email, image, i18n, session, httperror）│
 └─────────────────────────────────────────────────────────┘
          ↓ 依存（OK）
 ┌─────────────────────────────────────────────────────────┐
@@ -121,53 +121,173 @@ func (r *TopicRepository) toTopicsFromJoinedRows(rows []query.ListJoinedTopicsBy
 
 #### ドメインID型
 
-モデルのIDフィールドには `string` ではなく、`internal/model/id.go` に定義された専用のドメインID型（`type SpaceID string` 等）を使用します。これにより、異なるエンティティのIDを取り違える問題をコンパイル時に検出できます。
+モデルのIDフィールドには sqlc が生成する基底型 (`uuid.UUID` / `string` / `int64`) ではなく、`internal/model/id.go` に定義された専用のドメインID型 (`type UserID uuid.UUID` 等) を使用します。これにより、異なるエンティティのIDを取り違える問題をコンパイル時に検出できます。
 
 **基本ルール**:
 
-- ✅ **モデルのIDフィールドには専用型を使用**: `ID SpaceID`、`ID PageID` など
+- ✅ **モデルのIDフィールドには専用型を使用**: `ID UserID`、`ID PageID` など
 - ✅ **外部キーにも専用型を使用**: `UserID model.UserID`、`SpaceID model.SpaceID` など
+- ✅ **Repository / UseCase / Handler / Validator の公開シグネチャも専用型に揃える**: `UserRepository.FindByID(id model.UserID)` など。境界 (Handler) で `uuid.Parse()` 等を通して専用型に変換し、それより内側では基底型を意識しない
+- ✅ **型変換は Repository 内部に閉じ込める**: Application 層・Presentation 層で `uuid.UUID` / `string` / `int64` を意識した型変換は書かない。sqlc 生成コードは基底型のままで、Repository 内部で `model.UserID(row.ID)` や `uuid.UUID(id)` にキャストしてやりとりする
+- ✅ **テストビルダーの戻り値・引数も専用型に揃える**: `UserBuilder.Build() model.UserID` など
 - ✅ **新しいモデルを追加する場合は対応するID型も追加**: `id.go` に型と `String()` メソッドを定義
-- ❌ **IDフィールドに `string` を使用しない**
+- ❌ **IDフィールドに基底型 (`uuid.UUID` / `string` / `int64`) を直接使用しない**
 
-**実装パターン**:
+**ベース型の選択**:
+
+専用型がラップする基底型は DB 主キーの型と sqlc.yaml の override 設定で決まります。
+
+| DB 主キー | sqlc override     | ベース型           | 例のプロジェクト |
+| --------- | ----------------- | ------------------ | ---------------- |
+| `uuid`    | なし              | `uuid.UUID` (推奨) | Mewst            |
+| `uuid`    | `string` にマップ | `string` (代替)    | Wikino           |
+| `bigint`  | (不要)            | `int64`            | Annict           |
+
+主キーが `uuid` 型の場合は **UUID ベース (`type UserID uuid.UUID`) を推奨** します。`uuid.UUID` は `[16]byte` の構造的な型で、`SpaceID("invalid")` のような不正値が構築できず、入力検証が型システムに乗る利点があります。生成方式が ULID (`generate_ulid()` で生成) であっても、ULID は 128 bit 識別子で UUID とバイト互換のため、Go 側の型は `uuid.UUID` で問題なく扱えます (文字列化は UUID 形式 `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` になる)。
+
+`string` ベースは sqlc.yaml で `uuid → string` の override を使っている既存プロジェクトの代替パターンとして許容します。新規プロジェクトでは UUID ベースを採用してください。
+
+主キーが `bigint` (連番整数) の場合は `int64` ベースを使用します。
+
+**実装パターン (UUID ベース推奨)**:
 
 ```go
-// Wikino の例
+// Mewst の例
 // internal/model/id.go - 型定義
-type SpaceID string
-func (id SpaceID) String() string { return string(id) }
+type UserID uuid.UUID
+func (id UserID) String() string { return uuid.UUID(id).String() }
 
-// internal/model/space.go - モデルでの使用
-type Space struct {
-    ID   SpaceID
-    Name string
+// internal/model/user.go - モデルでの使用
+type User struct {
+    ID    UserID
+    Email string
 }
 
-// internal/repository/space.go - リポジトリでの変換（sqlcのstringから専用型へ）
-func toModel(row query.GetSpaceRow) *model.Space {
-    return &model.Space{
-        ID:   model.SpaceID(row.ID),
-        Name: row.Name,
+// internal/repository/user.go - Repository 内部で sqlc の uuid.UUID と専用型を相互変換
+func (r *UserRepository) FindByID(ctx context.Context, id model.UserID) (*model.User, error) {
+    row, err := r.q.GetUserByID(ctx, uuid.UUID(id))  // 専用型 → uuid.UUID (sqlc 入力)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, nil
+        }
+        return nil, err
+    }
+    return r.toModel(row), nil
+}
+
+func (r *UserRepository) toModel(row query.User) *model.User {
+    return &model.User{
+        ID:    model.UserID(row.ID),  // uuid.UUID (sqlc 出力) → 専用型
+        Email: row.Email,
     }
 }
 
-// internal/testutil/space_builder.go - テストビルダーの戻り値
-func (b *SpaceBuilder) Build() model.SpaceID {
-    // ...
-    return model.SpaceID(id)
+// internal/testutil/builder.go - テストビルダーの戻り値も専用型に揃える
+func (b *UserBuilder) Build() model.UserID {
+    var id uuid.UUID
+    // INSERT して RETURNING id
+    return model.UserID(id)
 }
+```
+
+**実装パターン (string ベース、既存 sqlc override の代替)**:
+
+```go
+// Wikino の例
+// sqlc.yaml で uuid → string の override を使っているため sqlc 生成型が string になる
+type SpaceID string
+func (id SpaceID) String() string { return string(id) }
+
+func (r *SpaceRepository) toModel(row query.GetSpaceRow) *model.Space {
+    return &model.Space{
+        ID:   model.SpaceID(row.ID),  // string (sqlc 出力) → 専用型
+        Name: row.Name,
+    }
+}
+```
+
+**実装パターン (int64 ベース、bigint 主キー)**:
+
+```go
+// Annict の例
+// 主キーが bigint (連番整数) のため sqlc 生成型は int64
+type WorkID int64
+func (id WorkID) String() string { return strconv.FormatInt(int64(id), 10) }
 ```
 
 **スライス変換ヘルパー**:
 
-IDのスライスと `[]string` の相互変換が必要な場合（例: PostgreSQL の配列型との変換）は、`id.go` にヘルパー関数を定義します：
+ID のスライスと基底型のスライス (`[]uuid.UUID` / `[]string` / `[]int64`) の相互変換が必要な場合 (PostgreSQL の配列型や外部 API とのやりとり等) は、`id.go` にヘルパー関数を定義します。
+
+```go
+// Mewst の例 (UUID ベース)
+func UserIDsToUUIDs(ids []UserID) []uuid.UUID { ... }
+func UUIDsToUserIDs(us []uuid.UUID) []UserID { ... }
+```
+
+string ベースや int64 ベースでも同じパターンで `PageIDsToStrings` / `StringsToPageIDs` や `WorkIDsToInts` / `IntsToWorkIDs` のような対称ヘルパーを定義します。
+
+#### Repository の Not Found 表現
+
+Repository の取得系メソッド (`FindByID` / `FindByEmail` 等) は、対象が存在しない場合に **`(nil, nil)` を返します**。`sql.ErrNoRows` を独自エラー (`repository.ErrNotFound` 等) に変換する設計は採用しません。
+
+**基本ルール**:
+
+- ✅ **取得系メソッドは未存在時に `(nil, nil)` を返す**: `sql.ErrNoRows` を `errors.Is` で判定し、未存在時は `nil, nil` を返す。それ以外のエラー (DB 接続エラー等) はそのまま `nil, err` で伝搬する
+- ✅ **呼び出し側は `if data == nil` で未存在を判定する**: UseCase / Validator / Session Manager 等の呼び出し側は、戻り値の `*Model` が nil かどうかで未存在を判定する
+- ✅ **未存在を業務上の異常として扱う場合は上位層で変換する**: UseCase 側で `*model.AppError` (`AppErrCodeResourceNotFound`) や `usecase.ErrNotFound` に変換して上位層へ伝搬する。Repository 自体は「未存在」を異常とは見なさない (見つからない可能性のあるルックアップでは正常系)
+- ❌ **`repository.ErrNotFound` のようなセンチネルエラーを定義しない**: Repository から独自エラー型を返さない
+- ❌ **Repository から `sql.ErrNoRows` をそのまま伝搬しない**: `database/sql` への依存を Repository 内に閉じ込める
+
+**実装パターン**:
+
+```go
+// Mewst の例
+func (r *UserRepository) FindByID(ctx context.Context, id model.UserID) (*model.User, error) {
+    row, err := r.q.GetUserByID(ctx, uuid.UUID(id))
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, nil  // 未存在は (nil, nil)
+        }
+        return nil, err  // それ以外のエラーはそのまま伝搬
+    }
+    return r.toModel(row), nil
+}
+```
+
+**呼び出し側のパターン (UseCase)**:
 
 ```go
 // Wikino の例
-func PageIDsToStrings(ids []PageID) []string { ... }
-func StringsToPageIDs(ss []string) []PageID { ... }
+// 1. データ取得
+space, err := uc.spaceRepo.FindByIdentifier(ctx, input.SpaceIdentifier)
+if err != nil {
+    return nil, fmt.Errorf("スペースの取得に失敗: %w", err)
+}
+
+// 2. 未存在を業務上の異常として扱う場合は AppError に変換
+if space == nil {
+    return nil, &model.AppError{
+        Code:    model.AppErrCodeResourceNotFound,
+        UserMsg: i18n.T(ctx, "error_space_not_found"),
+    }
+}
+
+// 以降は space が non-nil として扱える
 ```
+
+**なぜ `(nil, nil)` を採用するか**:
+
+- **シンプル**: センチネルエラー型を定義する必要がなく、`database/sql` への依存を Repository 内部に閉じ込められる
+- **「未存在」と「エラー」を完全に分離**: 戻り値の `(data, error)` のうち、`data == nil` は未存在、`err != nil` は本物のエラーと意味が分かれる
+- **業務文脈による判断を上位層に委ねられる**: 「未存在を異常として扱うかどうか」はユースケースに依存する (例: 「メールアドレス重複チェック」では未存在は正常、「リソース取得」では未存在は 404 異常)。Repository が「未存在 = エラー」と決め打ちすると上位層で逆変換が必要になる
+
+**呼び出し側のチェック忘れリスクへの対処**:
+
+`(nil, nil)` パターンは呼び出し側が `if data == nil` を書き忘れると nil 参照で panic する。これを避けるため、コードレビューで以下を確認する:
+
+- 取得系メソッド (`Find*`) の戻り値を使う前に `if data == nil` チェックがあるか
+- 未存在を業務上の異常として扱う場合、`*model.AppError` (`AppErrCodeResourceNotFound`) または `usecase.ErrNotFound` への変換が書かれているか
 
 #### Queryファイルの命名
 
@@ -245,6 +365,7 @@ internal/query/queries/
 - **internal/image**: 画像URL生成（imgproxy署名付きURL）
 - **internal/i18n**: 国際化（翻訳取得、言語切り替え）
 - **internal/session**: セッション管理（フラッシュメッセージ、ユーザー情報）
+- **internal/httperror**: 全リソース共通の HTTP エラーレスポンスヘルパー（404 / 502 などの汎用エラーページのレンダリング）。リソースディレクトリには属さないため `internal/handler/` の外に配置し、handler の「リソースディレクトリ + 8 種類のファイル名」ルールから外れる存在を作らないようにする。`templates` / `i18n` への依存は許可。Handler / Middleware / Application 層 / Domain/Infrastructure 層への依存は禁止
 
 ### Application層（アプリケーション層）
 
@@ -618,6 +739,197 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 
 📖 **詳細は [docs/usecase-guide.md](usecase-guide.md) を参照**
 
+## エラー型
+
+`internal/model/errors.go` に定義されたエラー型を使用してレイヤー間のエラー伝搬を行う。
+
+### エラー型の使い分け
+
+| エラー型                 | 生成元    | 意味                             | Handler の対応                          |
+| ------------------------ | --------- | -------------------------------- | --------------------------------------- |
+| `*model.ValidationError` | Validator | 入力が不正（ユーザーが修正可能） | フォーム再描画（422）                   |
+| `*model.AppError`        | UseCase   | 業務レベルの既知の失敗           | エラーコードに応じた処理（403, 404 等） |
+| 素の `error`             | どこでも  | 予期しないシステムエラー         | 500                                     |
+
+### ValidationError
+
+バリデーションエラー。Handler はフォームを再描画する。
+
+```go
+type ValidationError struct {
+    Global []string            // フォーム全体のエラー
+    Fields map[string][]string // フィールドごとのエラー
+}
+```
+
+Validator は Go の慣習に従った `(data, error)` の 2 値返しで、データを返さない場合は `error` のみを返す。バリデーション失敗時は `*model.ValidationError`（`error` を満たす）を返す。詳細は [validation-guide.md](validation-guide.md#構造体の命名規則) を参照。
+
+### AppError（SafeError パターン）
+
+アプリケーションエラー。`Error()` はユーザー安全なメッセージのみを返し、内部エラーの露出を構造的に防止する。
+
+```go
+type AppError struct {
+    Code     AppErrorCode      // Handler がステータスコードを決定するために使用
+    UserMsg  string            // ユーザーに表示する安全なメッセージ。内部情報を含めてはならない
+    Internal error             // ログ出力用の内部エラー。ユーザーには公開しない
+    Metadata map[string]string // 構造化ログ用のメタデータ（user_id, resource_id 等）
+}
+
+func (e *AppError) Error() string    { return e.UserMsg }
+func (e *AppError) Unwrap() error    { return e.Internal } // errors.Is / errors.As チェーン用
+func (e *AppError) LogString() string                      // ログ出力用の詳細文字列
+```
+
+`AppErrorCode` は各プロジェクトで定義する。3 プロダクト共通の基本コードは以下の 4 種類で、必要に応じてプロジェクト固有のコードを追加してよい（例: 2 段階認証未有効を表す `AppErrCodeTwoFactorNotEnabled` など）。
+
+| 定数                         | 用途                            |
+| ---------------------------- | ------------------------------- |
+| `AppErrCodeResourceNotFound` | リソース未存在 (404 相当)       |
+| `AppErrCodeForbidden`        | 権限不足 (403 相当)             |
+| `AppErrCodeConflict`         | 状態の競合 (409 相当)           |
+| `AppErrCodeInternal`         | 想定済みの内部エラー (500 相当) |
+
+#### 生成ルール: 構造体リテラルで生成する
+
+`AppError` の生成は構造体リテラルで行い、コンストラクタ関数（`NewAppError(...)` 等）は用意しない。理由: フィールドの組み合わせがケースごとに異なるため、コンストラクタを揃えるとオーバーロードセットが肥大化し、呼び出し側の判断コストが上がる。構造体リテラルなら必要なフィールドだけを直接書けて意図が明確になる。
+
+#### 利用例
+
+**シンプルなケース**: 業務上の失敗を Handler に伝えるだけで十分な場合は `Code` と `UserMsg` のみで生成する。
+
+```go
+return nil, &model.AppError{
+    Code:    model.AppErrCodeResourceNotFound,
+    UserMsg: i18n.T(ctx, "error_resource_not_found"),
+}
+```
+
+**全フィールドを使うケース**: 内部エラーをラップしつつ、構造化ログに残したいコンテキスト（操作対象の ID 等）も付与する場合は `Internal` と `Metadata` も埋める。Handler 側では `errors.As` で `*AppError` を取り出し、`LogString()` で 4 フィールドすべてが含まれた詳細を `slog` に流す。
+
+```go
+if !policy.NewTopicPolicy(spaceMember, topicMember).CanUpdateTopic(topic) {
+    return nil, &model.AppError{
+        Code:     model.AppErrCodeForbidden,
+        UserMsg:  i18n.T(ctx, "error_forbidden"),
+        Internal: fmt.Errorf("user %s lacks permission to update topic %s", userID, topic.ID),
+        Metadata: map[string]string{
+            "user_id":  userID.String(),
+            "topic_id": topic.ID.String(),
+        },
+    }
+}
+```
+
+`Internal` は `errors.Is` / `errors.As` のチェーンに乗るため、下層のエラーを `fmt.Errorf("...: %w", err)` でラップしてから渡してもよい。`Metadata` は構造化ログ用なので、ユーザーに見せたくない情報（リソース ID 等）を入れても安全。
+
+### ヘルパー関数
+
+```go
+// エラーから特定の型を取り出す（errors.As のラッパー、取り出せない場合は nil を返す）
+model.AsValidationError(err) *ValidationError
+model.AsAppError(err) *AppError
+```
+
+Handler では `if ve := model.AsValidationError(err); ve != nil { ... }` のように使うと `errors.As` の冗長な変数宣言を省略できる。
+
+## Repository の WithTx パターン
+
+Usecase でトランザクションを使用する場合、**Repository の `WithTx` メソッド**を使用してトランザクション内で操作するリポジトリを取得します。Repository を「通常時 (DB 直接)」と「トランザクション時 (tx 経由)」の両方で使えるようにし、Usecase は WithTx を呼び出して新しい Repository インスタンスを取得することで、トランザクション境界を明示します。
+
+### なぜ WithTx パターンを使うのか
+
+**メリット**:
+
+- **依存性注入**: Repository をコンストラクタで受け取るため、テストでモックに差し替えやすい
+- **意図が明確**: `WithTx(tx)` の呼び出しで「このリポジトリはトランザクション内で操作する」という意図が明確
+- **一貫性**: すべての Usecase で同じパターンを使用することで、コードの読みやすさが向上
+
+### Repository に WithTx を実装する
+
+各 Repository には `WithTx` メソッドを実装します。`WithTx` は新しい Repository インスタンスを返すだけで、元の Repository には影響しません。
+
+```go
+// internal/repository/user.go
+
+// WithTx はトランザクションを使用する新しいRepositoryを返す
+func (r *UserRepository) WithTx(tx *sql.Tx) *UserRepository {
+    return &UserRepository{q: r.q.WithTx(tx)}
+}
+```
+
+### Usecase で WithTx を使用する
+
+書き込み Usecase は次のライフサイクルでトランザクションを管理します。
+
+1. `db.BeginTx(ctx, nil)` でトランザクションを開始する
+2. `defer func() { _ = tx.Rollback() }()` でロールバックを予約する。`Commit` 成功後の `Rollback` は no-op のため、defer で常に呼び出しても安全
+3. 各 Repository の `WithTx(tx)` を呼び出してトランザクション内で操作するリポジトリを取得する
+4. トランザクション内で永続化処理を実行する
+5. すべて成功したら `tx.Commit()` でコミットする
+
+```go
+// Wikino の例: メール確認・ユーザー・パスワードの 3 リソースを 1 トランザクションで作成する
+
+// internal/usecase/create_account.go
+
+type CreateAccountUsecase struct {
+    db                    *sql.DB
+    emailConfirmationRepo *repository.EmailConfirmationRepository
+    userRepo              *repository.UserRepository
+    userPasswordRepo      *repository.UserPasswordRepository
+}
+
+func NewCreateAccountUsecase(
+    db *sql.DB,
+    emailConfirmationRepo *repository.EmailConfirmationRepository,
+    userRepo *repository.UserRepository,
+    userPasswordRepo *repository.UserPasswordRepository,
+) *CreateAccountUsecase {
+    return &CreateAccountUsecase{
+        db:                    db,
+        emailConfirmationRepo: emailConfirmationRepo,
+        userRepo:              userRepo,
+        userPasswordRepo:      userPasswordRepo,
+    }
+}
+
+func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
+    // 1. トランザクションを開始
+    tx, err := uc.db.BeginTx(ctx, nil)
+    if err != nil {
+        return nil, fmt.Errorf("トランザクションの開始に失敗: %w", err)
+    }
+    // 2. defer でロールバックを予約 (Commit 成功後の Rollback は no-op なので常に defer で OK)
+    defer func() { _ = tx.Rollback() }()
+
+    // 3. トランザクション内で操作するためのリポジトリを取得
+    emailConfirmationRepo := uc.emailConfirmationRepo.WithTx(tx)
+    userRepo := uc.userRepo.WithTx(tx)
+    userPasswordRepo := uc.userPasswordRepo.WithTx(tx)
+
+    // 4. 以降の処理はトランザクション内のリポジトリを使用
+    // ...
+
+    // 5. トランザクションをコミット
+    if err := tx.Commit(); err != nil {
+        return nil, fmt.Errorf("トランザクションのコミットに失敗: %w", err)
+    }
+
+    return &CreateAccountOutput{UserID: user.ID}, nil
+}
+```
+
+bcrypt のような重い CPU 計算と複数リソース作成を組み合わせる発展的なパターンは [usecase-guide.md](usecase-guide.md#bcrypt-と複数リソース作成を組み合わせる例) を参照してください。
+
+### 重要なポイント
+
+1. **Repository はコンストラクタで受け取る**: `NewXxxUsecase` で Repository を引数として受け取る
+2. **永続化関数の入口で `WithTx` を呼び出す**: トランザクションを開始した直後、各 Repository の `WithTx(tx)` を呼び出す
+3. **`defer func() { _ = tx.Rollback() }()`**: `Commit` 成功後の `Rollback` は no-op なので、常に defer で呼び出して安全にロールバックを保証する
+4. **元の Repository は変更されない**: `WithTx` は新しい Repository インスタンスを返すため、元の Repository には影響しない
+5. **すべての Repository で `WithTx` を使う**: トランザクション内で使用するすべての Repository に対して `WithTx` を呼び出す
+
 ## ワーカー（Worker）
 
 バックグラウンドジョブの受信を担当する薄い Adapter です。River（PostgreSQL ベースのジョブキュー）を使用します。Worker は Presentation 層に属し、Handler と同じく UseCase を呼び出すだけの役割です。
@@ -633,12 +945,17 @@ func TestNewWorkFromPopularRow(t *testing.T) {
 - Worker は **Dispatcher の Args 型を参照する**（ジョブ引数の型定義）
 - Worker は **templates に依存不可**（メールレンダリングは UseCase を経由）
 - Worker は **Repository, Query, Validator, Policy に依存不可**
+- Worker の **`Work` メソッドは UseCase の戻り値をそのまま return** する。ログ出力やエラーラップは Worker 内では行わない。ジョブ実行ログ・リトライは river 側 (`Logger: slog.Default()`) に任せる（後述の Worker クライアントを参照）
 
 ```go
-// ワーカーの実装例（薄い Adapter）
+// Mewst の例
 type SendEmailConfirmationWorker struct {
     river.WorkerDefaults[dispatcher.SendEmailConfirmationArgs]
     uc *usecase.SendEmailConfirmationUsecase
+}
+
+func NewSendEmailConfirmationWorker(uc *usecase.SendEmailConfirmationUsecase) *SendEmailConfirmationWorker {
+    return &SendEmailConfirmationWorker{uc: uc}
 }
 
 func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[dispatcher.SendEmailConfirmationArgs]) error {
@@ -650,6 +967,66 @@ func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[d
 }
 ```
 
+### Worker クライアント (`internal/worker/client.go`)
+
+Worker クライアントは river クライアントのライフサイクル（Pool 構築 / Worker 登録 / Start / Stop）を管理する Presentation 層の構成要素です。
+
+- **責務**: river クライアントのライフサイクル管理
+- **`NewClient(ctx, databaseURL, cfg)` のシグネチャ**: 依存性（`email.Sender` / UseCase 等）を引数で受け取らず、`cfg` から **内部で構築** する。Worker からしか使われない依存性を `worker.NewClient` 内に閉じ込めることで、`main.go` の DI を肥大化させず、Worker 専用依存が他のレイヤーから誤って参照されないようにする
+- **`Logger: slog.Default()` を `river.Config` に渡す**: river 内部のジョブ実行ログ・リトライログを slog の構造化ログとして出力する。Worker 自身がログを持たなくても観測性が確保される（Worker の `Work` メソッドはエラーをそのまま return するだけでよい）
+
+```go
+// Mewst の例
+package worker
+
+import (
+    "context"
+    "log/slog"
+
+    "github.com/jackc/pgx/v5"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "github.com/riverqueue/river"
+    "github.com/riverqueue/river/riverdriver/riverpgxv5"
+
+    "example.com/app/internal/config"
+    "example.com/app/internal/email"
+    "example.com/app/internal/usecase"
+)
+
+type Client struct {
+    riverClient *river.Client[pgx.Tx]
+    pool        *pgxpool.Pool
+}
+
+// NewClient は Worker 専用の依存性を内部で構築する（main.go から DI しない）。
+// pgxpool の詳細設定 (MaxConns / MaxConnLifetime 等) はプロジェクト依存のため省略。
+func NewClient(ctx context.Context, databaseURL string, cfg *config.Config) (*Client, error) {
+    pool, err := pgxpool.NewWithConfig(ctx, /* poolConfig */ nil)
+    if err != nil {
+        return nil, err
+    }
+
+    // 依存性 (Sender / UseCase) は cfg から内部で構築する
+    emailSender := email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
+    confirmationSender := email.NewConfirmationSender(emailSender)
+    sendEmailConfirmationUC := usecase.NewSendEmailConfirmationUsecase(confirmationSender)
+
+    workers := river.NewWorkers()
+    river.AddWorker(workers, NewSendEmailConfirmationWorker(sendEmailConfirmationUC))
+
+    riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
+        Queues:  map[string]river.QueueConfig{river.QueueDefault: {MaxWorkers: 10}},
+        Workers: workers,
+        Logger:  slog.Default(), // river のジョブ実行ログを構造化ログで出力
+    })
+    if err != nil {
+        pool.Close()
+        return nil, err
+    }
+    return &Client{riverClient: riverClient, pool: pool}, nil
+}
+```
+
 ## ディスパッチャー（Dispatcher）
 
 ジョブキューへの投入を抽象化します。Repository がデータベースアクセスを抽象化するのと同じ発想で、Dispatcher がジョブキューアクセスを抽象化します。
@@ -657,6 +1034,7 @@ func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[d
 - **配置**: `internal/dispatcher`（Domain/Infrastructure 層）
 - **責務**: ジョブキューへの投入、Args 型の定義
 - **依存先**: River（外部ライブラリ）のみ。上位層（UseCase, Handler, Worker）には依存しない
+- **`Dispatcher` のフィールド名**: `client`（`JobInserter` の実体を保持する）。`main.go` で `dispatcher.NewDispatcher(workerClient.Client())` の形で初期化する
 
 **Repository との対比**:
 
@@ -668,8 +1046,39 @@ func (w *SendEmailConfirmationWorker) Work(ctx context.Context, job *river.Job[d
 | **分離の基準**           | インフラの種類ではなく、**操作の性質**で分離する |
 
 ```go
+// Mewst の例
 // internal/dispatcher/dispatcher.go
 package dispatcher
+
+import (
+    "context"
+
+    "github.com/riverqueue/river"
+    "github.com/riverqueue/river/rivertype"
+)
+
+// --- ジョブ引数型 ---
+
+type SendEmailConfirmationArgs struct {
+    Email  string `json:"email"`
+    Code   string `json:"code"`
+    Locale string `json:"locale"`
+}
+
+// Kind はジョブの種類を返す
+func (SendEmailConfirmationArgs) Kind() string { return "send_email_confirmation" }
+
+// InsertOpts はジョブの Insert オプションを返す（デフォルト値はここに書く）
+func (SendEmailConfirmationArgs) InsertOpts() river.InsertOpts {
+    return river.InsertOpts{Queue: river.QueueDefault, MaxAttempts: 5}
+}
+
+// --- Dispatcher ---
+
+// JobInserter はジョブをキューに追加するインターフェース
+type JobInserter interface {
+    Insert(ctx context.Context, args river.JobArgs, opts *river.InsertOpts) (*rivertype.JobInsertResult, error)
+}
 
 type Dispatcher struct {
     client JobInserter
@@ -679,21 +1088,30 @@ func NewDispatcher(client JobInserter) *Dispatcher {
     return &Dispatcher{client: client}
 }
 
+// EnqueueEmailConfirmation はメール確認コード送信ジョブをキューに追加する。
+// 引数はプリミティブ値で受け取り、メソッド内で Args を組み立てる。
 func (d *Dispatcher) EnqueueEmailConfirmation(ctx context.Context, email, code, locale string) error {
-    _, err := d.client.Insert(ctx, &SendEmailConfirmationArgs{
-        Email: email, Code: code, Locale: locale,
-    }, nil)
+    args := SendEmailConfirmationArgs{Email: email, Code: code, Locale: locale}
+    opts := args.InsertOpts()
+    _, err := d.client.Insert(ctx, args, &opts)
     return err
 }
-
-// Args 型もこのパッケージ内に定義する
-type SendEmailConfirmationArgs struct {
-    Email  string `json:"email"`
-    Code   string `json:"code"`
-    Locale string `json:"locale"`
-}
-func (SendEmailConfirmationArgs) Kind() string { return "send_email_confirmation" }
 ```
+
+### Args 型と Enqueue メソッドの書き方
+
+- **`Kind()` の文字列**: snake_case でジョブ種別を一意に識別する
+- **`InsertOpts()` の置き場所**: 各 Args 型のメソッドとして定義し、`MaxAttempts` などのデフォルト値をここに書く。ジョブ単位の固有オプション（キュー名、最大試行回数等）を Args 型と一緒に管理することで、Enqueue 側で個別に指定する必要がなくなる
+- **`Enqueue*` の引数**: Args 型ではなくプリミティブ値で受け取り、メソッド内で Args を組み立てる。これにより呼び出し側（UseCase）は Args 型を import せずに済む
+- **`opts` を明示的に渡す**: Enqueue 内で `args.InsertOpts()` を呼び出し、結果の `&opts` を `Insert` に渡す。`nil` を渡すと `InsertOpts()` で定義したデフォルト値（`MaxAttempts` 等）が無視されるため使わない
+
+### JobInserter インターフェース
+
+`Dispatcher` のフィールド `client` は `JobInserter` インターフェースに依存する。
+
+- `*river.Client[pgx.Tx]`（river クライアント）が **そのまま満たすシグネチャに揃える**。worker 側で独自のラッパー型を用意しないことで、Dispatcher と river の橋渡しを最小化する
+- 初期化は `main.go` で `dispatcher.NewDispatcher(workerClient.Client())` の形で行う
+- テストでは `JobInserter` のモック実装を渡し、`Insert` 呼び出しの引数（Args の中身、`opts` の `MaxAttempts` 等）を検証できる
 
 **依存の方向**:
 
@@ -704,6 +1122,16 @@ Dispatcher (Domain/Infra)  → river（外部ライブラリ）
 ```
 
 循環なし。UseCase は River やジョブ Args 型の存在を知らない。
+
+### 新しいジョブを追加する手順
+
+複数ファイルをまたぐ作業のため、以下の順序で進めると抜け漏れを防げる。
+
+1. `internal/dispatcher/dispatcher.go` に `{Name}Args` 構造体と `Kind()` / `InsertOpts()` メソッドを追加する
+2. 同ファイルに `Enqueue{Name}` メソッドを追加する（引数はプリミティブ値で受け取る）
+3. `internal/worker/{job_kind}.go` に Worker を新設する（UseCase を呼ぶだけの薄い Adapter）
+4. `internal/worker/client.go` の `NewClient` 内部に、依存する UseCase の構築と `river.AddWorker(workers, NewXxxWorker(uc))` を追加する（必要なら依存先 Sender 等の構築も同関数内で行う）
+5. UseCase から `dispatcher.Enqueue{Name}(ctx, ...)` で呼び出す
 
 ## メール送信（Email）
 
