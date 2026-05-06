@@ -1,0 +1,133 @@
+name: Go CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "go/**"
+      - ".github/workflows/go-ci.yml"
+  pull_request:
+    paths:
+      - "go/**"
+      - ".github/workflows/go-ci.yml"
+
+env:
+  GO_VERSION: "1.25.4"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Check templ generate
+        run: |
+          make templ-generate
+          git diff --exit-code internal/templates/
+
+      - name: Check goimports
+        run: |
+          make goimports-check
+
+      - name: Check go mod tidy
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v9.2.0
+        with:
+          version: v2.7.2
+          working-directory: go
+          args: --config=.golangci.yml ./...
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgres://postgres@localhost:5432/mewst_test?sslmode=disable
+      MEWST_PORT: "4004"
+      MEWST_DOMAIN: "test.example.com"
+      MEWST_COOKIE_DOMAIN: ".test.example.com"
+      MEWST_SESSION_SECURE: "false"
+      MEWST_SESSION_HTTPONLY: "true"
+      MEWST_RAILS_APP_URL: "http://localhost:3000"
+      MEWST_DISABLE_RATE_LIMIT: "false"
+      MEWST_TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA"
+      MEWST_RESEND_API_KEY: "re_test_key"
+      MEWST_RESEND_FROM_EMAIL: "test@example.com"
+
+    services:
+      postgresql:
+        image: postgres:16.2
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: mewst_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Get dependencies
+        run: |
+          go mod download
+
+      - name: Setup test database
+        run: |
+          make db-setup-test
+
+      - name: Run tests
+        env:
+          CI: true
+        run: make test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build
+        run: |
+          make build
+
+      - name: Check binary exists
+        run: |
+          if [ ! -f bin/server ]; then
+            echo "Build failed: binary not found"
+            exit 1
+          fi

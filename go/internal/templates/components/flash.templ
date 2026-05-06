@@ -1,0 +1,69 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// Flash はフラッシュメッセージをtoastとして表示する。flash が nil なら何も描画しない。
+templ Flash(flash *session.FlashMessage) {
+	if flash != nil {
+		<div id="toaster" class="toaster">
+			<div
+				class="toast"
+				role="status"
+				aria-atomic="true"
+				aria-hidden="false"
+				data-category={ flashCategory(flash.Type) }
+			>
+				<div class="toast-content">
+					@flashIcon(flash.Type)
+					<section>
+						<p class="whitespace-pre-line">{ flash.Message }</p>
+					</section>
+					<footer>
+						<button type="button" class="btn" data-toast-action>{ templates.T(ctx, "flash_dismiss") }</button>
+					</footer>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+// flashCategory はフラッシュタイプに応じたdata-category属性値を返す
+func flashCategory(flashType session.FlashType) string {
+	switch flashType {
+	case session.FlashSuccess:
+		return "success"
+	case session.FlashError:
+		return "error"
+	case session.FlashWarning:
+		return "warning"
+	default:
+		return "info"
+	}
+}
+
+// flashIconStyle はアイコン名と塗りクラスのペア
+type flashIconStyle struct {
+	Name viewmodel.IconName
+	Fill string
+}
+
+// flashIconStyles はフラッシュタイプ ↔ アイコンスタイルの対応表
+var flashIconStyles = map[session.FlashType]flashIconStyle{
+	session.FlashSuccess: {Name: "check-circle-regular", Fill: "fill-success"},
+	session.FlashError:   {Name: "warning-regular", Fill: "fill-error"},
+	session.FlashWarning: {Name: "warning-regular", Fill: "fill-warning"},
+	session.FlashInfo:    {Name: "info-regular", Fill: "fill-info"},
+}
+
+// flashIcon はフラッシュタイプに応じたアイコンを返す。未知のタイプは info にフォールバックする
+func flashIcon(flashType session.FlashType) templ.Component {
+	style, ok := flashIconStyles[flashType]
+	if !ok {
+		style = flashIconStyles[session.FlashInfo]
+	}
+	return templates.Icon(style.Name, style.Fill)
+}

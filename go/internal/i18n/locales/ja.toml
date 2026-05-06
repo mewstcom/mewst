@@ -1,0 +1,326 @@
+# 日本語翻訳ファイル
+# Mewst Go プロジェクトの日本語メッセージ定義
+
+# ============================================
+# サイト全体のデフォルト
+# ============================================
+
+[default_title]
+description = "サイトのデフォルトタイトル"
+other = "Mewst (ミュースト)"
+
+[default_description]
+description = "サイトのデフォルト説明"
+other = "Mewstは160文字で今の気持ちや状況を記録できるマイクロブログサービスです。力まず使えるサービスを目指しています。"
+
+# ============================================
+# サインインページ (sign_in/new)
+# ============================================
+
+[sign_in_new_title]
+description = "ログインページのタイトル"
+other = "Mewstにログイン"
+
+[sign_in_new_email_label]
+description = "ログインページのメールアドレスラベル"
+other = "メールアドレス"
+
+[sign_in_new_password_label]
+description = "ログインページのパスワードラベル"
+other = "パスワード"
+
+[sign_in_new_forgot_password_link]
+description = "ログインページのパスワードリセットへのリンクテキスト"
+other = "パスワードを忘れた？"
+
+[sign_in_new_submit]
+description = "ログインページの送信ボタン"
+other = "ログインする"
+
+[sign_in_new_no_account]
+description = "ログインページのアカウント未所持の案内"
+other = "アカウントをお持ちでない方は"
+
+[sign_in_new_sign_up_link]
+description = "ログインページのサインアップへのリンクテキスト"
+other = "Mewstに新規登録"
+
+# ============================================
+# サインアップページ (sign_up/new)
+# ============================================
+
+[sign_up_new_title]
+description = "新規登録ページのタイトル"
+other = "Mewstに新規登録"
+
+[sign_up_new_description]
+description = "新規登録ページの説明"
+other = "メールアドレスの確認のため、\n入力したメールアドレス宛てに確認コードをお送りします"
+
+[sign_up_new_email_label]
+description = "新規登録ページのメールアドレスラベル"
+other = "メールアドレス"
+
+[sign_up_new_submit]
+description = "新規登録ページの送信ボタン"
+other = "確認コードを送信"
+
+[sign_up_new_have_account]
+description = "新規登録ページの既存アカウント案内"
+other = "アカウントをお持ちの方は"
+
+[sign_up_new_sign_in_link]
+description = "新規登録ページのログインへのリンクテキスト"
+other = "ログイン"
+
+# ============================================
+# パスワードリセットページ (password_reset/new)
+# ============================================
+
+[password_reset_new_title]
+description = "パスワードリセットページのタイトル"
+other = "パスワードを忘れた？"
+
+[password_reset_new_description]
+description = "パスワードリセットページの説明"
+other = "登録したメールアドレスを入力してください\n確認コードをお送りします"
+
+[password_reset_new_email_label]
+description = "パスワードリセットページのメールアドレスラベル"
+other = "メールアドレス"
+
+[password_reset_new_submit]
+description = "パスワードリセットページの送信ボタン"
+other = "確認コードを送信"
+
+[password_reset_new_back_to_sign_in]
+description = "パスワードリセットページのログインに戻るリンク"
+other = "ログインに戻る"
+
+# ============================================
+# メール確認ページ (email_confirmation/new)
+# ============================================
+
+[email_confirmation_new_title]
+description = "メール確認ページのタイトル"
+other = "確認コードを入力"
+
+[email_confirmation_new_description]
+description = "メール確認ページの説明"
+other = "メールアドレスに送信された6桁の確認コードを入力してください"
+
+[email_confirmation_new_code_label]
+description = "メール確認ページの確認コードラベル"
+other = "確認コード"
+
+[email_confirmation_new_submit]
+description = "メール確認ページの送信ボタン"
+other = "確認する"
+
+[email_confirmation_new_back_to_sign_in]
+description = "メール確認ページのログインに戻るリンク"
+other = "ログインに戻る"
+
+# ============================================
+# メール確認 (送信メール本文用)
+# ============================================
+
+[email_confirmation_subject]
+description = "メール確認コードのメール件名"
+other = "[Mewst] 確認用コード"
+
+# ============================================
+# アカウント作成ページ (account/new)
+# ============================================
+
+[account_new_title]
+description = "アカウント作成ページのタイトル"
+other = "アカウントを作成"
+
+[account_new_description]
+description = "アカウント作成ページの説明"
+other = "アットネームとパスワードを設定してください。"
+
+[account_new_email_label]
+description = "アカウント作成ページのメールアドレスラベル"
+other = "メールアドレス"
+
+[account_new_atname_label]
+description = "アカウント作成ページのアットネームラベル"
+other = "アットネーム"
+
+[account_new_atname_hint]
+description = "アカウント作成ページのアットネームのヒント"
+other = "半角英数字とアンダースコアのみ (最大20文字)"
+
+[account_new_password_label]
+description = "アカウント作成ページのパスワードラベル"
+other = "パスワード"
+
+[account_new_password_hint]
+description = "アカウント作成ページのパスワードのヒント"
+other = "8文字以上で入力してください"
+
+[account_new_submit]
+description = "アカウント作成ページの送信ボタン"
+other = "アカウントを作成"
+
+# ============================================
+# パスワード更新ページ (password/edit)
+# ============================================
+
+[password_edit_title]
+description = "パスワード更新ページのタイトル"
+other = "新しいパスワードを設定"
+
+[password_edit_description]
+description = "パスワード更新ページの説明"
+other = "新しいパスワードを入力してください。"
+
+[password_edit_password_label]
+description = "パスワード更新ページの新しいパスワードラベル"
+other = "新しいパスワード"
+
+[password_edit_password_hint]
+description = "パスワード更新ページのパスワードのヒント"
+other = "8文字以上で入力してください"
+
+[password_edit_submit]
+description = "パスワード更新ページの送信ボタン"
+other = "パスワードを更新"
+
+[password_edit_back_to_sign_in]
+description = "パスワード更新ページのログインに戻るリンク"
+other = "ログインに戻る"
+
+# ============================================
+# バリデーション共通メッセージ (validation_*)
+# ============================================
+
+[validation_required]
+description = "必須フィールドのバリデーションエラー"
+other = "入力してください"
+
+[validation_email_invalid]
+description = "メールアドレス形式のバリデーションエラー"
+other = "正しいメールアドレスを入力してください"
+
+[validation_credentials_invalid]
+description = "ログイン認証情報のバリデーションエラー"
+other = "ログインに失敗しました。メールアドレスかパスワードが間違っています"
+
+[validation_password_too_short]
+description = "パスワードが短すぎるバリデーションエラー"
+other = "8文字以上で入力してください"
+
+[validation_password_too_long]
+description = "パスワードが長すぎるバリデーションエラー"
+other = "パスワードが長すぎます"
+
+[validation_email_already_taken]
+description = "メールアドレスが既に使用されているバリデーションエラー"
+other = "このメールアドレスは既に登録されています"
+
+[validation_atname_invalid_format]
+description = "アットネームの形式バリデーションエラー"
+other = "半角英数字とアンダースコアのみ使用できます"
+
+[validation_atname_too_long]
+description = "アットネームが長すぎるバリデーションエラー"
+other = "20文字以内で入力してください"
+
+[validation_atname_already_taken]
+description = "アットネームが既に使用されているバリデーションエラー"
+other = "このアットネームは既に使用されています"
+
+[validation_atname_reserved]
+description = "アットネームが予約されているバリデーションエラー"
+other = "このアットネームは使用できません"
+
+[validation_code_incorrect_or_expired]
+description = "確認コードが間違っているか期限切れのバリデーションエラー"
+other = "確認コードが間違っているか、有効期限が切れています。"
+
+[validation_code_invalid_format]
+description = "確認コードの形式バリデーションエラー"
+other = "確認コードは6桁の数字で入力してください。"
+
+[validation_turnstile_failed]
+description = "Turnstile検証失敗のバリデーションエラー"
+other = "ロボット検証に失敗しました。もう一度お試しください"
+
+[validation_rate_limit_exceeded]
+description = "レート制限超過のバリデーションエラー"
+other = "リクエストが多すぎます。しばらく経ってからお試しください。"
+
+[validation_password_update_failed]
+description = "パスワード更新失敗のバリデーションエラー"
+other = "パスワードの更新に失敗しました。もう一度お試しください。"
+
+# ============================================
+# フラッシュメッセージ (flash_*)
+# ============================================
+
+[flash_dismiss]
+description = "フラッシュメッセージの閉じるボタン"
+other = "閉じる"
+
+[flash_sign_in_success]
+description = "ログイン成功メッセージ"
+other = "ログインしました"
+
+[flash_sign_out_success]
+description = "ログアウト成功メッセージ"
+other = "ログアウトしました"
+
+[flash_sign_up_email_sent]
+description = "サインアップメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
+[flash_account_created]
+description = "アカウント作成成功メッセージ"
+other = "アカウントを作成しました。"
+
+[flash_email_confirmed]
+description = "メール確認成功メッセージ"
+other = "確認が完了しました。"
+
+[flash_password_reset_email_sent]
+description = "パスワードリセットメール送信成功メッセージ"
+other = "確認コードを送信しました。メールをご確認ください。"
+
+[flash_password_updated]
+description = "パスワード更新成功メッセージ"
+other = "パスワードを更新しました。新しいパスワードでログインしてください。"
+
+# ============================================
+# エラーページ (error_*)
+# ============================================
+
+[error_not_found_title]
+description = "404エラーページのタイトル"
+other = "ページが見つかりませんでした | Mewst"
+
+[error_not_found_message]
+description = "404エラーページのメッセージ"
+other = "お探しのページは見つかりませんでした"
+
+[error_not_found_back_to_home]
+description = "404エラーページのホームリンク"
+other = "ホームに戻る"
+
+[error_bad_gateway_title]
+description = "502エラーページのタイトル"
+other = "サービス接続エラー | Mewst"
+
+[error_bad_gateway_message]
+description = "502エラーページのメッセージ"
+other = "申し訳ございません。現在サービスに接続できません。"
+
+[error_bad_gateway_submessage]
+description = "502エラーページのサブメッセージ"
+other = "しばらくしてから再度お試しください。"
+
+[error_bad_gateway_back_to_home]
+description = "502エラーページのホームリンク"
+other = "ホームに戻る"

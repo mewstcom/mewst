@@ -1,0 +1,61 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/viewmodel"
+
+// Head はHTMLヘッダーを生成する
+templ Head(meta viewmodel.PageMeta) {
+	<meta charset="utf-8"/>
+	// iOSのSafariでautofocus属性の影響でズームされてしまうのを防ぐため `maximum-scale=1` を設定
+  // ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+	<title>{ meta.Title }</title>
+
+	<meta name="description" content={ meta.Description }/>
+
+	<meta property="og:description" content={ meta.Description }/>
+	<meta property="og:image" content={ meta.OGImage }/>
+	<meta property="og:locale" content={ meta.OGLocale }/>
+	<meta property="og:site_name" content="Mewst (ミュースト)"/>
+	<meta property="og:title" content={ meta.Title }/>
+	<meta property="og:type" content={ meta.OGType }/>
+	<meta property="og:url" content={ meta.OGURL }/>
+
+	// iOSのSafariで「ホームに追加」した時にフルスクリーン表示にする
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+
+	// canonicalリンク
+	if meta.OGURL != "" {
+		<link rel="canonical" href={ meta.OGURL }/>
+	}
+
+	// ファビコンとアイコン
+	<link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png"/>
+	<link rel="icon" href="/static/images/favicon.ico" sizes="any"/>
+	<link rel="icon" href="/static/images/icon.svg" type="image/svg+xml"/>
+	<link rel="manifest" href="/manifest.json"/>
+
+	// Google Fonts (Itim)
+	<link rel="preconnect" href="https://fonts.googleapis.com"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Itim&display=swap"/>
+
+	// Cloudflare Turnstile プリコネクト
+	<link rel="preconnect" href="https://challenges.cloudflare.com"/>
+
+	<link rel="stylesheet" href={ "/static/css/style.css?v=" + meta.AssetVersion }/>
+
+	// ダークモード検出スクリプト
+	<script>
+		(() => {
+			try {
+				if (matchMedia("(prefers-color-scheme: dark)").matches) {
+					document.documentElement.classList.add("dark");
+				}
+			} catch (_) {}
+		})();
+	</script>
+
+	<script src={ "/static/js/vendor/htmx-4.0.0-alpha8.min.js?v=" + meta.AssetVersion }></script>
+	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion }></script>
+}

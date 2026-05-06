@@ -1,2 +1,5 @@
-css: yarn build:css --watch
-js: yarn build --watch
+go-assets: cd go && pnpm watch
+go-server: cd go && air
+rails-css: cd rails && yarn build:css --watch
+rails-js: cd rails && yarn build --watch
+rails-server: cd rails && PORT=3000 make server

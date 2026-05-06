@@ -1,0 +1,103 @@
+@import "tailwindcss";
+@import "basecoat-css";
+
+:root {
+  /* 独自の変数 */
+  --app-brand-50: #fffceb;
+  --app-brand-100: #fef6c7;
+  --app-brand-200: #fceb8b;
+  --app-brand-300: #fbdb4e;
+  --app-brand-400: #fac925;
+  --app-brand-500: #f4a90e; /* オリジナル */
+  --app-brand-600: #d88107;
+  --app-brand-700: #b35b0a;
+  --app-brand-800: #91460f;
+  --app-brand-900: #783a0f;
+  --app-brand-950: #451d03;
+  --app-error-foreground: var(--color-white);
+  --app-error: var(--color-red-600);
+  --app-info-foreground: var(--color-white);
+  --app-info: var(--color-blue-600);
+  --app-success-foreground: var(--color-white);
+  --app-success: var(--color-green-600);
+  --app-warning-foreground: var(--color-black);
+  --app-warning: var(--color-yellow-600);
+
+  /* Basecoatの変数上書き */
+  --background: #f5f5f4;
+  --foreground: var(--color-stone-950);
+  --primary: var(--app-brand-500);
+  --primary-foreground: var(--app-brand-950);
+  --secondary: var(--color-stone-300);
+  --secondary-foreground: var(--color-stone-950);
+
+  text-autospace: normal;
+}
+
+.dark {
+  /* 独自の変数 */
+  --app-error-foreground: var(--color-black);
+  --app-error: var(--color-red-400);
+  --app-info-foreground: var(--color-black);
+  --app-info: var(--color-blue-400);
+  --app-success-foreground: var(--color-black);
+  --app-success: var(--color-green-400);
+  --app-warning-foreground: var(--color-black);
+  --app-warning: var(--color-yellow-400);
+
+  /* Basecoatの変数上書き */
+  --background: var(--color-stone-950);
+  --foreground: var(--color-stone-300);
+  --primary: var(--app-brand-500);
+  --primary-foreground: var(--app-brand-950);
+  --secondary: var(--color-stone-600);
+  --secondary-foreground: var(--color-stone-50);
+}
+
+@theme {
+  --color-brand-50: var(--app-brand-50);
+  --color-brand-100: var(--app-brand-100);
+  --color-brand-200: var(--app-brand-200);
+  --color-brand-300: var(--app-brand-300);
+  --color-brand-400: var(--app-brand-400);
+  --color-brand-500: var(--app-brand-500);
+  --color-brand-600: var(--app-brand-600);
+  --color-brand-700: var(--app-brand-700);
+  --color-brand-800: var(--app-brand-800);
+  --color-brand-900: var(--app-brand-900);
+  --color-brand-950: var(--app-brand-950);
+
+  --color-error-foreground: var(--error-foreground);
+  --color-error: var(--error);
+  --color-info-foreground: var(--info-foreground);
+  --color-info: var(--info);
+  --color-success-foreground: var(--app-success-foreground);
+  --color-success: var(--app-success);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning: var(--warning);
+}
+
+@layer components {
+  .link,
+  .link-muted {
+    @apply underline underline-offset-4 transition-colors duration-150;
+  }
+
+  .link {
+    @apply text-blue-600 hover:text-blue-700;
+    @apply dark:text-blue-400 dark:hover:text-blue-300;
+  }
+
+  .link-muted {
+    @apply text-muted-foreground/90 hover:text-muted-foreground;
+    @apply dark:text-muted-foreground/90 dark:hover:text-muted-foreground;
+  }
+
+  .link:focus,
+  .link-muted:focus {
+    @apply outline-none ring-2 ring-ring;
+  }
+}
+
+@custom-variant touch (@media (hover: none) and (pointer: coarse));
+@custom-variant non-touch (@media (hover: hover) and (pointer: fine));

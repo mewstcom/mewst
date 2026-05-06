@@ -1,0 +1,430 @@
+# golangci-lint v2 の設定ファイル
+# https://golangci-lint.run/usage/configuration/
+
+version: "2"
+
+run:
+  # タイムアウト（デフォルト: 1m）
+  timeout: 5m
+  # テストファイルを含める
+  tests: true
+  # ビルドタグ
+  build-tags: []
+
+linters:
+  # 有効化するリンター
+  enable:
+    - govet # Go標準静的解析
+    - staticcheck # 高度な静的解析
+    - gosec # セキュリティチェック
+    - depguard # 依存関係のルール強制
+    - errcheck # エラーチェック漏れ
+    - ineffassign # 無駄な代入
+    - unused # 未使用コード
+
+  # リンター除外ルール（v2形式）
+  exclusions:
+    rules:
+      # テストファイルでは gosec と depguard を無効化
+      - path: '(.+)_test\.go'
+        linters:
+          - gosec
+          - depguard
+      # templ 自動生成ファイルは一部のリンターから除外（depguard は有効化）
+      - path: '(.+)_templ\.go'
+        linters:
+          - govet
+          - staticcheck
+          - gosec
+          - errcheck
+          - ineffassign
+          - unused
+    # 除外するディレクトリ
+    paths:
+      - bin/.*
+      - vendor/.*
+      - static/.*
+      - node_modules/.*
+
+  # リンター固有の設定（v2形式）
+  settings:
+    # gosec の設定
+    gosec:
+      # 除外する脆弱性ルール（必要に応じて調整）
+      excludes: []
+      # セキュリティの重要度（low, medium, high）
+      severity: medium
+      confidence: medium
+
+    # depguard の設定
+    depguard:
+      rules:
+        # Templates層のルール: ViewModelを通じてデータを表示
+        # 直接のデータアクセスとビジネスロジックに依存しない
+        templates-layer:
+          files:
+            - "**/internal/templates/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "TemplatesはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "TemplatesはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "TemplatesはModelに直接依存できません。ViewModelを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "TemplatesはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "TemplatesはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "TemplatesはMiddlewareに依存できません。"
+
+        # ViewModel層のルール: データ変換のみ
+        # 他のPresentation層パッケージに依存しない
+        viewmodel-layer:
+          files:
+            - "**/internal/viewmodel/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "ViewModelはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "ViewModelはRepositoryに依存できません。ModelからViewModelへの変換を行ってください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "ViewModelはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "ViewModelはMiddlewareに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "ViewModelはTemplatesに依存できません。"
+
+        # Handler層のルール: HTTPリクエスト処理
+        # データアクセス・バリデーションはUseCaseを経由
+        handler-layer:
+          files:
+            - "**/internal/handler/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "HandlerはQueryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "HandlerはRepositoryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "HandlerはValidatorに直接依存できません。UseCaseを経由してください。"
+
+        # Validator層のルール: 形式バリデーション+状態バリデーションを統合
+        # Queryへの直接アクセスは禁止、Repositoryを経由
+        # Presentation層への依存も禁止（i18nを直接使用する）
+        validator-layer:
+          files:
+            - "**/internal/validator/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "ValidatorはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "ValidatorはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "ValidatorはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "ValidatorはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "ValidatorはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "ValidatorはPresentation層に依存できません。翻訳はi18n.T()を直接使用してください。"
+
+        # Middleware層のルール
+        # エラーページ・メンテナンスページ等のレンダリングのためTemplatesへの依存は許可
+        middleware-layer:
+          files:
+            - "**/internal/middleware/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "MiddlewareはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "MiddlewareはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "MiddlewareはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "MiddlewareはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "MiddlewareはViewModelに依存できません。"
+
+        # Application層のルール（UseCase）
+        # Presentation層に依存しない（メール送信はemail パッケージが担当し、UseCase は interface 経由で呼び出す）
+        application-layer:
+          files:
+            - "**/internal/usecase/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "Application層はQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "Application層はPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "Application層はPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "Application層はPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "Application層はPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "Application層はWorker(Presentation層)に依存できません。Dispatcher経由でジョブを投入してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "Application層はPresentation層のヘルパーに依存できません。トークン生成はauthパッケージを使用してください。"
+
+        # Email層のルール: テンプレートレンダリング + メール送信
+        # templates, i18n, Sender に依存可能。上位層や他のPresentation層パッケージに依存しない
+        email-layer:
+          files:
+            - "**/internal/email/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "EmailはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "EmailはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "EmailはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "EmailはMiddlewareに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "EmailはViewModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "EmailはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "EmailはValidatorに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "EmailはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "EmailはDispatcherに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "EmailはSessionに依存できません。"
+
+        # Model層のルール: 純粋なドメインエンティティ
+        # データアクセス層、上位層に依存しない
+        model-layer:
+          files:
+            - "**/internal/model/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "ModelはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "ModelはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "ModelはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "ModelはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "ModelはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "ModelはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "ModelはPresentation層に依存できません。"
+
+        # Repository層のルール: データアクセス層
+        # 上位層に依存しない
+        repository-layer:
+          files:
+            - "**/internal/repository/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RepositoryはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RepositoryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RepositoryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RepositoryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RepositoryはPresentation層に依存できません。"
+
+        # Query層のルール: sqlc生成コード
+        # 上位層に依存しない
+        query-layer:
+          files:
+            - "**/internal/query/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "QueryはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "QueryはModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "QueryはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "QueryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "QueryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "QueryはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "QueryはPresentation層に依存できません。"
+
+        # Worker層のルール: バックグラウンドジョブ処理（Presentation層）
+        # UseCaseを呼ぶだけの薄いAdapter。他のPresentation層パッケージやRepository/Queryに直接依存しない
+        worker-layer:
+          files:
+            - "**/internal/worker/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "WorkerはQueryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "WorkerはRepositoryに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "WorkerはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "WorkerはPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
+
+        # Dispatcher層のルール: ジョブキューへの投入を抽象化（Domain/Infrastructure層）
+        # 上位層や同レイヤーの他パッケージに依存しない
+        dispatcher-layer:
+          files:
+            - "**/internal/dispatcher/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "DispatcherはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "DispatcherはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "DispatcherはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "DispatcherはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "DispatcherはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "DispatcherはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "DispatcherはModelに依存できません。"
+
+        # HTTPError層のルール: 全リソース共通のHTTPエラーレスポンスヘルパー
+        # templates / i18n に依存可能。リソース固有のハンドラーやビジネスロジック層には依存しない
+        httperror-layer:
+          files:
+            - "**/internal/httperror/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "HTTPErrorはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "HTTPErrorはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "HTTPErrorはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "HTTPErrorはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "HTTPErrorはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "HTTPErrorはMiddlewareに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "HTTPErrorはViewModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "HTTPErrorはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "HTTPErrorはDispatcherに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "HTTPErrorはSessionに依存できません。"
+
+        # RateLimit層のルール: インフラストラクチャユーティリティ
+        # Queryに直接依存せず、Repositoryを経由する
+        ratelimit-layer:
+          files:
+            - "**/internal/ratelimit/*.go"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "RateLimitはQueryに直接依存できません。Repositoryを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "RateLimitはUseCaseに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "RateLimitはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "RateLimitはPresentation層に依存できません。"
+
+        # Auth層のルール: 横断的な技術ユーティリティ
+        # 標準ライブラリと外部ライブラリ(bcryptなど)のみに依存し、プロジェクト内部のパッケージには一切依存しない
+        # 純粋な技術ユーティリティとして保ち、循環依存を防ぐ
+        auth-layer:
+          files:
+            - "**/internal/auth/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/i18n
+              desc: "Authはi18nに依存できません。auth → i18n → middleware → session → auth の循環依存を防ぎ、純粋な技術ユーティリティとして保つためです。バリデーション失敗は sentinel error で返し、翻訳の解決は呼び出し元(validatorなど)の責務とします。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "AuthはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "AuthはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/email
+              desc: "AuthはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/config
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/turnstile
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/ratelimit
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/clientip
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/database
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/redirect
+              desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/testutil
+              desc: "Authはテスト用ヘルパーに依存できません。純粋な技術ユーティリティとして保つためです。"
+
+    # staticcheck の設定
+    staticcheck:
+      # 有効化するチェック（デフォルトですべて有効）
+      checks: ["all", "-ST1003"] # ST1003: パッケージ名のアンダースコア警告を除外（ディレクトリ構造に由来）
+
+# フォーマッター固有の設定（v2形式）
+formatters:
+  # 有効化するフォーマッター
+  enable:
+    - gofmt # Go標準フォーマッター
+    - goimports # import文の整理
+
+  # フォーマッター除外パス
+  exclusions:
+    paths:
+      - bin/.*
+      - vendor/.*
+      - static/.*
+      - node_modules/.*
+      - '(.+)_templ\.go' # templ 自動生成ファイル
+
+  settings:
+    # goimports の設定
+    goimports:
+      # ローカルパッケージのプレフィックス
+      local-prefixes:
+        - github.com/mewstcom/mewst/go
+
+# 出力設定（v2形式）
+output:
+  formats:
+    text:
+      path: stdout
+      colors: true
