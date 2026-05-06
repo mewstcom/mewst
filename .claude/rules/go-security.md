@@ -99,34 +99,20 @@ templは自動でエスケープ処理を行うため、基本的に安全です
 すべてのユーザー入力は信頼しない前提で処理します。
 
 ```go
-// ✅ Good: バリデーターでバリデーションを実施
-// internal/validator/comment.go
-type CommentCreateValidator struct{}
-
-func NewCommentCreateValidator() *CommentCreateValidator {
-    return &CommentCreateValidator{}
-}
-
-type CommentCreateValidatorInput struct {
-    Body string
-}
-
-func (v *CommentCreateValidator) Validate(ctx context.Context, input CommentCreateValidatorInput) error {
+// ✅ Good: バリデーションを実施
+func (req *CommentRequest) Validate(ctx context.Context) *model.ValidationError {
     ve := model.NewValidationError()
 
-    if input.Body == "" {
-        ve.AddField("body", i18n.T(ctx, "comment_required"))
+    if req.Comment == "" {
+        ve.AddField("comment", i18n.T(ctx, "comment_required"))
     }
 
     // 文字数制限
-    if utf8.RuneCountInString(input.Body) > 1000 {
-        ve.AddField("body", i18n.T(ctx, "comment_too_long"))
+    if len(req.Comment) > 1000 {
+        ve.AddField("comment", i18n.T(ctx, "comment_too_long"))
     }
 
-    if ve.HasErrors() {
-        return ve
-    }
-    return nil
+    return ve
 }
 ```
 
@@ -212,33 +198,19 @@ slog.InfoContext(ctx, "ユーザーログイン試行", "email", email)
 ```
 
 ```go
-// バックエンド: バリデーターでバリデーション
-// internal/validator/sign_up.go
-type SignUpCreateValidator struct{}
-
-func NewSignUpCreateValidator() *SignUpCreateValidator {
-    return &SignUpCreateValidator{}
-}
-
-type SignUpCreateValidatorInput struct {
-    Email string
-}
-
-func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreateValidatorInput) error {
+// バックエンド: Request DTOでバリデーション
+func (req *SignUpRequest) Validate(ctx context.Context) *model.ValidationError {
     ve := model.NewValidationError()
 
-    if input.Email == "" {
+    if req.Email == "" {
         ve.AddField("email", i18n.T(ctx, "email_required"))
     }
 
-    if input.Email != "" && !emailRegex.MatchString(input.Email) {
+    if !emailRegex.MatchString(req.Email) {
         ve.AddField("email", i18n.T(ctx, "email_invalid"))
     }
 
-    if ve.HasErrors() {
-        return ve
-    }
-    return nil
+    return ve
 }
 ```
 
@@ -247,9 +219,7 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 許可する値を明示的に定義します。
 
 ```go
-// Annict の例
 // ✅ Good: ホワイトリスト方式
-// internal/validator/work.go
 var allowedSeasons = map[string]bool{
     "spring": true,
     "summer": true,
@@ -257,27 +227,14 @@ var allowedSeasons = map[string]bool{
     "winter": true,
 }
 
-type WorkCreateValidator struct{}
-
-func NewWorkCreateValidator() *WorkCreateValidator {
-    return &WorkCreateValidator{}
-}
-
-type WorkCreateValidatorInput struct {
-    Season string
-}
-
-func (v *WorkCreateValidator) Validate(ctx context.Context, input WorkCreateValidatorInput) error {
+func (req *CreateWorkRequest) Validate(ctx context.Context) *model.ValidationError {
     ve := model.NewValidationError()
 
-    if input.Season != "" && !allowedSeasons[input.Season] {
+    if req.Season != "" && !allowedSeasons[req.Season] {
         ve.AddField("season", i18n.T(ctx, "season_invalid"))
     }
 
-    if ve.HasErrors() {
-        return ve
-    }
-    return nil
+    return ve
 }
 ```
 

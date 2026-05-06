@@ -114,7 +114,7 @@ argument-hint: "annict | mewst | wikino"
 
 ### ステップ 1: レビュードキュメントの作成
 
-1. `.claude/skills/sync/review-template.md` をコピーして `docs/private/reviews/sync-YYYYMMDD-{3桁連番}.md` を作成する（YYYYMMDD は実行日）
+1. `.claude/skills/sync/review-template.md` をコピーして `docs/reviews/sync-YYYYMMDD-{3桁連番}.md` を作成する（YYYYMMDD は実行日）
 2. 連番は `docs/private/reviews/` と `docs/private/reviews/done/` 配下から `sync-YYYYMMDD-*` のファイルを検索し、既存の最大連番 + 1 を付与する
 3. レビュー情報テーブルを記入する（実行日、自プロジェクト名）
 

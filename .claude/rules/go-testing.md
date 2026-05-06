@@ -10,7 +10,7 @@ paths:
 ## 基本方針
 
 - **実データベースを使用**: 基本的にデータベースをモックせず、実際の PostgreSQL データベースを使用してテストを実行
-- **DB 接続プールの共有**: `sync.Once` で DB 接続を 1 回だけ確立し、パッケージ内の全テストで共有
+- **DB 接続プールの共有**: `TestMain` パターンでパッケージ単位で DB 接続を 1 回だけ確立し、全テストで共有
 - **トランザクションでの分離**: 各テストはトランザクション内で実行し、テスト終了時に自動ロールバックすることでデータをクリーンアップ
 - **テスト用 bcrypt コストの低減**: テスト時は bcrypt コストを最小値（4）に設定し、パスワードハッシュの計算を高速化
 - **テストヘルパーの活用**: `internal/testutil` パッケージのヘルパー関数とビルダーパターンを使用してテストデータを作成
@@ -22,35 +22,24 @@ paths:
 - **テスト関数**: `Test` で始まる名前（例: `TestPopularWorks`）
 - **ベンチマーク関数**: `Benchmark` で始まる名前（例: `BenchmarkPopularWorks`）
 
-## DB 接続の共有化（`sync.Once` + 3 ヘルパー）
+## DB 接続の共有化（TestMain パターン）
 
-`internal/testutil` パッケージは `sync.Once` で DB 接続を 1 回だけ確立し、`SetupTx` / `GetTestDB` / `SetupTestMain` のいずれから初めて呼ばれた時点で初期化します。`main_test.go` の作成は任意で、置かなくても遅延初期化で安全に動作します。
+各テストパッケージでは `TestMain` を使用し、DB 接続を 1 回だけ確立してパッケージ内の全テストで共有します。
 
 **セットアップの流れ**:
 
 ```
-初回呼び出し (sync.Once): sql.Open → Ping → bcryptコスト設定
-テスト1: SetupTx → Begin → テスト実行 → Rollback
-テスト2: SetupTx → Begin → テスト実行 → Rollback
+TestMain: sql.Open → Ping → bcryptコスト設定
+テスト1: Begin → テスト実行 → Rollback
+テスト2: Begin → テスト実行 → Rollback
+TestMain: Close
 ```
 
 **新規テストパッケージの作成手順**:
 
-1. テスト関数の先頭で `testutil.SetupTx(t)` を呼ぶだけで、初回は自動的に DB 接続が初期化される (lazy init)
-2. UseCase などトランザクション管理を自前で行うテストでは `testutil.GetTestDB()` を使用
-3. (任意) パッケージで eager init したい場合は `main_test.go` を作成して `testutil.SetupTestMain(m)` を呼ぶ
-
-```go
-// create_test.go
-func TestCreate_Success(t *testing.T) {
-    t.Parallel()
-
-    db, tx := testutil.SetupTx(t)
-    // 以降は既存のテストコードと同じ
-}
-```
-
-**(任意) eager init を行う場合**:
+1. `main_test.go` を作成し、`TestMain` で `testutil.SetupTestMain` を呼び出す
+2. 各テスト関数では `testutil.SetupTx(t)` でトランザクションを取得
+3. Usecase などトランザクション管理を自前で行うテストでは `testutil.GetTestDB()` を使用
 
 ```go
 // main_test.go
@@ -68,19 +57,27 @@ func TestMain(m *testing.M) {
 }
 ```
 
-**初回初期化時に行うこと**（`sync.Once` で 1 回のみ実行、`SetupTestMain` / `SetupTx` / `GetTestDB` のいずれから呼ばれても同じ接続を共有）:
+```go
+// create_test.go
+func TestCreate_Success(t *testing.T) {
+    t.Parallel()
+
+    db, tx := testutil.SetupTx(t)
+    // 以降は既存のテストコードと同じ
+}
+```
+
+**`SetupTestMain` が行う初期化**:
 
 - テスト用に bcrypt コストを下げる（DefaultCost 10 → MinCost 4 で約 64 倍高速化）
 - DB 接続プールを 1 回だけ確立し、パッケージ内の全テストで共有
 
 ## `SetupTx` と `GetTestDB` の使い分け
 
-| ヘルパー      | 用途                                           | トランザクション                         |
-| ------------- | ---------------------------------------------- | ---------------------------------------- |
-| `SetupTx(t)`  | Handler、Repository、Validator のテスト        | 自動（テスト終了時にロールバック）       |
-| `GetTestDB()` | Usecase のテスト（自前でトランザクション管理） | なし（テストデータは DB に直接コミット） |
-
-**`GetTestDB()` を使う理由**: UseCase が内部で `db.BeginTx` を開く場合、テスト側でアウター Tx を張るとその外側の Tx に閉じ込められた前提データは UseCase の内部 Tx から見えない (Tx 隔離)。Tx で包まずに DB に直接コミットする `GetTestDB` を使うと、UseCase の内部 Tx から前提データを参照できる。テストデータは `make test` 実行時の DB リセットで自動クリーンアップされるため、テストごとにユニークな識別子 (例: メールアドレスやアットネームに連番を含める) を使うことで衝突を避ける。
+| ヘルパー      | 用途                                           | トランザクション                   |
+| ------------- | ---------------------------------------------- | ---------------------------------- |
+| `SetupTx(t)`  | Handler、Repository、Validator のテスト        | 自動（テスト終了時にロールバック） |
+| `GetTestDB()` | Usecase のテスト（自前でトランザクション管理） | 手動（Usecase 内で管理）           |
 
 ## レイヤーごとのテストカバレッジ
 
@@ -101,7 +98,7 @@ func TestMain(m *testing.M) {
 ## テストのベストプラクティス
 
 - **実データベースを使用**: モックではなく実際の PostgreSQL データベースでテスト
-- **`sync.Once` 初期化**: `internal/testutil` の各ヘルパーは初回呼び出し時に `sync.Once` で DB 接続を初期化する。`main_test.go` は任意で、必要なら `testutil.SetupTestMain(m)` で eager init できる
+- **TestMain パターン**: 各テストパッケージに `main_test.go` を作成し、`testutil.SetupTestMain(m)` で DB 接続を共有
 - **トランザクション分離**: `testutil.SetupTx(t)` でテスト用トランザクションをセットアップ
 - **テーブル駆動テスト**: 複数のテストケースを効率的に実行
 - **並行テスト**: すべてのトップレベルテスト関数（`func TestXxx(t *testing.T)`）の先頭で必ず `t.Parallel()` を呼ぶ。テストデータにユニークな識別子を使用しているため、トランザクション分離パターン（`SetupTx`）でも直接 DB アクセスパターン（`GetTestDB`）でも並行実行が安全
@@ -230,9 +227,9 @@ func TestPopularWorks(t *testing.T) {
 
 **DB 接続・トランザクション**:
 
-- **`SetupTx(t)`**: 共有 DB 接続プールからトランザクションを取得。テスト終了時に自動ロールバック。初回呼び出し時に `sync.Once` で DB 接続が初期化される
-- **`GetTestDB()`**: 共有 DB 接続プールへの参照を取得。Usecase などトランザクション管理を自前で行うテストで使用。初回呼び出し時に `sync.Once` で DB 接続が初期化される
-- **`SetupTestMain(m)`**: (任意) `TestMain` 内で呼び出し、パッケージ共有の DB 接続を eager init する。`SetupTx` / `GetTestDB` の lazy init で十分な場合は不要
+- **`SetupTestMain(m)`**: `TestMain` 内で呼び出し、パッケージ共有の DB 接続を初期化。bcrypt コストの低減も行う
+- **`SetupTx(t)`**: 共有 DB 接続プールからトランザクションを取得。テスト終了時に自動ロールバック
+- **`GetTestDB()`**: 共有 DB 接続プールへの参照を取得。Usecase などトランザクション管理を自前で行うテストで使用
 
 **テストデータビルダー**:
 
