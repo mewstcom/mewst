@@ -2,9 +2,11 @@ package email_confirmation
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	emailconfirmationpages "github.com/mewstcom/mewst/go/internal/templates/pages/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -25,10 +27,19 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	// 有効な確認レコードを取得
 	_, err := h.getActiveEmailConfirmationUC.Execute(ctx, usecase.GetActiveEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, usecase.ErrNotFound) {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			switch ae.Code {
+			case model.AppErrCodeResourceNotFound:
+				http.Redirect(w, r, "/", http.StatusFound)
+				return
+			default:
+				slog.ErrorContext(ctx, ae.LogString())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 		}
+		slog.ErrorContext(ctx, "有効なメール確認の取得に失敗", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

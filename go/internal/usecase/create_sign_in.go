@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -61,7 +62,10 @@ func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInIn
 		return nil, fmt.Errorf("アクターの取得に失敗: %w", err)
 	}
 	if actor == nil {
-		return nil, ErrNotFound
+		return nil, &model.AppError{
+			Code:    model.AppErrCodeResourceNotFound,
+			UserMsg: i18n.T(ctx, "error_not_found_message"),
+		}
 	}
 
 	// 3. ビジネスロジック + 永続化

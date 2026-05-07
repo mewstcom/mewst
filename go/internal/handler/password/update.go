@@ -28,9 +28,17 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// 確認済みのメール確認レコードを取得
 	ecResult, err := h.getSucceededEmailConfirmationUC.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, usecase.ErrNotFound) {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			switch ae.Code {
+			case model.AppErrCodeResourceNotFound:
+				http.Redirect(w, r, "/", http.StatusFound)
+				return
+			default:
+				slog.ErrorContext(ctx, ae.LogString())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 		}
 		slog.ErrorContext(ctx, "メール確認レコードの取得に失敗", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -44,7 +52,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UseCase を実行（バリデーション + パスワード更新）
+	// UseCase を実行 (バリデーション + パスワード更新)
 	password := r.FormValue("password")
 	ucInput := usecase.UpdatePasswordInput{
 		Email:    ecResult.EmailConfirmation.Email,
@@ -58,7 +66,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// メール確認IDクッキーを削除
 	h.sessionMgr.DeleteEmailConfirmationID(w)
 
-	// セッションクッキーを削除（既存セッションを無効化）
+	// セッションクッキーを削除 (既存セッションを無効化)
 	h.sessionMgr.DeleteSessionCookie(w)
 
 	// フラッシュメッセージを設定

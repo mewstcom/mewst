@@ -52,6 +52,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 			h.renderSignInForm(w, r, ve, email, backURL)
 			return
 		}
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			slog.ErrorContext(ctx, ae.LogString())
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		slog.ErrorContext(ctx, "ログイン処理に失敗", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

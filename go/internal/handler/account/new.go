@@ -27,12 +27,20 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	// 確認済みのメール確認レコードを取得
 	ucResult, err := h.getSucceededEmailConfirmationUC.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, usecase.ErrNotFound) {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			switch ae.Code {
+			case model.AppErrCodeResourceNotFound:
+				http.Redirect(w, r, "/", http.StatusFound)
+				return
+			default:
+				slog.ErrorContext(ctx, ae.LogString())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 		}
 		slog.ErrorContext(ctx, "メール確認の取得に失敗", "error", err)
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

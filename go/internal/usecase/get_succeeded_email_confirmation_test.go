@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -74,8 +73,12 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 		t.Fatal("Execute() should return error for non-existent ID")
 	}
 
-	if !errors.Is(err, usecase.ErrNotFound) {
-		t.Errorf("Execute() error should be ErrNotFound, got %v", err)
+	ae := model.AsAppError(err)
+	if ae == nil {
+		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+	}
+	if ae.Code != model.AppErrCodeResourceNotFound {
+		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }
 
@@ -85,7 +88,7 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotSucceeded(t *testing.T)
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// 未確認のメール確認レコードを作成（succeeded_atがNULL）
+	// 未確認のメール確認レコードを作成 (succeeded_atがNULL)
 	emailConfirmationID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("test@example.com").
 		WithEvent("password_reset").
@@ -102,7 +105,11 @@ func TestGetSucceededEmailConfirmationUsecase_Execute_NotSucceeded(t *testing.T)
 		t.Fatal("Execute() should return error for unconfirmed email confirmation")
 	}
 
-	if !errors.Is(err, usecase.ErrNotFound) {
-		t.Errorf("Execute() error should be ErrNotFound, got %v", err)
+	ae := model.AsAppError(err)
+	if ae == nil {
+		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+	}
+	if ae.Code != model.AppErrCodeResourceNotFound {
+		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }

@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -72,8 +71,12 @@ func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 		t.Fatal("Execute() should return error for non-existent ID")
 	}
 
-	if !errors.Is(err, usecase.ErrNotFound) {
-		t.Errorf("Execute() error should be ErrNotFound, got %v", err)
+	ae := model.AsAppError(err)
+	if ae == nil {
+		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+	}
+	if ae.Code != model.AppErrCodeResourceNotFound {
+		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }
 
@@ -83,7 +86,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// 期限切れのメール確認レコードを作成（16分前）
+	// 期限切れのメール確認レコードを作成 (16分前)
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmationID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("test@example.com").
@@ -102,7 +105,11 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 		t.Fatal("Execute() should return error for expired email confirmation")
 	}
 
-	if !errors.Is(err, usecase.ErrNotFound) {
-		t.Errorf("Execute() error should be ErrNotFound, got %v", err)
+	ae := model.AsAppError(err)
+	if ae == nil {
+		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+	}
+	if ae.Code != model.AppErrCodeResourceNotFound {
+		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }
