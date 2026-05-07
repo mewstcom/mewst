@@ -433,31 +433,37 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 
 	testCases := []struct {
 		name    string
+		slug    string
 		backURL string
 		wantURL string
 	}{
 		{
 			name:    "絶対URL (外部サイト)",
+			slug:    "absolute-url",
 			backURL: "https://evil.com",
 			wantURL: "/",
 		},
 		{
 			name:    "プロトコル相対URL (外部サイト)",
+			slug:    "protocol-relative-url",
 			backURL: "//evil.com",
 			wantURL: "/",
 		},
 		{
 			name:    "空文字",
+			slug:    "empty",
 			backURL: "",
 			wantURL: "/",
 		},
 		{
 			name:    "正常な相対パス",
+			slug:    "relative-path",
 			backURL: "/profile",
 			wantURL: "/profile",
 		},
 		{
 			name:    "クエリパラメータ付き相対パス",
+			slug:    "relative-path-with-query",
 			backURL: "/search?q=test",
 			wantURL: "/search?q=test",
 		},
@@ -471,7 +477,7 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 			h, _ := setupTestHandler(t, tx, true)
 
 			// テストユーザーを作成
-			testEmail := "test-invalid-back-" + tc.name + "@example.com"
+			testEmail := "test-invalid-back-" + tc.slug + "@example.com"
 			createTestUser(t, tx, testEmail)
 
 			ctx := context.Background()
