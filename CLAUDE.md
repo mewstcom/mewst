@@ -19,21 +19,26 @@ Mewst はマイクロブログサービスです。
 
 ```
 /workspace/
-├── go/ # Go版の実装 (段階的に機能を移行中)
-├── rails/ # Rails版の実装 (既存の本番システム)
-├── caddy/ # リバースプロキシ設定
-├── .github/ # 共通のCI/CD設定
-└── CLAUDE.md # このファイル (プロジェクト全体のガイド)
+├── go/                  # Go 版の実装 (段階的に機能を移行中)
+├── rails/               # Rails 版の実装 (既存の本番システム)
+├── caddy/               # リバースプロキシ設定
+├── docs/                # Mewst 固有のドキュメント (仕様書、作業計画書など)
+├── .claude/
+│   ├── rules/
+│   │   ├── korylus/     # Korylus 共通ガイドライン (korylus-guidelines をマウント)
+│   │   └── mewst/       # Mewst 固有ガイドライン (Git 管理)
+│   └── skills/
+│       ├── korylus-*/   # Korylus 共通スキル (korylus-guidelines をマウント)
+│       └── mewst-*/     # Mewst 固有スキル (Git 管理)
+├── .github/             # 共通の CI/CD 設定
+├── Dockerfile.dev       # 統合開発コンテナの Dockerfile
+├── docker-compose.yml   # Docker Compose 設定
+└── CLAUDE.md            # このファイル (プロジェクト全体のガイド)
 ```
-
-各サブプロジェクトには独自の CLAUDE.md ファイルがあり、それぞれの技術スタック、開発環境、コーディング規約などが記載されています：
-
-- **Go 版**: `go/CLAUDE.md` - Go 版固有の開発ガイド
-- **Rails 版**: `rails/CLAUDE.md` - Rails 版固有の開発ガイド
 
 ## 主要な技術スタックのバージョン
 
-Mewst で使用している主要なランタイム・ミドルウェアのバージョンは以下の通りです。各サブプロジェクト固有のライブラリ・ツールのバージョンは各サブプロジェクトの CLAUDE.md を参照してください。
+Mewst で使用している主要なランタイム・ミドルウェアのバージョンは以下の通りです。
 
 | 項目       | バージョン | 備考                                              |
 | ---------- | ---------- | ------------------------------------------------- |
@@ -42,19 +47,7 @@ Mewst で使用している主要なランタイム・ミドルウェアのバ�
 | Rails      | 7.1.x      | Rails 版で使用 (`/workspace/rails/`)              |
 | PostgreSQL | 16.2       | Go 版と Rails 版で共有 (詳細は「共通インフラ」節) |
 
-なお、APM 経由で配信される共通ガイドライン (`korylus/guidelines`) はバージョン中立な記述としており、具体的なバージョンは本ファイルおよび各サブプロジェクトの CLAUDE.md で管理しています。
-
-## APM (Agent Package Manager) について
-
-このリポジトリでは [APM (Agent Package Manager)](https://github.com/microsoft/apm) を使い、Korylus プロダクト共通の AI 向けガイドラインとスキルを `korylus/guidelines` リポジトリから取得しています。`.claude/rules/` 配下のルールと `.claude/skills/` 配下のスキルは APM 経由で配信され、`apm install` 実行時にリポジトリへ配置されます。
-
-### 運用ルール
-
-- **`apm install` で更新する**: `apm.yml` の依存定義 (`github.com/korylus/guidelines#vX.Y.Z`) に従って `apm install` または `apm install --update` を実行し、`.claude/rules/` および `.claude/skills/` を最新化します
-- **`apm.lock.yaml` の `deployed_files` に列挙されたファイルは編集禁止**: これらのファイル (例: `.claude/rules/common.md`、`.claude/skills/commit/SKILL.md`) は次回の `apm install` で上書きされるため、Mewst リポジトリ側で直接編集しても次回更新時に元に戻ります
-- **共通ガイドラインの修正は単方向フロー**: 共通ガイドラインを変更したい場合は `korylus/guidelines` 側 (`.apm/instructions/` または `.apm/skills/`) を編集してバージョンタグを切り、Mewst の `apm.yml` を新バージョンに更新してから `apm install` を実行します。Mewst から共通ガイドラインへ直接コミットを書き戻す運用は行いません
-
-詳細な APM のコマンド一覧、フォーマット運用、診断メッセージの読み方、トラブルシューティングについては [@.claude/rules/apm.md](/workspace/.claude/rules/apm.md) を参照してください。
+なお、Korylus 共通ガイドライン (`korylus-guidelines`) はバージョン中立な記述としており、具体的なバージョンは本ファイルで管理しています。
 
 ## Rails から Go への移行について
 
@@ -85,7 +78,7 @@ Go 版を実装する際は、Rails 版のコードを参考にすることで�
 
 ## フィーチャーフラグによる開発
 
-Mewst ではフィーチャーブランチではなく **フィーチャーフラグ** を使って機能の公開を制御しています。基本方針・運用ルールは [@.claude/rules/common.md](/workspace/.claude/rules/common.md) の「フィーチャーフラグによる開発」セクションを参照してください。
+Mewst ではフィーチャーブランチではなく **フィーチャーフラグ** を使って機能の公開を制御しています。基本方針・運用ルールは [@.claude/rules/korylus/common.md](/workspace/.claude/rules/korylus/common.md) の「フィーチャーフラグによる開発」セクションを参照してください。
 
 Mewst で利用しているフラグの種類は次の 2 つです。
 
@@ -146,14 +139,14 @@ docker compose exec app zsh
 
 4. **各サブプロジェクトのセットアップ**
 
-各サブプロジェクトの詳細なセットアップ手順は、それぞれの CLAUDE.md ファイルを参照してください：
+各サブプロジェクトの詳細なセットアップ手順は、以下のガイドラインを参照してください：
 
-- Go 版: `go/CLAUDE.md`の「開発環境のセットアップ」セクション
-- Rails 版: `rails/CLAUDE.md`の「開発環境のセットアップ」セクション
+- Go 版: [@.claude/rules/korylus/go-development.md](/workspace/.claude/rules/korylus/go-development.md)
+- Rails 版: [@.claude/rules/korylus/rails-common.md](/workspace/.claude/rules/korylus/rails-common.md)
 
 ### 環境変数の設定
 
-各サブプロジェクトで`.env`ファイルを作成し、必要な環境変数を設定します。詳細は各サブプロジェクトの CLAUDE.md を参照してください。
+各サブプロジェクトで `.env` ファイルを作成し、必要な環境変数を設定します。詳細は上記のガイドラインを参照してください。
 
 ### 開発サーバーの起動
 
@@ -175,19 +168,26 @@ make dev
 
 ## ドキュメント
 
-### 仕様書
-
 各機能の仕様は `docs/specs/` ディレクトリで管理しています。システムの現在の状態を理解するには、まず仕様書を参照してください。
 
 - [@docs/README.md](/workspace/docs/README.md) - ドキュメント管理のガイド
 - [@docs/specs/](/workspace/docs/specs/) - 各機能の仕様書
 
-### サブプロジェクト
+## 参照するガイドライン
 
-各サブプロジェクトの詳細なドキュメントは以下を参照してください：
+Claude Code は `.claude/rules/` 配下のガイドラインを自動で読み込むため、通常は特に意識せず書いて OK。Korylus 共通ガイドラインの実体は `korylus-guidelines` リポジトリにあり、Docker Compose で `/korylus-guidelines/.claude/rules/korylus/` を `.claude/rules/korylus/` にマウントすることで参照しています (スキルも `/korylus-guidelines/.claude/skills/korylus-*` を `.claude/skills/korylus-*` にマウント)。
 
-- **Go 版**: @go/CLAUDE.md - Go 版の技術スタック、プロジェクト構造、コーディング規約、テスト戦略など
-- **Rails 版**: @rails/CLAUDE.md - Rails 版の技術スタック、プロジェクト構造、コーディング規約、テスト戦略など
+- **Korylus 共通**: `.claude/rules/korylus/common.md` / `.claude/rules/korylus/guidelines-authoring.md`
+- **Go 版**: `.claude/rules/korylus/go-*.md` (coding, architecture, common, development, handler, usecase, testing, validation, security, templ, i18n)
+- **Rails 版**: `.claude/rules/korylus/rails-*.md` (common, architecture, testing, security)
+
+`.claude/rules/korylus/` 配下のファイルを編集すると、マウント元である `korylus-guidelines` リポジトリのファイルが直接更新されます。共通ガイドラインの修正は `korylus-guidelines` 側でコミットしてください。
+
+## Mewst 固有のガイドライン
+
+マウントされる共通ガイドライン (`.claude/rules/korylus/`) に加えて、Mewst プロジェクト固有の規約を本セクションに記述する。Korylus の他プロダクトには適用されない、Mewst 独自のドメイン規約・セキュリティ規約を扱う。
+
+当面は本ファイルに直接記述し、記述量が増えてきたタイミングでトピックごとに `.claude/rules/mewst/{topic}.md` に切り出す (Mewst リポジトリで Git 管理)。切り出す際は YAML フロントマターの `paths:` で自動読み込みの対象範囲を指定する。
 
 ## レビュー時に参照するガイドライン
 
@@ -198,66 +198,57 @@ make dev
 - [@CLAUDE.md](/workspace/CLAUDE.md) - プロジェクト全体のガイド
   - コミットメッセージのガイドライン
   - コメントのガイドライン
-  - Pull Requestのガイドライン
+  - Pull Request のガイドライン
+- [@.claude/rules/korylus/common.md](/workspace/.claude/rules/korylus/common.md) - Korylus プロダクト共通の開発ガイドライン (設計原則、PR・コミットのガイドラインなど)
 
-### Go版ガイドライン
+### Go 版ガイドライン
 
-- [@go/CLAUDE.md](/workspace/go/CLAUDE.md) - Go版の開発ガイド
-  - コーディング規約 (インデント、フォーマット、コメント)
-  - ログ出力 (log/slog)
-  - HTTPハンドラー (標準ファイル名、メソッド名)
-  - templテンプレート (引数パターン)
-  - バリデーション方針
-  - HTTPメソッドとルーティング
-  - 国際化 (I18n)
-  - ビューモデル・ユースケース
-  - セキュリティガイドライン
-  - テスト戦略
-- [@go/docs/architecture-guide.md](/workspace/go/docs/architecture-guide.md) - アーキテクチャガイド
-  - 3層アーキテクチャの依存関係ルール
-  - Usecase、Repositoryの使い分け
-- [@go/docs/usecase-guide.md](/workspace/go/docs/usecase-guide.md) - UseCase ガイド
-  - 3 種類の分類(読み取り / 書き込み / オーケストレーション)
-  - UseCase 内の処理順序(5 ステップ)
+- [@.claude/rules/korylus/go-common.md](/workspace/.claude/rules/korylus/go-common.md) - Go 版開発ガイド (プロジェクト構造、技術スタック、開発コマンド)
+- [@.claude/rules/korylus/go-coding.md](/workspace/.claude/rules/korylus/go-coding.md) - コーディング規約 (インデント、フォーマット、コメント、log/slog)
+- [@.claude/rules/korylus/go-architecture.md](/workspace/.claude/rules/korylus/go-architecture.md) - アーキテクチャガイド
+  - 3 層アーキテクチャの依存関係ルール
+  - Usecase、Repository の使い分け
+- [@.claude/rules/korylus/go-usecase.md](/workspace/.claude/rules/korylus/go-usecase.md) - UseCase ガイド
+  - 3 種類の分類 (読み取り / 書き込み / オーケストレーション)
+  - UseCase 内の処理順序 (5 ステップ)
   - 書き込み UseCase の 2 つのルール
   - Validator のデータ取得パターン
-- [@go/docs/handler-guide.md](/workspace/go/docs/handler-guide.md) - HTTPハンドラーガイドライン
+- [@.claude/rules/korylus/go-handler.md](/workspace/.claude/rules/korylus/go-handler.md) - HTTP ハンドラーガイドライン
   - ディレクトリ構造
-  - 標準ファイル名 (8種類のみ)
+  - 標準ファイル名
   - 依存性注入
-- [@go/docs/validation-guide.md](/workspace/go/docs/validation-guide.md) - バリデーションガイド
+- [@.claude/rules/korylus/go-validation.md](/workspace/.claude/rules/korylus/go-validation.md) - バリデーションガイド
   - バリデーションの分類
   - 状態バリデーションの配置基準
-- [@go/docs/i18n-guide.md](/workspace/go/docs/i18n-guide.md) - 国際化ガイド
+- [@.claude/rules/korylus/go-i18n.md](/workspace/.claude/rules/korylus/go-i18n.md) - 国際化ガイド
   - 翻訳ファイルの追加手順
   - 命名規則
-- [@go/docs/security-guide.md](/workspace/go/docs/security-guide.md) - セキュリティガイドライン
-  - CSRF対策
-  - XSS対策
-  - SQLインジェクション対策
+- [@.claude/rules/korylus/go-security.md](/workspace/.claude/rules/korylus/go-security.md) - セキュリティガイドライン
+  - CSRF 対策
+  - XSS 対策
+  - SQL インジェクション対策
   - 認証・認可
-- [@go/docs/templ-guide.md](/workspace/go/docs/templ-guide.md) - templテンプレートガイド
+- [@.claude/rules/korylus/go-templ.md](/workspace/.claude/rules/korylus/go-templ.md) - templ テンプレートガイド
   - ファイル配置
   - 命名規則
   - コンポーネント化
+- [@.claude/rules/korylus/go-testing.md](/workspace/.claude/rules/korylus/go-testing.md) - テスト戦略
+- [@.claude/rules/korylus/go-development.md](/workspace/.claude/rules/korylus/go-development.md) - 開発環境ガイド (DB マイグレーション、golangci-lint など)
 
-### Rails版ガイドライン
+### Rails 版ガイドライン
 
-- [@rails/CLAUDE.md](/workspace/rails/CLAUDE.md) - Rails版の開発ガイド
-  - プロジェクト構造 (app/ディレクトリの構成と責務)
-  - コーディング規約 (Ruby、テンプレート、JavaScript)
-  - 国際化 (I18n)
-- [@rails/docs/architecture-guide.md](/workspace/rails/docs/architecture-guide.md) - アーキテクチャガイド
+- [@.claude/rules/korylus/rails-common.md](/workspace/.claude/rules/korylus/rails-common.md) - Rails 版開発ガイド (プロジェクト構造、コーディング規約、開発コマンド)
+- [@.claude/rules/korylus/rails-architecture.md](/workspace/.claude/rules/korylus/rails-architecture.md) - アーキテクチャガイド
   - アーキテクチャパターン (Records、UseCase、ViewComponent)
   - クラス間の依存関係ルール
   - 命名規則
-- [@rails/docs/testing-guide.md](/workspace/rails/docs/testing-guide.md) - テストガイド
-  - RSpecコーディング規約
+- [@.claude/rules/korylus/rails-testing.md](/workspace/.claude/rules/korylus/rails-testing.md) - テストガイド
+  - RSpec コーディング規約
   - テスト戦略
-- [@rails/docs/security-guide.md](/workspace/rails/docs/security-guide.md) - セキュリティガイドライン
-  - CSRF対策
-  - XSS対策
-  - SQLインジェクション対策
+- [@.claude/rules/korylus/rails-security.md](/workspace/.claude/rules/korylus/rails-security.md) - セキュリティガイドライン
+  - CSRF 対策
+  - XSS 対策
+  - SQL インジェクション対策
   - 認証
 
 ## 設計原則
@@ -315,7 +306,7 @@ make fmt-check
 make fmt
 ```
 
-各サブプロジェクト固有のコマンド (Go の `make fmt` や Rails の `make fmt` など) は、それぞれの CLAUDE.md を参照してください。
+各サブプロジェクト固有のコマンド (Go の `make fmt` や Rails の `make fmt` など) は、`.claude/rules/korylus/go-common.md` および `.claude/rules/korylus/rails-common.md` を参照してください。
 
 ### 修正後のコミット
 
@@ -390,10 +381,10 @@ make fmt
 - git の履歴に残る情報 (過去の実装、変更の経緯) はコメントに書かない
 - レビューコメントや議論の文脈に依存する内容は書かない
 
-詳細な例については、各サブプロジェクトの CLAUDE.md を参照してください：
+詳細な例については、各サブプロジェクトのコーディング規約を参照してください：
 
-- Go 版: `go/CLAUDE.md` の「コメントのガイドライン」セクション
-- Rails 版: `rails/CLAUDE.md` の「コメントのガイドライン」セクション
+- Go 版: [@.claude/rules/korylus/go-coding.md](/workspace/.claude/rules/korylus/go-coding.md) の「コメントのガイドライン」セクション
+- Rails 版: [@.claude/rules/korylus/rails-common.md](/workspace/.claude/rules/korylus/rails-common.md) の「コメントのガイドライン」セクション
 
 ### Pull Request のガイドライン
 
@@ -469,4 +460,4 @@ Pull Request を作成する際は、以下のルールを遵守してくださ�
 
 ### その他の問題
 
-各サブプロジェクト固有の問題については、それぞれの CLAUDE.md の「トラブルシューティング」セクションを参照してください。
+各サブプロジェクト固有の問題については、`.claude/rules/korylus/go-common.md` および `.claude/rules/korylus/rails-common.md` を参照してください。
