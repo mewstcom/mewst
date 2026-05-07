@@ -33,7 +33,7 @@ func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Confi
 	return h, cfg
 }
 
-// findCookie はレスポンスから指定名のCookieを返す（無ければnil）
+// findCookie はレスポンスから指定名のCookieを返す (無ければnil)
 func findCookie(cookies []*http.Cookie, name string) *http.Cookie {
 	for _, c := range cookies {
 		if c.Name == name {

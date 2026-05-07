@@ -293,7 +293,7 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 		t.Fatal("expected ValidationError")
 	}
 
-	// グローバルエラーとして返されることを確認（フィールドエラーではない）
+	// グローバルエラーとして返されることを確認 (フィールドエラーではない)
 	if len(ve.Global) == 0 {
 		t.Error("expected global error, not field error")
 	}
@@ -336,7 +336,7 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 			})
 
 			// 形式バリデーションでエラーにならないことを確認
-			// （ユーザーが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない）
+			// (ユーザーが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない)
 			ve := model.AsValidationError(err)
 			if ve != nil && ve.HasFieldError("email") {
 				t.Errorf("email形式バリデーションでエラーが発生: %v", ve.GetFieldErrors("email"))

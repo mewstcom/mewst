@@ -193,7 +193,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}
@@ -382,7 +382,7 @@ func TestNew_WithBackParameter(t *testing.T) {
 		t.Error("back hiddenフィールドの値が正しくありません")
 	}
 
-	// サインアップリンクにbackパラメータが含まれているか確認（URLクエリエスケープ済み）
+	// サインアップリンクにbackパラメータが含まれているか確認 (URLクエリエスケープ済み)
 	if !strings.Contains(body, `/sign_up?back=%2Fsettings`) {
 		t.Error("サインアップリンクにbackパラメータが含まれていません")
 	}
@@ -437,12 +437,12 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 		wantURL string
 	}{
 		{
-			name:    "絶対URL（外部サイト）",
+			name:    "絶対URL (外部サイト)",
 			backURL: "https://evil.com",
 			wantURL: "/",
 		},
 		{
-			name:    "プロトコル相対URL（外部サイト）",
+			name:    "プロトコル相対URL (外部サイト)",
 			backURL: "//evil.com",
 			wantURL: "/",
 		},
@@ -529,7 +529,7 @@ func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}

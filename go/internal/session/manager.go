@@ -18,10 +18,10 @@ const CookieName = "mewst_session_token"
 // EmailConfirmationCookieName はメール確認IDを保存するクッキー名
 const EmailConfirmationCookieName = "mewst_email_confirmation_id"
 
-// MaxAge はクッキーの有効期限（10年、Rails版と同じ）
+// MaxAge はクッキーの有効期限 (10年、Rails版と同じ)
 const MaxAge = 10 * 365 * 24 * 60 * 60
 
-// EmailConfirmationMaxAge はメール確認クッキーの有効期限（15分）
+// EmailConfirmationMaxAge はメール確認クッキーの有効期限 (15分)
 const EmailConfirmationMaxAge = 15 * 60
 
 // Manager はセッション管理を行う

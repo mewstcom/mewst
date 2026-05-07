@@ -14,7 +14,7 @@ func TestSessionRepository_FindByToken(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストデータを作成（User → Profile → Actor → Session）
+	// テストデータを作成 (User → Profile → Actor → Session)
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("session-getbytoken@example.com").
 		Build()
@@ -73,7 +73,7 @@ func TestSessionRepository_Create(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストデータを作成（User → Profile → Actor）
+	// テストデータを作成 (User → Profile → Actor)
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("session-create@example.com").
 		Build()
@@ -124,7 +124,7 @@ func TestSessionRepository_DeleteByToken(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストデータを作成（User → Profile → Actor → Session）
+	// テストデータを作成 (User → Profile → Actor → Session)
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("session-delete@example.com").
 		Build()

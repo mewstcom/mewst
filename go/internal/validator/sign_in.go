@@ -39,7 +39,7 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 		return nil, ve
 	}
 
-	// 2. 状態バリデーション（DB検証）
+	// 2. 状態バリデーション (DB検証)
 	user, err := v.userRepo.FindByEmail(ctx, input.Email)
 	if err != nil {
 		return nil, err

@@ -14,7 +14,7 @@ import (
 const (
 	// CloudflareのSiteverify APIエンドポイント
 	siteverifyURL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-	// タイムアウト時間（10秒）
+	// タイムアウト時間 (10秒)
 	requestTimeout = 10 * time.Second
 )
 
@@ -100,7 +100,7 @@ func (c *Client) Verify(ctx context.Context, token string) (bool, error) {
 
 	// ステータスコードが200でない場合はエラー
 	if resp.StatusCode != http.StatusOK {
-		return false, fmt.Errorf("siteverify APIがエラーを返しました（ステータスコード: %d）: %s", resp.StatusCode, string(body))
+		return false, fmt.Errorf("siteverify APIがエラーを返しました (ステータスコード: %d): %s", resp.StatusCode, string(body))
 	}
 
 	// JSONデコード
@@ -113,7 +113,7 @@ func (c *Client) Verify(ctx context.Context, token string) (bool, error) {
 	if !verifyResp.Success {
 		// error-codesがある場合はログに記録できるように返す
 		if len(verifyResp.ErrorCodes) > 0 {
-			return false, fmt.Errorf("turnstile検証に失敗しました（エラーコード: %v）", verifyResp.ErrorCodes)
+			return false, fmt.Errorf("turnstile検証に失敗しました (エラーコード: %v)", verifyResp.ErrorCodes)
 		}
 		return false, fmt.Errorf("turnstile検証に失敗しました")
 	}

@@ -151,7 +151,7 @@ func TestNew_WithMismatchedEvent(t *testing.T) {
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
 
-	// sign_up 以外のイベント（password_reset）の確認済みレコードを作成
+	// sign_up 以外のイベント (password_reset) の確認済みレコードを作成
 	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("mismatched@example.com").
 		WithEvent("password_reset").
@@ -308,7 +308,7 @@ func TestCreate_WithMismatchedEvent(t *testing.T) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req = req.WithContext(ctx)
 
-	// sign_up 以外のイベント（password_reset）の確認済みレコードを設定
+	// sign_up 以外のイベント (password_reset) の確認済みレコードを設定
 	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("mismatched-create@example.com").
 		WithEvent("password_reset").
@@ -342,7 +342,7 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
 
-	// レート制限を超過するためにリクエストを5回送信（制限: 5回/分）
+	// レート制限を超過するためにリクエストを5回送信 (制限: 5回/分)
 	for i := 0; i < 5; i++ {
 		form := url.Values{}
 		form.Set("atname", "ratelimit")

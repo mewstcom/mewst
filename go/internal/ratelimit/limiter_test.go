@@ -275,7 +275,7 @@ func TestLimiter_CleanupOldRecords(t *testing.T) {
 			t.Fatalf("チェックでエラー: %v", err)
 		}
 
-		// 2時間の保持期間で削除（現在のレコードは削除されない）
+		// 2時間の保持期間で削除 (現在のレコードは削除されない)
 		err = limiter.CleanupOldRecords(context.Background(), 2*time.Hour)
 		if err != nil {
 			t.Errorf("クリーンアップでエラー: %v", err)

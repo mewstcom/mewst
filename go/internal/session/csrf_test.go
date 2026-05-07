@@ -59,7 +59,7 @@ func TestGenerateCSRFToken(t *testing.T) {
 		}
 
 		if token1 == token2 {
-			t.Error("同じトークンが生成されました（ランダム性が失われています）")
+			t.Error("同じトークンが生成されました (ランダム性が失われています)")
 		}
 	})
 

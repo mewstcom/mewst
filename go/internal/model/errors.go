@@ -6,9 +6,9 @@ import (
 )
 
 // ValidationError はバリデーションエラーを表す。
-// Handler はこのエラーを受け取ったらフォームを再描画する（422）。
+// Handler はこのエラーを受け取ったらフォームを再描画する (422) 。
 type ValidationError struct {
-	// Global はフォーム全体のエラーメッセージ（特定のフィールドに紐づかないエラー）
+	// Global はフォーム全体のエラーメッセージ (特定のフィールドに紐づかないエラー)
 	Global []string
 	// Fields はフィールドごとのエラーメッセージ
 	Fields map[string][]string
@@ -53,7 +53,7 @@ func (e *ValidationError) GetFieldErrors(field string) []string {
 	return e.Fields[field]
 }
 
-// FieldError はフィールドエラーを表す構造体（テンプレート用）
+// FieldError はフィールドエラーを表す構造体 (テンプレート用)
 type FieldError struct {
 	Field   string
 	Message string
@@ -94,7 +94,7 @@ const (
 	AppErrCodeInternal
 )
 
-// AppError はアプリケーションエラーを表す（SafeError パターン）。
+// AppError はアプリケーションエラーを表す (SafeError パターン) 。
 // Error() はユーザー安全なメッセージのみを返す。
 type AppError struct {
 	// Code はエラー種別。Handler がステータスコードを決定するために使用する
@@ -103,13 +103,13 @@ type AppError struct {
 	UserMsg string
 	// Internal はログ出力用の内部エラー。ユーザーには公開しない
 	Internal error
-	// Metadata は構造化ログ用のメタデータ（user_id, email 等）
+	// Metadata は構造化ログ用のメタデータ (user_id, email 等)
 	Metadata map[string]string
 }
 
 func (e *AppError) Error() string { return e.UserMsg }
 
-// Unwrap は内部エラーを返す（errors.Is / errors.As チェーン用）
+// Unwrap は内部エラーを返す (errors.Is / errors.As チェーン用)
 func (e *AppError) Unwrap() error { return e.Internal }
 
 // LogString はログ出力用の詳細文字列を返す

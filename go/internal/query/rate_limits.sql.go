@@ -36,7 +36,7 @@ type IncrementRateLimitParams struct {
 	WindowStart time.Time `db:"window_start"`
 }
 
-// Rate Limit カウンターをインクリメントする（UPSERT）
+// Rate Limit カウンターをインクリメントする (UPSERT)
 // 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
 func (q *Queries) IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error) {
 	row := q.db.QueryRowContext(ctx, incrementRateLimit, arg.Key, arg.WindowStart)

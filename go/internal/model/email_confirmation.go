@@ -27,7 +27,7 @@ type EmailConfirmation struct {
 	UpdatedAt   time.Time
 }
 
-// EmailConfirmationExpirationMinutes は確認コードの有効期限（分）
+// EmailConfirmationExpirationMinutes は確認コードの有効期限 (分)
 const EmailConfirmationExpirationMinutes = 15
 
 // IsExpired は確認コードが有効期限切れかどうかを返す

@@ -29,7 +29,7 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	// リポジトリを作成（トランザクションを使用）
+	// リポジトリを作成 (トランザクションを使用)
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 

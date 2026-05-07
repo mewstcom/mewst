@@ -110,7 +110,7 @@ func TestRequireAuth_未認証の場合(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// リクエストを作成（クッキーなし）
+	// リクエストを作成 (クッキーなし)
 	req := httptest.NewRequest(http.MethodGet, "/protected", nil)
 	rr := httptest.NewRecorder()
 
@@ -142,7 +142,7 @@ func TestRequireAuth_無効なトークンの場合(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// リクエストを作成（無効なトークン）
+	// リクエストを作成 (無効なトークン)
 	req := httptest.NewRequest(http.MethodGet, "/protected", nil)
 	req.AddCookie(&http.Cookie{
 		Name:  session.CookieName,
@@ -214,7 +214,7 @@ func TestRequireNoAuth_未認証の場合(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// リクエストを作成（クッキーなし）
+	// リクエストを作成 (クッキーなし)
 	req := httptest.NewRequest(http.MethodGet, "/sign_in", nil)
 	rr := httptest.NewRecorder()
 
@@ -288,7 +288,7 @@ func TestSetUser_未認証の場合(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// リクエストを作成（クッキーなし）
+	// リクエストを作成 (クッキーなし)
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rr := httptest.NewRecorder()
 

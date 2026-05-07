@@ -278,7 +278,7 @@ func TestAccountCreateValidator_PasswordTooLong(t *testing.T) {
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	// 73文字のパスワード（bcryptの72文字制限を超える）
+	// 73文字のパスワード (bcryptの72文字制限を超える)
 	longPassword := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1"
 
 	err := validator.Validate(ctx, AccountCreateValidatorInput{

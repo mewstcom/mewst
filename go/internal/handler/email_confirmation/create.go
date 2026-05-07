@@ -30,7 +30,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	code := r.FormValue("code")
 	backURL := r.FormValue("back")
 
-	// UseCase を実行（バリデーション + 確認成功マーク）
+	// UseCase を実行 (バリデーション + 確認成功マーク)
 	ucResult, err := h.verifyEmailConfirmationUC.Execute(ctx, usecase.VerifyEmailConfirmationInput{
 		ID:   id,
 		Code: code,
@@ -40,7 +40,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// イベントに応じたリダイレクト先を決定（sign_up イベントのみ back を伝搬）
+	// イベントに応じたリダイレクト先を決定 (sign_up イベントのみ back を伝搬)
 	redirectPath := getRedirectPath(ucResult.EmailConfirmation.Event, backURL)
 
 	// フラッシュメッセージを設定
@@ -66,7 +66,7 @@ func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err 
 // getRedirectPath はイベントに応じたリダイレクト先を返す。
 //
 // sign_up イベント時のみ backURL を伝搬する理由: 新規登録フローでは登録完了後にユーザーが元ページに戻ることを想定する。
-// 一方、パスワードリセット・メール変更の完了画面は固定の遷移先（/sign_in もしくは /settings/email）であり、
+// 一方、パスワードリセット・メール変更の完了画面は固定の遷移先 (/sign_in もしくは /settings/email) であり、
 // 元ページへ戻すこと自体を想定していないため backURL を伝搬しない。
 func getRedirectPath(event model.EmailConfirmationEvent, backURL string) string {
 	switch event {

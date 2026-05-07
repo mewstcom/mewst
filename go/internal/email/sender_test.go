@@ -111,7 +111,7 @@ func TestEmailConfirmationTemplate_Japanese_HTML(t *testing.T) {
 		t.Error("expected confirmation code in HTML")
 	}
 
-	// HTMLタグが含まれているか（templは小文字に変換する）
+	// HTMLタグが含まれているか (templは小文字に変換する)
 	if !strings.Contains(html, "<!doctype html>") {
 		t.Error("expected doctype in HTML")
 	}

@@ -14,16 +14,16 @@ import (
 
 // Sender はメール送信を行うインターフェース
 type Sender interface {
-	// Send はメールを送信する（templ.Componentを使用）
+	// Send はメールを送信する (templ.Componentを使用)
 	Send(ctx context.Context, input SendInput) error
 }
 
-// SendInput はメール送信の入力（templ.Componentを使用）
+// SendInput はメール送信の入力 (templ.Componentを使用)
 type SendInput struct {
 	To       string          // 送信先メールアドレス
 	Subject  string          // 件名
-	HTMLBody templ.Component // メール本文（HTML形式）
-	TextBody templ.Component // メール本文（テキスト形式）
+	HTMLBody templ.Component // メール本文 (HTML形式)
+	TextBody templ.Component // メール本文 (テキスト形式)
 }
 
 // ResendSender はResend APIを使用してメールを送信する
@@ -54,7 +54,7 @@ func (s *ResendSender) from() string {
 	return s.fromEmail
 }
 
-// Send はメールを送信する（templ.Componentを使用）
+// Send はメールを送信する (templ.Componentを使用)
 func (s *ResendSender) Send(ctx context.Context, input SendInput) error {
 	// HTMLテンプレートをレンダリング
 	var htmlBuf bytes.Buffer
@@ -84,9 +84,9 @@ func (s *ResendSender) Send(ctx context.Context, input SendInput) error {
 	return nil
 }
 
-// NoopSender はメールを送信しないダミー実装（テスト用）
+// NoopSender はメールを送信しないダミー実装 (テスト用)
 type NoopSender struct {
-	// SentEmails は送信されたメールを記録する（テスト用）
+	// SentEmails は送信されたメールを記録する (テスト用)
 	SentEmails []SendInput
 }
 
@@ -97,7 +97,7 @@ func NewNoopSender() *NoopSender {
 	}
 }
 
-// Send はメールを送信せず、記録のみ行う（テスト用）
+// Send はメールを送信せず、記録のみ行う (テスト用)
 func (s *NoopSender) Send(_ context.Context, input SendInput) error {
 	s.SentEmails = append(s.SentEmails, input)
 	return nil

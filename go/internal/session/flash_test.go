@@ -208,7 +208,7 @@ func TestFlashManager_CookieAttributes(t *testing.T) {
 
 		cookie := rr.Result().Cookies()[0]
 		if cookie.HttpOnly {
-			t.Error("HttpOnlyフラグがtrueです（falseであるべき）")
+			t.Error("HttpOnlyフラグがtrueです (falseであるべき)")
 		}
 	})
 

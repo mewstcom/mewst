@@ -30,7 +30,7 @@ func TestVerify_Success(t *testing.T) {
 	}))
 	defer mockServer.Close()
 
-	// クライアントを作成（モックサーバーのURLを使用）
+	// クライアントを作成 (モックサーバーのURLを使用)
 	client := NewClient("test-secret-key")
 	// siteverifyURLを書き換えることができないため、httpClientのTransportを使ってリダイレクト
 	client.httpClient.Transport = &mockTransport{
@@ -72,7 +72,7 @@ func TestVerify_Failure(t *testing.T) {
 	ctx := context.Background()
 	success, err := client.Verify(ctx, "invalid-token")
 
-	// アサーション（検証失敗の場合はエラーが返る）
+	// アサーション (検証失敗の場合はエラーが返る)
 	if err == nil {
 		t.Error("Verify() error = nil, want error")
 	}
@@ -127,7 +127,7 @@ func TestVerify_EmptyToken(t *testing.T) {
 	// クライアントを作成
 	client := NewClient("test-secret-key")
 
-	// Verifyメソッドをテスト（空トークン）
+	// Verifyメソッドをテスト (空トークン)
 	ctx := context.Background()
 	success, err := client.Verify(ctx, "")
 
@@ -146,14 +146,14 @@ func TestVerify_EmptyToken(t *testing.T) {
 func TestVerify_EmptySecretKey(t *testing.T) {
 	t.Parallel()
 
-	// SecretKeyが空のクライアントを作成（テスト環境用）
+	// SecretKeyが空のクライアントを作成 (テスト環境用)
 	client := NewClient("")
 
 	// Verifyメソッドをテスト
 	ctx := context.Background()
 	success, err := client.Verify(ctx, "any-token")
 
-	// アサーション（SecretKeyが空の場合は常に成功を返す）
+	// アサーション (SecretKeyが空の場合は常に成功を返す)
 	if err != nil {
 		t.Errorf("Verify() error = %v, want nil", err)
 	}
@@ -166,9 +166,9 @@ func TestVerify_Timeout(t *testing.T) {
 	t.Parallel()
 
 	// コンテキストのタイムアウトを使ってタイムアウトをテスト
-	// （HTTPクライアントのタイムアウト10秒より短いコンテキストを使用）
+	// (HTTPクライアントのタイムアウト10秒より短いコンテキストを使用)
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 2秒待機（コンテキストのタイムアウト1秒より長い）
+		// 2秒待機 (コンテキストのタイムアウト1秒より長い)
 		time.Sleep(2 * time.Second)
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"success": true}`))

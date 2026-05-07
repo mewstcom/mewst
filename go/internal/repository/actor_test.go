@@ -16,7 +16,7 @@ func TestActorRepository_FindByID(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストデータを作成（User → Profile → Actor）
+	// テストデータを作成 (User → Profile → Actor)
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("actor-getbyid@example.com").
 		Build()
@@ -82,7 +82,7 @@ func TestActorRepository_FindByUserID(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストデータを作成（User → Profile → Actor）
+	// テストデータを作成 (User → Profile → Actor)
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("actor-getbyuserid@example.com").
 		Build()

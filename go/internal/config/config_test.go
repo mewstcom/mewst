@@ -620,7 +620,7 @@ func TestGetAssetVersion(t *testing.T) {
 			got2 := cfg.GetAssetVersion()
 
 			if tt.wantStatic {
-				// 静的値（AssetVersion）が返されるべき
+				// 静的値 (AssetVersion) が返されるべき
 				if got1 != tt.assetVersion {
 					t.Errorf("GetAssetVersion() = %v, want %v", got1, tt.assetVersion)
 				}
@@ -628,7 +628,7 @@ func TestGetAssetVersion(t *testing.T) {
 					t.Errorf("GetAssetVersion() should return same value, got %v and %v", got1, got2)
 				}
 			} else {
-				// 動的値（タイムスタンプ）が返されるべき
+				// 動的値 (タイムスタンプ) が返されるべき
 				if got1 == "" {
 					t.Error("GetAssetVersion() should not return empty string")
 				}

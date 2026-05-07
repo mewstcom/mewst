@@ -22,10 +22,10 @@ type ReverseProxyMiddleware struct {
 	cfg      *config.Config
 }
 
-// Go版で処理するパス（ホワイトリスト）
+// Go版で処理するパス (ホワイトリスト)
 // これらのパスはRails版にプロキシせず、Go版のハンドラーで処理する
 var goHandledPaths = []string{
-	"/static",             // 静的ファイル（CSS、JS、画像など）
+	"/static",             // 静的ファイル (CSS、JS、画像など)
 	"/health",             // ヘルスチェックエンドポイント
 	"/manifest.json",      // Web App Manifest
 	"/sign_in",            // ログインページ・処理
@@ -47,7 +47,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 	// httputil.ReverseProxyを作成
 	proxy := httputil.NewSingleHostReverseProxy(parsedURL)
 
-	// カスタムのHTTP Transportを設定（タイムアウトと接続プーリング）
+	// カスタムのHTTP Transportを設定 (タイムアウトと接続プーリング)
 	proxy.Transport = &http.Transport{
 		// 接続タイムアウト: 10秒
 		DialContext: (&net.Dialer{
@@ -64,7 +64,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 
-	// プロキシのディレクターをカスタマイズ（ヘッダー設定）
+	// プロキシのディレクターをカスタマイズ (ヘッダー設定)
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
 		// 既存のX-Forwarded-ForとX-Real-IPを保存
@@ -83,14 +83,14 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 		// これを防ぐために、ヘッダーマップから完全に削除してから再設定する。
 		delete(req.Header, "X-Forwarded-For")
 		if originalXForwardedFor != "" {
-			// 既存の値を維持（Cloudflareなどが設定した値を保持）
+			// 既存の値を維持 (Cloudflareなどが設定した値を保持)
 			req.Header.Set("X-Forwarded-For", originalXForwardedFor)
 		} else {
 			// 既存の値がない場合、clientIPを設定
 			req.Header.Set("X-Forwarded-For", clientIP)
 		}
 
-		// X-Real-IPヘッダーの設定（既存の値がない場合のみ）
+		// X-Real-IPヘッダーの設定 (既存の値がない場合のみ)
 		if originalXRealIP != "" {
 			req.Header.Set("X-Real-IP", originalXRealIP)
 		} else {
@@ -103,7 +103,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 		// X-Forwarded-Hostの設定
 		req.Header.Set("X-Forwarded-Host", cfg.Domain)
 
-		// ログ出力（開発者向け）
+		// ログ出力 (開発者向け)
 		slog.Info("リバースプロキシでRails版にリクエストを転送",
 			"path", req.URL.Path,
 			"method", req.Method,
@@ -112,9 +112,9 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 		)
 	}
 
-	// レスポンス処理後のログ出力（成功時）
+	// レスポンス処理後のログ出力 (成功時)
 	proxy.ModifyResponse = func(resp *http.Response) error {
-		// プロキシが成功した場合のレスポンスログを出力（開発者向け）
+		// プロキシが成功した場合のレスポンスログを出力 (開発者向け)
 		slog.Info("Rails版からレスポンスを受信",
 			"status_code", resp.StatusCode,
 			"status", resp.Status,
@@ -128,7 +128,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 		ctx := r.Context()
 
-		// 詳細なエラーログを出力（開発者向け）
+		// 詳細なエラーログを出力 (開発者向け)
 		slog.ErrorContext(ctx, "Rails版へのプロキシでエラーが発生",
 			"error", err,
 			"path", r.URL.Path,

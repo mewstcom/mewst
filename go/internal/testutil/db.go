@@ -73,7 +73,7 @@ func GetTestDB() *sql.DB {
 // SetupTestMain / SetupTx / GetTestDB のいずれから呼ばれても同じ接続を共有する。
 func initTestDB() {
 	testDBOnce.Do(func() {
-		// テスト用にbcryptコストを下げる（DefaultCost 10 → MinCost 4 で約64倍高速化）
+		// テスト用にbcryptコストを下げる (DefaultCost 10 → MinCost 4 で約64倍高速化)
 		auth.BcryptCost = auth.TestBcryptCost
 
 		dsn := os.Getenv("DATABASE_URL")
@@ -97,7 +97,7 @@ func initTestDB() {
 	})
 }
 
-// MustParseUUID は文字列をUUIDに変換する（パニックする可能性あり）
+// MustParseUUID は文字列をUUIDに変換する (パニックする可能性あり)
 func MustParseUUID(s string) uuid.UUID {
 	id, err := uuid.Parse(s)
 	if err != nil {

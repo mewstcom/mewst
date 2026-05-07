@@ -21,10 +21,10 @@ type PasswordResetCreateValidatorInput struct {
 	Email string
 }
 
-// Validate は入力値の形式をチェックする（DBアクセスなし）
+// Validate は入力値の形式をチェックする (DBアクセスなし)
 //
-// メールアドレスの存在チェックを行わないのは、列挙攻撃（存在するメールアドレスを
-// 推測する攻撃）を防ぐため。存在しないメールでも「リセットメールを送信しました」
+// メールアドレスの存在チェックを行わないのは、列挙攻撃 (存在するメールアドレスを
+// 推測する攻撃) を防ぐため。存在しないメールでも「リセットメールを送信しました」
 // と返すことで、攻撃者にメールアドレスの存在有無を推測させない。
 func (v *PasswordResetCreateValidator) Validate(ctx context.Context, input PasswordResetCreateValidatorInput) error {
 	ve := model.NewValidationError()

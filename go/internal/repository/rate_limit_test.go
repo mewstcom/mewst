@@ -126,7 +126,7 @@ func TestRateLimitRepository_DeleteOldRecords(t *testing.T) {
 			t.Fatalf("Increment() error = %v", err)
 		}
 
-		// 現在より未来のcutoffで削除（削除されない）
+		// 現在より未来のcutoffで削除 (削除されない)
 		err = repo.DeleteOldRecords(ctx, now.Add(2*time.Hour))
 		if err != nil {
 			t.Errorf("DeleteOldRecords() error = %v", err)

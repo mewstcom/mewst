@@ -11,7 +11,7 @@ import (
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// アプリケーション名（開発環境では "(Dev)" を付ける）
+	// アプリケーション名 (開発環境では "(Dev)" を付ける)
 	appName := "Mewst"
 	if h.cfg.IsDev() {
 		appName = "Mewst (Dev)"
