@@ -19,14 +19,14 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 		expectedField string
 	}{
 		{
-			name: "正常系: 有効なパスワード（8文字）",
+			name: "正常系: 有効なパスワード (8文字)",
 			input: PasswordUpdateValidatorInput{
 				Password: "password",
 			},
 			wantErrors: false,
 		},
 		{
-			name: "正常系: 有効なパスワード（長いパスワード）",
+			name: "正常系: 有効なパスワード (長いパスワード)",
 			input: PasswordUpdateValidatorInput{
 				Password: "thisisaverylongpassword123!",
 			},
@@ -55,7 +55,7 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			expectedField: "password",
 		},
 		{
-			name: "異常系: パスワードが短すぎる（7文字）",
+			name: "異常系: パスワードが短すぎる (7文字)",
 			input: PasswordUpdateValidatorInput{
 				Password: "passwor",
 			},
@@ -63,7 +63,7 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			expectedField: "password",
 		},
 		{
-			name: "異常系: パスワードが短すぎる（1文字）",
+			name: "異常系: パスワードが短すぎる (1文字)",
 			input: PasswordUpdateValidatorInput{
 				Password: "a",
 			},
@@ -71,7 +71,7 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			expectedField: "password",
 		},
 		{
-			name: "異常系: パスワードが長すぎる（73バイト）",
+			name: "異常系: パスワードが長すぎる (73バイト)",
 			input: PasswordUpdateValidatorInput{
 				Password: strings.Repeat("a", 73),
 			},
@@ -79,14 +79,14 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 			expectedField: "password",
 		},
 		{
-			name: "正常系: 日本語を含むパスワード（8文字以上）",
+			name: "正常系: 日本語を含むパスワード (8文字以上)",
 			input: PasswordUpdateValidatorInput{
 				Password: "パスワード123",
 			},
 			wantErrors: false,
 		},
 		{
-			name: "異常系: 日本語のみで8文字未満（文字数カウント）",
+			name: "異常系: 日本語のみで8文字未満 (文字数カウント)",
 			input: PasswordUpdateValidatorInput{
 				Password: "パスワード12",
 			},
@@ -131,7 +131,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 
 	v := NewPasswordUpdateValidator()
 
-	t.Run("境界値: 7文字（NG）", func(t *testing.T) {
+	t.Run("境界値: 7文字 (NG)", func(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "1234567"}
@@ -143,7 +143,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		}
 	})
 
-	t.Run("境界値: 8文字（OK）", func(t *testing.T) {
+	t.Run("境界値: 8文字 (OK)", func(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: "12345678"}
@@ -154,7 +154,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		}
 	})
 
-	t.Run("境界値: 72バイト（OK）", func(t *testing.T) {
+	t.Run("境界値: 72バイト (OK)", func(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 72)}
@@ -165,7 +165,7 @@ func TestPasswordUpdateValidator_Validate_BoundaryValues(t *testing.T) {
 		}
 	})
 
-	t.Run("境界値: 73バイト（NG）", func(t *testing.T) {
+	t.Run("境界値: 73バイト (NG)", func(t *testing.T) {
 		t.Parallel()
 
 		input := PasswordUpdateValidatorInput{Password: strings.Repeat("a", 73)}

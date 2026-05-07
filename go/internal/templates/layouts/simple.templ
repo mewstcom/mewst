@@ -13,7 +13,7 @@ type SimpleLayoutData struct {
 	Meta viewmodel.PageMeta
 }
 
-// Simple はシンプルなレイアウトを提供する（ログインページ等で使用）
+// Simple はシンプルなレイアウトを提供する (ログインページ等で使用)
 templ Simple(data SimpleLayoutData, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang={ templates.Locale(ctx) }>

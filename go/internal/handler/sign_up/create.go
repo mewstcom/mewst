@@ -54,7 +54,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UseCase を実行（バリデーション + メール確認レコード作成）
+	// UseCase を実行 (バリデーション + メール確認レコード作成)
 	ucResult, err := h.createSignUp.Execute(ctx, usecase.CreateSignUpInput{
 		Email:  email,
 		Locale: i18n.GetLocale(ctx),

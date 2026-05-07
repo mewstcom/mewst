@@ -33,10 +33,6 @@ type SendEmailConfirmationInput struct {
 
 // Execute はメール確認コードのメールを送信する
 func (uc *SendEmailConfirmationUsecase) Execute(ctx context.Context, input SendEmailConfirmationInput) error {
-	if input.Email == "" {
-		return fmt.Errorf("メールアドレスが空です")
-	}
-
 	if err := uc.sender.Send(ctx, input.Email, input.Code, input.Locale); err != nil {
 		slog.ErrorContext(ctx, "メール確認コード送信ユースケースの実行に失敗", "error", err, "email", input.Email)
 		return fmt.Errorf("メール確認コード送信ユースケースの実行に失敗: %w", err)

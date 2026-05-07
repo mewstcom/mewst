@@ -43,7 +43,7 @@ const maxAtnameLength = 20
 // minPasswordLength はパスワードの最小文字数
 const minPasswordLength = 8
 
-// maxPasswordLength はパスワードの最大文字数（bcryptの制限）
+// maxPasswordLength はパスワードの最大文字数 (bcryptの制限)
 const maxPasswordLength = 72
 
 // AccountCreateValidator はアカウント作成フォームのバリデーションを行う
@@ -67,7 +67,7 @@ type AccountCreateValidatorInput struct {
 	Password string
 }
 
-// Validate は入力値をチェックする（形式チェック + DB検証）
+// Validate は入力値をチェックする (形式チェック + DB検証)
 func (v *AccountCreateValidator) Validate(ctx context.Context, input AccountCreateValidatorInput) error {
 	ve := model.NewValidationError()
 
@@ -82,7 +82,7 @@ func (v *AccountCreateValidator) Validate(ctx context.Context, input AccountCrea
 		return ve
 	}
 
-	// 状態バリデーション（DB検証）
+	// 状態バリデーション (DB検証)
 	if err := v.validateAtnameUniqueness(ctx, ve, input.Atname); err != nil {
 		return err
 	}

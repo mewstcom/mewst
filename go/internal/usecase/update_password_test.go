@@ -56,7 +56,7 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 
 		_, tx := testutil.SetupTx(t)
 
-		// テストユーザーを作成（デフォルトパスワードは "password"）
+		// テストユーザーを作成 (デフォルトパスワードは "password")
 		email := "test-old-password@example.com"
 		testutil.NewUserBuilder(t, tx).
 			WithEmail(email).

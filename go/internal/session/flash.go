@@ -76,7 +76,7 @@ func (f *FlashManager) setFlash(w http.ResponseWriter, flashType FlashType, mess
 		return
 	}
 
-	// JSON の特殊文字（ダブルクォートなど）が Cookie で無効な文字として扱われるため、Base64 エンコードして保存する
+	// JSON の特殊文字 (ダブルクォートなど) が Cookie で無効な文字として扱われるため、Base64 エンコードして保存する
 	encoded := base64.StdEncoding.EncodeToString(data)
 
 	cookie := &http.Cookie{
@@ -85,7 +85,7 @@ func (f *FlashManager) setFlash(w http.ResponseWriter, flashType FlashType, mess
 		Path:     "/",
 		Domain:   f.cookieDomain,
 		Secure:   f.sessionSecure,
-		HttpOnly: false, // JavaScript からも参照できるようにする（toast 表示など）
+		HttpOnly: false, // JavaScript からも参照できるようにする (toast 表示など)
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, cookie)

@@ -61,7 +61,7 @@ func init() {
 	}
 }
 
-// T は翻訳関数（テンプレートやGoコードから呼び出される）
+// T は翻訳関数 (テンプレートやGoコードから呼び出される)
 func T(ctx context.Context, messageID string, templateData ...map[string]any) string {
 	localizer := GetLocalizer(ctx)
 	if localizer == nil {

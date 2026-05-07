@@ -69,7 +69,7 @@ func TestUserRepository_FindByEmail(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// テストユーザーを作成（パスワードダイジェストも検証）
+	// テストユーザーを作成 (パスワードダイジェストも検証)
 	passwordDigest := "$2a$12$TestPasswordDigest123456789012345678901234567890"
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("findbyemail@example.com").

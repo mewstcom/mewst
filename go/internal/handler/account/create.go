@@ -33,12 +33,20 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// 確認済みのメール確認レコードを取得
 	ecOutput, err := h.getSucceededEmailConfirmationUC.Execute(ctx, usecase.GetSucceededEmailConfirmationInput{ID: id})
 	if err != nil {
-		if errors.Is(err, usecase.ErrNotFound) {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			switch ae.Code {
+			case model.AppErrCodeResourceNotFound:
+				http.Redirect(w, r, "/", http.StatusFound)
+				return
+			default:
+				slog.ErrorContext(ctx, ae.LogString())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 		}
 		slog.ErrorContext(ctx, "メール確認の取得に失敗", "error", err)
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -82,7 +90,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UseCase を実行（バリデーション + アカウント作成）
+	// UseCase を実行 (バリデーション + アカウント作成)
 	accountOutput, err := h.createAccountUC.Execute(ctx, usecase.CreateAccountInput{
 		Email:    email,
 		Atname:   atname,
@@ -103,6 +111,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		UserAgent: userAgent,
 	})
 	if err != nil {
+		var ae *model.AppError
+		if errors.As(err, &ae) {
+			slog.ErrorContext(ctx, ae.LogString())
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		slog.ErrorContext(ctx, "セッション作成中にエラーが発生", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

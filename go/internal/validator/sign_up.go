@@ -26,7 +26,7 @@ type SignUpCreateValidatorInput struct {
 	Email string
 }
 
-// Validate は入力値をチェックする（形式チェック + DB検証）
+// Validate は入力値をチェックする (形式チェック + DB検証)
 func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreateValidatorInput) error {
 	ve := model.NewValidationError()
 
@@ -42,7 +42,7 @@ func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreate
 		return ve
 	}
 
-	// メールアドレスの重複チェック（DB検証）
+	// メールアドレスの重複チェック (DB検証)
 	exists, err := v.userRepo.ExistsByEmail(ctx, input.Email)
 	if err != nil {
 		return err

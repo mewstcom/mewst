@@ -6,7 +6,7 @@ import (
 )
 
 // MethodOverride はHTMLフォームから送信された_methodパラメータを読み取り、
-// HTTPメソッドを上書きするミドルウェア（Rails方式）
+// HTTPメソッドを上書きするミドルウェア (Rails方式)
 //
 // 使用例:
 //
@@ -14,7 +14,7 @@ import (
 //	  <input type="hidden" name="_method" value="DELETE">
 //	</form>
 //
-// これにより、HTMLフォーム（GETとPOSTのみサポート）とREST API（PUT/PATCH/DELETE）で
+// これにより、HTMLフォーム (GETとPOSTのみサポート) とREST API (PUT/PATCH/DELETE) で
 // 同じルーティングを使用できます。
 func MethodOverride(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

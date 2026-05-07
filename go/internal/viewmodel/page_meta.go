@@ -13,13 +13,13 @@ const siteSuffix = " | Mewst"
 
 // PageMeta はページのメタ情報を保持する構造体
 type PageMeta struct {
-	Title        string // ページタイトル（<title>タグ、og:title用）
-	Description  string // ページ説明（descriptionメタタグ、og:description用）
-	AssetVersion string // アセットのバージョン（キャッシュバスティング用）
-	OGType       string // og:typeの値（"website", "article"など）
-	OGURL        string // og:urlの値（canonicalと同じ）
+	Title        string // ページタイトル (<title>タグ、og:title用)
+	Description  string // ページ説明 (descriptionメタタグ、og:description用)
+	AssetVersion string // アセットのバージョン (キャッシュバスティング用)
+	OGType       string // og:typeの値 ("website", "article"など)
+	OGURL        string // og:urlの値 (canonicalと同じ)
 	OGImage      string // og:imageの値
-	OGLocale     string // og:localeの値（"ja_JP", "en_US"など）
+	OGLocale     string // og:localeの値 ("ja_JP", "en_US"など)
 }
 
 // DefaultPageMeta はデフォルトのメタ情報を返す
@@ -52,20 +52,20 @@ func ogLocaleFromLocale(locale string) string {
 	}
 }
 
-// SetTitle はタイトルを設定する（" | Mewst" サフィックス付き）
+// SetTitle はタイトルを設定する (" | Mewst" サフィックス付き)
 // 通常のページで使用する
 func (p *PageMeta) SetTitle(ctx context.Context, titleKey string) {
 	p.Title = i18n.T(ctx, titleKey) + siteSuffix
 }
 
-// SetTitleWithoutSuffix はタイトルを設定する（サフィックスなし）
+// SetTitleWithoutSuffix はタイトルを設定する (サフィックスなし)
 // トップページなど、サフィックスが不要なページで使用する
 func (p *PageMeta) SetTitleWithoutSuffix(ctx context.Context, titleKey string) {
 	p.Title = i18n.T(ctx, titleKey)
 }
 
 // SetOGURL はOGURLを設定する
-// pathにはクエリパラメータを除いたパスを指定する（canonical URLとして適切な形式）
+// pathにはクエリパラメータを除いたパスを指定する (canonical URLとして適切な形式)
 func (p *PageMeta) SetOGURL(cfg *config.Config, path string) {
 	p.OGURL = cfg.AppURL() + path
 }

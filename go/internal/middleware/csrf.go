@@ -103,7 +103,7 @@ func (c *CSRF) setCSRFCookie(w http.ResponseWriter, r *http.Request, token strin
 		Path:     "/",
 		Domain:   c.cfg.CookieDomain,
 		Secure:   secure,
-		HttpOnly: false, // JavaScriptからアクセス可能にする（AJAXリクエスト用）
+		HttpOnly: false, // JavaScriptからアクセス可能にする (AJAXリクエスト用)
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   24 * 60 * 60, // 24時間
 	}

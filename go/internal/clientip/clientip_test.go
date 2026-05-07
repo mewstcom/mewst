@@ -27,7 +27,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "203.0.113.1",
 		},
 		{
-			name:       "X-Forwarded-Forのみ設定されている場合（単一IP）",
+			name:       "X-Forwarded-Forのみ設定されている場合 (単一IP)",
 			cfIP:       "",
 			xff:        "192.168.1.1",
 			xri:        "",
@@ -35,7 +35,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "192.168.1.1",
 		},
 		{
-			name:       "X-Forwarded-Forのみ設定されている場合（複数IP）",
+			name:       "X-Forwarded-Forのみ設定されている場合 (複数IP)",
 			cfIP:       "",
 			xff:        "203.0.113.50, 192.168.1.1, 10.0.0.1",
 			xri:        "",
@@ -43,7 +43,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "203.0.113.50",
 		},
 		{
-			name:       "X-Forwarded-Forのみ設定されている場合（複数IP、スペースなし）",
+			name:       "X-Forwarded-Forのみ設定されている場合 (複数IP、スペースなし)",
 			cfIP:       "",
 			xff:        "203.0.113.50,192.168.1.1",
 			xri:        "",
@@ -59,7 +59,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "10.0.0.1",
 		},
 		{
-			name:       "RemoteAddrのみ使用（ポート番号あり）",
+			name:       "RemoteAddrのみ使用 (ポート番号あり)",
 			cfIP:       "",
 			xff:        "",
 			xri:        "",
@@ -67,7 +67,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "127.0.0.1",
 		},
 		{
-			name:       "RemoteAddrのみ使用（ポート番号なし）",
+			name:       "RemoteAddrのみ使用 (ポート番号なし)",
 			cfIP:       "",
 			xff:        "",
 			xri:        "",
@@ -75,7 +75,7 @@ func TestGetClientIP(t *testing.T) {
 			want:       "127.0.0.1",
 		},
 		{
-			name:       "IPv6アドレス（RemoteAddr）",
+			name:       "IPv6アドレス (RemoteAddr)",
 			cfIP:       "",
 			xff:        "",
 			xri:        "",

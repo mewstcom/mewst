@@ -31,7 +31,7 @@ func (l *Limiter) WithTx(tx *sql.Tx) *Limiter {
 
 // CheckInput はRate Limitチェックの入力パラメータ
 type CheckInput struct {
-	// Key は識別子（例: "ip:192.168.1.1", "email:user@example.com"）
+	// Key は識別子 (例: "ip:192.168.1.1", "email:user@example.com")
 	Key string
 	// Limit は許可される最大リクエスト数
 	Limit int
@@ -64,12 +64,12 @@ func (l *Limiter) Check(ctx context.Context, input CheckInput) (*CheckResult, er
 		return nil, fmt.Errorf("windowは正の値である必要があります")
 	}
 
-	// 現在のウィンドウ開始時刻を計算（時間枠の切り捨て）
+	// 現在のウィンドウ開始時刻を計算 (時間枠の切り捨て)
 	now := time.Now().UTC()
 	windowStart := now.Truncate(input.Window)
 	resetAt := windowStart.Add(input.Window)
 
-	// カウンターをインクリメント（UPSERT）
+	// カウンターをインクリメント (UPSERT)
 	result, err := l.repo.Increment(ctx, repository.IncrementInput{
 		Key:         input.Key,
 		WindowStart: windowStart,
@@ -106,7 +106,7 @@ func (l *Limiter) Allow(ctx context.Context, input CheckInput) error {
 }
 
 // CleanupOldRecords は古いRate Limitレコードを削除する
-// retentionは保持期間（この期間より古いレコードが削除される）
+// retentionは保持期間 (この期間より古いレコードが削除される)
 func (l *Limiter) CleanupOldRecords(ctx context.Context, retention time.Duration) error {
 	cutoff := time.Now().UTC().Add(-retention)
 	return l.repo.DeleteOldRecords(ctx, cutoff)

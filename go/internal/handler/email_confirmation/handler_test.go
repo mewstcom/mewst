@@ -150,7 +150,7 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// 期限切れのメール確認レコードを作成（16分前）
+	// 期限切れのメール確認レコードを作成 (16分前)
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithCode("123456").
@@ -269,7 +269,7 @@ func TestCreate_IncorrectCode(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}
@@ -462,7 +462,7 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// 期限切れのメール確認レコードを作成（16分前）
+	// 期限切れのメール確認レコードを作成 (16分前)
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithCode("123456").
@@ -489,7 +489,7 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}

@@ -21,7 +21,7 @@ type PasswordUpdateValidatorInput struct {
 	Password string
 }
 
-// Validate は入力値の形式をチェックする（DBアクセスなし）
+// Validate は入力値の形式をチェックする (DBアクセスなし)
 func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) error {
 	ve := model.NewValidationError()
 
@@ -37,7 +37,7 @@ func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUp
 		return ve
 	}
 
-	// 最大バイト数チェック（bcrypt 制限）
+	// 最大バイト数チェック (bcrypt 制限)
 	if len(input.Password) > maxPasswordLength {
 		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return ve

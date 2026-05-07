@@ -65,16 +65,6 @@ func TestSendEmailConfirmationUsecase_Execute(t *testing.T) {
 			wantLocale: "en",
 		},
 		{
-			name: "異常系: 空のメールアドレス",
-			input: usecase.SendEmailConfirmationInput{
-				Email:  "",
-				Code:   "123456",
-				Locale: "ja",
-			},
-			wantErr:   true,
-			wantCalls: 0,
-		},
-		{
 			name: "異常系: メール送信エラー",
 			input: usecase.SendEmailConfirmationInput{
 				Email:  "test@example.com",

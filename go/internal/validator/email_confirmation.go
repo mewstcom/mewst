@@ -48,7 +48,7 @@ func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input E
 		return nil, ve
 	}
 
-	// 2. 状態バリデーション（DB検証）
+	// 2. 状態バリデーション (DB検証)
 	emailConfirmation, err := v.emailConfirmationRepo.FindActiveByID(ctx, input.ID)
 	if err != nil {
 		return nil, err

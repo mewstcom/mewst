@@ -133,7 +133,7 @@ func TestT_FallbackToMessageID(t *testing.T) {
 func TestT_DefaultLocale(t *testing.T) {
 	t.Parallel()
 
-	// ロケールが設定されていない場合、デフォルト（日本語）が使われる
+	// ロケールが設定されていない場合、デフォルト (日本語) が使われる
 	ctx := context.Background()
 
 	got := T(ctx, "sign_in_new_title")
@@ -213,12 +213,12 @@ func TestDetectLanguage(t *testing.T) {
 			expected:       LangEn,
 		},
 		{
-			name:           "その他の言語の場合（デフォルト）",
+			name:           "その他の言語の場合 (デフォルト)",
 			acceptLanguage: "fr-FR,fr;q=0.9",
 			expected:       DefaultLang,
 		},
 		{
-			name:           "空の場合（デフォルト）",
+			name:           "空の場合 (デフォルト)",
 			acceptLanguage: "",
 			expected:       DefaultLang,
 		},

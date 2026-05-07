@@ -241,7 +241,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}
@@ -295,7 +295,7 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
 
-	// レート制限を超過するためにリクエストを5回送信（制限: 5回/分）
+	// レート制限を超過するためにリクエストを5回送信 (制限: 5回/分)
 	for i := 0; i < 5; i++ {
 		form := url.Values{}
 		form.Set("email", "ratelimit@example.com")

@@ -95,7 +95,7 @@ func TestNew(t *testing.T) {
 	}
 	// パスワードフィールドは含まれない
 	if strings.Contains(body, `name="password"`) {
-		t.Error("パスワードフィールドが含まれています（含まれるべきではない）")
+		t.Error("パスワードフィールドが含まれています (含まれるべきではない)")
 	}
 }
 
@@ -181,7 +181,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}

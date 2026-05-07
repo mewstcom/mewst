@@ -74,7 +74,7 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 			},
 		},
 		{
-			name: "正常系: 最大長のアットネーム（20文字）でアカウントを作成できる",
+			name: "正常系: 最大長のアットネーム (20文字) でアカウントを作成できる",
 			input: usecase.CreateAccountInput{
 				Email:    "long-atname@example.com",
 				Atname:   "abcdefghij1234567890",

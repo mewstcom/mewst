@@ -29,7 +29,7 @@ func TestReverseProxyMiddleware_GoHandledPaths(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// Go版で処理するハンドラー（ダミー）
+	// Go版で処理するハンドラー (ダミー)
 	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Go response"))
@@ -110,7 +110,7 @@ func TestReverseProxyMiddleware_RailsProxiedPaths(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// Go版で処理するハンドラー（ダミー）
+	// Go版で処理するハンドラー (ダミー)
 	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Go response"))
@@ -191,9 +191,9 @@ func TestIsGoHandledPath(t *testing.T) {
 func TestReverseProxyMiddleware_ErrorHandling(t *testing.T) {
 	t.Parallel()
 
-	// モックRailsサーバーを作成（常にエラーを返す）
+	// モックRailsサーバーを作成 (常にエラーを返す)
 	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 接続を即座に閉じる（エラーをシミュレート）
+		// 接続を即座に閉じる (エラーをシミュレート)
 		hj, ok := w.(http.Hijacker)
 		if !ok {
 			t.Fatal("Hijackerをサポートしていない")
@@ -217,7 +217,7 @@ func TestReverseProxyMiddleware_ErrorHandling(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// Go版で処理するハンドラー（ダミー）
+	// Go版で処理するハンドラー (ダミー)
 	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Go response"))
@@ -241,7 +241,7 @@ func TestReverseProxyMiddleware_ErrorHandling(t *testing.T) {
 func TestReverseProxyMiddleware_HeaderForwarding(t *testing.T) {
 	t.Parallel()
 
-	// モックRailsサーバーを作成（ヘッダーチェック）
+	// モックRailsサーバーを作成 (ヘッダーチェック)
 	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 各種ヘッダーが転送されていることを確認
 		headers := map[string]string{
@@ -272,7 +272,7 @@ func TestReverseProxyMiddleware_HeaderForwarding(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// Go版で処理するハンドラー（ダミー）
+	// Go版で処理するハンドラー (ダミー)
 	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Go response"))
@@ -281,7 +281,7 @@ func TestReverseProxyMiddleware_HeaderForwarding(t *testing.T) {
 	// ミドルウェアを適用
 	handler := proxyMiddleware.Middleware(goHandler)
 
-	// リクエストを作成（ヘッダーを設定）
+	// リクエストを作成 (ヘッダーを設定)
 	req := httptest.NewRequest("GET", "/posts", nil)
 	req.Header.Set("CF-Connecting-IP", "1.2.3.4")
 	req.Header.Set("Cookie", "_mewst_session=test_session_id")
@@ -297,7 +297,7 @@ func TestReverseProxyMiddleware_HeaderForwarding(t *testing.T) {
 func TestReverseProxyMiddleware_HTTPMethods(t *testing.T) {
 	t.Parallel()
 
-	// モックRailsサーバーを作成（HTTPメソッドを確認）
+	// モックRailsサーバーを作成 (HTTPメソッドを確認)
 	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// HTTPメソッドをレスポンスボディに含める
 		w.WriteHeader(http.StatusOK)
@@ -316,7 +316,7 @@ func TestReverseProxyMiddleware_HTTPMethods(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// Go版で処理するハンドラー（ダミー）
+	// Go版で処理するハンドラー (ダミー)
 	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Go response"))

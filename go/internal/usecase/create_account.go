@@ -12,7 +12,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// ProfileOwnerTypeUser はプロフィールの所有者タイプ（ユーザー）
+// ProfileOwnerTypeUser はプロフィールの所有者タイプ (ユーザー)
 const ProfileOwnerTypeUser = "User"
 
 // DefaultAvatarKind はデフォルトのアバター種別

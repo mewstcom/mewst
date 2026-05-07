@@ -193,7 +193,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}
@@ -382,7 +382,7 @@ func TestNew_WithBackParameter(t *testing.T) {
 		t.Error("back hiddenフィールドの値が正しくありません")
 	}
 
-	// サインアップリンクにbackパラメータが含まれているか確認（URLクエリエスケープ済み）
+	// サインアップリンクにbackパラメータが含まれているか確認 (URLクエリエスケープ済み)
 	if !strings.Contains(body, `/sign_up?back=%2Fsettings`) {
 		t.Error("サインアップリンクにbackパラメータが含まれていません")
 	}
@@ -433,31 +433,37 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 
 	testCases := []struct {
 		name    string
+		slug    string
 		backURL string
 		wantURL string
 	}{
 		{
-			name:    "絶対URL（外部サイト）",
+			name:    "絶対URL (外部サイト)",
+			slug:    "absolute-url",
 			backURL: "https://evil.com",
 			wantURL: "/",
 		},
 		{
-			name:    "プロトコル相対URL（外部サイト）",
+			name:    "プロトコル相対URL (外部サイト)",
+			slug:    "protocol-relative-url",
 			backURL: "//evil.com",
 			wantURL: "/",
 		},
 		{
 			name:    "空文字",
+			slug:    "empty",
 			backURL: "",
 			wantURL: "/",
 		},
 		{
 			name:    "正常な相対パス",
+			slug:    "relative-path",
 			backURL: "/profile",
 			wantURL: "/profile",
 		},
 		{
 			name:    "クエリパラメータ付き相対パス",
+			slug:    "relative-path-with-query",
 			backURL: "/search?q=test",
 			wantURL: "/search?q=test",
 		},
@@ -471,7 +477,7 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 			h, _ := setupTestHandler(t, tx, true)
 
 			// テストユーザーを作成
-			testEmail := "test-invalid-back-" + tc.name + "@example.com"
+			testEmail := "test-invalid-back-" + tc.slug + "@example.com"
 			createTestUser(t, tx, testEmail)
 
 			ctx := context.Background()
@@ -529,7 +535,7 @@ func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
 
 	h.Create(rr, req)
 
-	// ステータスコードを検証（422 Unprocessable Entity）
+	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
 	}

@@ -34,13 +34,13 @@ func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T
 			expectedField: "code",
 		},
 		{
-			name:          "異常系: 5桁のコード（短すぎる）",
+			name:          "異常系: 5桁のコード (短すぎる)",
 			code:          "12345",
 			wantErrors:    true,
 			expectedField: "code",
 		},
 		{
-			name:          "異常系: 7桁のコード（長すぎる）",
+			name:          "異常系: 7桁のコード (長すぎる)",
 			code:          "1234567",
 			wantErrors:    true,
 			expectedField: "code",
@@ -137,7 +137,7 @@ func TestEmailConfirmationCreateValidator_Validate_ValidCodeFormats(t *testing.T
 			_, err := validator.Validate(ctx, input)
 
 			// 形式バリデーションでエラーにならないことを確認
-			// （レコードが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない）
+			// (レコードが存在しないためグローバルエラーは発生するが、フィールドエラーは発生しない)
 			ve := model.AsValidationError(err)
 			if ve != nil && ve.HasFieldError("code") {
 				t.Errorf("code形式バリデーションでエラーが発生: %v", ve.GetFieldErrors("code"))
@@ -248,7 +248,7 @@ func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	ctx := context.Background()
 	ctx = i18n.SetLocale(ctx, "ja")
 
-	// 期限切れのレコードを作成（31分前に作成）
+	// 期限切れのレコードを作成 (31分前に作成)
 	expiredTime := time.Now().Add(-31 * time.Minute)
 	id := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithCode("123456").
@@ -374,7 +374,7 @@ func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 		t.Fatal("expected ValidationError")
 	}
 
-	// グローバルエラーとして返されることを確認（フィールドエラーではない）
+	// グローバルエラーとして返されることを確認 (フィールドエラーではない)
 	if len(ve.Global) == 0 {
 		t.Error("expected global error, not field error")
 	}

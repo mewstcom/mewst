@@ -115,7 +115,7 @@ func TestEmailConfirmationRepository_FindActiveByID(t *testing.T) {
 	})
 
 	t.Run("有効期限切れのレコードはnilを返す", func(t *testing.T) {
-		// 20分前に作成されたレコード（15分で期限切れ）
+		// 20分前に作成されたレコード (15分で期限切れ)
 		expiredTime := time.Now().Add(-20 * time.Minute)
 		id := testutil.NewEmailConfirmationBuilder(t, tx).
 			WithEmail("expired-test@example.com").

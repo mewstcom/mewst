@@ -35,7 +35,7 @@ type Querier interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserProfileByProfileID(ctx context.Context, profileID uuid.UUID) (UserProfile, error)
 	GetUserProfileByUserID(ctx context.Context, userID uuid.UUID) (UserProfile, error)
-	// Rate Limit カウンターをインクリメントする（UPSERT）
+	// Rate Limit カウンターをインクリメントする (UPSERT)
 	// 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
 	IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error

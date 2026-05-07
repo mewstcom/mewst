@@ -61,7 +61,7 @@ func TestCSRFMiddleware_GET(t *testing.T) {
 		t.Error("CSRFトークンが空です")
 	}
 
-	// トークンの長さを確認（Base64エンコード後は44文字）
+	// トークンの長さを確認 (Base64エンコード後は44文字)
 	if len(csrfCookie.Value) != 44 {
 		t.Errorf("CSRFトークンの長さが不正です: got %d want 44", len(csrfCookie.Value))
 	}
@@ -490,7 +490,7 @@ func TestCSRFMiddleware_CookieAttributes(t *testing.T) {
 		t.Error("Secure属性がtrueではありません")
 	}
 
-	// HttpOnlyはfalse（JavaScriptからアクセス可能にする）
+	// HttpOnlyはfalse (JavaScriptからアクセス可能にする)
 	if csrfCookie.HttpOnly {
 		t.Error("HttpOnly属性がfalseではありません")
 	}
