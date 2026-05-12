@@ -50,6 +50,12 @@ type Config struct {
 	ResendAPIKey  string
 	EmailFrom     string
 	EmailFromName string
+
+	// Sentry (エラー追跡)
+	SentryDSN              string
+	SentryEnvironment      string
+	SentryTracesSampleRate float64
+	SentryDebug            bool
 }
 
 // Load は環境変数から設定を読み込みます
@@ -132,6 +138,16 @@ func Load() (*Config, error) {
 	cfg.EmailFrom = os.Getenv("MEWST_EMAIL_FROM")
 	cfg.EmailFromName = os.Getenv("MEWST_EMAIL_FROM_NAME")
 
+	// Sentry (オプショナル - エラー追跡サービス)
+	// DSN が空のときは Sentry を完全に無効化する
+	cfg.SentryDSN = os.Getenv("MEWST_SENTRY_DSN")
+	cfg.SentryEnvironment = os.Getenv("MEWST_SENTRY_ENVIRONMENT")
+	if cfg.SentryEnvironment == "" {
+		cfg.SentryEnvironment = env
+	}
+	cfg.SentryTracesSampleRate = parseSentryTracesSampleRate(os.Getenv("MEWST_SENTRY_TRACES_SAMPLE_RATE"))
+	cfg.SentryDebug = os.Getenv("MEWST_SENTRY_DEBUG") == "true"
+
 	return cfg, nil
 }
 
@@ -196,4 +212,20 @@ func parseAdminIPs(s string) []string {
 		}
 	}
 	return ips
+}
+
+// parseSentryTracesSampleRate は文字列からSentryトレースサンプリングレートをパースします
+// 空文字列、パース失敗、範囲外 (0.0未満 または 1.0超) の場合はデフォルト値 0.5 を返します
+func parseSentryTracesSampleRate(s string) float64 {
+	if s == "" {
+		return 0.5
+	}
+	rate, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0.5
+	}
+	if rate < 0.0 || rate > 1.0 {
+		return 0.5
+	}
+	return rate
 }

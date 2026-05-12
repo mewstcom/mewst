@@ -328,8 +328,9 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
+			// 親テストの tx を共有しているため、サブテスト間で並行に DB クエリを発行すると
+			// lib/pq の接続状態が壊れて Rollback が "driver: bad connection" で失敗する。
+			// サブテストは順次実行する。
 			_, err := v.Validate(ctx, SignInCreateValidatorInput{
 				Email:    tt.email,
 				Password: "password123",
