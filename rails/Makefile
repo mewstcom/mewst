@@ -16,6 +16,9 @@ test: ## 全テストを実行
 test-file: ## 特定のテストファイルを実行 (例: make test-file FILE=spec/models/user_spec.rb)
 	$(OP_RUN_TEST) bin/rspec $(FILE)
 
+setup: ## セットアップコマンド
+	$(OP_RUN) bin/setup
+
 ## 開発サーバー
 console: ## Railsコンソールを起動
 	$(OP_RUN) bin/rails console
