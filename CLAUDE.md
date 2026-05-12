@@ -206,13 +206,20 @@ Claude Code は `.claude/rules/` 配下のガイドラインを自動で読み�
 - [@.claude/rules/korylus/go-common.md](/workspace/.claude/rules/korylus/go-common.md) - Go 版開発ガイド (プロジェクト構造、技術スタック、開発コマンド)
 - [@.claude/rules/korylus/go-coding.md](/workspace/.claude/rules/korylus/go-coding.md) - コーディング規約 (インデント、フォーマット、コメント、log/slog)
 - [@.claude/rules/korylus/go-architecture.md](/workspace/.claude/rules/korylus/go-architecture.md) - アーキテクチャガイド
-  - 3 層アーキテクチャの依存関係ルール
+  - 4 層アーキテクチャ (Presentation / Application / Domain / Infrastructure) の依存関係ルール
   - Usecase、Repository の使い分け
 - [@.claude/rules/korylus/go-usecase.md](/workspace/.claude/rules/korylus/go-usecase.md) - UseCase ガイド
   - 3 種類の分類 (読み取り / 書き込み / オーケストレーション)
   - UseCase 内の処理順序 (5 ステップ)
   - 書き込み UseCase の 2 つのルール
   - Validator のデータ取得パターン
+- [@.claude/rules/korylus/go-error.md](/workspace/.claude/rules/korylus/go-error.md) - エラー型ガイド
+  - `*model.ValidationError` / `*model.AppError` / 素の `error` の使い分け
+  - AppError (SafeError パターン) の生成ルール
+- [@.claude/rules/korylus/go-worker.md](/workspace/.claude/rules/korylus/go-worker.md) - Worker / Dispatcher / Email ガイド
+  - Worker と Worker クライアントの構成
+  - Dispatcher (ジョブキュー投入) の Args 型 / Enqueue メソッド
+  - メール送信 (interface パターン)
 - [@.claude/rules/korylus/go-handler.md](/workspace/.claude/rules/korylus/go-handler.md) - HTTP ハンドラーガイドライン
   - ディレクトリ構造
   - 標準ファイル名
