@@ -45,7 +45,7 @@ Mewst で使用している主要なランタイム・ミドルウェアのバ�
 | Go         | 1.25.4     | Go 版で使用 (`/workspace/go/`)                    |
 | Ruby       | 3.3.6      | Rails 版で使用 (`/workspace/rails/`)              |
 | Rails      | 7.1.x      | Rails 版で使用 (`/workspace/rails/`)              |
-| PostgreSQL | 16.2       | Go 版と Rails 版で共有 (詳細は「共通インフラ」節) |
+| PostgreSQL | 18.3       | Go 版と Rails 版で共有 (詳細は「共通インフラ」節) |
 
 なお、Korylus 共通ガイドライン (`korylus-guidelines`) はバージョン中立な記述としており、具体的なバージョンは本ファイルで管理しています。
 
@@ -89,7 +89,7 @@ Mewst で利用しているフラグの種類は次の 2 つです。
 
 ### データベース (PostgreSQL)
 
-- **バージョン**: PostgreSQL 16.2
+- **バージョン**: PostgreSQL 18.3
 - **共有方針**: Rails 版と Go 版で同一のデータベースを共有
 - **開発環境**: Docker Compose で管理 (ポート: 4104)
 - **データベース名**:
