@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
@@ -30,6 +31,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/query"
 	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
+	mewstsentry "github.com/mewstcom/mewst/go/internal/sentry"
 	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/turnstile"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -46,6 +48,20 @@ func main() {
 	}
 
 	slog.Info("サーバーを起動します", "port", cfg.Port, "env", cfg.Env)
+
+	// Sentry を初期化 (DSN が空の場合はスキップされる)。
+	// データベース接続より前に初期化することで、起動時のエラーも Sentry に送信できる。
+	if err := mewstsentry.Init(mewstsentry.Config{
+		DSN:              cfg.SentryDSN,
+		Environment:      cfg.SentryEnvironment,
+		Release:          cfg.AssetVersion,
+		TracesSampleRate: cfg.SentryTracesSampleRate,
+		Debug:            cfg.SentryDebug,
+	}); err != nil {
+		slog.Error("Sentry の初期化に失敗しました", "error", err)
+		os.Exit(1)
+	}
+	defer mewstsentry.Flush(2 * time.Second)
 
 	// データベース接続
 	db, err := database.Connect(cfg.DatabaseDSN())
@@ -132,6 +148,10 @@ func main() {
 	authMiddleware := middleware.NewAuth(sessionMgr)
 	csrfMiddleware := middleware.NewCSRF(cfg)
 
+	// Sentry の HTTP ミドルウェア。
+	// Repanic: true により、panic を Sentry に送ったあと再 panic させて後続の Recoverer に処理を委ねる。
+	sentryHTTPHandler := sentryhttp.New(sentryhttp.Options{Repanic: true})
+
 	// Chiルーターの設定
 	r := chi.NewRouter()
 
@@ -139,7 +159,18 @@ func main() {
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.RequestID)
 	r.Use(chimiddleware.RealIP)
+	// Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
+	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic しないため、
+	// sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、sentryhttp が panic を見られない。
 	r.Use(chimiddleware.Recoverer)
+	// sentryhttp は Recoverer より「あとに登録」= chi のチェーンでは innermost (= handler に近い側)。
+	// handler の panic を sentryhttp の defer がまず捕捉し、Sentry に送信したあと Repanic: true で再 panic。
+	// 再 panic は outer の Recoverer に到達し、Recoverer が 500 レスポンスを書いて終了する。
+	r.Use(sentryHTTPHandler.Handle)
+	// chi のルートパターン (例: "/users/{id}") を Sentry のトランザクション名に上書きする。
+	// sentryhttp より「あとに登録」することで、defer (LIFO) のタイミングで sentryhttp の
+	// transaction.Finish() より先に Name を確定できる。
+	r.Use(middleware.SentryTransaction)
 
 	// リバースプロキシの設定（Rails版へのプロキシ）
 	if cfg.RailsAppURL != "" {
