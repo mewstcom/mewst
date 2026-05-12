@@ -193,8 +193,8 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/session
               desc: "EmailはSessionに依存できません。"
 
-        # Model層のルール: 純粋なドメインエンティティ
-        # データアクセス層、上位層に依存しない
+        # Model層のルール: Domain層の純粋なドメインエンティティ
+        # Infrastructure層・上位層に依存しない
         model-layer:
           files:
             - "**/internal/model/**"
@@ -214,8 +214,8 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "ModelはPresentation層に依存できません。"
 
-        # Repository層のルール: データアクセス層
-        # 上位層に依存しない
+        # Repository層のルール: Infrastructure層のデータアクセス層 (Query結果をModelに変換)
+        # 上位層に依存しない (Model への依存は Infrastructure → Domain で許容)
         repository-layer:
           files:
             - "**/internal/repository/**"
@@ -271,7 +271,7 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "WorkerはPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
 
-        # Dispatcher層のルール: ジョブキューへの投入を抽象化（Domain/Infrastructure層）
+        # Dispatcher層のルール: ジョブキューへの投入を抽象化（Infrastructure層）
         # 上位層や同レイヤーの他パッケージに依存しない
         dispatcher-layer:
           files:
@@ -344,7 +344,7 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "RateLimitはPresentation層に依存できません。"
 
-        # Auth層のルール: 横断的な技術ユーティリティ
+        # Auth層のルール: Infrastructure層内の純粋な技術ユーティリティ
         # 標準ライブラリと外部ライブラリ(bcryptなど)のみに依存し、プロジェクト内部のパッケージには一切依存しない
         # 純粋な技術ユーティリティとして保ち、循環依存を防ぐ
         auth-layer:
@@ -354,13 +354,13 @@ linters:
             - pkg: github.com/mewstcom/mewst/go/internal/i18n
               desc: "Authはi18nに依存できません。auth → i18n → middleware → session → auth の循環依存を防ぎ、純粋な技術ユーティリティとして保つためです。バリデーション失敗は sentinel error で返し、翻訳の解決は呼び出し元(validatorなど)の責務とします。"
             - pkg: github.com/mewstcom/mewst/go/internal/model
-              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+              desc: "AuthはDomain層に依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/query
-              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+              desc: "AuthはInfrastructure層の他のパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/repository
-              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+              desc: "AuthはInfrastructure層の他のパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
-              desc: "AuthはDomain/Infrastructure層に依存できません。純粋な技術ユーティリティとして保つためです。"
+              desc: "AuthはInfrastructure層の他のパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/usecase
               desc: "AuthはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/validator
@@ -393,6 +393,38 @@ linters:
               desc: "Authは横断的なヘルパーパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
             - pkg: github.com/mewstcom/mewst/go/internal/testutil
               desc: "Authはテスト用ヘルパーに依存できません。純粋な技術ユーティリティとして保つためです。"
+
+        # Sentry層のルール: Infrastructure層内の純粋な技術ユーティリティ (auth-layerと同じ性質)
+        # プロジェクトの上位層 (Application層 / Presentation層) や Infrastructure層の他パッケージに依存しない
+        # model / i18n / config は将来の Sentry スコープ拡張 (ユーザー情報の付与、翻訳メッセージ等) を見越して許容する
+        sentry-layer:
+          files:
+            - "**/internal/sentry/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "SentryはInfrastructure層の他のパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "SentryはInfrastructure層の他のパッケージに依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "SentryはInfrastructure層の他のパッケージに依存できません。river ミドルウェアからはジョブ種別 (Kind()) のみ参照し、Args 型は import しないでください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "SentryはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "SentryはApplication層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "SentryはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "SentryはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "SentryはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "SentryはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "SentryはPresentation層に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/email
+              desc: "SentryはPresentation層のメール送信に依存できません。純粋な技術ユーティリティとして保つためです。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "Sentryはセッション管理に依存できません。純粋な技術ユーティリティとして保つためです。"
 
     # staticcheck の設定
     staticcheck:
