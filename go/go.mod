@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/a-h/templ v0.3.960
 	github.com/getsentry/sentry-go v0.46.2
+	github.com/getsentry/sentry-go/slog v0.46.2
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.0

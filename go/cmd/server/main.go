@@ -63,6 +63,15 @@ func main() {
 	}
 	defer mewstsentry.Flush(2 * time.Second)
 
+	// slog のデフォルトハンドラーを「標準出力 + Sentry」のファンアウトに差し替える。
+	// これ以降の slog.ErrorContext / slog.Error 呼び出しは自動的に Sentry のイベントとして送信される。
+	// 各層 (handler / usecase / validator / repository / middleware) で sentry.CaptureError を
+	// 明示的に呼ぶ必要がない。
+	// Sentry 初期化失敗時のログは引き続き Go 1.21+ のデフォルトハンドラー (TextHandler @ stderr) に出すべきため、
+	// SetDefault は mewstsentry.Init 成功後に呼ぶ。
+	baseSlogHandler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelInfo})
+	slog.SetDefault(slog.New(mewstsentry.NewSlogHandler(baseSlogHandler)))
+
 	// データベース接続
 	db, err := database.Connect(cfg.DatabaseDSN())
 	if err != nil {
