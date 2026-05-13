@@ -10,9 +10,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/rivertype"
 
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/email"
+	mewstsentry "github.com/mewstcom/mewst/go/internal/sentry"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
@@ -61,12 +63,17 @@ func NewClient(ctx context.Context, databaseURL string, cfg *config.Config) (*Cl
 	slog.InfoContext(ctx, "SendEmailConfirmationWorker を登録しました")
 
 	// River クライアントの作成
+	// Middleware には Sentry エラーキャプチャ用の WorkerMiddleware を登録する。
+	// これにより全 Worker のジョブ失敗が自動的に Sentry に送信される。
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 10},
 		},
 		Workers: workers,
 		Logger:  slog.Default(),
+		Middleware: []rivertype.Middleware{
+			mewstsentry.RiverWorkerMiddleware(),
+		},
 	})
 	if err != nil {
 		pool.Close()
