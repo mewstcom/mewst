@@ -1,10 +1,14 @@
 package middleware
 
 import (
+	"context"
+	"log/slog"
 	"net/http"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/mewstcom/mewst/go/internal/model"
 )
 
 // SentryTransaction は chi のルートパターンを Sentry のトランザクション名に設定するミドルウェア。
@@ -68,4 +72,75 @@ func setSentryTransactionName(r *http.Request) {
 			return event
 		})
 	}
+}
+
+// sentryProfileFinder は SentryUserContext が依存する Profile 取得の最小インターフェース。
+// `*repository.ProfileRepository` を直接型として受けると、テストで DB を立てる必要が出るため、
+// FindByID のみを切り出した極狭インターフェースとして定義する。
+// `*repository.ProfileRepository` はこのインターフェースを構造的に満たす。
+type sentryProfileFinder interface {
+	FindByID(ctx context.Context, id model.ProfileID) (*model.Profile, error)
+}
+
+// SentryUserContext は認証済みリクエストのユーザー情報を Sentry のスコープに反映するミドルウェア。
+//
+// `UserFromContext` / `ActorFromContext` で context から認証済みユーザーとアクターを取り出し、
+// Atname を取得するために `profileFinder.FindByID(actor.ProfileID)` を呼んで Profile を取得する。
+// 取得した情報を `hub.Scope().SetUser(...)` でセットすることで、認証済みリクエストで発生した
+// エラーやパフォーマンストレースに User ID と Atname (= Sentry の Username) が紐付く。
+//
+// 挙動:
+//   - 未認証リクエスト (UserFromContext が nil) では何もしない (Sentry の User スコープは未更新)
+//   - Hub が context にない (sentryhttp を通っていない経路) でも何もしない
+//   - Actor が context にない場合は ID のみセット (Atname は埋まらない)
+//   - Profile 取得に失敗 / 未存在の場合も ID のみセット (Sentry メタ情報取得失敗で本来の処理を巻き込まない)
+//   - すべて取得できた場合は ID + Username (= Atname) をセット
+//
+// 認証ミドルウェア (`RequireAuth` / `RequireNoAuth` / `SetUser`) の直後に登録すること。
+type SentryUserContext struct {
+	profileFinder sentryProfileFinder
+}
+
+// NewSentryUserContext は SentryUserContext ミドルウェアを生成する
+func NewSentryUserContext(profileFinder sentryProfileFinder) *SentryUserContext {
+	return &SentryUserContext{profileFinder: profileFinder}
+}
+
+// Middleware は SentryUserContext のミドルウェアを返す
+func (m *SentryUserContext) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		user := UserFromContext(ctx)
+		if user == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		hub := sentry.GetHubFromContext(ctx)
+		if hub == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		sentryUser := sentry.User{ID: user.ID.String()}
+
+		if actor := ActorFromContext(ctx); actor != nil {
+			profile, err := m.profileFinder.FindByID(ctx, actor.ProfileID)
+			switch {
+			case err != nil:
+				// Sentry 用のメタ情報取得失敗で本来のリクエスト処理を巻き込まないため、ログだけ残して継続する。
+				slog.WarnContext(ctx, "Sentry 用のプロフィール取得に失敗", "error", err, "user_id", user.ID.String())
+			case profile == nil:
+				// データ不整合や論理削除のタイミングで未存在になるケースは ID のみ紐付ける。
+				slog.WarnContext(ctx, "Sentry 用のプロフィールが見つからない", "user_id", user.ID.String(), "profile_id", actor.ProfileID.String())
+			default:
+				sentryUser.Username = profile.Atname
+			}
+		}
+
+		hub.Scope().SetUser(sentryUser)
+
+		next.ServeHTTP(w, r)
+	})
 }

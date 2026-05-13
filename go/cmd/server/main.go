@@ -156,6 +156,7 @@ func main() {
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
 	csrfMiddleware := middleware.NewCSRF(cfg)
+	sentryUserContextMW := middleware.NewSentryUserContext(profileRepo)
 
 	// Sentry の HTTP ミドルウェア。
 	// Repanic: true により、panic を Sentry に送ったあと再 panic させて後続の Recoverer に処理を委ねる。
@@ -224,6 +225,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
+		r.Use(sentryUserContextMW.Middleware)
 		r.Get("/sign_in", signInHandler.New)
 		r.Post("/sign_in", signInHandler.Create)
 		r.Get("/sign_up", signUpHandler.New)
@@ -238,6 +240,7 @@ func main() {
 	// CSRFミドルウェアは適用しない（ログアウトは破壊的操作ではないため安全）
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.RequireAuth)
+		r.Use(sentryUserContextMW.Middleware)
 		r.Delete("/sign_out", signOutHandler.Delete)
 		r.Post("/sign_out", signOutHandler.Delete)
 	})
@@ -246,6 +249,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
+		r.Use(sentryUserContextMW.Middleware)
 
 		// パスワードリセット開始（メールアドレス入力）
 		r.Get("/password_reset", passwordResetHandler.New)
