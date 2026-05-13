@@ -44,6 +44,12 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
+  # Rails 7.2 から全テストで application の active_job.queue_adapter が尊重されるようになった
+  # (Upgrade guide 4.1)。production と同じ :good_job のままだとテスト時に GoodJob の inline 実行で
+  # メーラージョブが即時 perform され、本来テストでは描画したくないテンプレートが描画されてしまう。
+  # テスト中はジョブを ActiveJob::TestAdapter のキューに積むだけにする。
+  config.active_job.queue_adapter = :test
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
