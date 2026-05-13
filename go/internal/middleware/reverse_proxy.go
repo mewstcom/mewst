@@ -128,8 +128,11 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 		ctx := r.Context()
 
-		// 詳細なエラーログを出力 (開発者向け)
-		slog.ErrorContext(ctx, "Rails版へのプロキシでエラーが発生",
+		// Rails 版が 502 を返したり接続が切れた場合は Go 版の障害ではなく
+		// Rails 版の外部要因 (= Go 版の Sentry に Issue を作るほどではない) のため Warn に留める。
+		// slog handler は LevelError 以上のみ Sentry に送るので、ここを Warn にすることで
+		// Sentry へのノイズ送信を構造的に防止する。
+		slog.WarnContext(ctx, "Rails版へのプロキシでエラーが発生",
 			"error", err,
 			"path", r.URL.Path,
 			"method", r.Method,

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -12,6 +13,9 @@ import (
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
+
+	"github.com/mewstcom/mewst/go/internal/model"
 )
 
 // fakeTransport は sentry.Transport の実装で、SendEvent された Event をすべて記録する。
@@ -226,5 +230,220 @@ func TestSentryTransaction_UnmatchedRoute(t *testing.T) {
 			t.Logf("予期せぬイベント %d: type=%q transaction=%q", i, e.Type, e.Transaction)
 		}
 		t.Fatalf("未マッチルート (404) ではイベントが送信されないはず: got %d, want 0", len(events))
+	}
+}
+
+// stubProfileFinder は sentryProfileFinder インターフェースをテスト用に満たすスタブ。
+// 返却 (profile / err) を保持し、FindByID 呼び出し回数を記録する。
+type stubProfileFinder struct {
+	profile *model.Profile
+	err     error
+	calls   int
+}
+
+func (s *stubProfileFinder) FindByID(_ context.Context, _ model.ProfileID) (*model.Profile, error) {
+	s.calls++
+	return s.profile, s.err
+}
+
+// runSentryUserContextRequest は SentryUserContext ミドルウェアの挙動検証用に
+// テスト用 Hub と認証 context をセットアップしたチェーンでリクエストを実行し、
+// Sentry へ送信されたイベント群を返す。handler 内で CaptureMessage を呼ぶことで、
+// その時点でスコープに乗っている User 情報が event.User に反映される。
+func runSentryUserContextRequest(t *testing.T, finder sentryProfileFinder, ctxMutator func(context.Context) context.Context) []*sentry.Event {
+	t.Helper()
+
+	hub, transport := newSentryTestHub(t)
+	mw := NewSentryUserContext(finder)
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// handler 内で CaptureMessage を呼ぶことで、ミドルウェアが SetUser した直後の Scope を
+		// 使ったイベントが送信される。これで Sentry に渡される User 情報を検証できる。
+		if hub := sentry.GetHubFromContext(r.Context()); hub != nil {
+			hub.CaptureMessage("test event")
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+
+	chain := bindHubMiddleware(hub)(mw.Middleware(handler))
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	if ctxMutator != nil {
+		req = req.WithContext(ctxMutator(req.Context()))
+	}
+	rr := httptest.NewRecorder()
+	chain.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusOK)
+	}
+	return transport.Events()
+}
+
+func newTestUser() *model.User {
+	return &model.User{
+		ID:    model.UserID(uuid.New()),
+		Email: "user@example.com",
+	}
+}
+
+func newTestActor() *model.Actor {
+	return &model.Actor{
+		ID:        model.ActorID(uuid.New()),
+		UserID:    model.UserID(uuid.New()),
+		ProfileID: model.ProfileID(uuid.New()),
+	}
+}
+
+func TestSentryUserContext_SetsUser_WithAtname(t *testing.T) {
+	t.Parallel()
+
+	user := newTestUser()
+	actor := newTestActor()
+	finder := &stubProfileFinder{profile: &model.Profile{Atname: "alice"}}
+
+	events := runSentryUserContextRequest(t, finder, func(ctx context.Context) context.Context {
+		ctx = context.WithValue(ctx, userContextKey, user)
+		ctx = context.WithValue(ctx, actorContextKey, actor)
+		return ctx
+	})
+
+	if finder.calls != 1 {
+		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+	}
+	if len(events) != 1 {
+		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+	}
+	ev := events[0]
+	if ev.User.ID != user.ID.String() {
+		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+	}
+	if ev.User.Username != "alice" {
+		t.Errorf("User.Username が期待と異なる: got %q, want %q", ev.User.Username, "alice")
+	}
+}
+
+func TestSentryUserContext_SetsUserIDOnly_WhenActorMissing(t *testing.T) {
+	t.Parallel()
+
+	user := newTestUser()
+	finder := &stubProfileFinder{}
+
+	events := runSentryUserContextRequest(t, finder, func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, userContextKey, user)
+	})
+
+	if finder.calls != 0 {
+		t.Errorf("Actor がない場合は FindByID を呼ばないはず: got %d", finder.calls)
+	}
+	if len(events) != 1 {
+		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+	}
+	ev := events[0]
+	if ev.User.ID != user.ID.String() {
+		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+	}
+	if ev.User.Username != "" {
+		t.Errorf("User.Username は空のはず: got %q", ev.User.Username)
+	}
+}
+
+func TestSentryUserContext_SetsUserIDOnly_WhenProfileNotFound(t *testing.T) {
+	t.Parallel()
+
+	user := newTestUser()
+	actor := newTestActor()
+	finder := &stubProfileFinder{profile: nil, err: nil}
+
+	events := runSentryUserContextRequest(t, finder, func(ctx context.Context) context.Context {
+		ctx = context.WithValue(ctx, userContextKey, user)
+		ctx = context.WithValue(ctx, actorContextKey, actor)
+		return ctx
+	})
+
+	if finder.calls != 1 {
+		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+	}
+	if len(events) != 1 {
+		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+	}
+	ev := events[0]
+	if ev.User.ID != user.ID.String() {
+		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+	}
+	if ev.User.Username != "" {
+		t.Errorf("Profile 未存在では Username は空のはず: got %q", ev.User.Username)
+	}
+}
+
+func TestSentryUserContext_SetsUserIDOnly_WhenProfileFetchFails(t *testing.T) {
+	t.Parallel()
+
+	user := newTestUser()
+	actor := newTestActor()
+	finder := &stubProfileFinder{err: errors.New("DB エラー")}
+
+	events := runSentryUserContextRequest(t, finder, func(ctx context.Context) context.Context {
+		ctx = context.WithValue(ctx, userContextKey, user)
+		ctx = context.WithValue(ctx, actorContextKey, actor)
+		return ctx
+	})
+
+	if finder.calls != 1 {
+		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+	}
+	if len(events) != 1 {
+		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+	}
+	ev := events[0]
+	if ev.User.ID != user.ID.String() {
+		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+	}
+	if ev.User.Username != "" {
+		t.Errorf("Profile 取得失敗時は Username は空のはず: got %q", ev.User.Username)
+	}
+}
+
+func TestSentryUserContext_NoOp_WhenUnauthenticated(t *testing.T) {
+	t.Parallel()
+
+	finder := &stubProfileFinder{}
+
+	events := runSentryUserContextRequest(t, finder, nil)
+
+	if finder.calls != 0 {
+		t.Errorf("未認証時は FindByID を呼ばないはず: got %d", finder.calls)
+	}
+	if len(events) != 1 {
+		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+	}
+	ev := events[0]
+	if ev.User.ID != "" || ev.User.Username != "" {
+		t.Errorf("未認証時は User.ID / Username は空のはず: got ID=%q Username=%q", ev.User.ID, ev.User.Username)
+	}
+}
+
+func TestSentryUserContext_NoOp_WhenHubMissing(t *testing.T) {
+	t.Parallel()
+
+	user := newTestUser()
+	finder := &stubProfileFinder{}
+	mw := NewSentryUserContext(finder)
+
+	// Hub を context にバインドせずに直接ミドルウェアを呼び、panic せず handler に処理が渡ることを確認する。
+	handler := mw.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(context.WithValue(req.Context(), userContextKey, user))
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNoContent {
+		t.Errorf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusNoContent)
+	}
+	if finder.calls != 0 {
+		t.Errorf("Hub がない場合は FindByID を呼ばないはず: got %d", finder.calls)
 	}
 }
