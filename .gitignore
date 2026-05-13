@@ -8,6 +8,7 @@
 /.pnpm-store
 /compose-up.sh
 /docker-compose.override.yml
+/docs/korylus
 /docs/private
 /docs/README.md
 /node_modules
