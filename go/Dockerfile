@@ -91,10 +91,6 @@ COPY --from=builder /app/internal/i18n/locales /app/internal/i18n/locales
 # [Ja] タイムゾーンを UTC に設定
 ENV TZ=UTC
 
-# Default listen port (Dokku maps it automatically)
-# [Ja] 待受ポートの既定値（Dokku が自動的にマッピング）
-ENV MEWST_PORT=8080
-
-# Expose port
-# [Ja] ポートを公開
+# Expose port (Dokku detects the listening port via this directive)
+# [Ja] ポートを公開（Dokku はこのディレクティブで待受ポートを検出する）
 EXPOSE 8080
