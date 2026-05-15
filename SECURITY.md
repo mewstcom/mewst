@@ -1,6 +1,4 @@
----
-last_synced: 2026-05-15
----
+<!-- last_synced: 2026-05-15 -->
 
 # Security Reporting
 

@@ -1,6 +1,4 @@
----
-last_synced: 2026-05-15
----
+<!-- last_synced: 2026-05-15 -->
 
 # Mewst Development Guide
 
@@ -77,7 +75,7 @@ Feature specifications are managed under the `docs/specs/` directory. To underst
 
 - **Canonical version is English; authoring workflow is Japanese-first**: The English version is the official authoritative source. Author by writing Japanese first, then translate to English (Claude Code assists). After translation, also review the English version to catch meaning drift and unnatural wording. When a discrepancy arises, the English version takes precedence
 - **Code comments**: English block → blank line → Japanese block prefixed with `[Ja]`. Short comments can be one-line pairs like `# Returns ... / [Ja] ... を返す`
-- **Markdown documents**: Maintain `xxx.md` (English, canonical) and `xxx.ja.md` (Japanese translation) in parallel. Both files carry a `last_synced: YYYY-MM-DD` field in the YAML frontmatter; keep the dates aligned
+- **Markdown documents**: Maintain `xxx.md` (English, canonical) and `xxx.ja.md` (Japanese translation) in parallel. Both files carry a `<!-- last_synced: YYYY-MM-DD -->` HTML comment on the first line; keep the dates aligned
 - **Commit messages**: English title + English body + blank line + Japanese body prefixed with `[Ja]`. Do not preserve a Japanese title (prioritize English scannability of `git log --oneline`)
 - **Identifiers**: Type, function, and variable names are English only
 - **Update both sides in the same commit**: Prevents translation drift
