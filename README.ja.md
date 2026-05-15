@@ -6,11 +6,11 @@ last_synced: 2026-05-15
   <img align="center" width="128" src="go/static/images/icon-192.png">
 
   <h1 align="center">
-    <b>Mewst</b>
+    <b>Mewst (ミュースト)</b>
   </h1>
 
   <p align="center">
-    A cozy microblog
+    ほっとするマイクロブログ
     <br>
     <a href="https://mewst.com/" rel="nofollow" target="_blank">
       <strong>mewst.com »</strong>
@@ -23,8 +23,8 @@ last_synced: 2026-05-15
 
 </div>
 
-> English | [日本語](./README.ja.md)
+> [English](./README.md) | 日本語
 
-- [Community](https://wikino.app/s/mewst/pages/54)
-- [Contributing](./CONTRIBUTING.md)
-- [Security reporting](./SECURITY.md)
+- [コミュニティ](https://wikino.app/s/mewst/pages/54)
+- [コントリビューションについて](./CONTRIBUTING.ja.md)
+- [セキュリティに関する報告](./SECURITY.ja.md)
