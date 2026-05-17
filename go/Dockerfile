@@ -29,11 +29,11 @@ RUN go mod download
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Install development tools defined in tools.go
-# [Ja] tools.go で定義された開発ツールをインストール
+# Install dev tools at versions pinned in go.mod (via tools.go)
+# [Ja] tools.go で go.mod に固定されたバージョンの開発ツールをインストール
 COPY tools.go ./
-RUN go install github.com/a-h/templ/cmd/templ && \
-    go install golang.org/x/tools/cmd/goimports
+RUN go install -mod=mod github.com/a-h/templ/cmd/templ && \
+    go install -mod=mod golang.org/x/tools/cmd/goimports
 
 # Copy source code
 # [Ja] ソースコードをコピー
@@ -43,17 +43,13 @@ COPY . .
 # [Ja] templ ファイルから Go コードを生成
 RUN templ generate
 
-# Organize import statements
-# [Ja] import 文を整理
-RUN goimports -w .
-
 # Build frontend assets
 # [Ja] フロントエンドアセットをビルド
 RUN pnpm build
 
 # Build Go binary
 # [Ja] Go バイナリをビルド
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/server cmd/server/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o bin/server cmd/server/main.go
 
 # ========================================
 # Runtime stage
