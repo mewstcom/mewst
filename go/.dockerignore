@@ -10,7 +10,7 @@
 *.swo
 
 # Build artifacts (for local development)
-# [Ja] ビルド成果物（ローカル開発用）
+# [Ja] ビルド成果物 (ローカル開発用)
 bin/
 tmp/
 
@@ -32,7 +32,7 @@ CLAUDE.ja.md
 docs/
 
 # Node modules (reinstalled by pnpm install)
-# [Ja] Node modules（pnpm install で再インストール）
+# [Ja] Node modules (pnpm install で再インストール)
 node_modules/
 
 # pnpm store
