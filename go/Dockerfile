@@ -80,7 +80,6 @@ WORKDIR /app
 RUN apk add --no-cache \
     ca-certificates \
     tzdata \
-    postgresql-client \
     bash
 
 # Copy dbmate from build stage (pinned for reproducibility)
