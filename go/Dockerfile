@@ -62,20 +62,48 @@ COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
-# Install templ at the version pinned in go.mod (via tools.go)
-# [Ja] tools.go で go.mod に固定されたバージョンの templ をインストール
+# Install templ and goimports at the versions pinned in go.mod (via tools.go).
+# goimports is required to merge the import blocks that templ generates: when
+# a .templ source already imports `github.com/a-h/templ`, templ emits a
+# second import block for its runtime, and only goimports collapses the two.
+# `make templ-generate` runs the same pair locally, so we mirror it here.
+#
+# [Ja] tools.go で go.mod に固定されたバージョンの templ と goimports を
+# インストール。goimports は templ が生成する import ブロックをマージするのに
+# 必要: `.templ` 側で `github.com/a-h/templ` を import していると、templ は
+# runtime 用に別の import ブロックを生成するため、goimports でまとめない
+# 限り `templ` シンボルが二重宣言になる。ローカルの `make templ-generate` も
+# 同じ 2 つを順に呼ぶため、本番 Dockerfile もそれに揃える。
 COPY tools.go ./
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go install -mod=mod github.com/a-h/templ/cmd/templ
+    go install -mod=mod github.com/a-h/templ/cmd/templ && \
+    go install -mod=mod golang.org/x/tools/cmd/goimports
 
 # Copy source code
 # [Ja] ソースコードをコピー
 COPY . .
 
-# Generate Go code from templ files
-# [Ja] templ ファイルから Go コードを生成
-RUN templ generate
+# Generate Go code from templ files, then run goimports to merge the
+# duplicate import blocks that templ emits when a .templ source already
+# imports `github.com/a-h/templ` (e.g. card.templ, container.templ).
+# Committed *_templ.go files are kept out of the build context by
+# `.dockerignore` (**/*_templ.go), so this RUN starts from a clean tree
+# without an explicit pre-delete step. This pair of steps matches the
+# `templ-generate` -> `templ-goimports` chain in go/Makefile so local and
+# production builds run the exact same scope (-w internal/templates).
+#
+# [Ja] templ ファイルから Go コードを生成し、続いて goimports で
+# `.templ` 側が `github.com/a-h/templ` を import しているコンポーネント
+# (card.templ / container.templ など) で発生する import ブロック重複を
+# マージする。コミット済みの *_templ.go は `.dockerignore` の
+# `**/*_templ.go` でビルドコンテキストから除外されているため、明示的に
+# 削除する手順は不要 (クリーンな状態から生成される)。go/Makefile の
+# `templ-generate` -> `templ-goimports` チェーンと同じスコープ
+# (-w internal/templates) を共有することで、ローカルと本番ビルドの
+# 挙動を揃えている。
+RUN templ generate && \
+    goimports -w internal/templates
 
 # Build frontend assets
 # [Ja] フロントエンドアセットをビルド
@@ -100,13 +128,25 @@ WORKDIR /app
 # Install runtime system dependencies:
 #   - ca-certificates: needed for HTTPS calls (e.g. Resend API)
 #   - tzdata:          required by TZ=UTC handling below
+#   - bash:            Dokku runs each Procfile process (web / release)
+#                      through bash, so /bin/bash must exist in the runtime
+#                      image. Without it, `release: dbmate ...` fails with
+#                      `exec: "/bin/bash": no such file or directory` even
+#                      though the Go server itself only needs /bin/sh.
 #
 # [Ja] 実行時の依存パッケージ:
 #   - ca-certificates: HTTPS 通信 (Resend API など) に必要
 #   - tzdata:          下の TZ=UTC 設定で参照される
+#   - bash:            Dokku は Procfile の各プロセス (web / release) を
+#                      bash 経由で起動するため、ランタイムに /bin/bash が
+#                      必要。Go サーバー自体は /bin/sh で動くが、bash が
+#                      ないと `release: dbmate ...` の起動時に
+#                      `exec: "/bin/bash": no such file or directory`
+#                      で失敗する。
 RUN apk add --no-cache \
     ca-certificates \
-    tzdata
+    tzdata \
+    bash
 
 # Copy dbmate from build stage (pinned for reproducibility)
 # [Ja] ビルドステージから dbmate をコピー (バージョンを固定して再現性を確保)
