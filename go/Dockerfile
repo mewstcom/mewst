@@ -85,12 +85,16 @@ FROM alpine:3.21
 # [Ja] 作業ディレクトリを設定
 WORKDIR /app
 
-# Install system dependencies
-# [Ja] システム依存関係のインストール
+# Install runtime system dependencies:
+#   - ca-certificates: needed for HTTPS calls (e.g. Resend API)
+#   - tzdata:          required by TZ=UTC handling below
+#
+# [Ja] 実行時の依存パッケージ:
+#   - ca-certificates: HTTPS 通信 (Resend API など) に必要
+#   - tzdata:          下の TZ=UTC 設定で参照される
 RUN apk add --no-cache \
     ca-certificates \
-    tzdata \
-    bash
+    tzdata
 
 # Copy dbmate from build stage (pinned for reproducibility)
 # [Ja] ビルドステージから dbmate をコピー (バージョンを固定して再現性を確保)
