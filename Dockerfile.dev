@@ -20,29 +20,29 @@ apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   build-essential
-  ca-certificates           # HTTPS接続に必要
+  ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
   curl
-  file                      # Shrineによる画像アップロードに必要 (Rails)
-  fzf                       # Claude Codeで使用
+  file                      # Required for Shrine image uploads (Rails) [Ja] Shrine による画像アップロードに必要 (Rails)
+  fzf                       # Used by Claude Code [Ja] Claude Code で使用
   git
-  gnupg                     # PostgreSQLのGPGキーとaptリポジトリに必要
-  jq                        # Claude Codeで使用
-  libffi-dev                # Ruby拡張のビルドに必要
-  libglib2.0-0              # libvipsの依存パッケージ (Rails)
-  libreadline-dev           # Rubyのreadline拡張に必要
-  libssl-dev                # SSL関連のビルドに必要
-  libvips42                 # 画像処理ライブラリ (Rails)
-  libyaml-dev               # psych gemのインストールに必要 (Rails)
-  lsb-release               # PostgreSQLのaptリポジトリ設定に必要
-  nano                      # Claude Codeで使用
-  net-tools                 # Claude Codeで使用 netstat (ネットワークデバッグ用)
-  psmisc                    # Claude Codeで使用 fuser (プロセス特定用)
-  ripgrep                   # Claude Codeで使用
+  gnupg                     # Required for PostgreSQL GPG key and apt repository [Ja] PostgreSQL の GPG キーと apt リポジトリに必要
+  jq                        # Used by Claude Code [Ja] Claude Code で使用
+  libffi-dev                # Required for Ruby extension builds [Ja] Ruby 拡張のビルドに必要
+  libglib2.0-0              # libvips dependency (Rails) [Ja] libvips の依存パッケージ (Rails)
+  libreadline-dev           # Required for Ruby readline extension [Ja] Ruby の readline 拡張に必要
+  libssl-dev                # Required for SSL-related builds [Ja] SSL 関連のビルドに必要
+  libvips42                 # Image processing library (Rails) [Ja] 画像処理ライブラリ (Rails)
+  libyaml-dev               # Required for psych gem installation (Rails) [Ja] psych gem のインストールに必要 (Rails)
+  lsb-release               # Required for PostgreSQL apt repository setup [Ja] PostgreSQL の apt リポジトリ設定に必要
+  nano                      # Used by Claude Code [Ja] Claude Code で使用
+  net-tools                 # Used by Claude Code: netstat (network debugging) [Ja] Claude Code で使用 netstat (ネットワークデバッグ用)
+  psmisc                    # Used by Claude Code: fuser (process identification) [Ja] Claude Code で使用 fuser (プロセス特定用)
+  ripgrep                   # Used by Claude Code [Ja] Claude Code で使用
   sudo
-  tree                      # Claude Codeで使用
+  tree                      # Used by Claude Code [Ja] Claude Code で使用
   unzip
-  vim                       # Claude Codeで使用
-  zlib1g-dev                # Rubyのzlib拡張に必要 (gem installに必須)
+  vim                       # Used by Claude Code [Ja] Claude Code で使用
+  zlib1g-dev                # Required for Ruby zlib extension (required for gem install) [Ja] Ruby の zlib 拡張に必要 (gem install に必須)
   zsh
 PKGLIST
 )
