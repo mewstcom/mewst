@@ -40,13 +40,12 @@ COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
-# Install dev tools at versions pinned in go.mod (via tools.go)
-# [Ja] tools.go で go.mod に固定されたバージョンの開発ツールをインストール
+# Install templ at the version pinned in go.mod (via tools.go)
+# [Ja] tools.go で go.mod に固定されたバージョンの templ をインストール
 COPY tools.go ./
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go install -mod=mod github.com/a-h/templ/cmd/templ && \
-    go install -mod=mod golang.org/x/tools/cmd/goimports
+    go install -mod=mod github.com/a-h/templ/cmd/templ
 
 # Copy source code
 # [Ja] ソースコードをコピー
