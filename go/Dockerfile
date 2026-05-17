@@ -124,13 +124,25 @@ WORKDIR /app
 # Install runtime system dependencies:
 #   - ca-certificates: needed for HTTPS calls (e.g. Resend API)
 #   - tzdata:          required by TZ=UTC handling below
+#   - bash:            Dokku runs each Procfile process (web / release)
+#                      through bash, so /bin/bash must exist in the runtime
+#                      image. Without it, `release: dbmate ...` fails with
+#                      `exec: "/bin/bash": no such file or directory` even
+#                      though the Go server itself only needs /bin/sh.
 #
 # [Ja] 実行時の依存パッケージ:
 #   - ca-certificates: HTTPS 通信 (Resend API など) に必要
 #   - tzdata:          下の TZ=UTC 設定で参照される
+#   - bash:            Dokku は Procfile の各プロセス (web / release) を
+#                      bash 経由で起動するため、ランタイムに /bin/bash が
+#                      必要。Go サーバー自体は /bin/sh で動くが、bash が
+#                      ないと `release: dbmate ...` の起動時に
+#                      `exec: "/bin/bash": no such file or directory`
+#                      で失敗する。
 RUN apk add --no-cache \
     ca-certificates \
-    tzdata
+    tzdata \
+    bash
 
 # Copy dbmate from build stage (pinned for reproducibility)
 # [Ja] ビルドステージから dbmate をコピー (バージョンを固定して再現性を確保)
