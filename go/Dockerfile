@@ -84,21 +84,25 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # [Ja] ソースコードをコピー
 COPY . .
 
-# Generate Go code from templ files. Delete any pre-existing *_templ.go
-# first so the result is independent of the build context's state, then run
-# templ generate, then run goimports to merge the duplicate import blocks
-# that templ emits when the .templ source already imports
-# `github.com/a-h/templ`. This mirrors `make templ-generate` so local and
-# production builds produce identical Go code.
+# Generate Go code from templ files, then run goimports to merge the
+# duplicate import blocks that templ emits when a .templ source already
+# imports `github.com/a-h/templ` (e.g. card.templ, container.templ).
+# Committed *_templ.go files are kept out of the build context by
+# `.dockerignore` (**/*_templ.go), so this RUN starts from a clean tree
+# without an explicit pre-delete step. This pair of steps matches the
+# `templ-generate` -> `templ-goimports` chain in go/Makefile so local and
+# production builds run the exact same scope (-w internal/templates).
 #
-# [Ja] templ ファイルから Go コードを生成。先に既存の *_templ.go を
-# 削除することで、ビルドコンテキスト側の状態に依存しないクリーンな
-# 生成を保証する。続いて templ generate を実行し、最後に goimports で
-# `.templ` 側が `github.com/a-h/templ` を import しているコンポーネントで
-# 発生する import ブロック重複をマージする。ローカルの `make templ-generate`
-# と同じ順序で実行することで、本番と生成結果を揃える。
-RUN find . -name '*_templ.go' -type f -delete && \
-    templ generate && \
+# [Ja] templ ファイルから Go コードを生成し、続いて goimports で
+# `.templ` 側が `github.com/a-h/templ` を import しているコンポーネント
+# (card.templ / container.templ など) で発生する import ブロック重複を
+# マージする。コミット済みの *_templ.go は `.dockerignore` の
+# `**/*_templ.go` でビルドコンテキストから除外されているため、明示的に
+# 削除する手順は不要 (クリーンな状態から生成される)。go/Makefile の
+# `templ-generate` -> `templ-goimports` チェーンと同じスコープ
+# (-w internal/templates) を共有することで、ローカルと本番ビルドの
+# 挙動を揃えている。
+RUN templ generate && \
     goimports -w internal/templates
 
 # Build frontend assets

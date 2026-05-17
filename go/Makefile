@@ -19,10 +19,15 @@ run: ## サーバーを起動
 templ-generate: ## templファイルからGoコードを生成し、import文を整理
 	@which templ > /dev/null || (echo "Installing templ from go.mod..." && go install github.com/a-h/templ/cmd/templ)
 	templ generate
-	@$(MAKE) goimports
+	@$(MAKE) templ-goimports
+
+.PHONY: templ-goimports
+templ-goimports: ## templ生成ファイルのimport文を整理（本番Dockerfileと共有するスコープ）
+	@which goimports > /dev/null || (echo "Installing goimports from go.mod..." && go install golang.org/x/tools/cmd/goimports)
+	goimports -w internal/templates
 
 .PHONY: goimports
-goimports: ## goimportsでimport文を整理
+goimports: ## goimportsでimport文を整理（リポジトリ全体）
 	@which goimports > /dev/null || (echo "Installing goimports from go.mod..." && go install golang.org/x/tools/cmd/goimports)
 	goimports -w .
 
