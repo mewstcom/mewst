@@ -161,6 +161,7 @@ RUN touch ~/.zshrc
 # `mise activate` bypasses shims and prepends the direct paths of the global
 # defaults to PATH, which breaks per-directory version switching. With the
 # shims approach, activate is unnecessary.
+#
 # [Ja] Docker 環境では shims 方式を使用 (PATH="/mise/shims:..." で設定済み)。
 # mise activate は shims をバイパスしてグローバルデフォルトの直接パスを PATH に
 # 追加するため、ディレクトリごとのバージョン切り替えが効かなくなる。shims 方式では不要。
