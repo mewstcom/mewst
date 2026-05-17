@@ -83,8 +83,10 @@ RUN mise use --global go@1.25.4 && \
 
 # --- dbmate ---
 ARG DBMATE_VERSION=v2.33.0
+ARG DBMATE_SHA256=dfd4027141b6e4357158099bdfe6c02b286af70f8e49057937744cf80b38ea1c
 RUN curl -fsSL -o /usr/local/bin/dbmate \
       https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
+    echo "${DBMATE_SHA256}  /usr/local/bin/dbmate" | sha256sum -c - && \
     chmod +x /usr/local/bin/dbmate
 
 # --- hivemind ---
