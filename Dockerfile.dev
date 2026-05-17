@@ -74,8 +74,9 @@ RUN mise use --global go@1.25.4 && \
     mise use --global pnpm@10.24.0
 
 # --- dbmate ---
+ARG DBMATE_VERSION=v2.33.0
 RUN curl -fsSL -o /usr/local/bin/dbmate \
-      https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64 && \
+      https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
     chmod +x /usr/local/bin/dbmate
 
 # --- hivemind ---

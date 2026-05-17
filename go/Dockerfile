@@ -75,9 +75,10 @@ RUN apk add --no-cache \
     curl \
     bash
 
-# Install dbmate (for migrations)
-# [Ja] dbmate のインストール（マイグレーション用）
-RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64 && \
+# Install dbmate (for migrations, pinned for reproducibility)
+# [Ja] dbmate のインストール (マイグレーション用、バージョンを固定して再現性を確保)
+ARG DBMATE_VERSION=v2.33.0
+RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
     chmod +x /usr/local/bin/dbmate
 
 # Copy required files from build stage
