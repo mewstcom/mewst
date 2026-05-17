@@ -105,7 +105,6 @@ COPY --from=builder /usr/local/bin/dbmate /usr/local/bin/dbmate
 COPY --from=builder /app/bin/server /app/bin/server
 COPY --from=builder /app/static /app/static
 COPY --from=builder /app/db /app/db
-COPY --from=builder /app/internal/i18n/locales /app/internal/i18n/locales
 
 # Set timezone to UTC
 # [Ja] タイムゾーンを UTC に設定
