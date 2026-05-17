@@ -1,11 +1,19 @@
+# syntax=docker/dockerfile:1.7
 FROM debian:trixie
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG USERNAME=developer
 
+# Keep apt downloads for BuildKit cache mounts
+# [Ja] BuildKit のキャッシュマウントで apt のダウンロード結果を保持する
+RUN rm -f /etc/apt/apt.conf.d/docker-clean && \
+    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
 # --- システムパッケージ ---
-RUN <<EOF
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    <<EOF
 apt update
 apt dist-upgrade -yq
 
@@ -39,16 +47,16 @@ PKGLIST
 )
 
 apt install -y --no-install-recommends $PACKAGES
-rm -rf /var/lib/apt/lists/*
 EOF
 
 # --- PostgreSQL クライアント ---
-RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
       | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
     echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
       > /etc/apt/sources.list.d/pgdg.list && \
-    apt update && apt install -y libpq-dev postgresql-client-18 && \
-    rm -rf /var/lib/apt/lists/*
+    apt update && apt install -y libpq-dev postgresql-client-18
 
 # --- mise (開発ツールバージョンマネージャー) ---
 # Docker環境向けの推奨設定: shims方式を使用
@@ -91,7 +99,9 @@ RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/ins
       | sh -s -- -b /usr/local/bin v2.7.2
 
 # --- GitHub CLI ---
-RUN (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
 	&& sudo mkdir -p -m 755 /etc/apt/keyrings \
 	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 	&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
