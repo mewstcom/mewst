@@ -11,18 +11,30 @@ FROM golang:1.25.4-alpine3.21 AS builder
 WORKDIR /app
 
 # Install system dependencies:
-#   - git:    needed by `go mod download` for VCS-based modules
-#   - nodejs: provides Corepack to enable pnpm in the next step
-#   - curl:   used to download the pinned dbmate binary below
+#   - git:       needed by `go mod download` for VCS-based modules
+#   - curl:      used to download the pinned dbmate binary below
+#   - libstdc++: required to run the Node binary copied from node:alpine below
 #
 # [Ja] システム依存関係のインストール:
-#   - git:    go mod download で VCS ベースのモジュールを取得するため
-#   - nodejs: 次ステップの Corepack 経由で pnpm を有効化するため
-#   - curl:   下で固定バージョンの dbmate バイナリを取得するため
+#   - git:       go mod download で VCS ベースのモジュールを取得するため
+#   - curl:      下で固定バージョンの dbmate バイナリを取得するため
+#   - libstdc++: 下で node:alpine からコピーする Node バイナリを動作させるため
 RUN apk add --no-cache \
     git \
-    nodejs \
-    curl
+    curl \
+    libstdc++
+
+# Copy Node.js from the official image so the build uses the same Node version
+# as Dockerfile.dev (mise's node@24.11.1), instead of whatever Alpine's `apk
+# add nodejs` happens to provide. The corepack symlink under /usr/local/bin is
+# recreated because COPY dereferences single-file symlinks.
+#
+# [Ja] Dockerfile.dev (mise の node@24.11.1) と Node バージョンを揃えるため、
+# `apk add nodejs` (Alpine 提供版) ではなく公式 Node イメージからコピーする。
+# /usr/local/bin/corepack のシンボリックリンクは COPY で参照先実体化されるため作り直す。
+COPY --from=node:24.11.1-alpine3.21 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:24.11.1-alpine3.21 /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack
 
 # Download dbmate binary (pinned for reproducibility, verified by SHA256)
 # [Ja] dbmate バイナリのダウンロード (バージョンを固定して再現性を確保、SHA256 で検証)
