@@ -13,12 +13,11 @@ WORKDIR /app
 RUN apk add --no-cache \
     git \
     nodejs \
-    npm \
     curl
 
-# Install pnpm
-# [Ja] pnpm のインストール
-RUN npm install -g pnpm@10.24.0
+# Enable Corepack and activate pnpm at the version pinned in package.json
+# [Ja] Corepack を有効化し、package.json で固定された pnpm を有効化
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
 # Copy Go dependency files
 # [Ja] Go 依存関係ファイルをコピー
