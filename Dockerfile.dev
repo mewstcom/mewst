@@ -1,65 +1,81 @@
+# syntax=docker/dockerfile:1.7
 FROM debian:trixie
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG USERNAME=developer
 
-# --- システムパッケージ ---
-RUN <<EOF
+# Keep apt downloads for BuildKit cache mounts
+# [Ja] BuildKit のキャッシュマウントで apt のダウンロード結果を保持する
+RUN rm -f /etc/apt/apt.conf.d/docker-clean && \
+    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+# --- System packages ---
+# [Ja] システムパッケージ
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    <<EOF
+set -eu
+
 apt update
 apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   build-essential
-  ca-certificates           # HTTPS接続に必要
+  ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
   curl
-  file                      # Shrineによる画像アップロードに必要 (Rails)
-  fzf                       # Claude Codeで使用
+  file                      # Required for Shrine image uploads (Rails) [Ja] Shrine による画像アップロードに必要 (Rails)
+  fzf                       # Used by Claude Code [Ja] Claude Code で使用
   git
-  gnupg                     # PostgreSQLのGPGキーとaptリポジトリに必要
-  jq                        # Claude Codeで使用
-  libffi-dev                # Ruby拡張のビルドに必要
-  libglib2.0-0              # libvipsの依存パッケージ (Rails)
-  libreadline-dev           # Rubyのreadline拡張に必要
-  libssl-dev                # SSL関連のビルドに必要
-  libvips42                 # 画像処理ライブラリ (Rails)
-  libyaml-dev               # psych gemのインストールに必要 (Rails)
-  lsb-release               # PostgreSQLのaptリポジトリ設定に必要
-  nano                      # Claude Codeで使用
-  net-tools                 # Claude Codeで使用 netstat (ネットワークデバッグ用)
-  psmisc                    # Claude Codeで使用 fuser (プロセス特定用)
-  ripgrep                   # Claude Codeで使用
+  gnupg                     # Required for PostgreSQL GPG key and apt repository [Ja] PostgreSQL の GPG キーと apt リポジトリに必要
+  jq                        # Used by Claude Code [Ja] Claude Code で使用
+  libffi-dev                # Required for Ruby extension builds [Ja] Ruby 拡張のビルドに必要
+  libglib2.0-0              # libvips dependency (Rails) [Ja] libvips の依存パッケージ (Rails)
+  libreadline-dev           # Required for Ruby readline extension [Ja] Ruby の readline 拡張に必要
+  libssl-dev                # Required for SSL-related builds [Ja] SSL 関連のビルドに必要
+  libvips42                 # Image processing library (Rails) [Ja] 画像処理ライブラリ (Rails)
+  libyaml-dev               # Required for psych gem installation (Rails) [Ja] psych gem のインストールに必要 (Rails)
+  lsb-release               # Required for PostgreSQL apt repository setup [Ja] PostgreSQL の apt リポジトリ設定に必要
+  nano                      # Used by Claude Code [Ja] Claude Code で使用
+  net-tools                 # Used by Claude Code: netstat (network debugging) [Ja] Claude Code で使用 netstat (ネットワークデバッグ用)
+  psmisc                    # Used by Claude Code: fuser (process identification) [Ja] Claude Code で使用 fuser (プロセス特定用)
+  ripgrep                   # Used by Claude Code [Ja] Claude Code で使用
   sudo
-  tree                      # Claude Codeで使用
+  tree                      # Used by Claude Code [Ja] Claude Code で使用
   unzip
-  vim                       # Claude Codeで使用
-  zlib1g-dev                # Rubyのzlib拡張に必要 (gem installに必須)
+  vim                       # Used by Claude Code [Ja] Claude Code で使用
+  zlib1g-dev                # Required for Ruby zlib extension (required for gem install) [Ja] Ruby の zlib 拡張に必要 (gem install に必須)
   zsh
 PKGLIST
 )
 
 apt install -y --no-install-recommends $PACKAGES
-rm -rf /var/lib/apt/lists/*
 EOF
 
-# --- PostgreSQL クライアント ---
-RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
-      | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
-    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+# --- PostgreSQL client ---
+# [Ja] PostgreSQL クライアント
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    mkdir -p -m 755 /etc/apt/keyrings && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+      | gpg --dearmor -o /etc/apt/keyrings/postgresql.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
       > /etc/apt/sources.list.d/pgdg.list && \
-    apt update && apt install -y libpq-dev postgresql-client-18 && \
-    rm -rf /var/lib/apt/lists/*
+    apt update && apt install -y libpq-dev postgresql-client-18
 
-# --- mise (開発ツールバージョンマネージャー) ---
-# Docker環境向けの推奨設定: shims方式を使用
+# --- mise (dev tool version manager) ---
+# [Ja] mise (開発ツールバージョンマネージャー)
+# Recommended config for Docker: use the shims approach.
+# [Ja] Docker 環境向けの推奨設定: shims 方式を使用する。
 ENV MISE_DATA_DIR="/mise"
 ENV MISE_CONFIG_DIR="/mise"
 ENV MISE_CACHE_DIR="/mise/cache"
 ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV PATH="/mise/shims:${PATH}"
-RUN curl https://mise.run | sh
+RUN curl -fsSL https://mise.run | sh
 
-# Go、Ruby、Node.js、pnpm、Yarnをmise経由でインストール
+# Install Go, Ruby, Node.js, pnpm, and Yarn via mise
+# [Ja] Go、Ruby、Node.js、pnpm、Yarn を mise 経由でインストール
 RUN mise install go@1.25.4 && \
     mise install ruby@3.3.6 && \
     mise install node@24.11.1 && \
@@ -67,70 +83,102 @@ RUN mise install go@1.25.4 && \
     mise install pnpm@10.24.0 && \
     mise install yarn@1.22.19
 
-# グローバルデフォルトを設定
+# Set global defaults
+# [Ja] グローバルデフォルトを設定
 RUN mise use --global go@1.25.4 && \
     mise use --global ruby@3.3.6 && \
     mise use --global node@24.11.1 && \
     mise use --global pnpm@10.24.0
 
 # --- dbmate ---
-RUN curl -fsSL -o /usr/local/bin/dbmate \
-      https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64 && \
+# [Ja] dbmate
+ARG DBMATE_VERSION=v2.33.0
+ARG DBMATE_SHA256=dfd4027141b6e4357158099bdfe6c02b286af70f8e49057937744cf80b38ea1c
+RUN curl -fsSL -o /tmp/dbmate \
+      https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
+    echo "${DBMATE_SHA256}  /tmp/dbmate" | sha256sum -c - && \
+    mv /tmp/dbmate /usr/local/bin/dbmate && \
     chmod +x /usr/local/bin/dbmate
 
 # --- hivemind ---
+# [Ja] hivemind
+ARG HIVEMIND_VERSION=v1.1.0
+ARG HIVEMIND_SHA256=809ca1c5fedbbfca8fdfb3a4b9bb9c41868b046f35f85a3e893ccf2583a3921a
 RUN curl -fsSL -o /tmp/hivemind.gz \
-      https://github.com/DarthSim/hivemind/releases/download/v1.1.0/hivemind-v1.1.0-linux-amd64.gz && \
+      https://github.com/DarthSim/hivemind/releases/download/${HIVEMIND_VERSION}/hivemind-${HIVEMIND_VERSION}-linux-amd64.gz && \
+    echo "${HIVEMIND_SHA256}  /tmp/hivemind.gz" | sha256sum -c - && \
     gunzip /tmp/hivemind.gz && \
     mv /tmp/hivemind /usr/local/bin/hivemind && \
     chmod +x /usr/local/bin/hivemind
 
 # --- golangci-lint ---
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh \
-      | sh -s -- -b /usr/local/bin v2.7.2
+# [Ja] golangci-lint
+ARG GOLANGCI_LINT_VERSION=2.7.2
+ARG GOLANGCI_LINT_SHA256=ce46a1f1d890e7b667259f70bb236297f5cf8791a9b6b98b41b283d93b5b6e88
+RUN curl -fsSL -o /tmp/golangci-lint.tar.gz \
+      https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64.tar.gz && \
+    echo "${GOLANGCI_LINT_SHA256}  /tmp/golangci-lint.tar.gz" | sha256sum -c - && \
+    tar -xzf /tmp/golangci-lint.tar.gz -C /tmp && \
+    mv /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64/golangci-lint /usr/local/bin/golangci-lint && \
+    chmod +x /usr/local/bin/golangci-lint && \
+    rm -rf /tmp/golangci-lint.tar.gz /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64
 
 # --- GitHub CLI ---
-RUN (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
-	&& sudo mkdir -p -m 755 /etc/apt/keyrings \
-	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-	&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-	&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-	&& sudo mkdir -p -m 755 /etc/apt/sources.list.d \
-	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-	&& sudo apt update \
-	&& sudo apt install gh -y
+# [Ja] GitHub CLI
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    mkdir -p -m 755 /etc/apt/keyrings && \
+    curl -fsSL -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+      https://cli.github.com/packages/githubcli-archive-keyring.gpg && \
+    chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list && \
+    apt update && apt install -y gh
 
-# --- ユーザー作成 ---
+# --- User setup ---
+# [Ja] ユーザー作成
 RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/zsh ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# --- Go キャッシュディレクトリ ---
+# --- Go cache directories ---
+# [Ja] Go キャッシュディレクトリ
 RUN mkdir -p /go/.cache/go-build /go/pkg && \
     chown -R ${USER_ID}:${GROUP_ID} /go
 
-# --- mise のデータディレクトリの権限設定 ---
+# --- mise data directory permissions ---
+# [Ja] mise のデータディレクトリの権限設定
 RUN chown -R ${USER_ID}:${GROUP_ID} /mise
 
 WORKDIR /workspace
 USER ${USERNAME}
 
-# --- .zshrc の作成 ---
+# --- Create .zshrc ---
+# [Ja] .zshrc の作成
 RUN touch ~/.zshrc
 
-# --- mise シェル設定 ---
-# Docker環境ではshims方式を使用（PATH="/mise/shims:..."で設定済み）
-# mise activateはshimsをバイパスしてグローバルデフォルトの直接パスをPATHに追加するため、
-# ディレクトリごとのバージョン切り替えが効かなくなる。shims方式では不要。
+# --- mise shell setup ---
+# [Ja] mise シェル設定
+# Use the shims approach in Docker (already configured via PATH="/mise/shims:...").
+# `mise activate` bypasses shims and prepends the direct paths of the global
+# defaults to PATH, which breaks per-directory version switching. With the
+# shims approach, activate is unnecessary.
+#
+# [Ja] Docker 環境では shims 方式を使用 (PATH="/mise/shims:..." で設定済み)。
+# mise activate は shims をバイパスしてグローバルデフォルトの直接パスを PATH に
+# 追加するため、ディレクトリごとのバージョン切り替えが効かなくなる。shims 方式では不要。
 RUN mise reshim
 
 # --- 1Password CLI ---
+# [Ja] 1Password CLI
 COPY --from=1password/op:2 /usr/local/bin/op /usr/local/bin/op
 
 # --- Claude Code ---
+# [Ja] Claude Code
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
-# --- Go ツール ---
+# --- Go tools ---
+# [Ja] Go ツール
 ENV GOCACHE=/go/.cache/go-build
 ENV GOMODCACHE=/go/pkg/mod
 ENV GOPATH=/go
@@ -138,14 +186,17 @@ ENV PATH="${GOPATH}/bin:${PATH}"
 RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0 && \
     go install github.com/air-verse/air@latest
 
-# --- Ruby ツール ---
+# --- Ruby tools ---
+# [Ja] Ruby ツール
 RUN gem install bundler -v 2.5.9
 
-# --- シェル設定 ---
+# --- Shell setup ---
+# [Ja] シェル設定
 SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 
-# --- Git設定 ---
+# --- Git config ---
+# [Ja] Git 設定
 RUN git config --global user.email "me@shimba.co" && \
     git config --global user.name "Koji Shimba"
 
