@@ -62,29 +62,44 @@ COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
-# Install templ at the version pinned in go.mod (via tools.go)
-# [Ja] tools.go で go.mod に固定されたバージョンの templ をインストール
+# Install templ and goimports at the versions pinned in go.mod (via tools.go).
+# goimports is required to merge the import blocks that templ generates: when
+# a .templ source already imports `github.com/a-h/templ`, templ emits a
+# second import block for its runtime, and only goimports collapses the two.
+# `make templ-generate` runs the same pair locally, so we mirror it here.
+#
+# [Ja] tools.go で go.mod に固定されたバージョンの templ と goimports を
+# インストール。goimports は templ が生成する import ブロックをマージするのに
+# 必要: `.templ` 側で `github.com/a-h/templ` を import していると、templ は
+# runtime 用に別の import ブロックを生成するため、goimports でまとめない
+# 限り `templ` シンボルが二重宣言になる。ローカルの `make templ-generate` も
+# 同じ 2 つを順に呼ぶため、本番 Dockerfile もそれに揃える。
 COPY tools.go ./
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go install -mod=mod github.com/a-h/templ/cmd/templ
+    go install -mod=mod github.com/a-h/templ/cmd/templ && \
+    go install -mod=mod golang.org/x/tools/cmd/goimports
 
 # Copy source code
 # [Ja] ソースコードをコピー
 COPY . .
 
 # Generate Go code from templ files. Delete any pre-existing *_templ.go
-# first so the result is independent of the build context's state. The
-# .dockerignore already excludes them, but this guards against stale
-# copies surviving a cached `COPY . .` layer and against future glob
-# regressions in .dockerignore.
+# first so the result is independent of the build context's state, then run
+# templ generate, then run goimports to merge the duplicate import blocks
+# that templ emits when the .templ source already imports
+# `github.com/a-h/templ`. This mirrors `make templ-generate` so local and
+# production builds produce identical Go code.
 #
 # [Ja] templ ファイルから Go コードを生成。先に既存の *_templ.go を
 # 削除することで、ビルドコンテキスト側の状態に依存しないクリーンな
-# 生成を保証する。.dockerignore でも除外しているが、`COPY . .` の
-# レイヤキャッシュ経由で古いファイルが残るケースや、将来の
-# .dockerignore の glob 退行に対する保険として機能させる。
-RUN find . -name '*_templ.go' -type f -delete && templ generate
+# 生成を保証する。続いて templ generate を実行し、最後に goimports で
+# `.templ` 側が `github.com/a-h/templ` を import しているコンポーネントで
+# 発生する import ブロック重複をマージする。ローカルの `make templ-generate`
+# と同じ順序で実行することで、本番と生成結果を揃える。
+RUN find . -name '*_templ.go' -type f -delete && \
+    templ generate && \
+    goimports -w internal/templates
 
 # Build frontend assets
 # [Ja] フロントエンドアセットをビルド
