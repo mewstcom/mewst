@@ -135,4 +135,4 @@ EXPOSE 8080
 # [Ja] デフォルトの起動コマンド。Dokku は Procfile の `web` を優先するため、
 # 本番デプロイは Procfile 経由のままになる。CMD は `docker run <image>` で
 # ローカルや CI のスモークテストを行うために置く。
-CMD ["bin/server"]
+CMD ["/app/bin/server"]
