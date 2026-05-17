@@ -17,6 +17,12 @@ RUN apk add --no-cache \
     nodejs \
     curl
 
+# Download dbmate binary (pinned for reproducibility)
+# [Ja] dbmate バイナリのダウンロード (バージョンを固定して再現性を確保)
+ARG DBMATE_VERSION=v2.33.0
+RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
+    chmod +x /usr/local/bin/dbmate
+
 # Enable Corepack and activate pnpm at the version pinned in package.json
 # [Ja] Corepack を有効化し、package.json で固定された pnpm を有効化
 RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
@@ -76,14 +82,11 @@ RUN apk add --no-cache \
     ca-certificates \
     tzdata \
     postgresql-client \
-    curl \
     bash
 
-# Install dbmate (for migrations, pinned for reproducibility)
-# [Ja] dbmate のインストール (マイグレーション用、バージョンを固定して再現性を確保)
-ARG DBMATE_VERSION=v2.33.0
-RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
-    chmod +x /usr/local/bin/dbmate
+# Copy dbmate from build stage (pinned for reproducibility)
+# [Ja] ビルドステージから dbmate をコピー (バージョンを固定して再現性を確保)
+COPY --from=builder /usr/local/bin/dbmate /usr/local/bin/dbmate
 
 # Copy required files from build stage
 # [Ja] ビルドステージから必要なファイルをコピー
