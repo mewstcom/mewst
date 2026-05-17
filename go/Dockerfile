@@ -10,8 +10,15 @@ FROM golang:1.25.4-alpine AS builder
 # [Ja] 作業ディレクトリを設定
 WORKDIR /app
 
-# Install system dependencies
-# [Ja] システム依存関係のインストール
+# Install system dependencies:
+#   - git:    needed by `go mod download` for VCS-based modules
+#   - nodejs: provides Corepack to enable pnpm in the next step
+#   - curl:   used to download the pinned dbmate binary below
+#
+# [Ja] システム依存関係のインストール:
+#   - git:    go mod download で VCS ベースのモジュールを取得するため
+#   - nodejs: 次ステップの Corepack 経由で pnpm を有効化するため
+#   - curl:   下で固定バージョンの dbmate バイナリを取得するため
 RUN apk add --no-cache \
     git \
     nodejs \
