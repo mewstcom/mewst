@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 # ========================================
 # Build stage
 # [Ja] ビルドステージ
@@ -22,17 +24,22 @@ RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 # Copy Go dependency files
 # [Ja] Go 依存関係ファイルをコピー
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
 # Copy pnpm dependency files
 # [Ja] pnpm 依存関係ファイルをコピー
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 # Install dev tools at versions pinned in go.mod (via tools.go)
 # [Ja] tools.go で go.mod に固定されたバージョンの開発ツールをインストール
 COPY tools.go ./
-RUN go install -mod=mod github.com/a-h/templ/cmd/templ && \
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    go install -mod=mod github.com/a-h/templ/cmd/templ && \
     go install -mod=mod golang.org/x/tools/cmd/goimports
 
 # Copy source code
@@ -49,7 +56,9 @@ RUN pnpm build
 
 # Build Go binary
 # [Ja] Go バイナリをビルド
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o bin/server cmd/server/main.go
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o bin/server cmd/server/main.go
 
 # ========================================
 # Runtime stage
@@ -88,5 +97,5 @@ COPY --from=builder /app/internal/i18n/locales /app/internal/i18n/locales
 ENV TZ=UTC
 
 # Expose port (Dokku detects the listening port via this directive)
-# [Ja] ポートを公開（Dokku はこのディレクティブで待受ポートを検出する）
+# [Ja] ポートを公開 (Dokku はこのディレクティブで待受ポートを検出する)
 EXPOSE 8080
