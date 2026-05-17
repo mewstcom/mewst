@@ -22,12 +22,12 @@ templ-generate: ## templファイルからGoコードを生成し、import文を
 	@$(MAKE) templ-goimports
 
 .PHONY: templ-goimports
-templ-goimports: ## templ生成ファイルのimport文を整理（本番Dockerfileと共有するスコープ）
+templ-goimports: ## Tidy imports for templ-generated files (scope shared with prod Dockerfile) [Ja] templ 生成ファイルの import 文を整理 (本番 Dockerfile と共有するスコープ)
 	@which goimports > /dev/null || (echo "Installing goimports from go.mod..." && go install golang.org/x/tools/cmd/goimports)
 	goimports -w internal/templates
 
 .PHONY: goimports
-goimports: ## goimportsでimport文を整理（リポジトリ全体）
+goimports: ## goimports で import 文を整理 (リポジトリ全体)
 	@which goimports > /dev/null || (echo "Installing goimports from go.mod..." && go install golang.org/x/tools/cmd/goimports)
 	goimports -w .
 
@@ -44,7 +44,7 @@ goimports-check: ## goimportsでimport文をチェック（差分があればエ
 	fi
 
 .PHONY: build
-build: templ-generate ## バイナリをビルド（templ-generateがgoimportsも実行）
+build: templ-generate ## バイナリをビルド (templ-generate が templ-goimports も実行)
 	go build -o bin/server cmd/server/main.go
 
 .PHONY: test
