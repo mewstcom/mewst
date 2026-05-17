@@ -127,3 +127,12 @@ ENV TZ=UTC
 # Expose port (Dokku detects the listening port via this directive)
 # [Ja] ポートを公開 (Dokku はこのディレクティブで待受ポートを検出する)
 EXPOSE 8080
+
+# Default command. Dokku prefers the Procfile's `web` entry over this CMD,
+# so production deploys still go through Procfile. CMD exists so that
+# `docker run <image>` works for local/CI smoke tests.
+#
+# [Ja] デフォルトの起動コマンド。Dokku は Procfile の `web` を優先するため、
+# 本番デプロイは Procfile 経由のままになる。CMD は `docker run <image>` で
+# ローカルや CI のスモークテストを行うために置く。
+CMD ["bin/server"]
