@@ -26,8 +26,8 @@ RUN curl -fsSL -o /tmp/dbmate https://github.com/amacneil/dbmate/releases/downlo
     mv /tmp/dbmate /usr/local/bin/dbmate && \
     chmod +x /usr/local/bin/dbmate
 
-# Enable Corepack and activate pnpm at the version pinned in package.json
-# [Ja] Corepack を有効化し、package.json で固定された pnpm を有効化
+# Enable Corepack and activate pnpm (version must match package.json's packageManager field).
+# [Ja] Corepack を有効化し pnpm を有効化 (バージョンは package.json の packageManager フィールドと一致させる)。
 RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
 # Copy Go dependency files
