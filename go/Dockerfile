@@ -21,8 +21,9 @@ RUN apk add --no-cache \
 # [Ja] dbmate バイナリのダウンロード (バージョンを固定して再現性を確保、SHA256 で検証)
 ARG DBMATE_VERSION=v2.33.0
 ARG DBMATE_SHA256=dfd4027141b6e4357158099bdfe6c02b286af70f8e49057937744cf80b38ea1c
-RUN curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
-    echo "${DBMATE_SHA256}  /usr/local/bin/dbmate" | sha256sum -c - && \
+RUN curl -fsSL -o /tmp/dbmate https://github.com/amacneil/dbmate/releases/download/${DBMATE_VERSION}/dbmate-linux-amd64 && \
+    echo "${DBMATE_SHA256}  /tmp/dbmate" | sha256sum -c - && \
+    mv /tmp/dbmate /usr/local/bin/dbmate && \
     chmod +x /usr/local/bin/dbmate
 
 # Enable Corepack and activate pnpm at the version pinned in package.json
