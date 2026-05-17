@@ -73,9 +73,18 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # [Ja] ソースコードをコピー
 COPY . .
 
-# Generate Go code from templ files
-# [Ja] templ ファイルから Go コードを生成
-RUN templ generate
+# Generate Go code from templ files. Delete any pre-existing *_templ.go
+# first so the result is independent of the build context's state. The
+# .dockerignore already excludes them, but this guards against stale
+# copies surviving a cached `COPY . .` layer and against future glob
+# regressions in .dockerignore.
+#
+# [Ja] templ ファイルから Go コードを生成。先に既存の *_templ.go を
+# 削除することで、ビルドコンテキスト側の状態に依存しないクリーンな
+# 生成を保証する。.dockerignore でも除外しているが、`COPY . .` の
+# レイヤキャッシュ経由で古いファイルが残るケースや、将来の
+# .dockerignore の glob 退行に対する保険として機能させる。
+RUN find . -name '*_templ.go' -type f -delete && templ generate
 
 # Build frontend assets
 # [Ja] フロントエンドアセットをビルド
