@@ -100,11 +100,13 @@ RUN apk add --no-cache \
 # [Ja] ビルドステージから dbmate をコピー (バージョンを固定して再現性を確保)
 COPY --from=builder /usr/local/bin/dbmate /usr/local/bin/dbmate
 
-# Copy required files from build stage
-# [Ja] ビルドステージから必要なファイルをコピー
+# Copy required files from build stage.
+# Migrations only: schema.sql is a dev-time snapshot, not consumed by `dbmate up`.
+# [Ja] ビルドステージから必要なファイルをコピー。
+# migrations のみ: schema.sql は開発時のスナップショットで `dbmate up` は使わない。
 COPY --from=builder /app/bin/server /app/bin/server
 COPY --from=builder /app/static /app/static
-COPY --from=builder /app/db /app/db
+COPY --from=builder /app/db/migrations /app/db/migrations
 
 # Set timezone to UTC
 # [Ja] タイムゾーンを UTC に設定
