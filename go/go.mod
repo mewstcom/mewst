@@ -14,9 +14,9 @@ require (
 	github.com/mfridman/tparse v0.18.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/resend/resend-go/v2 v2.28.0
-	github.com/riverqueue/river v0.30.2
-	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.30.2
-	github.com/riverqueue/river/rivertype v0.30.2
+	github.com/riverqueue/river v0.38.0
+	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.38.0
+	github.com/riverqueue/river/rivertype v0.38.0
 	github.com/sqlc-dev/pqtype v0.3.0
 	golang.org/x/crypto v0.52.0
 	golang.org/x/text v0.37.0
@@ -47,17 +47,17 @@ require (
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/riverqueue/river/riverdriver v0.30.2 // indirect
-	github.com/riverqueue/river/rivershared v0.30.2 // indirect
+	github.com/riverqueue/river/riverdriver v0.38.0 // indirect
+	github.com/riverqueue/river/rivershared v0.38.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
-	github.com/tidwall/gjson v1.18.0 // indirect
+	github.com/tidwall/gjson v1.19.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	go.uber.org/goleak v1.3.0 // indirect
-	golang.org/x/mod v0.35.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
 	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect
