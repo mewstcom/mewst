@@ -5,4 +5,5 @@
 # typed: false
 
 module Capybara::Cuprite::Driver; end
+module URI::Source; end
 module V1::UserResource::User; end

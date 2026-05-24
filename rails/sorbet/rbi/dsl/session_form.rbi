@@ -6,15 +6,19 @@
 
 
 class SessionForm
-  sig { returns(T.nilable(::String)) }
-  def email; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def email=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def email; end
 
-  sig { returns(T.nilable(::String)) }
-  def password; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def email=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def password=(value); end
+    sig { returns(T.nilable(::String)) }
+    def password; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def password=(value); end
+  end
 end

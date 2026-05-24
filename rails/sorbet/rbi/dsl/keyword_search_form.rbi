@@ -6,9 +6,13 @@
 
 
 class KeywordSearchForm
-  sig { returns(T.nilable(::String)) }
-  def q; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def q=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def q; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def q=(value); end
+  end
 end

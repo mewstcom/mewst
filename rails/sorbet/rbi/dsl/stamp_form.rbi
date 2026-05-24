@@ -6,9 +6,13 @@
 
 
 class StampForm
-  sig { returns(T.nilable(::String)) }
-  def target_post_id; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def target_post_id=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def target_post_id; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def target_post_id=(value); end
+  end
 end

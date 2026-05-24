@@ -6,15 +6,19 @@
 
 
 class EmailConfirmationChallengeForm
-  sig { returns(T.nilable(::String)) }
-  def confirmation_code; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def confirmation_code=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def confirmation_code; end
 
-  sig { returns(T.nilable(::String)) }
-  def email_confirmation_id; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def confirmation_code=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def email_confirmation_id=(value); end
+    sig { returns(T.nilable(::String)) }
+    def email_confirmation_id; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def email_confirmation_id=(value); end
+  end
 end
