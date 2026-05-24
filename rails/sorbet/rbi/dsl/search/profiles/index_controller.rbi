@@ -17,7 +17,6 @@ class Search::Profiles::IndexController
     include ::ProfilesHelper
     include ::TextHelper
     include ::TimeHelper
-    include ::PreviewHelper
     include ::Doorkeeper::DashboardHelper
     include ::ApplicationController::HelperMethods
 
