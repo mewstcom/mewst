@@ -6,9 +6,13 @@
 
 
 class PasswordResetForm
-  sig { returns(T.nilable(::String)) }
-  def password; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def password=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def password; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def password=(value); end
+  end
 end

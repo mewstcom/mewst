@@ -6,9 +6,13 @@
 
 
 class LinkDataFetcherForm
-  sig { returns(T.nilable(::String)) }
-  def target_url; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def target_url=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def target_url; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def target_url=(value); end
+  end
 end

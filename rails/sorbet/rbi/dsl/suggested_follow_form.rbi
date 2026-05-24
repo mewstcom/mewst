@@ -6,9 +6,13 @@
 
 
 class SuggestedFollowForm
-  sig { returns(T.nilable(::String)) }
-  def target_atname; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def target_atname=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def target_atname; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def target_atname=(value); end
+  end
 end

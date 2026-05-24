@@ -6,15 +6,19 @@
 
 
 class UserForm
-  sig { returns(T.nilable(::String)) }
-  def locale; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def locale=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def locale; end
 
-  sig { returns(T.nilable(::String)) }
-  def time_zone; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def locale=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def time_zone=(value); end
+    sig { returns(T.nilable(::String)) }
+    def time_zone; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def time_zone=(value); end
+  end
 end

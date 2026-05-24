@@ -6,27 +6,31 @@
 
 
 class LinkForm
-  sig { returns(T.nilable(::String)) }
-  def canonical_url; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def canonical_url=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def canonical_url; end
 
-  sig { returns(T.nilable(::String)) }
-  def domain; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def canonical_url=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def domain=(value); end
+    sig { returns(T.nilable(::String)) }
+    def domain; end
 
-  sig { returns(T.nilable(::String)) }
-  def image_url; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def domain=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def image_url=(value); end
+    sig { returns(T.nilable(::String)) }
+    def image_url; end
 
-  sig { returns(T.nilable(::String)) }
-  def title; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def image_url=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def title=(value); end
+    sig { returns(T.nilable(::String)) }
+    def title; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def title=(value); end
+  end
 end

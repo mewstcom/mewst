@@ -6,33 +6,37 @@
 
 
 class AccountForm
-  sig { returns(T.nilable(::String)) }
-  def atname; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def atname=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def atname; end
 
-  sig { returns(T.nilable(::String)) }
-  def email; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def atname=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def email=(value); end
+    sig { returns(T.nilable(::String)) }
+    def email; end
 
-  sig { returns(T.nilable(::String)) }
-  def locale; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def email=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def locale=(value); end
+    sig { returns(T.nilable(::String)) }
+    def locale; end
 
-  sig { returns(T.nilable(::String)) }
-  def password; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def locale=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def password=(value); end
+    sig { returns(T.nilable(::String)) }
+    def password; end
 
-  sig { returns(T.nilable(::String)) }
-  def time_zone; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def password=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def time_zone=(value); end
+    sig { returns(T.nilable(::String)) }
+    def time_zone; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def time_zone=(value); end
+  end
 end

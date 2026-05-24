@@ -6,21 +6,25 @@
 
 
 class PostForm
-  sig { returns(T.nilable(::String)) }
-  def canonical_url; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def canonical_url=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def canonical_url; end
 
-  sig { returns(T.nilable(::String)) }
-  def content; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def canonical_url=(value); end
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def content=(value); end
+    sig { returns(T.nilable(::String)) }
+    def content; end
 
-  sig { returns(T.nilable(T::Boolean)) }
-  def with_frame; end
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def content=(value); end
 
-  sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
-  def with_frame=(value); end
+    sig { returns(T.nilable(T::Boolean)) }
+    def with_frame; end
+
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def with_frame=(value); end
+  end
 end

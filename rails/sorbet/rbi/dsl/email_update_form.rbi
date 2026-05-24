@@ -6,9 +6,13 @@
 
 
 class EmailUpdateForm
-  sig { returns(T.nilable(::String)) }
-  def new_email; end
+  include GeneratedAttributeMethods
 
-  sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-  def new_email=(value); end
+  module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def new_email; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def new_email=(value); end
+  end
 end
