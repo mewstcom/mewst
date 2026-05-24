@@ -1,4 +1,4 @@
-<!-- last_synced: 2026-05-15 -->
+<!-- last_synced: 2026-05-24 -->
 
 # Mewst Development Guide
 
@@ -37,7 +37,7 @@ A project to gradually reimplement the existing Rails Mewst in Go is currently u
 - **Gradual migration**: Rails and Go share the same DB and session store, and features are migrated incrementally
 - **Data migrations are run from the Go side**: Use the migration mechanism set up on the Go side (dbmate)
 - **Continued use of shared infrastructure**: Shared infrastructure such as PostgreSQL continues to be used after the Go version takes over
-- **Do not modify the Rails source code**: When a change is needed, migrate the relevant feature to Go first
+- **Do not modify the Rails source code**: When a feature needs to be added or changed, migrate it to Go first rather than touching the Rails side. The one exception is minimal maintenance changes required to follow up on a dependency's security fix (e.g., adapting to breaking changes from a gem major upgrade); these fall outside this principle, and a minimal-diff fix on the Rails side is acceptable
 
 When implementing the Go version, refer to the Rails code to understand the existing specifications.
 

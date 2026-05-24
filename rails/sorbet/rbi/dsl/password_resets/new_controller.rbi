@@ -17,7 +17,6 @@ class PasswordResets::NewController
     include ::ProfilesHelper
     include ::TextHelper
     include ::TimeHelper
-    include ::PreviewHelper
     include ::Doorkeeper::DashboardHelper
     include ::ApplicationController::HelperMethods
 
