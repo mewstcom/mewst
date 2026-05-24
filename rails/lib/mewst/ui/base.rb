@@ -3,4 +3,6 @@
 
 class Mewst::UI::Base < ViewComponent::Base
   extend T::Sig
+
+  delegate :inline_svg_tag, to: :helpers
 end
