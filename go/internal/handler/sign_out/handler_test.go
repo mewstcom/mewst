@@ -24,8 +24,9 @@ func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Confi
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
 	h := handler.NewHandler(cfg, sessionMgr, flashMgr)

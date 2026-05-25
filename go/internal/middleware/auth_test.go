@@ -21,7 +21,9 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).Build()
-	profileID := testutil.NewProfileBuilder(t, tx).Build()
+	profileID := testutil.NewProfileBuilder(t, tx).
+		WithAtname("authtestuser").
+		Build()
 	actorID := testutil.NewActorBuilder(t, tx).
 		WithUserID(userID).
 		WithProfileID(profileID).
@@ -36,6 +38,7 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
+	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	// 設定を作成
 	cfg := &config.Config{
@@ -45,7 +48,7 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	}
 
 	// セッションマネージャーを作成
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
 
 	// Authミドルウェアを作成
 	auth := NewAuth(sessionMgr)
@@ -73,6 +76,14 @@ func TestRequireAuth_認証済みの場合(t *testing.T) {
 		actor := ActorFromContext(r.Context())
 		if actor == nil {
 			t.Error("コンテキストにアクターが設定されていない")
+		}
+
+		// コンテキストからプロフィールを取得できることを確認
+		profile := ProfileFromContext(r.Context())
+		if profile == nil {
+			t.Error("コンテキストにプロフィールが設定されていない")
+		} else if profile.Atname != "authtestuser" {
+			t.Errorf("ProfileFromContext().Atname = %q, want %q", profile.Atname, "authtestuser")
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -329,5 +340,16 @@ func TestActorFromContext_アクターが設定されていない場合(t *testi
 
 	if actor != nil {
 		t.Error("アクターが設定されていないのにnilではない")
+	}
+}
+
+func TestProfileFromContext_プロフィールが設定されていない場合(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	profile := ProfileFromContext(ctx)
+
+	if profile != nil {
+		t.Error("プロフィールが設定されていないのにnilではない")
 	}
 }

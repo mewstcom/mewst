@@ -29,6 +29,7 @@ type Manager struct {
 	sessionRepo *repository.SessionRepository
 	actorRepo   *repository.ActorRepository
 	userRepo    *repository.UserRepository
+	profileRepo *repository.ProfileRepository
 	cfg         *config.Config
 }
 
@@ -37,12 +38,14 @@ func NewManager(
 	sessionRepo *repository.SessionRepository,
 	actorRepo *repository.ActorRepository,
 	userRepo *repository.UserRepository,
+	profileRepo *repository.ProfileRepository,
 	cfg *config.Config,
 ) *Manager {
 	return &Manager{
 		sessionRepo: sessionRepo,
 		actorRepo:   actorRepo,
 		userRepo:    userRepo,
+		profileRepo: profileRepo,
 		cfg:         cfg,
 	}
 }
@@ -116,6 +119,31 @@ func (m *Manager) GetCurrentActor(ctx context.Context, r *http.Request) (*model.
 	}
 
 	return actor, nil
+}
+
+// GetCurrentProfile returns the profile of the current logged-in actor.
+// It returns nil when the session is missing or invalid.
+//
+// [Ja] 現在のログインアクターのプロフィールを取得する。
+// セッションが存在しない、または無効な場合はnilを返す。
+func (m *Manager) GetCurrentProfile(ctx context.Context, r *http.Request) (*model.Profile, error) {
+	actor, err := m.GetCurrentActor(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	if actor == nil {
+		return nil, nil
+	}
+
+	profile, err := m.profileRepo.FindByID(ctx, actor.ProfileID)
+	if err != nil {
+		return nil, err
+	}
+	if profile == nil {
+		return nil, nil
+	}
+
+	return profile, nil
 }
 
 // SetSessionCookie はセッションクッキーを設定する
