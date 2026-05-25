@@ -162,3 +162,58 @@ func TestIcon(t *testing.T) {
 		}
 	})
 }
+
+func TestIcon_MingcuteIcons(t *testing.T) {
+	t.Parallel()
+
+	// Each navbar icon ported from the Rails version must be registered and
+	// rendered as its own SVG: not falling back to info-regular, and not mixed
+	// up with another icon (e.g. its line/fill counterpart). The value is a
+	// substring unique to that icon's visible `content` path, taken from the
+	// Rails source SVG, so a copy-paste swap between two icons is detected.
+	//
+	// [Ja] Rails 版から移植した navbar 用アイコンが、それぞれ固有の SVG として
+	// 登録・描画されることを確認する。info-regular へのフォールバックや、
+	// line / fill など別アイコンとの取り違えに落ちていないこと。値は Rails の
+	// 元 SVG から取った、そのアイコンの表示用 `content` path 固有の部分文字列で、
+	// アイコン間のコピペ取り違えを検出できる。
+	pathFragments := map[viewmodel.IconName]string{
+		"home_4_line":       `d="M10.8 2.65`,
+		"home_4_fill":       `d="M13.2 2.65`,
+		"search_line":       `d="M10.5 2a8.5 8.5 0 1 0 5.262`,
+		"search_fill":       `d="M10.5 2a8.5 8.5 0 0 1 6.676`,
+		"edit_4_line":       `d="M5 2a2 2 0 0 0-2 2v15`,
+		"edit_4_fill":       `d="m14.535 12.225`,
+		"notification_line": `d="M5.00016,9 C5.00016`,
+		"notification_fill": `d="M12.0002,2 C8.13417`,
+		"user_4_line":       `d="M12 2c5.523`,
+		"user_4_fill":       `d="M12 2C6.477`,
+	}
+
+	for name, pathFragment := range pathFragments {
+		t.Run(string(name), func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+			if err := templates.Icon(name).Render(context.Background(), &buf); err != nil {
+				t.Fatalf("Icon(%q).Render() error = %v", name, err)
+			}
+
+			html := buf.String()
+			// `<svg`, the `content` class and the 24x24 viewBox confirm a ported
+			// mingcute icon is rendered instead of the info-regular fallback
+			// (256x256, no content class); the per-icon path fragment additionally
+			// confirms the correct icon is registered under this key.
+			//
+			// [Ja] `<svg`・`content` クラス・24x24 の viewBox は、info-regular
+			// フォールバック (256x256・content クラスなし) ではなく移植した
+			// mingcute アイコンが描画されていることを示す。加えてアイコン固有の
+			// path 片により、このキーに正しいアイコンが登録されていることを確認する。
+			for _, want := range []string{"<svg", `class="content"`, `viewBox="0 0 24 24"`, pathFragment} {
+				if !strings.Contains(html, want) {
+					t.Errorf("Icon(%q) = %q, want to contain %q", name, html, want)
+				}
+			}
+		})
+	}
+}
