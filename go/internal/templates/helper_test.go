@@ -138,20 +138,27 @@ func TestIcon(t *testing.T) {
 			}
 		})
 	}
-}
 
-func TestIcon_未定義のアイコン名はinfo_regularの内容と一致する(t *testing.T) {
-	t.Parallel()
+	t.Run("未定義のアイコン名はinfo-regularと完全一致する", func(t *testing.T) {
+		t.Parallel()
 
-	var fallbackBuf, undefinedBuf bytes.Buffer
-	if err := templates.Icon("info-regular").Render(context.Background(), &fallbackBuf); err != nil {
-		t.Fatalf("Icon(\"info-regular\") error = %v", err)
-	}
-	if err := templates.Icon("does-not-exist").Render(context.Background(), &undefinedBuf); err != nil {
-		t.Fatalf("Icon(\"does-not-exist\") error = %v", err)
-	}
+		// An undefined icon name must fall back to info-regular. Compared by exact
+		// equality (not substring) so a future change that makes the fallback emit
+		// anything other than info-regular's exact SVG is caught.
+		//
+		// [Ja] 未定義のアイコン名は info-regular にフォールバックしなければならない。
+		// 部分一致ではなく完全一致で比較することで、将来フォールバックが
+		// info-regular とは異なる SVG を返すようになった場合に検出できる。
+		var fallbackBuf, undefinedBuf bytes.Buffer
+		if err := templates.Icon("info-regular").Render(context.Background(), &fallbackBuf); err != nil {
+			t.Fatalf("Icon(\"info-regular\") error = %v", err)
+		}
+		if err := templates.Icon("does-not-exist").Render(context.Background(), &undefinedBuf); err != nil {
+			t.Fatalf("Icon(\"does-not-exist\") error = %v", err)
+		}
 
-	if fallbackBuf.String() != undefinedBuf.String() {
-		t.Errorf("undefined icon should fall back to info-regular, got = %q, want = %q", undefinedBuf.String(), fallbackBuf.String())
-	}
+		if fallbackBuf.String() != undefinedBuf.String() {
+			t.Errorf("undefined icon should fall back to info-regular, got = %q, want = %q", undefinedBuf.String(), fallbackBuf.String())
+		}
+	})
 }
