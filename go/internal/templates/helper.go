@@ -45,6 +45,9 @@ func Icon(name viewmodel.IconName, class ...string) templ.Component {
 		svg, ok = phosphorIcons[name]
 	}
 	if !ok {
+		svg, ok = mingcuteIcons[name]
+	}
+	if !ok {
 		svg = phosphorIcons["info-regular"]
 	}
 
