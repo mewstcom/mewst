@@ -18,6 +18,9 @@ const (
 	userContextKey contextKey = "user"
 	// actorContextKey はコンテキストにアクター情報を保存するためのキー
 	actorContextKey contextKey = "actor"
+	// profileContextKey is the key for storing profile information in the context.
+	// [Ja] profileContextKey はコンテキストにプロフィール情報を保存するためのキー
+	profileContextKey contextKey = "profile"
 )
 
 // Auth は認証関連のミドルウェアを提供する
@@ -57,9 +60,18 @@ func (a *Auth) RequireAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		// コンテキストにユーザーとアクター情報を設定
+		profile, err := a.sessionMgr.GetCurrentProfile(ctx, r)
+		if err != nil {
+			slog.ErrorContext(ctx, "プロフィール取得中にエラーが発生", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Store the user, actor, and profile information in the context.
+		// [Ja] コンテキストにユーザー・アクター・プロフィール情報を設定
 		ctx = context.WithValue(ctx, userContextKey, user)
 		ctx = context.WithValue(ctx, actorContextKey, actor)
+		ctx = context.WithValue(ctx, profileContextKey, profile)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -134,4 +146,17 @@ func ActorFromContext(ctx context.Context) *model.Actor {
 		return nil
 	}
 	return actor
+}
+
+// ProfileFromContext returns the profile information from the context.
+// It returns nil when no profile is set.
+//
+// [Ja] ProfileFromContext はコンテキストからプロフィール情報を取得する。
+// プロフィールが設定されていない場合は nil を返す。
+func ProfileFromContext(ctx context.Context) *model.Profile {
+	profile, ok := ctx.Value(profileContextKey).(*model.Profile)
+	if !ok {
+		return nil
+	}
+	return profile
 }
