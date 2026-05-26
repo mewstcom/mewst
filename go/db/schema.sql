@@ -1,10 +1,11 @@
 
--- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
--- Dumped by pg_dump version 16.12 (Debian 16.12-1.pgdg13+1)
+-- Dumped from database version 18.3 (Debian 18.3-1.pgdg13+1)
+-- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -130,6 +131,20 @@ CREATE TABLE public.email_confirmations (
     succeeded_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: feature_flags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.feature_flags (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    device_token character varying,
+    actor_id uuid,
+    name character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_feature_flags_identifier CHECK (((device_token IS NOT NULL) OR (actor_id IS NOT NULL)))
 );
 
 
@@ -646,6 +661,30 @@ ALTER TABLE ONLY public.email_confirmations
 
 
 --
+-- Name: feature_flags feature_flags_actor_id_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feature_flags
+    ADD CONSTRAINT feature_flags_actor_id_name_key UNIQUE (actor_id, name);
+
+
+--
+-- Name: feature_flags feature_flags_device_token_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feature_flags
+    ADD CONSTRAINT feature_flags_device_token_name_key UNIQUE (device_token, name);
+
+
+--
+-- Name: feature_flags feature_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feature_flags
+    ADD CONSTRAINT feature_flags_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: follows follows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -875,6 +914,27 @@ ALTER TABLE ONLY public.user_profiles
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_feature_flags_actor_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_feature_flags_actor_id ON public.feature_flags USING btree (actor_id);
+
+
+--
+-- Name: idx_feature_flags_device_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_feature_flags_device_token ON public.feature_flags USING btree (device_token);
+
+
+--
+-- Name: idx_feature_flags_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_feature_flags_name ON public.feature_flags USING btree (name);
 
 
 --
@@ -1347,6 +1407,14 @@ CREATE UNIQUE INDEX river_job_unique_idx ON public.river_job USING btree (unique
 
 
 --
+-- Name: feature_flags feature_flags_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.feature_flags
+    ADD CONSTRAINT feature_flags_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES public.actors(id);
+
+
+--
 -- Name: stamps fk_rails_27da15755d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1596,4 +1664,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20250719190948'),
     ('20260202095123'),
     ('20260204100000'),
-    ('20260226100000');
+    ('20260226100000'),
+    ('20260526063449');

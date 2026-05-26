@@ -320,3 +320,75 @@ func (b *EmailConfirmationBuilder) Build() model.EmailConfirmationID {
 
 	return model.EmailConfirmationID(id)
 }
+
+// FeatureFlagBuilder builds feature flag test data.
+// [Ja] FeatureFlagBuilder はフィーチャーフラグテストデータのビルダー。
+type FeatureFlagBuilder struct {
+	t           *testing.T
+	tx          *sql.Tx
+	deviceToken string
+	actorID     *model.ActorID
+	name        string
+}
+
+// NewFeatureFlagBuilder creates a FeatureFlagBuilder.
+// [Ja] NewFeatureFlagBuilder は FeatureFlagBuilder を生成する。
+func NewFeatureFlagBuilder(t *testing.T, tx *sql.Tx) *FeatureFlagBuilder {
+	t.Helper()
+	return &FeatureFlagBuilder{
+		t:    t,
+		tx:   tx,
+		name: string(model.FeatureFlagExample),
+	}
+}
+
+// WithDeviceToken sets the device token.
+// [Ja] WithDeviceToken はデバイストークンを設定する。
+func (b *FeatureFlagBuilder) WithDeviceToken(deviceToken string) *FeatureFlagBuilder {
+	b.deviceToken = deviceToken
+	return b
+}
+
+// WithActorID sets the actor ID.
+// [Ja] WithActorID はアクター ID を設定する。
+func (b *FeatureFlagBuilder) WithActorID(actorID model.ActorID) *FeatureFlagBuilder {
+	b.actorID = &actorID
+	return b
+}
+
+// WithName sets the feature flag name.
+// [Ja] WithName はフィーチャーフラグ名を設定する。
+func (b *FeatureFlagBuilder) WithName(name model.FeatureFlagName) *FeatureFlagBuilder {
+	b.name = string(name)
+	return b
+}
+
+// Build inserts the feature flag into the DB and returns its ID.
+// [Ja] Build はフィーチャーフラグを DB に作成し、ID を返す。
+func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
+	b.t.Helper()
+
+	var deviceToken sql.NullString
+	if b.deviceToken != "" {
+		deviceToken = sql.NullString{String: b.deviceToken, Valid: true}
+	}
+
+	var actorID uuid.NullUUID
+	if b.actorID != nil {
+		actorID = uuid.NullUUID{UUID: uuid.UUID(*b.actorID), Valid: true}
+	}
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO feature_flags (device_token, actor_id, name, created_at)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id
+	`, deviceToken, actorID, b.name, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("フィーチャーフラグの作成に失敗: %v", err)
+	}
+
+	return model.FeatureFlagID(id)
+}

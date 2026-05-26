@@ -88,6 +88,14 @@ type EmailConfirmation struct {
 	UpdatedAt   time.Time    `db:"updated_at"`
 }
 
+type FeatureFlag struct {
+	ID          uuid.UUID      `db:"id"`
+	DeviceToken sql.NullString `db:"device_token"`
+	ActorID     uuid.NullUUID  `db:"actor_id"`
+	Name        string         `db:"name"`
+	CreatedAt   time.Time      `db:"created_at"`
+}
+
 type Follow struct {
 	ID              uuid.UUID `db:"id"`
 	SourceProfileID uuid.UUID `db:"source_profile_id"`
