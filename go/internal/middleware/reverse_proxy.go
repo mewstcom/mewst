@@ -1,25 +1,81 @@
 package middleware
 
 import (
+	"context"
 	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
+	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/clientip"
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/httperror"
 	"github.com/mewstcom/mewst/go/internal/i18n"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/session"
 )
 
-// ReverseProxyMiddleware はRails版へのリバースプロキシミドルウェア
+// DeviceTokenCookieName is the cookie key that identifies a browser (device)
+// regardless of login state, used for feature-flag targeting.
+//
+// [Ja] DeviceTokenCookieName はログイン状態に依らずブラウザ (デバイス) を
+// 識別する Cookie キー名。フィーチャーフラグの出し分けに使う。
+const DeviceTokenCookieName = "device_token"
+
+// featureFlagChecker reports whether a feature flag is enabled for the viewer.
+// repository.FeatureFlagRepository satisfies this interface.
+//
+// [Ja] featureFlagChecker は閲覧者に対してフィーチャーフラグが有効かを返す。
+// repository.FeatureFlagRepository がこのインターフェースを満たす。
+type featureFlagChecker interface {
+	IsEnabledForDevice(ctx context.Context, deviceToken string, sessionToken string, name model.FeatureFlagName) (bool, error)
+}
+
+// featureFlaggedPattern defines a URL pattern gated by a feature flag.
+// [Ja] featureFlaggedPattern はフィーチャーフラグで制御する URL パターンを定義する。
+type featureFlaggedPattern struct {
+	pattern *regexp.Regexp
+	flag    model.FeatureFlagName
+	methods []string // nil or empty matches every method. [Ja] nil または空なら全メソッドにマッチ
+}
+
+// featureFlaggedPatterns lists the URL patterns gated by a feature flag.
+//
+// It is intentionally empty for now: this task introduces the mechanism only,
+// and no half-migrated page exists yet to gate. Add an entry like the commented
+// example below once a page is ready for staged rollout.
+//
+// [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
+//
+// 今は意図的に空にしている。本タスクでは仕組みのみを導入し、ゲートすべき
+// 半移行中のページがまだ存在しないため。先行公開の準備ができたページができたら、
+// 下記のコメント例のようにエントリを追加する。
+var featureFlaggedPatterns = []featureFlaggedPattern{
+	// Example: gate the profile page (GET /@:atname) behind the example flag.
+	// The trailing "$" keeps it from matching sub-paths such as /@:atname/....
+	//
+	// [Ja] 例: プロフィール画面 (GET /@:atname) を例示フラグでゲートする。
+	// 末尾の "$" により /@:atname/... などのサブパスにはマッチさせない。
+	//
+	// {
+	// 	pattern: regexp.MustCompile(`^/@[^/]+$`),
+	// 	flag:    model.FeatureFlagExample,
+	// 	methods: []string{http.MethodGet},
+	// },
+}
+
+// ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
+// [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
 type ReverseProxyMiddleware struct {
-	railsURL *url.URL
-	proxy    *httputil.ReverseProxy
-	cfg      *config.Config
+	railsURL        *url.URL
+	proxy           *httputil.ReverseProxy
+	cfg             *config.Config
+	featureFlagRepo featureFlagChecker
 }
 
 // Go版で処理するパス (ホワイトリスト)
@@ -37,8 +93,12 @@ var goHandledPaths = []string{
 	"/accounts",           // アカウント作成
 }
 
-// NewReverseProxyMiddleware は新しいReverseProxyMiddlewareを作成
-func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReverseProxyMiddleware, error) {
+// NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.
+// When featureFlagRepo is nil, feature-flag checks are skipped.
+//
+// [Ja] NewReverseProxyMiddleware は新しい ReverseProxyMiddleware を作成する。
+// featureFlagRepo が nil の場合、フィーチャーフラグ判定はスキップされる。
+func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagRepo featureFlagChecker) (*ReverseProxyMiddleware, error) {
 	parsedURL, err := url.Parse(railsURL)
 	if err != nil {
 		return nil, err
@@ -146,24 +206,75 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config) (*ReversePro
 	}
 
 	return &ReverseProxyMiddleware{
-		railsURL: parsedURL,
-		proxy:    proxy,
-		cfg:      cfg,
+		railsURL:        parsedURL,
+		proxy:           proxy,
+		cfg:             cfg,
+		featureFlagRepo: featureFlagRepo,
 	}, nil
 }
 
-// Middleware はHTTPミドルウェアを返す
+// Middleware returns the HTTP middleware.
+// [Ja] Middleware は HTTP ミドルウェアを返す。
 func (m *ReverseProxyMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Go版で処理するパスかどうかをチェック
+		// 1. Paths always handled by Go (whitelist).
+		// [Ja] 1. 常に Go 版で処理するパス (ホワイトリスト)。
 		if m.isGoHandledPath(r.URL.Path) {
-			// Go版で処理する
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// Rails版にプロキシ
+		// Issue a device_token cookie when one is absent, so feature-flag
+		// decisions can identify the browser regardless of login state. This
+		// runs after the Go-handled check so static assets and health checks
+		// (which never need feature-flag targeting) don't emit a Set-Cookie.
+		//
+		// [Ja] device_token Cookie が無ければ発行する。ログイン状態に依らず
+		// ブラウザを識別してフィーチャーフラグ判定に使えるようにするため。
+		// 静的アセットやヘルスチェック (フィーチャーフラグの出し分けが不要なパス) に
+		// Set-Cookie を出さないよう、Go 処理パスの判定より後で発行する。
+		m.ensureDeviceToken(w, r)
+
+		// 2. Feature-flagged paths: handle in Go only when the flag is enabled
+		// for this viewer; otherwise fall through to the Rails proxy.
+		//
+		// [Ja] 2. フィーチャーフラグで制御するパス。閲覧者に対してフラグが
+		// 有効なときだけ Go 版で処理し、無効なら Rails へのプロキシに進む。
+		if flagName := m.getFeatureFlagForRequest(r); flagName != "" {
+			if m.isFeatureFlagEnabled(r, flagName) {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
+		// 3. Everything else proxies to Rails.
+		// [Ja] 3. それ以外はすべて Rails にプロキシする。
 		m.proxy.ServeHTTP(w, r)
+	})
+}
+
+// ensureDeviceToken issues a device_token cookie when the request has none.
+// [Ja] ensureDeviceToken はリクエストに device_token Cookie が無ければ発行する。
+func (m *ReverseProxyMiddleware) ensureDeviceToken(w http.ResponseWriter, r *http.Request) {
+	if _, err := r.Cookie(DeviceTokenCookieName); err == nil {
+		return // Cookie already exists. [Ja] 既に Cookie が存在する
+	}
+
+	token, err := auth.GenerateSecureToken()
+	if err != nil {
+		slog.WarnContext(r.Context(), "device_tokenの生成に失敗", "error", err)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     DeviceTokenCookieName,
+		Value:    token,
+		Path:     "/",
+		Domain:   m.cfg.CookieDomain,
+		MaxAge:   10 * 365 * 24 * 60 * 60, // 10 years. [Ja] 10年
+		HttpOnly: true,
+		Secure:   m.cfg.SessionSecure,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
 
@@ -175,4 +286,103 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 		}
 	}
 	return false
+}
+
+// getFeatureFlagForRequest returns the feature flag name matching the request's
+// path and method, or an empty string when no pattern matches.
+//
+// [Ja] getFeatureFlagForRequest はリクエストのパスとメソッドに一致する
+// フィーチャーフラグ名を返す。一致するパターンが無ければ空文字列を返す。
+func (m *ReverseProxyMiddleware) getFeatureFlagForRequest(r *http.Request) model.FeatureFlagName {
+	for _, fp := range featureFlaggedPatterns {
+		if !fp.pattern.MatchString(r.URL.Path) {
+			continue
+		}
+		if len(fp.methods) > 0 && !containsMethod(fp.methods, r.Method) {
+			continue
+		}
+		return fp.flag
+	}
+	return ""
+}
+
+// containsMethod reports whether method is contained in methods.
+//
+// HTML forms support only GET and POST, so PATCH/PUT/DELETE requests are sent
+// as POST plus a _method parameter (the Method Override pattern). This
+// middleware runs before the Method Override middleware, so a POST request must
+// also match PATCH/PUT/DELETE patterns.
+//
+// [Ja] containsMethod は method が methods に含まれるかを判定する。
+//
+// HTML フォームは GET と POST のみをサポートするため、PATCH/PUT/DELETE は
+// POST + _method パラメータとして送信される (Method Override パターン)。
+// 本ミドルウェアは Method Override ミドルウェアより前に実行されるため、
+// POST リクエストも PATCH/PUT/DELETE パターンにマッチさせる必要がある。
+func containsMethod(methods []string, method string) bool {
+	for _, m := range methods {
+		if m == method {
+			return true
+		}
+	}
+
+	// A POST request may be converted to PATCH/PUT/DELETE via Method Override.
+	// [Ja] POST リクエストは Method Override 経由で PATCH/PUT/DELETE に変換される可能性がある。
+	if method == http.MethodPost {
+		for _, m := range methods {
+			switch m {
+			case http.MethodPatch, http.MethodPut, http.MethodDelete:
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// isFeatureFlagEnabled reports whether the feature flag is enabled for the
+// request based on its cookies. It returns false on error or when no identifying
+// cookie is present, so the request falls back to the Rails version.
+//
+// [Ja] isFeatureFlagEnabled はリクエストの Cookie からフィーチャーフラグが
+// 有効かどうかを判定する。エラー時または識別用 Cookie 不在時は false を返し、
+// Rails 版にフォールバックする。
+func (m *ReverseProxyMiddleware) isFeatureFlagEnabled(r *http.Request, flagName model.FeatureFlagName) bool {
+	if m.featureFlagRepo == nil {
+		return false
+	}
+
+	// Read the device_token cookie value.
+	// [Ja] device_token Cookie の値を取得する。
+	deviceToken := ""
+	if cookie, err := r.Cookie(DeviceTokenCookieName); err == nil {
+		deviceToken = cookie.Value
+	}
+
+	// Read the session token cookie shared with the Rails version.
+	// [Ja] Rails 版と共有するセッショントークン Cookie の値を取得する。
+	sessionToken := ""
+	if cookie, err := r.Cookie(session.CookieName); err == nil {
+		sessionToken = cookie.Value
+	}
+
+	// Fall back to Rails when neither cookie is present.
+	// [Ja] どちらの Cookie も存在しない場合は Rails 版にフォールバックする。
+	if deviceToken == "" && sessionToken == "" {
+		return false
+	}
+
+	// Evaluate device_token and the session-derived actor in a single query.
+	// [Ja] device_token とセッション経由の actor を 1 クエリで判定する。
+	enabled, err := m.featureFlagRepo.IsEnabledForDevice(r.Context(), deviceToken, sessionToken, flagName)
+	if err != nil {
+		slog.WarnContext(r.Context(), "フィーチャーフラグ判定でエラーが発生 (Rails版にフォールバック)",
+			"error", err,
+			"flag", flagName,
+			"path", r.URL.Path,
+		)
+		return false
+	}
+
+	return enabled
 }

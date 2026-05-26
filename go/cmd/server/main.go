@@ -96,6 +96,7 @@ func main() {
 	profileRepo := repository.NewProfileRepository(queries)
 	userProfileRepo := repository.NewUserProfileRepository(queries)
 	rateLimitRepo := repository.NewRateLimitRepository(queries)
+	featureFlagRepo := repository.NewFeatureFlagRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
@@ -184,7 +185,7 @@ func main() {
 
 	// リバースプロキシの設定（Rails版へのプロキシ）
 	if cfg.RailsAppURL != "" {
-		proxyMiddleware, err := middleware.NewReverseProxyMiddleware(cfg.RailsAppURL, cfg)
+		proxyMiddleware, err := middleware.NewReverseProxyMiddleware(cfg.RailsAppURL, cfg, featureFlagRepo)
 		if err != nil {
 			slog.Error("リバースプロキシミドルウェアの初期化に失敗しました", "error", err)
 			os.Exit(1)

@@ -1,12 +1,30 @@
 package middleware
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
+
+// stubFeatureFlagChecker is a featureFlagChecker that returns canned values for tests.
+// [Ja] stubFeatureFlagChecker はテスト用に固定値を返す featureFlagChecker。
+type stubFeatureFlagChecker struct {
+	enabled bool
+	err     error
+}
+
+func (s stubFeatureFlagChecker) IsEnabledForDevice(_ context.Context, _ string, _ string, _ model.FeatureFlagName) (bool, error) {
+	return s.enabled, s.err
+}
 
 func TestReverseProxyMiddleware_GoHandledPaths(t *testing.T) {
 	t.Parallel()
@@ -24,7 +42,7 @@ func TestReverseProxyMiddleware_GoHandledPaths(t *testing.T) {
 	}
 
 	// リバースプロキシミドルウェアを作成
-	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg)
+	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
@@ -105,7 +123,7 @@ func TestReverseProxyMiddleware_RailsProxiedPaths(t *testing.T) {
 	}
 
 	// リバースプロキシミドルウェアを作成
-	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg)
+	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
@@ -153,7 +171,7 @@ func TestIsGoHandledPath(t *testing.T) {
 	t.Parallel()
 
 	cfg := &config.Config{Domain: "mewst-test.com"}
-	proxyMiddleware, _ := NewReverseProxyMiddleware("http://localhost:3000", cfg)
+	proxyMiddleware, _ := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
 
 	testCases := []struct {
 		path     string
@@ -212,7 +230,7 @@ func TestReverseProxyMiddleware_ErrorHandling(t *testing.T) {
 	}
 
 	// リバースプロキシミドルウェアを作成
-	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg)
+	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
@@ -267,7 +285,7 @@ func TestReverseProxyMiddleware_HeaderForwarding(t *testing.T) {
 	}
 
 	// リバースプロキシミドルウェアを作成
-	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg)
+	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
@@ -311,7 +329,7 @@ func TestReverseProxyMiddleware_HTTPMethods(t *testing.T) {
 	}
 
 	// リバースプロキシミドルウェアを作成
-	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg)
+	proxyMiddleware, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
@@ -352,5 +370,408 @@ func TestReverseProxyMiddleware_HTTPMethods(t *testing.T) {
 				t.Errorf("レスポンスボディが期待と異なる: got %q want %q", rr.Body.String(), tc.expectedBody)
 			}
 		})
+	}
+}
+
+func TestReverseProxyMiddleware_ensureDeviceToken(t *testing.T) {
+	t.Parallel()
+
+	cfg := &config.Config{
+		Domain:        "mewst-test.com",
+		CookieDomain:  "mewst-test.com",
+		SessionSecure: true,
+	}
+
+	m, err := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	t.Run("device_token Cookieがない場合は自動生成される", func(t *testing.T) {
+		t.Parallel()
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		rr := httptest.NewRecorder()
+
+		m.ensureDeviceToken(rr, req)
+
+		var deviceCookie *http.Cookie
+		for _, c := range rr.Result().Cookies() {
+			if c.Name == DeviceTokenCookieName {
+				deviceCookie = c
+				break
+			}
+		}
+
+		if deviceCookie == nil {
+			t.Fatal("device_token Cookieが設定されていない")
+		}
+		if deviceCookie.Value == "" {
+			t.Error("device_token Cookieの値が空")
+		}
+		if !deviceCookie.HttpOnly {
+			t.Error("HttpOnlyが設定されていない")
+		}
+		if !deviceCookie.Secure {
+			t.Error("Secureが設定されていない")
+		}
+		if deviceCookie.SameSite != http.SameSiteLaxMode {
+			t.Errorf("SameSite = %v, want %v", deviceCookie.SameSite, http.SameSiteLaxMode)
+		}
+		if deviceCookie.Domain != "mewst-test.com" {
+			t.Errorf("Domain = %q, want %q", deviceCookie.Domain, "mewst-test.com")
+		}
+	})
+
+	t.Run("device_token Cookieが既に存在する場合は再生成しない", func(t *testing.T) {
+		t.Parallel()
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.AddCookie(&http.Cookie{Name: DeviceTokenCookieName, Value: "existing-token"})
+		rr := httptest.NewRecorder()
+
+		m.ensureDeviceToken(rr, req)
+
+		for _, c := range rr.Result().Cookies() {
+			if c.Name == DeviceTokenCookieName {
+				t.Error("既存のdevice_token Cookieがあるのに新しいCookieが設定された")
+			}
+		}
+	})
+}
+
+// TestReverseProxyMiddleware_Middleware_DeviceTokenIssuance verifies that the
+// device_token cookie is issued only after the Go-handled-path check, so static
+// assets and health checks never receive a Set-Cookie.
+//
+// [Ja] device_token Cookie が Go 処理パスの判定より後で発行され、静的アセットや
+// ヘルスチェックには Set-Cookie が付かないことを検証する。
+func TestReverseProxyMiddleware_Middleware_DeviceTokenIssuance(t *testing.T) {
+	t.Parallel()
+
+	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Rails response"))
+	}))
+	defer railsServer.Close()
+
+	cfg := &config.Config{
+		Domain:        "mewst-test.com",
+		CookieDomain:  "mewst-test.com",
+		SessionSecure: true,
+	}
+
+	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Go response"))
+	})
+	handler := m.Middleware(goHandler)
+
+	hasDeviceTokenCookie := func(rr *httptest.ResponseRecorder) bool {
+		for _, c := range rr.Result().Cookies() {
+			if c.Name == DeviceTokenCookieName {
+				return true
+			}
+		}
+		return false
+	}
+
+	t.Run("Go処理パスではdevice_tokenを発行しない", func(t *testing.T) {
+		t.Parallel()
+
+		req := httptest.NewRequest(http.MethodGet, "/static/app.css", nil)
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if hasDeviceTokenCookie(rr) {
+			t.Error("Go処理パスでdevice_token Cookieが発行された")
+		}
+	})
+
+	t.Run("Rails転送パスではdevice_tokenを発行する", func(t *testing.T) {
+		t.Parallel()
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if !hasDeviceTokenCookie(rr) {
+			t.Error("Rails転送パスでdevice_token Cookieが発行されなかった")
+		}
+	})
+}
+
+func TestContainsMethod(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		methods  []string
+		method   string
+		expected bool
+	}{
+		{"完全一致 (GET)", []string{http.MethodGet}, http.MethodGet, true},
+		{"不一致 (GET vs POST)", []string{http.MethodGet}, http.MethodPost, false},
+		// POSTはMethod Override前のためPATCHパターンにマッチする
+		{"POSTはPATCHにマッチ (Method Override)", []string{http.MethodPatch}, http.MethodPost, true},
+		{"POSTはDELETEにマッチ (Method Override)", []string{http.MethodDelete}, http.MethodPost, true},
+		// GETはMethod Overrideの対象外なのでPATCHにはマッチしない
+		{"GETはPATCHにマッチしない", []string{http.MethodPatch}, http.MethodGet, false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := containsMethod(tc.methods, tc.method); got != tc.expected {
+				t.Errorf("containsMethod(%v, %q) = %v, want %v", tc.methods, tc.method, got, tc.expected)
+			}
+		})
+	}
+}
+
+func TestReverseProxyMiddleware_getFeatureFlagForRequest(t *testing.T) {
+	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
+	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+	m, err := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	// テスト用のパターンを一時的に設定する
+	// [Ja] featureFlaggedPatterns は本番では空のため、テスト用パターンを注入する
+	originalPatterns := featureFlaggedPatterns
+	featureFlaggedPatterns = []featureFlaggedPattern{
+		{pattern: regexp.MustCompile(`^/@[^/]+$`), flag: model.FeatureFlagExample, methods: []string{http.MethodGet}},
+	}
+	defer func() { featureFlaggedPatterns = originalPatterns }()
+
+	testCases := []struct {
+		name     string
+		method   string
+		path     string
+		expected model.FeatureFlagName
+	}{
+		{"マッチするパス (プロフィール表示)", http.MethodGet, "/@username", model.FeatureFlagExample},
+		{"サブパスはマッチしない (末尾 $)", http.MethodGet, "/@username/posts", ""},
+		{"メソッドフィルタによりPOSTはマッチしない", http.MethodPost, "/@username", ""},
+		{"マッチしないパス", http.MethodGet, "/settings", ""},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			if got := m.getFeatureFlagForRequest(req); got != tc.expected {
+				t.Errorf("getFeatureFlagForRequest(%s %q) = %q, want %q", tc.method, tc.path, got, tc.expected)
+			}
+		})
+	}
+}
+
+func TestReverseProxyMiddleware_Middleware_FeatureFlag(t *testing.T) {
+	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
+	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+
+	_, tx := testutil.SetupTx(t)
+
+	// actor 単位フラグ: User → Profile → Actor → Session を作成し、actor にフラグを紐付ける
+	// [Ja] セッショントークン経由で解決した actor がフラグを持つケース
+	actorUserID := testutil.NewUserBuilder(t, tx).WithEmail("ff-mw-actor@example.com").Build()
+	actorProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffmwactor").Build()
+	actorID := testutil.NewActorBuilder(t, tx).WithUserID(actorUserID).WithProfileID(actorProfileID).Build()
+	actorSessionToken := "ff-mw-actor-session-token"
+	_ = testutil.NewSessionBuilder(t, tx).WithActorID(actorID).WithToken(actorSessionToken).Build()
+	_ = testutil.NewFeatureFlagBuilder(t, tx).WithActorID(actorID).WithName(model.FeatureFlagExample).Build()
+
+	// device 単位フラグ
+	// [Ja] device_token がフラグを持つケース
+	deviceToken := "ff-mw-device-token"
+	_ = testutil.NewFeatureFlagBuilder(t, tx).WithDeviceToken(deviceToken).WithName(model.FeatureFlagExample).Build()
+
+	// フラグを持たない別 actor のセッション
+	// [Ja] フラグが無効な閲覧者の検証に使う
+	otherUserID := testutil.NewUserBuilder(t, tx).WithEmail("ff-mw-other@example.com").Build()
+	otherProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffmwother").Build()
+	otherActorID := testutil.NewActorBuilder(t, tx).WithUserID(otherUserID).WithProfileID(otherProfileID).Build()
+	otherSessionToken := "ff-mw-other-session-token"
+	_ = testutil.NewSessionBuilder(t, tx).WithActorID(otherActorID).WithToken(otherSessionToken).Build()
+
+	originalPatterns := featureFlaggedPatterns
+	featureFlaggedPatterns = []featureFlaggedPattern{
+		{pattern: regexp.MustCompile(`^/@[^/]+$`), flag: model.FeatureFlagExample, methods: []string{http.MethodGet}},
+	}
+	defer func() { featureFlaggedPatterns = originalPatterns }()
+
+	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Rails-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Rails response"))
+	}))
+	defer railsServer.Close()
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+
+	featureFlagRepo := repository.NewFeatureFlagRepository(testutil.QueriesWithTx(tx))
+	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, featureFlagRepo)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Go-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Go response"))
+	})
+	handler := m.Middleware(goHandler)
+
+	t.Run("actorフラグが有効なセッションはGo版で処理される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: actorSessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Go-Handled") != "true" {
+			t.Error("フラグが有効なセッションのリクエストがGo版で処理されなかった")
+		}
+	})
+
+	t.Run("device_tokenフラグが有効なデバイスはGo版で処理される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+		req.AddCookie(&http.Cookie{Name: DeviceTokenCookieName, Value: deviceToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Go-Handled") != "true" {
+			t.Error("フラグが有効なdevice_tokenのリクエストがGo版で処理されなかった")
+		}
+	})
+
+	t.Run("フラグが無効なセッションはRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: otherSessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("フラグが無効なセッションのリクエストがRails版に転送されなかった")
+		}
+	})
+
+	t.Run("フラグが無効なdevice_tokenはRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+		req.AddCookie(&http.Cookie{Name: DeviceTokenCookieName, Value: "unknown-device-token"})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("フラグが無効なdevice_tokenのリクエストがRails版に転送されなかった")
+		}
+	})
+
+	t.Run("どちらのCookieもない場合はRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("CookieがないリクエストがRails版に転送されなかった")
+		}
+	})
+}
+
+func TestReverseProxyMiddleware_Middleware_FeatureFlag_ErrorFallback(t *testing.T) {
+	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
+	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+
+	originalPatterns := featureFlaggedPatterns
+	featureFlaggedPatterns = []featureFlaggedPattern{
+		{pattern: regexp.MustCompile(`^/@[^/]+$`), flag: model.FeatureFlagExample, methods: []string{http.MethodGet}},
+	}
+	defer func() { featureFlaggedPatterns = originalPatterns }()
+
+	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Rails-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Rails response"))
+	}))
+	defer railsServer.Close()
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+
+	// 判定でエラーを返すstubを注入し、Rails版にフォールバックすることを検証する
+	// [Ja] フラグ判定が失敗してもサービス断にせず Rails 版へフォールバックする
+	repo := stubFeatureFlagChecker{err: errors.New("db error")}
+	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, repo)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	handler := m.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Error("判定エラー時はRails版に転送されるべき")
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+	req.AddCookie(&http.Cookie{Name: session.CookieName, Value: "some-token"})
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Header().Get("X-Rails-Handled") != "true" {
+		t.Error("判定エラー時のリクエストがRails版に転送されなかった")
+	}
+}
+
+func TestReverseProxyMiddleware_Middleware_FeatureFlag_NilRepo(t *testing.T) {
+	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
+	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+
+	originalPatterns := featureFlaggedPatterns
+	featureFlaggedPatterns = []featureFlaggedPattern{
+		{pattern: regexp.MustCompile(`^/@[^/]+$`), flag: model.FeatureFlagExample, methods: []string{http.MethodGet}},
+	}
+	defer func() { featureFlaggedPatterns = originalPatterns }()
+
+	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Rails-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Rails response"))
+	}))
+	defer railsServer.Close()
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+
+	// featureFlagRepoがnilの場合、フラグパターンにマッチしてもRails版に転送される
+	// [Ja] nil のときはフラグ判定をスキップする
+	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	handler := m.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Error("featureFlagRepoがnilの場合はRails版に転送されるべき")
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/@anyone", nil)
+	req.AddCookie(&http.Cookie{Name: session.CookieName, Value: "some-token"})
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Header().Get("X-Rails-Handled") != "true" {
+		t.Error("featureFlagRepoがnilのリクエストがRails版に転送されなかった")
 	}
 }
