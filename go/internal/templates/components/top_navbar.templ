@@ -1,0 +1,28 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// TopNavbar renders the desktop top navigation bar (logo on the left, menu on
+// the right). It sticks to the top and is shown only on lg and above, matching
+// the Rails TopNavbarComponent. The Rails daisyUI bg-base-100 becomes
+// bg-background, and the BasicContainer (max-w-2xl) is reproduced inline.
+//
+// [Ja] PC 向けのトップナビゲーションバー (左にロゴ、右にメニュー) を描画する。
+// 画面上部に固定し lg 以上でのみ表示する点は Rails の TopNavbarComponent に
+// 合わせている。Rails の daisyUI bg-base-100 は bg-background に置き換え、
+// BasicContainer (max-w-2xl) はインラインで再現する。
+templ TopNavbar(navbar viewmodel.Navbar) {
+	<div class="sticky top-0 z-50 hidden bg-background lg:block">
+		<div class="mx-auto max-w-2xl px-4 py-4">
+			<div class="flex items-center justify-between">
+				<a href={ templates.RootPath() } class="inline-block">
+					@templates.Icon("logo", "h-[36px] w-[36px] fill-foreground")
+				</a>
+				@NavbarMenu(navbar, "")
+			</div>
+		</div>
+	</div>
+}
