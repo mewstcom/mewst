@@ -10,7 +10,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.2
-	github.com/lib/pq v1.10.9
+	github.com/lib/pq v1.12.3
 	github.com/mfridman/tparse v0.18.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/resend/resend-go/v2 v2.28.0
