@@ -324,3 +324,27 @@ other = "しばらくしてから再度お試しください。"
 [error_bad_gateway_back_to_home]
 description = "502エラーページのホームリンク"
 other = "ホームに戻る"
+
+# ============================================
+# ナビゲーション (navbar_*)
+# ============================================
+
+[navbar_home]
+description = "navbar のホームリンクのアクセシブルラベル"
+other = "ホーム"
+
+[navbar_search]
+description = "navbar の検索リンクのアクセシブルラベル"
+other = "検索"
+
+[navbar_new_post]
+description = "navbar の新規投稿リンクのアクセシブルラベル"
+other = "新規投稿"
+
+[navbar_notifications]
+description = "navbar の通知リンクのアクセシブルラベル"
+other = "通知"
+
+[navbar_profile]
+description = "navbar のプロフィールリンクのアクセシブルラベル"
+other = "プロフィール"
