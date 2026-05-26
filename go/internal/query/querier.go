@@ -38,6 +38,12 @@ type Querier interface {
 	// Rate Limit カウンターをインクリメントする (UPSERT)
 	// 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
 	IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error)
+	// Reports whether the flag is enabled for the given actor (prepared for future in-app control).
+	// [Ja] 指定 actor に対してフラグが有効かを返す (アプリ内制御の将来利用のために用意)。
+	IsFeatureFlagEnabledForActor(ctx context.Context, arg IsFeatureFlagEnabledForActorParams) (bool, error)
+	// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
+	// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。
+	IsFeatureFlagEnabledForDevice(ctx context.Context, arg IsFeatureFlagEnabledForDeviceParams) (bool, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 }

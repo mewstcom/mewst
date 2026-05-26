@@ -145,3 +145,19 @@ func UUIDsToUserProfileIDs(us []uuid.UUID) []UserProfileID {
 	}
 	return ids
 }
+
+// FeatureFlagID is the ID type for a feature flag.
+// [Ja] FeatureFlagID はフィーチャーフラグの ID 型。
+type FeatureFlagID uuid.UUID
+
+// String returns the string representation of the FeatureFlagID.
+// [Ja] String は FeatureFlagID の文字列表現を返す。
+func (id FeatureFlagID) String() string { return uuid.UUID(id).String() }
+
+// FeatureFlagName is the type for a feature flag name.
+// [Ja] FeatureFlagName はフィーチャーフラグ名の型。
+type FeatureFlagName string
+
+// String returns the string representation of the FeatureFlagName.
+// [Ja] String は FeatureFlagName の文字列表現を返す。
+func (n FeatureFlagName) String() string { return string(n) }

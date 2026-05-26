@@ -324,3 +324,27 @@ other = "Please try again later."
 [error_bad_gateway_back_to_home]
 description = "502 error page link to home"
 other = "Back to home"
+
+# ============================================
+# Navigation (navbar_*)
+# ============================================
+
+[navbar_home]
+description = "Accessible label for the navbar home link"
+other = "Home"
+
+[navbar_search]
+description = "Accessible label for the navbar search link"
+other = "Search"
+
+[navbar_new_post]
+description = "Accessible label for the navbar new post link"
+other = "New post"
+
+[navbar_notifications]
+description = "Accessible label for the navbar notifications link"
+other = "Notifications"
+
+[navbar_profile]
+description = "Accessible label for the navbar profile link"
+other = "Profile"
