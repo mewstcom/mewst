@@ -55,7 +55,7 @@ jobs:
           working-directory: go
           args: --config=.golangci.yml ./...
 
-      # コメントの英日併記チェック (korylus-lang §2.1 の [Ja] マーカー誤用)
+      # コメントの英日併記チェック ([Ja] マーカーの誤用)
       # 全体: [Ja] が日本語を含まない行に付く誤用をツリー全体で検査
       - name: Check bilingual comments (whole tree)
         run: go run ./cmd/commentlint .

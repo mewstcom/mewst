@@ -1,5 +1,5 @@
-// Command commentlint checks that bilingual code comments follow the
-// korylus-lang §2.1 rule for the [Ja] marker. The marker introduces the
+// Command commentlint checks that bilingual code comments use the [Ja]
+// marker correctly. The marker introduces the
 // Japanese translation block, which must sit below a corresponding English
 // block and appear at most once per comment group. The tool targets the
 // recurring *misuse* of the marker rather than enforcing full bilingual
@@ -15,8 +15,8 @@
 // .go files are parsed via go/parser so that "//" inside string literals is
 // never mistaken for a comment; .templ files (not valid Go) are scanned by line.
 //
-// [Ja] commentlint コマンドは、コードコメントの英日併記が korylus-lang §2.1 の
-// `[Ja]` マーカー規則に従っているかをチェックする。`[Ja]` は日本語訳ブロックの
+// [Ja] commentlint コマンドは、コードコメントの英日併記で
+// `[Ja]` マーカーが正しく使われているかをチェックする。`[Ja]` は日本語訳ブロックの
 // 冒頭を示すマーカーで、対応する英語ブロックの下に置き、1 コメント群に 1 つだけ
 // 付ける。全併記の強制ではなく、再発している「マーカーの誤用」のみを対象にする
 // ことで誤検出をほぼゼロに保つ。
@@ -78,9 +78,9 @@ type finding struct {
 }
 
 const (
-	msgCond1 = "[Ja] marker on a line with no Japanese text; it must lead the Japanese translation, not the English block (korylus-lang §2.1) / [Ja] マーカーが日本語を含まない行に付いている"
-	msgCond2 = "[Ja] marker has no English block above it; write the English block first, then [Ja] (korylus-lang §2.1) / [Ja] の上に対応する英語ブロックが無い"
-	msgCond3 = "[Ja] marker appears more than once in one comment block; mark only the first line of the Japanese block (korylus-lang §2.1) / [Ja] マーカーが 1 コメント群に複数ある"
+	msgCond1 = "[Ja] marker on a line with no Japanese text; it must lead the Japanese translation, not the English block / [Ja] マーカーが日本語を含まない行に付いている"
+	msgCond2 = "[Ja] marker has no English block above it; write the English block first, then [Ja] / [Ja] の上に対応する英語ブロックが無い"
+	msgCond3 = "[Ja] marker appears more than once in one comment block; mark only the first line of the Japanese block / [Ja] マーカーが 1 コメント群に複数ある"
 )
 
 func main() {
@@ -103,7 +103,7 @@ func main() {
 	for _, f := range findings {
 		fmt.Printf("%s:%d: %s\n", f.file, f.line, f.msg)
 	}
-	fmt.Fprintf(os.Stderr, "\ncommentlint: %d violation(s) of korylus-lang §2.1 (bilingual [Ja] marker)\n", len(findings))
+	fmt.Fprintf(os.Stderr, "\ncommentlint: %d bilingual [Ja] marker violation(s)\n", len(findings))
 	os.Exit(1)
 }
 
@@ -189,14 +189,14 @@ func run(roots []string, base string) ([]finding, error) {
 	return all, nil
 }
 
-// checkGroup evaluates one comment group against the §2.1 [Ja] marker rules.
+// checkGroup evaluates one comment group against the [Ja] marker rules.
 // Only lines whose comment content *begins* with the [Ja] marker count as
 // marker lines; a mid-sentence mention of "[Ja]" in English prose (such as this
 // tool's own docs) is ignored. At most one finding per marker line is produced
 // (condition 1 supersedes condition 2 on the same line); condition 3 is reported
 // independently.
 //
-// [Ja] checkGroup は 1 コメント群を §2.1 の [Ja] マーカー規則で評価する。
+// [Ja] checkGroup は 1 コメント群を [Ja] マーカー規則で評価する。
 // コメント本文が [Ja] マーカーで「始まる」行だけをマーカー行とみなし、英語の地の文中で
 // "[Ja]" に言及しているだけの行 (本ツール自身の説明など) は無視する。1 マーカー行あたり
 // 最大 1 件 (同じ行では条件 1 が条件 2 に優先する)。条件 3 は独立に報告する。
