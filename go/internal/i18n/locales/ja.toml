@@ -348,3 +348,19 @@ other = "通知"
 [navbar_profile]
 description = "navbar のプロフィールリンクのアクセシブルラベル"
 other = "プロフィール"
+
+# ============================================
+# 新規投稿ページ (post_new_*)
+# ============================================
+
+[post_new_title]
+description = "新規投稿ページのタイトル"
+other = "新規投稿"
+
+[post_new_content_label]
+description = "新規投稿ページの本文ラベル"
+other = "いまなにしてる？"
+
+[post_new_submit]
+description = "新規投稿フォームの送信ボタン"
+other = "投稿する"

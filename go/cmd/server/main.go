@@ -22,6 +22,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
 	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
+	"github.com/mewstcom/mewst/go/internal/handler/post"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_up"
@@ -153,6 +154,7 @@ func main() {
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
+	postHandler := post.NewHandler(cfg)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -268,6 +270,21 @@ func main() {
 		// アカウント作成（メール確認後）
 		r.Get("/accounts/new", accountHandler.New)
 		r.Post("/accounts", accountHandler.Create)
+	})
+
+	// New post form (authenticated users only). Gated by the reverse-proxy
+	// feature flag (FeatureFlagNewPost), so requests from viewers without the
+	// flag never reach this route and are proxied to the Rails version.
+	//
+	// [Ja] 新規投稿フォーム（認証済みユーザーのみ）。リバースプロキシの
+	// フィーチャーフラグ (FeatureFlagNewPost) でゲートされるため、フラグが無効な
+	// 閲覧者のリクエストはここに到達せず Rails 版にプロキシされる。
+	r.Group(func(r chi.Router) {
+		r.Use(csrfMiddleware.Middleware)
+		r.Use(authMiddleware.RequireAuth)
+		r.Use(sentryUserContextMW.Middleware)
+
+		r.Get("/new", postHandler.New)
 	})
 
 	// サーバー起動

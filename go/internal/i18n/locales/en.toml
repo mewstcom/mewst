@@ -348,3 +348,19 @@ other = "Notifications"
 [navbar_profile]
 description = "Accessible label for the navbar profile link"
 other = "Profile"
+
+# ============================================
+# New post page (post_new_*)
+# ============================================
+
+[post_new_title]
+description = "New post page title"
+other = "New post"
+
+[post_new_content_label]
+description = "New post page content label"
+other = "What's happening?"
+
+[post_new_submit]
+description = "New post form submit button"
+other = "Post"
