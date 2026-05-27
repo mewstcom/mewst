@@ -1,4 +1,4 @@
-<!-- last_synced: 2026-05-24 -->
+<!-- last_synced: 2026-05-27 -->
 
 # Mewst開発ガイドライン
 
@@ -20,7 +20,7 @@ Mewst はマイクロブログサービスです。
 ├── go/                  # Go 版の実装 (段階的に機能を移行中)
 ├── rails/               # Rails 版の実装 (既存の本番システム)
 ├── caddy/               # リバースプロキシ設定
-├── docs/                # Mewst 固有のドキュメント (仕様書、作業計画書など)
+├── docs/                # Mewst 固有のドキュメント (ADR、作業計画書など)
 ├── .github/             # 共通の CI/CD 設定
 ├── Dockerfile.dev       # 統合開発コンテナの Dockerfile
 ├── docker-compose.yml   # Docker Compose 設定
@@ -67,9 +67,7 @@ Mewst ではフィーチャーブランチではなく **フィーチャーフ�
 
 ## ドキュメント
 
-各機能の仕様は `docs/specs/` ディレクトリで管理しています。システムの現在の状態を理解するには、まず仕様書を参照してください。
-
-- [docs/specs/](./docs/specs/) - 各機能の仕様書
+設計判断 (採用した方式・背景・採用しなかった代替案) は `docs/private/adr/` 配下の ADR (Architecture Decision Record) に記録しています。システムの現在の状態は、仕様書ではなくコードとテストを参照してください。
 
 ## 言語・文章ルール
 
