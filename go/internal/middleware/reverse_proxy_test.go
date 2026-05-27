@@ -538,8 +538,8 @@ func TestContainsMethod(t *testing.T) {
 }
 
 func TestReverseProxyMiddleware_getFeatureFlagForRequest(t *testing.T) {
-	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
-	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+	// This test overwrites the global featureFlaggedPatterns, so it does not use t.Parallel().
+	// [Ja] このテストはグローバル変数 featureFlaggedPatterns を上書きするため、t.Parallel() を使わない。
 
 	cfg := &config.Config{Domain: "mewst-test.com"}
 	m, err := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
@@ -547,8 +547,8 @@ func TestReverseProxyMiddleware_getFeatureFlagForRequest(t *testing.T) {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
 	}
 
-	// テスト用のパターンを一時的に設定する
-	// [Ja] featureFlaggedPatterns は本番では空のため、テスト用パターンを注入する
+	// featureFlaggedPatterns is empty in production, so inject a test pattern here.
+	// [Ja] featureFlaggedPatterns は本番では空のため、テスト用パターンを注入する。
 	originalPatterns := featureFlaggedPatterns
 	featureFlaggedPatterns = []featureFlaggedPattern{
 		{pattern: regexp.MustCompile(`^/@[^/]+$`), flag: model.FeatureFlagExample, methods: []string{http.MethodGet}},
@@ -578,13 +578,13 @@ func TestReverseProxyMiddleware_getFeatureFlagForRequest(t *testing.T) {
 }
 
 func TestReverseProxyMiddleware_Middleware_FeatureFlag(t *testing.T) {
-	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
-	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+	// This test overwrites the global featureFlaggedPatterns, so it does not use t.Parallel().
+	// [Ja] このテストはグローバル変数 featureFlaggedPatterns を上書きするため、t.Parallel() を使わない。
 
 	_, tx := testutil.SetupTx(t)
 
-	// actor 単位フラグ: User → Profile → Actor → Session を作成し、actor にフラグを紐付ける
-	// [Ja] セッショントークン経由で解決した actor がフラグを持つケース
+	// Per-actor flag: build User -> Profile -> Actor -> Session and attach the flag to the actor resolved via the session token.
+	// [Ja] actor 単位フラグ: User → Profile → Actor → Session を作成し、セッショントークン経由で解決した actor にフラグを紐付ける。
 	actorUserID := testutil.NewUserBuilder(t, tx).WithEmail("ff-mw-actor@example.com").Build()
 	actorProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffmwactor").Build()
 	actorID := testutil.NewActorBuilder(t, tx).WithUserID(actorUserID).WithProfileID(actorProfileID).Build()
@@ -592,13 +592,13 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag(t *testing.T) {
 	_ = testutil.NewSessionBuilder(t, tx).WithActorID(actorID).WithToken(actorSessionToken).Build()
 	_ = testutil.NewFeatureFlagBuilder(t, tx).WithActorID(actorID).WithName(model.FeatureFlagExample).Build()
 
-	// device 単位フラグ
-	// [Ja] device_token がフラグを持つケース
+	// Per-device flag: the case where a device_token holds the flag.
+	// [Ja] device 単位フラグ: device_token がフラグを持つケース。
 	deviceToken := "ff-mw-device-token"
 	_ = testutil.NewFeatureFlagBuilder(t, tx).WithDeviceToken(deviceToken).WithName(model.FeatureFlagExample).Build()
 
-	// フラグを持たない別 actor のセッション
-	// [Ja] フラグが無効な閲覧者の検証に使う
+	// Session of another actor that does not hold the flag; used to verify a viewer for whom the flag is disabled.
+	// [Ja] フラグを持たない別 actor のセッション。フラグが無効な閲覧者の検証に使う。
 	otherUserID := testutil.NewUserBuilder(t, tx).WithEmail("ff-mw-other@example.com").Build()
 	otherProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffmwother").Build()
 	otherActorID := testutil.NewActorBuilder(t, tx).WithUserID(otherUserID).WithProfileID(otherProfileID).Build()
@@ -694,8 +694,8 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag(t *testing.T) {
 }
 
 func TestReverseProxyMiddleware_Middleware_FeatureFlag_ErrorFallback(t *testing.T) {
-	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
-	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+	// This test overwrites the global featureFlaggedPatterns, so it does not use t.Parallel().
+	// [Ja] このテストはグローバル変数 featureFlaggedPatterns を上書きするため、t.Parallel() を使わない。
 
 	originalPatterns := featureFlaggedPatterns
 	featureFlaggedPatterns = []featureFlaggedPattern{
@@ -712,8 +712,8 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag_ErrorFallback(t *testing.
 
 	cfg := &config.Config{Domain: "mewst-test.com"}
 
-	// 判定でエラーを返すstubを注入し、Rails版にフォールバックすることを検証する
-	// [Ja] フラグ判定が失敗してもサービス断にせず Rails 版へフォールバックする
+	// Inject a stub that returns an error from the flag check, and verify the request falls back to Rails instead of failing.
+	// [Ja] フラグ判定でエラーを返す stub を注入し、サービス断にせず Rails 版へフォールバックすることを検証する。
 	repo := stubFeatureFlagChecker{err: errors.New("db error")}
 	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, repo)
 	if err != nil {
@@ -735,9 +735,147 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag_ErrorFallback(t *testing.
 	}
 }
 
+// TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost verifies the real
+// (production) featureFlaggedPatterns registration for the new-post feature:
+// GET /new is gated by FeatureFlagNewPost, while the method/sub-path/other-path
+// cases do not match.
+//
+// [Ja] 新規投稿機能の実 (本番) featureFlaggedPatterns 登録を検証する。
+// GET /new が FeatureFlagNewPost でゲートされ、メソッド不一致・サブパス・
+// 別パスのケースは一致しないことを確認する。
+func TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost(t *testing.T) {
+	// Verify the real (production) featureFlaggedPatterns without overriding it.
+	// Skip t.Parallel() so this does not race the tests that overwrite the global.
+	//
+	// [Ja] 実 (本番) の featureFlaggedPatterns を上書きせずに検証する。
+	// グローバルを上書きする他テストと競合しないよう t.Parallel() は使わない。
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+	m, err := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	testCases := []struct {
+		name     string
+		method   string
+		path     string
+		expected model.FeatureFlagName
+	}{
+		{"GET /new はフラグ対象", http.MethodGet, "/new", model.FeatureFlagNewPost},
+		{"POST /new はメソッド不一致で対象外", http.MethodPost, "/new", ""},
+		{"サブパスはマッチしない (末尾 $)", http.MethodGet, "/new/foo", ""},
+		// POST /posts is registered in a later task, so it is absent for now.
+		// [Ja] POST /posts は後続タスクで登録するため、本タスク時点では未登録。
+		{"POST /posts はまだ未登録", http.MethodPost, "/posts", ""},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			if got := m.getFeatureFlagForRequest(req); got != tc.expected {
+				t.Errorf("getFeatureFlagForRequest(%s %q) = %q, want %q", tc.method, tc.path, got, tc.expected)
+			}
+		})
+	}
+}
+
+// TestReverseProxyMiddleware_Middleware_NewPostFlag verifies the end-to-end
+// routing of GET /new through the real featureFlaggedPatterns entry: the Go
+// handler serves it only when FeatureFlagNewPost is enabled for the viewer, and
+// a method mismatch (POST /new) falls through to Rails.
+//
+// [Ja] GET /new が実際の featureFlaggedPatterns エントリを通じて振り分けられる
+// ことを E2E で検証する。FeatureFlagNewPost が有効な閲覧者のときだけ Go 版で
+// 処理し、メソッド不一致 (POST /new) は Rails に抜けることを確認する。
+func TestReverseProxyMiddleware_Middleware_NewPostFlag(t *testing.T) {
+	// Verify the real (production) featureFlaggedPatterns without overriding it.
+	// Skip t.Parallel() so this does not race the tests that overwrite the global.
+	//
+	// [Ja] 実 (本番) の featureFlaggedPatterns を上書きせずに検証する。
+	// グローバルを上書きする他テストと競合しないよう t.Parallel() は使わない。
+
+	_, tx := testutil.SetupTx(t)
+
+	// A flag-enabled actor (User → Profile → Actor → Session) resolved via its session token.
+	// [Ja] フラグが有効な actor (User → Profile → Actor → Session)。セッショントークン経由で解決する。
+	userID := testutil.NewUserBuilder(t, tx).WithEmail("ff-new-post@example.com").Build()
+	profileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffnewpost").Build()
+	actorID := testutil.NewActorBuilder(t, tx).WithUserID(userID).WithProfileID(profileID).Build()
+	sessionToken := "ff-new-post-session-token"
+	_ = testutil.NewSessionBuilder(t, tx).WithActorID(actorID).WithToken(sessionToken).Build()
+	_ = testutil.NewFeatureFlagBuilder(t, tx).WithActorID(actorID).WithName(model.FeatureFlagNewPost).Build()
+
+	// A separate actor without the flag, used to verify a flag-disabled viewer.
+	// [Ja] フラグを持たない別 actor。フラグが無効な閲覧者の検証に使う。
+	otherUserID := testutil.NewUserBuilder(t, tx).WithEmail("ff-new-post-other@example.com").Build()
+	otherProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("ffnewpostother").Build()
+	otherActorID := testutil.NewActorBuilder(t, tx).WithUserID(otherUserID).WithProfileID(otherProfileID).Build()
+	otherSessionToken := "ff-new-post-other-session-token"
+	_ = testutil.NewSessionBuilder(t, tx).WithActorID(otherActorID).WithToken(otherSessionToken).Build()
+
+	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Rails-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Rails response"))
+	}))
+	defer railsServer.Close()
+
+	cfg := &config.Config{Domain: "mewst-test.com"}
+
+	featureFlagRepo := repository.NewFeatureFlagRepository(testutil.QueriesWithTx(tx))
+	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, featureFlagRepo)
+	if err != nil {
+		t.Fatalf("ミドルウェアの作成に失敗: %v", err)
+	}
+
+	goHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Go-Handled", "true")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Go response"))
+	})
+	handler := m.Middleware(goHandler)
+
+	t.Run("フラグが有効なセッションのGET /newはGo版で処理される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/new", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Go-Handled") != "true" {
+			t.Error("フラグが有効なセッションのGET /newがGo版で処理されなかった")
+		}
+	})
+
+	t.Run("フラグが無効なセッションのGET /newはRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/new", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: otherSessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("フラグが無効なセッションのGET /newがRails版に転送されなかった")
+		}
+	})
+
+	t.Run("POST /newはメソッド不一致でRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/new", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("POST /newがRails版に転送されなかった")
+		}
+	})
+}
+
 func TestReverseProxyMiddleware_Middleware_FeatureFlag_NilRepo(t *testing.T) {
-	// グローバル変数 featureFlaggedPatterns を変更するため t.Parallel() は使用しない
-	// [Ja] このグローバル変数を上書きするため、並行実行されないようにする
+	// This test overwrites the global featureFlaggedPatterns, so it does not use t.Parallel().
+	// [Ja] このテストはグローバル変数 featureFlaggedPatterns を上書きするため、t.Parallel() を使わない。
 
 	originalPatterns := featureFlaggedPatterns
 	featureFlaggedPatterns = []featureFlaggedPattern{
@@ -754,8 +892,8 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag_NilRepo(t *testing.T) {
 
 	cfg := &config.Config{Domain: "mewst-test.com"}
 
-	// featureFlagRepoがnilの場合、フラグパターンにマッチしてもRails版に転送される
-	// [Ja] nil のときはフラグ判定をスキップする
+	// When featureFlagRepo is nil the flag check is skipped, so even a matching pattern is forwarded to Rails.
+	// [Ja] featureFlagRepo が nil のときはフラグ判定をスキップするため、パターンにマッチしても Rails 版へ転送される。
 	m, err := NewReverseProxyMiddleware(railsServer.URL, cfg, nil)
 	if err != nil {
 		t.Fatalf("ミドルウェアの作成に失敗: %v", err)

@@ -46,27 +46,30 @@ type featureFlaggedPattern struct {
 
 // featureFlaggedPatterns lists the URL patterns gated by a feature flag.
 //
-// It is intentionally empty for now: this task introduces the mechanism only,
-// and no half-migrated page exists yet to gate. Add an entry like the commented
-// example below once a page is ready for staged rollout.
+// Each entry anchors its path regexp with "^...$" so it matches the exact path
+// and not sub-paths, and pairs it with an HTTP method set and the flag that
+// gates it. A matching request is served by Go only when the flag is enabled
+// for the viewer; otherwise it falls through to the Rails proxy.
 //
 // [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
 //
-// 今は意図的に空にしている。本タスクでは仕組みのみを導入し、ゲートすべき
-// 半移行中のページがまだ存在しないため。先行公開の準備ができたページができたら、
-// 下記のコメント例のようにエントリを追加する。
+// 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
+// させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
+// リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
+// プロキシに進む。
 var featureFlaggedPatterns = []featureFlaggedPattern{
-	// Example: gate the profile page (GET /@:atname) behind the example flag.
-	// The trailing "$" keeps it from matching sub-paths such as /@:atname/....
+	// GET /new: the Go new-post form. The "^/new$" anchor keeps it from matching
+	// sub-paths. POST /posts is gated under the same flag in a later task, so
+	// until then form submissions fall through to Rails even with the flag on.
 	//
-	// [Ja] 例: プロフィール画面 (GET /@:atname) を例示フラグでゲートする。
-	// 末尾の "$" により /@:atname/... などのサブパスにはマッチさせない。
-	//
-	// {
-	// 	pattern: regexp.MustCompile(`^/@[^/]+$`),
-	// 	flag:    model.FeatureFlagExample,
-	// 	methods: []string{http.MethodGet},
-	// },
+	// [Ja] GET /new: Go 版の新規投稿フォーム。"^/new$" のアンカーでサブパスには
+	// マッチさせない。POST /posts は後続タスクで同じフラグの配下に入るため、
+	// それまではフラグが有効でもフォーム送信は Rails に抜ける。
+	{
+		pattern: regexp.MustCompile(`^/new$`),
+		flag:    model.FeatureFlagNewPost,
+		methods: []string{http.MethodGet},
+	},
 }
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
