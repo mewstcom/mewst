@@ -1,4 +1,4 @@
-<!-- last_synced: 2026-05-24 -->
+<!-- last_synced: 2026-05-27 -->
 
 # Mewst Development Guide
 
@@ -20,7 +20,7 @@ This repository manages two subprojects—the Go version and the Rails version�
 ├── go/                  # Go version implementation (features being migrated gradually)
 ├── rails/               # Rails version implementation (existing production system)
 ├── caddy/               # Reverse proxy configuration
-├── docs/                # Mewst-specific documentation (specs, work plans, etc.)
+├── docs/                # Mewst-specific documentation (ADRs, work plans, etc.)
 ├── .github/             # Shared CI/CD configuration
 ├── Dockerfile.dev       # Dockerfile for the integrated development container
 ├── docker-compose.yml   # Docker Compose configuration
@@ -67,9 +67,7 @@ See [Makefile](./Makefile), [go/Makefile](./go/Makefile), and [rails/Makefile](.
 
 ## Documentation
 
-Feature specifications are managed under the `docs/specs/` directory. To understand the current state of the system, start by reading the specifications.
-
-- [docs/specs/](./docs/specs/) - Specifications for each feature
+Design decisions—the chosen approach, its background, and the alternatives that were rejected—are recorded as ADRs (Architecture Decision Records) under `docs/private/adr/`. To understand the current state of the system, read the code and tests rather than a separate spec document.
 
 ## Language and Writing Conventions
 
