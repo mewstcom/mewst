@@ -171,7 +171,14 @@ func main() {
 	// 基本ミドルウェア
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.RequestID)
-	r.Use(chimiddleware.RealIP)
+	// Client IP is resolved on demand via internal/clientip (CF-Connecting-IP first),
+	// so chi's IP middleware is intentionally not registered. chi's RealIP is also
+	// deprecated for IP spoofing (GHSA-3fxj-6jh8-hvhx) and must not be reintroduced.
+	//
+	// [Ja] クライアント IP は internal/clientip (CF-Connecting-IP 優先) で都度解決するため、
+	// chi の IP ミドルウェアは意図的に登録しない。chi の RealIP は IP spoofing
+	// (GHSA-3fxj-6jh8-hvhx) のため deprecated でもあり、再導入しないこと。
+
 	// Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
 	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic しないため、
 	// sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、sentryhttp が panic を見られない。

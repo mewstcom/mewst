@@ -7,7 +7,7 @@ require (
 	github.com/a-h/templ v0.3.1020
 	github.com/getsentry/sentry-go v0.46.2
 	github.com/getsentry/sentry-go/slog v0.46.2
-	github.com/go-chi/chi/v5 v5.2.3
+	github.com/go-chi/chi/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/lib/pq v1.12.3
