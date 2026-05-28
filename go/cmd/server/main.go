@@ -178,6 +178,7 @@ func main() {
 	// [Ja] クライアント IP は internal/clientip (CF-Connecting-IP 優先) で都度解決するため、
 	// chi の IP ミドルウェアは意図的に登録しない。chi の RealIP は IP spoofing
 	// (GHSA-3fxj-6jh8-hvhx) のため deprecated でもあり、再導入しないこと。
+
 	// Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
 	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic しないため、
 	// sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、sentryhttp が panic を見られない。
