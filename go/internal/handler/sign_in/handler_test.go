@@ -38,9 +38,8 @@ func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
 	signInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)

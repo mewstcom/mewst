@@ -38,7 +38,6 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	// 設定を作成
 	cfg := &config.Config{
@@ -48,7 +47,7 @@ func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	}
 
 	// セッションマネージャーを作成
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
 	// Authミドルウェアを作成
 	auth := NewAuth(sessionMgr)

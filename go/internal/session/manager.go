@@ -29,7 +29,6 @@ type Manager struct {
 	sessionRepo *repository.SessionRepository
 	actorRepo   *repository.ActorRepository
 	userRepo    *repository.UserRepository
-	profileRepo *repository.ProfileRepository
 	cfg         *config.Config
 }
 
@@ -38,14 +37,12 @@ func NewManager(
 	sessionRepo *repository.SessionRepository,
 	actorRepo *repository.ActorRepository,
 	userRepo *repository.UserRepository,
-	profileRepo *repository.ProfileRepository,
 	cfg *config.Config,
 ) *Manager {
 	return &Manager{
 		sessionRepo: sessionRepo,
 		actorRepo:   actorRepo,
 		userRepo:    userRepo,
-		profileRepo: profileRepo,
 		cfg:         cfg,
 	}
 }
@@ -121,29 +118,49 @@ func (m *Manager) GetCurrentActor(ctx context.Context, r *http.Request) (*model.
 	return actor, nil
 }
 
-// GetCurrentProfile returns the profile of the current logged-in actor.
-// It returns nil when the session is missing or invalid.
+// CurrentAuth bundles the user, actor, and profile resolved from the current
+// session. All three fields are non-nil when present; the entire pointer is
+// nil when the session is missing or invalid.
 //
-// [Ja] 現在のログインアクターのプロフィールを取得する。
-// セッションが存在しない、または無効な場合はnilを返す。
-func (m *Manager) GetCurrentProfile(ctx context.Context, r *http.Request) (*model.Profile, error) {
-	actor, err := m.GetCurrentActor(ctx, r)
-	if err != nil {
-		return nil, err
-	}
-	if actor == nil {
+// [Ja] CurrentAuth は現在のセッションから解決した user / actor / profile を
+// まとめて保持する。セッションが有効なときは 3 つすべてが non-nil。無効な
+// ときはポインタ自体が nil となる。
+type CurrentAuth struct {
+	User    *model.User
+	Actor   *model.Actor
+	Profile *model.Profile
+}
+
+// GetCurrentAuth resolves the session token to user / actor / profile in a
+// single JOIN query, returning them together. It is meant for callers that
+// need all three (such as RequireAuth) so that a single request does not
+// issue four separate queries (session -> actor -> user -> profile). Returns
+// (nil, nil) when the session is missing or invalid.
+//
+// [Ja] GetCurrentAuth はセッショントークンから user / actor / profile を
+// 1 度の JOIN クエリで解決し、まとめて返す。RequireAuth のように 3 つすべてを
+// 必要とする呼び出し元向けで、1 リクエストで session -> actor -> user ->
+// profile の 4 クエリが走らないようにするためのもの。セッションが存在しない、
+// または無効な場合は (nil, nil) を返す。
+func (m *Manager) GetCurrentAuth(ctx context.Context, r *http.Request) (*CurrentAuth, error) {
+	token := m.GetSessionToken(r)
+	if token == "" {
 		return nil, nil
 	}
 
-	profile, err := m.profileRepo.FindByID(ctx, actor.ProfileID)
+	lookup, err := m.sessionRepo.FindAuthByToken(ctx, token)
 	if err != nil {
 		return nil, err
 	}
-	if profile == nil {
+	if lookup == nil {
 		return nil, nil
 	}
 
-	return profile, nil
+	return &CurrentAuth{
+		User:    lookup.User,
+		Actor:   lookup.Actor,
+		Profile: lookup.Profile,
+	}, nil
 }
 
 // SetSessionCookie はセッションクッキーを設定する

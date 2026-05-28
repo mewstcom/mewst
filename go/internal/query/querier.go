@@ -26,6 +26,13 @@ type Querier interface {
 	GetActiveEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetActorByID(ctx context.Context, id uuid.UUID) (Actor, error)
 	GetActorByUserID(ctx context.Context, userID uuid.UUID) (Actor, error)
+	// Resolves a session token to the associated actor, user, and profile in a
+	// single JOIN so authenticated-page middleware can avoid issuing four separate
+	// queries (session, actor, user, profile) per request.
+	// [Ja] セッショントークンに紐づく actor / user / profile を 1 度の JOIN で
+	// 取得する。認証後ページの middleware が 1 リクエストあたり 4 クエリ
+	// (session, actor, user, profile) を発行するのを避けるため。
+	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetProfileByAtname(ctx context.Context, atname string) (Profile, error)
 	GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error)

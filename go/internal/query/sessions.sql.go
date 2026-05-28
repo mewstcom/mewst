@@ -55,6 +55,66 @@ func (q *Queries) DeleteSessionByToken(ctx context.Context, token string) error 
 	return err
 }
 
+const getAuthByToken = `-- name: GetAuthByToken :one
+SELECT
+    actors.id, actors.user_id, actors.profile_id, actors.created_at, actors.updated_at,
+    users.id, users.email, users.password_digest, users.locale, users.signed_up_at, users.created_at, users.updated_at, users.time_zone,
+    profiles.id, profiles.owner_type, profiles.atname, profiles.name, profiles.description, profiles.image_url, profiles.joined_at, profiles.created_at, profiles.updated_at, profiles.discarded_at, profiles.last_post_at, profiles.gravatar_email, profiles.gravatar_url, profiles.avatar_kind
+FROM sessions
+INNER JOIN actors ON actors.id = sessions.actor_id
+INNER JOIN users ON users.id = actors.user_id
+INNER JOIN profiles ON profiles.id = actors.profile_id
+WHERE sessions.token = $1
+LIMIT 1
+`
+
+type GetAuthByTokenRow struct {
+	Actor   Actor   `db:"actor"`
+	User    User    `db:"user"`
+	Profile Profile `db:"profile"`
+}
+
+// Resolves a session token to the associated actor, user, and profile in a
+// single JOIN so authenticated-page middleware can avoid issuing four separate
+// queries (session, actor, user, profile) per request.
+// [Ja] セッショントークンに紐づく actor / user / profile を 1 度の JOIN で
+// 取得する。認証後ページの middleware が 1 リクエストあたり 4 クエリ
+// (session, actor, user, profile) を発行するのを避けるため。
+func (q *Queries) GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error) {
+	row := q.db.QueryRowContext(ctx, getAuthByToken, token)
+	var i GetAuthByTokenRow
+	err := row.Scan(
+		&i.Actor.ID,
+		&i.Actor.UserID,
+		&i.Actor.ProfileID,
+		&i.Actor.CreatedAt,
+		&i.Actor.UpdatedAt,
+		&i.User.ID,
+		&i.User.Email,
+		&i.User.PasswordDigest,
+		&i.User.Locale,
+		&i.User.SignedUpAt,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.User.TimeZone,
+		&i.Profile.ID,
+		&i.Profile.OwnerType,
+		&i.Profile.Atname,
+		&i.Profile.Name,
+		&i.Profile.Description,
+		&i.Profile.ImageUrl,
+		&i.Profile.JoinedAt,
+		&i.Profile.CreatedAt,
+		&i.Profile.UpdatedAt,
+		&i.Profile.DiscardedAt,
+		&i.Profile.LastPostAt,
+		&i.Profile.GravatarEmail,
+		&i.Profile.GravatarUrl,
+		&i.Profile.AvatarKind,
+	)
+	return i, err
+}
+
 const getSessionByToken = `-- name: GetSessionByToken :one
 SELECT id, actor_id, token, ip_address, user_agent, signed_in_at, created_at, updated_at FROM sessions WHERE token = $1 LIMIT 1
 `

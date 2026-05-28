@@ -20,7 +20,7 @@ func TestManager_GetSessionToken(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	manager := NewManager(nil, nil, nil, nil, cfg)
+	manager := NewManager(nil, nil, nil, cfg)
 
 	tests := []struct {
 		name     string
@@ -93,9 +93,8 @@ func TestManager_GetCurrentUser(t *testing.T) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	manager := NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
 	tests := []struct {
 		name     string
@@ -189,9 +188,8 @@ func TestManager_GetCurrentActor(t *testing.T) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	manager := NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
 	tests := []struct {
 		name      string
@@ -245,18 +243,19 @@ func TestManager_GetCurrentActor(t *testing.T) {
 	}
 }
 
-func TestManager_GetCurrentProfile(t *testing.T) {
+func TestManager_GetCurrentAuth(t *testing.T) {
 	t.Parallel()
 
 	_, tx := testutil.SetupTx(t)
 
-	// テストデータを作成
+	// Set up a user / profile / actor / session to act as the valid case.
+	// [Ja] 正常系で参照する user / profile / actor / session を準備する。
 	userID := testutil.NewUserBuilder(t, tx).
-		WithEmail("profile-test@example.com").
+		WithEmail("auth-test@example.com").
 		Build()
 
 	profileID := testutil.NewProfileBuilder(t, tx).
-		WithAtname("profiletestuser").
+		WithAtname("authcurrentuser").
 		Build()
 
 	actorID := testutil.NewActorBuilder(t, tx).
@@ -264,7 +263,7 @@ func TestManager_GetCurrentProfile(t *testing.T) {
 		WithProfileID(profileID).
 		Build()
 
-	testToken := "test-profile-token-def456"
+	testToken := "test-current-auth-token-ghi321"
 	testutil.NewSessionBuilder(t, tx).
 		WithActorID(actorID).
 		WithToken(testToken).
@@ -279,33 +278,32 @@ func TestManager_GetCurrentProfile(t *testing.T) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	manager := NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
 	tests := []struct {
-		name        string
-		token       string
-		wantProfile bool
-		wantErr     bool
+		name     string
+		token    string
+		wantAuth bool
+		wantErr  bool
 	}{
 		{
-			name:        "有効なトークンでプロフィールを取得できる",
-			token:       testToken,
-			wantProfile: true,
-			wantErr:     false,
+			name:     "有効なトークンでuser/actor/profileを一括取得できる",
+			token:    testToken,
+			wantAuth: true,
+			wantErr:  false,
 		},
 		{
-			name:        "無効なトークンではnilを返す",
-			token:       "invalid-profile-token",
-			wantProfile: false,
-			wantErr:     false,
+			name:     "無効なトークンではnilを返す",
+			token:    "invalid-current-auth-token",
+			wantAuth: false,
+			wantErr:  false,
 		},
 		{
-			name:        "トークンがない場合はnilを返す",
-			token:       "",
-			wantProfile: false,
-			wantErr:     false,
+			name:     "トークンがない場合はnilを返す",
+			token:    "",
+			wantAuth: false,
+			wantErr:  false,
 		},
 	}
 
@@ -319,26 +317,33 @@ func TestManager_GetCurrentProfile(t *testing.T) {
 				})
 			}
 
-			profile, err := manager.GetCurrentProfile(context.Background(), req)
+			auth, err := manager.GetCurrentAuth(context.Background(), req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetCurrentProfile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetCurrentAuth() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
-			if tt.wantProfile && profile == nil {
-				t.Error("GetCurrentProfile() = nil, want profile")
-			}
-			if !tt.wantProfile && profile != nil {
-				t.Errorf("GetCurrentProfile() = %v, want nil", profile)
+			if tt.wantAuth {
+				if auth == nil {
+					t.Fatal("GetCurrentAuth() = nil, want CurrentAuth")
+				}
+				if auth.User == nil || auth.User.ID != userID {
+					t.Errorf("GetCurrentAuth().User.ID = %v, want %v", auth.User, userID)
+				}
+				if auth.Actor == nil || auth.Actor.ID != actorID {
+					t.Errorf("GetCurrentAuth().Actor.ID = %v, want %v", auth.Actor, actorID)
+				}
+				if auth.Profile == nil || auth.Profile.ID != profileID {
+					t.Errorf("GetCurrentAuth().Profile.ID = %v, want %v", auth.Profile, profileID)
+				}
+				if auth.Profile != nil && auth.Profile.Atname != "authcurrentuser" {
+					t.Errorf("GetCurrentAuth().Profile.Atname = %q, want %q", auth.Profile.Atname, "authcurrentuser")
+				}
+				return
 			}
 
-			if tt.wantProfile && profile != nil {
-				if profile.ID != profileID {
-					t.Errorf("GetCurrentProfile().ID = %v, want %v", profile.ID, profileID)
-				}
-				if profile.Atname != "profiletestuser" {
-					t.Errorf("GetCurrentProfile().Atname = %q, want %q", profile.Atname, "profiletestuser")
-				}
+			if auth != nil {
+				t.Errorf("GetCurrentAuth() = %v, want nil", auth)
 			}
 		})
 	}
@@ -353,7 +358,7 @@ func TestManager_SetSessionCookie(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	manager := NewManager(nil, nil, nil, nil, cfg)
+	manager := NewManager(nil, nil, nil, cfg)
 
 	rr := httptest.NewRecorder()
 	manager.SetSessionCookie(rr, "test-token")
@@ -393,7 +398,7 @@ func TestManager_DeleteSessionCookie(t *testing.T) {
 		SessionHTTPOnly: true,
 	}
 
-	manager := NewManager(nil, nil, nil, nil, cfg)
+	manager := NewManager(nil, nil, nil, cfg)
 
 	rr := httptest.NewRecorder()
 	manager.DeleteSessionCookie(rr)
@@ -449,9 +454,8 @@ func TestManager_IsLoggedIn(t *testing.T) {
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	userRepo := repository.NewUserRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	manager := NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	manager := NewManager(sessionRepo, actorRepo, userRepo, cfg)
 
 	tests := []struct {
 		name  string

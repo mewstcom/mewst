@@ -100,7 +100,7 @@ func main() {
 	featureFlagRepo := repository.NewFeatureFlagRepository(queries)
 
 	// セッションマネージャーの初期化
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
 	// Workerの初期化

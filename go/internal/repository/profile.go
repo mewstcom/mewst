@@ -49,7 +49,7 @@ func (r *ProfileRepository) FindByID(ctx context.Context, id model.ProfileID) (*
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toProfileModel(row), nil
 }
 
 // FindByAtname はアットネームでプロフィールを取得する
@@ -61,7 +61,7 @@ func (r *ProfileRepository) FindByAtname(ctx context.Context, atname string) (*m
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toProfileModel(row), nil
 }
 
 // ExistsByAtname はアットネームでプロフィールの存在を確認する
@@ -85,11 +85,17 @@ func (r *ProfileRepository) Create(ctx context.Context, input CreateProfileInput
 	if err != nil {
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toProfileModel(row), nil
 }
 
-// toModel は query.Profile を model.Profile に変換する
-func (r *ProfileRepository) toModel(row query.Profile) *model.Profile {
+// toProfileModel converts a query.Profile row into a model.Profile. It is a
+// package-private free function so SessionRepository's JOIN-based auth lookup
+// can reuse the conversion without instantiating a ProfileRepository.
+//
+// [Ja] toProfileModel は query.Profile を model.Profile に変換するパッケージ非公開の
+// 自由関数。SessionRepository が JOIN で取得した profile 行を ProfileRepository
+// なしで変換できるように、メソッドではなく自由関数にしている。
+func toProfileModel(row query.Profile) *model.Profile {
 	var discardedAt *time.Time
 	if row.DiscardedAt.Valid {
 		discardedAt = &row.DiscardedAt.Time

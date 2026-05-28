@@ -50,9 +50,8 @@ func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler
 	actorRepo := repository.NewActorRepository(testutil.QueriesWithTx(tx))
 	sessionRepo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
-	profileRepo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	inserter := &mockInserter{}
 	d := dispatcher.NewDispatcher(inserter)
