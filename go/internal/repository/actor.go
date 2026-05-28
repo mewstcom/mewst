@@ -37,7 +37,7 @@ func (r *ActorRepository) FindByID(ctx context.Context, id model.ActorID) (*mode
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toActorModel(row), nil
 }
 
 // FindByUserID はユーザーIDでアクターを取得する
@@ -49,7 +49,7 @@ func (r *ActorRepository) FindByUserID(ctx context.Context, userID model.UserID)
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toActorModel(row), nil
 }
 
 // CreateActorInput はアクター作成の入力パラメータ
@@ -67,11 +67,17 @@ func (r *ActorRepository) Create(ctx context.Context, input CreateActorInput) (*
 	if err != nil {
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toActorModel(row), nil
 }
 
-// toModel は query.Actor を model.Actor に変換する
-func (r *ActorRepository) toModel(row query.Actor) *model.Actor {
+// toActorModel converts a query.Actor row into a model.Actor. It is a
+// package-private free function so SessionRepository's JOIN-based auth lookup
+// can reuse the conversion without instantiating an ActorRepository.
+//
+// [Ja] toActorModel は query.Actor を model.Actor に変換するパッケージ非公開の
+// 自由関数。SessionRepository が JOIN で取得した actor 行を ActorRepository
+// なしで変換できるように、メソッドではなく自由関数にしている。
+func toActorModel(row query.Actor) *model.Actor {
 	return &model.Actor{
 		ID:        model.ActorID(row.ID),
 		UserID:    model.UserID(row.UserID),

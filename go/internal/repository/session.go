@@ -35,7 +35,7 @@ func (r *SessionRepository) FindByToken(ctx context.Context, token string) (*mod
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toSessionModel(row), nil
 }
 
 // CreateSessionInput はセッション作成の入力パラメータ
@@ -57,7 +57,7 @@ func (r *SessionRepository) Create(ctx context.Context, input CreateSessionInput
 	if err != nil {
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toSessionModel(row), nil
 }
 
 // DeleteByToken はトークンでセッションを削除する
@@ -65,8 +65,14 @@ func (r *SessionRepository) DeleteByToken(ctx context.Context, token string) err
 	return r.q.DeleteSessionByToken(ctx, token)
 }
 
-// toModel は query.Session を model.Session に変換する
-func (r *SessionRepository) toModel(row query.Session) *model.Session {
+// toSessionModel converts a query.Session row into a model.Session. It mirrors
+// toActorModel / toUserModel / toProfileModel so all row-to-model converters in
+// this package follow the same package-private free-function form.
+//
+// [Ja] toSessionModel は query.Session を model.Session に変換するパッケージ
+// 非公開の自由関数。actor / user / profile の同型の関数と揃え、本パッケージ
+// 内の row → model 変換を同じ形式に統一する。
+func toSessionModel(row query.Session) *model.Session {
 	return &model.Session{
 		ID:         model.SessionID(row.ID),
 		ActorID:    model.ActorID(row.ActorID),

@@ -35,7 +35,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id model.UserID) (*model.
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toUserModel(row), nil
 }
 
 // FindByEmail はメールアドレスでユーザーを取得する
@@ -47,7 +47,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*model.
 		}
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toUserModel(row), nil
 }
 
 // UpdatePasswordByEmail はメールアドレスでユーザーのパスワードを更新する
@@ -82,11 +82,17 @@ func (r *UserRepository) Create(ctx context.Context, input CreateUserInput) (*mo
 	if err != nil {
 		return nil, err
 	}
-	return r.toModel(row), nil
+	return toUserModel(row), nil
 }
 
-// toModel は query.User を model.User に変換する
-func (r *UserRepository) toModel(row query.User) *model.User {
+// toUserModel converts a query.User row into a model.User. It is a
+// package-private free function so SessionRepository's JOIN-based auth lookup
+// can reuse the conversion without instantiating a UserRepository.
+//
+// [Ja] toUserModel は query.User を model.User に変換するパッケージ非公開の
+// 自由関数。SessionRepository が JOIN で取得した user 行を UserRepository
+// なしで変換できるように、メソッドではなく自由関数にしている。
+func toUserModel(row query.User) *model.User {
 	return &model.User{
 		ID:             model.UserID(row.ID),
 		Email:          row.Email,
