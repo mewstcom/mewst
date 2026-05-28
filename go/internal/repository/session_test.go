@@ -67,6 +67,69 @@ func TestSessionRepository_FindByToken(t *testing.T) {
 	})
 }
 
+func TestSessionRepository_FindAuthByToken(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	ctx := context.Background()
+
+	// Set up user / profile / actor / session for the happy path.
+	// [Ja] 正常系で参照する user / profile / actor / session を準備する。
+	userID := testutil.NewUserBuilder(t, tx).
+		WithEmail("session-findauth@example.com").
+		Build()
+	profileID := testutil.NewProfileBuilder(t, tx).
+		WithAtname("authlookupuser").
+		Build()
+	actorID := testutil.NewActorBuilder(t, tx).
+		WithUserID(userID).
+		WithProfileID(profileID).
+		Build()
+
+	token := "test-session-token-findauth"
+	_ = testutil.NewSessionBuilder(t, tx).
+		WithActorID(actorID).
+		WithToken(token).
+		Build()
+
+	repo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
+
+	t.Run("既存のトークンで user / actor / profile を 1 度に取得できる", func(t *testing.T) {
+		lookup, err := repo.FindAuthByToken(ctx, token)
+		if err != nil {
+			t.Fatalf("FindAuthByToken() error = %v", err)
+		}
+		if lookup == nil {
+			t.Fatal("FindAuthByToken() = nil, want AuthLookup")
+		}
+		if lookup.Actor == nil || lookup.Actor.ID != actorID {
+			t.Errorf("lookup.Actor.ID = %v, want %v", lookup.Actor, actorID)
+		}
+		if lookup.User == nil || lookup.User.ID != userID {
+			t.Errorf("lookup.User.ID = %v, want %v", lookup.User, userID)
+		}
+		if lookup.User != nil && lookup.User.Email != "session-findauth@example.com" {
+			t.Errorf("lookup.User.Email = %q, want %q", lookup.User.Email, "session-findauth@example.com")
+		}
+		if lookup.Profile == nil || lookup.Profile.ID != profileID {
+			t.Errorf("lookup.Profile.ID = %v, want %v", lookup.Profile, profileID)
+		}
+		if lookup.Profile != nil && lookup.Profile.Atname != "authlookupuser" {
+			t.Errorf("lookup.Profile.Atname = %q, want %q", lookup.Profile.Atname, "authlookupuser")
+		}
+	})
+
+	t.Run("存在しないトークンは (nil, nil) を返す", func(t *testing.T) {
+		lookup, err := repo.FindAuthByToken(ctx, "nonexistent-token-for-findauth")
+		if err != nil {
+			t.Errorf("FindAuthByToken() error = %v, want nil", err)
+		}
+		if lookup != nil {
+			t.Errorf("FindAuthByToken() = %v, want nil", lookup)
+		}
+	})
+}
+
 func TestSessionRepository_Create(t *testing.T) {
 	t.Parallel()
 

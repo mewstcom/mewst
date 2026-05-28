@@ -41,37 +41,27 @@ func (a *Auth) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		user, err := a.sessionMgr.GetCurrentUser(ctx, r)
+		// Resolve user / actor / profile in a single call so that
+		// token -> session -> actor is looked up only once per request.
+		// [Ja] user / actor / profile を 1 回の呼び出しでまとめて解決し、
+		// 1 リクエストで token -> session -> actor の lookup が 3 回走らないようにする。
+		auth, err := a.sessionMgr.GetCurrentAuth(ctx, r)
 		if err != nil {
 			slog.ErrorContext(ctx, "認証チェック中にエラーが発生", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
-		if user == nil {
+		if auth == nil {
 			http.Redirect(w, r, "/sign_in", http.StatusFound)
-			return
-		}
-
-		actor, err := a.sessionMgr.GetCurrentActor(ctx, r)
-		if err != nil {
-			slog.ErrorContext(ctx, "アクター取得中にエラーが発生", "error", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		profile, err := a.sessionMgr.GetCurrentProfile(ctx, r)
-		if err != nil {
-			slog.ErrorContext(ctx, "プロフィール取得中にエラーが発生", "error", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
 		// Store the user, actor, and profile information in the context.
 		// [Ja] コンテキストにユーザー・アクター・プロフィール情報を設定
-		ctx = context.WithValue(ctx, userContextKey, user)
-		ctx = context.WithValue(ctx, actorContextKey, actor)
-		ctx = context.WithValue(ctx, profileContextKey, profile)
+		ctx = context.WithValue(ctx, userContextKey, auth.User)
+		ctx = context.WithValue(ctx, actorContextKey, auth.Actor)
+		ctx = context.WithValue(ctx, profileContextKey, auth.Profile)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

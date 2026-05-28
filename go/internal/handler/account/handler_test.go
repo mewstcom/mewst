@@ -46,7 +46,7 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	emailConfirmRepo := repository.NewEmailConfirmationRepository(testutil.QueriesWithTx(tx))
 	rateLimitRepo := repository.NewRateLimitRepository(testutil.QueriesWithTx(tx))
 
-	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, profileRepo, cfg)
+	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
