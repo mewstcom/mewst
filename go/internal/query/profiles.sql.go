@@ -7,6 +7,7 @@ package query
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -125,4 +126,20 @@ func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, er
 		&i.AvatarKind,
 	)
 	return i, err
+}
+
+const updateProfileLastPostAt = `-- name: UpdateProfileLastPostAt :exec
+UPDATE profiles
+SET last_post_at = $2, updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateProfileLastPostAtParams struct {
+	ID         uuid.UUID    `db:"id"`
+	LastPostAt sql.NullTime `db:"last_post_at"`
+}
+
+func (q *Queries) UpdateProfileLastPostAt(ctx context.Context, arg UpdateProfileLastPostAtParams) error {
+	_, err := q.db.ExecContext(ctx, updateProfileLastPostAt, arg.ID, arg.LastPostAt)
+	return err
 }

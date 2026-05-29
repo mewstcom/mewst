@@ -69,6 +69,15 @@ func (r *ProfileRepository) ExistsByAtname(ctx context.Context, atname string) (
 	return r.q.ExistsProfileByAtname(ctx, atname)
 }
 
+// UpdateLastPostAt updates the profile's last_post_at.
+// [Ja] UpdateLastPostAt はプロフィールの last_post_at を更新する。
+func (r *ProfileRepository) UpdateLastPostAt(ctx context.Context, id model.ProfileID, lastPostAt time.Time) error {
+	return r.q.UpdateProfileLastPostAt(ctx, query.UpdateProfileLastPostAtParams{
+		ID:         uuid.UUID(id),
+		LastPostAt: sql.NullTime{Time: lastPostAt, Valid: true},
+	})
+}
+
 // Create はプロフィールを作成する
 func (r *ProfileRepository) Create(ctx context.Context, input CreateProfileInput) (*model.Profile, error) {
 	row, err := r.q.CreateProfile(ctx, query.CreateProfileParams{

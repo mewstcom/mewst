@@ -72,6 +72,7 @@ type Querier interface {
 	ListFollowsByTargetProfileID(ctx context.Context, targetProfileID uuid.UUID) ([]Follow, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
+	UpdateProfileLastPostAt(ctx context.Context, arg UpdateProfileLastPostAtParams) error
 }
 
 var _ Querier = (*Queries)(nil)
