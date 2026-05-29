@@ -177,3 +177,11 @@ type OauthApplicationID uuid.UUID
 // String returns the string representation of the OauthApplicationID.
 // [Ja] String は OauthApplicationID の文字列表現を返す。
 func (id OauthApplicationID) String() string { return uuid.UUID(id).String() }
+
+// HomeTimelinePostID is the ID type for a home timeline post.
+// [Ja] HomeTimelinePostID はホームタイムライン投稿の ID 型。
+type HomeTimelinePostID uuid.UUID
+
+// String returns the string representation of the HomeTimelinePostID.
+// [Ja] String は HomeTimelinePostID の文字列表現を返す。
+func (id HomeTimelinePostID) String() string { return uuid.UUID(id).String() }
