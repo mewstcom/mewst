@@ -34,6 +34,7 @@ type Querier interface {
 	// (session, actor, user, profile) を発行するのを避けるため。
 	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
+	GetOauthApplicationByUID(ctx context.Context, uid string) (OauthApplication, error)
 	GetProfileByAtname(ctx context.Context, atname string) (Profile, error)
 	GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)

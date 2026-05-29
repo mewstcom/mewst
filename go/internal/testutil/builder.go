@@ -392,3 +392,74 @@ func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 
 	return model.FeatureFlagID(id)
 }
+
+// OauthApplicationBuilder builds OAuth application test data.
+// [Ja] OauthApplicationBuilder は OAuth アプリケーションテストデータのビルダー。
+//
+// The test DB (reset from schema.sql) has no mewst-web record, so tests that
+// attribute posts to mewst-web build one with this builder, setting the uid
+// explicitly via WithUID(model.MewstWebUID). The name and uid default to
+// per-call unique values so that parallel tests do not contend on the unique
+// indexes on oauth_applications.name / .uid.
+//
+// [Ja] テスト DB (schema.sql からリセット) には mewst-web レコードが無いため、
+// 投稿を mewst-web に紐づけるテストは本ビルダーでレコードを作成し、uid は
+// WithUID(model.MewstWebUID) で明示的に設定する。name と uid は呼び出しごとに
+// ユニークな値をデフォルトにしており、並行テストが oauth_applications.name /
+// .uid の unique インデックスで競合しないようにしている。
+type OauthApplicationBuilder struct {
+	t           *testing.T
+	tx          *sql.Tx
+	name        string
+	uid         string
+	secret      string
+	redirectURI string
+}
+
+// NewOauthApplicationBuilder creates an OauthApplicationBuilder.
+// [Ja] NewOauthApplicationBuilder は OauthApplicationBuilder を生成する。
+func NewOauthApplicationBuilder(t *testing.T, tx *sql.Tx) *OauthApplicationBuilder {
+	t.Helper()
+	return &OauthApplicationBuilder{
+		t:           t,
+		tx:          tx,
+		name:        fmt.Sprintf("Test App %d", time.Now().UnixNano()),
+		uid:         fmt.Sprintf("test-uid-%d", time.Now().UnixNano()),
+		secret:      fmt.Sprintf("test-secret-%d", time.Now().UnixNano()),
+		redirectURI: "https://example.com/callback",
+	}
+}
+
+// WithName sets the application name.
+// [Ja] WithName はアプリケーション名を設定する。
+func (b *OauthApplicationBuilder) WithName(name string) *OauthApplicationBuilder {
+	b.name = name
+	return b
+}
+
+// WithUID sets the application uid.
+// [Ja] WithUID はアプリケーションの uid を設定する。
+func (b *OauthApplicationBuilder) WithUID(uid string) *OauthApplicationBuilder {
+	b.uid = uid
+	return b
+}
+
+// Build inserts the OAuth application into the DB and returns its ID.
+// [Ja] Build は OAuth アプリケーションを DB に作成し、ID を返す。
+func (b *OauthApplicationBuilder) Build() model.OauthApplicationID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO oauth_applications (name, uid, secret, redirect_uri, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`, b.name, b.uid, b.secret, b.redirectURI, now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("OAuth アプリケーションの作成に失敗: %v", err)
+	}
+
+	return model.OauthApplicationID(id)
+}

@@ -161,3 +161,11 @@ type FeatureFlagName string
 // String returns the string representation of the FeatureFlagName.
 // [Ja] String は FeatureFlagName の文字列表現を返す。
 func (n FeatureFlagName) String() string { return string(n) }
+
+// OauthApplicationID is the ID type for an OAuth application.
+// [Ja] OauthApplicationID は OAuth アプリケーションの ID 型。
+type OauthApplicationID uuid.UUID
+
+// String returns the string representation of the OauthApplicationID.
+// [Ja] String は OauthApplicationID の文字列表現を返す。
+func (id OauthApplicationID) String() string { return uuid.UUID(id).String() }
