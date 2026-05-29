@@ -185,3 +185,11 @@ type HomeTimelinePostID uuid.UUID
 // String returns the string representation of the HomeTimelinePostID.
 // [Ja] String は HomeTimelinePostID の文字列表現を返す。
 func (id HomeTimelinePostID) String() string { return uuid.UUID(id).String() }
+
+// FollowID is the ID type for a follow.
+// [Ja] FollowID はフォローの ID 型。
+type FollowID uuid.UUID
+
+// String returns the string representation of the FollowID.
+// [Ja] String は FollowID の文字列表現を返す。
+func (id FollowID) String() string { return uuid.UUID(id).String() }

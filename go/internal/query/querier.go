@@ -64,6 +64,12 @@ type Querier interface {
 	// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
 	// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。
 	IsFeatureFlagEnabledForDevice(ctx context.Context, arg IsFeatureFlagEnabledForDeviceParams) (bool, error)
+	// Lists the follows whose target is the given profile. Their source profiles
+	// are that profile's followers, which fanout uses to enqueue timeline delivery.
+	//
+	// [Ja] target が指定プロフィールである follow を列挙する。その source プロフィールが
+	// 当該プロフィールのフォロワーであり、fanout がタイムライン配信を enqueue する際に使う。
+	ListFollowsByTargetProfileID(ctx context.Context, targetProfileID uuid.UUID) ([]Follow, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 }

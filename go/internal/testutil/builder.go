@@ -534,3 +534,56 @@ func (b *PostBuilder) Build() model.PostID {
 
 	return model.PostID(id)
 }
+
+// FollowBuilder builds follow test data.
+// [Ja] FollowBuilder はフォローテストデータのビルダー。
+type FollowBuilder struct {
+	t               *testing.T
+	tx              *sql.Tx
+	sourceProfileID model.ProfileID
+	targetProfileID model.ProfileID
+}
+
+// NewFollowBuilder creates a FollowBuilder.
+// [Ja] NewFollowBuilder は FollowBuilder を生成する。
+func NewFollowBuilder(t *testing.T, tx *sql.Tx) *FollowBuilder {
+	t.Helper()
+	return &FollowBuilder{
+		t:  t,
+		tx: tx,
+	}
+}
+
+// WithSourceProfileID sets the source profile ID (the follower).
+// [Ja] WithSourceProfileID は source プロフィール ID (フォローする側) を設定する。
+func (b *FollowBuilder) WithSourceProfileID(sourceProfileID model.ProfileID) *FollowBuilder {
+	b.sourceProfileID = sourceProfileID
+	return b
+}
+
+// WithTargetProfileID sets the target profile ID (the followed profile).
+// [Ja] WithTargetProfileID は target プロフィール ID (フォローされる側) を設定する。
+func (b *FollowBuilder) WithTargetProfileID(targetProfileID model.ProfileID) *FollowBuilder {
+	b.targetProfileID = targetProfileID
+	return b
+}
+
+// Build inserts the follow into the DB and returns its ID.
+// [Ja] Build はフォローを DB に作成し、ID を返す。
+func (b *FollowBuilder) Build() model.FollowID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO follows (source_profile_id, target_profile_id, followed_at, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`, uuid.UUID(b.sourceProfileID), uuid.UUID(b.targetProfileID), now, now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("フォローの作成に失敗: %v", err)
+	}
+
+	return model.FollowID(id)
+}
