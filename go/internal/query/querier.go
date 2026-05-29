@@ -14,6 +14,7 @@ import (
 type Querier interface {
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateEmailConfirmation(ctx context.Context, arg CreateEmailConfirmationParams) (EmailConfirmation, error)
+	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
@@ -35,6 +36,7 @@ type Querier interface {
 	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
 	GetOauthApplicationByUID(ctx context.Context, uid string) (OauthApplication, error)
+	GetPostByID(ctx context.Context, id uuid.UUID) (Post, error)
 	GetProfileByAtname(ctx context.Context, atname string) (Profile, error)
 	GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)

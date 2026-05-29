@@ -463,3 +463,74 @@ func (b *OauthApplicationBuilder) Build() model.OauthApplicationID {
 
 	return model.OauthApplicationID(id)
 }
+
+// PostBuilder builds post test data.
+// [Ja] PostBuilder は投稿テストデータのビルダー。
+type PostBuilder struct {
+	t                  *testing.T
+	tx                 *sql.Tx
+	profileID          model.ProfileID
+	oauthApplicationID model.OauthApplicationID
+	content            string
+	publishedAt        time.Time
+}
+
+// NewPostBuilder creates a PostBuilder.
+// [Ja] NewPostBuilder は PostBuilder を生成する。
+func NewPostBuilder(t *testing.T, tx *sql.Tx) *PostBuilder {
+	t.Helper()
+	return &PostBuilder{
+		t:           t,
+		tx:          tx,
+		content:     "test post",
+		publishedAt: time.Now(),
+	}
+}
+
+// WithProfileID sets the profile ID.
+// [Ja] WithProfileID はプロフィール ID を設定する。
+func (b *PostBuilder) WithProfileID(profileID model.ProfileID) *PostBuilder {
+	b.profileID = profileID
+	return b
+}
+
+// WithOauthApplicationID sets the OAuth application ID.
+// [Ja] WithOauthApplicationID は OAuth アプリケーション ID を設定する。
+func (b *PostBuilder) WithOauthApplicationID(oauthApplicationID model.OauthApplicationID) *PostBuilder {
+	b.oauthApplicationID = oauthApplicationID
+	return b
+}
+
+// WithContent sets the post content.
+// [Ja] WithContent は投稿本文を設定する。
+func (b *PostBuilder) WithContent(content string) *PostBuilder {
+	b.content = content
+	return b
+}
+
+// WithPublishedAt sets the published time.
+// [Ja] WithPublishedAt は公開日時を設定する。
+func (b *PostBuilder) WithPublishedAt(publishedAt time.Time) *PostBuilder {
+	b.publishedAt = publishedAt
+	return b
+}
+
+// Build inserts the post into the DB and returns its ID.
+// [Ja] Build は投稿を DB に作成し、ID を返す。
+func (b *PostBuilder) Build() model.PostID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO posts (profile_id, content, published_at, oauth_application_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`, uuid.UUID(b.profileID), b.content, b.publishedAt, uuid.UUID(b.oauthApplicationID), now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("投稿の作成に失敗: %v", err)
+	}
+
+	return model.PostID(id)
+}
