@@ -1,0 +1,12 @@
+package components
+
+import (
+	"github.com/a-h/templ"
+)
+
+// BasicContainer は基本的なコンテナを表示する
+templ BasicContainer(content templ.Component) {
+	<div class="mx-auto max-w-md px-4">
+		@content
+	</div>
+}

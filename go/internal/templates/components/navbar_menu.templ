@@ -1,0 +1,47 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// NavbarMenu renders the five-item authenticated menu (home / search / new /
+// notification / profile). className is appended to the pill container so the
+// bottom navbar can add a border. It mirrors the Rails NavbarMenuComponent:
+// the Rails daisyUI bg-base-300 pill becomes bg-secondary, and each item shows
+// its filled icon when active.
+//
+// [Ja] 認証後の 5 項目メニュー (home / search / new / notification / profile) を
+// 描画する。className はピル状コンテナに追記され、ボトム navbar が枠線を足せる
+// ようにする。Rails の NavbarMenuComponent に対応し、daisyUI の bg-base-300 ピルは
+// bg-secondary に置き換え、各項目はアクティブ時に塗りつぶしアイコンを表示する。
+templ NavbarMenu(navbar viewmodel.Navbar, className string) {
+	<div class={ "flex w-fit items-center gap-4 rounded-full bg-secondary px-4 py-1", className }>
+		@navbarMenuLink(templates.HomePath(), navbar.IsActive(viewmodel.NavbarItemHome), "home_4_line", "home_4_fill", templates.T(ctx, "navbar_home"))
+		@navbarMenuLink(templates.SearchPath(), navbar.IsActive(viewmodel.NavbarItemSearch), "search_line", "search_fill", templates.T(ctx, "navbar_search"))
+		@navbarMenuLink(templates.NewPostPath(), navbar.IsActive(viewmodel.NavbarItemNew), "edit_4_line", "edit_4_fill", templates.T(ctx, "navbar_new_post"))
+		@navbarMenuLink(templates.NotificationListPath(), navbar.IsActive(viewmodel.NavbarItemNotification), "notification_line", "notification_fill", templates.T(ctx, "navbar_notifications"))
+		@navbarMenuLink(templates.ProfilePath(navbar.Atname), navbar.IsActive(viewmodel.NavbarItemProfile), "user_4_line", "user_4_fill", templates.T(ctx, "navbar_profile"))
+	</div>
+}
+
+// navbarMenuLink renders one menu link. When active it shows the filled icon
+// colored with the foreground color; otherwise the line icon colored gray-400.
+// The .content fill override mirrors the Rails Mewst::UI::Icon color handling.
+// label is set as the link's aria-label so screen readers can announce the
+// icon-only link by its purpose.
+//
+// [Ja] メニューリンク 1 件を描画する。アクティブ時は塗りつぶしアイコンを
+// foreground 色で、非アクティブ時は線アイコンを gray-400 で表示する。
+// .content の fill 上書きは Rails の Mewst::UI::Icon の色処理に対応する。
+// label はリンクの aria-label に設定し、アイコンのみのリンクの目的を
+// スクリーンリーダーが読み上げられるようにする。
+templ navbarMenuLink(href templates.Path, active bool, lineIcon, fillIcon viewmodel.IconName, label string) {
+	<a href={ href } aria-label={ label } class="rounded-full p-1 hover:bg-gray-100">
+		if active {
+			@templates.Icon(fillIcon, "h-[30px] w-[30px] [&_.content]:fill-foreground")
+		} else {
+			@templates.Icon(lineIcon, "h-[30px] w-[30px] [&_.content]:fill-gray-400")
+		}
+	</a>
+}

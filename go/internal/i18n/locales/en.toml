@@ -1,0 +1,366 @@
+# English translation file
+# English messages for Mewst Go project
+
+# ============================================
+# Site default
+# ============================================
+
+[default_title]
+description = "Site default title"
+other = "Mewst"
+
+[default_description]
+description = "Site default description"
+other = "Mewst is a social network where you can share your current feelings and situation in 160 characters. We aim to provide a service that can be used without any tension."
+
+# ============================================
+# Sign in page (sign_in/new)
+# ============================================
+
+[sign_in_new_title]
+description = "Sign in page title"
+other = "Sign in to Mewst"
+
+[sign_in_new_email_label]
+description = "Sign in page email label"
+other = "Email"
+
+[sign_in_new_password_label]
+description = "Sign in page password label"
+other = "Password"
+
+[sign_in_new_forgot_password_link]
+description = "Sign in page forgot password link text"
+other = "Forgot your password?"
+
+[sign_in_new_submit]
+description = "Sign in page submit button"
+other = "Sign in"
+
+[sign_in_new_no_account]
+description = "Sign in page no account message"
+other = "Don't have an account?"
+
+[sign_in_new_sign_up_link]
+description = "Sign in page sign up link text"
+other = "Sign up to Mewst"
+
+# ============================================
+# Sign up page (sign_up/new)
+# ============================================
+
+[sign_up_new_title]
+description = "Sign up page title"
+other = "Sign up to Mewst"
+
+[sign_up_new_description]
+description = "Sign up page description"
+other = "Enter your email address. We will send you a confirmation code."
+
+[sign_up_new_email_label]
+description = "Sign up page email label"
+other = "Email"
+
+[sign_up_new_submit]
+description = "Sign up page submit button"
+other = "Send confirmation code"
+
+[sign_up_new_have_account]
+description = "Sign up page already have account message"
+other = "Already have an account?"
+
+[sign_up_new_sign_in_link]
+description = "Sign up page sign in link text"
+other = "Sign in"
+
+# ============================================
+# Password reset page (password_reset/new)
+# ============================================
+
+[password_reset_new_title]
+description = "Password reset page title"
+other = "Forgot your password?"
+
+[password_reset_new_description]
+description = "Password reset page description"
+other = "Enter your registered email address. We will send you a confirmation code."
+
+[password_reset_new_email_label]
+description = "Password reset page email label"
+other = "Email"
+
+[password_reset_new_submit]
+description = "Password reset page submit button"
+other = "Send confirmation code"
+
+[password_reset_new_back_to_sign_in]
+description = "Password reset page back to sign in link"
+other = "Back to sign in"
+
+# ============================================
+# Email confirmation page (email_confirmation/new)
+# ============================================
+
+[email_confirmation_new_title]
+description = "Email confirmation page title"
+other = "Enter confirmation code"
+
+[email_confirmation_new_description]
+description = "Email confirmation page description"
+other = "Enter the 6-digit confirmation code sent to your email."
+
+[email_confirmation_new_code_label]
+description = "Email confirmation page code label"
+other = "Confirmation code"
+
+[email_confirmation_new_submit]
+description = "Email confirmation page submit button"
+other = "Verify"
+
+[email_confirmation_new_back_to_sign_in]
+description = "Email confirmation page back to sign in link"
+other = "Back to sign in"
+
+# ============================================
+# Email confirmation (email body subject)
+# ============================================
+
+[email_confirmation_subject]
+description = "Email confirmation code email subject"
+other = "[Mewst] Confirmation code"
+
+# ============================================
+# Account creation page (account/new)
+# ============================================
+
+[account_new_title]
+description = "Account creation page title"
+other = "Create your account"
+
+[account_new_description]
+description = "Account creation page description"
+other = "Set your username and password."
+
+[account_new_email_label]
+description = "Account creation page email label"
+other = "Email"
+
+[account_new_atname_label]
+description = "Account creation page username label"
+other = "Username"
+
+[account_new_atname_hint]
+description = "Account creation page username hint"
+other = "Alphanumeric characters and underscores only (max 20 characters)"
+
+[account_new_password_label]
+description = "Account creation page password label"
+other = "Password"
+
+[account_new_password_hint]
+description = "Account creation page password hint"
+other = "Enter at least 8 characters"
+
+[account_new_submit]
+description = "Account creation page submit button"
+other = "Create account"
+
+# ============================================
+# Password update page (password/edit)
+# ============================================
+
+[password_edit_title]
+description = "Password update page title"
+other = "Set a new password"
+
+[password_edit_description]
+description = "Password update page description"
+other = "Please enter your new password."
+
+[password_edit_password_label]
+description = "Password update page new password label"
+other = "New password"
+
+[password_edit_password_hint]
+description = "Password update page password hint"
+other = "Enter at least 8 characters"
+
+[password_edit_submit]
+description = "Password update page submit button"
+other = "Reset password"
+
+[password_edit_back_to_sign_in]
+description = "Password update page back to sign in link"
+other = "Back to sign in"
+
+# ============================================
+# Validation messages (validation_*)
+# ============================================
+
+[validation_required]
+description = "Required field validation error"
+other = "is required"
+
+[validation_email_invalid]
+description = "Invalid email format validation error"
+other = "is not a valid email address"
+
+[validation_credentials_invalid]
+description = "Sign in credentials validation error"
+other = "Login failed. Email or password is incorrect"
+
+[validation_password_too_short]
+description = "Password too short validation error"
+other = "Enter at least 8 characters"
+
+[validation_password_too_long]
+description = "Password too long validation error"
+other = "Password is too long"
+
+[validation_email_already_taken]
+description = "Email already taken validation error"
+other = "This email is already registered"
+
+[validation_atname_invalid_format]
+description = "Username invalid format validation error"
+other = "Only alphanumeric characters and underscores are allowed"
+
+[validation_atname_too_long]
+description = "Username too long validation error"
+other = "Must be 20 characters or less"
+
+[validation_atname_already_taken]
+description = "Username already taken validation error"
+other = "This username is already taken"
+
+[validation_atname_reserved]
+description = "Username reserved validation error"
+other = "This username is not available"
+
+[validation_code_incorrect_or_expired]
+description = "Confirmation code incorrect or expired validation error"
+other = "The confirmation code is incorrect or has expired."
+
+[validation_code_invalid_format]
+description = "Confirmation code invalid format validation error"
+other = "Please enter a 6-digit confirmation code."
+
+[validation_turnstile_failed]
+description = "Turnstile verification failed validation error"
+other = "Robot verification failed. Please try again"
+
+[validation_rate_limit_exceeded]
+description = "Rate limit exceeded validation error"
+other = "Too many requests. Please try again later."
+
+[validation_password_update_failed]
+description = "Password update failed validation error"
+other = "Failed to update password. Please try again."
+
+# ============================================
+# Flash messages (flash_*)
+# ============================================
+
+[flash_dismiss]
+description = "Flash message dismiss button"
+other = "Dismiss"
+
+[flash_sign_in_success]
+description = "Sign in success message"
+other = "Signed in successfully."
+
+[flash_sign_out_success]
+description = "Sign out success message"
+other = "Signed out successfully."
+
+[flash_sign_up_email_sent]
+description = "Sign up email sent success message"
+other = "Confirmation code sent. Please check your email."
+
+[flash_account_created]
+description = "Account created success message"
+other = "Account created successfully."
+
+[flash_email_confirmed]
+description = "Email confirmed success message"
+other = "Confirmation complete."
+
+[flash_password_reset_email_sent]
+description = "Password reset email sent success message"
+other = "Confirmation code sent. Please check your email."
+
+[flash_password_updated]
+description = "Password updated success message"
+other = "Password updated. Please sign in with your new password."
+
+# ============================================
+# Error pages (error_*)
+# ============================================
+
+[error_not_found_title]
+description = "404 error page title"
+other = "Page not found | Mewst"
+
+[error_not_found_message]
+description = "404 error page message"
+other = "The page you are looking for could not be found"
+
+[error_not_found_back_to_home]
+description = "404 error page link to home"
+other = "Back to home"
+
+[error_bad_gateway_title]
+description = "502 error page title"
+other = "Service Connection Error | Mewst"
+
+[error_bad_gateway_message]
+description = "502 error page message"
+other = "Sorry, we are unable to connect to the service."
+
+[error_bad_gateway_submessage]
+description = "502 error page submessage"
+other = "Please try again later."
+
+[error_bad_gateway_back_to_home]
+description = "502 error page link to home"
+other = "Back to home"
+
+# ============================================
+# Navigation (navbar_*)
+# ============================================
+
+[navbar_home]
+description = "Accessible label for the navbar home link"
+other = "Home"
+
+[navbar_search]
+description = "Accessible label for the navbar search link"
+other = "Search"
+
+[navbar_new_post]
+description = "Accessible label for the navbar new post link"
+other = "New post"
+
+[navbar_notifications]
+description = "Accessible label for the navbar notifications link"
+other = "Notifications"
+
+[navbar_profile]
+description = "Accessible label for the navbar profile link"
+other = "Profile"
+
+# ============================================
+# New post page (post_new_*)
+# ============================================
+
+[post_new_title]
+description = "New post page title"
+other = "New post"
+
+[post_new_content_label]
+description = "New post page content label"
+other = "What's happening?"
+
+[post_new_submit]
+description = "New post form submit button"
+other = "Post"

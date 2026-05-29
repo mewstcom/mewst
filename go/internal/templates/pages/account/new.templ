@@ -1,0 +1,143 @@
+package account
+
+import (
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+)
+
+// NewPageData はアカウント作成フォームページのデータ
+type NewPageData struct {
+	CSRFToken        string
+	TurnstileSiteKey string
+	FormErrors       *model.ValidationError
+	Email            string
+	Atname           string
+	BackURL          string
+}
+
+// New はアカウント作成フォームを表示する
+templ New(data NewPageData) {
+	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+		<div class="text-center">
+			<a href="/" class="inline-block">
+				<div class="bg-primary rounded-xl">
+					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
+				</div>
+			</a>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<h1 class="text-center text-3xl font-bold antialiased">
+				{ templates.T(ctx, "account_new_title") }
+			</h1>
+			<p class="text-center text-muted-foreground">
+				{ templates.T(ctx, "account_new_description") }
+			</p>
+		</div>
+
+		@components.FormErrors(data.FormErrors)
+
+		<form
+			action="/accounts"
+			class="form grid gap-6"
+			hx-on:submit="disableSubmitButtons(this)"
+			method="POST"
+		>
+			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+			if data.BackURL != "" {
+				<input type="hidden" name="back" value={ data.BackURL }/>
+			}
+
+			<div class="grid gap-2">
+				<label for="email">
+					{ templates.T(ctx, "account_new_email_label") }
+				</label>
+
+				<input
+					disabled
+					id="email"
+					type="email"
+					value={ data.Email }
+				/>
+			</div>
+
+			<div class="grid gap-2">
+				<label for="atname">
+					{ templates.T(ctx, "account_new_atname_label") }
+				</label>
+
+				<input
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("atname") {
+						aria-invalid="true"
+					} else {
+						aria-invalid="false"
+					}
+					autocomplete="username"
+					autofocus
+					id="atname"
+					name="atname"
+					required
+					tabindex="1"
+					type="text"
+					value={ data.Atname }
+				/>
+
+				<p class="text-sm text-muted-foreground">
+					{ templates.T(ctx, "account_new_atname_hint") }
+				</p>
+
+				if data.FormErrors != nil && data.FormErrors.HasFieldError("atname") {
+					for _, errorMsg := range data.FormErrors.GetFieldErrors("atname") {
+						<p class="text-sm text-error">
+							{ errorMsg }
+						</p>
+					}
+				}
+			</div>
+
+			<div class="grid gap-2">
+				<label for="password">
+					{ templates.T(ctx, "account_new_password_label") }
+				</label>
+
+				<input
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
+						aria-invalid="true"
+					} else {
+						aria-invalid="false"
+					}
+					autocomplete="new-password"
+					id="password"
+					name="password"
+					required
+					tabindex="2"
+					type="password"
+				/>
+
+				<p class="text-sm text-muted-foreground">
+					{ templates.T(ctx, "account_new_password_hint") }
+				</p>
+
+				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
+					for _, errorMsg := range data.FormErrors.GetFieldErrors("password") {
+						<p class="text-sm text-error">
+							{ errorMsg }
+						</p>
+					}
+				}
+			</div>
+
+			@components.Turnstile(data.TurnstileSiteKey)
+
+			<button
+				class="btn-primary rounded-full w-fit"
+				tabindex="3"
+				type="submit"
+			>
+				@templates.Icon("arrow-right-regular")
+				{ templates.T(ctx, "account_new_submit") }
+			</button>
+		</form>
+	</div>
+}

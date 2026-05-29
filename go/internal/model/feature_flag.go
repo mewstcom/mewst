@@ -1,0 +1,30 @@
+package model
+
+import "time"
+
+// Feature flag name constants. Add a constant here when introducing a new flag.
+// [Ja] フィーチャーフラグ名の定数。新しいフラグを追加するときはここに定数を追加する。
+const (
+	// FeatureFlagExample is an unused constant kept as a naming-convention example.
+	// [Ja] FeatureFlagExample は命名規則の例として残している未使用の定数。
+	FeatureFlagExample FeatureFlagName = "go_example"
+
+	// FeatureFlagNewPost gates the Go new-post feature: the GET /new form,
+	// POST /posts, and the link card endpoints are bundled under this single
+	// flag so they roll out together.
+	//
+	// [Ja] FeatureFlagNewPost は Go 版の新規投稿機能をゲートする。GET /new の
+	// フォーム・POST /posts・リンクカードのエンドポイントは同一機能のため、
+	// この単一フラグで束ねてまとめて公開する。
+	FeatureFlagNewPost FeatureFlagName = "go_new_post"
+)
+
+// FeatureFlag is the domain model for a feature flag.
+// [Ja] FeatureFlag はフィーチャーフラグのドメインモデル。
+type FeatureFlag struct {
+	ID          FeatureFlagID
+	DeviceToken *string
+	ActorID     *ActorID
+	Name        FeatureFlagName
+	CreatedAt   time.Time
+}

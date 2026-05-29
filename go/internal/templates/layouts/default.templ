@@ -1,0 +1,51 @@
+package layouts
+
+import (
+	"github.com/a-h/templ"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// DefaultLayoutData holds the data passed to the authenticated shared layout.
+// Navbar carries the current user's atname and the active menu item.
+//
+// [Ja] 認証後ページ共通レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
+// atname とアクティブなメニュー項目を保持する。
+type DefaultLayoutData struct {
+	Meta   viewmodel.PageMeta
+	Navbar viewmodel.Navbar
+}
+
+// Default is the shared layout for authenticated pages: head, top navbar, main
+// content, and the mobile bottom navbar. It mirrors the Rails BasicLayoutComponent.
+//
+// [Ja] 認証後ページの共通レイアウト。head・トップ navbar・main コンテンツ・
+// モバイル用ボトム navbar で構成し、Rails の BasicLayoutComponent に対応する。
+templ Default(data DefaultLayoutData, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang={ templates.Locale(ctx) }>
+		<head>
+			@components.Head(data.Meta)
+		</head>
+
+		<body>
+			@components.Flash(session.FlashFromContext(ctx))
+
+			<div class="flex min-h-[100svh] flex-col">
+				@components.TopNavbar(data.Navbar)
+
+				<main class="flex-1">
+					@content
+				</main>
+
+				// Pin the bottom navbar to the bottom-center on mobile (the component itself hides it on lg).
+				// [Ja] モバイルではボトム navbar を画面下部中央に固定する (lg ではコンポーネント側で非表示)。
+				<div class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 p-4">
+					@components.BottomNavbar(data.Navbar)
+				</div>
+			</div>
+		</body>
+	</html>
+}

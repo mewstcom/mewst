@@ -1,0 +1,18 @@
+package email_confirmation
+
+// EnText は英語版のメール確認 (テキスト形式) です
+templ EnText(email, code string) {
+	Hello { email },
+
+	Your confirmation code is below.
+
+	{ code }
+
+	This confirmation code will expire in 15 minutes.
+
+	If you didn't request this email, please ignore it.
+
+	--
+	Mewst
+	https://mewst.com
+}

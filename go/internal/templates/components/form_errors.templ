@@ -1,0 +1,14 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/model"
+
+// FormErrors はフォームのグローバルエラーを表示する
+templ FormErrors(formErrors *model.ValidationError) {
+	if formErrors != nil && len(formErrors.Global) > 0 {
+		for _, errorMsg := range formErrors.Global {
+			<div class="alert-destructive">
+				<h2>{ errorMsg }</h2>
+			</div>
+		}
+	}
+}

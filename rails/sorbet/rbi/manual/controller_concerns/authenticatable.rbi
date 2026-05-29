@@ -1,0 +1,34 @@
+# typed: true
+# frozen_string_literal: true
+
+module ControllerConcerns::Authenticatable
+  def self.helper_method(*args)
+  end
+
+  def cookies
+  end
+
+  def flash
+  end
+
+  def home_path
+  end
+
+  def redirect_to(*args)
+  end
+
+  def request
+  end
+
+  def reset_session
+  end
+
+  def root_path
+  end
+
+  def session
+  end
+
+  def t(*args)
+  end
+end

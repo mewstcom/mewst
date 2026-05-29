@@ -1,0 +1,64 @@
+package errors
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+)
+
+// NotFound は404エラーページを表示する
+templ NotFound() {
+	<!DOCTYPE html>
+	<html lang={ templates.Locale(ctx) }>
+		<head>
+			<meta charset="utf-8"/>
+			<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+			<title>{ templates.T(ctx, "error_not_found_title") }</title>
+			<style>
+				body {
+					font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+					margin: 0;
+					padding: 0;
+				}
+
+				.container {
+					bottom: 0;
+					left: 0;
+					position: absolute;
+					right: 0;
+					top: 0;
+				}
+
+				.wrapper {
+					left: 50%;
+					margin: -160px 0 0 -160px;
+					position: absolute;
+					text-align: center;
+					top: 55%;
+					width: 320px;
+				}
+
+				h1 {
+					font-size: 70px;
+					margin-bottom: 10px;
+				}
+
+				.message {
+					font-size: 14px;
+					margin-bottom: 20px;
+				}
+
+				a {
+					color: #046582;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<div class="wrapper">
+					<h1>🫥</h1>
+					<div class="message">{ templates.T(ctx, "error_not_found_message") }</div>
+					<a href="/">{ templates.T(ctx, "error_not_found_back_to_home") }</a>
+				</div>
+			</div>
+		</body>
+	</html>
+}

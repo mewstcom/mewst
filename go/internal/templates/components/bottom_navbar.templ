@@ -1,0 +1,16 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/viewmodel"
+
+// BottomNavbar renders the mobile bottom navigation menu, shown only below lg,
+// matching the Rails BottomNavbarComponent. The menu carries a border so it
+// stands out as a floating pill at the bottom of the screen.
+//
+// [Ja] モバイル向けのボトムナビゲーションメニューを描画する。lg 未満でのみ
+// 表示する点は Rails の BottomNavbarComponent に合わせている。画面下部に
+// 浮かぶピルとして目立つよう、メニューに枠線を付けている。
+templ BottomNavbar(navbar viewmodel.Navbar) {
+	<div class="block lg:hidden">
+		@NavbarMenu(navbar, "me-auto ms-auto border border-slate-400")
+	</div>
+}

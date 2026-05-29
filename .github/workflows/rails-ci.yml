@@ -1,0 +1,176 @@
+name: Rails CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "rails/**"
+      - ".github/workflows/rails-ci.yml"
+  pull_request:
+    paths:
+      - "rails/**"
+      - ".github/workflows/rails-ci.yml"
+
+jobs:
+  zeitwerk:
+    name: Zeitwerk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: rails
+      - run: bin/rails zeitwerk:check
+
+  sorbet:
+    name: Sorbet
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: rails
+      - run: bin/rails sorbet:update
+      - name: Push RBI files or fail
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            if [ "$GITHUB_ACTOR" = "dependabot[bot]" ]; then
+              git config user.email 49699333+dependabot[bot]@users.noreply.github.com
+              git config user.name dependabot[bot]
+              git add .
+              git commit -m "Update RBI files"
+              git push
+            else
+              echo "Error! 未更新のRBIファイルがあるようです。make sorbet-update を実行して差分をコミットしてください。"
+              exit 1
+            fi
+          fi
+      - run: bin/srb tc
+
+  standard:
+    name: Standard
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: rails
+      - run: bin/standardrb
+
+  erb_lint:
+    name: ERB Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: rails
+      - run: bin/erb_lint --lint-all
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.11.1
+          package-manager-cache: false
+      - name: Install Yarn
+        run: |
+          npm install --global yarn@1.22.19
+      - name: Install npm packages
+        run: |
+          yarn install
+      - name: ESLint check
+        run: |
+          yarn eslint .
+
+  rspec:
+    name: RSpec
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails
+    env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/mewst_test
+      RAILS_ENV: test
+    services:
+      postgresql:
+        image: postgres:18.3
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: mewst_test
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.11.1
+          package-manager-cache: false
+      - name: Install Yarn
+        run: |
+          npm install --global yarn@1.22.19
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v2
+      - run: chrome --version
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: rails
+      - name: Setup Database
+        run: |
+          bin/rails db:schema:load
+      - name: Precompile assets
+        run: |
+          bin/rails assets:precompile
+      - run: bin/rspec
+      - name: Upload Capybara screenshot
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: capybara-screenshots
+          path: "rails/**/tmp/capybara/"

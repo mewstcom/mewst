@@ -1,38 +1,16 @@
-<div align="center">
-  <img align="center" width="128" src="public/icon-192.png">
+<!-- last_synced: 2026-05-15 -->
 
-  <h1 align="center">
-    <b>Mewst (ミュースト)</b>
-  </h1>
+# Mewst
 
-  <p align="center">
-    ほっとするマイクロブログ
-    <br>
-    <a href="https://mewst.com/" rel="nofollow" target="_blank">
-      <strong>mewst.com »</strong>
-    </a>
-  </p>
+> English | [日本語](./README.ja.md)
 
-[![Build](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml/badge.svg)](https://github.com/mewstcom/mewst/actions/workflows/lint-and-test.yml)
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
-[![Discord](https://img.shields.io/discord/1044830617860317184?label=Discord&color=5865F2)](https://discord.gg/tNwVpJ4Jfk)
+<img src="go/static/images/icon-192.png" width="128">
 
-</div>
+A cozy microblog<br>
+[» mewst.com](https://mewst.com/)
 
-## リンク
+[![Go CI](https://github.com/mewstcom/mewst/actions/workflows/go-ci.yml/badge.svg)](https://github.com/mewstcom/mewst/actions/workflows/go-ci.yml) [![Rails CI](https://github.com/mewstcom/mewst/actions/workflows/rails-ci.yml/badge.svg)](https://github.com/mewstcom/mewst/actions/workflows/rails-ci.yml) [![Discord](https://img.shields.io/discord/1044830617860317184?label=Discord&color=5865F2)](https://discord.gg/tNwVpJ4Jfk)
 
-- [ロードマップ](https://github.com/orgs/mewstcom/projects/1)
-- [Discord](https://discord.gg/tNwVpJ4Jfk)
-- [GitHub Issues](https://github.com/mewstcom/mewst/issues)
-
-## 開発環境のセットアップ
-
-```
-git clone git@github.com:mewstcom/mewst.git
-cd mewst
-docker compose up
-mise install
-bin/setup
-bin/dev
-bin/rails server
-```
+- [Community](https://wikino.app/s/mewst/pages/54)
+- [Contributing](./CONTRIBUTING.md)
+- [Security reporting](./SECURITY.md)
