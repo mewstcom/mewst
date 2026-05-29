@@ -394,7 +394,6 @@ func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 }
 
 // OauthApplicationBuilder builds OAuth application test data.
-// [Ja] OauthApplicationBuilder は OAuth アプリケーションテストデータのビルダー。
 //
 // The test DB (reset from schema.sql) has no mewst-web record, so tests that
 // attribute posts to mewst-web build one with this builder, setting the uid
@@ -402,7 +401,9 @@ func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 // per-call unique values so that parallel tests do not contend on the unique
 // indexes on oauth_applications.name / .uid.
 //
-// [Ja] テスト DB (schema.sql からリセット) には mewst-web レコードが無いため、
+// [Ja] OauthApplicationBuilder は OAuth アプリケーションテストデータのビルダー。
+//
+// テスト DB (schema.sql からリセット) には mewst-web レコードが無いため、
 // 投稿を mewst-web に紐づけるテストは本ビルダーでレコードを作成し、uid は
 // WithUID(model.MewstWebUID) で明示的に設定する。name と uid は呼び出しごとに
 // ユニークな値をデフォルトにしており、並行テストが oauth_applications.name /
