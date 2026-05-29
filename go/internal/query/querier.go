@@ -14,6 +14,17 @@ import (
 type Querier interface {
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateEmailConfirmation(ctx context.Context, arg CreateEmailConfirmationParams) (EmailConfirmation, error)
+	// Idempotently adds a post to a profile's home timeline. On conflict with the
+	// unique (profile_id, post_id) index it leaves the existing row untouched
+	// (the no-op DO UPDATE preserves the original published_at) so RETURNING still
+	// yields the row, mirroring Rails' home_timeline.add_post! (first_or_create!).
+	//
+	// [Ja] 投稿をプロフィールのホームタイムラインに冪等に追加する。unique な
+	// (profile_id, post_id) インデックスで衝突した場合は既存行をそのまま残し
+	// (no-op の DO UPDATE で元の published_at を保持)、RETURNING で行を返せるように
+	// する。Rails の home_timeline.add_post! (first_or_create!) を踏襲している。
+	CreateHomeTimelinePost(ctx context.Context, arg CreateHomeTimelinePostParams) (HomeTimelinePost, error)
+	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
@@ -34,6 +45,8 @@ type Querier interface {
 	// (session, actor, user, profile) を発行するのを避けるため。
 	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
+	GetOauthApplicationByUID(ctx context.Context, uid string) (OauthApplication, error)
+	GetPostByID(ctx context.Context, id uuid.UUID) (Post, error)
 	GetProfileByAtname(ctx context.Context, atname string) (Profile, error)
 	GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)
@@ -51,8 +64,15 @@ type Querier interface {
 	// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
 	// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。
 	IsFeatureFlagEnabledForDevice(ctx context.Context, arg IsFeatureFlagEnabledForDeviceParams) (bool, error)
+	// Lists the follows whose target is the given profile. Their source profiles
+	// are that profile's followers, which fanout uses to enqueue timeline delivery.
+	//
+	// [Ja] target が指定プロフィールである follow を列挙する。その source プロフィールが
+	// 当該プロフィールのフォロワーであり、fanout がタイムライン配信を enqueue する際に使う。
+	ListFollowsByTargetProfileID(ctx context.Context, targetProfileID uuid.UUID) ([]Follow, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
+	UpdateProfileLastPostAt(ctx context.Context, arg UpdateProfileLastPostAtParams) error
 }
 
 var _ Querier = (*Queries)(nil)

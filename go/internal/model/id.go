@@ -161,3 +161,35 @@ type FeatureFlagName string
 // String returns the string representation of the FeatureFlagName.
 // [Ja] String は FeatureFlagName の文字列表現を返す。
 func (n FeatureFlagName) String() string { return string(n) }
+
+// PostID is the ID type for a post.
+// [Ja] PostID は投稿の ID 型。
+type PostID uuid.UUID
+
+// String returns the string representation of the PostID.
+// [Ja] String は PostID の文字列表現を返す。
+func (id PostID) String() string { return uuid.UUID(id).String() }
+
+// OauthApplicationID is the ID type for an OAuth application.
+// [Ja] OauthApplicationID は OAuth アプリケーションの ID 型。
+type OauthApplicationID uuid.UUID
+
+// String returns the string representation of the OauthApplicationID.
+// [Ja] String は OauthApplicationID の文字列表現を返す。
+func (id OauthApplicationID) String() string { return uuid.UUID(id).String() }
+
+// HomeTimelinePostID is the ID type for a home timeline post.
+// [Ja] HomeTimelinePostID はホームタイムライン投稿の ID 型。
+type HomeTimelinePostID uuid.UUID
+
+// String returns the string representation of the HomeTimelinePostID.
+// [Ja] String は HomeTimelinePostID の文字列表現を返す。
+func (id HomeTimelinePostID) String() string { return uuid.UUID(id).String() }
+
+// FollowID is the ID type for a follow.
+// [Ja] FollowID はフォローの ID 型。
+type FollowID uuid.UUID
+
+// String returns the string representation of the FollowID.
+// [Ja] String は FollowID の文字列表現を返す。
+func (id FollowID) String() string { return uuid.UUID(id).String() }

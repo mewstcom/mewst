@@ -175,6 +175,45 @@ func TestProfileRepository_Create(t *testing.T) {
 	})
 }
 
+func TestProfileRepository_UpdateLastPostAt(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	ctx := context.Background()
+
+	profileID := testutil.NewProfileBuilder(t, tx).Build()
+
+	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
+
+	t.Run("last_post_atを更新できる", func(t *testing.T) {
+		// last_post_at is NULL right after creation.
+		// [Ja] 作成直後の last_post_at は NULL であることを確認する。
+		before, err := repo.FindByID(ctx, profileID)
+		if err != nil {
+			t.Fatalf("FindByID() error = %v", err)
+		}
+		if before.LastPostAt != nil {
+			t.Errorf("before.LastPostAt = %v, want nil", before.LastPostAt)
+		}
+
+		lastPostAt := time.Date(2024, 6, 7, 8, 9, 10, 0, time.UTC)
+		if err := repo.UpdateLastPostAt(ctx, profileID, lastPostAt); err != nil {
+			t.Fatalf("UpdateLastPostAt() error = %v", err)
+		}
+
+		after, err := repo.FindByID(ctx, profileID)
+		if err != nil {
+			t.Fatalf("FindByID() error = %v", err)
+		}
+		if after.LastPostAt == nil {
+			t.Fatal("after.LastPostAt = nil, want non-nil")
+		}
+		if !after.LastPostAt.Equal(lastPostAt) {
+			t.Errorf("after.LastPostAt = %v, want %v", after.LastPostAt, lastPostAt)
+		}
+	})
+}
+
 func TestProfileRepository_WithTx(t *testing.T) {
 	t.Parallel()
 
