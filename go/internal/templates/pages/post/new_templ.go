@@ -8,7 +8,9 @@ package post
 import (
 	"github.com/a-h/templ"
 	templruntime "github.com/a-h/templ/runtime"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
 // NewPageData holds the data for the new post form page.
@@ -16,15 +18,27 @@ import (
 // [Ja] NewPageData は新規投稿フォームページのデータを保持する。
 type NewPageData struct {
 	CSRFToken string
+	// FormErrors holds validation errors to re-display after a failed submit (nil on first render).
+	// [Ja] FormErrors は送信失敗後に再表示するバリデーションエラー (初回表示時は nil)。
+	FormErrors *model.ValidationError
+	// Content echoes back the submitted body so a failed submit keeps the user's input.
+	// [Ja] Content は送信した本文をエコーバックし、送信失敗時に入力を保持する。
+	Content string
+	// CanonicalURL echoes back the linked card's canonical_url so a failed submit keeps the attached link card (empty when no link is attached).
+	// [Ja] CanonicalURL はリンクカードの canonical_url をエコーバックし、送信失敗時に紐付けたリンクカードを保持する (リンク未紐付け時は空)。
+	CanonicalURL string
 }
 
 // New renders the new post form (content textarea + submit button + CSRF). The
-// form posts to /posts, mirroring the Rails post_list_path. Form enhancements
-// (character counter, autosize, link card preview) are added in a later task.
+// form posts to /posts, mirroring the Rails post_list_path. On a failed submit
+// it re-renders with the validation errors and the submitted content. Form
+// enhancements (character counter, autosize, link card preview) are added in a
+// later task.
 //
 // [Ja] New は新規投稿フォーム (本文 textarea + 投稿ボタン + CSRF) を描画する。
-// フォームは Rails の post_list_path に対応する /posts に送信する。フォーム
-// 拡張 (文字数カウンター・autosize・リンクカードプレビュー) は後続タスクで追加する。
+// フォームは Rails の post_list_path に対応する /posts に送信する。送信失敗時は
+// バリデーションエラーと送信済み本文を添えて再描画する。フォーム拡張 (文字数
+// カウンター・autosize・リンクカードプレビュー) は後続タスクで追加する。
 func New(data NewPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -46,46 +60,130 @@ func New(data NewPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-2xl px-4 py-6\"><form action=\"/posts\" class=\"form grid gap-4\" hx-on:submit=\"disableSubmitButtons(this)\" method=\"POST\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-2xl px-4 py-6\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.FormErrors(data.FormErrors).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<form action=\"/posts\" class=\"form grid gap-4\" hx-on:submit=\"disableSubmitButtons(this)\" method=\"POST\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CSRFToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 22, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 40, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><div class=\"grid gap-2\"><label class=\"font-bold\" for=\"content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_content_label"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 30, Col: 49}
+		if data.CanonicalURL != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<input type=\"hidden\" name=\"canonical_url\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CanonicalURL)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 47, Col: 71}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</label> <textarea autofocus class=\"w-full\" id=\"content\" name=\"content\" required rows=\"4\"></textarea></div><button class=\"btn-primary rounded-full w-fit\" type=\"submit\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"grid gap-2\"><label class=\"font-bold\" for=\"content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_submit"))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_content_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 44, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 56, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</button></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</label> <textarea autofocus class=\"w-full\" id=\"content\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " aria-invalid=\"true\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " aria-invalid=\"false\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " name=\"content\" required rows=\"4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.Content)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 71, Col: 19}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</textarea> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
+			for _, errorMsg := range data.FormErrors.GetFieldErrors("content") {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<p class=\"text-sm text-error\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var6 string
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(errorMsg)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 76, Col: 17}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><button class=\"btn-primary rounded-full w-fit\" type=\"submit\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_submit"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 83, Col: 41}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

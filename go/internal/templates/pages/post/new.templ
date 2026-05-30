@@ -1,25 +1,51 @@
 package post
 
-import "github.com/mewstcom/mewst/go/internal/templates"
+import (
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+)
 
 // NewPageData holds the data for the new post form page.
 //
 // [Ja] NewPageData は新規投稿フォームページのデータを保持する。
 type NewPageData struct {
 	CSRFToken string
+	// FormErrors holds validation errors to re-display after a failed submit (nil on first render).
+	// [Ja] FormErrors は送信失敗後に再表示するバリデーションエラー (初回表示時は nil)。
+	FormErrors *model.ValidationError
+	// Content echoes back the submitted body so a failed submit keeps the user's input.
+	// [Ja] Content は送信した本文をエコーバックし、送信失敗時に入力を保持する。
+	Content string
+	// CanonicalURL echoes back the linked card's canonical_url so a failed submit keeps the attached link card (empty when no link is attached).
+	// [Ja] CanonicalURL はリンクカードの canonical_url をエコーバックし、送信失敗時に紐付けたリンクカードを保持する (リンク未紐付け時は空)。
+	CanonicalURL string
 }
 
 // New renders the new post form (content textarea + submit button + CSRF). The
-// form posts to /posts, mirroring the Rails post_list_path. Form enhancements
-// (character counter, autosize, link card preview) are added in a later task.
+// form posts to /posts, mirroring the Rails post_list_path. On a failed submit
+// it re-renders with the validation errors and the submitted content. Form
+// enhancements (character counter, autosize, link card preview) are added in a
+// later task.
 //
 // [Ja] New は新規投稿フォーム (本文 textarea + 投稿ボタン + CSRF) を描画する。
-// フォームは Rails の post_list_path に対応する /posts に送信する。フォーム
-// 拡張 (文字数カウンター・autosize・リンクカードプレビュー) は後続タスクで追加する。
+// フォームは Rails の post_list_path に対応する /posts に送信する。送信失敗時は
+// バリデーションエラーと送信済み本文を添えて再描画する。フォーム拡張 (文字数
+// カウンター・autosize・リンクカードプレビュー) は後続タスクで追加する。
 templ New(data NewPageData) {
 	<div class="mx-auto max-w-2xl px-4 py-6">
+		@components.FormErrors(data.FormErrors)
+
 		<form action="/posts" class="form grid gap-4" hx-on:submit="disableSubmitButtons(this)" method="POST">
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+			// Preserve the attached link card across a failed submit. Rendered only
+			// when a link is attached, so a fresh form carries no empty hidden field.
+			// [Ja] 送信失敗時に紐付けたリンクカードを保持する。リンク紐付け時のみ描画し、
+			// 初回フォームに空の hidden フィールドを残さない。
+			if data.CanonicalURL != "" {
+				<input type="hidden" name="canonical_url" value={ data.CanonicalURL }/>
+			}
 
 			<div class="grid gap-2">
 				// Use the Rails "What's happening?" prompt as the textarea label (the Rails
@@ -34,10 +60,23 @@ templ New(data NewPageData) {
 					autofocus
 					class="w-full"
 					id="content"
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
+						aria-invalid="true"
+					} else {
+						aria-invalid="false"
+					}
 					name="content"
 					required
 					rows="4"
-				></textarea>
+				>{ data.Content }</textarea>
+
+				if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
+					for _, errorMsg := range data.FormErrors.GetFieldErrors("content") {
+						<p class="text-sm text-error">
+							{ errorMsg }
+						</p>
+					}
+				}
 			</div>
 
 			<button class="btn-primary rounded-full w-fit" type="submit">

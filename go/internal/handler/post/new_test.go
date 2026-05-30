@@ -7,17 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	handler "github.com/mewstcom/mewst/go/internal/handler/post"
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
-	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	cfg := testutil.NewTestConfig(t)
-	h := handler.NewHandler(cfg)
+	h := newCreatePostHandler(t)
 
 	// Set the CSRF token and locale on the context. /new sits under RequireAuth,
 	// so the CSRF token is supplied via the context in production.
@@ -62,8 +59,7 @@ func TestNew(t *testing.T) {
 func TestNew_Locales(t *testing.T) {
 	t.Parallel()
 
-	cfg := testutil.NewTestConfig(t)
-	h := handler.NewHandler(cfg)
+	h := newCreatePostHandler(t)
 
 	tests := []struct {
 		name   string

@@ -101,6 +101,9 @@ func main() {
 	postRepo := repository.NewPostRepository(queries)
 	followRepo := repository.NewFollowRepository(queries)
 	homeTimelinePostRepo := repository.NewHomeTimelinePostRepository(queries)
+	oauthApplicationRepo := repository.NewOauthApplicationRepository(queries)
+	linkRepo := repository.NewLinkRepository(queries)
+	postLinkRepo := repository.NewPostLinkRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
@@ -156,6 +159,7 @@ func main() {
 	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
 	passwordResetCreateValidator := validator.NewPasswordResetCreateValidator()
+	postCreateValidator := validator.NewPostCreateValidator()
 
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
@@ -167,6 +171,7 @@ func main() {
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmationRepo)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+	createPostUC := usecase.NewCreatePostUsecase(db, postCreateValidator, oauthApplicationRepo, linkRepo, postRepo, postLinkRepo, profileRepo, homeTimelinePostRepo, jobDispatcher)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -180,7 +185,7 @@ func main() {
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
-	postHandler := post.NewHandler(cfg)
+	postHandler := post.NewHandler(cfg, flashMgr, createPostUC)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -305,19 +310,24 @@ func main() {
 		r.Post("/accounts", accountHandler.Create)
 	})
 
-	// New post form (authenticated users only). Gated by the reverse-proxy
-	// feature flag (FeatureFlagNewPost), so requests from viewers without the
-	// flag never reach this route and are proxied to the Rails version.
+	// New post form and submission (authenticated users only). Both routes are
+	// gated by the reverse-proxy feature flag (FeatureFlagNewPost), so requests
+	// from viewers without the flag never reach them and are proxied to the Rails
+	// version. POST /posts is a genuine POST (post creation), so no Method
+	// Override is needed; the route is registered directly.
 	//
-	// [Ja] 新規投稿フォーム（認証済みユーザーのみ）。リバースプロキシの
-	// フィーチャーフラグ (FeatureFlagNewPost) でゲートされるため、フラグが無効な
-	// 閲覧者のリクエストはここに到達せず Rails 版にプロキシされる。
+	// [Ja] 新規投稿フォームと送信（認証済みユーザーのみ）。どちらのルートも
+	// リバースプロキシのフィーチャーフラグ (FeatureFlagNewPost) でゲートされるため、
+	// フラグが無効な閲覧者のリクエストはここに到達せず Rails 版にプロキシされる。
+	// POST /posts は本来の POST (投稿作成) のため Method Override は不要で、ルートを
+	// 直接登録する。
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
 
 		r.Get("/new", postHandler.New)
+		r.Post("/posts", postHandler.Create)
 	})
 
 	// サーバー起動
