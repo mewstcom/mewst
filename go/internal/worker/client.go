@@ -24,12 +24,11 @@ type Client struct {
 	pool        *pgxpool.Pool
 }
 
-// NewClient は新しい River クライアントを作成します。
-//
-// fanoutPostUC / addPostToTimelineUC は repository に依存するため、worker パッケージ
-// 内では構築できず (worker は depguard で repository / query への依存が禁止)、main.go で
-// 構築して注入する。email 系のように依存が worker から import 可能なものは従来どおり
-// 内部で構築する。
+// NewClient creates a new River client. fanoutPostUC / addPostToTimelineUC
+// depend on repository, so they cannot be built inside the worker package
+// (worker is forbidden by depguard from importing repository / query); build
+// them in main.go and inject them here. Dependencies that worker can import on
+// its own (such as the email ones) are still built internally as before.
 //
 // [Ja] NewClient は新しい River クライアントを作成する。fanoutPostUC /
 // addPostToTimelineUC は repository に依存するため worker 内では構築できず (worker は
