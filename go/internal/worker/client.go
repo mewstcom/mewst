@@ -24,8 +24,24 @@ type Client struct {
 	pool        *pgxpool.Pool
 }
 
-// NewClient は新しい River クライアントを作成します
-func NewClient(ctx context.Context, databaseURL string, cfg *config.Config) (*Client, error) {
+// NewClient は新しい River クライアントを作成します。
+//
+// fanoutPostUC / addPostToTimelineUC は repository に依存するため、worker パッケージ
+// 内では構築できず (worker は depguard で repository / query への依存が禁止)、main.go で
+// 構築して注入する。email 系のように依存が worker から import 可能なものは従来どおり
+// 内部で構築する。
+//
+// [Ja] NewClient は新しい River クライアントを作成する。fanoutPostUC /
+// addPostToTimelineUC は repository に依存するため worker 内では構築できず (worker は
+// depguard で repository / query への依存が禁止)、main.go で構築して注入する。email 系の
+// ように依存が worker から import 可能なものは従来どおり内部で構築する。
+func NewClient(
+	ctx context.Context,
+	databaseURL string,
+	cfg *config.Config,
+	fanoutPostUC *usecase.FanoutPostUsecase,
+	addPostToTimelineUC *usecase.AddPostToTimelineUsecase,
+) (*Client, error) {
 	// pgxpool の作成
 	poolConfig, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
@@ -61,6 +77,12 @@ func NewClient(ctx context.Context, databaseURL string, cfg *config.Config) (*Cl
 	sendEmailConfirmationUC := usecase.NewSendEmailConfirmationUsecase(confirmationSender)
 	river.AddWorker(workers, NewSendEmailConfirmationWorker(sendEmailConfirmationUC))
 	slog.InfoContext(ctx, "SendEmailConfirmationWorker を登録しました")
+
+	// タイムライン配信ワーカーを登録
+	river.AddWorker(workers, NewFanoutPostWorker(fanoutPostUC))
+	slog.InfoContext(ctx, "FanoutPostWorker を登録しました")
+	river.AddWorker(workers, NewAddPostToTimelineWorker(addPostToTimelineUC))
+	slog.InfoContext(ctx, "AddPostToTimelineWorker を登録しました")
 
 	// River クライアントの作成
 	// Middleware には Sentry エラーキャプチャ用の WorkerMiddleware を登録する。
