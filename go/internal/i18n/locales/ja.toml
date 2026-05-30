@@ -229,6 +229,10 @@ other = "半角英数字とアンダースコアのみ使用できます"
 description = "アットネームが長すぎるバリデーションエラー"
 other = "20文字以内で入力してください"
 
+[validation_content_too_long]
+description = "投稿本文が長すぎるバリデーションエラー"
+other = "160文字以内で入力してください"
+
 [validation_atname_already_taken]
 description = "アットネームが既に使用されているバリデーションエラー"
 other = "このアットネームは既に使用されています"
