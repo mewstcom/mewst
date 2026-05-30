@@ -95,10 +95,19 @@ lint-golangci: ## golangci-lintを実行
 	@echo "🔍 golangci-lintを実行中..."
 	@golangci-lint run --config=.golangci.yml ./...
 
+# Base git ref for the diff-scoped comment check. Mirrors CI's PR step, which
+# runs against the PR base branch. Override when your PR targets another branch:
+# make lint-comments COMMENTLINT_BASE=origin/main
+#
+# [Ja] コメント差分チェックの基準 git ref。CI の PR ステップ (PR のベースブランチに対して
+# 実行) を再現する。別のブランチを対象にする PR では上書きする。
+COMMENTLINT_BASE ?= origin/develop
+
 .PHONY: lint-comments
 lint-comments: ## コメントの英日併記をチェック ([Ja] マーカーの誤用)
 	@echo "🔍 コメントの英日併記をチェック中..."
 	@go run ./cmd/commentlint .
+	@go run ./cmd/commentlint -base=$(COMMENTLINT_BASE) .
 
 .PHONY: lint
 lint: lint-golangci lint-comments ## リントを実行（golangci-lint + コメント併記チェック）

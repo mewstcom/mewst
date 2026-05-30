@@ -98,17 +98,46 @@ func main() {
 	userProfileRepo := repository.NewUserProfileRepository(queries)
 	rateLimitRepo := repository.NewRateLimitRepository(queries)
 	featureFlagRepo := repository.NewFeatureFlagRepository(queries)
+	postRepo := repository.NewPostRepository(queries)
+	followRepo := repository.NewFollowRepository(queries)
+	homeTimelinePostRepo := repository.NewHomeTimelinePostRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
+	// Build the Dispatcher first, backed by a DeferredInserter. FanoutPostUsecase
+	// needs the Dispatcher, the Dispatcher needs the River client, and the River
+	// client can only be built after worker.NewClient registers the Workers that
+	// wrap those UseCases — an initialization cycle. Construct the Dispatcher
+	// around an unwired DeferredInserter now and inject the River client via
+	// SetInserter once worker.NewClient has created it.
+	//
+	// [Ja] FanoutPostUsecase → Dispatcher → River クライアント → Worker (UseCase を内包) の
+	// 初期化循環を断つため、先に DeferredInserter で Dispatcher を構築し、River クライアント
+	// 生成後に注入する。
+	deferredInserter := &dispatcher.DeferredInserter{}
+	jobDispatcher := dispatcher.NewDispatcher(deferredInserter)
+
+	// Build the fanout UseCases that the Workers register. They depend on
+	// repository, so they cannot be built inside the worker package (depguard
+	// forbids worker → repository); build them here and inject them.
+	// [Ja] Worker に登録する fanout 系 UseCase を構築する (repository 依存のため worker 内で
+	// は構築できず、ここで注入する)。
+	fanoutPostUC := usecase.NewFanoutPostUsecase(postRepo, followRepo, jobDispatcher)
+	addPostToTimelineUC := usecase.NewAddPostToTimelineUsecase(profileRepo, postRepo, homeTimelinePostRepo)
+
 	// Workerの初期化
-	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg)
+	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg, fanoutPostUC, addPostToTimelineUC)
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
 		os.Exit(1)
 	}
+
+	// Wire the real inserter into the DeferredInserter now that the River client
+	// exists (completes the wiring that broke the init cycle).
+	// [Ja] River クライアント生成後に DeferredInserter へ実体を注入する (循環を断った配線の完了)。
+	deferredInserter.SetInserter(workerClient.Client())
 
 	// Workerを開始
 	if err := workerClient.Start(context.Background()); err != nil {
@@ -119,9 +148,6 @@ func main() {
 
 	// レートリミッターの初期化
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
-
-	// Dispatcherの初期化
-	jobDispatcher := dispatcher.NewDispatcher(workerClient.Client())
 
 	// バリデーターの初期化
 	signInValidator := validator.NewSignInCreateValidator(userRepo)

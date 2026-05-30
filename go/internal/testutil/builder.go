@@ -85,6 +85,7 @@ type ProfileBuilder struct {
 	atname      string
 	name        string
 	description string
+	discardedAt sql.NullTime
 }
 
 // NewProfileBuilder はProfileBuilderを生成する
@@ -112,6 +113,13 @@ func (b *ProfileBuilder) WithName(name string) *ProfileBuilder {
 	return b
 }
 
+// WithDiscardedAt marks the profile as discarded (soft-deleted) at the given time.
+// [Ja] WithDiscardedAt はプロフィールを指定時刻で discard (論理削除) 済みにする。
+func (b *ProfileBuilder) WithDiscardedAt(discardedAt time.Time) *ProfileBuilder {
+	b.discardedAt = sql.NullTime{Time: discardedAt, Valid: true}
+	return b
+}
+
 // Build はプロフィールをDBに作成し、IDを返す
 func (b *ProfileBuilder) Build() model.ProfileID {
 	b.t.Helper()
@@ -119,10 +127,10 @@ func (b *ProfileBuilder) Build() model.ProfileID {
 	now := time.Now()
 	var id uuid.UUID
 	err := b.tx.QueryRow(`
-		INSERT INTO profiles (owner_type, atname, name, description, joined_at, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO profiles (owner_type, atname, name, description, joined_at, discarded_at, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id
-	`, b.ownerType, b.atname, b.name, b.description, now, now, now).Scan(&id)
+	`, b.ownerType, b.atname, b.name, b.description, now, b.discardedAt, now, now).Scan(&id)
 
 	if err != nil {
 		b.t.Fatalf("プロフィールの作成に失敗: %v", err)
