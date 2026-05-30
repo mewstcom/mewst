@@ -297,6 +297,10 @@ other = "Confirmation code sent. Please check your email."
 description = "Password updated success message"
 other = "Password updated. Please sign in with your new password."
 
+[flash_post_created]
+description = "Post created success message"
+other = "Post created."
+
 # ============================================
 # Error pages (error_*)
 # ============================================

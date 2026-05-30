@@ -59,16 +59,26 @@ type featureFlaggedPattern struct {
 // プロキシに進む。
 var featureFlaggedPatterns = []featureFlaggedPattern{
 	// GET /new: the Go new-post form. The "^/new$" anchor keeps it from matching
-	// sub-paths. POST /posts is gated under the same flag in a later task, so
-	// until then form submissions fall through to Rails even with the flag on.
+	// sub-paths.
 	//
 	// [Ja] GET /new: Go 版の新規投稿フォーム。"^/new$" のアンカーでサブパスには
-	// マッチさせない。POST /posts は後続タスクで同じフラグの配下に入るため、
-	// それまではフラグが有効でもフォーム送信は Rails に抜ける。
+	// マッチさせない。
 	{
 		pattern: regexp.MustCompile(`^/new$`),
 		flag:    model.FeatureFlagNewPost,
 		methods: []string{http.MethodGet},
+	},
+	// POST /posts: the Go post-creation endpoint, gated under the same flag as
+	// /new. The "^/posts$" anchor matches only the exact path, so the Rails-owned
+	// GET /posts/:id (post detail, out of scope) is not swept in.
+	//
+	// [Ja] POST /posts: Go 版の投稿作成エンドポイント。/new と同じフラグの配下に置く。
+	// "^/posts$" のアンカーで完全一致のみにマッチさせるため、Rails に残す
+	// GET /posts/:id (投稿詳細・スコープ外) を巻き込まない。
+	{
+		pattern: regexp.MustCompile(`^/posts$`),
+		flag:    model.FeatureFlagNewPost,
+		methods: []string{http.MethodPost},
 	},
 }
 
