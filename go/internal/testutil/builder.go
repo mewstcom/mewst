@@ -588,3 +588,134 @@ func (b *FollowBuilder) Build() model.FollowID {
 
 	return model.FollowID(id)
 }
+
+// LinkBuilder builds link test data. The canonical URL defaults to a per-call
+// unique value so that parallel tests do not contend on the unique index on
+// links.canonical_url.
+//
+// [Ja] LinkBuilder はリンクテストデータのビルダー。canonical URL は呼び出しごとに
+// ユニークな値をデフォルトにしており、並行テストが links.canonical_url の unique
+// インデックスで競合しないようにしている。
+type LinkBuilder struct {
+	t            *testing.T
+	tx           *sql.Tx
+	canonicalURL string
+	domain       string
+	title        string
+	imageURL     string
+}
+
+// NewLinkBuilder creates a LinkBuilder.
+// [Ja] NewLinkBuilder は LinkBuilder を生成する。
+func NewLinkBuilder(t *testing.T, tx *sql.Tx) *LinkBuilder {
+	t.Helper()
+	return &LinkBuilder{
+		t:            t,
+		tx:           tx,
+		canonicalURL: fmt.Sprintf("https://example.com/%d", time.Now().UnixNano()),
+		domain:       "example.com",
+		title:        "Test Link",
+		imageURL:     "https://example.com/image.png",
+	}
+}
+
+// WithCanonicalURL sets the canonical URL.
+// [Ja] WithCanonicalURL は canonical URL を設定する。
+func (b *LinkBuilder) WithCanonicalURL(canonicalURL string) *LinkBuilder {
+	b.canonicalURL = canonicalURL
+	return b
+}
+
+// WithDomain sets the domain.
+// [Ja] WithDomain はドメインを設定する。
+func (b *LinkBuilder) WithDomain(domain string) *LinkBuilder {
+	b.domain = domain
+	return b
+}
+
+// WithTitle sets the title.
+// [Ja] WithTitle はタイトルを設定する。
+func (b *LinkBuilder) WithTitle(title string) *LinkBuilder {
+	b.title = title
+	return b
+}
+
+// WithImageURL sets the image URL.
+// [Ja] WithImageURL は画像 URL を設定する。
+func (b *LinkBuilder) WithImageURL(imageURL string) *LinkBuilder {
+	b.imageURL = imageURL
+	return b
+}
+
+// Build inserts the link into the DB and returns its ID.
+// [Ja] Build はリンクを DB に作成し、ID を返す。
+func (b *LinkBuilder) Build() model.LinkID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO links (canonical_url, domain, title, image_url, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`, b.canonicalURL, b.domain, b.title, b.imageURL, now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("リンクの作成に失敗: %v", err)
+	}
+
+	return model.LinkID(id)
+}
+
+// PostLinkBuilder builds post-link association test data.
+// [Ja] PostLinkBuilder は投稿とリンクの関連付けテストデータのビルダー。
+type PostLinkBuilder struct {
+	t      *testing.T
+	tx     *sql.Tx
+	postID model.PostID
+	linkID model.LinkID
+}
+
+// NewPostLinkBuilder creates a PostLinkBuilder.
+// [Ja] NewPostLinkBuilder は PostLinkBuilder を生成する。
+func NewPostLinkBuilder(t *testing.T, tx *sql.Tx) *PostLinkBuilder {
+	t.Helper()
+	return &PostLinkBuilder{
+		t:  t,
+		tx: tx,
+	}
+}
+
+// WithPostID sets the post ID.
+// [Ja] WithPostID は投稿 ID を設定する。
+func (b *PostLinkBuilder) WithPostID(postID model.PostID) *PostLinkBuilder {
+	b.postID = postID
+	return b
+}
+
+// WithLinkID sets the link ID.
+// [Ja] WithLinkID はリンク ID を設定する。
+func (b *PostLinkBuilder) WithLinkID(linkID model.LinkID) *PostLinkBuilder {
+	b.linkID = linkID
+	return b
+}
+
+// Build inserts the post-link association into the DB and returns its ID.
+// [Ja] Build は投稿とリンクの関連付けを DB に作成し、ID を返す。
+func (b *PostLinkBuilder) Build() model.PostLinkID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO post_links (post_id, link_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id
+	`, uuid.UUID(b.postID), uuid.UUID(b.linkID), now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("投稿とリンクの関連付けの作成に失敗: %v", err)
+	}
+
+	return model.PostLinkID(id)
+}

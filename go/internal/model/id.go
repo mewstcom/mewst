@@ -193,3 +193,19 @@ type FollowID uuid.UUID
 // String returns the string representation of the FollowID.
 // [Ja] String は FollowID の文字列表現を返す。
 func (id FollowID) String() string { return uuid.UUID(id).String() }
+
+// LinkID is the ID type for a link.
+// [Ja] LinkID はリンクの ID 型。
+type LinkID uuid.UUID
+
+// String returns the string representation of the LinkID.
+// [Ja] String は LinkID の文字列表現を返す。
+func (id LinkID) String() string { return uuid.UUID(id).String() }
+
+// PostLinkID is the ID type for a post-link association.
+// [Ja] PostLinkID は投稿とリンクの関連付けの ID 型。
+type PostLinkID uuid.UUID
+
+// String returns the string representation of the PostLinkID.
+// [Ja] String は PostLinkID の文字列表現を返す。
+func (id PostLinkID) String() string { return uuid.UUID(id).String() }
