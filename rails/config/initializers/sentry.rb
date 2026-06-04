@@ -14,4 +14,13 @@ Sentry.init do |config|
   # of sampled transactions.
   # We recommend adjusting this value in production.
   config.profiles_sample_rate = 0.5
+
+  # Pair with the SentryEventFilter below: never auto-attach PII so the scrub
+  # only has to defend against accidentally-captured request payloads.
+  #
+  # [Ja] 後段の SentryEventFilter と合わせて、PII を自動添付しない方針を明示する。
+  # 想定外のリクエストペイロード捕捉に対する多層防御として動作する。
+  config.send_default_pii = false
+
+  config.before_send = ->(event, hint) { SentryEventFilter.call(event, hint) }
 end
