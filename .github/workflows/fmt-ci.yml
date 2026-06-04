@@ -9,23 +9,27 @@ on:
       - "**/*.js"
       - "**/*.ts"
       - "**/*.tsx"
+      - "**/*.mjs"
       - "**/*.css"
       - "**/*.json"
       - "**/*.yaml"
       - "**/*.yml"
       - "**/*.md"
       - "**/*.toml"
+      - "**/*.html"
   pull_request:
     paths:
       - "**/*.js"
       - "**/*.ts"
       - "**/*.tsx"
+      - "**/*.mjs"
       - "**/*.css"
       - "**/*.json"
       - "**/*.yaml"
       - "**/*.yml"
       - "**/*.md"
       - "**/*.toml"
+      - "**/*.html"
 
 jobs:
   oxfmt:
