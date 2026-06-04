@@ -7,11 +7,11 @@ dev: ## 全サービスの開発サーバーを起動
 	hivemind Procfile.dev
 
 .PHONY: fmt
-fmt: ## コードをフォーマット（Oxfmt）
+fmt: ## Format code (Oxfmt). [Ja] コードをフォーマット (Oxfmt)
 	pnpm fmt
 
 .PHONY: fmt-check
-fmt-check: ## フォーマットチェック（Oxfmt）
+fmt-check: ## Check code formatting (Oxfmt). [Ja] フォーマットチェック (Oxfmt)
 	pnpm fmt:check
 
 # koryluslint is the Korylus shared linter from korylus-tools. Its `md`
