@@ -4,7 +4,7 @@
 # Build stage
 # [Ja] ビルドステージ
 # ========================================
-FROM golang:1.25.4-alpine3.21 AS builder
+FROM golang:1.26.2-alpine3.21 AS builder
 
 # Set working directory
 # [Ja] 作業ディレクトリを設定
