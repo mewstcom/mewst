@@ -30,10 +30,6 @@ linters:
         linters:
           - gosec
           - depguard
-      # commentlint は開発用のリントツールで、走査対象ファイルを動的なパスで読むため gosec を無効化
-      - path: "cmd/commentlint/.*"
-        linters:
-          - gosec
       # templ 自動生成ファイルは一部のリンターから除外（depguard は有効化）
       - path: '(.+)_templ\.go'
         linters:
