@@ -233,6 +233,15 @@ func main() {
 		r.Use(proxyMiddleware.Middleware)
 	}
 
+	// Limit the request body size for Go-handled routes. Placed after reverse_proxy so
+	// requests proxied to the Rails version are not affected, and before any middleware /
+	// handler that parses form data (CSRF, MethodOverride, handlers).
+	//
+	// [Ja] Go 版が処理するルートのリクエストボディサイズを制限する。reverse_proxy より
+	// 後に配置することで Rails 版にプロキシされるリクエストには影響させず、フォームを
+	// パースするミドルウェア / ハンドラー (CSRF、MethodOverride、各ハンドラー) より前に置く。
+	r.Use(middleware.BodyLimit)
+
 	// i18n ミドルウェア(Accept-Language ヘッダーから ctx にロケールをセットする)
 	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには走らせない
 	r.Use(i18n.Middleware)

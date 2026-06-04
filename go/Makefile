@@ -97,17 +97,17 @@ lint-golangci: ## golangci-lintを実行
 
 # Base git ref for the diff-scoped comment check. Mirrors CI's PR step, which
 # runs against the PR base branch. Override when your PR targets another branch:
-# make lint-comments COMMENTLINT_BASE=origin/main
+# make lint-comments KORYLUSLINT_BASE=origin/main
 #
 # [Ja] コメント差分チェックの基準 git ref。CI の PR ステップ (PR のベースブランチに対して
 # 実行) を再現する。別のブランチを対象にする PR では上書きする。
-COMMENTLINT_BASE ?= origin/develop
+KORYLUSLINT_BASE ?= origin/develop
 
 .PHONY: lint-comments
-lint-comments: ## コメントの英日併記をチェック ([Ja] マーカーの誤用)
+lint-comments: ## Check [Ja]-marker misuse in code comments (koryluslint). [Ja] コードコメントの [Ja] マーカー誤用をチェック (koryluslint)
 	@echo "🔍 コメントの英日併記をチェック中..."
-	@go run ./cmd/commentlint .
-	@go run ./cmd/commentlint -base=$(COMMENTLINT_BASE) .
+	@go tool koryluslint comment
+	@go tool koryluslint comment -base=$(KORYLUSLINT_BASE)
 
 .PHONY: lint
 lint: lint-golangci lint-comments ## リントを実行（golangci-lint + コメント併記チェック）
@@ -118,12 +118,21 @@ clean: ## ビルド成果物をクリーン
 	find . -name "*_templ.go" -type f -delete
 
 # データベースマイグレーションコマンド
+
+# Strip the random \restrict / \unrestrict lines that pg_dump >= 17.6 emits into
+# db/schema.sql, which dbmate writes on both up and dump. Shared by db-migrate
+# and db-dump so the workaround lives in one place.
+# https://github.com/amacneil/dbmate/issues/678
+#
+# [Ja] dbmate が up / dump の双方で db/schema.sql へ書き込む、pg_dump 17.6 以降が
+# 出力するランダムな \restrict / \unrestrict 行を削除する。db-migrate と db-dump で
+# 共有し、回避策を 1 箇所にまとめる。
+STRIP_SCHEMA_RESTRICT = sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+
 .PHONY: db-migrate
 db-migrate: ## データベースマイグレーションを実行
 	$(OP_RUN_DEV) dbmate up
-	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
-	# https://github.com/amacneil/dbmate/issues/678
-	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+	@$(STRIP_SCHEMA_RESTRICT)
 
 .PHONY: db-setup-test
 db-setup-test: ## テスト用データベースのスキーマをセットアップ
@@ -148,9 +157,7 @@ db-new: ## 新しいマイグレーションファイルを作成（使用法: m
 .PHONY: db-dump
 db-dump: ## データベーススキーマをdb/schema.sqlにダンプ
 	$(OP_RUN_DEV) dbmate dump
-	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
-	# https://github.com/amacneil/dbmate/issues/678
-	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+	@$(STRIP_SCHEMA_RESTRICT)
 
 .PHONY: sqlc-generate
 sqlc-generate: ## SQLクエリからGoコードを生成

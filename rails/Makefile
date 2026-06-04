@@ -1,4 +1,4 @@
-.PHONY: test test-file console server lint lint-fix fmt zeitwerk sorbet sorbet-update db-migrate db-rollback db-setup help
+.PHONY: test test-file setup console server worker lint lint-fix fmt zeitwerk sorbet sorbet-update db-migrate db-rollback db-setup help
 
 # APP_ENVのデフォルト値を設定（外部から指定された場合はその値を使用）
 # 例: APP_ENV=test make db-migrate
@@ -25,6 +25,9 @@ console: ## Railsコンソールを起動
 
 server: ## Railsサーバーを起動
 	$(OP_RUN) bin/rails server
+
+worker: ## Railsワーカーを起動
+	$(OP_RUN) bin/good_job start
 
 ## リント・フォーマット
 lint: ## Rubyコードのリントを実行

@@ -118,7 +118,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 	}
 
 	// httputil.ReverseProxyを作成
-	proxy := httputil.NewSingleHostReverseProxy(parsedURL)
+	proxy := &httputil.ReverseProxy{}
 
 	// カスタムのHTTP Transportを設定 (タイムアウトと接続プーリング)
 	proxy.Transport = &http.Transport{
@@ -137,50 +137,53 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 
-	// プロキシのディレクターをカスタマイズ (ヘッダー設定)
-	originalDirector := proxy.Director
-	proxy.Director = func(req *http.Request) {
-		// 既存のX-Forwarded-ForとX-Real-IPを保存
-		originalXForwardedFor := req.Header.Get("X-Forwarded-For")
-		originalXRealIP := req.Header.Get("X-Real-IP")
+	// Customize header rewriting via the proxy's Rewrite function. ReverseProxy strips Forwarded /
+	// X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto from Out.Header before calling Rewrite,
+	// so read the original values from pr.In.Header when they need to be preserved.
+	//
+	// [Ja] プロキシの Rewrite 関数でヘッダー設定を行う。httputil.ReverseProxy は Rewrite 呼び出し前に
+	// Forwarded / X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto を Out.Header から削除するため、
+	// 元の値を参照したい場合は pr.In.Header から取得する必要がある。
+	proxy.Rewrite = func(pr *httputil.ProxyRequest) {
+		// Rewrite the URL to the Rails host. SetURL sets Out.Host = "", so follow it with
+		// Out.Host = In.Host to keep forwarding the client's Host header to Rails unchanged.
+		//
+		// [Ja] URL を Rails 版のホストに書き換える。SetURL は Out.Host = "" をセットしてしまうため、
+		// 続けて Out.Host = In.Host を設定し、クライアントが送ってきた Host ヘッダをそのまま Rails 版に
+		// 転送する挙動を維持する。
+		pr.SetURL(parsedURL)
+		pr.Out.Host = pr.In.Host
 
 		// クライアントIPアドレスを取得
-		clientIP := clientip.GetClientIP(req)
-
-		// originalDirectorを呼び出す
-		originalDirector(req)
+		clientIP := clientip.GetClientIP(pr.In)
 
 		// X-Forwarded-Forヘッダーの設定
-		// 注: httputil.ReverseProxyのServeHTTPメソッドは、Directorを呼び出した後に
-		// X-Forwarded-Forヘッダーが存在する場合、RemoteAddrを追加してしまう。
-		// これを防ぐために、ヘッダーマップから完全に削除してから再設定する。
-		delete(req.Header, "X-Forwarded-For")
-		if originalXForwardedFor != "" {
+		if originalXForwardedFor := pr.In.Header.Get("X-Forwarded-For"); originalXForwardedFor != "" {
 			// 既存の値を維持 (Cloudflareなどが設定した値を保持)
-			req.Header.Set("X-Forwarded-For", originalXForwardedFor)
+			pr.Out.Header.Set("X-Forwarded-For", originalXForwardedFor)
 		} else {
 			// 既存の値がない場合、clientIPを設定
-			req.Header.Set("X-Forwarded-For", clientIP)
+			pr.Out.Header.Set("X-Forwarded-For", clientIP)
 		}
 
 		// X-Real-IPヘッダーの設定 (既存の値がない場合のみ)
-		if originalXRealIP != "" {
-			req.Header.Set("X-Real-IP", originalXRealIP)
+		if originalXRealIP := pr.In.Header.Get("X-Real-IP"); originalXRealIP != "" {
+			pr.Out.Header.Set("X-Real-IP", originalXRealIP)
 		} else {
-			req.Header.Set("X-Real-IP", clientIP)
+			pr.Out.Header.Set("X-Real-IP", clientIP)
 		}
 
 		// X-Forwarded-Protoの設定
-		req.Header.Set("X-Forwarded-Proto", "https")
+		pr.Out.Header.Set("X-Forwarded-Proto", "https")
 
 		// X-Forwarded-Hostの設定
-		req.Header.Set("X-Forwarded-Host", cfg.Domain)
+		pr.Out.Header.Set("X-Forwarded-Host", cfg.Domain)
 
 		// ログ出力 (開発者向け)
 		slog.Info("リバースプロキシでRails版にリクエストを転送",
-			"path", req.URL.Path,
-			"method", req.Method,
-			"target", parsedURL.String()+req.URL.Path,
+			"path", pr.In.URL.Path,
+			"method", pr.In.Method,
+			"target", parsedURL.String()+pr.In.URL.Path,
 			"client_ip", clientIP,
 		)
 	}
