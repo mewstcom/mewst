@@ -53,7 +53,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		var ve *model.ValidationError
 		if errors.As(err, &ve) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
-			h.renderNewForm(w, r, ve, content, canonicalURL)
+			h.renderNewForm(w, r, ve, content, canonicalURL, h.lookupAttachedLink(ctx, canonicalURL))
 			return
 		}
 		var ae *model.AppError
