@@ -4,7 +4,7 @@
 # Build stage
 # [Ja] ビルドステージ
 # ========================================
-FROM golang:1.26.2-alpine3.21 AS builder
+FROM golang:1.26.4-alpine3.23 AS builder
 
 # Set working directory
 # [Ja] 作業ディレクトリを設定
@@ -32,8 +32,8 @@ RUN apk add --no-cache \
 # [Ja] Dockerfile.dev (mise の node@24.11.1) と Node バージョンを揃えるため、
 # `apk add nodejs` (Alpine 提供版) ではなく公式 Node イメージからコピーする。
 # /usr/local/bin/corepack のシンボリックリンクは COPY で参照先実体化されるため作り直す。
-COPY --from=node:24.11.1-alpine3.21 /usr/local/bin/node /usr/local/bin/node
-COPY --from=node:24.11.1-alpine3.21 /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node:24.11.1-alpine3.23 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:24.11.1-alpine3.23 /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack
 
 # Download dbmate binary (pinned for reproducibility, verified by SHA256)
@@ -119,7 +119,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # Runtime stage
 # [Ja] 実行ステージ
 # ========================================
-FROM alpine:3.21
+FROM alpine:3.23
 
 # Set working directory
 # [Ja] 作業ディレクトリを設定
