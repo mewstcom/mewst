@@ -19,6 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/handler/link"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
 	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
@@ -160,6 +161,7 @@ func main() {
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
 	passwordResetCreateValidator := validator.NewPasswordResetCreateValidator()
 	postCreateValidator := validator.NewPostCreateValidator()
+	linkDataFetcherValidator := validator.NewLinkDataFetcherValidator()
 
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
@@ -172,6 +174,18 @@ func main() {
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createPostUC := usecase.NewCreatePostUsecase(db, postCreateValidator, oauthApplicationRepo, linkRepo, postRepo, postLinkRepo, profileRepo, homeTimelinePostRepo, jobDispatcher)
+	// blockPrivateHosts is true in production wiring: fetching user-supplied URLs
+	// must not reach internal hosts (SSRF). Passing false still compiles and
+	// passes tests, so review wiring changes here carefully. The 10s timeout
+	// bounds each fetch (applied per redirect hop) so a slow external site cannot
+	// pin a request handler indefinitely.
+	//
+	// [Ja] 本番配線では blockPrivateHosts を true にする。ユーザー入力の URL の
+	// 取得が内部ホストへ到達してはならない (SSRF 対策)。false を渡しても
+	// コンパイル・テストは通るため、この配線の変更は注意して見ること。10 秒の
+	// タイムアウトは取得 1 回ごと (リダイレクトの各ホップ) に適用され、遅い外部
+	// サイトがリクエストハンドラーを占有し続けないようにする。
+	fetchLinkMetadataUC := usecase.NewFetchLinkMetadataUsecase(linkDataFetcherValidator, linkRepo, &http.Client{Timeout: 10 * time.Second}, true)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -186,6 +200,7 @@ func main() {
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC)
+	linkHandler := link.NewHandler(fetchLinkMetadataUC)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -319,17 +334,20 @@ func main() {
 		r.Post("/accounts", accountHandler.Create)
 	})
 
-	// New post form and submission (authenticated users only). Both routes are
-	// gated by the reverse-proxy feature flag (FeatureFlagNewPost), so requests
-	// from viewers without the flag never reach them and are proxied to the Rails
-	// version. POST /posts is a genuine POST (post creation), so no Method
-	// Override is needed; the route is registered directly.
+	// New post form, submission, and link card fragments (authenticated users
+	// only). All routes are gated by the reverse-proxy feature flag
+	// (FeatureFlagNewPost), so requests from viewers without the flag never reach
+	// them and are proxied to the Rails version. POST /posts and POST /links are
+	// genuine POSTs, so no Method Override is needed; the routes are registered
+	// directly. GET /links/new sits under the CSRF middleware so the fragment can
+	// embed the CSRF token for its POST /links form.
 	//
-	// [Ja] 新規投稿フォームと送信（認証済みユーザーのみ）。どちらのルートも
-	// リバースプロキシのフィーチャーフラグ (FeatureFlagNewPost) でゲートされるため、
-	// フラグが無効な閲覧者のリクエストはここに到達せず Rails 版にプロキシされる。
-	// POST /posts は本来の POST (投稿作成) のため Method Override は不要で、ルートを
-	// 直接登録する。
+	// [Ja] 新規投稿フォーム・送信・リンクカードのフラグメント（認証済みユーザーのみ）。
+	// すべてのルートはリバースプロキシのフィーチャーフラグ (FeatureFlagNewPost) で
+	// ゲートされるため、フラグが無効な閲覧者のリクエストはここに到達せず Rails 版に
+	// プロキシされる。POST /posts と POST /links は本来の POST のため Method Override
+	// は不要で、ルートを直接登録する。GET /links/new はフラグメントが POST /links
+	// フォーム用の CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
@@ -337,6 +355,8 @@ func main() {
 
 		r.Get("/new", postHandler.New)
 		r.Post("/posts", postHandler.Create)
+		r.Get("/links/new", linkHandler.New)
+		r.Post("/links", linkHandler.Create)
 	})
 
 	// サーバー起動
