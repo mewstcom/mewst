@@ -1,0 +1,37 @@
+package components
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// AttachedLinkCard renders an attached link card: the card preview, a remove
+// button that empties the #link-form container, and a hidden canonical_url
+// input that travels with the surrounding post form so the created post is
+// linked to the card. Shared by the POST /links fragment and the post form's
+// 422 re-render.
+//
+// [Ja] AttachedLinkCard は紐付け済みリンクカードを描画する。カードのプレビュー・
+// #link-form コンテナを空にする削除ボタン・外側の投稿フォームと一緒に送信されて
+// 作成される投稿にカードを紐付ける hidden の canonical_url から成る。POST /links の
+// フラグメントと投稿フォームの 422 再描画で共用する。
+templ AttachedLinkCard(link viewmodel.Link) {
+	<div class="mb-2">
+		<div class="relative">
+			@LinkCard(link)
+			// Clearing #link-form removes both the card preview and the hidden
+			// canonical_url, so the next post submits without a link.
+			// [Ja] #link-form を空にするとカードのプレビューと hidden の canonical_url が
+			// 両方消えるため、次の投稿はリンク無しで送信される。
+			<button
+				aria-label={ templates.T(ctx, "link_create_remove") }
+				class="btn-icon-ghost absolute right-0 top-0 m-2 rounded-full"
+				hx-on:click="document.getElementById('link-form').replaceChildren()"
+				type="button"
+			>
+				@templates.Icon("close_fill", "h-4 w-4 [&_.content]:fill-foreground")
+			</button>
+		</div>
+		<input type="hidden" name="canonical_url" value={ link.CanonicalURL }/>
+	</div>
+}
