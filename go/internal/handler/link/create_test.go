@@ -10,9 +10,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
+
 	handler "github.com/mewstcom/mewst/go/internal/handler/link"
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -37,16 +41,18 @@ func newLinkHandler(t *testing.T, tx *sql.Tx) *handler.Handler {
 		&http.Client{},
 		false,
 	)
-	return handler.NewHandler(uc)
+	rateLimiter := ratelimit.NewLimiter(repository.NewRateLimitRepository(testutil.QueriesWithTx(tx)))
+	return handler.NewHandler(uc, rateLimiter)
 }
 
 // postLinkRequest builds a POST /links request carrying the given target URL,
-// with the CSRF token injected into the context the way the CSRF middleware
-// does in production.
+// with the CSRF token and the requester's profile injected into the context the
+// way the CSRF / RequireAuth middlewares do in production.
 //
 // [Ja] postLinkRequest は指定の対象 URL を持つ POST /links リクエストを構築する。
-// CSRF トークンは、本番で CSRF ミドルウェアが行うのと同じ形で context に注入する。
-func postLinkRequest(t *testing.T, targetURL string) *http.Request {
+// CSRF トークンとリクエスト主体のプロフィールは、本番で CSRF / RequireAuth
+// ミドルウェアが行うのと同じ形で context に注入する。
+func postLinkRequest(t *testing.T, profile *model.Profile, targetURL string) *http.Request {
 	t.Helper()
 
 	form := url.Values{}
@@ -58,6 +64,7 @@ func postLinkRequest(t *testing.T, targetURL string) *http.Request {
 
 	ctx := i18n.SetLocale(context.Background(), "ja")
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = middleware.SetProfileToContext(ctx, profile)
 	return req.WithContext(ctx)
 }
 
@@ -81,7 +88,8 @@ func TestCreate_Success(t *testing.T) {
 	defer server.Close()
 	targetURL := server.URL + "/articles/1"
 
-	req := postLinkRequest(t, targetURL)
+	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
+	req := postLinkRequest(t, profile, targetURL)
 	rr := httptest.NewRecorder()
 
 	h.Create(rr, req)
@@ -113,7 +121,8 @@ func TestCreate_ValidationError_EmptyTargetURL(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h := newLinkHandler(t, tx)
 
-	req := postLinkRequest(t, "")
+	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
+	req := postLinkRequest(t, profile, "")
 	rr := httptest.NewRecorder()
 
 	h.Create(rr, req)
@@ -151,7 +160,8 @@ func TestCreate_ValidationError_FetchFailed(t *testing.T) {
 	defer server.Close()
 	targetURL := server.URL + "/empty"
 
-	req := postLinkRequest(t, targetURL)
+	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
+	req := postLinkRequest(t, profile, targetURL)
 	rr := httptest.NewRecorder()
 
 	h.Create(rr, req)
@@ -168,5 +178,90 @@ func TestCreate_ValidationError_FetchFailed(t *testing.T) {
 	// [Ja] 同じ URL を再送信できるよう、対象 URL がエコーバックされること。
 	if !strings.Contains(body, `value="`+targetURL+`"`) {
 		t.Error("対象 URL がエコーバックされていません")
+	}
+}
+
+func TestCreate_RateLimitExceeded(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	h := newLinkHandler(t, tx)
+
+	// Exhaust the per-profile limit (10 requests/min). An empty target URL is
+	// enough: the rate limit is checked before validation, so even invalid
+	// requests count toward it without hitting any external server.
+	//
+	// [Ja] profile 単位の上限 (10 回/分) を使い切る。レートリミットは
+	// バリデーションより先にチェックされるため、対象 URL が空の不正リクエスト
+	// でもカウントされ、外部サーバーへのアクセスなしで上限に到達できる。
+	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
+	for i := 0; i < 10; i++ {
+		rr := httptest.NewRecorder()
+		h.Create(rr, postLinkRequest(t, profile, ""))
+	}
+
+	// The 11th request exceeds the limit.
+	// [Ja] 11 回目のリクエストで上限を超過する。
+	rr := httptest.NewRecorder()
+	h.Create(rr, postLinkRequest(t, profile, ""))
+
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+	}
+	body := rr.Body.String()
+	if !strings.Contains(body, "リクエストが多すぎます") {
+		t.Error("レート制限エラーメッセージ (validation_rate_limit_exceeded) が表示されていません")
+	}
+	// The prompt fragment is re-rendered so the user can retry after waiting.
+	// [Ja] 時間を置いて再送信できるよう、プロンプトのフラグメントが再描画されること。
+	if !strings.Contains(body, `hx-post="/links"`) {
+		t.Error("プロンプトのフラグメントが再描画されていません")
+	}
+
+	// Another profile is unaffected: it gets the plain validation error, not
+	// the rate-limit message (the counter is keyed per profile).
+	//
+	// [Ja] 別の profile には影響しない: レート制限メッセージではなく通常の
+	// バリデーションエラーが返ること (カウンターは profile 単位)。
+	otherProfile := &model.Profile{ID: model.ProfileID(uuid.New())}
+	otherRR := httptest.NewRecorder()
+	h.Create(otherRR, postLinkRequest(t, otherProfile, ""))
+
+	if otherRR.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("別 profile のステータスコードが不正: got %v, want %v", otherRR.Code, http.StatusUnprocessableEntity)
+	}
+	otherBody := otherRR.Body.String()
+	if strings.Contains(otherBody, "リクエストが多すぎます") {
+		t.Error("別 profile がレート制限に巻き込まれています")
+	}
+	if !strings.Contains(otherBody, "入力してください") {
+		t.Error("別 profile に通常のバリデーションエラー (validation_required) が返っていません")
+	}
+}
+
+func TestCreate_NoProfile_InternalServerError(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	h := newLinkHandler(t, tx)
+
+	form := url.Values{}
+	form.Set("target_url", "https://example.com/articles/1")
+	form.Set("csrf_token", "test-csrf-token")
+
+	req := httptest.NewRequest(http.MethodPost, "/links", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	// Do not call SetProfileToContext, leaving the profile absent from the context.
+	// [Ja] SetProfileToContext を呼ばず、profile を context に注入しない。
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusInternalServerError)
 	}
 }
