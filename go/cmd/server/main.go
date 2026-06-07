@@ -174,6 +174,7 @@ func main() {
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createPostUC := usecase.NewCreatePostUsecase(db, postCreateValidator, oauthApplicationRepo, linkRepo, postRepo, postLinkRepo, profileRepo, homeTimelinePostRepo, jobDispatcher)
+	getLinkUC := usecase.NewGetLinkUsecase(linkRepo)
 	// blockPrivateHosts is true in production wiring: fetching user-supplied URLs
 	// must not reach internal hosts (SSRF). Passing false still compiles and
 	// passes tests, so review wiring changes here carefully. The 10s timeout
@@ -199,7 +200,7 @@ func main() {
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
-	postHandler := post.NewHandler(cfg, flashMgr, createPostUC)
+	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC)
 
 	// ミドルウェアの初期化

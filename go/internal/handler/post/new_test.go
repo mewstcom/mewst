@@ -48,11 +48,27 @@ func TestNew(t *testing.T) {
 		"投稿する",                         // 送信ボタン (post_new_submit)
 		`href="/home"`,                 // 認証後共通レイアウトの navbar
 		"[&_.content]:fill-foreground", // navbar の new 項目がアクティブ表示
+		// Form enhancements (4-3): wiring for the character counter, autosize,
+		// and the link card integration.
+		// [Ja] フォーム拡張 (4-3): 文字数カウンター・autosize・リンクカード連携の配線
+		`id="link-form"`,                       // link card fragment htmx target. [Ja] リンクカードフラグメントの htmx ターゲット
+		`data-link-card-path="/links/new"`,     // URL detection fetch path. [Ja] URL 検出モジュールの取得先パス
+		"data-autosize",                        // autosize module marker. [Ja] autosize モジュールの対象マーカー
+		`data-character-counter-for="content"`, // character counter target textarea. [Ja] 文字数カウンターの対象 textarea
+		`data-character-counter-max="160"`,     // content length limit (model.MaximumPostContentLength). [Ja] 文字数上限
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
 			t.Errorf("レスポンスに %q が含まれていません", want)
 		}
+	}
+
+	// A fresh form must not carry an empty canonical_url hidden field; it is
+	// rendered only when a link card is echoed back.
+	// [Ja] 初回表示のフォームには canonical_url の hidden フィールドを含めない
+	// (リンクカードのエコーバック時のみ描画される)。
+	if strings.Contains(body, `name="canonical_url"`) {
+		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
 	}
 }
 

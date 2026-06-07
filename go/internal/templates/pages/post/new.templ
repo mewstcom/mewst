@@ -1,9 +1,12 @@
 package post
 
 import (
+	"strconv"
+
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // NewPageData holds the data for the new post form page.
@@ -20,32 +23,29 @@ type NewPageData struct {
 	// CanonicalURL echoes back the linked card's canonical_url so a failed submit keeps the attached link card (empty when no link is attached).
 	// [Ja] CanonicalURL はリンクカードの canonical_url をエコーバックし、送信失敗時に紐付けたリンクカードを保持する (リンク未紐付け時は空)。
 	CanonicalURL string
+	// AttachedLink carries the resolved link card to re-render inside #link-form after a failed submit (nil when no link is attached or the URL resolves to no known link).
+	// [Ja] AttachedLink は送信失敗後に #link-form 内へ再描画する解決済みリンクカード (リンク未紐付け時や URL が既知のリンクに解決できない場合は nil)。
+	AttachedLink *viewmodel.Link
 }
 
 // New renders the new post form (content textarea + submit button + CSRF). The
 // form posts to /posts, mirroring the Rails post_list_path. On a failed submit
-// it re-renders with the validation errors and the submitted content. Form
-// enhancements (character counter, autosize, link card preview) are added in a
-// later task.
+// it re-renders with the validation errors and the submitted content. The
+// textarea sits in a bordered container together with the #link-form htmx
+// container and the character counter, mirroring the Rails post_form_component.
 //
 // [Ja] New は新規投稿フォーム (本文 textarea + 投稿ボタン + CSRF) を描画する。
 // フォームは Rails の post_list_path に対応する /posts に送信する。送信失敗時は
-// バリデーションエラーと送信済み本文を添えて再描画する。フォーム拡張 (文字数
-// カウンター・autosize・リンクカードプレビュー) は後続タスクで追加する。
+// バリデーションエラーと送信済み本文を添えて再描画する。textarea は Rails の
+// post_form_component と同様に、#link-form の htmx コンテナ・文字数カウンターと
+// 同じ枠付きコンテナに収める。
 templ New(data NewPageData) {
+	{{ hasContentError := data.FormErrors != nil && data.FormErrors.HasFieldError("content") }}
 	<div class="mx-auto max-w-2xl px-4 py-6">
 		@components.FormErrors(data.FormErrors)
 
 		<form action="/posts" class="form grid gap-4" hx-on:submit="disableSubmitButtons(this)" method="POST">
 			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-
-			// Preserve the attached link card across a failed submit. Rendered only
-			// when a link is attached, so a fresh form carries no empty hidden field.
-			// [Ja] 送信失敗時に紐付けたリンクカードを保持する。リンク紐付け時のみ描画し、
-			// 初回フォームに空の hidden フィールドを残さない。
-			if data.CanonicalURL != "" {
-				<input type="hidden" name="canonical_url" value={ data.CanonicalURL }/>
-			}
 
 			<div class="grid gap-2">
 				// Use the Rails "What's happening?" prompt as the textarea label (the Rails
@@ -56,21 +56,66 @@ templ New(data NewPageData) {
 					{ templates.T(ctx, "post_new_content_label") }
 				</label>
 
-				<textarea
-					autofocus
-					class="w-full"
-					id="content"
-					if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
-						aria-invalid="true"
-					} else {
-						aria-invalid="false"
-					}
-					name="content"
-					required
-					rows="4"
-				>{ data.Content }</textarea>
+				// Bordered container shared by the textarea, the link card area, and the
+				// character counter (the Rails post form's .textarea wrapper). The basecoat
+				// .textarea styles paint the border here, so the inner textarea strips its
+				// own border/shadow/ring, and the focus ring is recreated via focus-within.
+				//
+				// [Ja] textarea・リンクカード領域・文字数カウンターを収める枠付きコンテナ
+				// (Rails 投稿フォームの .textarea ラッパーに対応)。枠線は basecoat の
+				// .textarea スタイルでこのコンテナに描き、内側の textarea は自身の枠線・
+				// 影・リングを消す。フォーカスリングは focus-within で再現する。
+				<div
+					class={ "textarea w-full flex-col p-0 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+						templ.KV("border-destructive", hasContentError) }
+				>
+					<textarea
+						autofocus
+						class="min-h-0 w-full resize-none border-0 bg-transparent px-4 py-2 leading-loose shadow-none focus-visible:ring-0"
+						data-autosize
+						data-link-card-path="/links/new"
+						id="content"
+						if hasContentError {
+							aria-invalid="true"
+						} else {
+							aria-invalid="false"
+						}
+						name="content"
+						required
+						rows="1"
+					>{ data.Content }</textarea>
 
-				if data.FormErrors != nil && data.FormErrors.HasFieldError("content") {
+					<div class="px-4 py-2">
+						// htmx target for the link card fragments (GET /links/new and
+						// POST /links swap into here). The re-rendered link card (or the bare
+						// echoed canonical_url when the link cannot be resolved) lives inside
+						// so that, after a failed submit, the URL detection sees the container
+						// as occupied and does not attach a second link.
+						//
+						// [Ja] リンクカードのフラグメント (GET /links/new と POST /links) を
+						// スワップする htmx ターゲット。再描画するリンクカード (link に解決
+						// できない場合はエコーバックする canonical_url のみ) をこの中に置く
+						// ことで、送信失敗後も URL 検出がコンテナを使用中とみなし、2 つ目の
+						// リンクを紐付けない。
+						<div id="link-form">
+							if data.AttachedLink != nil {
+								@components.AttachedLinkCard(*data.AttachedLink)
+							} else if data.CanonicalURL != "" {
+								<input type="hidden" name="canonical_url" value={ data.CanonicalURL }/>
+							}
+						</div>
+
+						<div class="text-right">
+							<span
+								class="text-sm text-gray-500"
+								data-character-counter-for="content"
+								data-character-counter-max={ strconv.Itoa(viewmodel.MaximumPostContentLength) }
+							></span>
+						</div>
+					</div>
+				</div>
+
+				if hasContentError {
 					for _, errorMsg := range data.FormErrors.GetFieldErrors("content") {
 						<p class="text-sm text-error">
 							{ errorMsg }

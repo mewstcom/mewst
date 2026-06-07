@@ -65,8 +65,9 @@ func newCreatePostHandler(t *testing.T) *handler.Handler {
 		repository.NewHomeTimelinePostRepository(q),
 		dispatcher.NewDispatcher(noopJobInserter{}),
 	)
+	getLinkUC := usecase.NewGetLinkUsecase(repository.NewLinkRepository(q))
 
-	return handler.NewHandler(cfg, flashMgr, createPostUC)
+	return handler.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 }
 
 // postRequest builds a POST /posts request carrying the given form content, with
@@ -224,11 +225,15 @@ func TestCreate_ValidationError_TooLongContent(t *testing.T) {
 func TestCreate_ValidationError_PreservesCanonicalURL(t *testing.T) {
 	t.Parallel()
 
-	// An empty body fails validation before any DB access. The submitted
-	// canonical_url must survive the 422 re-render so the attached link card is
-	// not lost when the post body is invalid.
-	// [Ja] 空の本文は DB アクセス前にバリデーションで弾かれる。送信した canonical_url は
-	// 422 再描画でも保持され、本文が不正でも紐付けたリンクカードが失われないこと。
+	// An empty body fails validation before reaching the persistence path. The
+	// submitted canonical_url must survive the 422 re-render so the attached
+	// link card is not lost when the post body is invalid. The URL here matches
+	// no links row, so this also covers the fallback: a bare hidden input
+	// instead of a re-rendered link card.
+	// [Ja] 空の本文は永続化パスに到達する前にバリデーションで弾かれる。送信した
+	// canonical_url は 422 再描画でも保持され、本文が不正でも紐付けたリンクカードが
+	// 失われないこと。この URL は links 行に一致しないため、リンクカードの再描画
+	// ではなく hidden input のみ残すフォールバックも併せて検証する。
 	h := newCreatePostHandler(t)
 	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
 
@@ -257,6 +262,115 @@ func TestCreate_ValidationError_PreservesCanonicalURL(t *testing.T) {
 	}
 	if !strings.Contains(body, `value="https://example.com/article"`) {
 		t.Error("canonical_url の値がエコーバックされていません")
+	}
+
+	// The echoed hidden input must sit inside the #link-form container so the
+	// URL detection module sees the container as occupied and does not attach a
+	// second link (4-3).
+	// [Ja] エコーバックされた hidden input は #link-form コンテナの内側に置かれ、
+	// URL 検出モジュールがコンテナを使用中とみなして 2 つ目のリンクを紐付けない
+	// ことを保証する (4-3)。
+	linkFormIdx := strings.Index(body, `id="link-form"`)
+	canonicalIdx := strings.Index(body, `name="canonical_url"`)
+	counterIdx := strings.Index(body, `data-character-counter-for`)
+	if linkFormIdx == -1 || counterIdx == -1 {
+		t.Fatal("再描画フォームに #link-form または文字数カウンターが含まれていません")
+	}
+	if canonicalIdx < linkFormIdx || counterIdx < canonicalIdx {
+		t.Error("canonical_url の hidden input が #link-form コンテナの内側にありません")
+	}
+
+	// The unknown URL resolves to no link, so no link card (and no remove
+	// button) is re-rendered.
+	// [Ja] 未知の URL はリンクに解決されないため、リンクカード (と削除ボタン) は
+	// 再描画されないこと。
+	if strings.Contains(body, "リンクカードを削除") {
+		t.Error("未知の canonical_url なのにリンクカードが再描画されています")
+	}
+}
+
+func TestCreate_ValidationError_RendersAttachedLinkCard(t *testing.T) {
+	t.Parallel()
+
+	// When the echoed canonical_url matches an existing link, the 422 re-render
+	// shows the full link card (preview + remove button + hidden canonical_url)
+	// inside #link-form, so the attachment stays visible and removable instead
+	// of surviving only as an invisible hidden input.
+	// [Ja] エコーバックされた canonical_url が既存リンクに一致する場合、422 再描画は
+	// #link-form 内にリンクカード一式 (プレビュー + 削除ボタン + hidden の
+	// canonical_url) を表示する。紐付けが不可視の hidden input としてだけ残るのでは
+	// なく、カードとして見え削除ボタンで外せること。
+	db := testutil.GetTestDB()
+
+	canonicalURL := "https://example.com/attached-card-" + uuid.NewString()
+
+	// The handler's link lookup runs outside the test transaction, so commit
+	// the prerequisite link row and clean it up afterwards.
+	// [Ja] ハンドラーのリンク取得はテストのトランザクション外で走るため、前提の
+	// link 行はコミットし、終了時に削除する。
+	setupTx, err := db.Begin()
+	if err != nil {
+		t.Fatalf("セットアップ用トランザクションの開始に失敗: %v", err)
+	}
+	defer func() { _ = setupTx.Rollback() }()
+	testutil.NewLinkBuilder(t, setupTx).
+		WithCanonicalURL(canonicalURL).
+		WithTitle("Attached Card Test").
+		Build()
+	if err := setupTx.Commit(); err != nil {
+		t.Fatalf("前提データのコミットに失敗: %v", err)
+	}
+	t.Cleanup(func() {
+		_, _ = db.Exec(`DELETE FROM links WHERE canonical_url = $1`, canonicalURL)
+	})
+
+	h := newCreatePostHandler(t)
+	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
+
+	form := url.Values{}
+	form.Set("content", "") // presence error. [Ja] presence エラー
+	form.Set("canonical_url", canonicalURL)
+	form.Set("csrf_token", "test-csrf-token")
+
+	req := httptest.NewRequest(http.MethodPost, "/posts", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = middleware.SetProfileToContext(ctx, profile)
+	req = req.WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+	}
+	body := rr.Body.String()
+	checks := []string{
+		"Attached Card Test", // link card preview (link title). [Ja] リンクカードのプレビュー (リンクのタイトル)
+		"リンクカードを削除",          // remove button aria-label (link_create_remove). [Ja] 削除ボタンの aria-label
+		`name="canonical_url"`,
+		`value="` + canonicalURL + `"`,
+	}
+	for _, want := range checks {
+		if !strings.Contains(body, want) {
+			t.Errorf("レスポンスに %q が含まれていません", want)
+		}
+	}
+
+	// The re-rendered card (and its hidden input) must sit inside the
+	// #link-form container so the URL detection sees it as occupied.
+	// [Ja] 再描画されたカード (とその hidden input) は #link-form コンテナの
+	// 内側に置かれ、URL 検出がコンテナを使用中とみなすこと。
+	linkFormIdx := strings.Index(body, `id="link-form"`)
+	cardIdx := strings.Index(body, "Attached Card Test")
+	counterIdx := strings.Index(body, `data-character-counter-for`)
+	if linkFormIdx == -1 || counterIdx == -1 {
+		t.Fatal("再描画フォームに #link-form または文字数カウンターが含まれていません")
+	}
+	if cardIdx < linkFormIdx || counterIdx < cardIdx {
+		t.Error("リンクカードが #link-form コンテナの内側にありません")
 	}
 }
 
