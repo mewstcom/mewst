@@ -52,6 +52,14 @@ func TestCreatePostUsecase_Execute(t *testing.T) {
 	// oauth_applications 行をコミットするが、uid には UNIQUE インデックスがあるため、
 	// 並列実行すると uid が衝突する。
 
+	// Serialize against other test packages that commit the same mewst-web row
+	// (e.g. handler/post): packages run as separate processes on the shared DB,
+	// so the in-package serialization above is not enough on its own.
+	// [Ja] 同じ mewst-web 行をコミットする他のテストパッケージ (handler/post 等)
+	// と直列化する。パッケージは共有 DB 上で別プロセスとして実行されるため、
+	// 上記のパッケージ内直列化だけでは不十分。
+	testutil.AcquireMewstWebLock(t)
+
 	t.Run("正常系: 投稿を作成し副作用が発生する", func(t *testing.T) {
 		db := testutil.GetTestDB()
 		ctx := context.Background()

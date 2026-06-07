@@ -93,11 +93,17 @@ func postRequest(t *testing.T, profile *model.Profile, content string) *http.Req
 }
 
 func TestCreate_Success(t *testing.T) {
-	// Not parallel: this commits an oauth_applications row with uid = mewst-web,
-	// which has a UNIQUE index, so it must not run alongside other subtests that
-	// commit the same uid.
-	// [Ja] 並列化しない: uid = mewst-web (UNIQUE インデックス) の oauth_applications 行を
-	// コミットするため、同じ uid をコミットする他テストと同時実行してはならない。
+	t.Parallel()
+
+	// This commits an oauth_applications row with uid = mewst-web (UNIQUE
+	// index), so serialize against the other tests that commit or assert the
+	// absence of the same row (e.g. the CreatePostUsecase tests, which run as a
+	// separate process on the shared DB).
+	// [Ja] uid = mewst-web (UNIQUE インデックス) の oauth_applications 行を
+	// コミットするため、同じ行をコミットする / 不在を前提とする他テスト
+	// (共有 DB 上で別プロセスとして実行される CreatePostUsecase のテスト等) と
+	// 直列化する。
+	testutil.AcquireMewstWebLock(t)
 
 	db := testutil.GetTestDB()
 
