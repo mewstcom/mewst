@@ -9,15 +9,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// maxPostContentLength is the maximum number of characters allowed in a post
-// body. It mirrors the Rails PostRecord::MAXIMUM_CONTENT_LENGTH so that posts
-// created on either side share the same limit.
-//
-// [Ja] maxPostContentLength は投稿本文に許可される最大文字数。Rails の
-// PostRecord::MAXIMUM_CONTENT_LENGTH に揃え、どちら側で作成した投稿も同じ上限になる
-// ようにしている。
-const maxPostContentLength = 160
-
 // PostCreateValidator は投稿作成フォームのバリデーションを行う
 type PostCreateValidator struct{}
 
@@ -52,7 +43,7 @@ func (v *PostCreateValidator) Validate(ctx context.Context, input PostCreateVali
 	// one each, matching Rails' character-based length validation.
 	// [Ja] マルチバイト文字 (日本語など) を 1 文字として数えるため rune 単位で計測し、
 	// Rails の文字数ベースの length バリデーションに揃える。
-	if utf8.RuneCountInString(input.Content) > maxPostContentLength {
+	if utf8.RuneCountInString(input.Content) > model.MaximumPostContentLength {
 		ve.AddField("content", i18n.T(ctx, "validation_content_too_long"))
 		return ve
 	}
