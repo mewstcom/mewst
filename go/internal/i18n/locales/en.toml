@@ -261,6 +261,14 @@ other = "Too many requests. Please try again later."
 description = "Password update failed validation error"
 other = "Failed to update password. Please try again."
 
+[validation_url_invalid]
+description = "Invalid URL format validation error"
+other = "is not a valid URL"
+
+[validation_link_fetch_failed]
+description = "Link information fetch failure validation error"
+other = "Cannot fetch information from the URL"
+
 # ============================================
 # Flash messages (flash_*)
 # ============================================
