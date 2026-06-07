@@ -7,6 +7,7 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/ratelimit"
 	linkpages "github.com/mewstcom/mewst/go/internal/templates/pages/link"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
@@ -21,13 +22,15 @@ import (
 // HTML フラグメントを返す。
 type Handler struct {
 	fetchLinkMetadataUC *usecase.FetchLinkMetadataUsecase
+	rateLimiter         *ratelimit.Limiter
 }
 
 // NewHandler creates a new Handler.
 // [Ja] NewHandler は新しい Handler を作成する。
-func NewHandler(fetchLinkMetadataUC *usecase.FetchLinkMetadataUsecase) *Handler {
+func NewHandler(fetchLinkMetadataUC *usecase.FetchLinkMetadataUsecase, rateLimiter *ratelimit.Limiter) *Handler {
 	return &Handler{
 		fetchLinkMetadataUC: fetchLinkMetadataUC,
+		rateLimiter:         rateLimiter,
 	}
 }
 

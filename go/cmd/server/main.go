@@ -201,7 +201,7 @@ func main() {
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
-	linkHandler := link.NewHandler(fetchLinkMetadataUC)
+	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
