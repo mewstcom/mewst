@@ -1,0 +1,45 @@
+package link
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// CreatePageData holds the data for the attached-link-card fragment.
+//
+// [Ja] CreatePageData は紐付け済みリンクカードのフラグメントのデータを保持する。
+type CreatePageData struct {
+	Link viewmodel.Link
+}
+
+// Create renders the attached-link-card fragment (the Rails links/create/call
+// view): the link card preview, a remove button, and a hidden canonical_url
+// input that travels with the surrounding post form so the created post is
+// linked to the card. The fragment is swapped into the #link-form container.
+//
+// [Ja] Create は紐付け済みリンクカードのフラグメント (Rails の links/create/call
+// ビュー) を描画する。リンクカードのプレビュー・削除ボタン・hidden の
+// canonical_url を含み、canonical_url は外側の投稿フォームと一緒に送信されて
+// 作成される投稿にカードを紐付ける。フラグメントは #link-form コンテナに
+// スワップされる。
+templ Create(data CreatePageData) {
+	<div class="mb-2">
+		<div class="relative">
+			@components.LinkCard(data.Link)
+			// Clearing #link-form removes both the card preview and the hidden
+			// canonical_url, so the next post submits without a link.
+			// [Ja] #link-form を空にするとカードのプレビューと hidden の canonical_url が
+			// 両方消えるため、次の投稿はリンク無しで送信される。
+			<button
+				aria-label={ templates.T(ctx, "link_create_remove") }
+				class="btn-icon-ghost absolute right-0 top-0 m-2 rounded-full"
+				hx-on:click="document.getElementById('link-form').replaceChildren()"
+				type="button"
+			>
+				@templates.Icon("close_fill", "h-4 w-4 [&_.content]:fill-foreground")
+			</button>
+		</div>
+		<input type="hidden" name="canonical_url" value={ data.Link.CanonicalURL }/>
+	</div>
+}

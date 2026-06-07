@@ -380,3 +380,15 @@ other = "いまなにしてる？"
 [post_new_submit]
 description = "新規投稿フォームの送信ボタン"
 other = "投稿する"
+
+# ============================================
+# リンクカード (link_*)
+# ============================================
+
+[link_new_submit]
+description = "リンクカード追加プロンプトの送信ボタン"
+other = "リンクカードを追加する: {{.HostAndPath}}"
+
+[link_create_remove]
+description = "リンクカード削除ボタンのアクセシブルラベル"
+other = "リンクカードを削除"

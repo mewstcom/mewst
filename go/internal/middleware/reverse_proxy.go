@@ -80,6 +80,28 @@ var featureFlaggedPatterns = []featureFlaggedPattern{
 		flag:    model.FeatureFlagNewPost,
 		methods: []string{http.MethodPost},
 	},
+	// GET /links/new: the Go link card prompt fragment fetched via htmx from the
+	// /new form, gated under the same flag so the htmx call from a Go-rendered
+	// form also lands on Go.
+	//
+	// [Ja] GET /links/new: /new フォームから htmx で取得する Go 版リンクカード
+	// プロンプトのフラグメント。Go 版が描画したフォームからの htmx 呼び出しも
+	// Go に向くよう、同じフラグの配下に置く。
+	{
+		pattern: regexp.MustCompile(`^/links/new$`),
+		flag:    model.FeatureFlagNewPost,
+		methods: []string{http.MethodGet},
+	},
+	// POST /links: the Go link card creation endpoint. The "^/links$" anchor
+	// matches only the exact path so sub-paths are not swept in.
+	//
+	// [Ja] POST /links: Go 版のリンクカード作成エンドポイント。"^/links$" の
+	// アンカーで完全一致のみにマッチさせ、サブパスを巻き込まない。
+	{
+		pattern: regexp.MustCompile(`^/links$`),
+		flag:    model.FeatureFlagNewPost,
+		methods: []string{http.MethodPost},
+	},
 }
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.

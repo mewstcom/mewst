@@ -380,3 +380,15 @@ other = "What's happening?"
 [post_new_submit]
 description = "New post form submit button"
 other = "Post"
+
+# ============================================
+# Link card (link_*)
+# ============================================
+
+[link_new_submit]
+description = "Add link card prompt submit button"
+other = "Add link card: {{.HostAndPath}}"
+
+[link_create_remove]
+description = "Accessible label for the link card remove button"
+other = "Remove link card"

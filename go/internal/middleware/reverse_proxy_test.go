@@ -737,12 +737,14 @@ func TestReverseProxyMiddleware_Middleware_FeatureFlag_ErrorFallback(t *testing.
 
 // TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost verifies the real
 // (production) featureFlaggedPatterns registration for the new-post feature:
-// GET /new and POST /posts are gated by FeatureFlagNewPost, while the
-// method/sub-path cases (including the Rails-owned GET /posts/:id) do not match.
+// GET /new, POST /posts, GET /links/new and POST /links are gated by
+// FeatureFlagNewPost, while the method/sub-path cases (including the
+// Rails-owned GET /posts/:id) do not match.
 //
 // [Ja] 新規投稿機能の実 (本番) featureFlaggedPatterns 登録を検証する。
-// GET /new と POST /posts が FeatureFlagNewPost でゲートされ、メソッド不一致・
-// サブパス (Rails に残す GET /posts/:id を含む) のケースは一致しないことを確認する。
+// GET /new・POST /posts・GET /links/new・POST /links が FeatureFlagNewPost で
+// ゲートされ、メソッド不一致・サブパス (Rails に残す GET /posts/:id を含む) の
+// ケースは一致しないことを確認する。
 func TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost(t *testing.T) {
 	// Verify the real (production) featureFlaggedPatterns without overriding it.
 	// Skip t.Parallel() so this does not race the tests that overwrite the global.
@@ -770,6 +772,11 @@ func TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost(t *testing.T) {
 		// The "^/posts$" anchor must not match the Rails-owned GET /posts/:id.
 		// [Ja] "^/posts$" のアンカーは Rails に残す GET /posts/:id にマッチしてはならない。
 		{"投稿詳細 /posts/:id はマッチしない (末尾 $)", http.MethodGet, "/posts/123", ""},
+		{"GET /links/new はフラグ対象", http.MethodGet, "/links/new", model.FeatureFlagNewPost},
+		{"POST /links/new はメソッド不一致で対象外", http.MethodPost, "/links/new", ""},
+		{"POST /links はフラグ対象", http.MethodPost, "/links", model.FeatureFlagNewPost},
+		{"GET /links はメソッド不一致で対象外", http.MethodGet, "/links", ""},
+		{"サブパス /links/123 はマッチしない (末尾 $)", http.MethodPost, "/links/123", ""},
 	}
 
 	for _, tc := range testCases {
@@ -783,13 +790,15 @@ func TestReverseProxyMiddleware_getFeatureFlagForRequest_NewPost(t *testing.T) {
 }
 
 // TestReverseProxyMiddleware_Middleware_NewPostFlag verifies the end-to-end
-// routing of GET /new through the real featureFlaggedPatterns entry: the Go
-// handler serves it only when FeatureFlagNewPost is enabled for the viewer, and
-// a method mismatch (POST /new) falls through to Rails.
+// routing of the new-post endpoints (GET /new, POST /posts, GET /links/new,
+// POST /links) through the real featureFlaggedPatterns entries: the Go handler
+// serves them only when FeatureFlagNewPost is enabled for the viewer, and a
+// method mismatch falls through to Rails.
 //
-// [Ja] GET /new が実際の featureFlaggedPatterns エントリを通じて振り分けられる
+// [Ja] 新規投稿系エンドポイント (GET /new・POST /posts・GET /links/new・
+// POST /links) が実際の featureFlaggedPatterns エントリを通じて振り分けられる
 // ことを E2E で検証する。FeatureFlagNewPost が有効な閲覧者のときだけ Go 版で
-// 処理し、メソッド不一致 (POST /new) は Rails に抜けることを確認する。
+// 処理し、メソッド不一致は Rails に抜けることを確認する。
 func TestReverseProxyMiddleware_Middleware_NewPostFlag(t *testing.T) {
 	// Verify the real (production) featureFlaggedPatterns without overriding it.
 	// Skip t.Parallel() so this does not race the tests that overwrite the global.
@@ -907,6 +916,54 @@ func TestReverseProxyMiddleware_Middleware_NewPostFlag(t *testing.T) {
 
 		if rr.Header().Get("X-Rails-Handled") != "true" {
 			t.Error("GET /postsがRails版に転送されなかった")
+		}
+	})
+
+	t.Run("フラグが有効なセッションのGET /links/newはGo版で処理される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/links/new", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Go-Handled") != "true" {
+			t.Error("フラグが有効なセッションのGET /links/newがGo版で処理されなかった")
+		}
+	})
+
+	t.Run("フラグが無効なセッションのGET /links/newはRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/links/new", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: otherSessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("フラグが無効なセッションのGET /links/newがRails版に転送されなかった")
+		}
+	})
+
+	t.Run("フラグが有効なセッションのPOST /linksはGo版で処理される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/links", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Go-Handled") != "true" {
+			t.Error("フラグが有効なセッションのPOST /linksがGo版で処理されなかった")
+		}
+	})
+
+	t.Run("GET /linksはメソッド不一致でRails版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/links", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("GET /linksがRails版に転送されなかった")
 		}
 	})
 }
