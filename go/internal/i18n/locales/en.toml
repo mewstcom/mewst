@@ -381,8 +381,12 @@ other = "What's happening?"
 description = "New post form submit button"
 other = "Post"
 
-[post_new_back]
-description = "Back affordance link text on the new post page"
+# ============================================
+# Compose layout (compose_*)
+# ============================================
+
+[compose_back]
+description = "Back affordance link text in the compose layout (focused create screen)"
 other = "Back"
 
 # ============================================

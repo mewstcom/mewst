@@ -11,6 +11,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/templates/layouts"
 	postpages "github.com/mewstcom/mewst/go/internal/templates/pages/post"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -61,14 +62,20 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	ctx := r.Context()
 
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
-	profile := middleware.ProfileFromContext(ctx)
 
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "post_new_title")
 
-	data := layouts.DefaultLayoutData{
-		Meta:   meta,
-		Navbar: viewmodel.NewNavbar(profile, viewmodel.NavbarItemNew),
+	// /new is a focused compose screen, so it uses the navbar-less compose layout
+	// (form centered, back affordance pinned top-left) rather than the shared
+	// authenticated layout. The back affordance falls back to /home.
+	//
+	// [Ja] /new は集中作成画面のため、共通の認証後レイアウトではなく navbar を持たない
+	// compose レイアウト (フォーム中央寄せ・戻る導線を左上に固定) を使う。戻る導線は
+	// /home にフォールバックする。
+	data := layouts.ComposeLayoutData{
+		Meta:     meta,
+		BackHref: templates.HomePath(),
 	}
 	formContent := postpages.New(postpages.NewPageData{
 		CSRFToken:    csrfToken,
@@ -78,7 +85,7 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 		AttachedLink: attachedLink,
 	})
 
-	if err := layouts.Default(data, formContent).Render(ctx, w); err != nil {
+	if err := layouts.Compose(data, formContent).Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
