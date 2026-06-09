@@ -3,12 +3,6 @@
 
 <%= render ::Layouts::BasicLayoutComponent.new do %>
   <%= render Containers::BasicContainerComponent.new do %>
-    <div class="hidden lg:block">
-      <turbo-frame id="post-form">
-        <%= render Forms::PostFormComponent.new(form: @form) %>
-      </turbo-frame>
-    </div>
-
     <%= render Tabs::TimelineTabsComponent.new(class_name: "mt-0 lg:mt-6") %>
 
     <%= render Lists::PostCardListComponent.new(posts: @posts, stamp_checker: @stamp_checker, class_name: "py-4") %>

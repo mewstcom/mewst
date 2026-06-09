@@ -48,9 +48,15 @@ func TestNew(t *testing.T) {
 		"投稿する",                         // 送信ボタン (post_new_submit)
 		`href="/home"`,                 // 認証後共通レイアウトの navbar
 		"[&_.content]:fill-foreground", // navbar の new 項目がアクティブ表示
-		// Form enhancements (4-3): wiring for the character counter, autosize,
-		// and the link card integration.
-		// [Ja] フォーム拡張 (4-3): 文字数カウンター・autosize・リンクカード連携の配線
+		// Back affordance: a /home fallback link upgraded to history.back() by the
+		// back-link script when the referrer is same-origin.
+		// [Ja] 戻る導線: referrer が同一オリジンのとき back-link スクリプトが
+		// history.back() に格上げする /home フォールバックリンク
+		"data-back-link", // 戻るリンクの JS フック
+		"戻る",             // 戻るリンクのラベル (post_new_back)
+		// Form enhancements: wiring for the character counter, autosize, and the
+		// link card integration.
+		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
 		`id="link-form"`,                       // link card fragment htmx target. [Ja] リンクカードフラグメントの htmx ターゲット
 		`data-link-card-path="/links/new"`,     // URL detection fetch path. [Ja] URL 検出モジュールの取得先パス
 		"data-autosize",                        // autosize module marker. [Ja] autosize モジュールの対象マーカー

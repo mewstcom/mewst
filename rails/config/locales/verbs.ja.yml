@@ -1,7 +1,6 @@
 ja:
   verbs:
     add: 追加する
-    add_link_card: "リンクカードを追加する: %{host_and_path}"
     close: 閉じる
     connect: 連携する
     copy_link_to_post: ポストへのリンクをコピー
@@ -10,7 +9,6 @@ ja:
     disconnect: 連携解除する
     follow: フォローする
     hide: 非表示にする
-    post: 投稿する
     search: 検索する
     sign_in: ログインする
     sign_up: アカウントを作成する

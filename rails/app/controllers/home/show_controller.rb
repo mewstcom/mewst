@@ -10,7 +10,6 @@ class Home::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PostForm.new(with_frame: true)
     @posts, @page_info = viewer!.home_timeline.fetch_posts(
       before: params[:before].presence,
       after: params[:after].presence,

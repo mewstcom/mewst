@@ -37,9 +37,6 @@ module GeneratedPathHelpersModule
   def letter_opener_web_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def link_list_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def manifest_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -49,12 +46,6 @@ module GeneratedPathHelpersModule
   def new_email_confirmation_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_link_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_post_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def notification_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -62,9 +53,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def password_reset_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def post_list_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end

@@ -49,60 +49,16 @@ type featureFlaggedPattern struct {
 // Each entry anchors its path regexp with "^...$" so it matches the exact path
 // and not sub-paths, and pairs it with an HTTP method set and the flag that
 // gates it. A matching request is served by Go only when the flag is enabled
-// for the viewer; otherwise it falls through to the Rails proxy.
+// for the viewer; otherwise it falls through to the Rails proxy. The list is
+// currently empty; add an entry here to gate the next feature behind a flag.
 //
 // [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
 //
 // 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
 // させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
 // リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
-// プロキシに進む。
-var featureFlaggedPatterns = []featureFlaggedPattern{
-	// GET /new: the Go new-post form. The "^/new$" anchor keeps it from matching
-	// sub-paths.
-	//
-	// [Ja] GET /new: Go 版の新規投稿フォーム。"^/new$" のアンカーでサブパスには
-	// マッチさせない。
-	{
-		pattern: regexp.MustCompile(`^/new$`),
-		flag:    model.FeatureFlagNewPost,
-		methods: []string{http.MethodGet},
-	},
-	// POST /posts: the Go post-creation endpoint, gated under the same flag as
-	// /new. The "^/posts$" anchor matches only the exact path, so the Rails-owned
-	// GET /posts/:id (post detail, out of scope) is not swept in.
-	//
-	// [Ja] POST /posts: Go 版の投稿作成エンドポイント。/new と同じフラグの配下に置く。
-	// "^/posts$" のアンカーで完全一致のみにマッチさせるため、Rails に残す
-	// GET /posts/:id (投稿詳細・スコープ外) を巻き込まない。
-	{
-		pattern: regexp.MustCompile(`^/posts$`),
-		flag:    model.FeatureFlagNewPost,
-		methods: []string{http.MethodPost},
-	},
-	// GET /links/new: the Go link card prompt fragment fetched via htmx from the
-	// /new form, gated under the same flag so the htmx call from a Go-rendered
-	// form also lands on Go.
-	//
-	// [Ja] GET /links/new: /new フォームから htmx で取得する Go 版リンクカード
-	// プロンプトのフラグメント。Go 版が描画したフォームからの htmx 呼び出しも
-	// Go に向くよう、同じフラグの配下に置く。
-	{
-		pattern: regexp.MustCompile(`^/links/new$`),
-		flag:    model.FeatureFlagNewPost,
-		methods: []string{http.MethodGet},
-	},
-	// POST /links: the Go link card creation endpoint. The "^/links$" anchor
-	// matches only the exact path so sub-paths are not swept in.
-	//
-	// [Ja] POST /links: Go 版のリンクカード作成エンドポイント。"^/links$" の
-	// アンカーで完全一致のみにマッチさせ、サブパスを巻き込まない。
-	{
-		pattern: regexp.MustCompile(`^/links$`),
-		flag:    model.FeatureFlagNewPost,
-		methods: []string{http.MethodPost},
-	},
-}
+// プロキシに進む。現在は空で、次の機能をフラグでゲートするときにエントリを追加する。
+var featureFlaggedPatterns []featureFlaggedPattern
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
 // [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
@@ -126,6 +82,47 @@ var goHandledPaths = []string{
 	"/email_confirmation", // メール確認
 	"/password",           // パスワード更新
 	"/accounts",           // アカウント作成
+}
+
+// goHandledPattern defines an exact URL pattern and HTTP method set always
+// handled by Go.
+//
+// [Ja] goHandledPattern は常に Go 版で処理する完全一致 URL パターンと HTTP
+// メソッドの集合を定義する。
+type goHandledPattern struct {
+	pattern *regexp.Regexp
+	methods []string // nil or empty matches every method. [Ja] nil または空なら全メソッドにマッチ
+}
+
+// goHandledPatterns lists the URL patterns always handled by Go, identified by
+// an exact path regexp and an HTTP method set.
+//
+// goHandledPaths matches by prefix, which is too coarse here: adding "/posts"
+// there would also steal the Rails-owned GET /posts/:id (post detail). These
+// endpoints need exact-path + method precision, so the "^...$" anchor plus the
+// method set keeps POST /posts matching only POST /posts and leaves GET
+// /posts/:id with Rails.
+//
+// [Ja] goHandledPatterns は常に Go 版で処理する URL パターンの一覧。完全一致の
+// パス正規表現と HTTP メソッドの集合で識別する。
+//
+// goHandledPaths は prefix 一致のため、ここでは粗すぎる: "/posts" を足すと Rails
+// に残す GET /posts/:id (投稿詳細) まで奪ってしまう。これらのエンドポイントは
+// exact-path + method の精度が要るため、"^...$" のアンカーとメソッド集合により
+// POST /posts は POST /posts だけにマッチさせ、GET /posts/:id は Rails に残す。
+var goHandledPatterns = []goHandledPattern{
+	// GET /new: the new-post form.
+	// [Ja] GET /new: 新規投稿フォーム。
+	{pattern: regexp.MustCompile(`^/new$`), methods: []string{http.MethodGet}},
+	// POST /posts: post creation. The "^/posts$" anchor leaves GET /posts/:id with Rails.
+	// [Ja] POST /posts: 投稿作成。"^/posts$" のアンカーで GET /posts/:id は Rails に残す。
+	{pattern: regexp.MustCompile(`^/posts$`), methods: []string{http.MethodPost}},
+	// GET /links/new: the link card prompt fragment fetched via htmx from the /new form.
+	// [Ja] GET /links/new: /new フォームから htmx で取得するリンクカードプロンプトのフラグメント。
+	{pattern: regexp.MustCompile(`^/links/new$`), methods: []string{http.MethodGet}},
+	// POST /links: link card creation.
+	// [Ja] POST /links: リンクカード作成。
+	{pattern: regexp.MustCompile(`^/links$`), methods: []string{http.MethodPost}},
 }
 
 // NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.
@@ -255,9 +252,14 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 // [Ja] Middleware は HTTP ミドルウェアを返す。
 func (m *ReverseProxyMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 1. Paths always handled by Go (whitelist).
-		// [Ja] 1. 常に Go 版で処理するパス (ホワイトリスト)。
-		if m.isGoHandledPath(r.URL.Path) {
+		// 1. Paths always handled by Go (prefix whitelist), plus exact-path +
+		// method patterns that prefix matching is too coarse for (e.g. POST
+		// /posts must be Go while GET /posts/:id stays with Rails).
+		//
+		// [Ja] 1. 常に Go 版で処理するパス (prefix ホワイトリスト)。加えて prefix
+		// 一致では粗すぎる完全一致 + メソッドのパターン (例: POST /posts は Go・
+		// GET /posts/:id は Rails) もここで処理する。
+		if m.isGoHandledPath(r.URL.Path) || m.isGoHandledPattern(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -326,6 +328,20 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 	return false
 }
 
+// isGoHandledPattern reports whether the request matches a goHandledPatterns
+// entry by exact path and method, meaning Go always handles it.
+//
+// [Ja] isGoHandledPattern はリクエストが goHandledPatterns のエントリに完全一致
+// パスとメソッドで一致するか (= 常に Go 版で処理する) を判定する。
+func (m *ReverseProxyMiddleware) isGoHandledPattern(r *http.Request) bool {
+	for _, gp := range goHandledPatterns {
+		if matchesPattern(gp.pattern, gp.methods, r) {
+			return true
+		}
+	}
+	return false
+}
+
 // getFeatureFlagForRequest returns the feature flag name matching the request's
 // path and method, or an empty string when no pattern matches.
 //
@@ -333,15 +349,32 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 // フィーチャーフラグ名を返す。一致するパターンが無ければ空文字列を返す。
 func (m *ReverseProxyMiddleware) getFeatureFlagForRequest(r *http.Request) model.FeatureFlagName {
 	for _, fp := range featureFlaggedPatterns {
-		if !fp.pattern.MatchString(r.URL.Path) {
-			continue
+		if matchesPattern(fp.pattern, fp.methods, r) {
+			return fp.flag
 		}
-		if len(fp.methods) > 0 && !containsMethod(fp.methods, r.Method) {
-			continue
-		}
-		return fp.flag
 	}
 	return ""
+}
+
+// matchesPattern reports whether the request's path and method match the given
+// path regexp and method set. An empty method set matches every method. It is
+// shared by isGoHandledPattern and getFeatureFlagForRequest, which apply the
+// same regexp-plus-method matching to goHandledPatterns and
+// featureFlaggedPatterns respectively.
+//
+// [Ja] matchesPattern はリクエストのパスとメソッドが、指定したパス正規表現と
+// メソッド集合に一致するかを判定する。メソッド集合が空ならすべてのメソッドに
+// 一致する。goHandledPatterns / featureFlaggedPatterns に同じ「正規表現 +
+// メソッド」のマッチを適用する isGoHandledPattern と getFeatureFlagForRequest で
+// 共有する。
+func matchesPattern(pattern *regexp.Regexp, methods []string, r *http.Request) bool {
+	if !pattern.MatchString(r.URL.Path) {
+		return false
+	}
+	if len(methods) > 0 && !containsMethod(methods, r.Method) {
+		return false
+	}
+	return true
 }
 
 // containsMethod reports whether method is contained in methods.

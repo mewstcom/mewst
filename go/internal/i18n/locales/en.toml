@@ -381,6 +381,10 @@ other = "What's happening?"
 description = "New post form submit button"
 other = "Post"
 
+[post_new_back]
+description = "Back affordance link text on the new post page"
+other = "Back"
+
 # ============================================
 # Link card (link_*)
 # ============================================

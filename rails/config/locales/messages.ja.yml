@@ -47,7 +47,7 @@ ja:
       description: あなたがフォローしているプロフィールを表示しています
     home:
       lets_make_the_first_post_mobile: ↓の投稿ボタンからポストしましょう
-      lets_make_the_first_post_pc: ↑の投稿欄からポストしましょう
+      lets_make_the_first_post_pc: ↑の投稿ボタンからポストしましょう
       no_posts: 過去1ヶ月以内のポストはありません
     notifications:
       description: スタンプされたときに通知が届きます
@@ -60,7 +60,6 @@ ja:
     posts:
       are_you_sure_to_delete_post: この投稿を削除しますか？
       copied_to_clipboard: リンクをコピーしました
-      created: 投稿しました
       deleted: 投稿を削除しました
     profiles:
       about_gravatar: Gravatarについて
@@ -95,7 +94,6 @@ ja:
         アカウント作成用のメールを送信します
     users:
       updated: ユーザー設定を更新しました。
-    whats_happening: いまなにしてる？
     welcome:
       beta_html: |-
         現在ベータ版です<br>
