@@ -42,6 +42,23 @@ type NewPageData struct {
 templ New(data NewPageData) {
 	{{ hasContentError := data.FormErrors != nil && data.FormErrors.HasFieldError("content") }}
 	<div class="mx-auto max-w-2xl px-4 py-6">
+		// Back affordance restoring the "close and return" action the navbar new
+		// link lost when it changed from a modal to a plain full-page link. The
+		// href is a /home fallback used for direct visits, external referrers, or
+		// JS-disabled clients (progressive enhancement); the back-link script
+		// upgrades it to history.back() when the referrer is same-origin.
+		//
+		// [Ja] navbar の new がモーダルからプレーンなフルページリンクに変わったこと
+		// で失われた「閉じて元に戻る」操作を補う戻る導線。href は直接アクセス・外部
+		// からの遷移・JS 無効時のフォールバック (プログレッシブエンハンスメント) と
+		// して /home を指し、referrer が同一オリジンのときは back-link スクリプトが
+		// history.back() に格上げする。
+		<div class="mb-4">
+			<a class="link-muted" data-back-link href="/home">
+				{ templates.T(ctx, "post_new_back") }
+			</a>
+		</div>
+
 		@components.FormErrors(data.FormErrors)
 
 		<form action="/posts" class="form grid gap-4" hx-on:submit="disableSubmitButtons(this)" method="POST">
