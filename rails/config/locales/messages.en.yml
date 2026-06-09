@@ -44,7 +44,7 @@ en:
       description: Showing profiles you follow.
     home:
       lets_make_the_first_post_mobile: Let's make a post from "Post" below.
-      lets_make_the_first_post_pc: Let's make a post from the form above.
+      lets_make_the_first_post_pc: Let's make a post from "Post" above.
       no_posts: No posts within the past month.
     notifications:
       description: You will receive notifications when your posts are stamped.
@@ -57,7 +57,6 @@ en:
     posts:
       are_you_sure_to_delete_post: Are you sure to delete this post?
       copied_to_clipboard: Copied to clipboard.
-      created: Post created.
       deleted: Post deleted.
     profiles:
       about_gravatar: About Gravatar
@@ -89,7 +88,6 @@ en:
         We will send you an email to create an account.
     users:
       updated: User updated.
-    whats_happening: What's happening?
     welcome:
       beta_html: |-
         This is an beta product.<br>

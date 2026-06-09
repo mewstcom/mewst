@@ -4,11 +4,11 @@
 RSpec.describe DeletePostUseCase do
   context "正常系" do
     def setup_data
-      FactoryBot.create(:oauth_application, :mewst_web)
       link = FactoryBot.create(:link_record)
       post_author = FactoryBot.create(:actor)
-      result = CreatePostUseCase.new.call(viewer: post_author, content: "hello", canonical_url: link.canonical_url)
-      target_post = result.post
+      target_post = FactoryBot.create(:post_record, profile_record: post_author.profile_record)
+      target_post.create_post_link_record!(link_record: link)
+      post_author.profile_record.home_timeline.add_post!(post: target_post)
       viewer = FactoryBot.create(:actor)
       CreateStampUseCase.new.call(viewer:, target_post:)
 

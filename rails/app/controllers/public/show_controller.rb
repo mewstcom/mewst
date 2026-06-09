@@ -10,7 +10,6 @@ class Public::ShowController < ApplicationController
 
   sig { returns(T.untyped) }
   def call
-    @form = PostForm.new(with_frame: true)
     page = PostRecord.kept.preload(:profile_record, :link_record).cursor_paginate(
       after: params[:after].presence,
       before: params[:before].presence,

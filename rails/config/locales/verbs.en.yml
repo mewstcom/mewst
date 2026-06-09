@@ -1,7 +1,6 @@
 en:
   verbs:
     add: Add
-    add_link_card: "Add link card: %{host_and_path}"
     close: Close
     connect: Connect
     copy_link_to_post: Copy link to post
@@ -10,7 +9,6 @@ en:
     disconnect: Disconnect
     follow: Follow
     hide: Hide
-    post: Post
     search: Search
     sign_in: Sign in
     sign_up: Create account

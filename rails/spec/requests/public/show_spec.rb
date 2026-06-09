@@ -17,15 +17,6 @@ RSpec.describe "GET /public", type: :request do
     expect(response).to have_http_status(:ok)
   end
 
-  it "ログインしているとき、投稿フォームが表示されること" do
-    actor = FactoryBot.create(:actor)
-    sign_in(actor)
-
-    get "/public"
-
-    expect(response.body).to include("post_form[content]")
-  end
-
   it "ログインしているとき、公開された投稿が表示されること" do
     actor = FactoryBot.create(:actor)
     sign_in(actor)
