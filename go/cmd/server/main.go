@@ -336,19 +336,19 @@ func main() {
 	})
 
 	// New post form, submission, and link card fragments (authenticated users
-	// only). All routes are gated by the reverse-proxy feature flag
-	// (FeatureFlagNewPost), so requests from viewers without the flag never reach
-	// them and are proxied to the Rails version. POST /posts and POST /links are
-	// genuine POSTs, so no Method Override is needed; the routes are registered
-	// directly. GET /links/new sits under the CSRF middleware so the fragment can
-	// embed the CSRF token for its POST /links form.
+	// only). The reverse proxy routes these paths to Go unconditionally via its
+	// goHandledPatterns (exact path + method), so they are no longer behind a
+	// feature flag. POST /posts and POST /links are genuine POSTs, so no Method
+	// Override is needed; the routes are registered directly. GET /links/new sits
+	// under the CSRF middleware so the fragment can embed the CSRF token for its
+	// POST /links form.
 	//
 	// [Ja] 新規投稿フォーム・送信・リンクカードのフラグメント（認証済みユーザーのみ）。
-	// すべてのルートはリバースプロキシのフィーチャーフラグ (FeatureFlagNewPost) で
-	// ゲートされるため、フラグが無効な閲覧者のリクエストはここに到達せず Rails 版に
-	// プロキシされる。POST /posts と POST /links は本来の POST のため Method Override
-	// は不要で、ルートを直接登録する。GET /links/new はフラグメントが POST /links
-	// フォーム用の CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
+	// リバースプロキシはこれらのパスを goHandledPatterns (完全一致 + メソッド) で
+	// 無条件に Go 版へ振り分けるため、もうフィーチャーフラグの配下にはない。
+	// POST /posts と POST /links は本来の POST のため Method Override は不要で、
+	// ルートを直接登録する。GET /links/new はフラグメントが POST /links フォーム用の
+	// CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
