@@ -17,7 +17,6 @@ gem "discard"
 gem "doorkeeper"
 gem "email_validator"
 gem "enumerize"
-gem "faraday"
 gem "good_job", "~> 3.99.0"
 gem "http_accept_language"
 gem "inline_svg"
@@ -65,7 +64,6 @@ end
 group :test do
   gem "cuprite"
   gem "capybara"
-  gem "vcr"
 end
 
 group :production do
