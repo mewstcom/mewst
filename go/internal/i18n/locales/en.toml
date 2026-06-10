@@ -382,11 +382,11 @@ description = "New post form submit button"
 other = "Post"
 
 # ============================================
-# Compose layout (compose_*)
+# Back link (back_link)
 # ============================================
 
-[compose_back]
-description = "Back affordance link text in the compose layout (focused create screen)"
+[back_link]
+description = "Link text for the back affordance (BackLink component)"
 other = "Back"
 
 # ============================================

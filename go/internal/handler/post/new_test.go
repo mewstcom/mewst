@@ -46,13 +46,14 @@ func TestNew(t *testing.T) {
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
 		"いまなにしてる？",             // 本文ラベル (post_new_content_label)
 		"投稿する",                 // 送信ボタン (post_new_submit)
-		// Compose layout back affordance: a /home fallback link upgraded to
-		// history.back() by the back-link script when the referrer is same-origin.
-		// [Ja] compose レイアウトの戻る導線: referrer が同一オリジンのとき back-link
-		// スクリプトが history.back() に格上げする /home フォールバックリンク
+		// Back affordance rendered by the page (BackLink component): a /home fallback
+		// link upgraded to history.back() by the back-link script when the referrer is
+		// same-origin.
+		// [Ja] ページが描画する戻る導線 (BackLink コンポーネント): referrer が同一オリジン
+		// のとき back-link スクリプトが history.back() に格上げする /home フォールバックリンク
 		"data-back-link", // 戻るリンクの JS フック
 		`href="/home"`,   // 戻る導線のフォールバック先
-		"戻る",             // 戻るリンクのラベル (compose_back)
+		"戻る",             // 戻るリンクのラベル (back_link)
 		// Form enhancements: wiring for the character counter, autosize, and the
 		// link card integration.
 		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
@@ -76,14 +77,14 @@ func TestNew(t *testing.T) {
 		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
 	}
 
-	// The compose layout omits the navbar, so navbar-only links (e.g. search) must
-	// not appear. This locks /new to the focused compose layout instead of the
+	// layouts.Simple omits the navbar, so navbar-only links (e.g. search) must not
+	// appear. This locks /new to the focused navbar-less layout instead of the
 	// shared authenticated layout.
-	// [Ja] compose レイアウトは navbar を持たないため、navbar 専用リンク (検索など) は
-	// 出力されない。これにより /new が共通の認証後レイアウトではなく集中作成 compose
-	// レイアウトに固定されることを保証する。
+	// [Ja] layouts.Simple は navbar を持たないため、navbar 専用リンク (検索など) は
+	// 出力されない。これにより /new が共通の認証後レイアウトではなく navbar 無しの集中
+	// 作成レイアウトに固定されることを保証する。
 	if strings.Contains(body, `href="/search"`) {
-		t.Error("compose レイアウトの /new に navbar の検索リンクが含まれています")
+		t.Error("navbar 無しの /new に navbar の検索リンクが含まれています")
 	}
 }
 
