@@ -66,26 +66,24 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "post_new_title")
 
-	// /new is a focused compose screen, so it uses the navbar-less compose layout
-	// (form centered, back affordance pinned top-left) rather than the shared
-	// authenticated layout. The back affordance falls back to /home.
+	// /new is a focused compose screen, so it uses the navbar-less layouts.Simple
+	// (form centered, no navbar) rather than the shared authenticated layout. The
+	// page itself renders the back affordance at the top of its content column so it
+	// aligns with the form width; the affordance falls back to /home.
 	//
 	// [Ja] /new は集中作成画面のため、共通の認証後レイアウトではなく navbar を持たない
-	// compose レイアウト (フォーム中央寄せ・戻る導線を左上に固定) を使う。戻る導線は
-	// /home にフォールバックする。
-	data := layouts.ComposeLayoutData{
-		Meta:     meta,
-		BackHref: templates.HomePath(),
-	}
+	// layouts.Simple (フォーム中央寄せ・navbar なし) を使う。戻る導線はページがコンテンツ
+	// カラムの先頭で描画してフォーム幅に揃え、/home にフォールバックする。
 	formContent := postpages.New(postpages.NewPageData{
 		CSRFToken:    csrfToken,
 		FormErrors:   ve,
 		Content:      content,
 		CanonicalURL: canonicalURL,
 		AttachedLink: attachedLink,
+		BackHref:     templates.HomePath(),
 	})
 
-	if err := layouts.Compose(data, formContent).Render(ctx, w); err != nil {
+	if err := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, formContent).Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

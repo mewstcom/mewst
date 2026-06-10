@@ -1,0 +1,21 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/templates"
+
+// BackLink renders a back affordance: an anchor whose href is the fallback used
+// for direct visits, external referrers, or JS-disabled clients (progressive
+// enhancement). The back-link script (web/back_link.ts) upgrades it to
+// history.back() when the referrer is same-origin. Pages render this at the top
+// of their content column so it aligns with the content width instead of being
+// pinned to a window corner where it is easy to miss.
+//
+// [Ja] BackLink は戻る導線を描画する。href は直接アクセス・外部からの遷移・JS 無効時
+// のフォールバック (プログレッシブエンハンスメント) で、referrer が同一オリジンのときは
+// back-link スクリプト (web/back_link.ts) が history.back() に格上げする。各ページは
+// コンテンツ幅に揃うよう、これをコンテンツカラムの先頭で描画する (見落としやすい
+// ウィンドウ隅への固定はしない)。
+templ BackLink(href templates.Path) {
+	<a class="link-muted" data-back-link href={ href }>
+		{ templates.T(ctx, "back_link") }
+	</a>
+}
