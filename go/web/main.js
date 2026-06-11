@@ -27,13 +27,13 @@ const setupCharacterCounters = () => {
 
     const max = Number(counter.dataset.characterCounterMax);
     const update = () => {
-      // Count newlines as CRLF (2 code points) to match what the form submits:
-      // the HTML spec normalizes textarea newlines to CRLF on submission, and
-      // the server-side validation counts the submitted value.
-      // [Ja] フォーム送信時の表現に合わせ、改行を CRLF (2 コードポイント) として
-      // 数える。HTML 仕様により textarea の改行は送信時に CRLF へ正規化され、
-      // サーバー側バリデーションは送信後の値を数えるため。
-      counter.textContent = String(max - [...textarea.value.replace(/\n/g, "\r\n")].length);
+      // Count a newline as a single code point. The form submits CRLF, but the
+      // server folds it back to LF before validating/storing, so the counter
+      // matches the server by counting the textarea value (LF) as-is.
+      // [Ja] 改行は 1 コードポイントとして数える。フォーム送信時は CRLF だが、
+      // サーバーが検証・保存の前に LF へ畳み戻すため、textarea の値 (LF) を
+      // そのまま数えればサーバーと一致する。
+      counter.textContent = String(max - [...textarea.value].length);
     };
 
     textarea.addEventListener("input", update);
