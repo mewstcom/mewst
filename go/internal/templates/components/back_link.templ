@@ -5,17 +5,28 @@ import "github.com/mewstcom/mewst/go/internal/templates"
 // BackLink renders a back affordance: an anchor whose href is the fallback used
 // for direct visits, external referrers, or JS-disabled clients (progressive
 // enhancement). The back-link script (web/back_link.ts) upgrades it to
-// history.back() when the referrer is same-origin. Pages render this at the top
-// of their content column so it aligns with the content width instead of being
-// pinned to a window corner where it is easy to miss.
+// history.back() when the referrer is same-origin. The caller (layout or page)
+// decides where to place it.
 //
 // [Ja] BackLink は戻る導線を描画する。href は直接アクセス・外部からの遷移・JS 無効時
 // のフォールバック (プログレッシブエンハンスメント) で、referrer が同一オリジンのときは
-// back-link スクリプト (web/back_link.ts) が history.back() に格上げする。各ページは
-// コンテンツ幅に揃うよう、これをコンテンツカラムの先頭で描画する (見落としやすい
-// ウィンドウ隅への固定はしない)。
+// back-link スクリプト (web/back_link.ts) が history.back() に格上げする。配置先
+// (レイアウトかページか) は呼び出し側が決める。
 templ BackLink(href templates.Path) {
-	<a class="link-muted" data-back-link href={ href }>
-		{ templates.T(ctx, "back_link") }
+	// The icon pairs with the visible back_link label, so the label text itself
+	// is the link's accessible name and no aria-label is needed.
+	//
+	// [Ja] アイコンは可視の back_link ラベルと並ぶため、ラベルテキスト自体が
+	// リンクのアクセシブルネームになり aria-label は不要。
+	<a
+		class="link-bare-muted-foreground flex items-center gap-1"
+		data-back-link
+		href={ href }
+	>
+		@templates.Icon("arrow-bend-up-left-regular", "size-4")
+
+		<span class="text-sm">
+			{ templates.T(ctx, "back_link") }
+		</span>
 	</a>
 }

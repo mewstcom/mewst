@@ -1,0 +1,58 @@
+package layouts
+
+import (
+	"github.com/a-h/templ"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// ComposeLayoutData holds the data passed to the compose layout. BackHref is the
+// fallback destination for the back affordance pinned to the top-left corner (the
+// back-link script upgrades it to history.back() when the referrer is same-origin).
+//
+// [Ja] ComposeLayoutData は compose レイアウトに渡すデータ構造体。BackHref は左上端に
+// 固定する戻る導線のフォールバック先 (referrer が同一オリジンのとき back-link スクリプト
+// が history.back() に格上げする)。
+type ComposeLayoutData struct {
+	Meta     viewmodel.PageMeta
+	BackHref templates.Path
+}
+
+// Compose is the layout for modal-like focused pages served as their own full
+// page (e.g. the new post form). It hides the navbar to keep the user on a single
+// task, centers the content, and pins the back affordance to the top-left corner
+// as layout chrome — so the centered content stays the visual hero while the back
+// link recedes to the periphery, reproducing the "close and return" feel of the
+// Rails turbo-frame modal without an actual overlay.
+//
+// [Ja] Compose はモーダル風だが独立したフルページとして配信する集中作成画面 (新規
+// 投稿フォーム等) 用のレイアウト。navbar を隠してユーザーを単一タスクに集中させ、
+// コンテンツを中央に寄せ、戻る導線をレイアウト共通 chrome として左上端に固定する。
+// これにより中央のコンテンツが視覚的な主役のままで戻る導線は周辺に退き、Rails の
+// turbo-frame モーダルの「閉じて元に戻る」体験を、実際のオーバーレイ無しで再現する。
+templ Compose(data ComposeLayoutData, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang={ templates.Locale(ctx) }>
+		<head>
+			@components.Head(data.Meta)
+		</head>
+		<body class="flex min-h-[100svh] items-center justify-center p-4">
+			@components.Flash(session.FlashFromContext(ctx))
+			// Back affordance pinned to the window's top-left corner, outside the
+			// centered flow, so it stays available without competing with the content
+			// for attention. The BackLink component owns the icon, label, and the
+			// progressive-enhancement script wiring; this layout only positions it.
+			//
+			// [Ja] 中央寄せフローの外側、ウィンドウ左上端に固定する戻る導線。コンテンツと
+			// 注意を奪い合わずに常時利用できるようにする。アイコン・ラベル・プログレッシブ
+			// エンハンスメントのスクリプト配線は BackLink コンポーネントが持ち、本レイアウトは
+			// その配置だけを担う。
+			<div class="fixed left-4 top-4 z-50">
+				@components.BackLink(data.BackHref)
+			</div>
+			@content
+		</body>
+	</html>
+}

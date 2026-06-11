@@ -41,6 +41,43 @@ const setupCharacterCounters = () => {
   });
 };
 
+// Focus proxy: clicking an element with data-focus-textarea="<textarea id>"
+// focuses that textarea, so the character-counter row at the bottom of the
+// bordered box behaves like part of the textarea (paired with the cursor-text
+// class for the matching text cursor). The caret is moved to the end because the
+// click lands below the text.
+//
+// [Ja] フォーカスプロキシ: data-focus-textarea="<textarea の id>" を持つ要素を
+// クリックすると、その textarea にフォーカスする。これにより枠付きボックス下部の
+// 文字数カウンター行が textarea の一部のように振る舞う (cursor-text クラスと
+// 組み合わせてテキストカーソルも揃える)。クリックは本文の下に着地するため、
+// キャレットは末尾へ移動する。
+const setupTextareaFocusProxies = () => {
+  document.querySelectorAll("[data-focus-textarea]").forEach((proxy) => {
+    const textarea = document.getElementById(proxy.dataset.focusTextarea);
+    if (!textarea) return;
+
+    proxy.addEventListener("mousedown", (event) => {
+      // Leave opted-out regions (e.g. the link card in #link-form) alone so
+      // their own clicks and text selection keep working; only plain clicks
+      // elsewhere in the proxy focus the textarea.
+      // [Ja] 除外領域 (例: #link-form 内のリンクカード) はそのままにしてクリックや
+      // テキスト選択を維持し、プロキシ内のそれ以外のクリックだけ textarea へ
+      // フォーカスする。
+      if (event.target.closest("[data-focus-proxy-ignore]")) return;
+
+      // Prevent mousedown from starting a text selection on the proxy and focus
+      // the textarea instead, mirroring a click inside an input's padding.
+      // [Ja] mousedown でプロキシ上のテキスト選択が始まるのを防ぎ、代わりに textarea
+      // へフォーカスする (入力欄の余白をクリックしたときの挙動に揃える)。
+      event.preventDefault();
+      const end = textarea.value.length;
+      textarea.focus();
+      textarea.setSelectionRange(end, end);
+    });
+  });
+};
+
 // Autosize: grows a <textarea data-autosize> to fit its content on input.
 // Also runs once at setup so a re-rendered form (e.g. after a validation
 // error) starts at the right height.
@@ -125,6 +162,7 @@ const setupLinkCardDetection = () => {
 // [Ja] main.js は module スクリプト (defer 相当) として読み込まれるため、
 // この時点で DOM は構築済み。
 setupCharacterCounters();
+setupTextareaFocusProxies();
 setupAutosize();
 setupLinkCardDetection();
 setupBackLinks();
