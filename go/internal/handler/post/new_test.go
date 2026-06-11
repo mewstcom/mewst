@@ -46,11 +46,14 @@ func TestNew(t *testing.T) {
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
 		"いまなにしてる？",             // 本文ラベル (post_new_content_label)
 		"投稿する",                 // 送信ボタン (post_new_submit)
-		// Back affordance rendered by the page (BackLink component): a /home fallback
-		// link upgraded to history.back() by the back-link script when the referrer is
-		// same-origin.
-		// [Ja] ページが描画する戻る導線 (BackLink コンポーネント): referrer が同一オリジン
-		// のとき back-link スクリプトが history.back() に格上げする /home フォールバックリンク
+		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
+		// Back affordance rendered by layouts.Compose as top-left corner chrome
+		// (BackLink component): a /home fallback link upgraded to history.back() by the
+		// back-link script when the referrer is same-origin. It shows the back_link icon
+		// alongside the back_link label text.
+		// [Ja] layouts.Compose が左上端の chrome として描画する戻る導線 (BackLink コンポーネント):
+		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
+		// /home フォールバックリンク。back_link アイコンと back_link のラベルテキストを並べて表示する。
 		"data-back-link", // 戻るリンクの JS フック
 		`href="/home"`,   // 戻る導線のフォールバック先
 		"戻る",             // 戻るリンクのラベル (back_link)
@@ -62,6 +65,9 @@ func TestNew(t *testing.T) {
 		"data-autosize",                        // autosize module marker. [Ja] autosize モジュールの対象マーカー
 		`data-character-counter-for="content"`, // character counter target textarea. [Ja] 文字数カウンターの対象 textarea
 		`data-character-counter-max="160"`,     // content length limit (model.MaximumPostContentLength). [Ja] 文字数上限
+		`data-focus-textarea="content"`,        // lower-area focus proxy: clicking it focuses #content. [Ja] 下部領域のフォーカスプロキシ: クリックで #content にフォーカス
+		"cursor-text",                          // lower area shows the textarea's text cursor. [Ja] 下部領域に textarea と同じテキストカーソルを表示
+		"data-focus-proxy-ignore",              // #link-form opts out so the link card's clicks/cursor survive. [Ja] #link-form は除外しリンクカードのクリック・カーソルを維持
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
@@ -77,10 +83,10 @@ func TestNew(t *testing.T) {
 		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
 	}
 
-	// layouts.Simple omits the navbar, so navbar-only links (e.g. search) must not
+	// layouts.Compose omits the navbar, so navbar-only links (e.g. search) must not
 	// appear. This locks /new to the focused navbar-less layout instead of the
 	// shared authenticated layout.
-	// [Ja] layouts.Simple は navbar を持たないため、navbar 専用リンク (検索など) は
+	// [Ja] layouts.Compose は navbar を持たないため、navbar 専用リンク (検索など) は
 	// 出力されない。これにより /new が共通の認証後レイアウトではなく navbar 無しの集中
 	// 作成レイアウトに固定されることを保証する。
 	if strings.Contains(body, `href="/search"`) {

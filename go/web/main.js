@@ -27,17 +27,54 @@ const setupCharacterCounters = () => {
 
     const max = Number(counter.dataset.characterCounterMax);
     const update = () => {
-      // Count newlines as CRLF (2 code points) to match what the form submits:
-      // the HTML spec normalizes textarea newlines to CRLF on submission, and
-      // the server-side validation counts the submitted value.
-      // [Ja] フォーム送信時の表現に合わせ、改行を CRLF (2 コードポイント) として
-      // 数える。HTML 仕様により textarea の改行は送信時に CRLF へ正規化され、
-      // サーバー側バリデーションは送信後の値を数えるため。
-      counter.textContent = String(max - [...textarea.value.replace(/\n/g, "\r\n")].length);
+      // Count a newline as a single code point. The form submits CRLF, but the
+      // server folds it back to LF before validating/storing, so the counter
+      // matches the server by counting the textarea value (LF) as-is.
+      // [Ja] 改行は 1 コードポイントとして数える。フォーム送信時は CRLF だが、
+      // サーバーが検証・保存の前に LF へ畳み戻すため、textarea の値 (LF) を
+      // そのまま数えればサーバーと一致する。
+      counter.textContent = String(max - [...textarea.value].length);
     };
 
     textarea.addEventListener("input", update);
     update();
+  });
+};
+
+// Focus proxy: clicking an element with data-focus-textarea="<textarea id>"
+// focuses that textarea, so the character-counter row at the bottom of the
+// bordered box behaves like part of the textarea (paired with the cursor-text
+// class for the matching text cursor). The caret is moved to the end because the
+// click lands below the text.
+//
+// [Ja] フォーカスプロキシ: data-focus-textarea="<textarea の id>" を持つ要素を
+// クリックすると、その textarea にフォーカスする。これにより枠付きボックス下部の
+// 文字数カウンター行が textarea の一部のように振る舞う (cursor-text クラスと
+// 組み合わせてテキストカーソルも揃える)。クリックは本文の下に着地するため、
+// キャレットは末尾へ移動する。
+const setupTextareaFocusProxies = () => {
+  document.querySelectorAll("[data-focus-textarea]").forEach((proxy) => {
+    const textarea = document.getElementById(proxy.dataset.focusTextarea);
+    if (!textarea) return;
+
+    proxy.addEventListener("mousedown", (event) => {
+      // Leave opted-out regions (e.g. the link card in #link-form) alone so
+      // their own clicks and text selection keep working; only plain clicks
+      // elsewhere in the proxy focus the textarea.
+      // [Ja] 除外領域 (例: #link-form 内のリンクカード) はそのままにしてクリックや
+      // テキスト選択を維持し、プロキシ内のそれ以外のクリックだけ textarea へ
+      // フォーカスする。
+      if (event.target.closest("[data-focus-proxy-ignore]")) return;
+
+      // Prevent mousedown from starting a text selection on the proxy and focus
+      // the textarea instead, mirroring a click inside an input's padding.
+      // [Ja] mousedown でプロキシ上のテキスト選択が始まるのを防ぎ、代わりに textarea
+      // へフォーカスする (入力欄の余白をクリックしたときの挙動に揃える)。
+      event.preventDefault();
+      const end = textarea.value.length;
+      textarea.focus();
+      textarea.setSelectionRange(end, end);
+    });
   });
 };
 
@@ -125,6 +162,7 @@ const setupLinkCardDetection = () => {
 // [Ja] main.js は module スクリプト (defer 相当) として読み込まれるため、
 // この時点で DOM は構築済み。
 setupCharacterCounters();
+setupTextareaFocusProxies();
 setupAutosize();
 setupLinkCardDetection();
 setupBackLinks();

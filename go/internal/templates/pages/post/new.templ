@@ -26,9 +26,6 @@ type NewPageData struct {
 	// AttachedLink carries the resolved link card to re-render inside #link-form after a failed submit (nil when no link is attached or the URL resolves to no known link).
 	// [Ja] AttachedLink は送信失敗後に #link-form 内へ再描画する解決済みリンクカード (リンク未紐付け時や URL が既知のリンクに解決できない場合は nil)。
 	AttachedLink *viewmodel.Link
-	// BackHref is the fallback destination for the back affordance rendered above the form (the back-link script upgrades it to history.back() when the referrer is same-origin).
-	// [Ja] BackHref はフォーム上部に描画する戻る導線のフォールバック先 (referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする)。
-	BackHref templates.Path
 }
 
 // New renders the new post form (content textarea + submit button + CSRF). The
@@ -44,104 +41,138 @@ type NewPageData struct {
 // 同じ枠付きコンテナに収める。
 templ New(data NewPageData) {
 	{{ hasContentError := data.FormErrors != nil && data.FormErrors.HasFieldError("content") }}
-	// The centering and navbar-less chrome come from layouts.Simple; this page owns
-	// its content width (max-w-2xl) and edge padding (px-4), and renders the back
-	// affordance at the top of that column so it aligns with the form width instead
-	// of being pinned to a window corner.
+	// The centering and navbar-less chrome — and the back affordance pinned to the
+	// top-left corner — come from layouts.Compose; this page owns only its content
+	// width (max-w-2xl) and edge padding (px-4). Keeping the back link as layout
+	// chrome (rather than at the top of this column) lets the centered form stay the
+	// visual hero instead of the back link drawing the eye first.
 	//
-	// [Ja] 中央寄せと navbar 無しの chrome は layouts.Simple が担う。このページは
-	// コンテンツ幅 (max-w-2xl) と端の余白 (px-4) を自前で持ち、戻る導線をそのカラムの
-	// 先頭で描画してフォーム幅に揃える (ウィンドウ隅への固定はしない)。
+	// [Ja] 中央寄せと navbar 無しの chrome、および左上端に固定する戻る導線は
+	// layouts.Compose が担う。このページはコンテンツ幅 (max-w-2xl) と端の余白 (px-4)
+	// だけを持つ。戻る導線を (このカラム先頭ではなく) レイアウト共通 chrome に置くことで、
+	// 戻る導線に最初に視線が行くのではなく中央のフォームが視覚的な主役のままになる。
 	<div class="w-full max-w-2xl px-4">
-		<div class="mb-4">
-			@components.BackLink(data.BackHref)
-		</div>
+		<div class="flex flex-col gap-4">
+			@components.FormErrors(data.FormErrors)
 
-		@components.FormErrors(data.FormErrors)
+			<form
+				action="/posts"
+				class="form grid gap-4"
+				hx-on:submit="disableSubmitButtons(this)"
+				method="POST"
+			>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 
-		<form action="/posts" class="form grid gap-4" hx-on:submit="disableSubmitButtons(this)" method="POST">
-			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div class="grid gap-2">
+					// Use the Rails "What's happening?" prompt as the textarea label (the Rails
+					// post form has no separate heading and no generic "Content" label).
+					// [Ja] Rails の「いまなにしてる？」を本文 textarea のラベルに使う (Rails の
+					// 投稿フォームは独立見出しも汎用的な「本文」ラベルも持たない)。
+					<label class="font-bold" for="content">
+						{ templates.T(ctx, "post_new_content_label") }
+					</label>
 
-			<div class="grid gap-2">
-				// Use the Rails "What's happening?" prompt as the textarea label (the Rails
-				// post form has no separate heading and no generic "Content" label).
-				// [Ja] Rails の「いまなにしてる？」を本文 textarea のラベルに使う (Rails の
-				// 投稿フォームは独立見出しも汎用的な「本文」ラベルも持たない)。
-				<label class="font-bold" for="content">
-					{ templates.T(ctx, "post_new_content_label") }
-				</label>
-
-				// Bordered container shared by the textarea, the link card area, and the
-				// character counter (the Rails post form's .textarea wrapper). The basecoat
-				// .textarea styles paint the border here, so the inner textarea strips its
-				// own border/shadow/ring, and the focus ring is recreated via focus-within.
-				//
-				// [Ja] textarea・リンクカード領域・文字数カウンターを収める枠付きコンテナ
-				// (Rails 投稿フォームの .textarea ラッパーに対応)。枠線は basecoat の
-				// .textarea スタイルでこのコンテナに描き、内側の textarea は自身の枠線・
-				// 影・リングを消す。フォーカスリングは focus-within で再現する。
-				<div
-					class={ "textarea w-full flex-col p-0 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
-						templ.KV("border-destructive", hasContentError) }
-				>
-					<textarea
-						autofocus
-						class="min-h-0 w-full resize-none border-0 bg-transparent px-4 py-2 leading-loose shadow-none focus-visible:ring-0"
-						data-autosize
-						data-link-card-path="/links/new"
-						id="content"
-						if hasContentError {
-							aria-invalid="true"
-						} else {
-							aria-invalid="false"
-						}
-						name="content"
-						required
-						rows="1"
-					>{ data.Content }</textarea>
-
-					<div class="px-4 py-2">
-						// htmx target for the link card fragments (GET /links/new and
-						// POST /links swap into here). The re-rendered link card (or the bare
-						// echoed canonical_url when the link cannot be resolved) lives inside
-						// so that, after a failed submit, the URL detection sees the container
-						// as occupied and does not attach a second link.
-						//
-						// [Ja] リンクカードのフラグメント (GET /links/new と POST /links) を
-						// スワップする htmx ターゲット。再描画するリンクカード (link に解決
-						// できない場合はエコーバックする canonical_url のみ) をこの中に置く
-						// ことで、送信失敗後も URL 検出がコンテナを使用中とみなし、2 つ目の
-						// リンクを紐付けない。
-						<div id="link-form">
-							if data.AttachedLink != nil {
-								@components.AttachedLinkCard(*data.AttachedLink)
-							} else if data.CanonicalURL != "" {
-								<input type="hidden" name="canonical_url" value={ data.CanonicalURL }/>
+					// Bordered container shared by the textarea, the link card area, and the
+					// character counter (the Rails post form's .textarea wrapper). The basecoat
+					// .textarea styles paint the border here, so the inner textarea strips its
+					// own border/shadow/ring, and the focus ring is recreated via focus-within.
+					//
+					// The basecoat .textarea only transitions [color,box-shadow], so on focus the
+					// border-color flips instantly while the ring (box-shadow) fades in, making the
+					// two land at different times. Override the transition to include border-color
+					// with a duration/easing so the border and ring fade in together and softly.
+					//
+					// [Ja] textarea・リンクカード領域・文字数カウンターを収める枠付きコンテナ
+					// (Rails 投稿フォームの .textarea ラッパーに対応)。枠線は basecoat の
+					// .textarea スタイルでこのコンテナに描き、内側の textarea は自身の枠線・
+					// 影・リングを消す。フォーカスリングは focus-within で再現する。
+					//
+					// basecoat の .textarea は [color,box-shadow] しか遷移しないため、フォーカス時に
+					// 枠線色は即座に切り替わり、リング (box-shadow) だけ遅れてフェードインして両者の
+					// タイミングがずれる。遷移対象に border-color を含め duration/easing を付けて
+					// 上書きし、枠線とリングが同時にふわっとフェードインするようにする。
+					<div
+						class={ "textarea w-full flex-col p-0 transition-[color,box-shadow,border-color] duration-200 ease-out focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+							templ.KV("border-destructive", hasContentError) }
+					>
+						<textarea
+							autofocus
+							class="min-h-0 w-full resize-none border-0 bg-transparent px-4 py-2 leading-loose shadow-none focus-visible:ring-0"
+							data-autosize
+							data-link-card-path="/links/new"
+							id="content"
+							if hasContentError {
+								aria-invalid="true"
+							} else {
+								aria-invalid="false"
 							}
-						</div>
+							name="content"
+							required
+							rows="1"
+						>{ data.Content }</textarea>
 
-						<div class="text-right">
-							<span
-								class="text-sm text-gray-500"
-								data-character-counter-for="content"
-								data-character-counter-max={ strconv.Itoa(viewmodel.MaximumPostContentLength) }
-							></span>
+						// This whole area below the textarea (link card + character counter)
+						// belongs to the same bordered box, so make it act like part of the
+						// textarea: clicking it focuses #content (data-focus-textarea, wired in
+						// web/main.js) and cursor-text shows the same text cursor as the textarea,
+						// so the box's lower region feels editable rather than dead space.
+						// #link-form is opted out (data-focus-proxy-ignore + cursor-auto) so the
+						// link card's own clicks/cursor keep working.
+						//
+						// [Ja] textarea の下のこの領域全体 (リンクカード + 文字数カウンター) は同じ
+						// 枠付きボックスに属するため、textarea の一部のように振る舞わせる: クリックすると
+						// #content にフォーカスし (data-focus-textarea。配線は web/main.js)、cursor-text で
+						// textarea と同じテキストカーソルを表示する。これにより枠の下部領域が死んだ余白では
+						// なく編集可能領域のように感じられる。#link-form は除外し (data-focus-proxy-ignore +
+						// cursor-auto)、リンクカード自身のクリック・カーソルを維持する。
+						<div class="cursor-text px-4 py-2" data-focus-textarea="content">
+							// htmx target for the link card fragments (GET /links/new and
+							// POST /links swap into here). The re-rendered link card (or the bare
+							// echoed canonical_url when the link cannot be resolved) lives inside
+							// so that, after a failed submit, the URL detection sees the container
+							// as occupied and does not attach a second link.
+							//
+							// [Ja] リンクカードのフラグメント (GET /links/new と POST /links) を
+							// スワップする htmx ターゲット。再描画するリンクカード (link に解決
+							// できない場合はエコーバックする canonical_url のみ) をこの中に置く
+							// ことで、送信失敗後も URL 検出がコンテナを使用中とみなし、2 つ目の
+							// リンクを紐付けない。
+							<div id="link-form" class="cursor-auto" data-focus-proxy-ignore>
+								if data.AttachedLink != nil {
+									@components.AttachedLinkCard(*data.AttachedLink)
+								} else if data.CanonicalURL != "" {
+									<input type="hidden" name="canonical_url" value={ data.CanonicalURL }/>
+								}
+							</div>
+
+							<div class="text-right">
+								<span
+									class="text-sm text-gray-500"
+									data-character-counter-for="content"
+									data-character-counter-max={ strconv.Itoa(viewmodel.MaximumPostContentLength) }
+								></span>
+							</div>
 						</div>
 					</div>
+
+					if hasContentError {
+						for _, errorMsg := range data.FormErrors.GetFieldErrors("content") {
+							<p class="text-sm text-error">
+								{ errorMsg }
+							</p>
+						}
+					}
 				</div>
 
-				if hasContentError {
-					for _, errorMsg := range data.FormErrors.GetFieldErrors("content") {
-						<p class="text-sm text-error">
-							{ errorMsg }
-						</p>
-					}
-				}
-			</div>
-
-			<button class="btn-primary rounded-full w-fit" type="submit">
-				{ templates.T(ctx, "post_new_submit") }
-			</button>
-		</form>
+				<button class="btn-primary rounded-full w-fit" type="submit">
+					// Leading send icon. btn-primary sizes the bare svg to size-4 and adds the
+					// gap, and the icon inherits the button text color via fill="currentColor".
+					// [Ja] 先頭の送信アイコン。btn-primary が size 指定無しの svg を size-4 にし
+					// gap も付ける。アイコンは fill="currentColor" でボタンの文字色を継承する。
+					@templates.Icon("paper-plane-tilt-regular")
+					{ templates.T(ctx, "post_new_submit") }
+				</button>
+			</form>
+		</div>
 	</div>
 }

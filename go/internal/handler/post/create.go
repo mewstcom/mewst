@@ -4,12 +4,22 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
+
+// normalizeNewlines folds CRLF and lone CR into LF so a newline is a single
+// code point. See the call site for why submitted bodies need this.
+//
+// [Ja] normalizeNewlines は CRLF と単独の CR を LF に畳み、改行を 1 コードポイント
+// にする。送信本文にこれが必要な理由は呼び出し箇所のコメントを参照。
+func normalizeNewlines(s string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(s, "\r\n", "\n"), "\r", "\n")
+}
 
 // Create handles the new post submission (POST /posts). On success it sets a
 // flash message and redirects to /home; on a validation error it re-renders the
@@ -27,7 +37,17 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := r.FormValue("content")
+	// Normalize submitted newlines to LF. The HTML spec normalizes textarea
+	// newlines to CRLF on submission, so counting/validating/storing the raw
+	// value would treat each newline as 2 code points. Folding CRLF (and lone
+	// CR) back to LF here makes a newline a single code point across the counter,
+	// the length validation, and the stored body.
+	//
+	// [Ja] 送信された改行を LF に正規化する。HTML 仕様により textarea の改行は送信時
+	// に CRLF へ正規化されるため、生の値を数える/検証する/保存すると改行 1 個が
+	// 2 コードポイント扱いになる。ここで CRLF (および単独の CR) を LF に畳むことで、
+	// カウンター・文字数バリデーション・保存本文のすべてで改行が 1 コードポイントになる。
+	content := normalizeNewlines(r.FormValue("content"))
 	canonicalURL := r.FormValue("canonical_url")
 
 	// The author is the current viewer's profile, supplied by RequireAuth.

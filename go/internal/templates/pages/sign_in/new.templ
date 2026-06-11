@@ -82,7 +82,7 @@ templ New(data NewPageData) {
 						{ templates.T(ctx, "sign_in_new_password_label") }
 					</label>
 
-					<a class="link text-sm ml-auto" href="/password_reset" tabindex="4">
+					<a class="link-primary-foreground text-sm ml-auto" href="/password_reset" tabindex="4">
 						{ templates.T(ctx, "sign_in_new_forgot_password_link") }
 					</a>
 				</div>
@@ -125,7 +125,7 @@ templ New(data NewPageData) {
 		<div class="text-center text-muted-foreground">
 			{ templates.T(ctx, "sign_in_new_no_account") }
 			{ " " }
-			<a class="link" href={ templ.SafeURL(data.SignUpHref) }>
+			<a class="link-primary-foreground" href={ templ.SafeURL(data.SignUpHref) }>
 				{ templates.T(ctx, "sign_in_new_sign_up_link") }
 			</a>
 		</div>

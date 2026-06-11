@@ -14,15 +14,13 @@ import (
 // BackLink renders a back affordance: an anchor whose href is the fallback used
 // for direct visits, external referrers, or JS-disabled clients (progressive
 // enhancement). The back-link script (web/back_link.ts) upgrades it to
-// history.back() when the referrer is same-origin. Pages render this at the top
-// of their content column so it aligns with the content width instead of being
-// pinned to a window corner where it is easy to miss.
+// history.back() when the referrer is same-origin. The caller (layout or page)
+// decides where to place it.
 //
 // [Ja] BackLink は戻る導線を描画する。href は直接アクセス・外部からの遷移・JS 無効時
 // のフォールバック (プログレッシブエンハンスメント) で、referrer が同一オリジンのときは
-// back-link スクリプト (web/back_link.ts) が history.back() に格上げする。各ページは
-// コンテンツ幅に揃うよう、これをコンテンツカラムの先頭で描画する (見落としやすい
-// ウィンドウ隅への固定はしない)。
+// back-link スクリプト (web/back_link.ts) が history.back() に格上げする。配置先
+// (レイアウトかページか) は呼び出し側が決める。
 func BackLink(href templates.Path) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -44,14 +42,14 @@ func BackLink(href templates.Path) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"link-muted\" data-back-link href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"link-bare-muted-foreground flex items-center gap-1\" data-back-link href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 18, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 24, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -61,16 +59,24 @@ func BackLink(href templates.Path) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templates.Icon("arrow-bend-up-left-regular", "size-4").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"text-sm\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "back_link"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 19, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 29, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -164,6 +164,60 @@ func TestCreate_Success(t *testing.T) {
 	}
 }
 
+func TestCreate_NormalizesNewlines(t *testing.T) {
+	t.Parallel()
+
+	// Same mewst-web row serialization rationale as TestCreate_Success.
+	// [Ja] mewst-web 行の直列化理由は TestCreate_Success と同じ。
+	testutil.AcquireMewstWebLock(t)
+
+	db := testutil.GetTestDB()
+
+	setupTx, err := db.Begin()
+	if err != nil {
+		t.Fatalf("セットアップ用トランザクションの開始に失敗: %v", err)
+	}
+	defer func() { _ = setupTx.Rollback() }()
+	authorID := testutil.NewProfileBuilder(t, setupTx).Build()
+	testutil.NewOauthApplicationBuilder(t, setupTx).WithUID(model.MewstWebUID).Build()
+	if err := setupTx.Commit(); err != nil {
+		t.Fatalf("前提データのコミットに失敗: %v", err)
+	}
+	t.Cleanup(func() {
+		id := uuid.UUID(authorID)
+		_, _ = db.Exec(`DELETE FROM home_timeline_posts WHERE post_id IN (SELECT id FROM posts WHERE profile_id = $1)`, id)
+		_, _ = db.Exec(`DELETE FROM posts WHERE profile_id = $1`, id)
+		_, _ = db.Exec(`DELETE FROM profiles WHERE id = $1`, id)
+		_, _ = db.Exec(`DELETE FROM oauth_applications WHERE uid = $1`, model.MewstWebUID)
+	})
+
+	h := newCreatePostHandler(t)
+	// Submit a body with CRLF newlines, mirroring what a browser form sends.
+	// [Ja] ブラウザのフォーム送信を模して CRLF の改行を含む本文を送信する。
+	req := postRequest(t, &model.Profile{ID: authorID}, "line1\r\nline2\r\nline3")
+	rr := httptest.NewRecorder()
+
+	h.Create(rr, req)
+
+	if rr.Code != http.StatusFound {
+		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+	}
+
+	// The stored body must carry LF newlines (no CR), so a newline counts as a
+	// single code point everywhere.
+	// [Ja] 保存本文は LF 改行 (CR を含まない) でなければならず、改行が全箇所で
+	// 1 コードポイントになる。
+	var stored string
+	if err := db.QueryRow(
+		`SELECT content FROM posts WHERE profile_id = $1`, uuid.UUID(authorID),
+	).Scan(&stored); err != nil {
+		t.Fatalf("posts の取得に失敗: %v", err)
+	}
+	if want := "line1\nline2\nline3"; stored != want {
+		t.Errorf("保存された本文が正規化されていません: got %q, want %q", stored, want)
+	}
+}
+
 func TestCreate_ValidationError_EmptyContent(t *testing.T) {
 	t.Parallel()
 
