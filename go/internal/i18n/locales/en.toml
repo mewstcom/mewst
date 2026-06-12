@@ -398,6 +398,14 @@ description = "Link text for the back affordance (BackLink component)"
 other = "Back"
 
 # ============================================
+# Skip link (skip_to_main_content)
+# ============================================
+
+[skip_to_main_content]
+description = "Text for the skip link that jumps to the main content (WCAG 2.4.1)"
+other = "Skip to main content"
+
+# ============================================
 # Link card (link_*)
 # ============================================
 

@@ -39,6 +39,22 @@ templ Compose(data ComposeLayoutData, content templ.Component) {
 			@components.Head(data.Meta)
 		</head>
 		<body class="flex min-h-[100svh] items-center justify-center p-4">
+			// Skip link as the first focusable element so keyboard / screen-reader users
+			// can jump straight to the main content (WCAG 2.4.1). It stays visually hidden
+			// until focused, then surfaces at the top-left. It must precede the back
+			// affordance (fixed left-4 top-4) in the DOM so focus reaches the skip link
+			// first rather than the back link.
+			//
+			// [Ja] キーボード / スクリーンリーダー利用者がメインコンテンツへ直接移動できるよう、
+			// 最初のフォーカス可能要素としてスキップリンクを置く (WCAG 2.4.1)。フォーカス時のみ
+			// 左上に可視化する。戻る導線 (fixed left-4 top-4) より先にフォーカスが当たるよう、
+			// DOM 上は戻る導線より前に置く。
+			<a
+				href="#main"
+				class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:shadow focus:outline focus:outline-2 focus:outline-ring"
+			>
+				{ templates.T(ctx, "skip_to_main_content") }
+			</a>
 			@components.Flash(session.FlashFromContext(ctx))
 			// Back affordance pinned to the window's top-left corner, outside the
 			// centered flow, so it stays available without competing with the content
@@ -52,7 +68,19 @@ templ Compose(data ComposeLayoutData, content templ.Component) {
 			<div class="fixed left-4 top-4 z-50">
 				@components.BackLink(data.BackHref)
 			</div>
-			@content
+			// Wrap the page content in the single <main> landmark. w-full gives the
+			// page's inner column a definite full-width parent so its max-w-2xl resolves,
+			// and justify-center keeps the column centered (the vertical centering comes
+			// from the body's items-center). tabindex="-1" lets the skip link move focus
+			// here without making <main> a tab stop.
+			//
+			// [Ja] ページコンテンツをただ 1 つの <main> ランドマークで包む。w-full でページ
+			// 内側カラムに幅の定まった親を与え max-w-2xl を解決させ、justify-center でカラムを
+			// 中央寄せする (上下中央寄せは body の items-center が担う)。tabindex="-1" により
+			// <main> をタブ停止点にせずにスキップリンクからフォーカスを移動できる。
+			<main id="main" tabindex="-1" class="flex w-full justify-center">
+				@content
+			</main>
 		</body>
 	</html>
 }
