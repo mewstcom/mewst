@@ -381,6 +381,10 @@ other = "グローバル (モバイル)"
 description = "新規投稿ページのタイトル"
 other = "新規投稿"
 
+[post_new_heading]
+description = "新規投稿ページの見出し (視覚上はフォームのラベルが担うため sr-only)"
+other = "新規投稿"
+
 [post_new_content_label]
 description = "新規投稿ページの本文ラベル"
 other = "いまなにしてる？"
@@ -396,6 +400,14 @@ other = "投稿する"
 [back_link]
 description = "戻る導線 (BackLink コンポーネント) のリンクテキスト"
 other = "戻る"
+
+# ============================================
+# スキップリンク (skip_to_main_content)
+# ============================================
+
+[skip_to_main_content]
+description = "メインコンテンツへ移動するスキップリンクのテキスト (WCAG 2.4.1)"
+other = "メインコンテンツへスキップ"
 
 # ============================================
 # リンクカード (link_*)

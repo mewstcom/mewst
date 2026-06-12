@@ -31,12 +31,25 @@ templ Default(data DefaultLayoutData, content templ.Component) {
 		</head>
 
 		<body>
+			// Skip link as the first focusable element so keyboard / screen-reader users
+			// can jump past the navbar straight to the main content (WCAG 2.4.1). It stays
+			// visually hidden until focused, then surfaces at the top-left.
+			//
+			// [Ja] キーボード / スクリーンリーダー利用者が navbar を飛ばしてメインコンテンツへ
+			// 直接移動できるよう、最初のフォーカス可能要素としてスキップリンクを置く
+			// (WCAG 2.4.1)。フォーカス時のみ左上に可視化する。
+			<a
+				href="#main"
+				class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:shadow focus:outline focus:outline-2 focus:outline-ring"
+			>
+				{ templates.T(ctx, "skip_to_main_content") }
+			</a>
 			@components.Flash(session.FlashFromContext(ctx))
 
 			<div class="flex min-h-[100svh] flex-col">
 				@components.TopNavbar(data.Navbar)
 
-				<main class="flex-1">
+				<main id="main" tabindex="-1" class="flex-1">
 					@content
 				</main>
 

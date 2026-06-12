@@ -53,6 +53,15 @@ templ New(data NewPageData) {
 	// 戻る導線に最初に視線が行くのではなく中央のフォームが視覚的な主役のままになる。
 	<div class="w-full max-w-2xl px-4">
 		<div class="flex flex-col gap-4">
+			// Establish the page's heading hierarchy with a single <h1>. The compose
+			// screen has no visible page title (the textarea label "What's happening?"
+			// visually leads the form), so the h1 is sr-only for assistive technology.
+			//
+			// [Ja] ただ 1 つの <h1> でページの見出し階層を確立する。集中作成画面は可視の
+			// ページタイトルを持たない (textarea のラベル「いまなにしてる？」が視覚的に
+			// フォームを先導する) ため、h1 は支援技術向けに sr-only とする。
+			<h1 class="sr-only">{ templates.T(ctx, "post_new_heading") }</h1>
+
 			@components.FormErrors(data.FormErrors)
 
 			<form

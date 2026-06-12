@@ -46,6 +46,11 @@ func TestNew(t *testing.T) {
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
 		"いまなにしてる？",             // 本文ラベル (post_new_content_label)
 		"投稿する",                 // 送信ボタン (post_new_submit)
+		`<h1 class="sr-only">`, // sr-only h1 that establishes the heading hierarchy. [Ja] 見出し階層を確立する sr-only の h1 (heading-hierarchy)
+		"新規投稿",                 // h1 text (post_new_heading). [Ja] h1 の文言 (post_new_heading)
+		`href="#main"`,         // layout skip link (WCAG 2.4.1). [Ja] レイアウトのスキップリンク (WCAG 2.4.1)
+		"メインコンテンツへスキップ",        // skip link label. [Ja] スキップリンクのラベル
+		`<main id="main"`,      // main landmark (semantic-html). [Ja] main ランドマーク (semantic-html)
 		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
 		// Back affordance rendered by layouts.Compose as top-left corner chrome
 		// (BackLink component): a /home fallback link upgraded to history.back() by the
