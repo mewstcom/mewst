@@ -365,6 +365,14 @@ other = "Notifications"
 description = "Accessible label for the navbar profile link"
 other = "Profile"
 
+[navbar_top_label]
+description = "Accessible label for the top navbar (desktop) landmark"
+other = "Global (desktop)"
+
+[navbar_bottom_label]
+description = "Accessible label for the bottom navbar (mobile) landmark"
+other = "Global (mobile)"
+
 # ============================================
 # New post page (post_new_*)
 # ============================================

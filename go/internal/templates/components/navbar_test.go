@@ -182,6 +182,30 @@ func TestTopNavbar(t *testing.T) {
 	}
 }
 
+func TestTopNavbar_Landmark(t *testing.T) {
+	t.Parallel()
+
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	navbar := viewmodel.NewNavbar(&model.Profile{Atname: "alice"}, viewmodel.NavbarItemNew)
+
+	var buf bytes.Buffer
+	if err := components.TopNavbar(navbar).Render(ctx, &buf); err != nil {
+		t.Fatalf("failed to render: %v", err)
+	}
+	html := buf.String()
+
+	// The wrapper is a <nav> landmark carrying a localized aria-label so the two
+	// coexisting navigation regions can be told apart.
+	// [Ja] ラッパーはローカライズ済み aria-label を持つ <nav> ランドマークで、
+	// 共存する 2 つのナビゲーション領域を区別できるようにする。
+	if !strings.Contains(html, "<nav") {
+		t.Error("TopNavbar output missing the <nav> landmark")
+	}
+	if !strings.Contains(html, `aria-label="グローバル (PC)"`) {
+		t.Error("TopNavbar output missing the aria-label")
+	}
+}
+
 func TestBottomNavbar(t *testing.T) {
 	t.Parallel()
 
@@ -195,5 +219,29 @@ func TestBottomNavbar(t *testing.T) {
 		if !strings.Contains(html, want) {
 			t.Errorf("BottomNavbar output missing %q", want)
 		}
+	}
+}
+
+func TestBottomNavbar_Landmark(t *testing.T) {
+	t.Parallel()
+
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	navbar := viewmodel.NewNavbar(&model.Profile{Atname: "alice"}, viewmodel.NavbarItemNew)
+
+	var buf bytes.Buffer
+	if err := components.BottomNavbar(navbar).Render(ctx, &buf); err != nil {
+		t.Fatalf("failed to render: %v", err)
+	}
+	html := buf.String()
+
+	// The wrapper is a <nav> landmark whose aria-label differs from the top
+	// navbar's, distinguishing the two navigation regions.
+	// [Ja] ラッパーは <nav> ランドマークで、その aria-label はトップ navbar とは
+	// 異なり、2 つのナビゲーション領域を区別する。
+	if !strings.Contains(html, "<nav") {
+		t.Error("BottomNavbar output missing the <nav> landmark")
+	}
+	if !strings.Contains(html, `aria-label="グローバル (モバイル)"`) {
+		t.Error("BottomNavbar output missing the aria-label")
 	}
 }
