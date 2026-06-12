@@ -365,6 +365,14 @@ other = "通知"
 description = "navbar のプロフィールリンクのアクセシブルラベル"
 other = "プロフィール"
 
+[navbar_top_label]
+description = "トップ navbar (PC) のランドマークのアクセシブルラベル"
+other = "グローバル (PC)"
+
+[navbar_bottom_label]
+description = "ボトム navbar (モバイル) のランドマークのアクセシブルラベル"
+other = "グローバル (モバイル)"
+
 # ============================================
 # 新規投稿ページ (post_new_*)
 # ============================================
