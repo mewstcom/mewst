@@ -381,6 +381,10 @@ other = "Global (mobile)"
 description = "New post page title"
 other = "New post"
 
+[post_new_heading]
+description = "New post page heading (sr-only since the form label carries it visually)"
+other = "New post"
+
 [post_new_content_label]
 description = "New post page content label"
 other = "What's happening?"

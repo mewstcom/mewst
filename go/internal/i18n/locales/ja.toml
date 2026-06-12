@@ -381,6 +381,10 @@ other = "グローバル (モバイル)"
 description = "新規投稿ページのタイトル"
 other = "新規投稿"
 
+[post_new_heading]
+description = "新規投稿ページの見出し (視覚上はフォームのラベルが担うため sr-only)"
+other = "新規投稿"
+
 [post_new_content_label]
 description = "新規投稿ページの本文ラベル"
 other = "いまなにしてる？"
