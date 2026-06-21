@@ -1,4 +1,4 @@
-<!-- last_synced: 2026-06-09 -->
+<!-- last_synced: 2026-06-21 -->
 
 # Mewst Development Guide
 
@@ -41,6 +41,7 @@ A project to gradually reimplement the existing Rails Mewst in Go is currently u
   - The following cases fall outside this principle, and a minimal-diff fix on the Rails side is acceptable:
     - Minimal maintenance changes required to follow up on a dependency's security fix (e.g., adapting to breaking changes from a gem major upgrade)
     - When deleting Rails-side processing that has become unused after migrating the feature to Go
+    - Minimal fixes made in response to an error reported by production error monitoring such as Sentry (e.g., suppressing a 500 caused by an unhandled exception)
 
 When implementing the Go version, refer to the Rails code to understand the existing specifications.
 
