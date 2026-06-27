@@ -5,9 +5,15 @@ import "github.com/mewstcom/mewst/go/internal/viewmodel"
 // Head はHTMLヘッダーを生成する
 templ Head(meta viewmodel.PageMeta) {
 	<meta charset="utf-8"/>
-	// iOSのSafariでautofocus属性の影響でズームされてしまうのを防ぐため `maximum-scale=1` を設定
-  // ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	// Use a standard viewport. Do not add `maximum-scale=1` or `user-scalable=no`:
+	// disabling pinch-zoom violates WCAG 1.4.4 (Resize Text). iOS Safari's
+	// focus auto-zoom is avoided instead by keeping form inputs at 16px or larger.
+	//
+	// [Ja] 標準的な viewport を使う。`maximum-scale=1` や `user-scalable=no` は
+	// 加えないこと。ピンチズームの無効化は WCAG 1.4.4 (Resize Text) に反する。
+	// iOS Safari のフォーカス時自動ズームは、フォーム入力のフォントサイズを
+	// 16px 以上に保つことで回避している。
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 	<title>{ meta.Title }</title>
 
