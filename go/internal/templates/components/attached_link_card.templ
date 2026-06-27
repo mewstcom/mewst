@@ -19,19 +19,21 @@ templ AttachedLinkCard(link viewmodel.Link) {
 	<div class="mb-2">
 		<div class="relative">
 			@LinkCard(link)
+
 			// Clearing #link-form removes both the card preview and the hidden
 			// canonical_url, so the next post submits without a link.
 			// [Ja] #link-form を空にするとカードのプレビューと hidden の canonical_url が
 			// 両方消えるため、次の投稿はリンク無しで送信される。
 			<button
 				aria-label={ templates.T(ctx, "link_create_remove") }
-				class="btn-icon-ghost absolute right-0 top-0 m-2 rounded-full"
+				class="btn-icon-outline absolute right-0 top-0 m-2 rounded-full"
 				hx-on:click="document.getElementById('link-form').replaceChildren()"
 				type="button"
 			>
 				@templates.Icon("close_fill", "h-4 w-4 [&_.content]:fill-foreground")
 			</button>
 		</div>
+
 		<input type="hidden" name="canonical_url" value={ link.CanonicalURL }/>
 	</div>
 }
