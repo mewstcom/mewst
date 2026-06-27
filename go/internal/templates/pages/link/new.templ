@@ -32,6 +32,7 @@ templ New(data NewPageData) {
 	<form hx-disable="find button[type='submit']" hx-post="/links" hx-target="#link-form">
 		<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 		<input type="hidden" name="target_url" value={ data.TargetURL }/>
+
 		if data.FormErrors != nil && data.FormErrors.HasFieldError("target_url") {
 			for _, errorMsg := range data.FormErrors.GetFieldErrors("target_url") {
 				<p class="text-sm text-error">
@@ -39,7 +40,8 @@ templ New(data NewPageData) {
 				</p>
 			}
 		}
-		<button class="btn-ghost rounded-full" type="submit">
+
+		<button class="btn-outline rounded-full" type="submit">
 			{ templates.T(ctx, "link_new_submit", map[string]any{"HostAndPath": data.HostAndPath}) }
 		</button>
 	</form>

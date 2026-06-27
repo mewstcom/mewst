@@ -34,6 +34,7 @@
   --primary-foreground: var(--app-brand-950);
   --secondary: var(--color-stone-300);
   --secondary-foreground: var(--color-stone-950);
+  --accent: var(--color-stone-200);
 
   text-autospace: normal;
 }
