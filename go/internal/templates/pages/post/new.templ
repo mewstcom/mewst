@@ -58,7 +58,7 @@ templ New(data NewPageData) {
 			// visually leads the form), so the h1 is sr-only for assistive technology.
 			//
 			// [Ja] ただ 1 つの <h1> でページの見出し階層を確立する。集中作成画面は可視の
-			// ページタイトルを持たない (textarea のラベル「いまなにしてる？」が視覚的に
+			// ページタイトルを持たない (textarea のラベル「いま何してる？」が視覚的に
 			// フォームを先導する) ため、h1 は支援技術向けに sr-only とする。
 			<h1 class="sr-only">{ templates.T(ctx, "post_new_heading") }</h1>
 
@@ -75,7 +75,7 @@ templ New(data NewPageData) {
 				<div class="grid gap-2">
 					// Use the Rails "What's happening?" prompt as the textarea label (the Rails
 					// post form has no separate heading and no generic "Content" label).
-					// [Ja] Rails の「いまなにしてる？」を本文 textarea のラベルに使う (Rails の
+					// [Ja] Rails の「いま何してる？」を本文 textarea のラベルに使う (Rails の
 					// 投稿フォームは独立見出しも汎用的な「本文」ラベルも持たない)。
 					<label class="font-bold" for="content">
 						{ templates.T(ctx, "post_new_content_label") }

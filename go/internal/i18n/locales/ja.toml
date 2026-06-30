@@ -387,7 +387,7 @@ other = "新規投稿"
 
 [post_new_content_label]
 description = "新規投稿ページの本文ラベル"
-other = "いまなにしてる？"
+other = "いま何してる？"
 
 [post_new_submit]
 description = "新規投稿フォームの送信ボタン"
