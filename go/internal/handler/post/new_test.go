@@ -44,7 +44,7 @@ func TestNew(t *testing.T) {
 		"disableSubmitButtons", // 二重送信防止 (他フォームと共通)
 		`name="content"`,       // 本文 textarea
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
-		"いまなにしてる？",             // 本文ラベル (post_new_content_label)
+		"いま何してる？",              // 本文ラベル (post_new_content_label)
 		"投稿する",                 // 送信ボタン (post_new_submit)
 		`<h1 class="sr-only">`, // sr-only h1 that establishes the heading hierarchy. [Ja] 見出し階層を確立する sr-only の h1 (heading-hierarchy)
 		"新規投稿",                 // h1 text (post_new_heading). [Ja] h1 の文言 (post_new_heading)
@@ -110,7 +110,7 @@ func TestNew_Locales(t *testing.T) {
 		label  string
 		submit string
 	}{
-		{name: "Japanese", locale: "ja", label: "いまなにしてる？", submit: "投稿する"},
+		{name: "Japanese", locale: "ja", label: "いま何してる？", submit: "投稿する"},
 		// The apostrophe in the English label "What's happening?" is escaped by
 		// templ, so assert a stable substring instead of the escaped form.
 		// [Ja] 英語ラベル "What's happening?" のアポストロフィは templ がエスケープ
