@@ -52,16 +52,19 @@ func TestNew(t *testing.T) {
 		"メインコンテンツへスキップ",        // skip link label. [Ja] スキップリンクのラベル
 		`<main id="main"`,      // main landmark (semantic-html). [Ja] main ランドマーク (semantic-html)
 		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
-		// Back affordance rendered by layouts.Compose as top-left corner chrome
-		// (BackLink component): a /home fallback link upgraded to history.back() by the
-		// back-link script when the referrer is same-origin. It shows the back_link icon
-		// alongside the back_link label text.
-		// [Ja] layouts.Compose が左上端の chrome として描画する戻る導線 (BackLink コンポーネント):
+		// Cancel affordance rendered inside the form's action row (CancelButton
+		// component): a /home fallback link upgraded to history.back() by the back-link
+		// script when the referrer is same-origin (data-back-link is the PE hook). It is
+		// an <a> styled as a secondary button, not a <button>, so it navigates via href
+		// without JS and cannot accidentally submit the form.
+		// [Ja] フォームの操作行の中に描画されるキャンセル導線 (CancelButton コンポーネント):
 		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
-		// /home フォールバックリンク。back_link アイコンと back_link のラベルテキストを並べて表示する。
-		"data-back-link", // 戻るリンクの JS フック
-		`href="/home"`,   // 戻る導線のフォールバック先
-		"戻る",             // 戻るリンクのラベル (back_link)
+		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく secondary
+		// ボタン風にスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
+		"data-back-link", // キャンセルリンクの JS フック (PE)
+		`href="/home"`,   // キャンセル導線のフォールバック先
+		"btn-secondary",  // secondary ボタン風のスタイル
+		"キャンセル",          // キャンセルボタンのラベル (cancel)
 		// Form enhancements: wiring for the character counter, autosize, and the
 		// link card integration.
 		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
@@ -88,10 +91,10 @@ func TestNew(t *testing.T) {
 		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
 	}
 
-	// layouts.Compose omits the navbar, so navbar-only links (e.g. search) must not
+	// layouts.Simple omits the navbar, so navbar-only links (e.g. search) must not
 	// appear. This locks /new to the focused navbar-less layout instead of the
 	// shared authenticated layout.
-	// [Ja] layouts.Compose は navbar を持たないため、navbar 専用リンク (検索など) は
+	// [Ja] layouts.Simple は navbar を持たないため、navbar 専用リンク (検索など) は
 	// 出力されない。これにより /new が共通の認証後レイアウトではなく navbar 無しの集中
 	// 作成レイアウトに固定されることを保証する。
 	if strings.Contains(body, `href="/search"`) {

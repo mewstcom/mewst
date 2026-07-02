@@ -66,24 +66,25 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "post_new_title")
 
-	// /new is a focused compose screen, so it uses the navbar-less layouts.Compose
-	// (form centered, no navbar) rather than the shared authenticated layout.
-	// Compose pins the back affordance to the top-left corner as layout chrome
-	// (falling back to /home), keeping the centered form the visual hero.
+	// /new is a focused compose screen, so it uses the navbar-less layouts.Simple
+	// (form centered, no navbar) rather than the shared authenticated layout. The
+	// cancel affordance lives inside the form's action row (see the page template),
+	// so this handler only supplies its /home fallback via NewPageData.BackHref.
 	//
 	// [Ja] /new は集中作成画面のため、共通の認証後レイアウトではなく navbar を持たない
-	// layouts.Compose (フォーム中央寄せ・navbar なし) を使う。Compose は戻る導線を
-	// レイアウト共通 chrome として左上端に固定し (/home にフォールバック)、中央のフォームを
-	// 視覚的な主役のままにする。
+	// layouts.Simple (フォーム中央寄せ・navbar なし) を使う。キャンセル導線はフォームの
+	// 操作行の中に置く (ページテンプレート参照) ため、このハンドラーは NewPageData.BackHref
+	// でそのフォールバック先 (/home) を渡すだけでよい。
 	formContent := postpages.New(postpages.NewPageData{
 		CSRFToken:    csrfToken,
 		FormErrors:   ve,
 		Content:      content,
 		CanonicalURL: canonicalURL,
 		AttachedLink: attachedLink,
+		BackHref:     templates.HomePath(),
 	})
 
-	if err := layouts.Compose(layouts.ComposeLayoutData{Meta: meta, BackHref: templates.HomePath()}, formContent).Render(ctx, w); err != nil {
+	if err := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, formContent).Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
