@@ -1,6 +1,7 @@
 import "basecoat-css/all";
 
 import { setupBackLinks } from "./back_link";
+import { setupFormGuards } from "./form_guard";
 
 // フォーム内の全送信ボタンを無効化し、二重送信を防止する
 window.disableSubmitButtons = (form) => {
@@ -166,3 +167,4 @@ setupTextareaFocusProxies();
 setupAutosize();
 setupLinkCardDetection();
 setupBackLinks();
+setupFormGuards();
