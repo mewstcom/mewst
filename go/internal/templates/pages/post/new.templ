@@ -67,9 +67,17 @@ templ New(data NewPageData) {
 
 			@components.FormErrors(data.FormErrors)
 
+			// data-form-guard opts this form into the leave guard (web/form_guard.ts): once
+			// the body is edited, leaving without submitting (back button, tab close, reload,
+			// or the cancel button) prompts a browser confirm. A real submit clears the guard.
+			//
+			// [Ja] data-form-guard でこのフォームを離脱ガード (web/form_guard.ts) の対象にする。
+			// 本文を編集した後は、送信せずに離れようとすると (戻るボタン・タブ閉じ・リロード・
+			// キャンセルボタン) ブラウザの確認が出る。実際の送信ではガードが解除される。
 			<form
 				action="/posts"
 				class="form grid gap-4"
+				data-form-guard
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>

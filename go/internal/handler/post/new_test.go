@@ -42,6 +42,7 @@ func TestNew(t *testing.T) {
 	checks := []string{
 		"csrf_token",           // CSRF トークン
 		"disableSubmitButtons", // 二重送信防止 (他フォームと共通)
+		"data-form-guard",      // leave guard PE hook (web/form_guard.ts). [Ja] 離脱ガードの PE フック (web/form_guard.ts)
 		`name="content"`,       // 本文 textarea
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
 		"いま何してる？",              // 本文ラベル (post_new_content_label)
