@@ -11,18 +11,20 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// CancelButton renders a form cancel affordance: an anchor styled as a secondary
-// button whose href is the fallback used for direct visits, external referrers,
-// or JS-disabled clients (progressive enhancement). The back-link script
+// CancelButton renders a form cancel affordance: an anchor styled as an outline
+// button (a lighter emphasis than the primary submit button) whose href is the
+// fallback used for direct visits, external referrers, or JS-disabled clients
+// (progressive enhancement). The back-link script
 // (web/back_link.ts, keyed on data-back-link) upgrades it to history.back() when
 // the referrer is same-origin. It is an <a>, not a <button>, so it navigates via
 // the href without JS and cannot accidentally submit the enclosing form (a bare
 // <button> in a form defaults to type="submit"). The caller places it (e.g. next
 // to the submit button in a form action row); it is reusable across forms.
 //
-// [Ja] CancelButton はフォームのキャンセル導線を描画する。secondary ボタン風に
-// スタイルしたアンカーで、href は直接アクセス・外部からの遷移・JS 無効時の
-// フォールバック (プログレッシブエンハンスメント)。referrer が同一オリジンのときは
+// [Ja] CancelButton はフォームのキャンセル導線を描画する。輪郭のみ
+// (outline、投稿ボタンより一段弱い強調) のボタン風にスタイルしたアンカーで、
+// href は直接アクセス・外部からの遷移・JS 無効時のフォールバック
+// (プログレッシブエンハンスメント)。referrer が同一オリジンのときは
 // back-link スクリプト (web/back_link.ts、data-back-link をキーにする) が
 // history.back() に格上げする。<button> ではなく <a> にしているのは、JS 無効でも
 // href で遷移でき、かつフォーム内の素の <button> の既定 type="submit" による誤送信
@@ -49,14 +51,14 @@ func CancelButton(href templates.Path) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"btn-secondary rounded-full\" data-back-link href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"btn-outline rounded-full\" data-back-link href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/cancel_button.templ`, Line: 23, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/cancel_button.templ`, Line: 25, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -69,7 +71,7 @@ func CancelButton(href templates.Path) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "cancel"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/cancel_button.templ`, Line: 24, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/cancel_button.templ`, Line: 26, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

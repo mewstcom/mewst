@@ -56,15 +56,16 @@ func TestNew(t *testing.T) {
 		// Cancel affordance rendered inside the form's action row (CancelButton
 		// component): a /home fallback link upgraded to history.back() by the back-link
 		// script when the referrer is same-origin (data-back-link is the PE hook). It is
-		// an <a> styled as a secondary button, not a <button>, so it navigates via href
+		// an <a> styled as an outline button, not a <button>, so it navigates via href
 		// without JS and cannot accidentally submit the form.
+		//
 		// [Ja] フォームの操作行の中に描画されるキャンセル導線 (CancelButton コンポーネント):
 		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
-		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく secondary
-		// ボタン風にスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
+		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく輪郭のみ
+		// (outline) のボタン風にスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
 		"data-back-link", // キャンセルリンクの JS フック (PE)
 		`href="/home"`,   // キャンセル導線のフォールバック先
-		"btn-secondary",  // secondary ボタン風のスタイル
+		"btn-outline",    // outline (輪郭のみ) ボタンのスタイル
 		"キャンセル",          // キャンセルボタンのラベル (cancel)
 		// Form enhancements: wiring for the character counter, autosize, and the
 		// link card integration.
