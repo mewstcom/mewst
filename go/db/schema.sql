@@ -425,39 +425,6 @@ CREATE TABLE public.rate_limits (
 
 
 --
--- Name: river_client; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE UNLOGGED TABLE public.river_client (
-    id text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
-    paused_at timestamp with time zone,
-    updated_at timestamp with time zone NOT NULL,
-    CONSTRAINT name_length CHECK (((char_length(id) > 0) AND (char_length(id) < 128)))
-);
-
-
---
--- Name: river_client_queue; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE UNLOGGED TABLE public.river_client_queue (
-    river_client_id text NOT NULL,
-    name text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    max_workers bigint DEFAULT 0 NOT NULL,
-    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
-    num_jobs_completed bigint DEFAULT 0 NOT NULL,
-    num_jobs_running bigint DEFAULT 0 NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    CONSTRAINT name_length CHECK (((char_length(name) > 0) AND (char_length(name) < 128))),
-    CONSTRAINT num_jobs_completed_zero_or_positive CHECK ((num_jobs_completed >= 0)),
-    CONSTRAINT num_jobs_running_zero_or_positive CHECK ((num_jobs_running >= 0))
-);
-
-
---
 -- Name: river_job; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -465,7 +432,7 @@ CREATE TABLE public.river_job (
     id bigint NOT NULL,
     state public.river_job_state DEFAULT 'available'::public.river_job_state NOT NULL,
     attempt smallint DEFAULT 0 NOT NULL,
-    max_attempts smallint NOT NULL,
+    max_attempts smallint DEFAULT 25 NOT NULL,
     attempted_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     finalized_at timestamp with time zone,
@@ -535,6 +502,38 @@ CREATE TABLE public.river_migration (
 
 
 --
+-- Name: river_notification; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.river_notification (
+    id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload text NOT NULL,
+    topic text NOT NULL,
+    CONSTRAINT topic_length CHECK (((length(topic) > 0) AND (length(topic) < 128)))
+);
+
+
+--
+-- Name: river_notification_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.river_notification_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: river_notification_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.river_notification_id_seq OWNED BY public.river_notification.id;
+
+
+--
 -- Name: river_queue; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -543,7 +542,7 @@ CREATE TABLE public.river_queue (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
     paused_at timestamp with time zone,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -634,6 +633,13 @@ CREATE TABLE public.users (
 --
 
 ALTER TABLE ONLY public.river_job ALTER COLUMN id SET DEFAULT nextval('public.river_job_id_seq'::regclass);
+
+
+--
+-- Name: river_notification id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_notification ALTER COLUMN id SET DEFAULT nextval('public.river_notification_id_seq'::regclass);
 
 
 --
@@ -821,22 +827,6 @@ ALTER TABLE ONLY public.rate_limits
 
 
 --
--- Name: river_client river_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.river_client
-    ADD CONSTRAINT river_client_pkey PRIMARY KEY (id);
-
-
---
--- Name: river_client_queue river_client_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.river_client_queue
-    ADD CONSTRAINT river_client_queue_pkey PRIMARY KEY (river_client_id, name);
-
-
---
 -- Name: river_job river_job_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -858,6 +848,14 @@ ALTER TABLE ONLY public.river_leader
 
 ALTER TABLE ONLY public.river_migration
     ADD CONSTRAINT river_migration_pkey PRIMARY KEY (line, version);
+
+
+--
+-- Name: river_notification river_notification_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_notification
+    ADD CONSTRAINT river_notification_pkey PRIMARY KEY (id);
 
 
 --
@@ -1407,6 +1405,20 @@ CREATE UNIQUE INDEX river_job_unique_idx ON public.river_job USING btree (unique
 
 
 --
+-- Name: river_notification_created_at_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX river_notification_created_at_idx ON public.river_notification USING btree (created_at);
+
+
+--
+-- Name: river_notification_topic_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX river_notification_topic_id_idx ON public.river_notification USING btree (topic, id);
+
+
+--
 -- Name: feature_flags feature_flags_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1607,14 +1619,6 @@ ALTER TABLE ONLY public.home_timeline_posts
 
 
 --
--- Name: river_client_queue river_client_queue_river_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.river_client_queue
-    ADD CONSTRAINT river_client_queue_river_client_id_fkey FOREIGN KEY (river_client_id) REFERENCES public.river_client(id) ON DELETE CASCADE;
-
-
---
 -- PostgreSQL database dump complete
 --
 
@@ -1665,4 +1669,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260202095123'),
     ('20260204100000'),
     ('20260226100000'),
-    ('20260526063449');
+    ('20260526063449'),
+    ('20260712112942');
