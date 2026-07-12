@@ -21,6 +21,7 @@ apt update
 apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
+  bubblewrap                # Required by Codex for Linux sandboxing [Ja] Codex の Linux sandbox に必要
   build-essential
   ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
   curl
@@ -91,7 +92,6 @@ RUN mise use --global go@1.26.4 && \
     mise use --global pnpm@10.24.0
 
 # --- dbmate ---
-# [Ja] dbmate
 ARG DBMATE_VERSION=v2.33.0
 ARG DBMATE_SHA256=dfd4027141b6e4357158099bdfe6c02b286af70f8e49057937744cf80b38ea1c
 RUN curl -fsSL -o /tmp/dbmate \
@@ -101,7 +101,6 @@ RUN curl -fsSL -o /tmp/dbmate \
     chmod +x /usr/local/bin/dbmate
 
 # --- hivemind ---
-# [Ja] hivemind
 ARG HIVEMIND_VERSION=v1.1.0
 ARG HIVEMIND_SHA256=809ca1c5fedbbfca8fdfb3a4b9bb9c41868b046f35f85a3e893ccf2583a3921a
 RUN curl -fsSL -o /tmp/hivemind.gz \
@@ -112,7 +111,6 @@ RUN curl -fsSL -o /tmp/hivemind.gz \
     chmod +x /usr/local/bin/hivemind
 
 # --- golangci-lint ---
-# [Ja] golangci-lint
 ARG GOLANGCI_LINT_VERSION=2.11.4
 ARG GOLANGCI_LINT_SHA256=200c5b7503f67b59a6743ccf32133026c174e272b930ee79aa2aa6f37aca7ef1
 RUN curl -fsSL -o /tmp/golangci-lint.tar.gz \
@@ -124,7 +122,6 @@ RUN curl -fsSL -o /tmp/golangci-lint.tar.gz \
     rm -rf /tmp/golangci-lint.tar.gz /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64
 
 # --- GitHub CLI ---
-# [Ja] GitHub CLI
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     mkdir -p -m 755 /etc/apt/keyrings && \
@@ -136,13 +133,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt update && apt install -y gh
 
 # --- User setup ---
-# [Ja] ユーザー作成
 RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/zsh ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # --- Go cache directories ---
-# [Ja] Go キャッシュディレクトリ
 RUN mkdir -p /go/.cache/go-build /go/pkg && \
     chown -R ${USER_ID}:${GROUP_ID} /go
 
@@ -170,15 +165,15 @@ RUN touch ~/.zshrc
 RUN mise reshim
 
 # --- 1Password CLI ---
-# [Ja] 1Password CLI
 COPY --from=1password/op:2 /usr/local/bin/op /usr/local/bin/op
 
 # --- Claude Code ---
-# [Ja] Claude Code
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
+# --- Codex ---
+RUN curl -fsSL https://chatgpt.com/codex/install.sh | sh
+
 # --- Go tools ---
-# [Ja] Go ツール
 ENV GOCACHE=/go/.cache/go-build
 ENV GOMODCACHE=/go/pkg/mod
 ENV GOPATH=/go
@@ -187,16 +182,13 @@ RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0 && \
     go install github.com/air-verse/air@latest
 
 # --- Ruby tools ---
-# [Ja] Ruby ツール
 RUN gem install bundler -v 2.5.9
 
 # --- Shell setup ---
-# [Ja] シェル設定
 SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 
 # --- Git config ---
-# [Ja] Git 設定
 RUN git config --global user.email "me@shimba.co" && \
     git config --global user.name "Koji Shimba"
 
