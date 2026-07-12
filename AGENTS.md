@@ -48,7 +48,8 @@ When implementing the Go version, refer to the Rails code to understand the exis
 
 ## Feature Flag-Based Development
 
-Mewst uses **feature flags** rather than feature branches to control feature visibility. Pre-release features are developed with the flag off, and the flag is flipped to release them once they are ready for production.
+Mewst uses **feature flags** rather than feature branches to control feature visibility.
+Pre-release features are developed with the flag off, and the flag is flipped to release them once they are ready for production.
 
 ## Development Workflow
 
@@ -72,7 +73,8 @@ See [Makefile](./Makefile), [go/Makefile](./go/Makefile), and [rails/Makefile](.
 
 ## Documentation
 
-Design decisions—the chosen approach, its background, and the alternatives that were rejected—are recorded as ADRs (Architecture Decision Records) under `docs/private/adr/`. To understand the current state of the system, read the code and tests rather than a separate spec document.
+Design decisions—the chosen approach, its background, and the alternatives that were rejected—are recorded as ADRs (Architecture Decision Records) under `docs/private/adr/`.
+To understand the current state of the system, read the code and tests rather than a separate spec document.
 
 ## Language and Writing Conventions
 
