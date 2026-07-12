@@ -51,6 +51,8 @@ web/dist
 # Documentation
 # [Ja] ドキュメント
 README.md
+AGENTS.md
+AGENTS.ja.md
 CLAUDE.md
 CLAUDE.ja.md
 docs/
