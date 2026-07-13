@@ -26,6 +26,7 @@ PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
   curl
   file                      # Required for Shrine image uploads (Rails) [Ja] Shrine による画像アップロードに必要 (Rails)
+  fonts-noto-cjk            # CJK glyphs for playwright-cli screenshots [Ja] playwright-cli のスクショで CJK を描画 (豆腐回避)
   fzf                       # Used by Claude Code [Ja] Claude Code で使用
   git
   gnupg                     # Required for PostgreSQL GPG key and apt repository [Ja] PostgreSQL の GPG キーと apt リポジトリに必要
@@ -39,6 +40,7 @@ PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   lsb-release               # Required for PostgreSQL apt repository setup [Ja] PostgreSQL の apt リポジトリ設定に必要
   nano                      # Used by Claude Code [Ja] Claude Code で使用
   net-tools                 # Used by Claude Code: netstat (network debugging) [Ja] Claude Code で使用 netstat (ネットワークデバッグ用)
+  procps                    # ps for playwright-cli kill-all [Ja] playwright-cli の kill-all 用 (ps を提供)
   psmisc                    # Used by Claude Code: fuser (process identification) [Ja] Claude Code で使用 fuser (プロセス特定用)
   ripgrep                   # Used by Claude Code [Ja] Claude Code で使用
   sudo
@@ -183,6 +185,22 @@ RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0 && \
 
 # --- Ruby tools ---
 RUN gem install bundler -v 2.5.9
+
+# --- Playwright CLI (browser verification) ---
+# Install @playwright/cli into every Node version mise selects across the
+# monorepo (24.11.1 for /workspace and /workspace/go, 20.11.1 for
+# /workspace/rails) so the shim resolves from any directory, then bake the
+# Chromium browser and its system dependencies with --with-deps (Mewst ships
+# neither a Playwright browser nor its system libs by default).
+#
+# [Ja] monorepo で mise が選ぶ全 Node バージョン (/workspace と /workspace/go は 24.11.1、
+# /workspace/rails は 20.11.1) に @playwright/cli を install し、どのディレクトリからでも
+# shim が解決できるようにする。その後 --with-deps で Chromium 本体と system 依存を焼き込む
+# (Mewst は Playwright のブラウザも system 依存も未導入のため)。
+RUN mise exec node@24.11.1 -- npm install -g @playwright/cli@0.1.17 && \
+    mise exec node@20.11.1 -- npm install -g @playwright/cli@0.1.17 && \
+    mise reshim && \
+    playwright-cli install-browser chromium --with-deps
 
 # --- Shell setup ---
 SHELL ["/bin/zsh", "-c"]
