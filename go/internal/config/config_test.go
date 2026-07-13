@@ -23,6 +23,7 @@ func setupTestEnv(t *testing.T) func() {
 		"MEWST_RAILS_APP_URL":             os.Getenv("MEWST_RAILS_APP_URL"),
 		"MEWST_TURNSTILE_SITE_KEY":        os.Getenv("MEWST_TURNSTILE_SITE_KEY"),
 		"MEWST_TURNSTILE_SECRET_KEY":      os.Getenv("MEWST_TURNSTILE_SECRET_KEY"),
+		"MEWST_TURNSTILE_DISABLE":         os.Getenv("MEWST_TURNSTILE_DISABLE"),
 		"MEWST_MAINTENANCE_MODE":          os.Getenv("MEWST_MAINTENANCE_MODE"),
 		"MEWST_ADMIN_IP":                  os.Getenv("MEWST_ADMIN_IP"),
 		"MEWST_SENTRY_DSN":                os.Getenv("MEWST_SENTRY_DSN"),
@@ -45,6 +46,13 @@ func setupTestEnv(t *testing.T) func() {
 	_ = os.Unsetenv("MEWST_SENTRY_ENVIRONMENT")
 	_ = os.Unsetenv("MEWST_SENTRY_TRACES_SAMPLE_RATE")
 	_ = os.Unsetenv("MEWST_SENTRY_DEBUG")
+
+	// Keep MEWST_TURNSTILE_DISABLE unset by default so each test controls it
+	// explicitly and a real .env cannot alter config test behavior.
+	//
+	// [Ja] 各テストが MEWST_TURNSTILE_DISABLE を明示的に制御し、実 .env が config テストの
+	// 挙動を変えないよう、デフォルトでは未設定にする。
+	_ = os.Unsetenv("MEWST_TURNSTILE_DISABLE")
 
 	// クリーンアップ関数を返す
 	return func() {
@@ -397,6 +405,83 @@ func TestLoad_TurnstileConfig(t *testing.T) {
 				_ = os.Setenv("MEWST_TURNSTILE_SECRET_KEY", tt.secretKey)
 			} else {
 				_ = os.Unsetenv("MEWST_TURNSTILE_SECRET_KEY")
+			}
+
+			cfg, err := Load()
+			if err != nil {
+				t.Fatalf("Load() failed: %v", err)
+			}
+
+			if cfg.TurnstileSiteKey != tt.wantSiteKey {
+				t.Errorf("TurnstileSiteKey = %q, want %q", cfg.TurnstileSiteKey, tt.wantSiteKey)
+			}
+			if cfg.TurnstileSecretKey != tt.wantSecretKey {
+				t.Errorf("TurnstileSecretKey = %q, want %q", cfg.TurnstileSecretKey, tt.wantSecretKey)
+			}
+		})
+	}
+}
+
+// TestLoad_TurnstileDisable verifies one-flag disabling outside production
+// and fail-closed behavior in production.
+//
+// [Ja] MEWST_TURNSTILE_DISABLE による非本番でのワンフラグ無効化と、
+// 本番での fail-closed の挙動を検証する。
+func TestLoad_TurnstileDisable(t *testing.T) {
+	const (
+		siteKey   = "1x00000000000000000000AA"
+		secretKey = "1x0000000000000000000000000000000AA"
+	)
+
+	tests := []struct {
+		name          string
+		appEnv        string
+		disable       string
+		wantSiteKey   string
+		wantSecretKey string
+	}{
+		{
+			name:          "非 prod + true: キーを空に落として無効化",
+			appEnv:        "dev",
+			disable:       "true",
+			wantSiteKey:   "",
+			wantSecretKey: "",
+		},
+		{
+			name:          "prod + true: 無視してキーを維持 (fail-closed)",
+			appEnv:        "prod",
+			disable:       "true",
+			wantSiteKey:   siteKey,
+			wantSecretKey: secretKey,
+		},
+		{
+			name:          "未設定: 既定どおりキーを維持",
+			appEnv:        "dev",
+			disable:       "",
+			wantSiteKey:   siteKey,
+			wantSecretKey: secretKey,
+		},
+		{
+			name:          "true 以外の値は無効化しない",
+			appEnv:        "dev",
+			disable:       "yes",
+			wantSiteKey:   siteKey,
+			wantSecretKey: secretKey,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanup := setupTestEnv(t)
+			defer cleanup()
+
+			_ = os.Setenv("APP_ENV", tt.appEnv)
+			_ = os.Setenv("MEWST_TURNSTILE_SITE_KEY", siteKey)
+			_ = os.Setenv("MEWST_TURNSTILE_SECRET_KEY", secretKey)
+			if tt.disable != "" {
+				_ = os.Setenv("MEWST_TURNSTILE_DISABLE", tt.disable)
+			} else {
+				_ = os.Unsetenv("MEWST_TURNSTILE_DISABLE")
 			}
 
 			cfg, err := Load()
