@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strconv"
@@ -115,10 +116,35 @@ func Load() (*Config, error) {
 	// Rails版アプリのURL (オプショナル - リバースプロキシ機能で使用)
 	cfg.RailsAppURL = os.Getenv("MEWST_RAILS_APP_URL")
 
-	// Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)
-	// テスト環境では空文字列でも動作する (モック設定として使用)
+	// Cloudflare Turnstile (optional - used by the sign-in and sign-up forms).
+	// An empty key works in the test environment too (used as a mock config).
+	//
+	// [Ja] Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)。
+	// テスト環境では空文字列でも動作する (モック設定として使用)。
 	cfg.TurnstileSiteKey = os.Getenv("MEWST_TURNSTILE_SITE_KEY")
 	cfg.TurnstileSecretKey = os.Getenv("MEWST_TURNSTILE_SECRET_KEY")
+
+	// MEWST_TURNSTILE_DISABLE=true disables Turnstile outside production with a single
+	// flag by blanking both keys, which routes through the existing "empty key"
+	// path (Verify always succeeds and the widget is not rendered), so no new
+	// branch is added to turnstile.Verify or turnstile.templ. It is fail-closed in
+	// production: Turnstile is a bot countermeasure, so a stray disable flag must
+	// never silently turn it off. In production the flag is ignored, the keys are
+	// kept, and a warning is logged.
+	//
+	// [Ja] MEWST_TURNSTILE_DISABLE=true は 2 つのキーを空に落とすことで非本番の Turnstile を
+	// 1 フラグで無効化する。空キーは既存経路 (Verify は常に成功・ウィジェット非描画) にそのまま
+	// 乗るため、turnstile.Verify / turnstile.templ に新たな分岐は足さない。本番では fail-closed
+	// とする。Turnstile は Bot 対策のため、無効化フラグが誤って本番に漏れても黙って無効化されては
+	// ならない。本番ではフラグを無視してキーを維持し、警告ログを出す。
+	if os.Getenv("MEWST_TURNSTILE_DISABLE") == "true" {
+		if cfg.IsProduction() {
+			slog.Warn("MEWST_TURNSTILE_DISABLE は本番環境では無視されます (Turnstile キーは変更しません)")
+		} else {
+			cfg.TurnstileSiteKey = ""
+			cfg.TurnstileSecretKey = ""
+		}
+	}
 
 	// メンテナンスモード (オプショナル - "on"のときメンテナンスモードを有効化)
 	cfg.MaintenanceMode = os.Getenv("MEWST_MAINTENANCE_MODE") == "on"
