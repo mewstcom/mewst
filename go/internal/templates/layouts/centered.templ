@@ -1,0 +1,82 @@
+package layouts
+
+import (
+	"github.com/a-h/templ"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// CenteredLayoutData holds the data passed to the centered authenticated layout.
+// Navbar carries the current user's atname and the active menu item.
+//
+// [Ja] 中央寄せの認証後レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
+// atname とアクティブなメニュー項目を保持する。
+type CenteredLayoutData struct {
+	Meta   viewmodel.PageMeta
+	Navbar viewmodel.Navbar
+}
+
+// Centered is the authenticated layout for focused single-column pages (such as
+// the new post compose screen): it shows the same navbar as Default but centers
+// the page's content column horizontally. Default keeps content top-left and
+// lets each page own its width; Simple drops the navbar entirely and centers a
+// card in the viewport. Centered sits between them — navbar present, content
+// centered — so a focused page reachable from the navbar keeps global navigation
+// without spreading its form across the full width.
+//
+// [Ja] Centered は集中させたい単一カラムページ (新規投稿の集中作成画面など) 向けの
+// 認証後レイアウト。Default と同じ navbar を表示しつつ、ページのコンテンツカラムを
+// 水平方向に中央寄せする。Default はコンテンツを左上に置き幅をページに委ねる。Simple は
+// navbar を持たずビューポート内にカードを中央寄せする。Centered はその中間で、navbar を
+// 持ちつつコンテンツを中央寄せするため、navbar から到達する集中ページがフォームを全幅に
+// 広げずにグローバルナビゲーションを保てる。
+templ Centered(data CenteredLayoutData, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang={ templates.Locale(ctx) }>
+		<head>
+			@components.Head(data.Meta)
+		</head>
+
+		<body>
+			@components.SkipLink()
+			@components.Flash(session.FlashFromContext(ctx))
+
+			// Keep shared navigation and page content inside the top and side safe areas.
+			// The inset variables resolve to zero on displays without constrained edges.
+			//
+			// [Ja] 共通ナビゲーションとページ内容を上・左右の safe area 内に収める。
+			// 制約のない画面では inset 変数が 0 になり、従来の配置を維持する。
+			<div class="flex min-h-[100svh] flex-col pt-safe px-safe">
+				@components.TopNavbar(data.Navbar)
+
+				// Center the page's content column (the page owns its max-width and edge
+				// padding). pb-safe-offset-24 reserves the base 6rem plus the bottom safe
+				// area below the fixed mobile navbar so a tall form never hides behind it.
+				// On lg, pb-safe-offset-8 keeps the base 2rem while respecting the bottom
+				// edge. tabindex="-1" lets the skip link move focus here without adding a tab stop.
+				//
+				// [Ja] ページのコンテンツカラムを中央寄せする (最大幅と端の余白はページが持つ)。
+				// pb-safe-offset-24 で固定ボトム navbar 用の 6rem と下辺の safe area を確保し、
+				// 縦長フォームが背後に隠れないようにする。lg では pb-safe-offset-8 により基準の 2rem と
+				// 下辺の safe area を保つ。tabindex="-1" でタブ停止点を増やさずフォーカスを移動できる。
+				<main id="main" tabindex="-1" class="flex-1 grid place-items-center pb-safe-offset-24 lg:pb-safe-offset-8">
+					@content
+				</main>
+
+				// Pin the bottom navbar to the bottom-center on mobile (the component itself hides it on lg).
+				// mb-safe lifts the pill above the home indicator in standalone mode. Its margin and
+				// the horizontal safe-area padding are additive to the existing 1rem inset; safe-area
+				// values resolve to zero where no constrained edge exists.
+				//
+				// [Ja] モバイルではボトム navbar を画面下部中央に固定する (lg ではコンポーネント側で非表示)。
+				// mb-safe はスタンドアロン表示でピルをホームインジケータの上へ持ち上げる。margin と左右の
+				// safe-area padding は既存の 1rem の余白に加算され、制約のない辺では値が 0 になる。
+				<div class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 py-4 px-safe-offset-4 mb-safe lg:hidden">
+					@components.BottomNavbar(data.Navbar)
+				</div>
+			</div>
+		</body>
+	</html>
+}
