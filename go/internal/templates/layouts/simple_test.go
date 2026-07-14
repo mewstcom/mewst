@@ -33,6 +33,7 @@ func TestSimple(t *testing.T) {
 		"<!doctype html>", // ドキュメント宣言。[Ja] document declaration
 		`<html lang="ja"`, // ロケールが反映される。[Ja] locale is applied
 		"テストタイトル | Mewst", // head のタイトル。[Ja] head title
+		`<body class="min-h-screen flex items-center justify-center p-safe"`,
 		// Skip link + <main> landmark (WCAG 2.4.1 / semantic-html): the skip link
 		// target, its label, and the focusable main wrapper.
 		//

@@ -31,31 +31,30 @@ templ Default(data DefaultLayoutData, content templ.Component) {
 		</head>
 
 		<body>
-			// Skip link as the first focusable element so keyboard / screen-reader users
-			// can jump past the navbar straight to the main content (WCAG 2.4.1). It stays
-			// visually hidden until focused, then surfaces at the top-left.
-			//
-			// [Ja] キーボード / スクリーンリーダー利用者が navbar を飛ばしてメインコンテンツへ
-			// 直接移動できるよう、最初のフォーカス可能要素としてスキップリンクを置く
-			// (WCAG 2.4.1)。フォーカス時のみ左上に可視化する。
-			<a
-				href="#main"
-				class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:shadow focus:outline focus:outline-2 focus:outline-ring"
-			>
-				{ templates.T(ctx, "skip_to_main_content") }
-			</a>
+			@components.SkipLink()
 			@components.Flash(session.FlashFromContext(ctx))
 
-			<div class="flex min-h-[100svh] flex-col">
+			// Keep shared navigation and page content inside the top and side safe areas.
+			// The inset variables resolve to zero on displays without constrained edges.
+			//
+			// [Ja] 共通ナビゲーションとページ内容を上・左右の safe area 内に収める。
+			// 制約のない画面では inset 変数が 0 になり、従来の配置を維持する。
+			<div class="flex min-h-[100svh] flex-col pt-safe px-safe">
 				@components.TopNavbar(data.Navbar)
 
-				<main id="main" tabindex="-1" class="flex-1">
+				<main id="main" tabindex="-1" class="flex-1 pb-safe">
 					@content
 				</main>
 
 				// Pin the bottom navbar to the bottom-center on mobile (the component itself hides it on lg).
+				// mb-safe lifts the pill above the home indicator in standalone mode. Its margin and
+				// the horizontal safe-area padding are additive to the existing 1rem inset; safe-area
+				// values resolve to zero where no constrained edge exists.
+				//
 				// [Ja] モバイルではボトム navbar を画面下部中央に固定する (lg ではコンポーネント側で非表示)。
-				<div class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 p-4">
+				// mb-safe はスタンドアロン表示でピルをホームインジケータの上へ持ち上げる。margin と左右の
+				// safe-area padding は既存の 1rem の余白に加算され、制約のない辺では値が 0 になる。
+				<div class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 py-4 px-safe-offset-4 mb-safe lg:hidden">
 					@components.BottomNavbar(data.Navbar)
 				</div>
 			</div>
