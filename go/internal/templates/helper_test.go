@@ -96,7 +96,7 @@ func TestIcon(t *testing.T) {
 			name:         "クラス指定なしでcustomアイコン(logo)が描画される",
 			iconName:     "logo",
 			class:        nil,
-			wantContains: []string{"<svg", "viewBox=\"0 0 512 512\""},
+			wantContains: []string{"<svg", "viewBox=\"0 0 700 700\""},
 			// クラス未指定時はclass属性が挿入されない
 			wantNoContains: []string{`class="`},
 		},
