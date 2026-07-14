@@ -9,11 +9,19 @@ templ Head(meta viewmodel.PageMeta) {
 	// disabling pinch-zoom violates WCAG 1.4.4 (Resize Text). iOS Safari's
 	// focus auto-zoom is avoided instead by keeping form inputs at 16px or larger.
 	//
+	// viewport-fit=cover lets the page extend into the device safe areas so that
+	// env(safe-area-inset-*) resolves to non-zero values; without it those insets
+	// are always 0 and the safe-area utilities (e.g. mb-safe) have no effect.
+	//
 	// [Ja] 標準的な viewport を使う。`maximum-scale=1` や `user-scalable=no` は
 	// 加えないこと。ピンチズームの無効化は WCAG 1.4.4 (Resize Text) に反する。
 	// iOS Safari のフォーカス時自動ズームは、フォーム入力のフォントサイズを
 	// 16px 以上に保つことで回避している。
-	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	//
+	// viewport-fit=cover はページを端末の safe area まで広げ、env(safe-area-inset-*)
+	// が非ゼロ値を返すようにする。これが無いと inset は常に 0 になり、safe-area
+	// ユーティリティ (例: mb-safe) が効かない。
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 
 	<title>{ meta.Title }</title>
 

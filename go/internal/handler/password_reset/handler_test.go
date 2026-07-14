@@ -97,6 +97,9 @@ func TestNew(t *testing.T) {
 	if strings.Contains(body, `name="password"`) {
 		t.Error("パスワードフィールドが含まれています (含まれるべきではない)")
 	}
+	if !strings.Contains(body, `aria-label="Mewst"`) {
+		t.Error("ロゴリンクにアクセシブルネームが含まれていません")
+	}
 }
 
 func TestCreate_Success(t *testing.T) {

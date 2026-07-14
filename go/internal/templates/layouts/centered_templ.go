@@ -14,22 +14,31 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// DefaultLayoutData holds the data passed to the authenticated shared layout.
+// CenteredLayoutData holds the data passed to the centered authenticated layout.
 // Navbar carries the current user's atname and the active menu item.
 //
-// [Ja] 認証後ページ共通レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
+// [Ja] 中央寄せの認証後レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
 // atname とアクティブなメニュー項目を保持する。
-type DefaultLayoutData struct {
+type CenteredLayoutData struct {
 	Meta   viewmodel.PageMeta
 	Navbar viewmodel.Navbar
 }
 
-// Default is the shared layout for authenticated pages: head, top navbar, main
-// content, and the mobile bottom navbar. It mirrors the Rails BasicLayoutComponent.
+// Centered is the authenticated layout for focused single-column pages (such as
+// the new post compose screen): it shows the same navbar as Default but centers
+// the page's content column horizontally. Default keeps content top-left and
+// lets each page own its width; Simple drops the navbar entirely and centers a
+// card in the viewport. Centered sits between them — navbar present, content
+// centered — so a focused page reachable from the navbar keeps global navigation
+// without spreading its form across the full width.
 //
-// [Ja] 認証後ページの共通レイアウト。head・トップ navbar・main コンテンツ・
-// モバイル用ボトム navbar で構成し、Rails の BasicLayoutComponent に対応する。
-func Default(data DefaultLayoutData, content templ.Component) templ.Component {
+// [Ja] Centered は集中させたい単一カラムページ (新規投稿の集中作成画面など) 向けの
+// 認証後レイアウト。Default と同じ navbar を表示しつつ、ページのコンテンツカラムを
+// 水平方向に中央寄せする。Default はコンテンツを左上に置き幅をページに委ねる。Simple は
+// navbar を持たずビューポート内にカードを中央寄せする。Centered はその中間で、navbar を
+// 持ちつつコンテンツを中央寄せするため、navbar から到達する集中ページがフォームを全幅に
+// 広げずにグローバルナビゲーションを保てる。
+func Centered(data CenteredLayoutData, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -57,7 +66,7 @@ func Default(data DefaultLayoutData, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.Locale(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/default.templ`, Line: 28, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/centered.templ`, Line: 37, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -91,7 +100,7 @@ func Default(data DefaultLayoutData, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"main\" tabindex=\"-1\" class=\"flex-1 pb-safe\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"main\" tabindex=\"-1\" class=\"flex-1 grid place-items-center pb-safe-offset-24 lg:pb-safe-offset-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

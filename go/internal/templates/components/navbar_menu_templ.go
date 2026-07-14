@@ -14,14 +14,18 @@ import (
 
 // NavbarMenu renders the five-item authenticated menu (home / search / new /
 // notification / profile). className is appended to the pill container so the
-// bottom navbar can add a border. It mirrors the Rails NavbarMenuComponent:
-// the Rails daisyUI bg-base-300 pill becomes bg-secondary, and each item shows
-// its filled icon when active.
+// bottom navbar can add a border. It mirrors the Rails NavbarMenuComponent, but
+// the pill uses a white background (bg-white) so the menu reads as a distinct
+// surface on the cream --background shared by the navbar and page; a
+// dark:bg-secondary variant is kept for the eventual dark-mode re-enablement.
+// Each item shows its filled icon and aria-current="page" when active.
 //
 // [Ja] 認証後の 5 項目メニュー (home / search / new / notification / profile) を
 // 描画する。className はピル状コンテナに追記され、ボトム navbar が枠線を足せる
-// ようにする。Rails の NavbarMenuComponent に対応し、daisyUI の bg-base-300 ピルは
-// bg-secondary に置き換え、各項目はアクティブ時に塗りつぶしアイコンを表示する。
+// ようにする。Rails の NavbarMenuComponent に対応するが、ピルは白背景 (bg-white) を
+// 使い、navbar とページが共有するクリーム色の --background 上でメニューが独立した面
+// として見えるようにする。ダークモード再有効化に備えて dark:bg-secondary バリアントを
+// 残す。各項目はアクティブ時に塗りつぶしアイコンと aria-current="page" を表示する。
 func NavbarMenu(navbar viewmodel.Navbar, className string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -43,7 +47,7 @@ func NavbarMenu(navbar viewmodel.Navbar, className string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"flex w-fit items-center gap-4 rounded-full bg-secondary px-4 py-1", className}
+		var templ_7745c5c3_Var2 = []any{"flex w-fit items-center gap-4 rounded-full bg-white px-4 py-1 dark:bg-secondary", className}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -94,16 +98,20 @@ func NavbarMenu(navbar viewmodel.Navbar, className string) templ.Component {
 }
 
 // navbarMenuLink renders one menu link. When active it shows the filled icon
-// colored with the foreground color; otherwise the line icon colored gray-400.
-// The .content fill override mirrors the Rails Mewst::UI::Icon color handling.
+// colored with the foreground color; otherwise the line icon uses gray-500 in
+// light mode and gray-300 in dark mode. The .content fill override mirrors the
+// Rails Mewst::UI::Icon color handling.
 // label is set as the link's aria-label so screen readers can announce the
-// icon-only link by its purpose.
+// icon-only link by its purpose. The active link also carries aria-current="page"
+// so its current-page state is exposed independently of the visual icon style.
 //
 // [Ja] メニューリンク 1 件を描画する。アクティブ時は塗りつぶしアイコンを
-// foreground 色で、非アクティブ時は線アイコンを gray-400 で表示する。
-// .content の fill 上書きは Rails の Mewst::UI::Icon の色処理に対応する。
+// foreground 色で、非アクティブ時は線アイコンをライトモードでは gray-500、
+// ダークモードでは gray-300 で表示する。.content の fill 上書きは Rails の
+// Mewst::UI::Icon の色処理に対応する。
 // label はリンクの aria-label に設定し、アイコンのみのリンクの目的を
-// スクリーンリーダーが読み上げられるようにする。
+// スクリーンリーダーが読み上げられるようにする。アクティブなリンクには
+// aria-current="page" も付け、現在ページの状態を視覚的なアイコン表現とは独立して伝える。
 func navbarMenuLink(href templates.Path, active bool, lineIcon, fillIcon viewmodel.IconName, label string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -132,7 +140,7 @@ func navbarMenuLink(href templates.Path, active bool, lineIcon, fillIcon viewmod
 		var templ_7745c5c3_Var5 templ.SafeURL
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/navbar_menu.templ`, Line: 40, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/navbar_menu.templ`, Line: 49, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -145,13 +153,23 @@ func navbarMenuLink(href templates.Path, active bool, lineIcon, fillIcon viewmod
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/navbar_menu.templ`, Line: 40, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/navbar_menu.templ`, Line: 50, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"rounded-full p-1 hover:bg-gray-100\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if active {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " aria-current=\"page\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " class=\"rounded-full p-1 hover:bg-gray-100 dark:hover:bg-stone-700\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -161,12 +179,12 @@ func navbarMenuLink(href templates.Path, active bool, lineIcon, fillIcon viewmod
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templates.Icon(lineIcon, "h-[30px] w-[30px] [&_.content]:fill-gray-400").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templates.Icon(lineIcon, "h-[30px] w-[30px] [&_.content]:fill-gray-500 dark:[&_.content]:fill-gray-300").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

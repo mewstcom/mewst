@@ -84,6 +84,9 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 	if !strings.Contains(body, `name="code"`) {
 		t.Error("確認コードフィールドがフォームに含まれていません")
 	}
+	if !strings.Contains(body, `aria-label="Mewst"`) {
+		t.Error("ロゴリンクにアクセシブルネームが含まれていません")
+	}
 }
 
 func TestNew_WithoutEmailConfirmationID(t *testing.T) {

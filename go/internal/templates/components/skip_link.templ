@@ -1,0 +1,25 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/templates"
+
+// SkipLink renders the "skip to main content" link that every layout places as
+// its first focusable element (WCAG 2.4.1). It targets #main so keyboard and
+// screen-reader users can bypass preceding chrome such as the navbar and jump
+// straight to the main content. It stays visually hidden until focused, then
+// surfaces at the top-left inside the safe area. Centralizing the markup keeps the skip link
+// consistent across the Simple, Default, and Centered layouts.
+//
+// [Ja] SkipLink は全レイアウトが最初のフォーカス可能要素として置く
+// 「メインコンテンツへスキップ」リンクを描画する (WCAG 2.4.1)。#main を指し、
+// navbar など前段の chrome を飛ばしてメインコンテンツへ直接移動できるようにする。
+// フォーカスされるまで視覚的に隠れ、フォーカス時に safe area 内の左上へ現れる。マークアップを
+// 1 つのコンポーネントに集約し、Simple・Default・Centered の各レイアウトで
+// スキップリンクを一貫させる。
+templ SkipLink() {
+	<a
+		href="#main"
+		class="sr-only focus:not-sr-only focus:absolute focus:left-safe-offset-4 focus:top-safe-offset-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:shadow focus:outline focus:outline-2 focus:outline-ring"
+	>
+		{ templates.T(ctx, "skip_to_main_content") }
+	</a>
+}

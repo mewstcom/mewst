@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "basecoat-css";
+@import "tailwindcss-safe-area";
 
 :root {
   /* 独自の変数 */

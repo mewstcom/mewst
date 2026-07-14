@@ -36,9 +36,16 @@ func TestDefault(t *testing.T) {
 		`<html lang="ja"`, // ロケールが反映される
 		"テストタイトル | Mewst", // head のタイトル
 		"sticky",          // トップ navbar
-		"lg:hidden",       // ボトム navbar
-		`href="/@alice"`,  // navbar メニュー (プロフィールリンク)
-		`href="#main"`,    // skip link (WCAG 2.4.1). [Ja] スキップリンク (WCAG 2.4.1)
+		`class="flex min-h-[100svh] flex-col pt-safe px-safe"`,
+		`<main id="main" tabindex="-1" class="flex-1 pb-safe"`,
+		// Check the fixed wrapper's complete class list so its transparent mobile
+		// hit area cannot remain over desktop content.
+		//
+		// [Ja] 固定ラッパーの完全な class 一覧を検証し、モバイル用の透明な
+		// ヒット領域がデスクトップのコンテンツ上に残ることを防ぐ。
+		`class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 py-4 px-safe-offset-4 mb-safe lg:hidden"`,
+		`href="/@alice"`, // navbar メニュー (プロフィールリンク)
+		`href="#main"`,   // skip link (WCAG 2.4.1). [Ja] スキップリンク (WCAG 2.4.1)
 		"メインコンテンツへスキップ",                 // skip link label. [Ja] スキップリンクのラベル
 		`<main id="main" tabindex="-1"`, // main landmark (id is the skip link target, tabindex enables programmatic focus). [Ja] main ランドマーク (id はスキップリンクのターゲット、tabindex でプログラム的フォーカスを許可)
 		"content-marker",                // 差し込まれたコンテンツ

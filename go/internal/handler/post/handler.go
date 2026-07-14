@@ -66,15 +66,22 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
 	meta.SetTitle(ctx, "post_new_title")
 
-	// /new is a focused compose screen, so it uses the navbar-less layouts.Simple
-	// (form centered, no navbar) rather than the shared authenticated layout. The
-	// cancel affordance lives inside the form's action row (see the page template),
-	// so this handler only supplies its /home fallback via NewPageData.BackHref.
+	// /new uses layouts.Centered to keep a focused, centered compose column while
+	// showing the same global navbar as the shared authenticated layout (desktop
+	// top-right, mobile bottom-center). This matches the navigation available around
+	// the Rails post form. The navbar highlights the new item because /new is the new
+	// page. The in-form cancel affordance stays alongside it (navbar = global
+	// navigation, cancel = back to the previous page), so this handler supplies the
+	// cancel button's /home fallback via NewPageData.BackHref.
 	//
-	// [Ja] /new は集中作成画面のため、共通の認証後レイアウトではなく navbar を持たない
-	// layouts.Simple (フォーム中央寄せ・navbar なし) を使う。キャンセル導線はフォームの
-	// 操作行の中に置く (ページテンプレート参照) ため、このハンドラーは NewPageData.BackHref
-	// でそのフォールバック先 (/home) を渡すだけでよい。
+	// [Ja] /new は layouts.Centered を使い、集中した中央寄せの作成カラムを保ちながら、
+	// 共通の認証後レイアウトと同じグローバル navbar (PC 右上・モバイル下部中央) を表示する。
+	// これは Rails の投稿フォーム周辺で利用できるナビゲーションに揃う。/new は new ページの
+	// ため navbar は new をアクティブ表示する。フォーム内のキャンセル導線はそのまま併存させる
+	// (navbar = 全体ナビ、キャンセル = 直前ページへ戻る) ため、このハンドラーは
+	// NewPageData.BackHref でキャンセルボタンのフォールバック先 (/home) を渡す。
+	navbar := viewmodel.NewNavbar(middleware.ProfileFromContext(ctx), viewmodel.NavbarItemNew)
+
 	formContent := postpages.New(postpages.NewPageData{
 		CSRFToken:    csrfToken,
 		FormErrors:   ve,
@@ -84,7 +91,7 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 		BackHref:     templates.HomePath(),
 	})
 
-	if err := layouts.Simple(layouts.SimpleLayoutData{Meta: meta}, formContent).Render(ctx, w); err != nil {
+	if err := layouts.Centered(layouts.CenteredLayoutData{Meta: meta, Navbar: navbar}, formContent).Render(ctx, w); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

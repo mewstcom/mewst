@@ -8,20 +8,21 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// SimpleLayoutData はシンプルレイアウトに渡すデータ構造体
+// SimpleLayoutData holds the data passed to the simple layout.
+//
+// [Ja] SimpleLayoutData はシンプルレイアウトに渡すデータ構造体。
 type SimpleLayoutData struct {
 	Meta viewmodel.PageMeta
 }
 
-// Simple is a navbar-less, centered single-column layout used by focused pages
-// (unauthenticated auth forms, the new post compose screen). It provides the
-// skip link and the single <main> landmark so every page built on it satisfies
-// WCAG 2.4.1 / semantic-html without repeating the markup per page.
+// Simple is a navbar-less, centered single-column layout used by unauthenticated
+// authentication forms. It provides the skip link and the single <main>
+// landmark so every page built on it satisfies WCAG 2.4.1 / semantic-html
+// without repeating the markup per page.
 //
-// [Ja] Simple は navbar 無しの中央寄せ単一カラムレイアウトで、集中させたいページ
-// (未認証の認証フォーム・新規投稿の集中作成画面) で使う。スキップリンクとただ 1 つの
-// <main> ランドマークを備え、これを土台にする全ページがページごとにマークアップを
-// 繰り返さずに WCAG 2.4.1 / semantic-html を満たす。
+// [Ja] Simple は未認証の認証フォームで使う、navbar 無しの中央寄せ単一カラム
+// レイアウト。スキップリンクとただ 1 つの <main> ランドマークを備え、これを土台にする
+// 全ページがページごとにマークアップを繰り返さずに WCAG 2.4.1 / semantic-html を満たす。
 templ Simple(data SimpleLayoutData, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang={ templates.Locale(ctx) }>
@@ -29,20 +30,13 @@ templ Simple(data SimpleLayoutData, content templ.Component) {
 			@components.Head(data.Meta)
 		</head>
 
-		<body class="min-h-screen flex items-center justify-center">
-			// Skip link as the first focusable element so keyboard / screen-reader users
-			// can jump straight to the main content (WCAG 2.4.1). It stays visually hidden
-			// until focused, then surfaces at the top-left.
-			//
-			// [Ja] キーボード / スクリーンリーダー利用者がメインコンテンツへ直接移動できるよう、
-			// 最初のフォーカス可能要素としてスキップリンクを置く (WCAG 2.4.1)。フォーカス時のみ
-			// 左上に可視化する。
-			<a
-				href="#main"
-				class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:shadow focus:outline focus:outline-2 focus:outline-ring"
-			>
-				{ templates.T(ctx, "skip_to_main_content") }
-			</a>
+		// Keep the centered authentication content inside every constrained edge.
+		// Safe-area values resolve to zero on displays without constrained edges.
+		//
+		// [Ja] 中央寄せの認証コンテンツを全辺の safe area 内に収める。
+		// 制約のない画面では safe-area の値が 0 になり、従来の配置を維持する。
+		<body class="min-h-screen flex items-center justify-center p-safe">
+			@components.SkipLink()
 			@components.Flash(session.FlashFromContext(ctx))
 			// Wrap the page content in the single <main> landmark. w-full gives the
 			// page's inner column a definite full-width parent so its max-width resolves,

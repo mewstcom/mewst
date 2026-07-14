@@ -9,6 +9,7 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
 )
 
 func TestNew(t *testing.T) {
@@ -16,13 +17,16 @@ func TestNew(t *testing.T) {
 
 	h := newCreatePostHandler(t)
 
-	// Set the CSRF token and locale on the context. /new sits under RequireAuth,
-	// so the CSRF token is supplied via the context in production.
+	// Set the CSRF token, locale, and current profile on the context. /new sits
+	// under RequireAuth, so in production the CSRF token and profile are supplied via
+	// the context; the profile drives the navbar's profile link (/@{atname}).
 	//
-	// [Ja] CSRF トークンとロケールをコンテキストに設定する。/new は RequireAuth
-	// 配下のため、本番では CSRF トークンは context 経由で渡る。
+	// [Ja] CSRF トークン・ロケール・現在プロフィールをコンテキストに設定する。/new は
+	// RequireAuth 配下のため、本番では CSRF トークンとプロフィールは context 経由で渡る。
+	// プロフィールは navbar のプロフィールリンク (/@{atname}) を駆動する。
 	ctx := i18n.SetLocale(context.Background(), "ja")
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = middleware.SetProfileToContext(ctx, &model.Profile{Atname: "alice"})
 
 	req := httptest.NewRequest(http.MethodGet, "/new", nil)
 	req = req.WithContext(ctx)
@@ -93,14 +97,83 @@ func TestNew(t *testing.T) {
 		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
 	}
 
-	// layouts.Simple omits the navbar, so navbar-only links (e.g. search) must not
-	// appear. This locks /new to the focused navbar-less layout instead of the
-	// shared authenticated layout.
-	// [Ja] layouts.Simple は navbar を持たないため、navbar 専用リンク (検索など) は
-	// 出力されない。これにより /new が共通の認証後レイアウトではなく navbar 無しの集中
-	// 作成レイアウトに固定されることを保証する。
-	if strings.Contains(body, `href="/search"`) {
-		t.Error("navbar 無しの /new に navbar の検索リンクが含まれています")
+	// /new renders on the authenticated navbar layout (layouts.Centered), so the
+	// top navbar (desktop) and bottom navbar (mobile) each render the five-item menu.
+	// Assert a navbar-only link (search) and the profile link built from the injected
+	// profile's atname to confirm both navbars render. This verifies that the handler
+	// wires /new to the navbar-bearing centered layout.
+	//
+	// [Ja] /new は認証後の navbar 付きレイアウト (layouts.Centered) で描画し、トップ navbar
+	// (PC) とボトム navbar (モバイル) がそれぞれ 5 項目メニューを描画する。navbar 専用リンク
+	// (検索) と、注入したプロフィールの atname から生成されるプロフィールリンクを検証し、
+	// ハンドラーが /new を navbar 付き中央寄せレイアウトへ配線していることを確認する。
+	navbarChecks := []string{
+		`href="/search"`,
+		`href="/@alice"`,
+		"sticky",
+		"lg:hidden",
+	}
+	for _, want := range navbarChecks {
+		if !strings.Contains(body, want) {
+			t.Errorf("navbar を表示する /new に %q が含まれていません", want)
+		}
+	}
+
+	// The new item is the active one on /new. Both navbars render the menu, so the
+	// active filled-icon fill override appears exactly twice (once per menu).
+	//
+	// [Ja] /new では new 項目がアクティブ。両 navbar がメニューを描画するため、アクティブの
+	// 塗りつぶしアイコンの fill 上書きはちょうど 2 回 (メニューごとに 1 回) 現れる。
+	if got := strings.Count(body, "[&_.content]:fill-foreground"); got != 2 {
+		t.Errorf("アクティブ表示の fill クラス数 = %d, want 2 (new がトップ / ボトム navbar でアクティブ)", got)
+	}
+}
+
+func TestNew_ContentPrefill(t *testing.T) {
+	t.Parallel()
+
+	h := newCreatePostHandler(t)
+
+	// The GET form pre-fills the content textarea from ?content= and intentionally
+	// defers validation until submit. The template renders the value as
+	// `>{ data.Content }</textarea>`, so each case asserts the substring that must sit
+	// just before the closing tag.
+	//
+	// [Ja] GET フォームは ?content= から本文 textarea を事前入力し、送信時まで意図的に
+	// 検証を遅延する。テンプレートは値を `>{ data.Content }</textarea>` として描画するため、
+	// 各ケースは閉じタグ直前に来るはずの部分文字列を検証する。
+	overLimit := strings.Repeat("a", 161)
+
+	tests := []struct {
+		name     string
+		query    string
+		wantBody string
+	}{
+		{name: "prefills the textarea from the query parameter", query: "?content=hello", wantBody: "hello</textarea>"},
+		{name: "leaves the textarea empty without the parameter", query: "", wantBody: "></textarea>"},
+		{name: "shows an over-limit prefill as-is (validation deferred to submit)", query: "?content=" + overLimit, wantBody: overLimit + "</textarea>"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := i18n.SetLocale(context.Background(), "ja")
+			ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+			req := httptest.NewRequest(http.MethodGet, "/new"+tt.query, nil)
+			req = req.WithContext(ctx)
+			rr := httptest.NewRecorder()
+
+			h.New(rr, req)
+
+			if rr.Code != http.StatusOK {
+				t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+			}
+			if body := rr.Body.String(); !strings.Contains(body, tt.wantBody) {
+				t.Errorf("textarea に %q が含まれていません", tt.wantBody)
+			}
+		})
 	}
 }
 

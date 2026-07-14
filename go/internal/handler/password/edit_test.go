@@ -58,6 +58,9 @@ func TestEdit_WithValidSucceededEmailConfirmation(t *testing.T) {
 	if !strings.Contains(body, `_method`) {
 		t.Error("メソッドオーバーライドがフォームに含まれていません")
 	}
+	if !strings.Contains(body, `aria-label="Mewst"`) {
+		t.Error("ロゴリンクにアクセシブルネームが含まれていません")
+	}
 }
 
 func TestEdit_WithoutEmailConfirmationID(t *testing.T) {

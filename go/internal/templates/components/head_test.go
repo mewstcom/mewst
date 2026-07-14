@@ -26,7 +26,7 @@ func TestHead_ViewportAllowsZoom(t *testing.T) {
 	// 最大スケールを固定したりユーザースケーリングを無効化したりしてはならない。
 	// iOS Safari のフォーカス時自動ズームは viewport の固定ではなく 16px の
 	// フォーム入力で回避している (head.templ を参照)。
-	required := []string{"width=device-width", "initial-scale=1"}
+	required := []string{"width=device-width", "initial-scale=1", "viewport-fit=cover"}
 	for _, want := range required {
 		if !strings.Contains(html, want) {
 			t.Errorf("Head viewport must contain %q, got: %q", want, html)
