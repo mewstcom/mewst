@@ -16,7 +16,7 @@
   --app-brand-900: #783a0f;
   --app-brand-950: #451d03;
   --app-error-foreground: var(--color-white);
-  --app-error: var(--color-red-600);
+  --app-error: var(--color-red-700);
   --app-info-foreground: var(--color-white);
   --app-info: var(--color-blue-600);
   --app-success-foreground: var(--color-white);
@@ -79,14 +79,14 @@
   --color-link-primary-foreground: var(--app-link-primary-foreground);
   --color-link-muted-foreground: var(--app-link-muted-foreground);
 
-  --color-error-foreground: var(--error-foreground);
-  --color-error: var(--error);
-  --color-info-foreground: var(--info-foreground);
-  --color-info: var(--info);
+  --color-error-foreground: var(--app-error-foreground);
+  --color-error: var(--app-error);
+  --color-info-foreground: var(--app-info-foreground);
+  --color-info: var(--app-info);
   --color-success-foreground: var(--app-success-foreground);
   --color-success: var(--app-success);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-warning: var(--warning);
+  --color-warning-foreground: var(--app-warning-foreground);
+  --color-warning: var(--app-warning);
 }
 
 @utility link-bare-* {

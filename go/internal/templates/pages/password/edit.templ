@@ -14,78 +14,76 @@ type EditPageData struct {
 
 // Edit はパスワード更新フォームを表示する
 templ Edit(data EditPageData) {
-	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">
-			<a href="/" aria-label="Mewst" class="inline-block">
-				<div class="bg-primary rounded-xl">
-					@templates.Icon("logo", "fill-black w-[50px] h-[50px]")
-				</div>
-			</a>
+			@components.LogoTile()
 		</div>
 
 		<div class="flex flex-col gap-2">
 			<h1 class="text-center text-3xl font-bold antialiased">
 				{ templates.T(ctx, "password_edit_title") }
 			</h1>
-			<p class="text-center text-muted-foreground">
+			<p class="text-center text-sm text-muted-foreground">
 				{ templates.T(ctx, "password_edit_description") }
 			</p>
 		</div>
 
 		@components.FormErrors(data.FormErrors)
 
-		<form
-			action="/password"
-			class="form grid gap-6"
-			hx-on:submit="disableSubmitButtons(this)"
-			method="POST"
-		>
-			<input type="hidden" name="_method" value="PATCH"/>
-			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-
-			<div class="grid gap-2">
-				<label for="password">
-					{ templates.T(ctx, "password_edit_password_label") }
-				</label>
-
-				<input
-					if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
-						aria-invalid="true"
-					} else {
-						aria-invalid="false"
-					}
-					autocomplete="new-password"
-					autofocus
-					id="password"
-					minlength="8"
-					name="password"
-					required
-					tabindex="1"
-					type="password"
-				/>
-
-				<p class="text-sm text-muted-foreground">
-					{ templates.T(ctx, "password_edit_password_hint") }
-				</p>
-
-				if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
-					for _, errorMsg := range data.FormErrors.GetFieldErrors("password") {
-						<p class="text-sm text-error">
-							{ errorMsg }
-						</p>
-					}
-				}
-			</div>
-
-			<button
-				class="btn-primary rounded-full w-fit"
-				tabindex="2"
-				type="submit"
+		@components.AuthFormCard() {
+			<form
+				action="/password"
+				class="form grid gap-6"
+				hx-on:submit="disableSubmitButtons(this)"
+				method="POST"
 			>
-				@templates.Icon("arrow-right-regular")
-				{ templates.T(ctx, "password_edit_submit") }
-			</button>
-		</form>
+				<input type="hidden" name="_method" value="PATCH"/>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+				<div class="grid gap-2">
+					<label for="password">
+						{ templates.T(ctx, "password_edit_password_label") }
+					</label>
+
+					<input
+						if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
+							aria-invalid="true"
+						} else {
+							aria-invalid="false"
+						}
+						autocomplete="new-password"
+						autofocus
+						id="password"
+						minlength="8"
+						name="password"
+						required
+						tabindex="1"
+						type="password"
+					/>
+
+					<p class="text-sm text-muted-foreground">
+						{ templates.T(ctx, "password_edit_password_hint") }
+					</p>
+
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("password") {
+						for _, errorMsg := range data.FormErrors.GetFieldErrors("password") {
+							<p class="text-sm text-error">
+								{ errorMsg }
+							</p>
+						}
+					}
+				</div>
+
+				<button
+					class="btn-primary rounded-full w-fit"
+					tabindex="2"
+					type="submit"
+				>
+					@templates.Icon("arrow-right-regular")
+					{ templates.T(ctx, "password_edit_submit") }
+				</button>
+			</form>
+		}
 
 		<div class="text-center text-muted-foreground">
 			<a class="link-primary-foreground" href="/sign_in">

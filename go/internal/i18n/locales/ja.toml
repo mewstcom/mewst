@@ -139,7 +139,7 @@ other = "アカウントを作成"
 
 [account_new_description]
 description = "アカウント作成ページの説明"
-other = "アットネームとパスワードを設定してください。"
+other = "アットネームとパスワードを設定してください"
 
 [account_new_email_label]
 description = "アカウント作成ページのメールアドレスラベル"
@@ -175,7 +175,7 @@ other = "新しいパスワードを設定"
 
 [password_edit_description]
 description = "パスワード更新ページの説明"
-other = "新しいパスワードを入力してください。"
+other = "新しいパスワードを入力してください"
 
 [password_edit_password_label]
 description = "パスワード更新ページの新しいパスワードラベル"
