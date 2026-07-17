@@ -1,0 +1,20 @@
+package components
+
+// AuthFormCard frames an authentication form in the shared card used across the
+// auth screens (sign in / sign up / account creation / email confirmation /
+// password update / password reset). It owns the card surface and its
+// responsive treatment—full-bleed with square corners on narrow viewports, an
+// inset rounded card from the md breakpoint up—so each screen supplies only the
+// form inside.
+//
+// [Ja] AuthFormCard は認証フォームを、認証系の各画面 (ログイン / サインアップ /
+// アカウント作成 / メール確認 / パスワード更新 / パスワードリセット) で共有する
+// カードに収める。カードの面とそのレスポンシブな見た目 (狭い画面では全幅・角なし、
+// md 以上では余白を持つ角丸カード) を担い、各画面は内側のフォームだけを渡す。
+templ AuthFormCard() {
+	<div class="card py-4 rounded-none md:rounded-xl mx-0 md:mx-4">
+		<section class="px-4">
+			{ children... }
+		</section>
+	</div>
+}
