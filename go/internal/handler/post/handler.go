@@ -27,6 +27,15 @@ type Handler struct {
 	getLinkUC    *usecase.GetLinkUsecase
 }
 
+// draftStorageKeyPrefix namespaces the localStorage draft key by feature so the
+// per-user body draft (web/post_draft.ts) does not collide with other stored
+// keys. The author's profile id is appended to scope it per user.
+//
+// [Ja] draftStorageKeyPrefix は localStorage の下書きキーを機能ごとに名前空間化し、
+// ユーザー別の本文下書き (web/post_draft.ts) が他の保存キーと衝突しないようにする。
+// 投稿者のプロフィール ID を後ろに付けてユーザー別にスコープする。
+const draftStorageKeyPrefix = "post_draft:"
+
 // NewHandler creates a new Handler.
 // [Ja] NewHandler は新しい Handler を作成する。
 func NewHandler(
@@ -80,15 +89,32 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	// ため navbar は new をアクティブ表示する。ページ単位の戻る導線は navbar を補完する
 	// (navbar = 全体ナビ、戻る = 直前ページへ戻る)。このハンドラーは NewPageData.BackHref
 	// で戻るリンクのフォールバック先 (/home) を渡す。
-	navbar := viewmodel.NewNavbar(middleware.ProfileFromContext(ctx), viewmodel.NavbarItemNew)
+	profile := middleware.ProfileFromContext(ctx)
+
+	navbar := viewmodel.NewNavbar(profile, viewmodel.NavbarItemNew)
+
+	// Scope the localStorage draft key to the current author so a shared device
+	// never restores one user's unsent draft for the next. The profile is absent
+	// only when /new is rendered outside RequireAuth (e.g. some tests); leaving
+	// the key empty disables autosave rather than writing to a shared key.
+	//
+	// [Ja] localStorage の下書きキーを現在の投稿者にスコープし、共有端末で前ユーザーの
+	// 未送信下書きが次のユーザーに復元されないようにする。プロフィールが無いのは
+	// RequireAuth 外で /new を描画したとき (例: 一部のテスト) だけであり、キーを空の
+	// ままにすることで共有キーへの書き込みではなく自動保存の無効化とする。
+	var draftStorageKey string
+	if profile != nil {
+		draftStorageKey = draftStorageKeyPrefix + profile.ID.String()
+	}
 
 	formContent := postpages.New(postpages.NewPageData{
-		CSRFToken:    csrfToken,
-		FormErrors:   ve,
-		Content:      content,
-		CanonicalURL: canonicalURL,
-		AttachedLink: attachedLink,
-		BackHref:     templates.HomePath(),
+		CSRFToken:       csrfToken,
+		FormErrors:      ve,
+		Content:         content,
+		CanonicalURL:    canonicalURL,
+		AttachedLink:    attachedLink,
+		BackHref:        templates.HomePath(),
+		DraftStorageKey: draftStorageKey,
 	})
 
 	if err := layouts.Centered(layouts.CenteredLayoutData{Meta: meta, Navbar: navbar}, formContent).Render(ctx, w); err != nil {

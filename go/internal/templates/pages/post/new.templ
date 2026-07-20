@@ -29,6 +29,9 @@ type NewPageData struct {
 	// BackHref is the fallback destination for the back link (the back-link script upgrades it to history.back() when the referrer is same-origin).
 	// [Ja] BackHref は戻るリンクのフォールバック先 (referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする)。
 	BackHref templates.Path
+	// DraftStorageKey is the per-user localStorage key for the body draft autosave (web/post_draft.ts). Empty disables autosave (e.g. no profile on the context).
+	// [Ja] DraftStorageKey は本文の下書き自動保存 (web/post_draft.ts) 用のユーザー別 localStorage キー。空なら自動保存を無効化する (例: context にプロフィールが無い場合)。
+	DraftStorageKey string
 }
 
 // New renders the new post form (content textarea + submit button + CSRF). The
@@ -71,17 +74,9 @@ templ New(data NewPageData) {
 
 			@components.FormErrors(data.FormErrors)
 
-			// data-form-guard opts this form into the leave guard (web/form_guard.ts): once
-			// the body is edited, leaving without submitting (back button, tab close, reload,
-			// or the cancel button) prompts a browser confirm. A real submit clears the guard.
-			//
-			// [Ja] data-form-guard でこのフォームを離脱ガード (web/form_guard.ts) の対象にする。
-			// 本文を編集した後は、送信せずに離れようとすると (戻るボタン・タブ閉じ・リロード・
-			// キャンセルボタン) ブラウザの確認が出る。実際の送信ではガードが解除される。
 			<form
 				action="/posts"
 				class="form grid gap-4"
-				data-form-guard
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -119,10 +114,30 @@ templ New(data NewPageData) {
 						class={ "textarea w-full flex-col p-0 transition-[color,box-shadow,border-color] duration-200 ease-out focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
 							templ.KV("border-destructive", hasContentError) }
 					>
+						// data-draft-key opts the body into localStorage draft autosave
+						// (web/post_draft.ts): edits are debounced into this per-user key, pending
+						// writes are flushed when the page is hidden, and the draft is restored on
+						// return. This keeps the latest value across tab close, reload, and device
+						// back; a real submit clears it. The key is scoped to the author's profile id so a
+						// shared device never restores one user's unsent draft for the next. It is
+						// omitted when no profile is on the context (e.g. tests /new outside
+						// RequireAuth), which disables autosave rather than writing a shared key.
+						//
+						// [Ja] data-draft-key は本文を localStorage の下書き自動保存
+						// (web/post_draft.ts) の対象にする: 編集はデバウンスしてこのユーザー別キーへ保存し、
+						// ページが隠れるときに保留中の書き込みを確定して、戻ってきたときに復元する。
+						// タブ閉じ・リロード・端末の戻るでも最新値が残り、実際の送信ではクリアされる。
+						// キーは投稿者のプロフィール ID にスコープするため、共有
+						// 端末で前ユーザーの未送信下書きが次のユーザーに復元されない。context に
+						// プロフィールが無いとき (例: RequireAuth 外の /new テスト) は属性を省き、共有
+						// キーへの書き込みではなく自動保存の無効化とする。
 						<textarea
 							autofocus
 							class="min-h-0 w-full resize-none border-0 bg-transparent px-4 py-2 leading-loose shadow-none focus-visible:ring-0"
 							data-autosize
+							if data.DraftStorageKey != "" {
+								data-draft-key={ data.DraftStorageKey }
+							}
 							data-link-card-path="/links/new"
 							id="content"
 							if hasContentError {
