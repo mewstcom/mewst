@@ -394,12 +394,12 @@ description = "New post form submit button"
 other = "Post"
 
 # ============================================
-# Cancel button (cancel)
+# Back link (back_link)
 # ============================================
 
-[cancel]
-description = "Link text for the cancel affordance (CancelButton component)"
-other = "Cancel"
+[back_link]
+description = "Link text for the back affordance (BackLink component)"
+other = "Back"
 
 # ============================================
 # Skip link (skip_to_main_content)

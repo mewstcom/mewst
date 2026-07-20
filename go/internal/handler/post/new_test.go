@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
@@ -24,9 +26,10 @@ func TestNew(t *testing.T) {
 	// [Ja] CSRF トークン・ロケール・現在プロフィールをコンテキストに設定する。/new は
 	// RequireAuth 配下のため、本番では CSRF トークンとプロフィールは context 経由で渡る。
 	// プロフィールは navbar のプロフィールリンク (/@{atname}) を駆動する。
+	authorID := model.ProfileID(uuid.MustParse("11111111-1111-1111-1111-111111111111"))
 	ctx := i18n.SetLocale(context.Background(), "ja")
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = middleware.SetProfileToContext(ctx, &model.Profile{Atname: "alice"})
+	ctx = middleware.SetProfileToContext(ctx, &model.Profile{ID: authorID, Atname: "alice"})
 
 	req := httptest.NewRequest(http.MethodGet, "/new", nil)
 	req = req.WithContext(ctx)
@@ -46,7 +49,11 @@ func TestNew(t *testing.T) {
 	checks := []string{
 		"csrf_token",           // CSRF トークン
 		"disableSubmitButtons", // 二重送信防止 (他フォームと共通)
-		"data-form-guard",      // leave guard PE hook (web/form_guard.ts). [Ja] 離脱ガードの PE フック (web/form_guard.ts)
+		// Body draft autosave PE hook (web/post_draft.ts), scoped to the author's
+		// profile id so a shared device never leaks one user's draft to the next.
+		// [Ja] 本文の下書き自動保存の PE フック (web/post_draft.ts)。投稿者のプロフィール
+		// ID にスコープし、共有端末で前ユーザーの下書きが次のユーザーに漏れないようにする。
+		`data-draft-key="post_draft:11111111-1111-1111-1111-111111111111"`,
 		`name="content"`,       // 本文 textarea
 		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
 		"いま何してる？",              // 本文ラベル (post_new_content_label)
@@ -57,20 +64,20 @@ func TestNew(t *testing.T) {
 		"メインコンテンツへスキップ",        // skip link label. [Ja] スキップリンクのラベル
 		`<main id="main"`,      // main landmark (semantic-html). [Ja] main ランドマーク (semantic-html)
 		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
-		// Cancel affordance rendered inside the form's action row (CancelButton
-		// component): a /home fallback link upgraded to history.back() by the back-link
-		// script when the referrer is same-origin (data-back-link is the PE hook). It is
-		// an <a> styled as an outline button, not a <button>, so it navigates via href
-		// without JS and cannot accidentally submit the form.
+		// Back affordance rendered above the form (BackLink component): a /home
+		// fallback link upgraded to history.back() by the back-link script when the
+		// referrer is same-origin (data-back-link is the PE hook). It is an <a> styled
+		// as a subdued muted link, not a <button>, so it navigates via href without JS
+		// and cannot accidentally submit the form.
 		//
-		// [Ja] フォームの操作行の中に描画されるキャンセル導線 (CancelButton コンポーネント):
+		// [Ja] フォーム上部に描画される戻る導線 (BackLink コンポーネント):
 		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
-		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく輪郭のみ
-		// (outline) のボタン風にスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
-		"data-back-link", // キャンセルリンクの JS フック (PE)
-		`href="/home"`,   // キャンセル導線のフォールバック先
-		"btn-outline",    // outline (輪郭のみ) ボタンのスタイル
-		"キャンセル",          // キャンセルボタンのラベル (cancel)
+		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく muted な
+		// リンクとしてスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
+		"data-back-link",
+		`href="/home"`,
+		"link-bare-muted-foreground",
+		"戻る",
 		// Form enhancements: wiring for the character counter, autosize, and the
 		// link card integration.
 		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
@@ -87,6 +94,30 @@ func TestNew(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Errorf("レスポンスに %q が含まれていません", want)
 		}
+	}
+
+	// The sole back link must precede the post form, keeping it above and outside
+	// the action row. The action row must contain only the submit button and use
+	// justify-end to place it at the right edge.
+	//
+	// [Ja] 唯一の戻るリンクは投稿フォームより前にあり、フォーム上部かつ操作行の外に
+	// 置かれる必要がある。操作行は投稿ボタンだけを含み、justify-end で右端へ置く。
+	backLinkIdx := strings.Index(body, "data-back-link")
+	formIdx := strings.Index(body, `<form action="/posts"`)
+	if backLinkIdx < 0 || formIdx < 0 || backLinkIdx > formIdx {
+		t.Errorf("戻るリンクが投稿フォームより前にありません: backLinkIdx=%d, formIdx=%d", backLinkIdx, formIdx)
+	}
+	if got := strings.Count(body, "data-back-link"); got != 1 {
+		t.Errorf("戻るリンク数 = %d, want 1", got)
+	}
+
+	const actionRowStart = `<div class="flex items-center justify-end"><button class="btn-primary`
+	if !strings.Contains(body, actionRowStart) {
+		t.Errorf("投稿ボタンだけを右寄せする操作行 %q がありません", actionRowStart)
+	}
+	const unexpectedActionRowStart = `<div class="flex items-center justify-between"><button class="btn-primary`
+	if strings.Contains(body, unexpectedActionRowStart) {
+		t.Errorf("投稿ボタンを justify-between で配置する操作行 %q が含まれています", unexpectedActionRowStart)
 	}
 
 	// A fresh form must not carry an empty canonical_url hidden field; it is
@@ -126,6 +157,38 @@ func TestNew(t *testing.T) {
 	// 塗りつぶしアイコンの fill 上書きはちょうど 2 回 (メニューごとに 1 回) 現れる。
 	if got := strings.Count(body, "[&_.content]:fill-foreground"); got != 2 {
 		t.Errorf("アクティブ表示の fill クラス数 = %d, want 2 (new がトップ / ボトム navbar でアクティブ)", got)
+	}
+}
+
+func TestNew_WithoutProfile(t *testing.T) {
+	t.Parallel()
+
+	h := newCreatePostHandler(t)
+
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+
+	req := httptest.NewRequest(http.MethodGet, "/new", nil)
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	h.New(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	// Without a profile there is no per-user id to scope the draft key to, so the
+	// autosave PE hook must be omitted entirely: web/post_draft.ts only picks up
+	// textarea[data-draft-key], and leaving the attribute out is what keeps a
+	// shared device from storing a draft under a key the next visitor also reads.
+	//
+	// [Ja] プロフィールが無いときは下書きキーをスコープするユーザー別 ID が無いため、
+	// 自動保存の PE フック自体を描画しない。web/post_draft.ts は
+	// textarea[data-draft-key] しか拾わないため、属性を省くことが「共有端末で次の
+	// 訪問者も読めるキーに下書きを保存しない」ことの担保になる。
+	if body := rr.Body.String(); strings.Contains(body, "data-draft-key") {
+		t.Error("プロフィール不在時のレスポンスに data-draft-key が含まれています")
 	}
 }
 

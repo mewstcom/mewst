@@ -1,7 +1,7 @@
 import "basecoat-css/all";
 
 import { setupBackLinks } from "./back_link";
-import { setupFormGuards } from "./form_guard";
+import { setupPostDrafts } from "./post_draft";
 
 // フォーム内の全送信ボタンを無効化し、二重送信を防止する
 window.disableSubmitButtons = (form) => {
@@ -167,4 +167,8 @@ setupTextareaFocusProxies();
 setupAutosize();
 setupLinkCardDetection();
 setupBackLinks();
-setupFormGuards();
+// setupPostDrafts runs last so restoring a draft re-dispatches input into the
+// counter/autosize/link-card listeners registered above.
+// [Ja] setupPostDrafts は最後に実行する。下書き復元が input を再発火した際、上で
+// 登録済みのカウンター / autosize / リンクカードのリスナーに届くようにするため。
+setupPostDrafts();
