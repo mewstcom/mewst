@@ -70,16 +70,16 @@ func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *mode
 	// showing the same global navbar as the shared authenticated layout (desktop
 	// top-right, mobile bottom-center). This matches the navigation available around
 	// the Rails post form. The navbar highlights the new item because /new is the new
-	// page. The in-form cancel affordance stays alongside it (navbar = global
-	// navigation, cancel = back to the previous page), so this handler supplies the
-	// cancel button's /home fallback via NewPageData.BackHref.
+	// page. The page-level back affordance complements the navbar (navbar = global
+	// navigation, back = to the previous page), so this handler supplies the back
+	// link's /home fallback via NewPageData.BackHref.
 	//
 	// [Ja] /new は layouts.Centered を使い、集中した中央寄せの作成カラムを保ちながら、
 	// 共通の認証後レイアウトと同じグローバル navbar (PC 右上・モバイル下部中央) を表示する。
 	// これは Rails の投稿フォーム周辺で利用できるナビゲーションに揃う。/new は new ページの
-	// ため navbar は new をアクティブ表示する。フォーム内のキャンセル導線はそのまま併存させる
-	// (navbar = 全体ナビ、キャンセル = 直前ページへ戻る) ため、このハンドラーは
-	// NewPageData.BackHref でキャンセルボタンのフォールバック先 (/home) を渡す。
+	// ため navbar は new をアクティブ表示する。ページ単位の戻る導線は navbar を補完する
+	// (navbar = 全体ナビ、戻る = 直前ページへ戻る)。このハンドラーは NewPageData.BackHref
+	// で戻るリンクのフォールバック先 (/home) を渡す。
 	navbar := viewmodel.NewNavbar(middleware.ProfileFromContext(ctx), viewmodel.NavbarItemNew)
 
 	formContent := postpages.New(postpages.NewPageData{

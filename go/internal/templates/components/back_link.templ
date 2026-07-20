@@ -1,0 +1,45 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/templates"
+
+// BackLink renders a subdued "back" affordance for the top of a form: an anchor
+// carrying a leading back-arrow icon and the visible label, styled as a plain
+// muted link (no underline, no button chrome) rather than a button. The href is
+// the fallback used for direct visits, external referrers, or JS-disabled
+// clients (progressive enhancement); the back-link script (web/back_link.ts,
+// keyed on data-back-link) upgrades it to history.back() when the referrer is
+// same-origin. It is an <a>, not a <button>, so it navigates via the href
+// without JS and cannot accidentally submit an enclosing form (a bare <button>
+// in a form defaults to type="submit"). The visible label carries the
+// accessible name and the leading arrow is decorative. The caller places it
+// (e.g. above the form's first field); it is reusable across forms.
+//
+// [Ja] BackLink はフォーム上部に置く控えめな「戻る」導線を描画する。先頭に戻る
+// 矢印アイコンと可視ラベルを持つアンカーで、ボタンではなくただの muted なリンク
+// (下線なし・ボタン風の装飾なし) としてスタイルする。href は直接アクセス・外部
+// からの遷移・JS 無効時のフォールバック (プログレッシブエンハンスメント)。referrer
+// が同一オリジンのときは back-link スクリプト (web/back_link.ts、data-back-link を
+// キーにする) が history.back() に格上げする。<button> ではなく <a> にしているのは、
+// JS 無効でも href で遷移でき、かつフォーム内の素の <button> の既定 type="submit"
+// による誤送信を避けるため。アクセシブルネームは可視ラベルが担い、先頭の矢印は装飾。
+// 配置 (例: フォーム最初の項目の上) は呼び出し側が決め、フォームを問わず再利用できる。
+templ BackLink(href templates.Path) {
+	// py-1 enlarges the tap target to ~28px tall (text-sm line-height + padding)
+	// without drawing a box, so it clears the WCAG 2.5.8 AA 24x24 minimum while
+	// staying a subdued borderless link.
+	// The explicit focus-visible outline is two pixels wide and offset from the
+	// link, using foreground so it keeps at least 3:1 contrast in both themes.
+	//
+	// [Ja] py-1 でタップ領域を約 28px 高 (text-sm の行高 + パディング) に広げる。枠は
+	// 描かないため見た目は控えめな枠なしリンクのまま、WCAG 2.5.8 AA の 24x24 最小を満たす。
+	// 明示的な focus-visible 輪郭は 2px 幅でリンクからオフセットし、両テーマで 3:1 以上の
+	// コントラストを保つよう foreground を使う。
+	<a
+		class="link-bare-muted-foreground flex w-fit items-center gap-1 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+		data-back-link
+		href={ href }
+	>
+		@templates.Icon("arrow-bend-up-left-regular", "size-4")
+		{ templates.T(ctx, "back_link") }
+	</a>
+}

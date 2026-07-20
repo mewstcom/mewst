@@ -57,20 +57,20 @@ func TestNew(t *testing.T) {
 		"メインコンテンツへスキップ",        // skip link label. [Ja] スキップリンクのラベル
 		`<main id="main"`,      // main landmark (semantic-html). [Ja] main ランドマーク (semantic-html)
 		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
-		// Cancel affordance rendered inside the form's action row (CancelButton
-		// component): a /home fallback link upgraded to history.back() by the back-link
-		// script when the referrer is same-origin (data-back-link is the PE hook). It is
-		// an <a> styled as an outline button, not a <button>, so it navigates via href
-		// without JS and cannot accidentally submit the form.
+		// Back affordance rendered above the form (BackLink component): a /home
+		// fallback link upgraded to history.back() by the back-link script when the
+		// referrer is same-origin (data-back-link is the PE hook). It is an <a> styled
+		// as a subdued muted link, not a <button>, so it navigates via href without JS
+		// and cannot accidentally submit the form.
 		//
-		// [Ja] フォームの操作行の中に描画されるキャンセル導線 (CancelButton コンポーネント):
+		// [Ja] フォーム上部に描画される戻る導線 (BackLink コンポーネント):
 		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
-		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく輪郭のみ
-		// (outline) のボタン風にスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
-		"data-back-link", // キャンセルリンクの JS フック (PE)
-		`href="/home"`,   // キャンセル導線のフォールバック先
-		"btn-outline",    // outline (輪郭のみ) ボタンのスタイル
-		"キャンセル",          // キャンセルボタンのラベル (cancel)
+		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく muted な
+		// リンクとしてスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
+		"data-back-link",
+		`href="/home"`,
+		"link-bare-muted-foreground",
+		"戻る",
 		// Form enhancements: wiring for the character counter, autosize, and the
 		// link card integration.
 		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
@@ -87,6 +87,30 @@ func TestNew(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Errorf("レスポンスに %q が含まれていません", want)
 		}
+	}
+
+	// The sole back link must precede the post form, keeping it above and outside
+	// the action row. The action row must contain only the submit button and use
+	// justify-end to place it at the right edge.
+	//
+	// [Ja] 唯一の戻るリンクは投稿フォームより前にあり、フォーム上部かつ操作行の外に
+	// 置かれる必要がある。操作行は投稿ボタンだけを含み、justify-end で右端へ置く。
+	backLinkIdx := strings.Index(body, "data-back-link")
+	formIdx := strings.Index(body, `<form action="/posts"`)
+	if backLinkIdx < 0 || formIdx < 0 || backLinkIdx > formIdx {
+		t.Errorf("戻るリンクが投稿フォームより前にありません: backLinkIdx=%d, formIdx=%d", backLinkIdx, formIdx)
+	}
+	if got := strings.Count(body, "data-back-link"); got != 1 {
+		t.Errorf("戻るリンク数 = %d, want 1", got)
+	}
+
+	const actionRowStart = `<div class="flex items-center justify-end"><button class="btn-primary`
+	if !strings.Contains(body, actionRowStart) {
+		t.Errorf("投稿ボタンだけを右寄せする操作行 %q がありません", actionRowStart)
+	}
+	const unexpectedActionRowStart = `<div class="flex items-center justify-between"><button class="btn-primary`
+	if strings.Contains(body, unexpectedActionRowStart) {
+		t.Errorf("投稿ボタンを justify-between で配置する操作行 %q が含まれています", unexpectedActionRowStart)
 	}
 
 	// A fresh form must not carry an empty canonical_url hidden field; it is

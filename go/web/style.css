@@ -23,10 +23,14 @@
   --app-success: var(--color-green-600);
   --app-warning-foreground: var(--color-black);
   --app-warning: var(--color-yellow-600);
-  /* Link colors. [Ja] リンク色 */
+  /* Link colors. Muted links use explicit neutral tokens that keep AA contrast
+     on the app's custom light and dark backgrounds.
+
+     [Ja] リンク色。muted リンクはアプリ固有のライト / ダーク背景上で AA の
+     コントラストを保つ明示的な無彩色トークンを使う。 */
   --app-link-foreground: var(--foreground);
   --app-link-primary-foreground: var(--color-blue-600);
-  --app-link-muted-foreground: var(--muted-foreground);
+  --app-link-muted-foreground: var(--color-stone-600);
 
   /* Basecoatの変数上書き */
   --background: #f6f2eb;
@@ -58,8 +62,8 @@
   --primary-foreground: var(--app-brand-950);
   --secondary: var(--color-stone-600);
   --secondary-foreground: var(--color-stone-50);
-  /* Link colors. [Ja] リンク色 (foreground / muted は --foreground / --muted-foreground の dark 上書きに追従するため primary のみ上書き) */
   --app-link-primary-foreground: var(--color-blue-400);
+  --app-link-muted-foreground: var(--color-stone-400);
 }
 
 @theme {

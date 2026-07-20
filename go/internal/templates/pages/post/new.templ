@@ -26,8 +26,8 @@ type NewPageData struct {
 	// AttachedLink carries the resolved link card to re-render inside #link-form after a failed submit (nil when no link is attached or the URL resolves to no known link).
 	// [Ja] AttachedLink は送信失敗後に #link-form 内へ再描画する解決済みリンクカード (リンク未紐付け時や URL が既知のリンクに解決できない場合は nil)。
 	AttachedLink *viewmodel.Link
-	// BackHref is the fallback destination for the cancel button (the back-link script upgrades it to history.back() when the referrer is same-origin).
-	// [Ja] BackHref はキャンセルボタンのフォールバック先 (referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする)。
+	// BackHref is the fallback destination for the back link (the back-link script upgrades it to history.back() when the referrer is same-origin).
+	// [Ja] BackHref は戻るリンクのフォールバック先 (referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする)。
 	BackHref templates.Path
 }
 
@@ -45,15 +45,17 @@ type NewPageData struct {
 templ New(data NewPageData) {
 	{{ hasContentError := data.FormErrors != nil && data.FormErrors.HasFieldError("content") }}
 	// The navbar and the horizontal centering come from layouts.Centered; this page
-	// owns only its content width (max-w-2xl) and edge padding (px-4). The cancel
-	// affordance lives inside the form's action row (submit left, cancel right):
-	// the row is the end of the focus line, and it stays reachable on mobile where
-	// the window's top-left corner is the hardest spot to reach.
+	// owns only its content width (max-w-2xl) and edge padding (px-4). The back
+	// affordance (components.BackLink) sits at the top of the content column as a
+	// subdued link, which leaves the form's action row to the submit button alone,
+	// pushed to the right edge per the microblog compose convention (attachments
+	// left, post right).
 	//
 	// [Ja] navbar と水平方向の中央寄せは layouts.Centered が担う。このページは
-	// コンテンツ幅 (max-w-2xl) と端の余白 (px-4) だけを持つ。キャンセル導線はフォームの
-	// 操作行 (投稿ボタン左・キャンセル右) の中に置く。この行は焦点ラインの末尾であり、
-	// ウィンドウ左上端が最も指の届きにくい隅であるモバイルでも到達しやすい位置になる。
+	// コンテンツ幅 (max-w-2xl) と端の余白 (px-4) だけを持つ。戻る導線
+	// (components.BackLink) はコンテンツカラム上部に控えめなリンクとして置く。これに
+	// より操作行は投稿ボタン 1 つだけになり、マイクロブログの compose 慣習 (添付を左・
+	// 投稿を右) に沿って右端へ寄せられる。
 	<div class="w-full max-w-2xl px-4">
 		<div class="flex flex-col gap-4">
 			// Establish the page's heading hierarchy with a single <h1>. The compose
@@ -64,6 +66,8 @@ templ New(data NewPageData) {
 			// ページタイトルを持たない (textarea のラベル「いま何してる？」が視覚的に
 			// フォームを先導する) ため、h1 は支援技術向けに sr-only とする。
 			<h1 class="sr-only">{ templates.T(ctx, "post_new_heading") }</h1>
+
+			@components.BackLink(data.BackHref)
 
 			@components.FormErrors(data.FormErrors)
 
@@ -184,15 +188,12 @@ templ New(data NewPageData) {
 					}
 				</div>
 
-				// Form action row: submit on the left, cancel on the right. The cancel
-				// button returns to the previous page (history.back() / BackHref fallback);
-				// see components.CancelButton and the page-level comment for why it lives
-				// here rather than as layout chrome.
+				// The microblog compose convention places attachments on the left and the
+				// post action on the right, keeping this row ready for attachment controls.
 				//
-				// [Ja] フォームの操作行: 投稿ボタンを左、キャンセルを右に置く。キャンセルボタンは
-				// 直前のページへ戻る (history.back() / BackHref フォールバック)。ここに置く理由は
-				// components.CancelButton とページ先頭のコメントを参照。
-				<div class="flex items-center justify-between">
+				// [Ja] マイクロブログの compose 慣習では添付を左、投稿操作を右に置くため、
+				// この操作行は添付コントロールを追加できる構成にする。
+				<div class="flex items-center justify-end">
 					<button class="btn-primary rounded-full w-fit" type="submit">
 						// Leading send icon. btn-primary sizes the bare svg to size-4 and adds the
 						// gap, and the icon inherits the button text color via fill="currentColor".
@@ -201,8 +202,6 @@ templ New(data NewPageData) {
 						@templates.Icon("paper-plane-tilt-regular")
 						{ templates.T(ctx, "post_new_submit") }
 					</button>
-
-					@components.CancelButton(data.BackHref)
 				</div>
 			</form>
 		</div>
