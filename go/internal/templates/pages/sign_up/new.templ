@@ -17,13 +17,9 @@ type NewPageData struct {
 
 // New はサインアップフォームを表示する
 templ New(data NewPageData) {
-	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">
-			<a href="/" class="inline-block">
-				<div class="bg-primary rounded-xl">
-					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
-				</div>
-			</a>
+			@components.LogoTile()
 		</div>
 
 		<div class="flex flex-col gap-2">
@@ -38,67 +34,65 @@ templ New(data NewPageData) {
 
 		@components.FormErrors(data.FormErrors)
 
-		<div class="card py-4 rounded-none md:rounded-xl mx-0 md:mx-4">
-			<section class="px-4">
-				<form
-					action="/sign_up"
-					class="form grid gap-6"
-					hx-on:submit="disableSubmitButtons(this)"
-					method="POST"
-				>
-					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-					if data.BackURL != "" {
-						<input type="hidden" name="back" value={ data.BackURL }/>
-					}
+		@components.AuthFormCard() {
+			<form
+				action="/sign_up"
+				class="form grid gap-6"
+				hx-on:submit="disableSubmitButtons(this)"
+				method="POST"
+			>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				if data.BackURL != "" {
+					<input type="hidden" name="back" value={ data.BackURL }/>
+				}
 
-					<div class="grid gap-2">
-						<label for="email">
-							{ templates.T(ctx, "sign_up_new_email_label") }
-						</label>
+				<div class="grid gap-2">
+					<label for="email">
+						{ templates.T(ctx, "sign_up_new_email_label") }
+					</label>
 
-						<input
-							if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
-								aria-invalid="true"
-							} else {
-								aria-invalid="false"
-							}
-							autocomplete="email"
-							autofocus
-							id="email"
-							name="email"
-							required
-							tabindex="1"
-							type="email"
-							value={ data.Email }
-						/>
-
+					<input
 						if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
-							for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
-								<p class="text-sm text-error">
-									{ errorMsg }
-								</p>
-							}
+							aria-invalid="true"
+						} else {
+							aria-invalid="false"
 						}
-					</div>
+						autocomplete="email"
+						autofocus
+						id="email"
+						name="email"
+						required
+						tabindex="1"
+						type="email"
+						value={ data.Email }
+					/>
 
-					@components.Turnstile(data.TurnstileSiteKey)
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
+						for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
+							<p class="text-sm text-error">
+								{ errorMsg }
+							</p>
+						}
+					}
+				</div>
 
-					<button
-						class="btn-primary rounded-full w-fit"
-						tabindex="2"
-						type="submit"
-					>
-						@templates.Icon("arrow-right-regular")
-						{ templates.T(ctx, "sign_up_new_submit") }
-					</button>
-				</form>
-			</section>
-		</div>
+				@components.Turnstile(data.TurnstileSiteKey)
+
+				<button
+					class="btn-primary rounded-full w-fit"
+					tabindex="2"
+					type="submit"
+				>
+					@templates.Icon("arrow-right-regular")
+					{ templates.T(ctx, "sign_up_new_submit") }
+				</button>
+			</form>
+		}
 
 		<div class="text-center text-muted-foreground">
 			{ templates.T(ctx, "sign_up_new_have_account") }
 			{ " " }
-			<a class="link" href="/sign_in">
+			<a class="link-primary-foreground" href="/sign_in">
 				{ templates.T(ctx, "sign_up_new_sign_in_link") }
 			</a>
 		</div>

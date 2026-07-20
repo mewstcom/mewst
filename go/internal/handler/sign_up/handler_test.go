@@ -96,6 +96,9 @@ func TestNew(t *testing.T) {
 	if !strings.Contains(body, "email") {
 		t.Error("メールアドレスフィールドがフォームに含まれていません")
 	}
+	if !strings.Contains(body, `aria-label="Mewst"`) {
+		t.Error("ロゴリンクにアクセシブルネームが含まれていません")
+	}
 }
 
 func TestNew_ContainsSignInLink(t *testing.T) {

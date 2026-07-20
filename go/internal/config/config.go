@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strconv"
@@ -115,10 +116,35 @@ func Load() (*Config, error) {
 	// Rails版アプリのURL (オプショナル - リバースプロキシ機能で使用)
 	cfg.RailsAppURL = os.Getenv("MEWST_RAILS_APP_URL")
 
-	// Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)
-	// テスト環境では空文字列でも動作する (モック設定として使用)
+	// Cloudflare Turnstile (optional - used by the sign-in and sign-up forms).
+	// An empty key works in the test environment too (used as a mock config).
+	//
+	// [Ja] Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)。
+	// テスト環境では空文字列でも動作する (モック設定として使用)。
 	cfg.TurnstileSiteKey = os.Getenv("MEWST_TURNSTILE_SITE_KEY")
 	cfg.TurnstileSecretKey = os.Getenv("MEWST_TURNSTILE_SECRET_KEY")
+
+	// MEWST_TURNSTILE_DISABLE=true disables Turnstile outside production with a single
+	// flag by blanking both keys, which routes through the existing "empty key"
+	// path (Verify always succeeds and the widget is not rendered), so no new
+	// branch is added to turnstile.Verify or turnstile.templ. It is fail-closed in
+	// production: Turnstile is a bot countermeasure, so a stray disable flag must
+	// never silently turn it off. In production the flag is ignored, the keys are
+	// kept, and a warning is logged.
+	//
+	// [Ja] MEWST_TURNSTILE_DISABLE=true は 2 つのキーを空に落とすことで非本番の Turnstile を
+	// 1 フラグで無効化する。空キーは既存経路 (Verify は常に成功・ウィジェット非描画) にそのまま
+	// 乗るため、turnstile.Verify / turnstile.templ に新たな分岐は足さない。本番では fail-closed
+	// とする。Turnstile は Bot 対策のため、無効化フラグが誤って本番に漏れても黙って無効化されては
+	// ならない。本番ではフラグを無視してキーを維持し、警告ログを出す。
+	if os.Getenv("MEWST_TURNSTILE_DISABLE") == "true" {
+		if cfg.IsProduction() {
+			slog.Warn("MEWST_TURNSTILE_DISABLE は本番環境では無視されます (Turnstile キーは変更しません)")
+		} else {
+			cfg.TurnstileSiteKey = ""
+			cfg.TurnstileSecretKey = ""
+		}
+	}
 
 	// メンテナンスモード (オプショナル - "on"のときメンテナンスモードを有効化)
 	cfg.MaintenanceMode = os.Getenv("MEWST_MAINTENANCE_MODE") == "on"
@@ -176,13 +202,46 @@ func (c *Config) AppURL() string {
 	return "https://" + c.Domain
 }
 
-// getGitCommitHash はGitのコミットハッシュ (短縮版) を取得します
-// CDNキャッシュ対策として、CSS/JSファイルのクエリパラメータに使用します
+// getGitCommitHash returns the short Git commit hash of the running build. It
+// is used as the Sentry release and as the CSS/JS query parameter for CDN cache
+// busting.
+//
+// GIT_REV takes precedence: on Dokku the deployed container has no .git
+// directory, so `git rev-parse` fails there and the value would fall back to
+// "dev". Dokku instead exposes the deploy commit hash via the GIT_REV
+// environment variable, which is provided by the platform (so it carries no
+// MEWST_ prefix). The local git command is the development fallback, and "dev"
+// is the last resort.
+//
+// [Ja] 実行中ビルドの Git コミットハッシュ (短縮版) を返す。Sentry の release と、
+// CDN キャッシュ対策用の CSS/JS クエリパラメータに使う。
+//
+// GIT_REV を最優先する。Dokku のデプロイ先コンテナには .git ディレクトリが無いため
+// `git rev-parse` は失敗し、そのままだと "dev" にフォールバックしてしまう。Dokku は
+// 代わりにデプロイ時のコミットハッシュを GIT_REV 環境変数で渡す (プラットフォームが
+// 提供する変数なので MEWST_ プレフィックスは付けない)。ローカルの git コマンドは
+// 開発用のフォールバックで、最後の手段が "dev"。
 func getGitCommitHash() string {
+	// Dokku provides the full deploy SHA here; shorten it to 7 characters to
+	// roughly match the abbreviated form the local `git rev-parse --short` path
+	// produces.
+	//
+	// [Ja] Dokku はここに完全なデプロイ SHA を渡すので、7 文字に短縮して
+	// ローカルの `git rev-parse --short` が返す短縮形におおよそ揃える。
+	if rev := strings.TrimSpace(os.Getenv("GIT_REV")); rev != "" {
+		const shortHashLen = 7
+		if len(rev) > shortHashLen {
+			return rev[:shortHashLen]
+		}
+		return rev
+	}
+
 	cmd := exec.Command("git", "rev-parse", "--short", "HEAD")
 	out, err := cmd.Output()
 	if err != nil {
-		// Gitが利用できない場合は "dev" を返す (開発環境用のフォールバック)
+		// Fall back to "dev" when git is unavailable (development environment).
+		//
+		// [Ja] Git が利用できない場合は "dev" を返す (開発環境用のフォールバック)。
 		return "dev"
 	}
 	return strings.TrimSpace(string(out))

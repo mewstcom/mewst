@@ -14,12 +14,21 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// SimpleLayoutData はシンプルレイアウトに渡すデータ構造体
+// SimpleLayoutData holds the data passed to the simple layout.
+//
+// [Ja] SimpleLayoutData はシンプルレイアウトに渡すデータ構造体。
 type SimpleLayoutData struct {
 	Meta viewmodel.PageMeta
 }
 
-// Simple はシンプルなレイアウトを提供する (ログインページ等で使用)
+// Simple is a navbar-less, centered single-column layout used by unauthenticated
+// authentication forms. It provides the skip link and the single <main>
+// landmark so every page built on it satisfies WCAG 2.4.1 / semantic-html
+// without repeating the markup per page.
+//
+// [Ja] Simple は未認証の認証フォームで使う、navbar 無しの中央寄せ単一カラム
+// レイアウト。スキップリンクとただ 1 つの <main> ランドマークを備え、これを土台にする
+// 全ページがページごとにマークアップを繰り返さずに WCAG 2.4.1 / semantic-html を満たす。
 func Simple(data SimpleLayoutData, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -48,7 +57,7 @@ func Simple(data SimpleLayoutData, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.Locale(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/simple.templ`, Line: 19, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/simple.templ`, Line: 28, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -62,7 +71,11 @@ func Simple(data SimpleLayoutData, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</head><body class=\"min-h-screen flex items-center justify-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</head><body class=\"min-h-screen flex items-center justify-center p-safe\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.SkipLink().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,11 +83,15 @@ func Simple(data SimpleLayoutData, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<main id=\"main\" tabindex=\"-1\" class=\"flex w-full justify-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = content.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

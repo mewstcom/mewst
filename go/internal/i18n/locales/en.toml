@@ -229,6 +229,10 @@ other = "Only alphanumeric characters and underscores are allowed"
 description = "Username too long validation error"
 other = "Must be 20 characters or less"
 
+[validation_content_too_long]
+description = "Post content too long validation error"
+other = "Must be 160 characters or less"
+
 [validation_atname_already_taken]
 description = "Username already taken validation error"
 other = "This username is already taken"
@@ -256,6 +260,14 @@ other = "Too many requests. Please try again later."
 [validation_password_update_failed]
 description = "Password update failed validation error"
 other = "Failed to update password. Please try again."
+
+[validation_url_invalid]
+description = "Invalid URL format validation error"
+other = "is not a valid URL"
+
+[validation_link_fetch_failed]
+description = "Link information fetch failure validation error"
+other = "Cannot fetch information from the URL"
 
 # ============================================
 # Flash messages (flash_*)
@@ -292,6 +304,10 @@ other = "Confirmation code sent. Please check your email."
 [flash_password_updated]
 description = "Password updated success message"
 other = "Password updated. Please sign in with your new password."
+
+[flash_post_created]
+description = "Post created success message"
+other = "Post created."
 
 # ============================================
 # Error pages (error_*)
@@ -349,12 +365,24 @@ other = "Notifications"
 description = "Accessible label for the navbar profile link"
 other = "Profile"
 
+[navbar_top_label]
+description = "Accessible label for the top navbar (desktop) landmark"
+other = "Global (desktop)"
+
+[navbar_bottom_label]
+description = "Accessible label for the bottom navbar (mobile) landmark"
+other = "Global (mobile)"
+
 # ============================================
 # New post page (post_new_*)
 # ============================================
 
 [post_new_title]
 description = "New post page title"
+other = "New post"
+
+[post_new_heading]
+description = "New post page heading (sr-only since the form label carries it visually)"
 other = "New post"
 
 [post_new_content_label]
@@ -364,3 +392,31 @@ other = "What's happening?"
 [post_new_submit]
 description = "New post form submit button"
 other = "Post"
+
+# ============================================
+# Back link (back_link)
+# ============================================
+
+[back_link]
+description = "Link text for the back affordance (BackLink component)"
+other = "Back"
+
+# ============================================
+# Skip link (skip_to_main_content)
+# ============================================
+
+[skip_to_main_content]
+description = "Text for the skip link that jumps to the main content (WCAG 2.4.1)"
+other = "Skip to main content"
+
+# ============================================
+# Link card (link_*)
+# ============================================
+
+[link_new_submit]
+description = "Add link card prompt submit button"
+other = "Add link card: {{.HostAndPath}}"
+
+[link_create_remove]
+description = "Accessible label for the link card remove button"
+other = "Remove link card"

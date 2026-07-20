@@ -1,0 +1,37 @@
+package components
+
+import "github.com/mewstcom/mewst/go/internal/viewmodel"
+
+// LinkCard renders a link card (domain + title + optional OGP image), mirroring
+// the Rails Cards::LinkCardComponent.
+//
+// [Ja] LinkCard はリンクカード (ドメイン + タイトル + 任意の OGP 画像) を描画する。
+// Rails の Cards::LinkCardComponent に対応する。
+templ LinkCard(link viewmodel.Link) {
+	<div class="flex rounded-lg border border-gray-300 p-2">
+		<div class="flex w-full flex-col gap-2">
+			if link.ImageURL != "" {
+				// The empty alt marks the OGP image as decorative: the card already
+				// conveys the destination via the domain and title texts.
+				// [Ja] OGP 画像は装飾扱いとして alt を空にする。リンク先の情報はドメインと
+				// タイトルのテキストで伝わるため。
+				<img
+					alt=""
+					class="aspect-video max-h-[300px] object-contain w-full"
+					height="9"
+					loading="lazy"
+					src={ link.ImageURL }
+					width="16"
+				/>
+			}
+			<div class="flex flex-col gap-1">
+				<div class="text-sm text-gray-500">
+					{ link.Domain }
+				</div>
+				<div class="font-bold">
+					{ link.Title }
+				</div>
+			</div>
+		</div>
+	</div>
+}

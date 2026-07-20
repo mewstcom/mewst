@@ -24,7 +24,9 @@ type Querier interface {
 	// (no-op の DO UPDATE で元の published_at を保持)、RETURNING で行を返せるように
 	// する。Rails の home_timeline.add_post! (first_or_create!) を踏襲している。
 	CreateHomeTimelinePost(ctx context.Context, arg CreateHomeTimelinePostParams) (HomeTimelinePost, error)
+	CreateLink(ctx context.Context, arg CreateLinkParams) (Link, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
+	CreatePostLink(ctx context.Context, arg CreatePostLinkParams) (PostLink, error)
 	CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
@@ -45,6 +47,7 @@ type Querier interface {
 	// (session, actor, user, profile) を発行するのを避けるため。
 	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
+	GetLinkByCanonicalURL(ctx context.Context, canonicalUrl string) (Link, error)
 	GetOauthApplicationByUID(ctx context.Context, uid string) (OauthApplication, error)
 	GetPostByID(ctx context.Context, id uuid.UUID) (Post, error)
 	GetProfileByAtname(ctx context.Context, atname string) (Profile, error)

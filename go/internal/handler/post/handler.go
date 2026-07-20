@@ -3,19 +3,153 @@
 package post
 
 import (
+	"context"
+	"log/slog"
+	"net/http"
+
 	"github.com/mewstcom/mewst/go/internal/config"
+	"github.com/mewstcom/mewst/go/internal/middleware"
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/layouts"
+	postpages "github.com/mewstcom/mewst/go/internal/templates/pages/post"
+	"github.com/mewstcom/mewst/go/internal/usecase"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
 // Handler is the HTTP handler for post-related endpoints.
 // [Ja] Handler は投稿関連の HTTP ハンドラー。
 type Handler struct {
-	cfg *config.Config
+	cfg          *config.Config
+	flashMgr     *session.FlashManager
+	createPostUC *usecase.CreatePostUsecase
+	getLinkUC    *usecase.GetLinkUsecase
 }
+
+// draftStorageKeyPrefix namespaces the localStorage draft key by feature so the
+// per-user body draft (web/post_draft.ts) does not collide with other stored
+// keys. The author's profile id is appended to scope it per user.
+//
+// [Ja] draftStorageKeyPrefix は localStorage の下書きキーを機能ごとに名前空間化し、
+// ユーザー別の本文下書き (web/post_draft.ts) が他の保存キーと衝突しないようにする。
+// 投稿者のプロフィール ID を後ろに付けてユーザー別にスコープする。
+const draftStorageKeyPrefix = "post_draft:"
 
 // NewHandler creates a new Handler.
 // [Ja] NewHandler は新しい Handler を作成する。
-func NewHandler(cfg *config.Config) *Handler {
+func NewHandler(
+	cfg *config.Config,
+	flashMgr *session.FlashManager,
+	createPostUC *usecase.CreatePostUsecase,
+	getLinkUC *usecase.GetLinkUsecase,
+) *Handler {
 	return &Handler{
-		cfg: cfg,
+		cfg:          cfg,
+		flashMgr:     flashMgr,
+		createPostUC: createPostUC,
+		getLinkUC:    getLinkUC,
 	}
+}
+
+// renderNewForm renders the new post form. It is shared by New (first render)
+// and Create (re-render on a validation failure). The current profile and CSRF
+// token come from the context populated by RequireAuth and the CSRF middleware.
+// content and canonicalURL echo the submitted values back so a failed submit
+// keeps the body and the attached link card; attachedLink carries the resolved
+// link card to re-render inside #link-form (all empty / nil on first render).
+// Only Create sets a 422 status before calling this; New leaves the default 200.
+//
+// [Ja] renderNewForm は新規投稿フォームを描画する。New (初回表示) と Create
+// (バリデーション失敗時の再表示) の両方から共通利用する。現在プロフィールと CSRF
+// トークンは RequireAuth と CSRF ミドルウェアが context に格納する。content と
+// canonicalURL は送信値をエコーバックし、送信失敗時に本文と紐付けたリンクカードを
+// 保持する。attachedLink は #link-form 内に再描画する解決済みリンクカードを運ぶ
+// (初回表示時はいずれも空 / nil)。422 を設定するのは Create のバリデーション失敗
+// 時のみで、New はデフォルトの 200 を使う。
+func (h *Handler) renderNewForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, content, canonicalURL string, attachedLink *viewmodel.Link) {
+	ctx := r.Context()
+
+	csrfToken := middleware.GetCSRFTokenFromContext(ctx)
+
+	meta := viewmodel.DefaultPageMeta(ctx, h.cfg)
+	meta.SetTitle(ctx, "post_new_title")
+
+	// /new uses layouts.Centered to keep a focused, centered compose column while
+	// showing the same global navbar as the shared authenticated layout (desktop
+	// top-right, mobile bottom-center). This matches the navigation available around
+	// the Rails post form. The navbar highlights the new item because /new is the new
+	// page. The page-level back affordance complements the navbar (navbar = global
+	// navigation, back = to the previous page), so this handler supplies the back
+	// link's /home fallback via NewPageData.BackHref.
+	//
+	// [Ja] /new は layouts.Centered を使い、集中した中央寄せの作成カラムを保ちながら、
+	// 共通の認証後レイアウトと同じグローバル navbar (PC 右上・モバイル下部中央) を表示する。
+	// これは Rails の投稿フォーム周辺で利用できるナビゲーションに揃う。/new は new ページの
+	// ため navbar は new をアクティブ表示する。ページ単位の戻る導線は navbar を補完する
+	// (navbar = 全体ナビ、戻る = 直前ページへ戻る)。このハンドラーは NewPageData.BackHref
+	// で戻るリンクのフォールバック先 (/home) を渡す。
+	profile := middleware.ProfileFromContext(ctx)
+
+	navbar := viewmodel.NewNavbar(profile, viewmodel.NavbarItemNew)
+
+	// Scope the localStorage draft key to the current author so a shared device
+	// never restores one user's unsent draft for the next. The profile is absent
+	// only when /new is rendered outside RequireAuth (e.g. some tests); leaving
+	// the key empty disables autosave rather than writing to a shared key.
+	//
+	// [Ja] localStorage の下書きキーを現在の投稿者にスコープし、共有端末で前ユーザーの
+	// 未送信下書きが次のユーザーに復元されないようにする。プロフィールが無いのは
+	// RequireAuth 外で /new を描画したとき (例: 一部のテスト) だけであり、キーを空の
+	// ままにすることで共有キーへの書き込みではなく自動保存の無効化とする。
+	var draftStorageKey string
+	if profile != nil {
+		draftStorageKey = draftStorageKeyPrefix + profile.ID.String()
+	}
+
+	formContent := postpages.New(postpages.NewPageData{
+		CSRFToken:       csrfToken,
+		FormErrors:      ve,
+		Content:         content,
+		CanonicalURL:    canonicalURL,
+		AttachedLink:    attachedLink,
+		BackHref:        templates.HomePath(),
+		DraftStorageKey: draftStorageKey,
+	})
+
+	if err := layouts.Centered(layouts.CenteredLayoutData{Meta: meta, Navbar: navbar}, formContent).Render(ctx, w); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// lookupAttachedLink resolves the echoed canonical URL into a link card view
+// model for the 422 re-render, so the attached link stays visible and removable
+// instead of surviving only as an invisible hidden input. The lookup is
+// best-effort: an unknown URL or a lookup failure falls back to nil (the bare
+// hidden input still keeps the attachment), because failing the whole re-render
+// over a cosmetic card would hide the validation errors the user needs to see.
+//
+// [Ja] lookupAttachedLink はエコーバックする canonical URL を 422 再描画用の
+// リンクカード view model に解決する。これにより紐付けたリンクが不可視の hidden
+// input としてだけ残るのではなく、カードとして見え削除ボタンで外せる状態を保つ。
+// 解決はベストエフォートとし、未知の URL や取得失敗時は nil にフォールバックする
+// (紐付け自体は hidden input が保持する)。装飾であるカードのために再描画全体を
+// 失敗させると、ユーザーが見るべきバリデーションエラーまで隠れてしまうため。
+func (h *Handler) lookupAttachedLink(ctx context.Context, canonicalURL string) *viewmodel.Link {
+	if canonicalURL == "" {
+		return nil
+	}
+
+	output, err := h.getLinkUC.Execute(ctx, usecase.GetLinkInput{CanonicalURL: canonicalURL})
+	if err != nil {
+		slog.WarnContext(ctx, "再描画用リンクの取得に失敗", "error", err, "canonical_url", canonicalURL)
+		return nil
+	}
+	if output.Link == nil {
+		return nil
+	}
+
+	link := viewmodel.NewLink(output.Link)
+	return &link
 }

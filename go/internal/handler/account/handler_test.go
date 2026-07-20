@@ -113,6 +113,9 @@ func TestNew(t *testing.T) {
 	if !strings.Contains(body, "newuser@example.com") {
 		t.Error("メールアドレスがフォームに表示されていません")
 	}
+	if !strings.Contains(body, `aria-label="Mewst"`) {
+		t.Error("ロゴリンクにアクセシブルネームが含まれていません")
+	}
 }
 
 func TestNew_WithoutEmailConfirmation(t *testing.T) {

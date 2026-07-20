@@ -1,16 +1,27 @@
 package components
 
-import "github.com/mewstcom/mewst/go/internal/viewmodel"
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
 
 // BottomNavbar renders the mobile bottom navigation menu, shown only below lg,
 // matching the Rails BottomNavbarComponent. The menu carries a border so it
 // stands out as a floating pill at the bottom of the screen.
 //
+// The wrapper is a <nav> landmark with a distinct aria-label, paired with
+// TopNavbar's so assistive tech can tell the two coexisting navigation regions
+// apart (see TopNavbar for the rationale).
+//
 // [Ja] モバイル向けのボトムナビゲーションメニューを描画する。lg 未満でのみ
 // 表示する点は Rails の BottomNavbarComponent に合わせている。画面下部に
 // 浮かぶピルとして目立つよう、メニューに枠線を付けている。
+//
+// ラッパーは固有の aria-label を持つ <nav> ランドマーク。TopNavbar と対になり、
+// 支援技術が共存する 2 つのナビゲーション領域を区別できるようにする (理由は
+// TopNavbar を参照)。
 templ BottomNavbar(navbar viewmodel.Navbar) {
-	<div class="block lg:hidden">
+	<nav class="block lg:hidden" aria-label={ templates.T(ctx, "navbar_bottom_label") }>
 		@NavbarMenu(navbar, "me-auto ms-auto border border-slate-400")
-	</div>
+	</nav>
 }

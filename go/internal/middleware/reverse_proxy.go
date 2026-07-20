@@ -49,28 +49,16 @@ type featureFlaggedPattern struct {
 // Each entry anchors its path regexp with "^...$" so it matches the exact path
 // and not sub-paths, and pairs it with an HTTP method set and the flag that
 // gates it. A matching request is served by Go only when the flag is enabled
-// for the viewer; otherwise it falls through to the Rails proxy.
+// for the viewer; otherwise it falls through to the Rails proxy. The list is
+// currently empty; add an entry here to gate the next feature behind a flag.
 //
 // [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
 //
 // 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
 // させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
 // リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
-// プロキシに進む。
-var featureFlaggedPatterns = []featureFlaggedPattern{
-	// GET /new: the Go new-post form. The "^/new$" anchor keeps it from matching
-	// sub-paths. POST /posts is gated under the same flag in a later task, so
-	// until then form submissions fall through to Rails even with the flag on.
-	//
-	// [Ja] GET /new: Go 版の新規投稿フォーム。"^/new$" のアンカーでサブパスには
-	// マッチさせない。POST /posts は後続タスクで同じフラグの配下に入るため、
-	// それまではフラグが有効でもフォーム送信は Rails に抜ける。
-	{
-		pattern: regexp.MustCompile(`^/new$`),
-		flag:    model.FeatureFlagNewPost,
-		methods: []string{http.MethodGet},
-	},
-}
+// プロキシに進む。現在は空で、次の機能をフラグでゲートするときにエントリを追加する。
+var featureFlaggedPatterns []featureFlaggedPattern
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
 // [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
@@ -96,6 +84,47 @@ var goHandledPaths = []string{
 	"/accounts",           // アカウント作成
 }
 
+// goHandledPattern defines an exact URL pattern and HTTP method set always
+// handled by Go.
+//
+// [Ja] goHandledPattern は常に Go 版で処理する完全一致 URL パターンと HTTP
+// メソッドの集合を定義する。
+type goHandledPattern struct {
+	pattern *regexp.Regexp
+	methods []string // nil or empty matches every method. [Ja] nil または空なら全メソッドにマッチ
+}
+
+// goHandledPatterns lists the URL patterns always handled by Go, identified by
+// an exact path regexp and an HTTP method set.
+//
+// goHandledPaths matches by prefix, which is too coarse here: adding "/posts"
+// there would also steal the Rails-owned GET /posts/:id (post detail). These
+// endpoints need exact-path + method precision, so the "^...$" anchor plus the
+// method set keeps POST /posts matching only POST /posts and leaves GET
+// /posts/:id with Rails.
+//
+// [Ja] goHandledPatterns は常に Go 版で処理する URL パターンの一覧。完全一致の
+// パス正規表現と HTTP メソッドの集合で識別する。
+//
+// goHandledPaths は prefix 一致のため、ここでは粗すぎる: "/posts" を足すと Rails
+// に残す GET /posts/:id (投稿詳細) まで奪ってしまう。これらのエンドポイントは
+// exact-path + method の精度が要るため、"^...$" のアンカーとメソッド集合により
+// POST /posts は POST /posts だけにマッチさせ、GET /posts/:id は Rails に残す。
+var goHandledPatterns = []goHandledPattern{
+	// GET /new: the new-post form.
+	// [Ja] GET /new: 新規投稿フォーム。
+	{pattern: regexp.MustCompile(`^/new$`), methods: []string{http.MethodGet}},
+	// POST /posts: post creation. The "^/posts$" anchor leaves GET /posts/:id with Rails.
+	// [Ja] POST /posts: 投稿作成。"^/posts$" のアンカーで GET /posts/:id は Rails に残す。
+	{pattern: regexp.MustCompile(`^/posts$`), methods: []string{http.MethodPost}},
+	// GET /links/new: the link card prompt fragment fetched via htmx from the /new form.
+	// [Ja] GET /links/new: /new フォームから htmx で取得するリンクカードプロンプトのフラグメント。
+	{pattern: regexp.MustCompile(`^/links/new$`), methods: []string{http.MethodGet}},
+	// POST /links: link card creation.
+	// [Ja] POST /links: リンクカード作成。
+	{pattern: regexp.MustCompile(`^/links$`), methods: []string{http.MethodPost}},
+}
+
 // NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.
 // When featureFlagRepo is nil, feature-flag checks are skipped.
 //
@@ -108,7 +137,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 	}
 
 	// httputil.ReverseProxyを作成
-	proxy := httputil.NewSingleHostReverseProxy(parsedURL)
+	proxy := &httputil.ReverseProxy{}
 
 	// カスタムのHTTP Transportを設定 (タイムアウトと接続プーリング)
 	proxy.Transport = &http.Transport{
@@ -127,50 +156,53 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 
-	// プロキシのディレクターをカスタマイズ (ヘッダー設定)
-	originalDirector := proxy.Director
-	proxy.Director = func(req *http.Request) {
-		// 既存のX-Forwarded-ForとX-Real-IPを保存
-		originalXForwardedFor := req.Header.Get("X-Forwarded-For")
-		originalXRealIP := req.Header.Get("X-Real-IP")
+	// Customize header rewriting via the proxy's Rewrite function. ReverseProxy strips Forwarded /
+	// X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto from Out.Header before calling Rewrite,
+	// so read the original values from pr.In.Header when they need to be preserved.
+	//
+	// [Ja] プロキシの Rewrite 関数でヘッダー設定を行う。httputil.ReverseProxy は Rewrite 呼び出し前に
+	// Forwarded / X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto を Out.Header から削除するため、
+	// 元の値を参照したい場合は pr.In.Header から取得する必要がある。
+	proxy.Rewrite = func(pr *httputil.ProxyRequest) {
+		// Rewrite the URL to the Rails host. SetURL sets Out.Host = "", so follow it with
+		// Out.Host = In.Host to keep forwarding the client's Host header to Rails unchanged.
+		//
+		// [Ja] URL を Rails 版のホストに書き換える。SetURL は Out.Host = "" をセットしてしまうため、
+		// 続けて Out.Host = In.Host を設定し、クライアントが送ってきた Host ヘッダをそのまま Rails 版に
+		// 転送する挙動を維持する。
+		pr.SetURL(parsedURL)
+		pr.Out.Host = pr.In.Host
 
 		// クライアントIPアドレスを取得
-		clientIP := clientip.GetClientIP(req)
-
-		// originalDirectorを呼び出す
-		originalDirector(req)
+		clientIP := clientip.GetClientIP(pr.In)
 
 		// X-Forwarded-Forヘッダーの設定
-		// 注: httputil.ReverseProxyのServeHTTPメソッドは、Directorを呼び出した後に
-		// X-Forwarded-Forヘッダーが存在する場合、RemoteAddrを追加してしまう。
-		// これを防ぐために、ヘッダーマップから完全に削除してから再設定する。
-		delete(req.Header, "X-Forwarded-For")
-		if originalXForwardedFor != "" {
+		if originalXForwardedFor := pr.In.Header.Get("X-Forwarded-For"); originalXForwardedFor != "" {
 			// 既存の値を維持 (Cloudflareなどが設定した値を保持)
-			req.Header.Set("X-Forwarded-For", originalXForwardedFor)
+			pr.Out.Header.Set("X-Forwarded-For", originalXForwardedFor)
 		} else {
 			// 既存の値がない場合、clientIPを設定
-			req.Header.Set("X-Forwarded-For", clientIP)
+			pr.Out.Header.Set("X-Forwarded-For", clientIP)
 		}
 
 		// X-Real-IPヘッダーの設定 (既存の値がない場合のみ)
-		if originalXRealIP != "" {
-			req.Header.Set("X-Real-IP", originalXRealIP)
+		if originalXRealIP := pr.In.Header.Get("X-Real-IP"); originalXRealIP != "" {
+			pr.Out.Header.Set("X-Real-IP", originalXRealIP)
 		} else {
-			req.Header.Set("X-Real-IP", clientIP)
+			pr.Out.Header.Set("X-Real-IP", clientIP)
 		}
 
 		// X-Forwarded-Protoの設定
-		req.Header.Set("X-Forwarded-Proto", "https")
+		pr.Out.Header.Set("X-Forwarded-Proto", "https")
 
 		// X-Forwarded-Hostの設定
-		req.Header.Set("X-Forwarded-Host", cfg.Domain)
+		pr.Out.Header.Set("X-Forwarded-Host", cfg.Domain)
 
 		// ログ出力 (開発者向け)
 		slog.Info("リバースプロキシでRails版にリクエストを転送",
-			"path", req.URL.Path,
-			"method", req.Method,
-			"target", parsedURL.String()+req.URL.Path,
+			"path", pr.In.URL.Path,
+			"method", pr.In.Method,
+			"target", parsedURL.String()+pr.In.URL.Path,
 			"client_ip", clientIP,
 		)
 	}
@@ -220,9 +252,14 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 // [Ja] Middleware は HTTP ミドルウェアを返す。
 func (m *ReverseProxyMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 1. Paths always handled by Go (whitelist).
-		// [Ja] 1. 常に Go 版で処理するパス (ホワイトリスト)。
-		if m.isGoHandledPath(r.URL.Path) {
+		// 1. Paths always handled by Go (prefix whitelist), plus exact-path +
+		// method patterns that prefix matching is too coarse for (e.g. POST
+		// /posts must be Go while GET /posts/:id stays with Rails).
+		//
+		// [Ja] 1. 常に Go 版で処理するパス (prefix ホワイトリスト)。加えて prefix
+		// 一致では粗すぎる完全一致 + メソッドのパターン (例: POST /posts は Go・
+		// GET /posts/:id は Rails) もここで処理する。
+		if m.isGoHandledPath(r.URL.Path) || m.isGoHandledPattern(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -291,6 +328,20 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 	return false
 }
 
+// isGoHandledPattern reports whether the request matches a goHandledPatterns
+// entry by exact path and method, meaning Go always handles it.
+//
+// [Ja] isGoHandledPattern はリクエストが goHandledPatterns のエントリに完全一致
+// パスとメソッドで一致するか (= 常に Go 版で処理する) を判定する。
+func (m *ReverseProxyMiddleware) isGoHandledPattern(r *http.Request) bool {
+	for _, gp := range goHandledPatterns {
+		if matchesPattern(gp.pattern, gp.methods, r) {
+			return true
+		}
+	}
+	return false
+}
+
 // getFeatureFlagForRequest returns the feature flag name matching the request's
 // path and method, or an empty string when no pattern matches.
 //
@@ -298,15 +349,32 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 // フィーチャーフラグ名を返す。一致するパターンが無ければ空文字列を返す。
 func (m *ReverseProxyMiddleware) getFeatureFlagForRequest(r *http.Request) model.FeatureFlagName {
 	for _, fp := range featureFlaggedPatterns {
-		if !fp.pattern.MatchString(r.URL.Path) {
-			continue
+		if matchesPattern(fp.pattern, fp.methods, r) {
+			return fp.flag
 		}
-		if len(fp.methods) > 0 && !containsMethod(fp.methods, r.Method) {
-			continue
-		}
-		return fp.flag
 	}
 	return ""
+}
+
+// matchesPattern reports whether the request's path and method match the given
+// path regexp and method set. An empty method set matches every method. It is
+// shared by isGoHandledPattern and getFeatureFlagForRequest, which apply the
+// same regexp-plus-method matching to goHandledPatterns and
+// featureFlaggedPatterns respectively.
+//
+// [Ja] matchesPattern はリクエストのパスとメソッドが、指定したパス正規表現と
+// メソッド集合に一致するかを判定する。メソッド集合が空ならすべてのメソッドに
+// 一致する。goHandledPatterns / featureFlaggedPatterns に同じ「正規表現 +
+// メソッド」のマッチを適用する isGoHandledPattern と getFeatureFlagForRequest で
+// 共有する。
+func matchesPattern(pattern *regexp.Regexp, methods []string, r *http.Request) bool {
+	if !pattern.MatchString(r.URL.Path) {
+		return false
+	}
+	if len(methods) > 0 && !containsMethod(methods, r.Method) {
+		return false
+	}
+	return true
 }
 
 // containsMethod reports whether method is contained in methods.

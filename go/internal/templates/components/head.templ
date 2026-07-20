@@ -5,9 +5,23 @@ import "github.com/mewstcom/mewst/go/internal/viewmodel"
 // Head はHTMLヘッダーを生成する
 templ Head(meta viewmodel.PageMeta) {
 	<meta charset="utf-8"/>
-	// iOSのSafariでautofocus属性の影響でズームされてしまうのを防ぐため `maximum-scale=1` を設定
-  // ref: https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	// Use a standard viewport. Do not add `maximum-scale=1` or `user-scalable=no`:
+	// disabling pinch-zoom violates WCAG 1.4.4 (Resize Text). iOS Safari's
+	// focus auto-zoom is avoided instead by keeping form inputs at 16px or larger.
+	//
+	// viewport-fit=cover lets the page extend into the device safe areas so that
+	// env(safe-area-inset-*) resolves to non-zero values; without it those insets
+	// are always 0 and the safe-area utilities (e.g. mb-safe) have no effect.
+	//
+	// [Ja] 標準的な viewport を使う。`maximum-scale=1` や `user-scalable=no` は
+	// 加えないこと。ピンチズームの無効化は WCAG 1.4.4 (Resize Text) に反する。
+	// iOS Safari のフォーカス時自動ズームは、フォーム入力のフォントサイズを
+	// 16px 以上に保つことで回避している。
+	//
+	// viewport-fit=cover はページを端末の safe area まで広げ、env(safe-area-inset-*)
+	// が非ゼロ値を返すようにする。これが無いと inset は常に 0 になり、safe-area
+	// ユーティリティ (例: mb-safe) が効かない。
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 
 	<title>{ meta.Title }</title>
 
@@ -45,16 +59,30 @@ templ Head(meta viewmodel.PageMeta) {
 
 	<link rel="stylesheet" href={ "/static/css/style.css?v=" + meta.AssetVersion }/>
 
-	// ダークモード検出スクリプト
-	<script>
-		(() => {
-			try {
-				if (matchMedia("(prefers-color-scheme: dark)").matches) {
-					document.documentElement.classList.add("dark");
-				}
-			} catch (_) {}
-		})();
-	</script>
+	// Dark mode detection is intentionally disabled while the Rails-to-Go
+	// migration is in progress. The Rails version has no dark mode, so toggling
+	// `.dark` from the OS preference only on Go-rendered pages would split the
+	// experience: a user whose OS prefers dark would see Go pages in dark and
+	// Rails pages in light. The `.dark {}` CSS and `dark:` variants are kept, so
+	// re-enabling dark mode once every page is served by Go is just a matter of
+	// uncommenting the detection script below.
+	//
+	// [Ja] Rails から Go への移行期は、ダークモード検出を意図的に無効化している。
+	// Rails 版にはダークモードが無いため、OS の設定に応じた `.dark` の付与を Go 描画
+	// ページだけで行うと、OS がダークを好むユーザーには Go ページがダーク・Rails ページ
+	// がライトで見え、体験が割れてしまう。`.dark {}` の CSS と `dark:` バリアントは
+	// 残してあるため、全ページが Go で配信されるようになったら、下の検出スクリプトの
+	// コメントを外すだけでダークモードを再有効化できる。
+	//
+	// <script>
+	// 	(() => {
+	// 		try {
+	// 			if (matchMedia("(prefers-color-scheme: dark)").matches) {
+	// 				document.documentElement.classList.add("dark");
+	// 			}
+	// 		} catch (_) {}
+	// 	})();
+	// </script>
 
 	<script src={ "/static/js/vendor/htmx-4.0.0-alpha8.min.js?v=" + meta.AssetVersion }></script>
 	<script type="module" src={ "/static/js/main.js?v=" + meta.AssetVersion }></script>

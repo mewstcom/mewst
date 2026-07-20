@@ -20,10 +20,9 @@ RSpec.describe "GET /notifications", type: :request do
   end
 
   it "認証されている場合、通知がある状態で正常に表示されること" do
-    FactoryBot.create(:oauth_application, :mewst_web)
     actor = FactoryBot.create(:actor)
     other_actor = FactoryBot.create(:actor)
-    post = CreatePostUseCase.new.call(viewer: actor, content: "Hello", canonical_url: "").post
+    post = FactoryBot.create(:post_record, profile_record: actor.profile_record)
     CreateStampUseCase.new.call(viewer: other_actor, target_post: post)
     sign_in(actor)
 

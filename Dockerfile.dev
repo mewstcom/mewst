@@ -21,10 +21,12 @@ apt update
 apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
+  bubblewrap                # Required by Codex for Linux sandboxing [Ja] Codex の Linux sandbox に必要
   build-essential
   ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
   curl
   file                      # Required for Shrine image uploads (Rails) [Ja] Shrine による画像アップロードに必要 (Rails)
+  fonts-noto-cjk            # CJK glyphs for playwright-cli screenshots [Ja] playwright-cli のスクショで CJK を描画 (豆腐回避)
   fzf                       # Used by Claude Code [Ja] Claude Code で使用
   git
   gnupg                     # Required for PostgreSQL GPG key and apt repository [Ja] PostgreSQL の GPG キーと apt リポジトリに必要
@@ -38,6 +40,7 @@ PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
   lsb-release               # Required for PostgreSQL apt repository setup [Ja] PostgreSQL の apt リポジトリ設定に必要
   nano                      # Used by Claude Code [Ja] Claude Code で使用
   net-tools                 # Used by Claude Code: netstat (network debugging) [Ja] Claude Code で使用 netstat (ネットワークデバッグ用)
+  procps                    # ps for playwright-cli kill-all [Ja] playwright-cli の kill-all 用 (ps を提供)
   psmisc                    # Used by Claude Code: fuser (process identification) [Ja] Claude Code で使用 fuser (プロセス特定用)
   ripgrep                   # Used by Claude Code [Ja] Claude Code で使用
   sudo
@@ -76,7 +79,7 @@ RUN curl -fsSL https://mise.run | sh
 
 # Install Go, Ruby, Node.js, pnpm, and Yarn via mise
 # [Ja] Go、Ruby、Node.js、pnpm、Yarn を mise 経由でインストール
-RUN mise install go@1.25.4 && \
+RUN mise install go@1.26.4 && \
     mise install ruby@3.3.6 && \
     mise install node@24.11.1 && \
     mise install node@20.11.1 && \
@@ -85,13 +88,12 @@ RUN mise install go@1.25.4 && \
 
 # Set global defaults
 # [Ja] グローバルデフォルトを設定
-RUN mise use --global go@1.25.4 && \
+RUN mise use --global go@1.26.4 && \
     mise use --global ruby@3.3.6 && \
     mise use --global node@24.11.1 && \
     mise use --global pnpm@10.24.0
 
 # --- dbmate ---
-# [Ja] dbmate
 ARG DBMATE_VERSION=v2.33.0
 ARG DBMATE_SHA256=dfd4027141b6e4357158099bdfe6c02b286af70f8e49057937744cf80b38ea1c
 RUN curl -fsSL -o /tmp/dbmate \
@@ -101,7 +103,6 @@ RUN curl -fsSL -o /tmp/dbmate \
     chmod +x /usr/local/bin/dbmate
 
 # --- hivemind ---
-# [Ja] hivemind
 ARG HIVEMIND_VERSION=v1.1.0
 ARG HIVEMIND_SHA256=809ca1c5fedbbfca8fdfb3a4b9bb9c41868b046f35f85a3e893ccf2583a3921a
 RUN curl -fsSL -o /tmp/hivemind.gz \
@@ -112,9 +113,8 @@ RUN curl -fsSL -o /tmp/hivemind.gz \
     chmod +x /usr/local/bin/hivemind
 
 # --- golangci-lint ---
-# [Ja] golangci-lint
-ARG GOLANGCI_LINT_VERSION=2.7.2
-ARG GOLANGCI_LINT_SHA256=ce46a1f1d890e7b667259f70bb236297f5cf8791a9b6b98b41b283d93b5b6e88
+ARG GOLANGCI_LINT_VERSION=2.11.4
+ARG GOLANGCI_LINT_SHA256=200c5b7503f67b59a6743ccf32133026c174e272b930ee79aa2aa6f37aca7ef1
 RUN curl -fsSL -o /tmp/golangci-lint.tar.gz \
       https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64.tar.gz && \
     echo "${GOLANGCI_LINT_SHA256}  /tmp/golangci-lint.tar.gz" | sha256sum -c - && \
@@ -124,7 +124,6 @@ RUN curl -fsSL -o /tmp/golangci-lint.tar.gz \
     rm -rf /tmp/golangci-lint.tar.gz /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64
 
 # --- GitHub CLI ---
-# [Ja] GitHub CLI
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     mkdir -p -m 755 /etc/apt/keyrings && \
@@ -136,13 +135,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt update && apt install -y gh
 
 # --- User setup ---
-# [Ja] ユーザー作成
 RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/zsh ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # --- Go cache directories ---
-# [Ja] Go キャッシュディレクトリ
 RUN mkdir -p /go/.cache/go-build /go/pkg && \
     chown -R ${USER_ID}:${GROUP_ID} /go
 
@@ -170,15 +167,15 @@ RUN touch ~/.zshrc
 RUN mise reshim
 
 # --- 1Password CLI ---
-# [Ja] 1Password CLI
 COPY --from=1password/op:2 /usr/local/bin/op /usr/local/bin/op
 
 # --- Claude Code ---
-# [Ja] Claude Code
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
+# --- Codex ---
+RUN curl -fsSL https://chatgpt.com/codex/install.sh | sh
+
 # --- Go tools ---
-# [Ja] Go ツール
 ENV GOCACHE=/go/.cache/go-build
 ENV GOMODCACHE=/go/pkg/mod
 ENV GOPATH=/go
@@ -187,16 +184,29 @@ RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30.0 && \
     go install github.com/air-verse/air@latest
 
 # --- Ruby tools ---
-# [Ja] Ruby ツール
 RUN gem install bundler -v 2.5.9
 
+# --- Playwright CLI (browser verification) ---
+# Install @playwright/cli into every Node version mise selects across the
+# monorepo (24.11.1 for /workspace and /workspace/go, 20.11.1 for
+# /workspace/rails) so the shim resolves from any directory, then bake the
+# Chromium browser and its system dependencies with --with-deps (Mewst ships
+# neither a Playwright browser nor its system libs by default).
+#
+# [Ja] monorepo で mise が選ぶ全 Node バージョン (/workspace と /workspace/go は 24.11.1、
+# /workspace/rails は 20.11.1) に @playwright/cli を install し、どのディレクトリからでも
+# shim が解決できるようにする。その後 --with-deps で Chromium 本体と system 依存を焼き込む
+# (Mewst は Playwright のブラウザも system 依存も未導入のため)。
+RUN mise exec node@24.11.1 -- npm install -g @playwright/cli@0.1.17 && \
+    mise exec node@20.11.1 -- npm install -g @playwright/cli@0.1.17 && \
+    mise reshim && \
+    playwright-cli install-browser chromium --with-deps
+
 # --- Shell setup ---
-# [Ja] シェル設定
 SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 
 # --- Git config ---
-# [Ja] Git 設定
 RUN git config --global user.email "me@shimba.co" && \
     git config --global user.name "Koji Shimba"
 

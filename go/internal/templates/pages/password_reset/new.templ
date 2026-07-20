@@ -16,13 +16,9 @@ type NewPageData struct {
 
 // New はパスワードリセットフォームを表示する
 templ New(data NewPageData) {
-	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">
-			<a href="/" class="inline-block">
-				<div class="bg-primary rounded-xl">
-					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
-				</div>
-			</a>
+			@components.LogoTile()
 		</div>
 
 		<div class="flex flex-col gap-2">
@@ -36,58 +32,60 @@ templ New(data NewPageData) {
 
 		@components.FormErrors(data.FormErrors)
 
-		<form
-			action="/password_reset"
-			class="form grid gap-6"
-			hx-on:submit="disableSubmitButtons(this)"
-			method="POST"
-		>
-			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-
-			<div class="grid gap-2">
-				<label for="email">
-					{ templates.T(ctx, "password_reset_new_email_label") }
-				</label>
-
-				<input
-					if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
-						aria-invalid="true"
-					} else {
-						aria-invalid="false"
-					}
-					autocomplete="email"
-					autofocus
-					id="email"
-					name="email"
-					required
-					tabindex="1"
-					type="email"
-					value={ data.Email }
-				/>
-
-				if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
-					for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
-						<p class="text-sm text-error">
-							{ errorMsg }
-						</p>
-					}
-				}
-			</div>
-
-			@components.Turnstile(data.TurnstileSiteKey)
-
-			<button
-				class="btn-primary rounded-full w-fit"
-				tabindex="2"
-				type="submit"
+		@components.AuthFormCard() {
+			<form
+				action="/password_reset"
+				class="form grid gap-6"
+				hx-on:submit="disableSubmitButtons(this)"
+				method="POST"
 			>
-				@templates.Icon("arrow-right-regular")
-				{ templates.T(ctx, "password_reset_new_submit") }
-			</button>
-		</form>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+				<div class="grid gap-2">
+					<label for="email">
+						{ templates.T(ctx, "password_reset_new_email_label") }
+					</label>
+
+					<input
+						if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
+							aria-invalid="true"
+						} else {
+							aria-invalid="false"
+						}
+						autocomplete="email"
+						autofocus
+						id="email"
+						name="email"
+						required
+						tabindex="1"
+						type="email"
+						value={ data.Email }
+					/>
+
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("email") {
+						for _, errorMsg := range data.FormErrors.GetFieldErrors("email") {
+							<p class="text-sm text-error">
+								{ errorMsg }
+							</p>
+						}
+					}
+				</div>
+
+				@components.Turnstile(data.TurnstileSiteKey)
+
+				<button
+					class="btn-primary rounded-full w-fit"
+					tabindex="2"
+					type="submit"
+				>
+					@templates.Icon("arrow-right-regular")
+					{ templates.T(ctx, "password_reset_new_submit") }
+				</button>
+			</form>
+		}
 
 		<div class="text-center text-muted-foreground">
-			<a class="link" href="/sign_in">
+			<a class="link-primary-foreground" href="/sign_in">
 				{ templates.T(ctx, "password_reset_new_back_to_sign_in") }
 			</a>
 		</div>

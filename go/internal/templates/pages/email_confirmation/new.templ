@@ -16,13 +16,9 @@ type NewPageData struct {
 
 // New は確認コード入力フォームを表示する
 templ New(data NewPageData) {
-	<div class="max-w-lg w-full flex flex-col gap-6 px-4">
+	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">
-			<a href="/" class="inline-block">
-				<div class="bg-primary rounded-xl">
-					@templates.Icon("logo", "fill-black w-[60px] h-[60px]")
-				</div>
-			</a>
+			@components.LogoTile()
 		</div>
 
 		<div class="flex flex-col gap-2">
@@ -30,69 +26,71 @@ templ New(data NewPageData) {
 				{ templates.T(ctx, "email_confirmation_new_title") }
 			</h1>
 
-			<p class="text-center text-sm text-muted-foreground whitespace-pre-line">
+			<p class="text-center text-sm text-muted-foreground">
 				{ templates.T(ctx, "email_confirmation_new_description") }
 			</p>
 		</div>
 
 		@components.FormErrors(data.FormErrors)
 
-		<form
-			action="/email_confirmation"
-			class="form grid gap-6"
-			hx-on:submit="disableSubmitButtons(this)"
-			method="POST"
-		>
-			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-			if data.BackURL != "" {
-				<input type="hidden" name="back" value={ data.BackURL }/>
-			}
-
-			<div class="grid gap-2">
-				<label for="code">
-					{ templates.T(ctx, "email_confirmation_new_code_label") }
-				</label>
-
-				<input
-					if data.FormErrors != nil && data.FormErrors.HasFieldError("code") {
-						aria-invalid="true"
-					} else {
-						aria-invalid="false"
-					}
-					autocomplete="one-time-code"
-					autofocus
-					id="code"
-					inputmode="numeric"
-					maxlength="6"
-					name="code"
-					pattern="[0-9]{6}"
-					required
-					tabindex="1"
-					type="text"
-					value={ data.Code }
-				/>
-
-				if data.FormErrors != nil && data.FormErrors.HasFieldError("code") {
-					for _, errorMsg := range data.FormErrors.GetFieldErrors("code") {
-						<p class="text-sm text-error">
-							{ errorMsg }
-						</p>
-					}
-				}
-			</div>
-
-			<button
-				class="btn-primary rounded-full w-fit"
-				tabindex="2"
-				type="submit"
+		@components.AuthFormCard() {
+			<form
+				action="/email_confirmation"
+				class="form grid gap-6"
+				hx-on:submit="disableSubmitButtons(this)"
+				method="POST"
 			>
-				@templates.Icon("arrow-right-regular")
-				{ templates.T(ctx, "email_confirmation_new_submit") }
-			</button>
-		</form>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				if data.BackURL != "" {
+					<input type="hidden" name="back" value={ data.BackURL }/>
+				}
+
+				<div class="grid gap-2">
+					<label for="code">
+						{ templates.T(ctx, "email_confirmation_new_code_label") }
+					</label>
+
+					<input
+						if data.FormErrors != nil && data.FormErrors.HasFieldError("code") {
+							aria-invalid="true"
+						} else {
+							aria-invalid="false"
+						}
+						autocomplete="one-time-code"
+						autofocus
+						id="code"
+						inputmode="numeric"
+						maxlength="6"
+						name="code"
+						pattern="[0-9]{6}"
+						required
+						tabindex="1"
+						type="text"
+						value={ data.Code }
+					/>
+
+					if data.FormErrors != nil && data.FormErrors.HasFieldError("code") {
+						for _, errorMsg := range data.FormErrors.GetFieldErrors("code") {
+							<p class="text-sm text-error">
+								{ errorMsg }
+							</p>
+						}
+					}
+				</div>
+
+				<button
+					class="btn-primary rounded-full w-fit"
+					tabindex="2"
+					type="submit"
+				>
+					@templates.Icon("arrow-right-regular")
+					{ templates.T(ctx, "email_confirmation_new_submit") }
+				</button>
+			</form>
+		}
 
 		<div class="text-center text-muted-foreground">
-			<a class="link" href="/sign_in">
+			<a class="link-primary-foreground" href="/sign_in">
 				{ templates.T(ctx, "email_confirmation_new_back_to_sign_in") }
 			</a>
 		</div>

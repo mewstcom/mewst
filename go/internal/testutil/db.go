@@ -2,6 +2,7 @@
 package testutil
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -15,6 +16,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/query"
 )
+
+// mewstWebLockKey is the advisory lock key guarding the mewst-web
+// oauth_applications row (an arbitrary fixed value unique within this app).
+//
+// [Ja] mewstWebLockKey は mewst-web の oauth_applications 行を保護する
+// advisory lock のキー (このアプリ内で一意な任意の固定値)。
+const mewstWebLockKey int64 = 727577_001
 
 var (
 	testDB     *sql.DB
@@ -110,4 +118,52 @@ func MustParseUUID(s string) uuid.UUID {
 // Repository テスト用の DI ヘルパー
 func QueriesWithTx(tx *sql.Tx) *query.Queries {
 	return query.New(tx)
+}
+
+// AcquireMewstWebLock blocks until the cross-process advisory lock guarding
+// the mewst-web oauth_applications row is acquired, and releases it via
+// t.Cleanup.
+//
+// `go test ./...` runs packages as separate processes sharing the same test
+// DB. Tests that commit (or assert the absence of) the fixed-uid mewst-web row
+// race with each other across packages: concurrent inserts collide on the
+// unique uid index, and one package's cleanup can delete the row while another
+// package still depends on it. Every test that touches the committed mewst-web
+// row must take this lock first so those tests serialize across packages.
+//
+// [Ja] AcquireMewstWebLock は mewst-web の oauth_applications 行を保護する
+// プロセス間の advisory lock を獲得できるまでブロックし、t.Cleanup で解放する。
+//
+// `go test ./...` はパッケージごとに別プロセスで実行され、同じテスト DB を
+// 共有する。固定 uid の mewst-web 行をコミットする (または不在を前提とする)
+// テストはパッケージをまたいで競合する: 同時 INSERT は uid の UNIQUE
+// インデックスで衝突し、一方のパッケージの cleanup が他方の依存中の行を削除
+// しうる。コミットされた mewst-web 行に触れるテストは、必ず先にこのロックを
+// 獲得してパッケージ間で直列化すること。
+func AcquireMewstWebLock(t *testing.T) {
+	t.Helper()
+
+	initTestDB()
+	ctx := context.Background()
+
+	// Pin a dedicated connection: pg_advisory_lock is session-scoped, so the
+	// lock must be held and released on the same connection.
+	// [Ja] 専用コネクションを確保する。pg_advisory_lock はセッション単位のため、
+	// 同じコネクション上で保持・解放する必要がある。
+	conn, err := testDB.Conn(ctx)
+	if err != nil {
+		t.Fatalf("advisory lock 用コネクションの取得に失敗: %v", err)
+	}
+
+	if _, err := conn.ExecContext(ctx, `SELECT pg_advisory_lock($1)`, mewstWebLockKey); err != nil {
+		_ = conn.Close()
+		t.Fatalf("advisory lock の獲得に失敗: %v", err)
+	}
+
+	t.Cleanup(func() {
+		if _, err := conn.ExecContext(ctx, `SELECT pg_advisory_unlock($1)`, mewstWebLockKey); err != nil {
+			t.Errorf("advisory lock の解放に失敗: %v", err)
+		}
+		_ = conn.Close()
+	})
 }

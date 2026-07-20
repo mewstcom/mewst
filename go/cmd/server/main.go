@@ -19,6 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
 	"github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/handler/link"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
 	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
@@ -98,17 +99,49 @@ func main() {
 	userProfileRepo := repository.NewUserProfileRepository(queries)
 	rateLimitRepo := repository.NewRateLimitRepository(queries)
 	featureFlagRepo := repository.NewFeatureFlagRepository(queries)
+	postRepo := repository.NewPostRepository(queries)
+	followRepo := repository.NewFollowRepository(queries)
+	homeTimelinePostRepo := repository.NewHomeTimelinePostRepository(queries)
+	oauthApplicationRepo := repository.NewOauthApplicationRepository(queries)
+	linkRepo := repository.NewLinkRepository(queries)
+	postLinkRepo := repository.NewPostLinkRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
+	// Build the Dispatcher first, backed by a DeferredInserter. FanoutPostUsecase
+	// needs the Dispatcher, the Dispatcher needs the River client, and the River
+	// client can only be built after worker.NewClient registers the Workers that
+	// wrap those UseCases — an initialization cycle. Construct the Dispatcher
+	// around an unwired DeferredInserter now and inject the River client via
+	// SetInserter once worker.NewClient has created it.
+	//
+	// [Ja] FanoutPostUsecase → Dispatcher → River クライアント → Worker (UseCase を内包) の
+	// 初期化循環を断つため、先に DeferredInserter で Dispatcher を構築し、River クライアント
+	// 生成後に注入する。
+	deferredInserter := &dispatcher.DeferredInserter{}
+	jobDispatcher := dispatcher.NewDispatcher(deferredInserter)
+
+	// Build the fanout UseCases that the Workers register. They depend on
+	// repository, so they cannot be built inside the worker package (depguard
+	// forbids worker → repository); build them here and inject them.
+	// [Ja] Worker に登録する fanout 系 UseCase を構築する (repository 依存のため worker 内で
+	// は構築できず、ここで注入する)。
+	fanoutPostUC := usecase.NewFanoutPostUsecase(postRepo, followRepo, jobDispatcher)
+	addPostToTimelineUC := usecase.NewAddPostToTimelineUsecase(profileRepo, postRepo, homeTimelinePostRepo)
+
 	// Workerの初期化
-	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg)
+	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg, fanoutPostUC, addPostToTimelineUC)
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
 		os.Exit(1)
 	}
+
+	// Wire the real inserter into the DeferredInserter now that the River client
+	// exists (completes the wiring that broke the init cycle).
+	// [Ja] River クライアント生成後に DeferredInserter へ実体を注入する (循環を断った配線の完了)。
+	deferredInserter.SetInserter(workerClient.Client())
 
 	// Workerを開始
 	if err := workerClient.Start(context.Background()); err != nil {
@@ -120,9 +153,6 @@ func main() {
 	// レートリミッターの初期化
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
-	// Dispatcherの初期化
-	jobDispatcher := dispatcher.NewDispatcher(workerClient.Client())
-
 	// バリデーターの初期化
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
 	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
@@ -130,6 +160,8 @@ func main() {
 	accountValidator := validator.NewAccountCreateValidator(userRepo, profileRepo)
 	passwordUpdateValidator := validator.NewPasswordUpdateValidator()
 	passwordResetCreateValidator := validator.NewPasswordResetCreateValidator()
+	postCreateValidator := validator.NewPostCreateValidator()
+	linkDataFetcherValidator := validator.NewLinkDataFetcherValidator()
 
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
@@ -141,6 +173,20 @@ func main() {
 	getSucceededEmailConfirmationUC := usecase.NewGetSucceededEmailConfirmationUsecase(emailConfirmationRepo)
 	updatePasswordUC := usecase.NewUpdatePasswordUsecase(passwordUpdateValidator, userRepo)
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
+	createPostUC := usecase.NewCreatePostUsecase(db, postCreateValidator, oauthApplicationRepo, linkRepo, postRepo, postLinkRepo, profileRepo, homeTimelinePostRepo, jobDispatcher)
+	getLinkUC := usecase.NewGetLinkUsecase(linkRepo)
+	// blockPrivateHosts is true in production wiring: fetching user-supplied URLs
+	// must not reach internal hosts (SSRF). Passing false still compiles and
+	// passes tests, so review wiring changes here carefully. The 10s timeout
+	// bounds each fetch (applied per redirect hop) so a slow external site cannot
+	// pin a request handler indefinitely.
+	//
+	// [Ja] 本番配線では blockPrivateHosts を true にする。ユーザー入力の URL の
+	// 取得が内部ホストへ到達してはならない (SSRF 対策)。false を渡しても
+	// コンパイル・テストは通るため、この配線の変更は注意して見ること。10 秒の
+	// タイムアウトは取得 1 回ごと (リダイレクトの各ホップ) に適用され、遅い外部
+	// サイトがリクエストハンドラーを占有し続けないようにする。
+	fetchLinkMetadataUC := usecase.NewFetchLinkMetadataUsecase(linkDataFetcherValidator, linkRepo, &http.Client{Timeout: 10 * time.Second}, true)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -154,7 +200,8 @@ func main() {
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
-	postHandler := post.NewHandler(cfg)
+	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
+	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -201,6 +248,15 @@ func main() {
 		}
 		r.Use(proxyMiddleware.Middleware)
 	}
+
+	// Limit the request body size for Go-handled routes. Placed after reverse_proxy so
+	// requests proxied to the Rails version are not affected, and before any middleware /
+	// handler that parses form data (CSRF, MethodOverride, handlers).
+	//
+	// [Ja] Go 版が処理するルートのリクエストボディサイズを制限する。reverse_proxy より
+	// 後に配置することで Rails 版にプロキシされるリクエストには影響させず、フォームを
+	// パースするミドルウェア / ハンドラー (CSRF、MethodOverride、各ハンドラー) より前に置く。
+	r.Use(middleware.BodyLimit)
 
 	// i18n ミドルウェア(Accept-Language ヘッダーから ctx にロケールをセットする)
 	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには走らせない
@@ -279,19 +335,29 @@ func main() {
 		r.Post("/accounts", accountHandler.Create)
 	})
 
-	// New post form (authenticated users only). Gated by the reverse-proxy
-	// feature flag (FeatureFlagNewPost), so requests from viewers without the
-	// flag never reach this route and are proxied to the Rails version.
+	// New post form, submission, and link card fragments (authenticated users
+	// only). The reverse proxy routes these paths to Go unconditionally via its
+	// goHandledPatterns (exact path + method), so they are no longer behind a
+	// feature flag. POST /posts and POST /links are genuine POSTs, so no Method
+	// Override is needed; the routes are registered directly. GET /links/new sits
+	// under the CSRF middleware so the fragment can embed the CSRF token for its
+	// POST /links form.
 	//
-	// [Ja] 新規投稿フォーム（認証済みユーザーのみ）。リバースプロキシの
-	// フィーチャーフラグ (FeatureFlagNewPost) でゲートされるため、フラグが無効な
-	// 閲覧者のリクエストはここに到達せず Rails 版にプロキシされる。
+	// [Ja] 新規投稿フォーム・送信・リンクカードのフラグメント（認証済みユーザーのみ）。
+	// リバースプロキシはこれらのパスを goHandledPatterns (完全一致 + メソッド) で
+	// 無条件に Go 版へ振り分けるため、もうフィーチャーフラグの配下にはない。
+	// POST /posts と POST /links は本来の POST のため Method Override は不要で、
+	// ルートを直接登録する。GET /links/new はフラグメントが POST /links フォーム用の
+	// CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
 
 		r.Get("/new", postHandler.New)
+		r.Post("/posts", postHandler.Create)
+		r.Get("/links/new", linkHandler.New)
+		r.Post("/links", linkHandler.Create)
 	})
 
 	// サーバー起動

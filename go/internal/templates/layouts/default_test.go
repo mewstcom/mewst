@@ -32,19 +32,37 @@ func TestDefault(t *testing.T) {
 	html := buf.String()
 
 	checks := []string{
-		"<!doctype html>",       // ドキュメント宣言
-		`<html lang="ja"`,       // ロケールが反映される
-		"テストタイトル | Mewst",       // head のタイトル
-		"sticky",                // トップ navbar
-		"lg:hidden",             // ボトム navbar
-		`href="/@alice"`,        // navbar メニュー (プロフィールリンク)
-		`<main class="flex-1">`, // メインコンテンツ領域
-		"content-marker",        // 差し込まれたコンテンツ
+		"<!doctype html>", // ドキュメント宣言
+		`<html lang="ja"`, // ロケールが反映される
+		"テストタイトル | Mewst", // head のタイトル
+		"sticky",          // トップ navbar
+		`class="flex min-h-[100svh] flex-col pt-safe px-safe"`,
+		`<main id="main" tabindex="-1" class="flex-1 pb-safe"`,
+		// Check the fixed wrapper's complete class list so its transparent mobile
+		// hit area cannot remain over desktop content.
+		//
+		// [Ja] 固定ラッパーの完全な class 一覧を検証し、モバイル用の透明な
+		// ヒット領域がデスクトップのコンテンツ上に残ることを防ぐ。
+		`class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 py-4 px-safe-offset-4 mb-safe lg:hidden"`,
+		`href="/@alice"`, // navbar メニュー (プロフィールリンク)
+		`href="#main"`,   // skip link (WCAG 2.4.1). [Ja] スキップリンク (WCAG 2.4.1)
+		"メインコンテンツへスキップ",                 // skip link label. [Ja] スキップリンクのラベル
+		`<main id="main" tabindex="-1"`, // main landmark (id is the skip link target, tabindex enables programmatic focus). [Ja] main ランドマーク (id はスキップリンクのターゲット、tabindex でプログラム的フォーカスを許可)
+		"content-marker",                // 差し込まれたコンテンツ
 	}
 	for _, want := range checks {
 		if !strings.Contains(html, want) {
 			t.Errorf("Default layout output missing %q", want)
 		}
+	}
+
+	// The skip link must be the first focusable element, so it must precede the
+	// navbar links in the DOM.
+	//
+	// [Ja] スキップリンクは最初のフォーカス可能要素でなければならないため、DOM 上で
+	// navbar のリンクより前に現れる必要がある。
+	if skip, nav := strings.Index(html, `href="#main"`), strings.Index(html, `href="/@alice"`); skip == -1 || nav == -1 || skip > nav {
+		t.Errorf("skip link (index %d) must precede navbar links (index %d)", skip, nav)
 	}
 }
 

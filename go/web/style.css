@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "basecoat-css";
+@import "tailwindcss-safe-area";
 
 :root {
   /* 独自の変数 */
@@ -15,21 +16,30 @@
   --app-brand-900: #783a0f;
   --app-brand-950: #451d03;
   --app-error-foreground: var(--color-white);
-  --app-error: var(--color-red-600);
+  --app-error: var(--color-red-700);
   --app-info-foreground: var(--color-white);
   --app-info: var(--color-blue-600);
   --app-success-foreground: var(--color-white);
   --app-success: var(--color-green-600);
   --app-warning-foreground: var(--color-black);
   --app-warning: var(--color-yellow-600);
+  /* Link colors. Muted links use explicit neutral tokens that keep AA contrast
+     on the app's custom light and dark backgrounds.
+
+     [Ja] リンク色。muted リンクはアプリ固有のライト / ダーク背景上で AA の
+     コントラストを保つ明示的な無彩色トークンを使う。 */
+  --app-link-foreground: var(--foreground);
+  --app-link-primary-foreground: var(--color-blue-600);
+  --app-link-muted-foreground: var(--color-stone-600);
 
   /* Basecoatの変数上書き */
-  --background: #f5f5f4;
+  --background: #f6f2eb;
   --foreground: var(--color-stone-950);
   --primary: var(--app-brand-500);
   --primary-foreground: var(--app-brand-950);
   --secondary: var(--color-stone-300);
   --secondary-foreground: var(--color-stone-950);
+  --accent: var(--color-stone-200);
 
   text-autospace: normal;
 }
@@ -52,6 +62,8 @@
   --primary-foreground: var(--app-brand-950);
   --secondary: var(--color-stone-600);
   --secondary-foreground: var(--color-stone-50);
+  --app-link-primary-foreground: var(--color-blue-400);
+  --app-link-muted-foreground: var(--color-stone-400);
 }
 
 @theme {
@@ -67,36 +79,33 @@
   --color-brand-900: var(--app-brand-900);
   --color-brand-950: var(--app-brand-950);
 
-  --color-error-foreground: var(--error-foreground);
-  --color-error: var(--error);
-  --color-info-foreground: var(--info-foreground);
-  --color-info: var(--info);
+  --color-link-foreground: var(--app-link-foreground);
+  --color-link-primary-foreground: var(--app-link-primary-foreground);
+  --color-link-muted-foreground: var(--app-link-muted-foreground);
+
+  --color-error-foreground: var(--app-error-foreground);
+  --color-error: var(--app-error);
+  --color-info-foreground: var(--app-info-foreground);
+  --color-info: var(--app-info);
   --color-success-foreground: var(--app-success-foreground);
   --color-success: var(--app-success);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-warning: var(--warning);
+  --color-warning-foreground: var(--app-warning-foreground);
+  --color-warning: var(--app-warning);
 }
 
-@layer components {
-  .link,
-  .link-muted {
-    @apply underline underline-offset-4 transition-colors duration-150;
-  }
+@utility link-bare-* {
+  @apply transition-colors duration-100;
+  @apply text-[--value(--color-link-*)] hover:text-[--value(--color-link-*)]/85;
+}
 
-  .link {
-    @apply text-blue-600 hover:text-blue-700;
-    @apply dark:text-blue-400 dark:hover:text-blue-300;
-  }
-
-  .link-muted {
-    @apply text-muted-foreground/90 hover:text-muted-foreground;
-    @apply dark:text-muted-foreground/90 dark:hover:text-muted-foreground;
-  }
-
-  .link:focus,
-  .link-muted:focus {
-    @apply outline-none ring-2 ring-ring;
-  }
+@utility link-* {
+  /* We want to write `@apply link-bare-*;` here, but that breaks utilities
+     like .link-bare-muted-foreground, so the shared declarations are repeated.
+     [Ja] ここで `@apply link-bare-*;` と書きたいが、そうすると
+     .link-bare-muted-foreground などが効かなくなるため共通の宣言を再掲している。 */
+  @apply transition-colors duration-100;
+  @apply text-[--value(--color-link-*)] hover:text-[--value(--color-link-*)]/85;
+  @apply underline underline-offset-4;
 }
 
 @custom-variant touch (@media (hover: none) and (pointer: coarse));

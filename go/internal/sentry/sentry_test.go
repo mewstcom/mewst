@@ -300,6 +300,104 @@ func TestBeforeSend_FiltersQueryString(t *testing.T) {
 	}
 }
 
+func TestBeforeSend_FiltersTags(t *testing.T) {
+	t.Parallel()
+
+	// Tags are populated from slog attributes via sentryslog, so PII logged as
+	// a structured attribute (e.g. "email") must be masked here.
+	//
+	// [Ja] タグには sentryslog 経由で slog 属性が乗るため、構造化属性として
+	// ログに載った PII (例: "email") がここでマスクされることを検証する。
+	tests := []struct {
+		name     string
+		tags     map[string]string
+		expected map[string]string
+	}{
+		{
+			name: "emailタグをマスク",
+			tags: map[string]string{
+				"email":   "user@example.com",
+				"user_id": "123",
+			},
+			expected: map[string]string{
+				"email":   "[FILTERED]",
+				"user_id": "123",
+			},
+		},
+		{
+			name: "部分一致でマスク",
+			tags: map[string]string{
+				"user_email": "user@example.com",
+			},
+			expected: map[string]string{
+				"user_email": "[FILTERED]",
+			},
+		},
+		{
+			name: "password/token/secretタグをマスク",
+			tags: map[string]string{
+				"password":      "raw-password",
+				"api_token":     "token-value",
+				"client_secret": "secret-value",
+			},
+			expected: map[string]string{
+				"password":      "[FILTERED]",
+				"api_token":     "[FILTERED]",
+				"client_secret": "[FILTERED]",
+			},
+		},
+		{
+			name: "大文字小文字を区別しない",
+			tags: map[string]string{
+				"Email": "user@example.com",
+			},
+			expected: map[string]string{
+				"Email": "[FILTERED]",
+			},
+		},
+		{
+			name: "センシティブでないタグは変更しない",
+			tags: map[string]string{
+				"user_id":  "123",
+				"job.kind": "send_email_confirmation",
+			},
+			expected: map[string]string{
+				"user_id":  "123",
+				"job.kind": "send_email_confirmation",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			event := &sentry.Event{Tags: tt.tags}
+
+			result := beforeSend(event, nil)
+			if result == nil {
+				t.Fatal("beforeSend は通常イベントを破棄してはならない")
+			}
+
+			for key, expectedValue := range tt.expected {
+				if result.Tags[key] != expectedValue {
+					t.Errorf("タグ %s: got %q, want %q", key, result.Tags[key], expectedValue)
+				}
+			}
+		})
+	}
+}
+
+func TestBeforeSend_HandlesNilTags(t *testing.T) {
+	t.Parallel()
+
+	event := &sentry.Event{Tags: nil}
+
+	if result := beforeSend(event, nil); result == nil {
+		t.Error("Tagsがnilでもイベントは保持されるべき")
+	}
+}
+
 func TestBeforeSend_HandlesNilRequest(t *testing.T) {
 	t.Parallel()
 

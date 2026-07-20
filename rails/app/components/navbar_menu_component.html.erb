@@ -18,7 +18,7 @@
       ) %>
     <% end %>
 
-    <%= link_to new_post_path(with_frame: true), class: link_class_name, data: { turbo_frame: "modal" } do %>
+    <%= link_to "/new", class: link_class_name do %>
       <%= render Icons::NavbarMenuIconComponent.new(
         name: "edit_4_line",
         active_name: "edit_4_fill",

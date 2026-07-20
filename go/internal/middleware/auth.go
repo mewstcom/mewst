@@ -61,7 +61,7 @@ func (a *Auth) RequireAuth(next http.Handler) http.Handler {
 		// [Ja] コンテキストにユーザー・アクター・プロフィール情報を設定
 		ctx = context.WithValue(ctx, userContextKey, auth.User)
 		ctx = context.WithValue(ctx, actorContextKey, auth.Actor)
-		ctx = context.WithValue(ctx, profileContextKey, auth.Profile)
+		ctx = SetProfileToContext(ctx, auth.Profile)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -136,6 +136,17 @@ func ActorFromContext(ctx context.Context) *model.Actor {
 		return nil
 	}
 	return actor
+}
+
+// SetProfileToContext stores the profile information in the context.
+// RequireAuth uses it in production, and handler tests reuse it to inject a
+// profile (mirroring SetCSRFTokenToContext).
+//
+// [Ja] SetProfileToContext はコンテキストにプロフィール情報を設定する。
+// 本番では RequireAuth が使い、ハンドラーテストはプロフィールを注入するために
+// 再利用する (SetCSRFTokenToContext に倣う)。
+func SetProfileToContext(ctx context.Context, profile *model.Profile) context.Context {
+	return context.WithValue(ctx, profileContextKey, profile)
 }
 
 // ProfileFromContext returns the profile information from the context.

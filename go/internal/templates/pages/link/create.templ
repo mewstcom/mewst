@@ -1,0 +1,26 @@
+package link
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// CreatePageData holds the data for the attached-link-card fragment.
+//
+// [Ja] CreatePageData は紐付け済みリンクカードのフラグメントのデータを保持する。
+type CreatePageData struct {
+	Link viewmodel.Link
+}
+
+// Create renders the attached-link-card fragment (the Rails links/create/call
+// view). The markup itself lives in components.AttachedLinkCard, which the post
+// form's 422 re-render also uses. The fragment is swapped into the #link-form
+// container.
+//
+// [Ja] Create は紐付け済みリンクカードのフラグメント (Rails の links/create/call
+// ビュー) を描画する。マークアップ本体は components.AttachedLinkCard にあり、
+// 投稿フォームの 422 再描画でも同じコンポーネントを使う。フラグメントは
+// #link-form コンテナにスワップされる。
+templ Create(data CreatePageData) {
+	@components.AttachedLinkCard(data.Link)
+}

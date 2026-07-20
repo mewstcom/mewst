@@ -15,6 +15,18 @@ help: ## ヘルプを表示
 run: ## サーバーを起動
 	$(OP_RUN_DEV) go run cmd/server/main.go
 
+.PHONY: browse-login
+browse-login: ## Log in to the dev site in a browser (other user: make browse-login BROWSE_USER=2). [Ja] dev サイトへブラウザでログイン (別ユーザーは make browse-login BROWSE_USER=2)
+	$(OP_RUN_DEV) bash scripts/browse.sh login $(BROWSE_USER)
+
+.PHONY: browse-shot
+browse-shot: ## Open a page with the logged-in session and screenshot it (e.g. make browse-shot URL=/). [Ja] ログイン済みセッションでページを開きスクショ (例: make browse-shot URL=/)
+	bash scripts/browse.sh shot "$(URL)"
+
+.PHONY: browse-close
+browse-close: ## Close the browser session and remove temp files. [Ja] ブラウザセッションを閉じ一時ファイルを削除
+	bash scripts/browse.sh close
+
 .PHONY: templ-generate
 templ-generate: ## templファイルからGoコードを生成し、import文を整理
 	@which templ > /dev/null || (echo "Installing templ from go.mod..." && go install github.com/a-h/templ/cmd/templ)
@@ -85,6 +97,14 @@ test-verbose: db-setup-test ## 詳細ログ付きで全テストを実行（デ�
 	@echo "ローカル環境: 詳細ログ付きで全テストを実行"
 	@bash -c 'set -o pipefail && $(OP_RUN_TEST) go test -json -race -count=1 ./... | tparse -all'
 
+.PHONY: test-js
+test-js: ## Run frontend unit tests (Vitest). [Ja] フロントエンドのユニットテストを実行 (Vitest)
+	pnpm test
+
+.PHONY: typecheck-js
+typecheck-js: ## Type-check frontend TypeScript (tsc --noEmit). [Ja] フロントエンドの TypeScript を型検査 (tsc --noEmit)
+	pnpm typecheck
+
 .PHONY: fmt
 fmt: ## コードをフォーマット
 	go fmt ./...
@@ -95,10 +115,19 @@ lint-golangci: ## golangci-lintを実行
 	@echo "🔍 golangci-lintを実行中..."
 	@golangci-lint run --config=.golangci.yml ./...
 
+# Base git ref for the diff-scoped comment check. Mirrors CI's PR step, which
+# runs against the PR base branch. Override when your PR targets another branch:
+# make lint-comments KORYLUSLINT_BASE=origin/main
+#
+# [Ja] コメント差分チェックの基準 git ref。CI の PR ステップ (PR のベースブランチに対して
+# 実行) を再現する。別のブランチを対象にする PR では上書きする。
+KORYLUSLINT_BASE ?= origin/develop
+
 .PHONY: lint-comments
-lint-comments: ## コメントの英日併記をチェック ([Ja] マーカーの誤用)
+lint-comments: ## Check [Ja]-marker misuse in code comments (koryluslint). [Ja] コードコメントの [Ja] マーカー誤用をチェック (koryluslint)
 	@echo "🔍 コメントの英日併記をチェック中..."
-	@go run ./cmd/commentlint .
+	@go tool koryluslint comment
+	@go tool koryluslint comment -base=$(KORYLUSLINT_BASE)
 
 .PHONY: lint
 lint: lint-golangci lint-comments ## リントを実行（golangci-lint + コメント併記チェック）
@@ -109,12 +138,21 @@ clean: ## ビルド成果物をクリーン
 	find . -name "*_templ.go" -type f -delete
 
 # データベースマイグレーションコマンド
+
+# Strip the random \restrict / \unrestrict lines that pg_dump >= 17.6 emits into
+# db/schema.sql, which dbmate writes on both up and dump. Shared by db-migrate
+# and db-dump so the workaround lives in one place.
+# https://github.com/amacneil/dbmate/issues/678
+#
+# [Ja] dbmate が up / dump の双方で db/schema.sql へ書き込む、pg_dump 17.6 以降が
+# 出力するランダムな \restrict / \unrestrict 行を削除する。db-migrate と db-dump で
+# 共有し、回避策を 1 箇所にまとめる。
+STRIP_SCHEMA_RESTRICT = sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+
 .PHONY: db-migrate
 db-migrate: ## データベースマイグレーションを実行
 	$(OP_RUN_DEV) dbmate up
-	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
-	# https://github.com/amacneil/dbmate/issues/678
-	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+	@$(STRIP_SCHEMA_RESTRICT)
 
 .PHONY: db-setup-test
 db-setup-test: ## テスト用データベースのスキーマをセットアップ
@@ -139,9 +177,7 @@ db-new: ## 新しいマイグレーションファイルを作成（使用法: m
 .PHONY: db-dump
 db-dump: ## データベーススキーマをdb/schema.sqlにダンプ
 	$(OP_RUN_DEV) dbmate dump
-	# PostgreSQL 17.6以降のpg_dumpが生成するランダムな\restrict行を削除
-	# https://github.com/amacneil/dbmate/issues/678
-	@sed -i '/^\\restrict /d;/^\\unrestrict /d' db/schema.sql
+	@$(STRIP_SCHEMA_RESTRICT)
 
 .PHONY: sqlc-generate
 sqlc-generate: ## SQLクエリからGoコードを生成

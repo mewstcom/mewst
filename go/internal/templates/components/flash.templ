@@ -6,10 +6,12 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Flash はフラッシュメッセージをtoastとして表示する。flash が nil なら何も描画しない。
+// Flash renders a flash message as a toast and renders nothing when flash is nil.
+//
+// [Ja] Flash はフラッシュメッセージを toast として表示し、flash が nil なら何も描画しない。
 templ Flash(flash *session.FlashMessage) {
 	if flash != nil {
-		<div id="toaster" class="toaster">
+		<div id="toaster" class="toaster pb-safe-offset-4 px-safe-offset-4">
 			<div
 				class="toast"
 				role="status"
@@ -31,7 +33,9 @@ templ Flash(flash *session.FlashMessage) {
 	}
 }
 
-// flashCategory はフラッシュタイプに応じたdata-category属性値を返す
+// flashCategory returns the data-category value for the flash type.
+//
+// [Ja] flashCategory はフラッシュタイプに応じた data-category 属性値を返す。
 func flashCategory(flashType session.FlashType) string {
 	switch flashType {
 	case session.FlashSuccess:
@@ -45,13 +49,17 @@ func flashCategory(flashType session.FlashType) string {
 	}
 }
 
-// flashIconStyle はアイコン名と塗りクラスのペア
+// flashIconStyle pairs an icon name with its fill class.
+//
+// [Ja] flashIconStyle はアイコン名と塗りクラスのペア。
 type flashIconStyle struct {
 	Name viewmodel.IconName
 	Fill string
 }
 
-// flashIconStyles はフラッシュタイプ ↔ アイコンスタイルの対応表
+// flashIconStyles maps flash types to icon styles.
+//
+// [Ja] flashIconStyles はフラッシュタイプとアイコンスタイルの対応表。
 var flashIconStyles = map[session.FlashType]flashIconStyle{
 	session.FlashSuccess: {Name: "check-circle-regular", Fill: "fill-success"},
 	session.FlashError:   {Name: "warning-regular", Fill: "fill-error"},
@@ -59,7 +67,9 @@ var flashIconStyles = map[session.FlashType]flashIconStyle{
 	session.FlashInfo:    {Name: "info-regular", Fill: "fill-info"},
 }
 
-// flashIcon はフラッシュタイプに応じたアイコンを返す。未知のタイプは info にフォールバックする
+// flashIcon returns the icon for a flash type and falls back to info for unknown types.
+//
+// [Ja] flashIcon はフラッシュタイプに応じたアイコンを返し、未知のタイプは info にフォールバックする。
 func flashIcon(flashType session.FlashType) templ.Component {
 	style, ok := flashIconStyles[flashType]
 	if !ok {

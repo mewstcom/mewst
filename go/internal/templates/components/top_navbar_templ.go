@@ -13,14 +13,23 @@ import (
 )
 
 // TopNavbar renders the desktop top navigation bar (logo on the left, menu on
-// the right). It sticks to the top and is shown only on lg and above, matching
-// the Rails TopNavbarComponent. The Rails daisyUI bg-base-100 becomes
+// the right). It sticks below the top safe-area inset and is shown only on lg
+// and above, matching the Rails TopNavbarComponent. The Rails daisyUI bg-base-100 becomes
 // bg-background, and the BasicContainer (max-w-2xl) is reproduced inline.
 //
+// The wrapper is a <nav> landmark. Because the top and bottom navbars are both
+// rendered into the same DOM (toggled by CSS breakpoints), each carries a
+// distinct aria-label so assistive tech can tell the two navigation regions
+// apart.
+//
 // [Ja] PC 向けのトップナビゲーションバー (左にロゴ、右にメニュー) を描画する。
-// 画面上部に固定し lg 以上でのみ表示する点は Rails の TopNavbarComponent に
+// 上辺の safe-area inset より下に固定し、lg 以上でのみ表示する点は Rails の TopNavbarComponent に
 // 合わせている。Rails の daisyUI bg-base-100 は bg-background に置き換え、
 // BasicContainer (max-w-2xl) はインラインで再現する。
+//
+// ラッパーは <nav> ランドマーク。トップとボトムの navbar は CSS のブレークポイント
+// で切り替わるが両方とも同一 DOM に描画されるため、支援技術が 2 つのナビゲーション
+// 領域を区別できるよう、それぞれに固有の aria-label を付けている。
 func TopNavbar(navbar viewmodel.Navbar) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -42,28 +51,42 @@ func TopNavbar(navbar viewmodel.Navbar) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"sticky top-0 z-50 hidden bg-background lg:block\"><div class=\"mx-auto max-w-2xl px-4 py-4\"><div class=\"flex items-center justify-between\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"sticky top-safe z-50 hidden bg-background lg:block\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 templ.SafeURL
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(templates.RootPath())
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.T(ctx, "navbar_top_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/top_navbar.templ`, Line: 21, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/top_navbar.templ`, Line: 27, Col: 114}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"inline-block\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templates.Icon("logo", "h-[36px] w-[36px] fill-foreground").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><div class=\"mx-auto max-w-2xl px-4 py-4\"><div class=\"flex items-center justify-between\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a>")
+		templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templates.Icon("logo", "h-[36px] w-[36px] fill-foreground").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = LogoLink().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -71,7 +94,7 @@ func TopNavbar(navbar viewmodel.Navbar) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

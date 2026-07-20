@@ -44,6 +44,23 @@ var sensitiveQueryKeys = []string{
 	"key",
 }
 
+// sensitiveTagKeys lists tag keys to mask (partial match, lowercase). Sentry
+// tags are populated from slog attributes by the custom Sentry slog handler,
+// so PII logged as a structured attribute (e.g. "email" on email-send failure
+// logs) would reach Sentry unmasked without this filter. The stderr log keeps
+// the original value, so debugging is still possible there.
+//
+// [Ja] マスクすべきタグのキー (部分一致、小文字)。独自の Sentry slog ハンドラーが
+// slog 属性を Sentry のタグへ載せるため、構造化属性としてログに載せた PII (例:
+// メール送信失敗ログの "email") は、このフィルタがないとマスクされずに Sentry へ
+// 届く。標準エラー出力側のログには元の値が残るため、デバッグはそちらで行える。
+var sensitiveTagKeys = []string{
+	"email",
+	"password",
+	"secret",
+	"token",
+}
+
 // ignoredErrorPatterns はメッセージレベルで Sentry 送信をスキップするパターン (正規表現)。
 // クライアント切断由来のノイズや Go runtime の正常な中断をフィルタする。
 var ignoredErrorPatterns = []string{
@@ -81,12 +98,18 @@ func Init(cfg Config) error {
 	return nil
 }
 
-// beforeSend はSentryにイベントを送信する前にフィルタリングを行う。
+// beforeSend filters events before they are sent to Sentry. Events caused by
+// client disconnects or normal aborts are dropped; everything else has its
+// sensitive data masked.
+//
+// [Ja] beforeSend は Sentry にイベントを送信する前にフィルタリングを行う。
 // クライアント切断や正常な中断由来のエラーは破棄し、それ以外はセンシティブデータをマスクする。
 func beforeSend(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
 	if hint != nil && shouldDropError(hint.OriginalException) {
 		return nil
 	}
+
+	filterTags(event)
 
 	if event.Request != nil {
 		filterRequestHeaders(event.Request)
@@ -109,6 +132,25 @@ func shouldDropError(err error) bool {
 		return true
 	}
 	return false
+}
+
+// filterTags masks sensitive tag values such as email addresses. Unlike the
+// request filters below, this also covers events generated from slog records
+// whose attributes the custom Sentry slog handler stores in event.Tags.
+//
+// [Ja] センシティブなタグ (メールアドレス等) をマスクする。下のリクエスト系
+// フィルタと異なり、独自の Sentry slog ハンドラーが slog 属性を event.Tags へ
+// 格納して生成したイベントも対象にする。
+func filterTags(event *sentry.Event) {
+	for key := range event.Tags {
+		lowerKey := strings.ToLower(key)
+		for _, sensitive := range sensitiveTagKeys {
+			if strings.Contains(lowerKey, sensitive) {
+				event.Tags[key] = maskedValue
+				break
+			}
+		}
+	}
 }
 
 // filterRequestHeaders はセンシティブなHTTPヘッダーをマスクする
