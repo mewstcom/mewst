@@ -394,6 +394,42 @@ description = "New post form submit button"
 other = "Post"
 
 # ============================================
+# Settings menu page (setting_index_*)
+# ============================================
+
+[setting_index_title]
+description = "Settings menu page title"
+other = "Settings"
+
+[setting_index_heading]
+description = "Settings menu page heading"
+other = "Settings"
+
+[setting_index_menu_label]
+description = "Accessible label for the settings menu landmark (to distinguish it from the navbars)"
+other = "Settings menu"
+
+[setting_index_profile_link]
+description = "Link text from the settings menu to the profile edit page"
+other = "Edit profile"
+
+[setting_index_user_link]
+description = "Link text from the settings menu to the user edit page"
+other = "Edit user"
+
+[setting_index_email_link]
+description = "Link text from the settings menu to the email change page"
+other = "Change email"
+
+[setting_index_sign_out]
+description = "Sign-out button on the settings menu"
+other = "Sign out"
+
+[setting_index_sign_out_confirm]
+description = "Message shown in the native confirmation dialog when the settings menu sign-out button is clicked"
+other = "Are you sure you want to sign out?"
+
+# ============================================
 # Back link (back_link)
 # ============================================
 

@@ -123,6 +123,13 @@ var goHandledPatterns = []goHandledPattern{
 	// POST /links: link card creation.
 	// [Ja] POST /links: リンクカード作成。
 	{pattern: regexp.MustCompile(`^/links$`), methods: []string{http.MethodPost}},
+	// GET /settings: the settings menu page. The "^/settings$" anchor leaves the
+	// Rails-owned sub-pages (GET /settings/profile, /settings/user, /settings/email)
+	// with Rails.
+	//
+	// [Ja] GET /settings: 設定メニューページ。"^/settings$" のアンカーにより、
+	// サブページ (GET /settings/profile・/settings/user・/settings/email) は Rails に残す。
+	{pattern: regexp.MustCompile(`^/settings$`), methods: []string{http.MethodGet}},
 }
 
 // NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.

@@ -24,6 +24,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/handler/password"
 	"github.com/mewstcom/mewst/go/internal/handler/password_reset"
 	"github.com/mewstcom/mewst/go/internal/handler/post"
+	"github.com/mewstcom/mewst/go/internal/handler/setting"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_in"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_out"
 	"github.com/mewstcom/mewst/go/internal/handler/sign_up"
@@ -165,6 +166,7 @@ func main() {
 
 	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
+	deleteSessionUC := usecase.NewDeleteSessionUsecase(sessionRepo)
 	createSignInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
 	createSignUpUC := usecase.NewCreateSignUpUsecase(signUpValidator, emailConfirmationRepo, jobDispatcher)
 	createPasswordResetUC := usecase.NewCreatePasswordResetUsecase(passwordResetCreateValidator, emailConfirmationRepo, jobDispatcher)
@@ -195,13 +197,14 @@ func main() {
 	manifestHandler := manifest.NewHandler(cfg)
 	signInHandler := sign_in.NewHandler(cfg, sessionMgr, flashMgr, createSignInUC, turnstileClient)
 	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, flashMgr, createSignUpUC, turnstileClient, rateLimiter)
-	signOutHandler := sign_out.NewHandler(cfg, sessionMgr, flashMgr)
+	signOutHandler := sign_out.NewHandler(sessionMgr, flashMgr, deleteSessionUC)
 	passwordResetHandler := password_reset.NewHandler(cfg, sessionMgr, flashMgr, createPasswordResetUC, turnstileClient)
 	emailConfirmationHandler := email_confirmation.NewHandler(cfg, sessionMgr, flashMgr, getActiveEmailConfirmationUC, verifyEmailConfirmationUC)
 	passwordHandler := password.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, updatePasswordUC)
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
+	settingHandler := setting.NewHandler(cfg)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -298,13 +301,26 @@ func main() {
 		r.Post("/sign_up", signUpHandler.Create)
 	})
 
-	// ログアウト（認証済みユーザーのみ）
-	// HTMLフォームからはPOST（_method=DELETE付き）で呼び出されるが、
-	// Chiはルートマッチング時にメソッドも考慮するため、
-	// POSTとDELETE両方を登録する必要がある
-	// 注: Rails版のページからのリクエストにはGo版のCSRFトークンが含まれないため、
-	// CSRFミドルウェアは適用しない（ログアウトは破壊的操作ではないため安全）
+	// Sign out (authenticated users only). The sign-out form is served by the Go
+	// /settings page and submits with method="POST", so the request reaches this
+	// server as POST. DELETE is registered alongside POST for the same handler,
+	// mirroring how /password registers both PATCH and a POST fallback for HTML
+	// forms.
+	//
+	// The CSRF middleware protects this endpoint. The /settings page runs under
+	// the same CSRF middleware, so the token cookie is issued when that page loads
+	// and its sign-out form embeds the matching token.
+	//
+	// [Ja] ログアウト (認証済みユーザーのみ)。ログアウトフォームは Go 版の /settings
+	// ページが供給し、method="POST" で送信するため、リクエストは POST で本サーバーに
+	// 届く。DELETE も同じハンドラーに登録しており、これは /password が PATCH と HTML
+	// フォーム用の POST を二重登録しているのと同じ扱いである。
+	//
+	// CSRF ミドルウェアがこのエンドポイントを保護する。/settings ページも同じ CSRF
+	// ミドルウェア配下で動くため、ページ読み込み時にトークン Cookie が発行され、
+	// ログアウトフォームには一致するトークンが埋め込まれる。
 	r.Group(func(r chi.Router) {
+		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
 		r.Delete("/sign_out", signOutHandler.Delete)
@@ -358,6 +374,20 @@ func main() {
 		r.Post("/posts", postHandler.Create)
 		r.Get("/links/new", linkHandler.New)
 		r.Post("/links", linkHandler.Create)
+	})
+
+	// Settings menu (authenticated users only). The CSRF middleware makes its
+	// token available to the sign-out form, while RequireAuth provides the
+	// current profile used by the navbar.
+	//
+	// [Ja] 設定メニュー (認証済みユーザーのみ)。CSRF ミドルウェアはログアウト
+	// フォームへトークンを渡し、RequireAuth は navbar 用の現在プロフィールを渡す。
+	r.Group(func(r chi.Router) {
+		r.Use(csrfMiddleware.Middleware)
+		r.Use(authMiddleware.RequireAuth)
+		r.Use(sentryUserContextMW.Middleware)
+
+		r.Get("/settings", settingHandler.Index)
 	})
 
 	// サーバー起動
