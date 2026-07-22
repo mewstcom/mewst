@@ -456,3 +456,11 @@ other = "Add link card: {{.HostAndPath}}"
 [link_create_remove]
 description = "Accessible label for the link card remove button"
 other = "Remove link card"
+
+# ============================================
+# Footer (footer_*)
+# ============================================
+
+[footer_opens_in_new_tab]
+description = "Visually hidden hint telling users that a footer link opens in a new tab"
+other = "Opens in new tab"

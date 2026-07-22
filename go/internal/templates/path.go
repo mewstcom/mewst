@@ -79,3 +79,30 @@ func SettingEmailPath() Path {
 func SignOutPath() Path {
 	return Path("/sign_out")
 }
+
+// CommunityPath returns the path to the community page. The page is still served
+// by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] CommunityPath はコミュニティページへのパスを返す。ページ自体は Rails 版が
+// 応答するが、リンク元のフッターは Go 版が描画する。
+func CommunityPath() Path {
+	return Path("/community")
+}
+
+// TermsPath returns the path to the terms of service page. The page is still
+// served by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] TermsPath は利用規約ページへのパスを返す。ページ自体は Rails 版が応答するが、
+// リンク元のフッターは Go 版が描画する。
+func TermsPath() Path {
+	return Path("/terms")
+}
+
+// PrivacyPath returns the path to the privacy policy page. The page is still
+// served by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] PrivacyPath はプライバシーポリシーページへのパスを返す。ページ自体は Rails 版が
+// 応答するが、リンク元のフッターは Go 版が描画する。
+func PrivacyPath() Path {
+	return Path("/privacy")
+}
