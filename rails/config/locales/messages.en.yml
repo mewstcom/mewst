@@ -16,7 +16,6 @@ en:
         Please create an account after agreeing to the <a href="https://help.mewst.com/docs/terms" rel="nofollow" target="_blank">Terms of Service</a> and <a href="https://help.mewst.com/docs/privacy" rel="nofollow" target="_blank">Privacy Policy</a>.
     authentication:
       already_signed_in: Already signed in.
-      signed_out_successfully: Signed out successfully.
       sign_in_link_expired: Sign in link has expired. Please try again later.
       sign_up_link_expired: Sign up link has expired. Please try again later.
     blank_slate:
