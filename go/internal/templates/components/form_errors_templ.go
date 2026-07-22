@@ -11,7 +11,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// FormErrors はフォームのグローバルエラーを表示する
+// FormErrors renders the form's global errors, one alert per message.
+//
+// [Ja] FormErrors はフォームのグローバルエラーを、1 メッセージにつき 1 つの
+// アラートとして表示する。
 func FormErrors(formErrors *model.ValidationError) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -35,14 +38,14 @@ func FormErrors(formErrors *model.ValidationError) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		if formErrors != nil && len(formErrors.Global) > 0 {
 			for _, errorMsg := range formErrors.Global {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"alert-destructive\"><h2>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"alert\" data-variant=\"destructive\"><h2>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(errorMsg)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/form_errors.templ`, Line: 10, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/form_errors.templ`, Line: 13, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
