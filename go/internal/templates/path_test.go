@@ -19,6 +19,14 @@ func TestStaticPaths(t *testing.T) {
 		{name: "SearchPath", got: templates.SearchPath(), want: "/search"},
 		{name: "NewPostPath", got: templates.NewPostPath(), want: "/new"},
 		{name: "NotificationListPath", got: templates.NotificationListPath(), want: "/notifications"},
+		{name: "SettingListPath", got: templates.SettingListPath(), want: "/settings"},
+		{name: "SettingProfilePath", got: templates.SettingProfilePath(), want: "/settings/profile"},
+		{name: "SettingUserPath", got: templates.SettingUserPath(), want: "/settings/user"},
+		{name: "SettingEmailPath", got: templates.SettingEmailPath(), want: "/settings/email"},
+		{name: "SignOutPath", got: templates.SignOutPath(), want: "/sign_out"},
+		{name: "CommunityPath", got: templates.CommunityPath(), want: "/community"},
+		{name: "TermsPath", got: templates.TermsPath(), want: "/terms"},
+		{name: "PrivacyPath", got: templates.PrivacyPath(), want: "/privacy"},
 	}
 
 	for _, tt := range tests {

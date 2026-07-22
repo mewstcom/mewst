@@ -394,6 +394,42 @@ description = "新規投稿フォームの送信ボタン"
 other = "投稿する"
 
 # ============================================
+# 設定メニューページ (setting_index_*)
+# ============================================
+
+[setting_index_title]
+description = "設定メニューページのタイトル"
+other = "設定"
+
+[setting_index_heading]
+description = "設定メニューページの見出し"
+other = "設定"
+
+[setting_index_menu_label]
+description = "設定メニューのランドマークのアクセシブルラベル (navbar と区別するため)"
+other = "設定メニュー"
+
+[setting_index_profile_link]
+description = "設定メニューからプロフィール編集ページへのリンクテキスト"
+other = "プロフィールの編集"
+
+[setting_index_user_link]
+description = "設定メニューからユーザー編集ページへのリンクテキスト"
+other = "ユーザーの編集"
+
+[setting_index_email_link]
+description = "設定メニューからメールアドレス変更ページへのリンクテキスト"
+other = "メールアドレスの変更"
+
+[setting_index_sign_out]
+description = "設定メニューのログアウトボタン"
+other = "ログアウト"
+
+[setting_index_sign_out_confirm]
+description = "設定メニューのログアウトボタン押下時にネイティブ確認ダイアログへ表示する文言"
+other = "ログアウトしますか？"
+
+# ============================================
 # 戻るリンク (back_link)
 # ============================================
 
@@ -420,3 +456,11 @@ other = "リンクカードを追加する: {{.HostAndPath}}"
 [link_create_remove]
 description = "リンクカード削除ボタンのアクセシブルラベル"
 other = "リンクカードを削除"
+
+# ============================================
+# フッター (footer_*)
+# ============================================
+
+[footer_opens_in_new_tab]
+description = "フッターの外部リンクが新規タブで開くことを伝える、視覚的に隠したヒント"
+other = "新しいタブで開く"

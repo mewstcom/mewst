@@ -10,6 +10,14 @@ import (
 type NavbarItem string
 
 const (
+	// NavbarItemNone marks a page that has no navbar item of its own (e.g.
+	// /settings). It is the zero value, so the navbar renders with nothing
+	// active; naming it lets call sites state that intent instead of passing "".
+	//
+	// [Ja] NavbarItemNone は navbar の項目を持たないページ (例: /settings) を表す。
+	// ゼロ値であり navbar はどの項目もアクティブにせず描画する。定数として名前を
+	// 与えることで、呼び出し側が "" を渡す代わりにその意図を明示できる。
+	NavbarItemNone NavbarItem = ""
 	// NavbarItemHome is the home menu item (/home).
 	// [Ja] home メニュー項目 (/home)
 	NavbarItemHome NavbarItem = "home"

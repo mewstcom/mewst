@@ -44,3 +44,65 @@ func NotificationListPath() Path {
 func ProfilePath(atname string) Path {
 	return Path("/@" + atname)
 }
+
+// SettingListPath returns the path to the settings menu.
+//
+// [Ja] SettingListPath は設定メニューへのパスを返す。
+func SettingListPath() Path {
+	return Path("/settings")
+}
+
+// SettingProfilePath returns the path to the profile settings page.
+//
+// [Ja] SettingProfilePath はプロフィール設定ページへのパスを返す。
+func SettingProfilePath() Path {
+	return Path("/settings/profile")
+}
+
+// SettingUserPath returns the path to the user settings page.
+//
+// [Ja] SettingUserPath はユーザー設定ページへのパスを返す。
+func SettingUserPath() Path {
+	return Path("/settings/user")
+}
+
+// SettingEmailPath returns the path to the email settings page.
+//
+// [Ja] SettingEmailPath はメールアドレス設定ページへのパスを返す。
+func SettingEmailPath() Path {
+	return Path("/settings/email")
+}
+
+// SignOutPath returns the path that the sign-out form posts to.
+//
+// [Ja] SignOutPath はログアウトフォームの送信先パスを返す。
+func SignOutPath() Path {
+	return Path("/sign_out")
+}
+
+// CommunityPath returns the path to the community page. The page is still served
+// by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] CommunityPath はコミュニティページへのパスを返す。ページ自体は Rails 版が
+// 応答するが、リンク元のフッターは Go 版が描画する。
+func CommunityPath() Path {
+	return Path("/community")
+}
+
+// TermsPath returns the path to the terms of service page. The page is still
+// served by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] TermsPath は利用規約ページへのパスを返す。ページ自体は Rails 版が応答するが、
+// リンク元のフッターは Go 版が描画する。
+func TermsPath() Path {
+	return Path("/terms")
+}
+
+// PrivacyPath returns the path to the privacy policy page. The page is still
+// served by the Rails version, but the footer that links to it is rendered by Go.
+//
+// [Ja] PrivacyPath はプライバシーポリシーページへのパスを返す。ページ自体は Rails 版が
+// 応答するが、リンク元のフッターは Go 版が描画する。
+func PrivacyPath() Path {
+	return Path("/privacy")
+}

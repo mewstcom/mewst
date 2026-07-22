@@ -40,7 +40,16 @@ func TestBackLink(t *testing.T) {
 		}
 	}
 
-	if strings.Contains(html, "btn-outline") {
-		t.Error("BackLink should not render btn-outline")
+	// BackLink is a bare muted link, so it must carry no button chrome. Basecoat
+	// 1.0 composes buttons as the `btn` root class plus `data-*` modifiers, so
+	// assert on both instead of the removed `btn-outline` alias.
+	//
+	// [Ja] BackLink は枠なしの muted なリンクであり、ボタン風の装飾を持たない。
+	// Basecoat 1.0 のボタンは root クラス `btn` と `data-*` 修飾子の組み合わせで
+	// 表現するため、削除された `btn-outline` エイリアスではなく両方をアサートする。
+	for _, unwanted := range []string{`class="btn`, `data-variant="outline"`} {
+		if strings.Contains(html, unwanted) {
+			t.Errorf("BackLink should not render button chrome %q", unwanted)
+		}
 	}
 }
