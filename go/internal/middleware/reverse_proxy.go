@@ -49,16 +49,24 @@ type featureFlaggedPattern struct {
 // Each entry anchors its path regexp with "^...$" so it matches the exact path
 // and not sub-paths, and pairs it with an HTTP method set and the flag that
 // gates it. A matching request is served by Go only when the flag is enabled
-// for the viewer; otherwise it falls through to the Rails proxy. The list is
-// currently empty; add an entry here to gate the next feature behind a flag.
+// for the viewer; otherwise it falls through to the Rails proxy.
 //
 // [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
 //
 // 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
 // させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
 // リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
-// プロキシに進む。現在は空で、次の機能をフラグでゲートするときにエントリを追加する。
-var featureFlaggedPatterns []featureFlaggedPattern
+// プロキシに進む。
+var featureFlaggedPatterns = []featureFlaggedPattern{
+	// GET/POST /settings/export: the export screen and export start. The route
+	// does not exist in Rails, so with the flag off the proxied request ends as
+	// a Rails 404 and the feature stays unpublished.
+	//
+	// [Ja] GET/POST /settings/export: エクスポート画面と開始。Rails 版に存在しない
+	// ルートのため、フラグ OFF ではプロキシ先の Rails が 404 を返し非公開のまま。
+	{pattern: regexp.MustCompile(`^/settings/export$`), flag: model.FeatureFlagExport, methods: []string{http.MethodGet, http.MethodPost}},
+	{pattern: regexp.MustCompile(`^/settings/export/download$`), flag: model.FeatureFlagExport, methods: []string{http.MethodGet}},
+}
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
 // [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
