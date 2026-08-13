@@ -73,6 +73,24 @@ func SettingEmailPath() Path {
 	return Path("/settings/email")
 }
 
+// SettingExportPath returns the path to the export page, which is also where
+// the completion email sends the reader.
+//
+// [Ja] SettingExportPath はエクスポートページへのパスを返す。完了メールが読み手を
+// 送る先でもある。
+func SettingExportPath() Path {
+	return Path("/settings/export")
+}
+
+// SettingExportDownloadPath returns the path reserved for downloading the
+// profile's latest succeeded export.
+//
+// [Ja] SettingExportDownloadPath はプロフィールの最新の成功したエクスポートを
+// ダウンロードするために予約したパスを返す。
+func SettingExportDownloadPath() Path {
+	return Path("/settings/export/download")
+}
+
 // SignOutPath returns the path that the sign-out form posts to.
 //
 // [Ja] SignOutPath はログアウトフォームの送信先パスを返す。
