@@ -430,6 +430,54 @@ description = "Message shown in the native confirmation dialog when the settings
 other = "Are you sure you want to sign out?"
 
 # ============================================
+# Export page (export_show_*)
+# ============================================
+
+[export_show_title]
+description = "Export page title"
+other = "Export"
+
+[export_show_heading]
+description = "Export page heading"
+other = "Export"
+
+[export_show_description]
+description = "Sentence on the export page describing what an export contains"
+other = "Your posts are collected into monthly HTML files in a zip file. Creating it may take a while."
+
+[export_show_state_none]
+description = "Export page state message: no export has been created yet"
+other = "You have not created an export yet."
+
+[export_show_state_in_progress]
+description = "Export page state message: the export is being created"
+other = "Your export is being created. We will email you once it is ready."
+
+[export_show_state_succeeded]
+description = "Export page state message: the export has been created"
+other = "Your export is ready."
+
+[export_show_state_failed]
+description = "Export page state message: creating the export failed"
+other = "Creating your export failed. Please try again."
+
+[export_show_state_unavailable]
+description = "Export page state message: the export feature is unavailable"
+other = "Export is unavailable right now."
+
+[export_show_submit]
+description = "Button on the export page that starts an export"
+other = "Create an export"
+
+[export_show_download_link]
+description = "Link text on the export page for downloading the latest export"
+other = "Download your export"
+
+[export_show_previous_download_link]
+description = "Link text on the export page for downloading the previous export while a newer one is being created or has failed"
+other = "Download your previous export"
+
+# ============================================
 # Back link (back_link)
 # ============================================
 
@@ -464,3 +512,60 @@ other = "Remove link card"
 [footer_opens_in_new_tab]
 description = "Visually hidden hint telling users that a footer link opens in a new tab"
 other = "Opens in new tab"
+
+# ============================================
+# Export archive (export_archive_*)
+# ============================================
+
+[export_archive_index_title]
+description = "Title of the export zip's table of contents (index.html)"
+other = "Post export - Mewst"
+
+[export_archive_index_heading]
+description = "Heading of the export zip's table of contents"
+other = "Post export"
+
+[export_archive_index_description]
+description = "Explains that the export zip splits posts into one file per month"
+other = "Your posts are split into one file per month. Choose the month you want to read."
+
+[export_archive_index_empty]
+description = "Tells the reader that the export zip contains no posts"
+other = "This export contains no posts."
+
+[export_archive_index_month_link]
+description = "Text of the link from the export zip's table of contents to a month's file"
+other = "Posts from {{.MonthLabel}}"
+
+[export_archive_index_post_count]
+description = "Number of posts a month holds, shown in the export zip's table of contents"
+one = "{{.Count}} post"
+other = "{{.Count}} posts"
+
+[export_archive_month_label]
+description = "How a calendar month is written inside the export zip"
+other = "{{.MonthName}} {{.Year}}"
+
+[export_archive_month_title]
+description = "Title of a month's file (posts/2026-07.html) inside the export zip"
+other = "Posts from {{.MonthLabel}} - Mewst"
+
+[export_archive_month_heading]
+description = "Heading of a month's file inside the export zip"
+other = "Posts from {{.MonthLabel}}"
+
+[export_archive_post_published_at]
+description = "Published time of a post, shown in a month's file inside the export zip"
+other = "{{.MonthName}} {{.Day}}, {{.Year}} {{.Time}}"
+
+[export_archive_format_comment]
+description = "HTML comment at the top of a month's file inside the export zip, documenting the output contract of a post"
+other = "Mewst export format v{{.Version}}: each post is an article.h-entry. Its ID is in the data-post-id attribute, its published time in the datetime attribute of time.dt-published (RFC 3339), and its body in .e-content."
+
+# ============================================
+# Export completion email (export_completed_email_*)
+# ============================================
+
+[export_completed_email_subject]
+description = "Subject of the export completion notification email"
+other = "[Mewst] Your export is ready"
