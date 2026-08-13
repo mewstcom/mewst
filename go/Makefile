@@ -7,6 +7,20 @@ else
 OP_RUN_TEST = APP_ENV=test op run --env-file=".env" --
 endif
 
+# Iteration count for `make bench`. Memory benchmarks measure a peak rather than
+# an average, so one iteration of a heavy fixture is the useful default.
+#
+# [Ja] `make bench` の実行回数。メモリのベンチマークは平均ではなくピークを測るため、
+# 重いフィクスチャを 1 回実行するのが既定として有用。
+BENCHTIME ?= 1x
+
+# Extra flags for `make bench`, for one-off runs such as capturing a profile
+# (BENCHFLAGS="-memprofile=tmp/mem.out").
+#
+# [Ja] `make bench` へ渡す追加フラグ。プロファイルの取得
+# (BENCHFLAGS="-memprofile=tmp/mem.out") のような一時的な実行のため。
+BENCHFLAGS ?=
+
 .PHONY: help
 help: ## ヘルプを表示
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -96,6 +110,16 @@ test-verbose: db-setup-test ## 詳細ログ付きで全テストを実行（デ�
 	@which tparse > /dev/null || (echo "Installing tparse from go.mod..." && go install github.com/mfridman/tparse)
 	@echo "ローカル環境: 詳細ログ付きで全テストを実行"
 	@bash -c 'set -o pipefail && $(OP_RUN_TEST) go test -json -race -count=1 ./... | tparse -all'
+
+.PHONY: bench
+bench: db-setup-test ## Run benchmarks (e.g. make bench PKG=internal/exportfile RUN=BenchmarkBuilder_StreamsArchive). [Ja] ベンチマークを実行 (例: make bench PKG=internal/exportfile RUN=BenchmarkBuilder_StreamsArchive)
+	@if [ -z "$(PKG)" ]; then \
+		echo "エラー: PKG変数を指定してください"; \
+		echo "使用例: make bench PKG=internal/exportfile RUN=BenchmarkBuilder_StreamsArchive"; \
+		exit 1; \
+	fi
+	@echo "パッケージ $(PKG) のベンチマーク $(or $(RUN),.) を実行 (BENCHTIME=$(BENCHTIME))"
+	@bash -c '$(OP_RUN_TEST) go test -run "^$$" -bench "$(or $(RUN),.)" -benchmem -benchtime $(BENCHTIME) $(BENCHFLAGS) ./$(PKG)'
 
 .PHONY: test-js
 test-js: ## Run frontend unit tests (Vitest). [Ja] フロントエンドのユニットテストを実行 (Vitest)
