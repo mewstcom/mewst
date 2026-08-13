@@ -1,0 +1,32 @@
+package exports
+
+// monthHeading names the month the file holds, so that the file says which
+// month it is when it is opened directly instead of through the table of
+// contents.
+//
+// [Ja] monthHeading はそのファイルが持つ月を示す。目次を介さず直接開いた
+// ファイルでも、どの月のものかが分かるようにするため。
+templ monthHeading(data MonthData) {
+	<h1>{ monthHeadingText(ctx, data.MonthStart) }</h1>
+}
+
+// monthPost renders one post as the archive's output contract describes it:
+// an article.h-entry carrying the post's ID, its published time in a
+// machine-readable datetime attribute next to the form the reader reads, and
+// its body in .e-content.
+//
+// The body is written as one line so that no indentation of this template
+// leaks into the text content a parser recovers from the element.
+//
+// [Ja] monthPost はアーカイブの出力契約どおりにポストを 1 件描画する。ポストの
+// ID を持つ article.h-entry、読み手が読む表記と並べた機械可読な datetime 属性の
+// 投稿日時、そして .e-content の本文からなる。
+//
+// 本文を 1 行で書くのは、このテンプレートのインデントが、パーサーが要素から
+// 復元するテキストコンテンツへ紛れ込まないようにするため。
+templ monthPost(data MonthPostData) {
+	<article class="h-entry" data-post-id={ data.ID }>
+		<time class="dt-published" datetime={ postPublishedAtMachine(data.PublishedAt) }>{ postPublishedAtText(ctx, data.PublishedAt) }</time>
+		<p class="e-content">{ data.Content }</p>
+	</article>
+}
