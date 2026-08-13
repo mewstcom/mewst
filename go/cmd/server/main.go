@@ -17,8 +17,11 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/database"
 	"github.com/mewstcom/mewst/go/internal/dispatcher"
+	"github.com/mewstcom/mewst/go/internal/email"
+	"github.com/mewstcom/mewst/go/internal/exportfile"
 	"github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/handler/export"
 	"github.com/mewstcom/mewst/go/internal/handler/link"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
@@ -36,6 +39,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 	mewstsentry "github.com/mewstcom/mewst/go/internal/sentry"
 	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/storage"
+	"github.com/mewstcom/mewst/go/internal/templates"
 	"github.com/mewstcom/mewst/go/internal/turnstile"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 	"github.com/mewstcom/mewst/go/internal/validator"
@@ -106,6 +111,10 @@ func main() {
 	oauthApplicationRepo := repository.NewOauthApplicationRepository(queries)
 	linkRepo := repository.NewLinkRepository(queries)
 	postLinkRepo := repository.NewPostLinkRepository(queries)
+	exportRepo := repository.NewExportRepository(queries)
+	exportCompletionNotificationRepo := repository.NewExportCompletionNotificationRepository(queries)
+	exportProfileDeletionGuardRepo := repository.NewExportProfileDeletionGuardRepository(db)
+	exportPostRepo := repository.NewExportPostRepository(queries)
 
 	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
@@ -132,8 +141,38 @@ func main() {
 	fanoutPostUC := usecase.NewFanoutPostUsecase(postRepo, followRepo, jobDispatcher)
 	addPostToTimelineUC := usecase.NewAddPostToTimelineUsecase(profileRepo, postRepo, homeTimelinePostRepo)
 
+	// The mail sender is built here rather than inside worker.NewClient because
+	// the export completion mail is sent by a UseCase that reads the notification
+	// outbox, which puts it among the repository-dependent UseCases built above.
+	//
+	// [Ja] メール sender を worker.NewClient 内ではなくここで構築する。エクスポート
+	// 完了メールを送るのは通知 outbox を読む UseCase であり、上で構築している
+	// repository 依存の UseCase 群に属するため。
+	emailSender := newEmailSender(cfg)
+	// Resolve once whether this deployment can run exports, and give the same
+	// value to everything that depends on it: the Worker registration below and
+	// the export page further down. One expression means the page cannot offer
+	// an action whose Worker was never registered.
+	//
+	// [Ja] このデプロイがエクスポートを実行できるかを一度だけ解決し、それに依存する
+	// すべて (下の Worker 登録と、後ろのエクスポート画面) へ同じ値を渡す。式が 1 つ
+	// であれば、Worker が登録されていない操作を画面が出すことはあり得ない。
+	exportStorageReady := cfg.S3Readiness() == config.S3ReadinessReady
+	exportUCs := newExportUsecases(
+		cfg,
+		exportStorageReady,
+		emailSender,
+		exportRepo,
+		exportCompletionNotificationRepo,
+		exportProfileDeletionGuardRepo,
+		exportPostRepo,
+		actorRepo,
+		userRepo,
+		jobDispatcher,
+	)
+
 	// Workerの初期化
-	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), cfg, fanoutPostUC, addPostToTimelineUC)
+	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), emailSender, fanoutPostUC, addPostToTimelineUC, exportUCs)
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
 		os.Exit(1)
@@ -189,6 +228,14 @@ func main() {
 	// タイムアウトは取得 1 回ごと (リダイレクトの各ホップ) に適用され、遅い外部
 	// サイトがリクエストハンドラーを占有し続けないようにする。
 	fetchLinkMetadataUC := usecase.NewFetchLinkMetadataUsecase(linkDataFetcherValidator, linkRepo, &http.Client{Timeout: 10 * time.Second}, true)
+	// The export page is given the same readiness the export Workers are gated
+	// on, so a deployment without MEWST_S3_* tells the reader the feature is
+	// unavailable instead of offering actions that cannot complete.
+	//
+	// [Ja] エクスポート画面にはエクスポート系 Worker の登録と同じ readiness を渡す。
+	// MEWST_S3_* が無いデプロイでは、完了し得ない操作を出す代わりに、機能が利用
+	// できないことを読み手へ伝える。
+	getExportShowUC := usecase.NewGetExportShowUsecase(userProfileRepo, exportRepo, exportStorageReady)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -205,6 +252,7 @@ func main() {
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
 	settingHandler := setting.NewHandler(cfg)
+	exportHandler := export.NewHandler(cfg, getExportShowUC)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -320,6 +368,7 @@ func main() {
 	// ミドルウェア配下で動くため、ページ読み込み時にトークン Cookie が発行され、
 	// ログアウトフォームには一致するトークンが埋め込まれる。
 	r.Group(func(r chi.Router) {
+		r.Use(middleware.PrivateCache)
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
@@ -366,6 +415,7 @@ func main() {
 	// ルートを直接登録する。GET /links/new はフラグメントが POST /links フォーム用の
 	// CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
 	r.Group(func(r chi.Router) {
+		r.Use(middleware.PrivateCache)
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
@@ -376,18 +426,22 @@ func main() {
 		r.Post("/links", linkHandler.Create)
 	})
 
-	// Settings menu (authenticated users only). The CSRF middleware makes its
-	// token available to the sign-out form, while RequireAuth provides the
-	// current profile used by the navbar.
+	// Settings pages (authenticated users only). The CSRF middleware makes its
+	// token available to the sign-out and export forms, while RequireAuth
+	// provides the current user and profile used by the navbar and by the
+	// export page's authorization.
 	//
-	// [Ja] 設定メニュー (認証済みユーザーのみ)。CSRF ミドルウェアはログアウト
-	// フォームへトークンを渡し、RequireAuth は navbar 用の現在プロフィールを渡す。
+	// [Ja] 設定系ページ (認証済みユーザーのみ)。CSRF ミドルウェアはログアウトと
+	// エクスポートのフォームへトークンを渡し、RequireAuth は navbar とエクスポート
+	// 画面の認可が使う現在のユーザーとプロフィールを渡す。
 	r.Group(func(r chi.Router) {
+		r.Use(middleware.PrivateCache)
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireAuth)
 		r.Use(sentryUserContextMW.Middleware)
 
 		r.Get("/settings", settingHandler.Index)
+		r.Get("/settings/export", exportHandler.Show)
 	})
 
 	// サーバー起動
@@ -435,4 +489,106 @@ func main() {
 	}
 
 	slog.Info("サーバーが正常に停止しました")
+}
+
+// newEmailSender returns the sender that delivers the app's mail, or the one
+// that discards it when the provider is not configured. Every mail kind goes
+// through the same instance, so whether a deployment delivers mail at all is
+// decided once.
+//
+// [Ja] newEmailSender はアプリのメールを配信する sender を返す。プロバイダーが未設定の
+// 場合はメールを破棄する sender を返す。すべての種類のメールが同じインスタンスを通るため、
+// そのデプロイがメールを配信するかどうかの判断は 1 度だけ行われる。
+func newEmailSender(cfg *config.Config) email.Sender {
+	if cfg.ResendAPIKey == "" || cfg.EmailFrom == "" {
+		slog.Warn("Resend APIキーまたは送信元メールアドレスが設定されていないため、メール送信は無効です")
+		return email.NewDiscardSender()
+	}
+
+	slog.Info("Resend クライアントを初期化しました")
+	return email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
+}
+
+// newExportUsecases builds the export UseCases the Worker runs, or returns the
+// zero value when storageReady is false. The caller resolves that flag from
+// cfg.S3Readiness once, so the Workers registered here and the export page are
+// gated on the same value rather than on two expressions that can drift apart.
+// The zero value keeps the feature flag's off state deployable without any
+// MEWST_S3_* value: no export Worker is registered, no export periodic job is
+// scheduled, and no export work runs. A partial configuration never reaches
+// here, because config.Load rejects it at startup.
+//
+// They are built together even though reconciliation is the one that never
+// reaches the object storage. Without it no export row can be created at all,
+// so reconciling exports would be recovering work that cannot exist.
+//
+// [Ja] newExportUsecases は Worker が実行するエクスポート系 UseCase を構築する。
+// storageReady が false の場合はゼロ値を返す。このフラグは呼び出し側が
+// cfg.S3Readiness から一度だけ解決するため、ここで登録する Worker とエクスポート
+// 画面は、乖離しうる 2 つの式ではなく同じ値でゲートされる。ゼロ値を返すことで、
+// MEWST_S3_* を 1 つも設定しないままフィーチャーフラグ OFF の状態をデプロイできる
+// (エクスポート系 Worker も定期ジョブも登録されず、エクスポートの処理は動作しない)。
+// 一部だけ設定された状態は config.Load が起動時に拒否するため、ここには到達しない。
+//
+// オブジェクトストレージに触れないのはリコンシリエーションだけだが、これらはまとめて
+// 構築する。ストレージが無ければエクスポート行自体を作成できないため、
+// リコンシリエーションは存在し得ない処理を回復することになるからである。
+func newExportUsecases(
+	cfg *config.Config,
+	storageReady bool,
+	emailSender email.Sender,
+	exportRepo *repository.ExportRepository,
+	exportCompletionNotificationRepo *repository.ExportCompletionNotificationRepository,
+	exportProfileDeletionGuard usecase.ExportProfileDeletionGuard,
+	exportPostRepo *repository.ExportPostRepository,
+	actorRepo *repository.ActorRepository,
+	userRepo *repository.UserRepository,
+	jobDispatcher *dispatcher.Dispatcher,
+) worker.ExportUsecases {
+	if !storageReady {
+		return worker.ExportUsecases{}
+	}
+
+	exportStorage := storage.NewS3ExportStorage(storage.S3Config{
+		BucketName:      cfg.S3BucketName,
+		Endpoint:        cfg.S3Endpoint,
+		AccessKeyID:     cfg.S3AccessKeyID,
+		SecretAccessKey: cfg.S3SecretAccessKey,
+		Region:          cfg.S3Region,
+	})
+
+	return worker.ExportUsecases{
+		Generate: usecase.NewGenerateExportUsecase(
+			exportRepo,
+			exportPostRepo,
+			actorRepo,
+			userRepo,
+			exportProfileDeletionGuard,
+			exportfile.NewBuilder(),
+			exportStorage,
+			jobDispatcher,
+		),
+		CleanupOld: usecase.NewCleanupOldExportsUsecase(
+			exportRepo,
+			exportStorage,
+		),
+		SendCompletedEmail: usecase.NewSendExportCompletedEmailUsecase(
+			exportCompletionNotificationRepo,
+			exportProfileDeletionGuard,
+			email.NewExportCompletedSender(emailSender),
+			cfg.AppURL()+string(templates.SettingExportPath()),
+		),
+		Reconcile: usecase.NewReconcileExportsUsecase(
+			exportRepo,
+			exportCompletionNotificationRepo,
+			jobDispatcher,
+			usecase.DefaultExportRecoveryLimits(),
+		),
+		CleanupOrphanObjects: usecase.NewCleanupOrphanExportObjectsUsecase(
+			exportRepo,
+			exportStorage,
+			jobDispatcher,
+			usecase.DefaultExportOrphanSweepLimits(),
+		),
+	}
 }

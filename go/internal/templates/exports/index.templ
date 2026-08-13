@@ -1,0 +1,71 @@
+package exports
+
+import "time"
+
+import "github.com/mewstcom/mewst/go/internal/templates"
+
+// IndexData is the table of contents of an archive.
+//
+// [Ja] IndexData はアーカイブの目次。
+type IndexData struct {
+	// Months lists every month file of the archive, oldest first.
+	//
+	// [Ja] Months はアーカイブの月ごとのファイルを古い順に列挙する。
+	Months []IndexMonth
+}
+
+// IndexMonth is one month file linked from the table of contents.
+//
+// [Ja] IndexMonth は目次からリンクする月のファイル 1 つ。
+type IndexMonth struct {
+	// EntryName is the file's path inside the archive, for example
+	// posts/2026-07.html.
+	//
+	// [Ja] EntryName はアーカイブ内でのそのファイルのパス (例:
+	// posts/2026-07.html)。
+	EntryName string
+
+	// MonthStart names the month the file holds. It is a calendar label rather
+	// than an instant, so it is read as written.
+	//
+	// [Ja] MonthStart はそのファイルが持つ月を指す。時点ではなく暦月のラベルの
+	// ため、書かれたとおりに読む。
+	MonthStart time.Time
+
+	// PostCount is how many posts the file holds.
+	//
+	// [Ja] PostCount はそのファイルが持つ投稿の件数。
+	PostCount int64
+}
+
+// IndexMain renders the content of index.html: a heading and one link per
+// month with its post count. The archive of a profile with no posts still gets
+// an index, so an empty table of contents says so instead of showing an empty
+// list.
+//
+// [Ja] IndexMain は index.html の内容 (見出しと、月ごとのリンクおよびその投稿
+// 件数) を描画する。投稿が 1 件も無いプロフィールのアーカイブにも index は
+// 含まれるため、目次が空のときは空のリストではなくその旨を示す。
+templ IndexMain(data IndexData) {
+	<main>
+		<h1>{ templates.T(ctx, "export_archive_index_heading") }</h1>
+		if len(data.Months) == 0 {
+			<p>{ templates.T(ctx, "export_archive_index_empty") }</p>
+		} else {
+			<p>{ templates.T(ctx, "export_archive_index_description") }</p>
+			<ul>
+				for _, month := range data.Months {
+					<li>
+						// The link text names the month it opens, so it still says where
+						// it goes when it is read on its own.
+						//
+						// [Ja] リンクテキストは開く月を示す。リンクだけを読んでも行き先が
+						// 分かるようにするため。
+						<a href={ month.EntryName }>{ monthLinkText(ctx, month.MonthStart) }</a>
+						<span class="post-count">{ postCountText(ctx, month.PostCount) }</span>
+					</li>
+				}
+			</ul>
+		}
+	</main>
+}

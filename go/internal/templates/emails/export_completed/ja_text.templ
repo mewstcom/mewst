@@ -1,0 +1,16 @@
+package export_completed
+
+// JaText is the Japanese export completion notification (plain text).
+//
+// The body goes through templ.Raw: this is the text/plain part, where templ's
+// default expression escaping has no HTML context to protect and would turn an
+// ampersand in the URL into &amp; in the delivered mail.
+//
+// [Ja] JaText は日本語版のエクスポート完了通知 (テキスト形式) です。
+//
+// 本文は templ.Raw を通す。ここは text/plain パートであり、templ の既定の式
+// エスケープには守るべき HTML 文脈が無く、URL 中のアンパサンドを配信されるメール
+// では &amp; にしてしまうため。
+templ JaText(exportURL string) {
+	@templ.Raw("ポストのエクスポートが完了しました。\n\n下記のページからダウンロードできます。\n\n" + exportURL + "\n\nダウンロードできるのは最新のエクスポート 1 件です。\n新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。\n\n-- \nMewst\nhttps://mewst.com\n")
+}

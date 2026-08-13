@@ -12,9 +12,6 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// ProfileOwnerTypeUser はプロフィールの所有者タイプ (ユーザー)
-const ProfileOwnerTypeUser = "User"
-
 // DefaultAvatarKind はデフォルトのアバター種別
 const DefaultAvatarKind = "default"
 
@@ -100,7 +97,7 @@ func (uc *CreateAccountUsecase) createAccount(ctx context.Context, input CreateA
 	actorRepo := uc.actorRepo.WithTx(tx)
 
 	profile, err := profileRepo.Create(ctx, repository.CreateProfileInput{
-		OwnerType:     ProfileOwnerTypeUser,
+		OwnerType:     model.ProfileOwnerTypeUser,
 		Atname:        input.Atname,
 		Name:          "",
 		Description:   "",

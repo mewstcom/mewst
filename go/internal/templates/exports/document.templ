@@ -1,0 +1,83 @@
+package exports
+
+// documentHead renders the head every HTML file of the archive shares.
+//
+// The encoding declaration is the first child of head so that it stays well
+// within the first 1024 bytes a browser reads when it sniffs an encoding: the
+// files are opened from the local file system, where there is no Content-Type
+// header to fall back on.
+//
+// [Ja] documentHead はアーカイブの各 HTML ファイルで共通の head を描画する。
+//
+// 文字コード宣言は head の最初の子に置き、ブラウザが文字コードを判定するために
+// 読む先頭 1024 バイトに余裕をもって収まるようにする。これらのファイルはローカル
+// ファイルシステムから開かれ、頼れる Content-Type ヘッダーが無いため。
+templ documentHead(data DocumentData) {
+	<head>
+		<meta charset="utf-8"/>
+		// Do not add maximum-scale or user-scalable: taking pinch zoom away from
+		// someone reading their own archive on a phone breaks WCAG 1.4.4.
+		//
+		// [Ja] maximum-scale や user-scalable は加えない。スマートフォンで自分の
+		// アーカイブを読む人からピンチズームを奪うことは WCAG 1.4.4 に反する。
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		// The reader's dark preference reaches the browser before the stylesheet
+		// is parsed, so the page opens dark instead of flashing white first.
+		//
+		// [Ja] 読み手のダーク設定がスタイルシートの解析より前にブラウザへ届く
+		// ため、ページは白く光ってからではなく最初からダークで開く。
+		<meta name="color-scheme" content="light dark"/>
+		<meta name="mewst-export-format" content={ FormatVersion }/>
+		<title>{ data.Title }</title>
+		// The stylesheet is inlined because the archive is read offline from a
+		// file manager, where a linked stylesheet would not resolve. The layout
+		// uses no fixed width: the content is centred with a max-width in rem so
+		// that it fills a phone screen without horizontal scrolling and stays
+		// readable on a desktop. Colours follow the reader's light or dark
+		// preference. A post body is displayed with white-space: pre-wrap, so
+		// that the newlines it was written with are shown rather than collapsed.
+		//
+		// [Ja] アーカイブはファイルアプリからオフラインで読まれ、リンクした
+		// スタイルシートは解決できないため、スタイルシートはインラインにする。
+		// レイアウトは固定幅を持たない。rem 指定の max-width で中央寄せすることで、
+		// スマートフォンでは横スクロールを生じさせずに画面幅を使い、デスクトップ
+		// でも読みやすい幅に収まる。配色は読み手のライト / ダークの設定に従う。
+		// ポストの本文は white-space: pre-wrap で表示し、書かれたときの改行を
+		// 折り畳まずそのまま見せる。
+		<style>
+			:root { color-scheme: light dark; }
+			body {
+				margin: 0;
+				padding: 1.5rem 1rem 3rem;
+				font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+				line-height: 1.8;
+				color: #1c1c1e;
+				background-color: #ffffff;
+				overflow-wrap: anywhere;
+			}
+			main { margin: 0 auto; max-width: 40rem; }
+			h1 { margin: 0 0 1rem; font-size: 1.5rem; line-height: 1.4; }
+			ul { margin: 1.5rem 0 0; padding: 0; list-style: none; }
+			li {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0 1rem;
+				align-items: baseline;
+				justify-content: space-between;
+				border-top: 1px solid #d9d9de;
+			}
+			li a { display: inline-block; padding: 0.75rem 0; }
+			a { color: #0b57d0; }
+			article { padding: 1rem 0; border-top: 1px solid #d9d9de; }
+			.dt-published { display: block; }
+			.e-content { margin: 0.25rem 0 0; white-space: pre-wrap; }
+			.post-count, .dt-published { color: #4c4c51; font-size: 0.875rem; }
+			@media (prefers-color-scheme: dark) {
+				body { color: #f2f2f7; background-color: #1c1c1e; }
+				li, article { border-top-color: #48484a; }
+				a { color: #8ab4f8; }
+				.post-count, .dt-published { color: #b0b0b8; }
+			}
+		</style>
+	</head>
+}

@@ -10,7 +10,19 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// JaText は日本語版のメール確認 (テキスト形式) です
+// JaText is the Japanese email confirmation code notification (plain text).
+//
+// The body goes through templ.Raw so that the blank lines between paragraphs
+// survive: templ normalizes literal whitespace by HTML rules. Passing the
+// address through Raw is safe here because the text/plain part has no markup to
+// break out of; the HTML part still escapes it.
+//
+// [Ja] JaText は日本語版のメール確認コード通知 (テキスト形式) です。
+//
+// 段落間の空行を残すため、本文は templ.Raw を通す。templ はリテラルの空白を HTML
+// の規則で正規化するためである。text/plain パートにはメールアドレスが抜け出せる
+// マークアップが無いため、Raw に渡しても安全である (HTML パートでは引き続き
+// エスケープする)。
 func JaText(email, code string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -32,29 +44,7 @@ func JaText(email, code string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(email)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/email_confirmation/ja_text.templ`, Line: 5, Col: 8}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " さん、こんにちは。 確認用コードは下記になります。 ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(code)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/email_confirmation/ja_text.templ`, Line: 9, Col: 7}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " 確認用コードの有効期間は15分です。 もしこのメールに心当たりが無い場合は無視してください。 -- Mewst https://mewst.com")
+		templ_7745c5c3_Err = templ.Raw(email+" さん、こんにちは。\n\n確認用コードは下記になります。\n\n"+code+"\n\n確認用コードの有効期間は15分です。\n\nもしこのメールに心当たりが無い場合は無視してください。\n\n-- \nMewst\nhttps://mewst.com\n").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
