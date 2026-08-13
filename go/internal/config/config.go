@@ -57,7 +57,51 @@ type Config struct {
 	SentryEnvironment      string
 	SentryTracesSampleRate float64
 	SentryDebug            bool
+
+	// Object storage for exports (S3-compatible - Cloudflare R2). The bucket,
+	// endpoint, access key and secret must be set together; the region is optional.
+	//
+	// [Ja] エクスポート用オブジェクトストレージ (S3 互換 - Cloudflare R2)。
+	// バケット・エンドポイント・アクセスキー・シークレットは 4 項目セットで必須とし、
+	// リージョンは任意とする。
+	S3BucketName      string
+	S3Endpoint        string
+	S3AccessKeyID     string
+	S3SecretAccessKey string
+	S3Region          string
 }
+
+// S3Readiness represents the configuration state of the S3-compatible object
+// storage (Cloudflare R2) used by the export feature.
+//
+// [Ja] S3Readiness はエクスポート機能で使う S3 互換オブジェクトストレージ
+// (Cloudflare R2) の設定状態を表す。
+type S3Readiness string
+
+const (
+	// S3ReadinessDisabled means every MEWST_S3_* variable is unset: the server
+	// and worker boot with the export feature disabled. A flag-off deploy must
+	// not require the R2 configuration.
+	//
+	// [Ja] S3ReadinessDisabled は MEWST_S3_* がすべて未設定の状態。server / worker は
+	// エクスポート機能を無効化したまま起動できる。フラグ OFF のデプロイに R2 設定を
+	// 必須化しない。
+	S3ReadinessDisabled S3Readiness = "disabled"
+
+	// S3ReadinessReady means every required MEWST_S3_* variable is set and the
+	// export storage can be used.
+	//
+	// [Ja] S3ReadinessReady は必須の MEWST_S3_* がすべて設定され、エクスポート用
+	// ストレージを使用できる状態。
+	S3ReadinessReady S3Readiness = "ready"
+
+	// S3ReadinessInvalid means only part of MEWST_S3_* is set, which is a
+	// configuration mistake. Load fails so the process does not boot.
+	//
+	// [Ja] S3ReadinessInvalid は MEWST_S3_* が一部だけ設定された構成ミスの状態。
+	// Load がエラーを返すためプロセスは起動しない。
+	S3ReadinessInvalid S3Readiness = "invalid"
+)
 
 // Load は環境変数から設定を読み込みます
 func Load() (*Config, error) {
@@ -174,7 +218,89 @@ func Load() (*Config, error) {
 	cfg.SentryTracesSampleRate = parseSentryTracesSampleRate(os.Getenv("MEWST_SENTRY_TRACES_SAMPLE_RATE"))
 	cfg.SentryDebug = os.Getenv("MEWST_SENTRY_DEBUG") == "true"
 
+	// Object storage for exports (S3-compatible - Cloudflare R2). A partial
+	// MEWST_S3_* set is a configuration mistake: fail the boot here instead of
+	// letting it surface later as a broken export.
+	//
+	// [Ja] エクスポート用オブジェクトストレージ (S3 互換 - Cloudflare R2)。
+	// MEWST_S3_* の部分設定は構成ミスのため、後からエクスポートの故障として
+	// 表面化させず、ここで起動を失敗させる。
+	cfg.S3BucketName = os.Getenv("MEWST_S3_BUCKET_NAME")
+	cfg.S3Endpoint = os.Getenv("MEWST_S3_ENDPOINT")
+	cfg.S3AccessKeyID = os.Getenv("MEWST_S3_ACCESS_KEY_ID")
+	cfg.S3SecretAccessKey = os.Getenv("MEWST_S3_SECRET_ACCESS_KEY")
+	cfg.S3Region = os.Getenv("MEWST_S3_REGION")
+
+	switch cfg.S3Readiness() {
+	case S3ReadinessInvalid:
+		return nil, fmt.Errorf("MEWST_S3_* 環境変数が一部だけ設定されています (未設定の必須項目: %s)。必須 4 項目を設定するか、MEWST_S3_REGION を含む全項目を未設定にしてください", strings.Join(missingS3EnvVars(cfg), ", "))
+	case S3ReadinessReady:
+		if cfg.S3Region == "" {
+			cfg.S3Region = "auto"
+		}
+	}
+
 	return cfg, nil
+}
+
+// S3Readiness reports the export object storage configuration state. The
+// bucket, endpoint, access key and secret are required as a set. The region is
+// optional (it defaults to "auto"), but a region set on its own still counts as
+// a partial, invalid configuration.
+//
+// [Ja] S3Readiness はエクスポート用オブジェクトストレージの設定状態を返す。
+// バケット・エンドポイント・アクセスキー・シークレットは 4 項目セットで必須。
+// リージョンは任意 (既定 "auto") だが、リージョンだけが設定された状態も
+// 部分設定の構成ミス (invalid) として扱う。
+func (c *Config) S3Readiness() S3Readiness {
+	required := c.requiredS3Vars()
+	setCount := 0
+	for _, v := range required {
+		if v.value != "" {
+			setCount++
+		}
+	}
+
+	switch {
+	case setCount == len(required):
+		return S3ReadinessReady
+	case setCount == 0 && c.S3Region == "":
+		return S3ReadinessDisabled
+	default:
+		return S3ReadinessInvalid
+	}
+}
+
+// requiredS3Vars returns the required MEWST_S3_* variable names and their
+// current values as the single source for both the readiness check and the
+// partial-configuration error message.
+//
+// [Ja] requiredS3Vars は必須の MEWST_S3_* の変数名と現在値の組を返す。
+// readiness 判定と部分設定エラーメッセージの両方がこの一覧を参照する。
+func (c *Config) requiredS3Vars() []struct{ name, value string } {
+	return []struct{ name, value string }{
+		{"MEWST_S3_BUCKET_NAME", c.S3BucketName},
+		{"MEWST_S3_ENDPOINT", c.S3Endpoint},
+		{"MEWST_S3_ACCESS_KEY_ID", c.S3AccessKeyID},
+		{"MEWST_S3_SECRET_ACCESS_KEY", c.S3SecretAccessKey},
+	}
+}
+
+// missingS3EnvVars returns the names of the unset variables among the required
+// MEWST_S3_* set, for the partial-configuration error message.
+//
+// [Ja] missingS3EnvVars は必須の MEWST_S3_* のうち未設定の変数名を返す。
+// 部分設定エラーのメッセージに使う。
+func missingS3EnvVars(c *Config) []string {
+	vars := c.requiredS3Vars()
+
+	missing := make([]string, 0, len(vars))
+	for _, v := range vars {
+		if v.value == "" {
+			missing = append(missing, v.name)
+		}
+	}
+	return missing
 }
 
 // DatabaseDSN は PostgreSQL 接続文字列を返します
