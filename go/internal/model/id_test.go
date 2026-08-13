@@ -710,3 +710,109 @@ func TestUserProfileIDsAndUUIDsRoundTrip(t *testing.T) {
 		t.Errorf("round trip mismatch: got %v want %v", got, src)
 	}
 }
+
+func TestExportIDsToUUIDs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		ids  []model.ExportID
+	}{
+		{
+			name: "nil スライスは長さ 0 のスライスを返す",
+			ids:  nil,
+		},
+		{
+			name: "空スライスは長さ 0 のスライスを返す",
+			ids:  []model.ExportID{},
+		},
+		{
+			name: "単一要素を変換できる",
+			ids:  []model.ExportID{model.ExportID(uuid.New())},
+		},
+		{
+			name: "複数要素を順序を保って変換できる",
+			ids: []model.ExportID{
+				model.ExportID(uuid.New()),
+				model.ExportID(uuid.New()),
+				model.ExportID(uuid.New()),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := model.ExportIDsToUUIDs(tt.ids)
+
+			if len(got) != len(tt.ids) {
+				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+			}
+			for i, id := range tt.ids {
+				if got[i] != uuid.UUID(id) {
+					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+				}
+			}
+		})
+	}
+}
+
+func TestUUIDsToExportIDs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		us   []uuid.UUID
+	}{
+		{
+			name: "nil スライスは長さ 0 のスライスを返す",
+			us:   nil,
+		},
+		{
+			name: "空スライスは長さ 0 のスライスを返す",
+			us:   []uuid.UUID{},
+		},
+		{
+			name: "単一要素を変換できる",
+			us:   []uuid.UUID{uuid.New()},
+		},
+		{
+			name: "複数要素を順序を保って変換できる",
+			us:   []uuid.UUID{uuid.New(), uuid.New(), uuid.New()},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := model.UUIDsToExportIDs(tt.us)
+
+			if len(got) != len(tt.us) {
+				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+			}
+			for i, u := range tt.us {
+				if got[i] != model.ExportID(u) {
+					t.Errorf("got[%d] = %v, want %v", i, got[i], model.ExportID(u))
+				}
+			}
+		})
+	}
+}
+
+func TestExportIDsAndUUIDsRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	src := []model.ExportID{
+		model.ExportID(uuid.New()),
+		model.ExportID(uuid.New()),
+		model.ExportID(uuid.New()),
+	}
+
+	got := model.UUIDsToExportIDs(model.ExportIDsToUUIDs(src))
+
+	if !reflect.DeepEqual(src, got) {
+		t.Errorf("round trip mismatch: got %v want %v", got, src)
+	}
+}

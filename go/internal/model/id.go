@@ -209,3 +209,35 @@ type PostLinkID uuid.UUID
 // String returns the string representation of the PostLinkID.
 // [Ja] String は PostLinkID の文字列表現を返す。
 func (id PostLinkID) String() string { return uuid.UUID(id).String() }
+
+// ExportID is the ID type for an export.
+//
+// [Ja] ExportID はエクスポートの ID 型。
+type ExportID uuid.UUID
+
+// String returns the string representation of the ExportID.
+//
+// [Ja] String は ExportID の文字列表現を返す。
+func (id ExportID) String() string { return uuid.UUID(id).String() }
+
+// ExportIDsToUUIDs converts a slice of ExportID to a slice of uuid.UUID.
+//
+// [Ja] ExportIDsToUUIDs は ExportID スライスを uuid.UUID スライスに変換する。
+func ExportIDsToUUIDs(ids []ExportID) []uuid.UUID {
+	us := make([]uuid.UUID, len(ids))
+	for i, id := range ids {
+		us[i] = uuid.UUID(id)
+	}
+	return us
+}
+
+// UUIDsToExportIDs converts a slice of uuid.UUID to a slice of ExportID.
+//
+// [Ja] UUIDsToExportIDs は uuid.UUID スライスを ExportID スライスに変換する。
+func UUIDsToExportIDs(us []uuid.UUID) []ExportID {
+	ids := make([]ExportID, len(us))
+	for i, u := range us {
+		ids[i] = ExportID(u)
+	}
+	return ids
+}
