@@ -20,7 +20,7 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
     "basecoat-css": "^1.0.1",
-    "concurrently": "^10.0.3",
+    "concurrently": "^10.0.4",
     "esbuild": "^0.28.2",
     "happy-dom": "^20.11.2",
     "tailwindcss": "^4.3.3",
