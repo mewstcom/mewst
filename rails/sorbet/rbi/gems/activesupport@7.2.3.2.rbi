@@ -19264,6 +19264,8 @@ end
 
 # pkg:gem/activesupport#lib/active_support/core_ext/object/json.rb:224
 class URI::Generic
+  include ::URI::RFC2396_REGEXP
+
   # pkg:gem/activesupport#lib/active_support/core_ext/object/json.rb:225
   def as_json(options = T.unsafe(nil)); end
 end
