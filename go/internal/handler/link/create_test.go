@@ -187,6 +187,8 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h := newLinkHandler(t, tx)
 
+	testutil.WaitForRateLimitWindow(t)
+
 	// Exhaust the per-profile limit (10 requests/min). An empty target URL is
 	// enough: the rate limit is checked before validation, so even invalid
 	// requests count toward it without hitting any external server.
