@@ -236,7 +236,7 @@ GEM
       actionpack (>= 6.0.0, < 8.1)
     mini_mime (1.1.5)
     minitest (5.27.0)
-    msgpack (1.7.2)
+    msgpack (1.8.4)
     multi_xml (0.7.1)
       bigdecimal (~> 3.1)
     net-imap (0.6.4.1)
