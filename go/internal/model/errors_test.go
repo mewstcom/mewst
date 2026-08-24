@@ -317,6 +317,9 @@ func TestAppErrorCode_Values(t *testing.T) {
 	if model.AppErrCodeInternal == model.AppErrCodeConflict {
 		t.Error("AppErrCodeInternal should differ from AppErrCodeConflict")
 	}
+	if model.AppErrCodeServiceUnavailable == model.AppErrCodeInternal {
+		t.Error("AppErrCodeServiceUnavailable should differ from AppErrCodeInternal")
+	}
 }
 
 func TestAsValidationError(t *testing.T) {
