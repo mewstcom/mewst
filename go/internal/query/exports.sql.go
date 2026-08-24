@@ -123,6 +123,46 @@ func (q *Queries) DeleteExport(ctx context.Context, id uuid.UUID) (int64, error)
 	return result.RowsAffected()
 }
 
+const deleteFailedExportsByProfileID = `-- name: DeleteFailedExportsByProfileID :execrows
+DELETE FROM exports
+WHERE profile_id = $1
+  AND status = 'failed'
+`
+
+// Delete the profile's failed exports. Create calls this in the same
+// transaction that inserts the new queued export, so a profile keeps at most
+// its latest success plus one export that is either in progress or failed.
+//
+// Only failed rows are removed. A queued or started row is the profile's
+// active export and is protected by the partial unique index, and a succeeded
+// row is the archive that stays downloadable until the next success replaces
+// it.
+//
+// A failed export holds no object_key (the state fields check enforces it), and
+// the terminal transition already released any object it uploaded, so removing
+// the row leaves nothing behind: an object that outlived its transition is not
+// retained by a failed row and is collected by the orphan sweep.
+//
+// [Ja] プロフィールの failed なエクスポートを削除する。Create は新しい queued の
+// エクスポートを挿入するのと同じ transaction でこれを呼ぶため、プロフィールが
+// 保持するのは最新の成功 1 件と、進行中または failed のエクスポート 1 件までになる。
+//
+// 削除するのは failed の行だけである。queued / started の行はプロフィールの実行中の
+// エクスポートで部分ユニークインデックスが守っており、succeeded の行は次の成功が
+// 置き換えるまでダウンロードできるアーカイブであるため。
+//
+// failed のエクスポートは object_key を持たず (状態フィールドの CHECK 制約が保証)、
+// 終端遷移がアップロード済みのオブジェクトを既に手放しているため、行を消しても
+// 取り残しは生じない。遷移より後まで残ったオブジェクトは failed の行に保持されて
+// おらず、孤児回収が回収する。
+func (q *Queries) DeleteFailedExportsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteFailedExportsByProfileID, profileID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getExportByID = `-- name: GetExportByID :one
 SELECT id, profile_id, actor_id, status, object_key, attempt_count, started_at, finished_at, completion_notified_at, created_at, updated_at FROM exports
 WHERE id = $1

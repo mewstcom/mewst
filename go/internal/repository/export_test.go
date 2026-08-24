@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"errors"
 	"slices"
 	"strings"
 	"testing"
@@ -80,17 +81,21 @@ func TestExportRepository_Create(t *testing.T) {
 
 		// The partial unique index on active statuses guarantees only one wins
 		// even under real concurrency; it is exercised here by a second create in
-		// the same session, which the index rejects immediately.
+		// the same session, which the index rejects immediately. The rejection is
+		// reported as ErrActiveExportExists so that callers recognize it without
+		// knowing the driver's error shape or the index name.
 		//
 		// [Ja] active な status に対する部分ユニークインデックスは、実際の並行実行
 		// でも 1 件だけが成功することを保証する。ここでは同一セッションでの 2 件目の
-		// Create で検証し、インデックスが即座に拒否する。
+		// Create で検証し、インデックスが即座に拒否する。拒否は
+		// ErrActiveExportExists として報告され、呼び出し側はドライバーのエラーの形も
+		// インデックス名も知らずにこれを識別できる。
 		_, err := repo.Create(ctx, repository.CreateExportInput{ProfileID: profileID, ActorID: actorID})
 		if err == nil {
 			t.Fatal("2 件目の Create() は失敗するべきだが nil が返った")
 		}
-		if !strings.Contains(err.Error(), "index_exports_on_profile_id_where_active") {
-			t.Errorf("index_exports_on_profile_id_where_active 違反を期待したが: %v", err)
+		if !errors.Is(err, repository.ErrActiveExportExists) {
+			t.Errorf("ErrActiveExportExists を期待したが: %v", err)
 		}
 	})
 
@@ -1605,6 +1610,138 @@ func TestExportRepository_Delete(t *testing.T) {
 		}
 		if deleted {
 			t.Error("Delete() on a missing row = true, want false")
+		}
+	})
+}
+
+// TestExportRepository_DeleteFailedByProfileID pins what Create's transaction
+// clears out: the profile's own failed exports and nothing else.
+//
+// [Ja] TestExportRepository_DeleteFailedByProfileID は、Create の transaction が
+// 何を片付けるかを固定する。対象はそのプロフィール自身の failed なエクスポートだけ
+// である。
+func TestExportRepository_DeleteFailedByProfileID(t *testing.T) {
+	t.Parallel()
+
+	base := time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC)
+
+	t.Run("failed の行だけを削除する", func(t *testing.T) {
+		_, tx := testutil.SetupTx(t)
+		ctx := context.Background()
+		repo := repository.NewExportRepository(testutil.QueriesWithTx(tx))
+		owner := testutil.NewProfileOwner(t, tx)
+		profileID, actorID := owner.ProfileID, owner.ActorID
+
+		failedID := buildExport(t, tx, profileID, actorID, model.ExportStatusFailed, base)
+		succeededID := buildExport(t, tx, profileID, actorID, model.ExportStatusSucceeded, base.Add(time.Hour))
+
+		deleted, err := repo.DeleteFailedByProfileID(ctx, profileID)
+		if err != nil {
+			t.Fatalf("DeleteFailedByProfileID() error = %v", err)
+		}
+		if deleted != 1 {
+			t.Errorf("DeleteFailedByProfileID() = %d, want 1", deleted)
+		}
+
+		if got, err := repo.FindByID(ctx, failedID); err != nil {
+			t.Fatalf("FindByID() error = %v", err)
+		} else if got != nil {
+			t.Errorf("failed のエクスポートが残っている: %v", got.ID)
+		}
+		if got, err := repo.FindByID(ctx, succeededID); err != nil {
+			t.Fatalf("FindByID() error = %v", err)
+		} else if got == nil {
+			t.Error("succeeded のエクスポートが削除されている")
+		}
+	})
+
+	// The profile's in-flight export is protected by the active partial unique
+	// index, and deleting it here would let a second export start alongside it.
+	//
+	// [Ja] プロフィールの実行中エクスポートは active な部分ユニークインデックスが
+	// 守っており、ここで消すと 2 件目のエクスポートを並行して開始できてしまう。
+	for _, status := range []model.ExportStatus{model.ExportStatusQueued, model.ExportStatusStarted} {
+		t.Run(status.String()+" の行は削除しない", func(t *testing.T) {
+			_, tx := testutil.SetupTx(t)
+			ctx := context.Background()
+			repo := repository.NewExportRepository(testutil.QueriesWithTx(tx))
+			owner := testutil.NewProfileOwner(t, tx)
+			profileID, actorID := owner.ProfileID, owner.ActorID
+
+			id := buildExport(t, tx, profileID, actorID, status, base)
+
+			deleted, err := repo.DeleteFailedByProfileID(ctx, profileID)
+			if err != nil {
+				t.Fatalf("DeleteFailedByProfileID() error = %v", err)
+			}
+			if deleted != 0 {
+				t.Errorf("DeleteFailedByProfileID() = %d, want 0", deleted)
+			}
+
+			if got, err := repo.FindByID(ctx, id); err != nil {
+				t.Fatalf("FindByID() error = %v", err)
+			} else if got == nil {
+				t.Errorf("%s のエクスポートが削除されている", status)
+			}
+		})
+	}
+
+	t.Run("他プロフィールの failed は削除しない", func(t *testing.T) {
+		_, tx := testutil.SetupTx(t)
+		ctx := context.Background()
+		repo := repository.NewExportRepository(testutil.QueriesWithTx(tx))
+		target := testutil.NewProfileOwner(t, tx)
+		other := testutil.NewProfileOwner(t, tx)
+
+		otherFailedID := buildExport(t, tx, other.ProfileID, other.ActorID, model.ExportStatusFailed, base)
+
+		deleted, err := repo.DeleteFailedByProfileID(ctx, target.ProfileID)
+		if err != nil {
+			t.Fatalf("DeleteFailedByProfileID() error = %v", err)
+		}
+		if deleted != 0 {
+			t.Errorf("DeleteFailedByProfileID() = %d, want 0", deleted)
+		}
+
+		if got, err := repo.FindByID(ctx, otherFailedID); err != nil {
+			t.Fatalf("FindByID() error = %v", err)
+		} else if got == nil {
+			t.Error("他プロフィールの failed が削除されている")
+		}
+	})
+
+	// The snapshot of a failed export is pure dependent data, so the cascade on
+	// export_posts has to take it with the row rather than leave it orphaned.
+	//
+	// [Ja] failed なエクスポートの snapshot は純粋な従属データであり、
+	// export_posts の CASCADE は行と一緒にこれを消さなければならない。
+	t.Run("export_posts も CASCADE で消える", func(t *testing.T) {
+		_, tx := testutil.SetupTx(t)
+		ctx := context.Background()
+		repo := repository.NewExportRepository(testutil.QueriesWithTx(tx))
+		owner := testutil.NewProfileOwner(t, tx)
+
+		failedID := buildExport(t, tx, owner.ProfileID, owner.ActorID, model.ExportStatusFailed, base)
+		if _, err := tx.Exec(
+			"INSERT INTO export_posts (export_id, post_id, content, published_at) VALUES ($1, $2, $3, $4)",
+			uuid.UUID(failedID), uuid.New(), "hello", base,
+		); err != nil {
+			t.Fatalf("export_posts の作成に失敗: %v", err)
+		}
+
+		if _, err := repo.DeleteFailedByProfileID(ctx, owner.ProfileID); err != nil {
+			t.Fatalf("DeleteFailedByProfileID() error = %v", err)
+		}
+
+		var remaining int
+		if err := tx.QueryRow(
+			"SELECT COUNT(*) FROM export_posts WHERE export_id = $1",
+			uuid.UUID(failedID),
+		).Scan(&remaining); err != nil {
+			t.Fatalf("export_posts の件数取得に失敗: %v", err)
+		}
+		if remaining != 0 {
+			t.Errorf("export_posts が %d 件残っている, want 0", remaining)
 		}
 	})
 }
