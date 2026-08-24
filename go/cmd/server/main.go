@@ -22,6 +22,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/handler/account"
 	"github.com/mewstcom/mewst/go/internal/handler/email_confirmation"
 	"github.com/mewstcom/mewst/go/internal/handler/export"
+	"github.com/mewstcom/mewst/go/internal/handler/export_download"
 	"github.com/mewstcom/mewst/go/internal/handler/link"
 	"github.com/mewstcom/mewst/go/internal/handler/manifest"
 	"github.com/mewstcom/mewst/go/internal/handler/password"
@@ -158,9 +159,11 @@ func main() {
 	// すべて (下の Worker 登録と、後ろのエクスポート画面) へ同じ値を渡す。式が 1 つ
 	// であれば、Worker が登録されていない操作を画面が出すことはあり得ない。
 	exportStorageReady := cfg.S3Readiness() == config.S3ReadinessReady
+	exportStorage := newExportStorage(cfg, exportStorageReady)
 	exportUCs := newExportUsecases(
 		cfg,
 		exportStorageReady,
+		exportStorage,
 		emailSender,
 		exportRepo,
 		exportCompletionNotificationRepo,
@@ -236,6 +239,29 @@ func main() {
 	// MEWST_S3_* が無いデプロイでは、完了し得ない操作を出す代わりに、機能が利用
 	// できないことを読み手へ伝える。
 	getExportShowUC := usecase.NewGetExportShowUsecase(userProfileRepo, exportRepo, exportStorageReady)
+	// The settings menu reads the export feature flag so its export entry
+	// appears only for the actors the reverse proxy also routes to the Go
+	// export page.
+	//
+	// [Ja] 設定メニューはエクスポートのフィーチャーフラグを読み、リバースプロキシが
+	// Go 版のエクスポート画面へ振り分ける actor にだけエクスポート項目を出す。
+	getSettingIndexUC := usecase.NewGetSettingIndexUsecase(featureFlagRepo)
+	// Starting an export is gated on the same readiness, so a deployment
+	// without MEWST_S3_* refuses the request instead of persisting a queued
+	// export no Worker is registered to generate.
+	//
+	// [Ja] エクスポートの開始も同じ readiness でゲートする。MEWST_S3_* が無い
+	// デプロイでは、生成する Worker が登録されていない queued のエクスポートを
+	// 永続化する代わりに、リクエストを拒否する。
+	createExportUC := usecase.NewCreateExportUsecase(db, userProfileRepo, exportRepo, jobDispatcher, exportStorageReady)
+	// Downloading is gated on the same readiness as the page and the start, so a
+	// deployment without MEWST_S3_* refuses the request instead of reaching an
+	// object storage it does not have.
+	//
+	// [Ja] ダウンロードも画面・開始と同じ readiness でゲートする。MEWST_S3_* が無い
+	// デプロイでは、持っていないオブジェクトストレージへ到達する代わりに、リクエストを
+	// 拒否する。
+	getExportDownloadUC := usecase.NewGetExportDownloadUsecase(userProfileRepo, userRepo, exportRepo, exportStorage, exportStorageReady)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -251,8 +277,9 @@ func main() {
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
-	settingHandler := setting.NewHandler(cfg)
-	exportHandler := export.NewHandler(cfg, getExportShowUC)
+	settingHandler := setting.NewHandler(cfg, getSettingIndexUC)
+	exportHandler := export.NewHandler(cfg, flashMgr, getExportShowUC, createExportUC)
+	exportDownloadHandler := export_download.NewHandler(getExportDownloadUC)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -442,6 +469,8 @@ func main() {
 
 		r.Get("/settings", settingHandler.Index)
 		r.Get("/settings/export", exportHandler.Show)
+		r.Post("/settings/export", exportHandler.Create)
+		r.Get("/settings/export/download", exportDownloadHandler.Show)
 	})
 
 	// サーバー起動
@@ -509,10 +538,49 @@ func newEmailSender(cfg *config.Config) email.Sender {
 	return email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
 }
 
+// newExportStorage returns the object storage the export feature reads and
+// writes, or nil when storageReady is false. The caller resolves that flag from
+// cfg.S3Readiness once and passes the same storage to everything that reaches
+// R2, so a deployment cannot end up with the Workers and the download route
+// addressing different buckets.
+//
+// nil is safe for the readiness that produced it: every UseCase holding this
+// storage is given the same flag and returns before the storage is reached
+// when it is false. Returning the interface type rather than the concrete one
+// keeps that nil a nil interface, so an accidental call fails loudly instead
+// of dialling a client with no credentials.
+//
+// [Ja] newExportStorage はエクスポート機能が読み書きするオブジェクトストレージを
+// 返す。storageReady が false の場合は nil を返す。このフラグは呼び出し側が
+// cfg.S3Readiness から一度だけ解決し、R2 へ到達するすべてへ同じストレージを渡す
+// ため、Worker とダウンロードのルートが別々のバケットを相手にするデプロイは
+// 生じ得ない。
+//
+// nil は、それを生んだ readiness に対して安全である。このストレージを保持する
+// UseCase はいずれも同じフラグを受け取り、false のときはストレージへ到達する前に
+// 返るためである。具象型ではなく interface 型で返すことでこの nil を nil interface に
+// 保ち、誤って呼び出した場合は資格情報の無いクライアントで通信するのではなく、
+// その場で失敗する。
+func newExportStorage(cfg *config.Config, storageReady bool) usecase.ExportObjectStorage {
+	if !storageReady {
+		return nil
+	}
+
+	return storage.NewS3ExportStorage(storage.S3Config{
+		BucketName:      cfg.S3BucketName,
+		Endpoint:        cfg.S3Endpoint,
+		AccessKeyID:     cfg.S3AccessKeyID,
+		SecretAccessKey: cfg.S3SecretAccessKey,
+		Region:          cfg.S3Region,
+	})
+}
+
 // newExportUsecases builds the export UseCases the Worker runs, or returns the
 // zero value when storageReady is false. The caller resolves that flag from
 // cfg.S3Readiness once, so the Workers registered here and the export page are
 // gated on the same value rather than on two expressions that can drift apart.
+// exportStorage is the storage newExportStorage built from that same flag, so
+// it is non-nil exactly when these UseCases are built.
 // The zero value keeps the feature flag's off state deployable without any
 // MEWST_S3_* value: no export Worker is registered, no export periodic job is
 // scheduled, and no export work runs. A partial configuration never reaches
@@ -525,7 +593,9 @@ func newEmailSender(cfg *config.Config) email.Sender {
 // [Ja] newExportUsecases は Worker が実行するエクスポート系 UseCase を構築する。
 // storageReady が false の場合はゼロ値を返す。このフラグは呼び出し側が
 // cfg.S3Readiness から一度だけ解決するため、ここで登録する Worker とエクスポート
-// 画面は、乖離しうる 2 つの式ではなく同じ値でゲートされる。ゼロ値を返すことで、
+// 画面は、乖離しうる 2 つの式ではなく同じ値でゲートされる。exportStorage は
+// newExportStorage が同じフラグから構築したストレージであり、これらの UseCase を
+// 構築するときにちょうど非 nil になる。ゼロ値を返すことで、
 // MEWST_S3_* を 1 つも設定しないままフィーチャーフラグ OFF の状態をデプロイできる
 // (エクスポート系 Worker も定期ジョブも登録されず、エクスポートの処理は動作しない)。
 // 一部だけ設定された状態は config.Load が起動時に拒否するため、ここには到達しない。
@@ -536,6 +606,7 @@ func newEmailSender(cfg *config.Config) email.Sender {
 func newExportUsecases(
 	cfg *config.Config,
 	storageReady bool,
+	exportStorage usecase.ExportObjectStorage,
 	emailSender email.Sender,
 	exportRepo *repository.ExportRepository,
 	exportCompletionNotificationRepo *repository.ExportCompletionNotificationRepository,
@@ -548,14 +619,6 @@ func newExportUsecases(
 	if !storageReady {
 		return worker.ExportUsecases{}
 	}
-
-	exportStorage := storage.NewS3ExportStorage(storage.S3Config{
-		BucketName:      cfg.S3BucketName,
-		Endpoint:        cfg.S3Endpoint,
-		AccessKeyID:     cfg.S3AccessKeyID,
-		SecretAccessKey: cfg.S3SecretAccessKey,
-		Region:          cfg.S3Region,
-	})
 
 	return worker.ExportUsecases{
 		Generate: usecase.NewGenerateExportUsecase(

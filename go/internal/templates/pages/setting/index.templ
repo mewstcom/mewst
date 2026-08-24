@@ -2,17 +2,20 @@ package setting
 
 import "github.com/mewstcom/mewst/go/internal/templates"
 
-// IndexPageData holds the data for the settings menu page.
+// IndexPageData holds the data for the settings menu page. ExportEnabled comes
+// from the export feature flag and decides whether the export entry is listed.
 //
-// [Ja] IndexPageData は設定メニューページのデータを保持する。
+// [Ja] IndexPageData は設定メニューページのデータを保持する。ExportEnabled は
+// エクスポートのフィーチャーフラグ由来で、エクスポート項目を一覧に載せるかを決める。
 type IndexPageData struct {
-	CSRFToken string
+	CSRFToken     string
+	ExportEnabled bool
 }
 
-// Index renders the settings menu with links to its three subpages and the
-// sign-out form.
+// Index renders the settings menu with links to its subpages and the sign-out
+// form.
 //
-// [Ja] Index は 3 つのサブページへのリンクとログアウトフォームを持つ設定メニューを描画する。
+// [Ja] Index はサブページへのリンクとログアウトフォームを持つ設定メニューを描画する。
 templ Index(data IndexPageData) {
 	<div class="mx-auto w-full max-w-2xl px-4 py-4">
 		<h1 class="text-2xl font-semibold antialiased">
@@ -38,6 +41,16 @@ templ Index(data IndexPageData) {
 					<li>
 						@settingMenuLink(templates.SettingEmailPath(), templates.T(ctx, "setting_index_email_link"))
 					</li>
+					// Export is listed last: the entries above it act on the account
+					// itself, while export acts on the posts the account has written.
+					//
+					// [Ja] エクスポートは最後に置く。上の各項目がアカウント自体を扱うのに対し、
+					// エクスポートはアカウントが書いたポストを扱うためである。
+					if data.ExportEnabled {
+						<li>
+							@settingMenuLink(templates.SettingExportPath(), templates.T(ctx, "setting_index_export_link"))
+						</li>
+					}
 				</ul>
 			</nav>
 

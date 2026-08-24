@@ -460,3 +460,34 @@ LIMIT sqlc.arg(page_size);
 -- 消えた後にこれを呼ぶため、オブジェクトが残ったまま行が消えることはない。
 DELETE FROM exports
 WHERE id = sqlc.arg(id);
+
+-- name: DeleteFailedExportsByProfileID :execrows
+-- Delete the profile's failed exports. Create calls this in the same
+-- transaction that inserts the new queued export, so a profile keeps at most
+-- its latest success plus one export that is either in progress or failed.
+--
+-- Only failed rows are removed. A queued or started row is the profile's
+-- active export and is protected by the partial unique index, and a succeeded
+-- row is the archive that stays downloadable until the next success replaces
+-- it.
+--
+-- A failed export holds no object_key (the state fields check enforces it), and
+-- the terminal transition already released any object it uploaded, so removing
+-- the row leaves nothing behind: an object that outlived its transition is not
+-- retained by a failed row and is collected by the orphan sweep.
+--
+-- [Ja] プロフィールの failed なエクスポートを削除する。Create は新しい queued の
+-- エクスポートを挿入するのと同じ transaction でこれを呼ぶため、プロフィールが
+-- 保持するのは最新の成功 1 件と、進行中または failed のエクスポート 1 件までになる。
+--
+-- 削除するのは failed の行だけである。queued / started の行はプロフィールの実行中の
+-- エクスポートで部分ユニークインデックスが守っており、succeeded の行は次の成功が
+-- 置き換えるまでダウンロードできるアーカイブであるため。
+--
+-- failed のエクスポートは object_key を持たず (状態フィールドの CHECK 制約が保証)、
+-- 終端遷移がアップロード済みのオブジェクトを既に手放しているため、行を消しても
+-- 取り残しは生じない。遷移より後まで残ったオブジェクトは failed の行に保持されて
+-- おらず、孤児回収が回収する。
+DELETE FROM exports
+WHERE profile_id = sqlc.arg(profile_id)
+  AND status = 'failed';

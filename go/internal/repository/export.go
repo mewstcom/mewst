@@ -7,10 +7,40 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/query"
 )
+
+// ErrActiveExportExists is returned by Create when the profile already has a
+// queued or started export. The partial unique index on active statuses is what
+// decides this, so the answer covers a concurrent Create in another transaction
+// as well as one the caller could have seen coming.
+//
+// It is a sentinel rather than the driver error so that callers can recognize
+// the case without importing the database driver or matching on a constraint
+// name.
+//
+// [Ja] ErrActiveExportExists は、プロフィールに queued または started の
+// エクスポートが既にあるときに Create が返す。判定するのは active な status に対する
+// 部分ユニークインデックスであるため、この答えは、呼び出し側が事前に見て取れた
+// ケースだけでなく、別 transaction の同時 Create もカバーする。
+//
+// ドライバーのエラーではなく sentinel にするのは、呼び出し側が DB ドライバーを
+// import したり制約名で判定したりせずにこのケースを識別できるようにするため。
+var ErrActiveExportExists = errors.New("プロフィールに進行中のエクスポートが既に存在する")
+
+// exportsActiveProfileIndex is the partial unique index that allows a profile
+// at most one queued or started export. Create matches the driver's unique
+// violation against this name so that a violation of a different constraint
+// (one added later, say) is not reported as an active export.
+//
+// [Ja] exportsActiveProfileIndex は、プロフィールごとに queued / started の
+// エクスポートを 1 件までとする部分ユニークインデックス。Create はドライバーの
+// ユニーク制約違反をこの名前で照合し、別の制約 (後から追加されたものなど) の違反を
+// 進行中のエクスポートとして報告しないようにする。
+const exportsActiveProfileIndex = "index_exports_on_profile_id_where_active"
 
 // ExportRepository is the repository for exports.
 //
@@ -44,10 +74,10 @@ type CreateExportInput struct {
 // Create inserts a queued export and materializes the profile's currently kept
 // posts in the same PostgreSQL statement. The statement snapshot fixes the
 // archive's input even if a source post is physically deleted afterward. The
-// partial unique index on active statuses surfaces as an error here when the
-// profile already has an in-progress export, so a concurrent create for the
-// same profile cannot produce a second one. The statement also locks the
-// profile row before checking its persistent deletion marker, serializing
+// partial unique index on active statuses surfaces as ErrActiveExportExists
+// here when the profile already has an in-progress export, so a concurrent
+// create for the same profile cannot produce a second one. The statement also
+// locks the profile row before checking its persistent deletion marker, serializing
 // creation with the boundary established by profile cleanup. A profile past
 // that boundary yields (nil, nil): the marker is already set, so the statement
 // inserts nothing and the caller has to report that no export can be started
@@ -57,9 +87,9 @@ type CreateExportInput struct {
 // 同じ PostgreSQL 文で固定化する。statement snapshot によって、後から元投稿が
 // 物理削除されてもアーカイブの入力は変わらない。プロフィールにすでに進行中の
 // エクスポートがあると、active な status に対する部分ユニークインデックスが
-// ここでエラーとして現れるため、同一プロフィールへの同時 Create が 2 件目を
-// 作ることはない。また、永続的な削除マーカーを確認する前にプロフィール行を lock
-// するため、作成はプロフィール cleanup が確立する境界と直列化される。境界を越えた
+// ここで ErrActiveExportExists として現れるため、同一プロフィールへの同時 Create が
+// 2 件目を作ることはない。また、永続的な削除マーカーを確認する前にプロフィール行を
+// lock するため、作成はプロフィール cleanup が確立する境界と直列化される。境界を越えた
 // プロフィールでは (nil, nil) を返す。マーカーが設定済みで文が何も挿入しないため、
 // 呼び出し側はこれを失敗ではなく「エクスポートを開始できない」として扱う。
 func (r *ExportRepository) Create(ctx context.Context, input CreateExportInput) (*model.Export, error) {
@@ -78,9 +108,29 @@ func (r *ExportRepository) Create(ctx context.Context, input CreateExportInput) 
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
+		if isExportActiveUniqueViolation(err) {
+			return nil, ErrActiveExportExists
+		}
 		return nil, err
 	}
 	return r.toModel(query.Export(row)), nil
+}
+
+// isExportActiveUniqueViolation reports whether err is the unique violation
+// raised by the partial index that allows one active export per profile.
+//
+// [Ja] isExportActiveUniqueViolation は、err がプロフィールごとに実行中の
+// エクスポートを 1 件までとする部分インデックスによるユニーク制約違反かどうかを返す。
+func isExportActiveUniqueViolation(err error) bool {
+	var pgErr *pq.Error
+	if !errors.As(err, &pgErr) {
+		return false
+	}
+
+	// 23505 is the SQLSTATE for unique_violation.
+	//
+	// [Ja] 23505 は unique_violation の SQLSTATE。
+	return pgErr.Code == "23505" && pgErr.Constraint == exportsActiveProfileIndex
 }
 
 // FindByID returns the export with the given ID, or (nil, nil) when no row
@@ -510,6 +560,23 @@ func (r *ExportRepository) Delete(ctx context.Context, id model.ExportID) (bool,
 		return false, err
 	}
 	return n > 0, nil
+}
+
+// DeleteFailedByProfileID removes the profile's failed exports and reports how
+// many rows went. Create calls it in the transaction that inserts the new
+// queued export, so a profile carries at most its latest success plus one
+// export that is in progress or failed. It returns the count rather than a bool
+// because there is no expected number: a profile can hold no failed export at
+// all, and finding none is not a conflict.
+//
+// [Ja] DeleteFailedByProfileID はプロフィールの failed なエクスポートを削除し、
+// 消えた行数を返す。Create が新しい queued のエクスポートを挿入する transaction で
+// 呼ぶため、プロフィールが持つのは最新の成功 1 件と、進行中または failed の
+// エクスポート 1 件までになる。bool ではなく件数を返すのは、期待される件数が無い
+// ため。プロフィールが failed のエクスポートを 1 件も持たないことはあり、0 件で
+// あることは競合ではない。
+func (r *ExportRepository) DeleteFailedByProfileID(ctx context.Context, profileID model.ProfileID) (int64, error) {
+	return r.q.DeleteFailedExportsByProfileID(ctx, uuid.UUID(profileID))
 }
 
 // toModel converts a query.Export to a model.Export.

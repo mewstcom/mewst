@@ -69,6 +69,33 @@ type Querier interface {
 	// 行は export ではなく通知に snapshot されたプロフィールから辿る。export 行は先に
 	// 削除され、通知は意図的にそれより長く残るためである。
 	DeleteExportCompletionNotificationsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error)
+	// Delete the profile's failed exports. Create calls this in the same
+	// transaction that inserts the new queued export, so a profile keeps at most
+	// its latest success plus one export that is either in progress or failed.
+	//
+	// Only failed rows are removed. A queued or started row is the profile's
+	// active export and is protected by the partial unique index, and a succeeded
+	// row is the archive that stays downloadable until the next success replaces
+	// it.
+	//
+	// A failed export holds no object_key (the state fields check enforces it), and
+	// the terminal transition already released any object it uploaded, so removing
+	// the row leaves nothing behind: an object that outlived its transition is not
+	// retained by a failed row and is collected by the orphan sweep.
+	//
+	// [Ja] プロフィールの failed なエクスポートを削除する。Create は新しい queued の
+	// エクスポートを挿入するのと同じ transaction でこれを呼ぶため、プロフィールが
+	// 保持するのは最新の成功 1 件と、進行中または failed のエクスポート 1 件までになる。
+	//
+	// 削除するのは failed の行だけである。queued / started の行はプロフィールの実行中の
+	// エクスポートで部分ユニークインデックスが守っており、succeeded の行は次の成功が
+	// 置き換えるまでダウンロードできるアーカイブであるため。
+	//
+	// failed のエクスポートは object_key を持たず (状態フィールドの CHECK 制約が保証)、
+	// 終端遷移がアップロード済みのオブジェクトを既に手放しているため、行を消しても
+	// 取り残しは生じない。遷移より後まで残ったオブジェクトは failed の行に保持されて
+	// おらず、孤児回収が回収する。
+	DeleteFailedExportsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error)
 	// 指定された時刻より古いRate Limitレコードを削除する
 	DeleteOldRateLimits(ctx context.Context, windowStart time.Time) error
 	DeleteSessionByToken(ctx context.Context, token string) error
@@ -112,8 +139,8 @@ type Querier interface {
 	// Rate Limit カウンターをインクリメントする (UPSERT)
 	// 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
 	IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error)
-	// Reports whether the flag is enabled for the given actor (prepared for future in-app control).
-	// [Ja] 指定 actor に対してフラグが有効かを返す (アプリ内制御の将来利用のために用意)。
+	// Reports whether the flag is enabled for the given actor, used for in-app control such as the settings menu.
+	// [Ja] 指定 actor に対してフラグが有効かを返す。設定メニューなどのアプリ内制御で使う。
 	IsFeatureFlagEnabledForActor(ctx context.Context, arg IsFeatureFlagEnabledForActorParams) (bool, error)
 	// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
 	// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。

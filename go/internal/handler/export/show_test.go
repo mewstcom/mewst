@@ -14,13 +14,24 @@ import (
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
+	"github.com/mewstcom/mewst/go/internal/session"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
+// newExportHandler builds a Handler whose read path runs inside the test's
+// transaction. The start UseCase is wired for completeness but is not exercised
+// here: it opens its own transaction, so it cannot see this one, and the tests
+// that drive it commit their fixtures instead (see create_test.go).
+//
+// [Ja] newExportHandler は読み取り経路がテストの transaction 内で動く Handler を
+// 構築する。開始の UseCase は配線の完全性のために渡すが、ここでは実行しない。
+// 自身の transaction を開くためこの transaction が見えず、それを動かすテストは
+// 代わりにフィクスチャを commit するからである (create_test.go を参照)。
 func newExportHandler(t *testing.T, tx *sql.Tx, storageReady bool) *export.Handler {
 	t.Helper()
 
+	cfg := testutil.NewTestConfig(t)
 	queries := testutil.QueriesWithTx(tx)
 	getExportShowUC := usecase.NewGetExportShowUsecase(
 		repository.NewUserProfileRepository(queries),
@@ -28,7 +39,12 @@ func newExportHandler(t *testing.T, tx *sql.Tx, storageReady bool) *export.Handl
 		storageReady,
 	)
 
-	return export.NewHandler(testutil.NewTestConfig(t), getExportShowUC)
+	return export.NewHandler(
+		cfg,
+		session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly),
+		getExportShowUC,
+		newCreateExportUsecase(testutil.GetTestDB(), noopJobInserter{}, storageReady),
+	)
 }
 
 // newShowRequest builds a GET /settings/export request whose context carries
