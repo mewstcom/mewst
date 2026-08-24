@@ -2,50 +2,109 @@ package setting_test
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/google/uuid"
-
 	"github.com/mewstcom/mewst/go/internal/handler/setting"
 	"github.com/mewstcom/mewst/go/internal/i18n"
 	"github.com/mewstcom/mewst/go/internal/middleware"
 	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-func newSettingHandler(t *testing.T) *setting.Handler {
+// newSettingHandler builds a Handler whose feature-flag lookup runs inside the
+// test's transaction, so a flag granted by the test is the only grant it sees.
+//
+// [Ja] newSettingHandler はフィーチャーフラグの判定がテストの transaction 内で動く
+// Handler を構築する。テストが付与したフラグだけが判定に見えるようにするため。
+func newSettingHandler(t *testing.T, tx *sql.Tx) *setting.Handler {
 	t.Helper()
 
-	return setting.NewHandler(testutil.NewTestConfig(t))
+	getSettingIndexUC := usecase.NewGetSettingIndexUsecase(
+		repository.NewFeatureFlagRepository(testutil.QueriesWithTx(tx)),
+	)
+
+	return setting.NewHandler(testutil.NewTestConfig(t), getSettingIndexUC)
+}
+
+// newIndexRequest builds a GET /settings request whose context carries what the
+// CSRF and RequireAuth middleware supply in production: the locale, the CSRF
+// token the sign-out form submits, and the signed-in actor and profile. The
+// actor drives the export entry's feature-flag lookup; the profile drives the
+// navbar's profile link.
+//
+// [Ja] newIndexRequest は GET /settings のリクエストを組み立てる。context には
+// 本番で CSRF / RequireAuth ミドルウェアが渡すもの (ロケール、ログアウトフォームが
+// 送信する CSRF トークン、ログイン中の actor とプロフィール) を載せる。actor は
+// エクスポート項目のフィーチャーフラグ判定を、プロフィールは navbar のプロフィール
+// リンクを駆動する。
+func newIndexRequest(t *testing.T, locale string, owner testutil.ProfileOwner) *http.Request {
+	t.Helper()
+
+	ctx := i18n.SetLocale(context.Background(), locale)
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = middleware.SetActorToContext(ctx, &model.Actor{
+		ID:        owner.ActorID,
+		UserID:    owner.UserID,
+		ProfileID: owner.ProfileID,
+	})
+	ctx = middleware.SetProfileToContext(ctx, &model.Profile{
+		ID:     owner.ProfileID,
+		Atname: "alice",
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/settings", nil)
+	return req.WithContext(ctx)
+}
+
+// grantExportFlag gives the owner's actor the export feature flag.
+//
+// [Ja] grantExportFlag は owner の actor にエクスポートのフィーチャーフラグを付与する。
+func grantExportFlag(t *testing.T, tx *sql.Tx, owner testutil.ProfileOwner) {
+	t.Helper()
+
+	testutil.NewFeatureFlagBuilder(t, tx).
+		WithActorID(owner.ActorID).
+		WithName(model.FeatureFlagExport).
+		Build()
+}
+
+// settingsNav returns the settings menu's <nav> element, so assertions about
+// the menu cannot be satisfied by links elsewhere in the shared layout.
+//
+// [Ja] settingsNav は設定メニューの <nav> 要素を返す。メニューについての検証が、
+// 共通レイアウト内の別のリンクで満たされてしまわないようにするため。
+func settingsNav(t *testing.T, body string, label string) string {
+	t.Helper()
+
+	start := `<nav aria-label="` + label + `">`
+	navIdx := strings.Index(body, start)
+	if navIdx < 0 {
+		t.Fatal("設定メニューの nav がありません")
+	}
+
+	endOffset := strings.Index(body[navIdx:], `</nav>`)
+	if endOffset < 0 {
+		t.Fatal("設定メニューの nav に閉じタグがありません")
+	}
+
+	return body[navIdx : navIdx+endOffset+len(`</nav>`)]
 }
 
 func TestIndex(t *testing.T) {
 	t.Parallel()
 
-	h := newSettingHandler(t)
+	_, tx := testutil.SetupTx(t)
+	owner := testutil.NewProfileOwner(t, tx)
+	h := newSettingHandler(t, tx)
 
-	// Set the CSRF token, locale, and current profile on the context the way the
-	// CSRF and RequireAuth middleware do in production. The CSRF token drives the
-	// sign-out form's hidden input; the profile drives the navbar's profile link.
-	//
-	// [Ja] CSRF トークン・ロケール・現在プロフィールを、本番で CSRF / RequireAuth
-	// ミドルウェアが行うのと同じ形で context に設定する。CSRF トークンはログアウト
-	// フォームの hidden input を、プロフィールは navbar のプロフィールリンクを駆動する。
-	ctx := i18n.SetLocale(context.Background(), "ja")
-	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	ctx = middleware.SetProfileToContext(ctx, &model.Profile{
-		ID:     model.ProfileID(uuid.MustParse("11111111-1111-1111-1111-111111111111")),
-		Atname: "alice",
-	})
-
-	req := httptest.NewRequest(http.MethodGet, "/settings", nil)
-	req = req.WithContext(ctx)
 	rr := httptest.NewRecorder()
-
-	h.Index(rr, req)
+	h.Index(rr, newIndexRequest(t, "ja", owner))
 
 	if rr.Code != http.StatusOK {
 		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
@@ -99,40 +158,37 @@ func TestIndex(t *testing.T) {
 	}
 
 	// The settings menu links must stay inside a labelled <nav> containing a list.
-	// Limit the assertions to that nav so links elsewhere in the shared layout
-	// cannot make this semantic-structure check pass.
 	//
-	// [Ja] 設定メニューのリンクは、ラベル付き <nav> 内のリストに置く。この nav の
-	// 範囲だけを検証し、共通レイアウト内の別リンクによる偽陽性を防ぐ。
-	const settingsNavStart = `<nav aria-label="設定メニュー">`
-	navIdx := strings.Index(body, settingsNavStart)
-	if navIdx < 0 {
-		t.Error("設定メニューの nav がありません")
-	} else {
-		navEndOffset := strings.Index(body[navIdx:], `</nav>`)
-		if navEndOffset < 0 {
-			t.Error("設定メニューの nav に閉じタグがありません")
-		} else {
-			settingsNav := body[navIdx : navIdx+navEndOffset+len(`</nav>`)]
-			for _, want := range []string{
-				`<ul class="flex flex-col">`,
-				`href="/settings/profile"`,
-				`href="/settings/user"`,
-				`href="/settings/email"`,
-			} {
-				if !strings.Contains(settingsNav, want) {
-					t.Errorf("設定メニューの nav に %q が含まれていません", want)
-				}
-			}
-			if got := strings.Count(settingsNav, `<li>`); got != 3 {
-				t.Errorf("設定メニューの li 数 = %d, want 3", got)
-			}
-			if got := strings.Count(settingsNav, `aria-hidden="true"`); got != 3 {
-				t.Errorf("装飾キャレットの aria-hidden 数 = %d, want 3", got)
-			}
-			if got := strings.Count(settingsNav, "M181.66,133.66l-80,80"); got != 3 {
-				t.Errorf("caret-right-regular の path 数 = %d, want 3", got)
-			}
+	// [Ja] 設定メニューのリンクは、ラベル付き <nav> 内のリストに置く。
+	nav := settingsNav(t, body, "設定メニュー")
+	for _, want := range []string{
+		`<ul class="flex flex-col">`,
+		`href="/settings/profile"`,
+		`href="/settings/user"`,
+		`href="/settings/email"`,
+	} {
+		if !strings.Contains(nav, want) {
+			t.Errorf("設定メニューの nav に %q が含まれていません", want)
+		}
+	}
+	if got := strings.Count(nav, `<li>`); got != 3 {
+		t.Errorf("設定メニューの li 数 = %d, want 3", got)
+	}
+	if got := strings.Count(nav, `aria-hidden="true"`); got != 3 {
+		t.Errorf("装飾キャレットの aria-hidden 数 = %d, want 3", got)
+	}
+	if got := strings.Count(nav, "M181.66,133.66l-80,80"); got != 3 {
+		t.Errorf("caret-right-regular の path 数 = %d, want 3", got)
+	}
+
+	// The export feature is gated by a flag this owner does not have, so its
+	// entry must be absent from the whole page, not merely from the menu.
+	//
+	// [Ja] エクスポート機能はこの owner が持たないフラグで制御されるため、その項目は
+	// メニューだけでなくページ全体に現れてはならない。
+	for _, unwant := range []string{`href="/settings/export"`, "ポストのエクスポート"} {
+		if strings.Contains(body, unwant) {
+			t.Errorf("フラグ OFF のレスポンスに %q が含まれています", unwant)
 		}
 	}
 
@@ -170,10 +226,142 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-func TestIndex_Locales(t *testing.T) {
+// TestIndex_ExportFlagEnabled pins the menu an actor with the export flag sees:
+// the export entry is appended as a fourth row of the same list, and its link
+// text names what the page is for rather than reading as a bare action.
+//
+// [Ja] TestIndex_ExportFlagEnabled は、エクスポートのフラグを持つ actor が見る
+// メニューを固定する。エクスポート項目は同じリストの 4 行目として末尾に追加され、
+// そのリンクテキストは素の操作名ではなく遷移先が何であるかを示す。
+func TestIndex_ExportFlagEnabled(t *testing.T) {
 	t.Parallel()
 
-	h := newSettingHandler(t)
+	_, tx := testutil.SetupTx(t)
+	owner := testutil.NewProfileOwner(t, tx)
+	grantExportFlag(t, tx, owner)
+	h := newSettingHandler(t, tx)
+
+	rr := httptest.NewRecorder()
+	h.Index(rr, newIndexRequest(t, "ja", owner))
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	nav := settingsNav(t, rr.Body.String(), "設定メニュー")
+	for _, want := range []string{
+		`href="/settings/export"`,
+		"ポストのエクスポート",
+	} {
+		if !strings.Contains(nav, want) {
+			t.Errorf("設定メニューの nav に %q が含まれていません", want)
+		}
+	}
+	if got := strings.Count(nav, `<li>`); got != 4 {
+		t.Errorf("設定メニューの li 数 = %d, want 4", got)
+	}
+	if got := strings.Count(nav, "M181.66,133.66l-80,80"); got != 4 {
+		t.Errorf("caret-right-regular の path 数 = %d, want 4", got)
+	}
+
+	// The export entry goes last, after the account settings rows.
+	//
+	// [Ja] エクスポート項目はアカウント設定の各行の後、最後に置く。
+	if exportIdx, emailIdx := strings.Index(nav, `href="/settings/export"`), strings.Index(nav, `href="/settings/email"`); exportIdx < emailIdx {
+		t.Errorf("エクスポート項目の位置 = %d, メールアドレス項目の位置 = %d (エクスポートは末尾に置く)", exportIdx, emailIdx)
+	}
+
+	// The link text must stand on its own in a screen reader's link list, so it
+	// names the object it acts on instead of the bare verb.
+	//
+	// [Ja] リンクテキストはスクリーンリーダーのリンク一覧で単独で意味を成す必要が
+	// あるため、素の動詞ではなく対象を含めて示す。
+	if strings.Contains(nav, `>エクスポート<`) {
+		t.Error("設定メニューのリンクテキストが素の「エクスポート」になっています")
+	}
+}
+
+// TestIndex_WithoutActor pins the fallback for a request that reaches the menu
+// with no actor on the context: the page still renders, with the flagged entry
+// left out.
+//
+// [Ja] TestIndex_WithoutActor は、context に actor が無いままメニューへ到達した
+// リクエストのフォールバックを固定する。ページは描画され、フラグで制御する項目は
+// 出ない。
+func TestIndex_WithoutActor(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	owner := testutil.NewProfileOwner(t, tx)
+	grantExportFlag(t, tx, owner)
+	h := newSettingHandler(t, tx)
+
+	ctx := i18n.SetLocale(context.Background(), "ja")
+	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+	ctx = middleware.SetProfileToContext(ctx, &model.Profile{
+		ID:     owner.ProfileID,
+		Atname: "alice",
+	})
+	req := httptest.NewRequest(http.MethodGet, "/settings", nil).WithContext(ctx)
+
+	rr := httptest.NewRecorder()
+	h.Index(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `href="/settings/profile"`) {
+		t.Error("actor 不在でも設定メニューの既存項目が描画されていません")
+	}
+	if strings.Contains(body, `href="/settings/export"`) {
+		t.Error("actor 不在のレスポンスにエクスポート項目が含まれています")
+	}
+}
+
+// TestIndex_FeatureFlagLookupError pins the fallback when the feature-flag
+// lookup fails: the existing settings menu remains available, while the export
+// entry is left out.
+//
+// [Ja] TestIndex_FeatureFlagLookupError はフィーチャーフラグの判定に失敗した場合の
+// フォールバックを固定する。既存の設定メニューは利用可能なままにし、エクスポート
+// 項目だけを表示しない。
+func TestIndex_FeatureFlagLookupError(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	owner := testutil.NewProfileOwner(t, tx)
+	h := newSettingHandler(t, tx)
+
+	if err := tx.Rollback(); err != nil {
+		t.Fatalf("transaction の rollback に失敗: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	h.Index(rr, newIndexRequest(t, "ja", owner))
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+	}
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		`href="/settings/profile"`,
+		`href="/settings/user"`,
+		`href="/settings/email"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("フラグ判定失敗時のレスポンスに既存項目 %q が含まれていません", want)
+		}
+	}
+	if strings.Contains(body, `href="/settings/export"`) {
+		t.Error("フラグ判定失敗時のレスポンスにエクスポート項目が含まれています")
+	}
+}
+
+func TestIndex_Locales(t *testing.T) {
+	t.Parallel()
 
 	tests := []struct {
 		name           string
@@ -184,6 +372,7 @@ func TestIndex_Locales(t *testing.T) {
 		profile        string
 		user           string
 		email          string
+		export         string
 		signOut        string
 		signOutConfirm string
 	}{
@@ -196,6 +385,7 @@ func TestIndex_Locales(t *testing.T) {
 			profile:        "プロフィールの編集",
 			user:           "ユーザーの編集",
 			email:          "メールアドレスの変更",
+			export:         "ポストのエクスポート",
 			signOut:        "ログアウト",
 			signOutConfirm: "ログアウトしますか？",
 		},
@@ -208,6 +398,7 @@ func TestIndex_Locales(t *testing.T) {
 			profile:        "Edit profile",
 			user:           "Edit user",
 			email:          "Change email",
+			export:         "Export posts",
 			signOut:        "Sign out",
 			signOutConfirm: "Are you sure you want to sign out?",
 		},
@@ -217,14 +408,13 @@ func TestIndex_Locales(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := i18n.SetLocale(context.Background(), tt.locale)
-			ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
+			_, tx := testutil.SetupTx(t)
+			owner := testutil.NewProfileOwner(t, tx)
+			grantExportFlag(t, tx, owner)
+			h := newSettingHandler(t, tx)
 
-			req := httptest.NewRequest(http.MethodGet, "/settings", nil)
-			req = req.WithContext(ctx)
 			rr := httptest.NewRecorder()
-
-			h.Index(rr, req)
+			h.Index(rr, newIndexRequest(t, tt.locale, owner))
 
 			body := rr.Body.String()
 			for _, want := range []string{
@@ -234,6 +424,7 @@ func TestIndex_Locales(t *testing.T) {
 				tt.profile,
 				tt.user,
 				tt.email,
+				tt.export,
 				tt.signOut,
 				tt.signOutConfirm,
 			} {

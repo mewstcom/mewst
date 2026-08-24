@@ -236,6 +236,13 @@ func main() {
 	// MEWST_S3_* が無いデプロイでは、完了し得ない操作を出す代わりに、機能が利用
 	// できないことを読み手へ伝える。
 	getExportShowUC := usecase.NewGetExportShowUsecase(userProfileRepo, exportRepo, exportStorageReady)
+	// The settings menu reads the export feature flag so its export entry
+	// appears only for the actors the reverse proxy also routes to the Go
+	// export page.
+	//
+	// [Ja] 設定メニューはエクスポートのフィーチャーフラグを読み、リバースプロキシが
+	// Go 版のエクスポート画面へ振り分ける actor にだけエクスポート項目を出す。
+	getSettingIndexUC := usecase.NewGetSettingIndexUsecase(featureFlagRepo)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -251,7 +258,7 @@ func main() {
 	accountHandler := account.NewHandler(cfg, sessionMgr, flashMgr, getSucceededEmailConfirmationUC, createAccountUC, createSessionUC, turnstileClient, rateLimiter)
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
-	settingHandler := setting.NewHandler(cfg)
+	settingHandler := setting.NewHandler(cfg, getSettingIndexUC)
 	exportHandler := export.NewHandler(cfg, getExportShowUC)
 
 	// ミドルウェアの初期化
