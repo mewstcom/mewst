@@ -309,6 +309,18 @@ other = "パスワードを更新しました。新しいパスワードでロ�
 description = "投稿作成成功メッセージ"
 other = "投稿しました。"
 
+[flash_export_started]
+description = "エクスポート開始成功メッセージ"
+other = "エクスポートを開始しました。完了したらメールでお知らせします。"
+
+[flash_export_already_in_progress]
+description = "エクスポート開始を拒否したメッセージ: すでに進行中のエクスポートがある"
+other = "エクスポートは既に処理中です。完了までお待ちください。"
+
+[flash_export_profile_deleting]
+description = "エクスポート開始を拒否したメッセージ: プロフィールの削除処理が始まっている"
+other = "プロフィールの削除処理中のため、エクスポートを開始できません。"
+
 # ============================================
 # エラーページ (error_*)
 # ============================================
@@ -340,6 +352,10 @@ other = "しばらくしてから再度お試しください。"
 [error_bad_gateway_back_to_home]
 description = "502エラーページのホームリンク"
 other = "ホームに戻る"
+
+[error_export_unavailable]
+description = "エクスポート機能を提供していないデプロイでの拒否メッセージ (503 で返すため画面には表示しない)"
+other = "エクスポート機能は現在ご利用いただけません。"
 
 # ============================================
 # ナビゲーション (navbar_*)
@@ -420,6 +436,10 @@ other = "ユーザーの編集"
 [setting_index_email_link]
 description = "設定メニューからメールアドレス変更ページへのリンクテキスト"
 other = "メールアドレスの変更"
+
+[setting_index_export_link]
+description = "設定メニューからエクスポート画面へのリンクテキスト"
+other = "ポストのエクスポート"
 
 [setting_index_sign_out]
 description = "設定メニューのログアウトボタン"

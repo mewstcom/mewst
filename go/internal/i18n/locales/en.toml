@@ -309,6 +309,18 @@ other = "Password updated. Please sign in with your new password."
 description = "Post created success message"
 other = "Post created."
 
+[flash_export_started]
+description = "Export started success message"
+other = "Your export has started. We will email you once it is ready."
+
+[flash_export_already_in_progress]
+description = "Message shown when starting an export is refused because one is already in progress"
+other = "An export is already in progress. Please wait for it to finish."
+
+[flash_export_profile_deleting]
+description = "Message shown when starting an export is refused because the profile is being deleted"
+other = "Your profile is being deleted, so an export cannot be started."
+
 # ============================================
 # Error pages (error_*)
 # ============================================
@@ -340,6 +352,10 @@ other = "Please try again later."
 [error_bad_gateway_back_to_home]
 description = "502 error page link to home"
 other = "Back to home"
+
+[error_export_unavailable]
+description = "Refusal message on a deployment that does not serve exports (returned as 503, so it is never rendered)"
+other = "The export feature is currently unavailable."
 
 # ============================================
 # Navigation (navbar_*)
@@ -420,6 +436,10 @@ other = "Edit user"
 [setting_index_email_link]
 description = "Link text from the settings menu to the email change page"
 other = "Change email"
+
+[setting_index_export_link]
+description = "Link text from the settings menu to the export page"
+other = "Export posts"
 
 [setting_index_sign_out]
 description = "Sign-out button on the settings menu"
