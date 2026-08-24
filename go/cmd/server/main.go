@@ -243,6 +243,14 @@ func main() {
 	// [Ja] 設定メニューはエクスポートのフィーチャーフラグを読み、リバースプロキシが
 	// Go 版のエクスポート画面へ振り分ける actor にだけエクスポート項目を出す。
 	getSettingIndexUC := usecase.NewGetSettingIndexUsecase(featureFlagRepo)
+	// Starting an export is gated on the same readiness, so a deployment
+	// without MEWST_S3_* refuses the request instead of persisting a queued
+	// export no Worker is registered to generate.
+	//
+	// [Ja] エクスポートの開始も同じ readiness でゲートする。MEWST_S3_* が無い
+	// デプロイでは、生成する Worker が登録されていない queued のエクスポートを
+	// 永続化する代わりに、リクエストを拒否する。
+	createExportUC := usecase.NewCreateExportUsecase(db, userProfileRepo, exportRepo, jobDispatcher, exportStorageReady)
 
 	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
@@ -259,7 +267,7 @@ func main() {
 	postHandler := post.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 	linkHandler := link.NewHandler(fetchLinkMetadataUC, rateLimiter)
 	settingHandler := setting.NewHandler(cfg, getSettingIndexUC)
-	exportHandler := export.NewHandler(cfg, getExportShowUC)
+	exportHandler := export.NewHandler(cfg, flashMgr, getExportShowUC, createExportUC)
 
 	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
@@ -449,6 +457,7 @@ func main() {
 
 		r.Get("/settings", settingHandler.Index)
 		r.Get("/settings/export", exportHandler.Show)
+		r.Post("/settings/export", exportHandler.Create)
 	})
 
 	// サーバー起動
