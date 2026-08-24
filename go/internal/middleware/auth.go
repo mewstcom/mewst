@@ -60,7 +60,7 @@ func (a *Auth) RequireAuth(next http.Handler) http.Handler {
 		// Store the user, actor, and profile information in the context.
 		// [Ja] コンテキストにユーザー・アクター・プロフィール情報を設定
 		ctx = SetUserToContext(ctx, auth.User)
-		ctx = context.WithValue(ctx, actorContextKey, auth.Actor)
+		ctx = SetActorToContext(ctx, auth.Actor)
 		ctx = SetProfileToContext(ctx, auth.Profile)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -110,7 +110,7 @@ func (a *Auth) SetUser(next http.Handler) http.Handler {
 			if err != nil {
 				slog.WarnContext(ctx, "アクター情報の取得に失敗", "error", err)
 			} else if actor != nil {
-				ctx = context.WithValue(ctx, actorContextKey, actor)
+				ctx = SetActorToContext(ctx, actor)
 			}
 		}
 
@@ -137,6 +137,17 @@ func UserFromContext(ctx context.Context) *model.User {
 		return nil
 	}
 	return user
+}
+
+// SetActorToContext stores the actor information in the context. RequireAuth
+// and SetUser use it in production, and handler tests reuse it to inject the
+// signed-in actor (mirroring SetUserToContext / SetProfileToContext).
+//
+// [Ja] SetActorToContext はコンテキストにアクター情報を設定する。本番では
+// RequireAuth と SetUser が使い、ハンドラーテストはログイン中のアクターを注入する
+// ために再利用する (SetUserToContext / SetProfileToContext に倣う)。
+func SetActorToContext(ctx context.Context, actor *model.Actor) context.Context {
+	return context.WithValue(ctx, actorContextKey, actor)
 }
 
 // ActorFromContext はコンテキストからアクター情報を取得する
