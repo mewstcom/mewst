@@ -37,14 +37,35 @@ var reservedAtnames = map[string]bool{
 	"status":        true,
 }
 
-// maxAtnameLength はアットネームの最大文字数
-const maxAtnameLength = 20
+// AtnameMaxLength is the maximum number of characters an atname can hold.
+// [Ja] AtnameMaxLength はアットネームの最大文字数。
+const AtnameMaxLength = 20
 
 // minPasswordLength はパスワードの最小文字数
 const minPasswordLength = 8
 
 // maxPasswordLength はパスワードの最大文字数 (bcryptの制限)
 const maxPasswordLength = 72
+
+// IsValidAtname reports whether the atname satisfies the format and the length
+// every account's atname has to have. It is exported so that a caller creating
+// an account outside the account creation form checks the same rule instead of
+// a copy of it.
+//
+// AccountCreateValidator applies the same two constraints separately, because
+// the form tells the two apart in what it says. A rule added here has to be
+// added there as well, or the form would accept an atname the roster refuses.
+//
+// [Ja] IsValidAtname は、アットネームがすべてのアカウントに課される形式と長さを
+// 満たすかを返す。アカウント作成フォームの外でアカウントを作る呼び出し元が、制約の
+// 写しではなく同じ規則を参照できるよう公開している。
+//
+// AccountCreateValidator は同じ 2 つの制約を個別に適用する。フォームは 2 つを別の
+// メッセージで伝え分けるため。ここへ規則を足したときは、あちらへも足す必要がある。
+// そうしないと、フォームが受理する atname を名簿が拒否することになる。
+func IsValidAtname(atname string) bool {
+	return len(atname) <= AtnameMaxLength && atnameRegex.MatchString(atname)
+}
 
 // AccountCreateValidator はアカウント作成フォームのバリデーションを行う
 type AccountCreateValidator struct {
@@ -110,7 +131,7 @@ func (v *AccountCreateValidator) validateAtname(ctx context.Context, ve *model.V
 		return
 	}
 
-	if len(atname) > maxAtnameLength {
+	if len(atname) > AtnameMaxLength {
 		ve.AddField("atname", i18n.T(ctx, "validation_atname_too_long"))
 		return
 	}

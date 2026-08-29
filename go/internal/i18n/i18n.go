@@ -33,6 +33,18 @@ const (
 	localizerContextKey contextKey = "localizer"
 )
 
+// SupportedLangs lists every language the application serves, in the order the
+// bundle loads them. It is exported so that a caller reading a locale from
+// outside a request (the development seed reads one from its roster) checks it
+// against the languages that actually have a translation file, rather than
+// against a copy of the list.
+//
+// [Ja] SupportedLangs はアプリケーションが提供するすべての言語を、バンドルが
+// 読み込む順に並べたもの。リクエストの外でロケールを読む呼び出し元 (開発用の
+// シードは名簿から読む) が、一覧の写しではなく、実際に翻訳ファイルを持つ言語と
+// 突き合わせられるよう公開している。
+var SupportedLangs = []string{LangJa, LangEn}
+
 // グローバルなバンドル
 var bundle *i18n.Bundle
 
@@ -43,21 +55,13 @@ func init() {
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
 	// 翻訳ファイルを読み込み
-	languages := []struct {
-		code string
-		tag  language.Tag
-	}{
-		{LangJa, language.Japanese},
-		{LangEn, language.English},
-	}
-
-	for _, lang := range languages {
-		data, err := localesFS.ReadFile(fmt.Sprintf("locales/%s.toml", lang.code))
+	for _, lang := range SupportedLangs {
+		data, err := localesFS.ReadFile(fmt.Sprintf("locales/%s.toml", lang))
 		if err != nil {
 			continue
 		}
 
-		bundle.MustParseMessageFileBytes(data, fmt.Sprintf("%s.toml", lang.code))
+		bundle.MustParseMessageFileBytes(data, fmt.Sprintf("%s.toml", lang))
 	}
 }
 
