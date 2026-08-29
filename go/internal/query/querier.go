@@ -6,14 +6,31 @@ package query
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Querier interface {
+	AcquireExportProfileDeletionLock(ctx context.Context, dollar_1 int64) error
+	AcquireExportProfileOperationLock(ctx context.Context, dollar_1 int64) error
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateEmailConfirmation(ctx context.Context, arg CreateEmailConfirmationParams) (EmailConfirmation, error)
+	// Create the export and materialize its kept posts in one PostgreSQL statement.
+	// Both data-modifying CTEs use the same statement snapshot, so a post committed
+	// after the request or physically deleted afterward cannot enter or leave the
+	// export. A data-modifying CTE runs exactly once and to completion whether or
+	// not the primary query reads its output, so the final SELECT does not need to
+	// reference snapshotted_posts for the copy to happen.
+	//
+	// [Ja] export の作成と kept 投稿の固定化を 1 つの PostgreSQL 文で行う。2 つの
+	// data-modifying CTE は同じ statement snapshot を使うため、申請より後に commit
+	// された投稿が入り込んだり、後から物理削除された投稿が抜け落ちたりしない。
+	// data-modifying CTE は主問い合わせがその出力を読むかどうかに関係なく、ちょうど
+	// 1 回、完了まで実行されるため、複製のために最後の SELECT から
+	// snapshotted_posts を参照する必要はない。
+	CreateExport(ctx context.Context, arg CreateExportParams) (CreateExportRow, error)
 	// Idempotently adds a post to a profile's home timeline. On conflict with the
 	// unique (profile_id, post_id) index it leaves the existing row untouched
 	// (the no-op DO UPDATE preserves the original published_at) so RETURNING still
@@ -31,6 +48,54 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateUserProfile(ctx context.Context, arg CreateUserProfileParams) (UserProfile, error)
+	// Delete a single export row by ID. Cleanup calls this after the R2 object is
+	// gone, so a row is never removed while its object still exists.
+	//
+	// [Ja] ID 指定でエクスポート行を 1 件削除する。cleanup は R2 オブジェクトが
+	// 消えた後にこれを呼ぶため、オブジェクトが残ったまま行が消えることはない。
+	DeleteExport(ctx context.Context, id uuid.UUID) (int64, error)
+	// Cancel every pending completion email of the profile, which is what deleting
+	// the profile itself makes of them: the archive the email announces is gone and
+	// the address it would reach is being removed.
+	//
+	// The rows are found through the profile snapshotted on the notification rather
+	// than through the export, because the export row is deleted first and the
+	// notification deliberately outlives it.
+	//
+	// [Ja] プロフィールの送信待ち完了メールをすべて取り消す。プロフィール自体の削除は
+	// それらをこう扱うことになる。メールが知らせるアーカイブは消えており、宛先も削除
+	// されようとしているからである。
+	//
+	// 行は export ではなく通知に snapshot されたプロフィールから辿る。export 行は先に
+	// 削除され、通知は意図的にそれより長く残るためである。
+	DeleteExportCompletionNotificationsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error)
+	// Delete the profile's failed exports. Create calls this in the same
+	// transaction that inserts the new queued export, so a profile keeps at most
+	// its latest success plus one export that is either in progress or failed.
+	//
+	// Only failed rows are removed. A queued or started row is the profile's
+	// active export and is protected by the partial unique index, and a succeeded
+	// row is the archive that stays downloadable until the next success replaces
+	// it.
+	//
+	// A failed export holds no object_key (the state fields check enforces it), and
+	// the terminal transition already released any object it uploaded, so removing
+	// the row leaves nothing behind: an object that outlived its transition is not
+	// retained by a failed row and is collected by the orphan sweep.
+	//
+	// [Ja] プロフィールの failed なエクスポートを削除する。Create は新しい queued の
+	// エクスポートを挿入するのと同じ transaction でこれを呼ぶため、プロフィールが
+	// 保持するのは最新の成功 1 件と、進行中または failed のエクスポート 1 件までになる。
+	//
+	// 削除するのは failed の行だけである。queued / started の行はプロフィールの実行中の
+	// エクスポートで部分ユニークインデックスが守っており、succeeded の行は次の成功が
+	// 置き換えるまでダウンロードできるアーカイブであるため。
+	//
+	// failed のエクスポートは object_key を持たず (状態フィールドの CHECK 制約が保証)、
+	// 終端遷移がアップロード済みのオブジェクトを既に手放しているため、行を消しても
+	// 取り残しは生じない。遷移より後まで残ったオブジェクトは failed の行に保持されて
+	// おらず、孤児回収が回収する。
+	DeleteFailedExportsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error)
 	// 指定された時刻より古いRate Limitレコードを削除する
 	DeleteOldRateLimits(ctx context.Context, windowStart time.Time) error
 	DeleteSessionByToken(ctx context.Context, token string) error
@@ -47,6 +112,19 @@ type Querier interface {
 	// (session, actor, user, profile) を発行するのを避けるため。
 	GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error)
 	GetEmailConfirmationByID(ctx context.Context, id uuid.UUID) (EmailConfirmation, error)
+	GetExportByID(ctx context.Context, id uuid.UUID) (Export, error)
+	GetExportCompletionNotificationByExportID(ctx context.Context, exportID uuid.UUID) (ExportCompletionNotification, error)
+	// Read the persistent marker. Export operations call this before waiting for
+	// the shared advisory lock and again while holding it, so post-deletion work
+	// stops promptly without reopening the check-to-lock race. A missing profile
+	// has no export work either and is represented by sql.ErrNoRows.
+	//
+	// [Ja] 永続マーカーを読む。export 操作は共有 advisory lock を待つ前と取得後に
+	// 呼び出すため、削除開始後の処理を速やかに止めつつ、確認と lock の間の競合も
+	// 開け直さない。存在しないプロフィールにも export 作業は無く、sql.ErrNoRows として返す。
+	GetExportProfileDeletionStartedAt(ctx context.Context, id uuid.UUID) (sql.NullTime, error)
+	GetLatestExportByProfileID(ctx context.Context, profileID uuid.UUID) (Export, error)
+	GetLatestSucceededExportByProfileID(ctx context.Context, profileID uuid.UUID) (Export, error)
 	GetLinkByCanonicalURL(ctx context.Context, canonicalUrl string) (Link, error)
 	GetOauthApplicationByUID(ctx context.Context, uid string) (OauthApplication, error)
 	GetPostByID(ctx context.Context, id uuid.UUID) (Post, error)
@@ -61,18 +139,414 @@ type Querier interface {
 	// Rate Limit カウンターをインクリメントする (UPSERT)
 	// 同一のkey + window_startが存在する場合はcountをインクリメント、なければ新規作成
 	IncrementRateLimit(ctx context.Context, arg IncrementRateLimitParams) (RateLimit, error)
-	// Reports whether the flag is enabled for the given actor (prepared for future in-app control).
-	// [Ja] 指定 actor に対してフラグが有効かを返す (アプリ内制御の将来利用のために用意)。
+	// Reports whether the flag is enabled for the given actor, used for in-app control such as the settings menu.
+	// [Ja] 指定 actor に対してフラグが有効かを返す。設定メニューなどのアプリ内制御で使う。
 	IsFeatureFlagEnabledForActor(ctx context.Context, arg IsFeatureFlagEnabledForActorParams) (bool, error)
 	// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
 	// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。
 	IsFeatureFlagEnabledForDevice(ctx context.Context, arg IsFeatureFlagEnabledForDeviceParams) (bool, error)
+	// Return the subset of the given IDs whose export still retains an object in
+	// the object storage, used by orphan recovery to tell which R2 objects (keyed
+	// by export ID) are still claimed. The IDs absent from the result are orphan
+	// candidates.
+	//
+	// Every status but failed retains: a queued or started export may own an object
+	// an earlier attempt uploaded and the current one is about to overwrite, and a
+	// succeeded export owns the archive offered for download. A failed export owns
+	// nothing, because the terminal transition is what releases the object; an
+	// object left under a failed row is precisely what orphan recovery collects.
+	//
+	// [Ja] 与えた ID のうち、オブジェクトストレージ上のオブジェクトをまだ保持している
+	// エクスポートだけを返す。孤児回収が、どの R2 オブジェクト (キーはエクスポート ID)
+	// がまだ保持されているかを判別するために使う。結果に無い ID が孤児の候補。
+	//
+	// failed 以外のすべての status が保持側になる。queued / started のエクスポートは、
+	// 前の試行がアップロードし現在の試行が上書きしようとしているオブジェクトを保持
+	// しうる。succeeded のエクスポートはダウンロード対象のアーカイブを保持する。
+	// failed のエクスポートは何も保持しない。オブジェクトを手放すのが終端遷移であり、
+	// failed の行の下に残ったオブジェクトはまさに孤児回収が回収するものであるため。
+	ListExportIDsRetainingObject(ctx context.Context, ids []uuid.UUID) ([]uuid.UUID, error)
+	// Return one row per calendar month in an export's immutable post snapshot,
+	// with the post count and a UTC scan range containing those posts, oldest
+	// first. The export writes one HTML file per month and needs the counts before
+	// the first file, so the summary is taken up front and each month is then paged
+	// over its range from the same materialized snapshot.
+	//
+	// export_posts.published_at is timestamp without time zone holding UTC, so the
+	// month a post belongs to is found by reading it as UTC and converting to the
+	// target zone before truncating. A local month start can be ambiguous during a
+	// daylight saving fold, so converting that wall clock back to one UTC instant
+	// is not a safe scan boundary. Instead, MIN / MAX derive a tight half-open
+	// range from the exact export_posts rows in the group. The paging query repeats
+	// the local-month predicate as a correctness guard and uses the range for its
+	// index scan.
+	//
+	// [Ja] export の不変な投稿 snapshot に含まれる暦月ごとに 1 行を、投稿件数と
+	// その投稿を含む UTC 走査範囲とともに古い順で返す。
+	// エクスポートは月ごとに 1 つの HTML ファイルを書き、最初のファイルより前に
+	// 件数を必要とするため、先にサマリーを取得し、その後で同じ固定済み snapshot
+	// から各月をその範囲で分割取得する。
+	//
+	// export_posts.published_at は UTC を保持する timestamp without time zone
+	// のため、投稿が属する月は UTC として読んでから対象タイムゾーンへ変換し、
+	// truncate して求める。夏時間のフォールド中はローカル月初が曖昧になりうるため、
+	// その壁時計を 1 つの UTC 時刻へ逆変換しても安全な走査境界にはならない。
+	// 代わりに、グループの正確な export_posts 行から MIN / MAX で狭い半開区間を
+	// 導出する。分割取得クエリは正しさを守るためローカル月の述語を再適用し、
+	// 範囲はインデックス走査に使う。
+	ListExportPostMonthsByExportID(ctx context.Context, arg ListExportPostMonthsByExportIDParams) ([]ListExportPostMonthsByExportIDRow, error)
+	// Return a page from an export's immutable post snapshot, published within the
+	// half-open UTC scan range [starts_at, ends_at), and in the requested local
+	// calendar month. Rows are oldest first and strictly after the cursor. The
+	// order is fully deterministic because post_id breaks ties between posts
+	// sharing one published_at, so successive pages visit every post exactly once.
+	//
+	// The first page passes the zero timestamp and the zero UUID, which sort before
+	// every stored row, so one unconditional comparison drives both the first and
+	// later pages. Wrapping it in an OR with a has-cursor flag instead would keep
+	// the planner from using the cursor as the starting point of an index scan
+	// whenever the parameter value is unknown at plan time.
+	//
+	// [Ja] export の不変な投稿 snapshot のうち、半開区間の UTC 走査範囲
+	// [starts_at, ends_at) に公開され、指定したローカル暦月に属するものを cursor
+	// より後から古い順に 1 ページ返す。published_at が同値の投稿は post_id で
+	// tie-break されるため並び順は完全に決定的で、ページを順に辿ると各投稿を
+	// ちょうど 1 回ずつ訪れる。
+	//
+	// 1 ページ目はゼロ時刻とゼロ UUID を渡す。どちらも保存されるどの行よりも前に
+	// 並ぶため、1 つの無条件な比較で 1 ページ目と 2 ページ目以降の両方をまかなえる。
+	// cursor の有無フラグと OR で包むと、パラメータ値がプラン時に未知の場合に
+	// cursor を索引スキャンの開始位置として使えなくなる。
+	ListExportPostsByExportIDInRange(ctx context.Context, arg ListExportPostsByExportIDInRangeParams) ([]ListExportPostsByExportIDInRangeRow, error)
+	// Return a page of the profile's exports whatever their status, oldest first.
+	// Deleting a profile has to remove its exports through the application because
+	// the foreign key is ON DELETE NO ACTION: a row is not the whole of an export,
+	// and the object it may hold in the object storage is beyond what the database
+	// can cascade.
+	//
+	// Every status is returned, not only succeeded: an attempt that uploaded before
+	// the transition that records it leaves an object under a queued, started or
+	// failed row as well, and a profile being deleted must not leave one behind.
+	//
+	// Page size bounds one query the same way the cleanup query does, and no cursor
+	// is needed for the same reason: the caller deletes the rows it processed, so
+	// the oldest-first order exposes the remaining ones on the next query.
+	//
+	// [Ja] プロフィールのエクスポートを status を問わず古い順に 1 ページ返す。
+	// 外部キーが ON DELETE NO ACTION であるため、プロフィールの削除はその
+	// エクスポートをアプリケーション経由で削除する必要がある。行はエクスポートの
+	// すべてではなく、オブジェクトストレージ上のオブジェクトは DB の CASCADE が
+	// 及ぶ範囲の外にあるからである。
+	//
+	// succeeded だけでなく全 status を返す。それを記録する遷移より先にアップロードを
+	// 終えた試行は、queued / started / failed の行の下にもオブジェクトを残すため、
+	// 削除されるプロフィールがそれを残していってはならない。
+	//
+	// page size は cleanup のクエリと同じく 1 クエリの取得量を抑え、cursor が不要な
+	// 理由も同じである。呼び出し側は処理した行を削除するため、古い順の並びにより次の
+	// クエリで残りが現れる。
+	ListExportsByProfileID(ctx context.Context, arg ListExportsByProfileIDParams) ([]Export, error)
 	// Lists the follows whose target is the given profile. Their source profiles
 	// are that profile's followers, which fanout uses to enqueue timeline delivery.
 	//
 	// [Ja] target が指定プロフィールである follow を列挙する。その source プロフィールが
 	// 当該プロフィールのフォロワーであり、fanout がタイムライン配信を enqueue する際に使う。
 	ListFollowsByTargetProfileID(ctx context.Context, targetProfileID uuid.UUID) ([]Follow, error)
+	// Return every succeeded export of the profile except the most recent one, so
+	// cleanup can delete the R2 object and the row. The row-value comparison
+	// (created_at, id) < (latest created_at, latest id) makes the tie-break on
+	// equal created_at fall to id, matching the DESC ordering used to pick the
+	// latest, and the strict < excludes the latest succeeded itself so it is never
+	// selected for deletion.
+	//
+	// Page size bounds one query the same way the reconciliation queries do. No
+	// cursor is needed: cleanup deletes the rows it processed, so the oldest-first
+	// order always exposes the remaining candidates on the next run.
+	//
+	// [Ja] プロフィールの succeeded のうち最新の 1 件を除いたすべてを返し、cleanup が
+	// R2 オブジェクトと行を削除できるようにする。行値比較 (created_at, id) < (最新の
+	// created_at, 最新の id) により、created_at が同値のときの tie-break が id に
+	// 落ち、最新を選ぶ DESC の並びと一致する。厳密な < により最新の succeeded 自身は
+	// 除外され、削除対象に選ばれない。
+	//
+	// page size はリコンシリエーションのクエリと同じく 1 クエリの取得量を抑える。
+	// cursor は不要で、cleanup は処理した行を削除するため、古い順の並びにより次回の
+	// 実行で残りの候補が先頭に現れる。
+	ListOldSucceededExportsByProfileID(ctx context.Context, arg ListOldSucceededExportsByProfileIDParams) ([]Export, error)
+	// Return pending completion notifications created before the threshold,
+	// oldest first. The row is created atomically with the export succeeded
+	// transition and survives cleanup of that export, so it remains the durable
+	// work intent until the sender deletes it after a successful send.
+	//
+	// Rows of a profile whose deletion has started are left out, for the same
+	// reason as in ListStaleQueuedExports. Delivery stops at that profile's
+	// deletion marker, so a re-enqueued job would return without touching the row,
+	// and the marker is never cleared. Without the exclusion the row stays a
+	// candidate on every run and keeps producing jobs that do nothing while
+	// consuming the run's budget for new work. Converging these rows is profile
+	// deletion's work, not reconciliation's.
+	//
+	// The first page passes the zero timestamp and zero UUID. Both sort before
+	// every stored row, letting one unconditional keyset comparison drive the
+	// first and later pages.
+	//
+	// [Ja] threshold より前に作成された送信待ち完了通知を古い順に返す。行は export の
+	// succeeded 遷移と原子的に作成され、その export の cleanup 後も残るため、sender が
+	// 送信成功後に削除するまで durable work intent になる。
+	//
+	// 削除が始まったプロフィールの行は返さない。理由は ListStaleQueuedExports と同じで
+	// ある。配信はそのプロフィールの削除マーカーで止まるため、再投入したジョブは行に
+	// 触れずに戻り、マーカーが戻ることもない。除外しなければ、その行は毎回の実行で候補に
+	// なり、新しい処理の予算を消費しながら何もしないジョブを投入し続ける。これらの行を
+	// 収束させるのは親削除であって、リコンシリエーションではない。
+	//
+	// 1 ページ目はゼロ時刻とゼロ UUID を渡す。どちらも保存されるすべての行より前に
+	// 並ぶため、同じ無条件の keyset 比較で 1 ページ目と後続ページを扱える。
+	ListPendingExportCompletionNotifications(ctx context.Context, arg ListPendingExportCompletionNotificationsParams) ([]ExportCompletionNotification, error)
+	// Return the profile IDs that hold more than one succeeded export, i.e. those
+	// with old succeeded rows to clean up. Reconciliation enqueues one unique
+	// cleanup job per returned profile as the safety net for a lost cleanup
+	// enqueue after a success.
+	//
+	// The profile-ID cursor lets reconciliation advance past profiles whose unique
+	// cleanup job already exists. Page size bounds each query, while the caller
+	// separately caps how many new cleanup jobs one run accepts. The first page
+	// passes the zero UUID, which sorts before every stored profile ID; see
+	// ListStaleQueuedExports for why that beats a "has cursor" flag.
+	//
+	// [Ja] succeeded のエクスポートを 2 件以上持つ (= 掃除すべき古い succeeded の
+	// 行がある) プロフィール ID を返す。リコンシリエーションが返された各プロフィール
+	// ごとに一意な cleanup ジョブを 1 件投入し、成功後の cleanup 投入消失に対する
+	// 安全網とする。
+	//
+	// profile ID の cursor により、リコンシリエーションは一意な cleanup ジョブが
+	// すでに存在するプロフィールを飛ばせる。page size は各クエリの取得量を抑え、
+	// 呼び出し側は 1 回で受理する新しい cleanup ジョブ数を別に制限する。1 ページ目は
+	// ゼロ UUID を渡す。保存されるどの profile ID よりも前に並ぶためで、
+	// 「cursor の有無」フラグより優れる理由は ListStaleQueuedExports を参照。
+	ListProfileIDsWithOldSucceededExports(ctx context.Context, arg ListProfileIDsWithOldSucceededExportsParams) ([]uuid.UUID, error)
+	// Return queued exports created before the threshold, oldest first. The
+	// generation job is inserted right after Create commits, so a queued row that
+	// is still queued long after creation means the River insert never happened
+	// (the process died between commit and insert, or the insert failed). The
+	// threshold is a grace period against re-enqueueing a row whose normal insert
+	// is still in flight; created_at (not updated_at) is used because the risk
+	// window opens at Create time, and re-enqueueing is idempotent under the
+	// unique job.
+	//
+	// Rows of a profile whose deletion has started are left out. Generation stops
+	// at that profile's deletion marker, so a re-enqueued job would return without
+	// touching the row, and the marker is never cleared. Without the exclusion the
+	// row stays a candidate on every run and keeps producing jobs that do nothing.
+	// Converging these rows is profile deletion's work, not reconciliation's.
+	//
+	// The cursor and page size bound one query without pinning every run to the
+	// same head of the backlog. Reconciliation advances the cursor past jobs that
+	// already exist and stops only after it has accepted its per-run budget of new
+	// work, so a stuck head cannot starve later rows.
+	//
+	// The first page passes the zero timestamp and the zero UUID, which sort before
+	// every stored row, so one unconditional comparison drives both the first and
+	// later pages. Wrapping it in an OR with a "has cursor" flag instead would keep
+	// the planner from using the cursor as the starting point of an index scan
+	// whenever the parameter value is unknown at plan time.
+	//
+	// [Ja] threshold より前に作成された queued のエクスポートを古い順に返す。生成
+	// ジョブは Create のコミット直後に投入されるため、作成から時間が経ってもまだ
+	// queued の行は River への投入が起きなかったこと (コミットと投入の間でプロセスが
+	// 落ちた、または投入が失敗した) を意味する。threshold は通常の投入がまだ処理中の
+	// 行を再投入しないための猶予期間。リスクの窓は Create 時点で開くため updated_at
+	// ではなく created_at を使う。再投入は一意ジョブにより冪等。
+	//
+	// 削除が始まったプロフィールの行は返さない。生成はそのプロフィールの削除マーカーで
+	// 止まるため、再投入したジョブは行に触れずに戻り、マーカーが戻ることもない。除外し
+	// なければ、その行は毎回の実行で候補になり、何もしないジョブを投入し続ける。これら
+	// の行を収束させるのは親削除であって、リコンシリエーションではない。
+	//
+	// cursor と page size は 1 クエリの取得量を抑えつつ、毎回同じバックログの
+	// 先頭へ固定されるのを防ぐ。リコンシリエーションは既存ジョブの候補を cursor で
+	// 飛ばし、新しい処理を 1 回の予算まで受理した時点で止まるため、先頭の停滞が後続
+	// 行を飢えさせない。
+	//
+	// 1 ページ目はゼロ時刻とゼロ UUID を渡す。どちらも保存されるどの行よりも前に
+	// 並ぶため、1 つの無条件な比較で 1 ページ目と 2 ページ目以降の両方をまかなえる。
+	// 「cursor の有無」フラグと OR で包むと、パラメータ値がプラン時に未知の場合に
+	// cursor を索引スキャンの開始位置として使えなくなる。
+	ListStaleQueuedExports(ctx context.Context, arg ListStaleQueuedExportsParams) ([]Export, error)
+	// Return started exports whose current attempt began before the threshold,
+	// oldest first. started_at is stamped on every MarkExportStarted (including
+	// retries), so it marks when the running attempt began; a started row older
+	// than the timeout plus a grace period means the worker died without reaching
+	// its cleanup. The caller decides between requeue (attempt_count below the
+	// limit) and failed (at the limit).
+	//
+	// Rows of a profile whose deletion has started are left out, on the same terms
+	// as in ListStaleQueuedExports. Generation stops at that profile's deletion
+	// marker, so a requeued row would produce a job that returns without touching
+	// it. Here the waste is bounded rather than endless, because the requeue moves
+	// the row to queued and the queued stream already excludes it; the exclusion
+	// spends that budget on work that can still converge, and keeps the rule the
+	// same across all three recovery streams.
+	//
+	// The cursor lets reconciliation scan past a stuck or already-enqueued head in
+	// bounded pages while enforcing its new-work budget separately. See
+	// ListStaleQueuedExports for why the first page passes zero values instead of a
+	// "has cursor" flag.
+	//
+	// [Ja] 現在の試行が threshold より前に始まった started のエクスポートを古い順に
+	// 返す。started_at は MarkExportStarted のたび (リトライを含む) に打刻されるため
+	// 実行中の試行の開始時刻を表す。タイムアウトと猶予期間を足した時間より古い
+	// started の行は、Worker が後処理に到達せず落ちたことを意味する。呼び出し側が
+	// 再投入 (attempt_count が上限未満) と failed (上限到達) を判断する。
+	//
+	// 削除が始まったプロフィールの行は、ListStaleQueuedExports と同じ理由で返さない。
+	// 生成はそのプロフィールの削除マーカーで止まるため、差し戻した行は、それに触れずに
+	// 戻るジョブを生むだけである。ここでの無駄は無期限ではなく有界である。差し戻しは行を
+	// queued へ移し、queued の系統は既にその行を除外しているためである。除外することで、
+	// その予算をまだ収束し得る処理に充て、3 つの回復系統でルールを揃える。
+	//
+	// cursor により、リコンシリエーションは停滞中または投入済みの先頭候補を
+	// 有界なページで飛ばし、新しい処理の予算を別に制御できる。1 ページ目が
+	// 「cursor の有無」フラグではなくゼロ値を渡す理由は ListStaleQueuedExports を
+	// 参照。
+	ListStaleStartedExports(ctx context.Context, arg ListStaleStartedExportsParams) ([]Export, error)
+	// Retire the work intent of a completion email that was delivered. Deleting the
+	// outbox row is what records the send, and the legacy completion_notified_at
+	// column is mirrored in the same statement so that a rollback to the schema
+	// before the outbox still sees the notification as done.
+	//
+	// The mirror is skipped when the export row is gone, which retention cleanup
+	// makes the normal case: it deletes the export while the notification
+	// deliberately outlives it. The row count therefore comes from the delete, not
+	// from the update, because reading the update would answer "nothing to retire"
+	// for exactly the sends the outbox exists to keep possible. Data-modifying CTEs
+	// run to completion whether or not the primary query reads them, so the update
+	// still runs even though the select reads deleted alone.
+	//
+	// The status predicate is what exports requires of the stamp:
+	// exports_completion_notified_at_check only allows completion_notified_at on a
+	// succeeded row, so without it a row in any other state would fail the whole
+	// statement and leave a delivered email unretired.
+	//
+	// completion_notified_at is not the notification state any more, so its stamp is
+	// not paired with a bump of updated_at: that column is the optimistic-lock token
+	// of the export's own transitions, and moving it here would make a legacy mirror
+	// look like a state change.
+	//
+	// [Ja] 配信済みの完了メールの work intent を退役させる。送信を記録するのは outbox 行の
+	// 削除であり、legacy な completion_notified_at 列は同じ文で mirror する。outbox 導入前の
+	// スキーマへ切り戻しても、通知が完了済みに見えるようにするためである。
+	//
+	// export 行が無い場合、mirror は行われない。保持 cleanup は通知を意図的に残したまま
+	// export を削除するため、これが通常のケースになる。したがって行数は update ではなく
+	// delete から取る。update 側を読むと、outbox がまさに可能にしている送信に対して
+	// 「退役させるものが無い」と答えてしまう。データ変更を伴う CTE は、主クエリが読むか
+	// どうかに関わらず最後まで実行されるため、select が deleted だけを読んでいても update は
+	// 実行される。
+	//
+	// status の述語は exports が打刻に対して要求しているものである。
+	// exports_completion_notified_at_check は succeeded の行にしか completion_notified_at を
+	// 許さないため、これが無いと他の状態の行で文全体が失敗し、配信済みのメールが退役できなく
+	// なる。
+	//
+	// completion_notified_at はもはや通知状態の正本ではないため、打刻に updated_at の更新を
+	// 伴わせない。updated_at は export 自身の遷移における楽観ロックのトークンであり、ここで
+	// 動かすと legacy な mirror が状態遷移のように見えてしまう。
+	MarkExportCompletionNotificationSent(ctx context.Context, exportID uuid.UUID) (int64, error)
+	// The updated_at expression is the optimistic-lock token; see MarkExportStarted
+	// for why it must strictly increase.
+	//
+	// failed is terminal, so the request-time post snapshot is discarded in the
+	// same statement for the same reason as in MarkExportSucceeded: nothing will
+	// read it again.
+	//
+	// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
+	// MarkExportStarted を参照。
+	//
+	// failed は終端状態のため、MarkExportSucceeded と同じ理由で申請時の投稿 snapshot を
+	// 同じ文で破棄する。以後それを読むものは無い。
+	MarkExportFailed(ctx context.Context, arg MarkExportFailedParams) (int64, error)
+	// Persist the deletion marker before waiting for in-flight export operations. The
+	// existing value is kept on retries, while the UPDATE still takes the profile
+	// row lock that serializes it with CreateExport's FOR SHARE gate.
+	//
+	// [Ja] 進行中の export 操作を待つ前に削除マーカーを永続化する。再実行では既存値を
+	// 維持しつつ、CreateExport の FOR SHARE ガードと直列化するプロフィール行ロックは
+	// UPDATE によって取得する。
+	MarkExportProfileDeletionStarted(ctx context.Context, id uuid.UUID) (sql.NullTime, error)
+	// The four state transitions (MarkExportStarted / MarkExportSucceeded /
+	// MarkExportFailed / RequeueExport) guard on the caller's expected updated_at,
+	// so updated_at doubles as an optimistic-lock token and must strictly increase
+	// on every update. NOW() is frozen within a transaction and clock_timestamp()
+	// alone can repeat at microsecond resolution, so
+	// GREATEST(clock_timestamp(), updated_at + INTERVAL '1 microsecond') guarantees
+	// a strictly larger token. Do not simplify it to NOW() or a bare
+	// clock_timestamp(), or a stale attempt could win the guard.
+	//
+	// The updated row is returned rather than a row count because the generation
+	// flow chains this transition into the next guarded update: it has to know the
+	// token this statement produced to end the same attempt with
+	// MarkExportSucceeded or MarkExportFailed. Reading the row back in a separate
+	// statement would reopen the very window the token closes, since a transition
+	// committed in between would hand the caller a token it does not own.
+	//
+	// [Ja] 4 つの状態遷移 (MarkExportStarted / MarkExportSucceeded /
+	// MarkExportFailed / RequeueExport) は呼び出し側の期待する updated_at を
+	// ガードにするため、updated_at は楽観ロックのトークンを兼ねており、更新のたびに
+	// 厳密増加させる必要がある。NOW() はトランザクション内で固定され、
+	// clock_timestamp() 単独でもマイクロ秒解像度で同値になり得るため、
+	// GREATEST(clock_timestamp(), updated_at + INTERVAL '1 microsecond') で必ず
+	// より大きいトークンを保証する。NOW() や素の clock_timestamp() へ単純化しない
+	// こと。古い試行がガードを通過し得る。
+	//
+	// 行数ではなく更新後の行を返すのは、生成処理がこの遷移を次のガード付き更新へ
+	// つなぐため。同じ試行を MarkExportSucceeded / MarkExportFailed で終わらせるには、
+	// 本文が生成したトークンを知る必要がある。別の文で行を読み直すとトークンが閉じて
+	// いる窓をふたたび開くことになる。その間に commit された遷移があれば、呼び出し側は
+	// 自分が保持していないトークンを受け取ってしまうため。
+	MarkExportStarted(ctx context.Context, arg MarkExportStartedParams) (Export, error)
+	// The updated_at expression is the optimistic-lock token; see MarkExportStarted
+	// for why it must strictly increase.
+	//
+	// Reaching succeeded creates the completion-notification work intent and
+	// discards the request-time post snapshot in the same statement. The
+	// notification snapshots the profile, the requester email and the locale so
+	// cleanup can delete the export row without losing the pending work, and so
+	// delivery can decide against the profile's deletion boundary from the
+	// notification alone. The post snapshot exists so that a retried attempt reads
+	// the same input as the first one, and the uploaded archive makes it useless.
+	// Keeping all three changes atomic prevents a succeeded export without a
+	// notification and prevents the row and its post snapshot from diverging.
+	//
+	// The final select reads marked so that the row count reports the transition
+	// alone, which is what the caller guards on. The notification is created
+	// whenever the transition matches, because actor_id and actors.user_id are both
+	// NOT NULL foreign keys and the joins therefore cannot come back empty; reading
+	// the insert instead would answer "no transition" to a join that did.
+	//
+	// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
+	// MarkExportStarted を参照。
+	//
+	// succeeded への到達では、完了通知の work intent を作成し、申請時の投稿 snapshot
+	// も同じ文で破棄する。通知にはプロフィール・申請者のメールアドレス・locale を
+	// snapshot するため、cleanup が export 行を削除しても pending work は失われず、配信は
+	// 通知だけでプロフィールの削除境界に対する判断ができる。投稿 snapshot は再試行が
+	// 初回と同じ入力を読むために存在し、アーカイブの upload 後は不要になる。3 つの変更を
+	// 原子的に行うことで、通知の無い succeeded や、行と投稿 snapshot の食い違いを防ぐ。
+	//
+	// 最後の select が marked を読むのは、行数が呼び出し側のガード対象である遷移だけを
+	// 表すようにするため。遷移が成立すれば通知は必ず作成される。actor_id と
+	// actors.user_id はどちらも NOT NULL の外部キーであり、結合が空になり得ないからで
+	// ある。insert 側を読むと、結合が失敗したときに「遷移しなかった」と答えてしまう。
+	MarkExportSucceeded(ctx context.Context, arg MarkExportSucceededParams) (int64, error)
+	ReleaseExportProfileDeletionLock(ctx context.Context, dollar_1 int64) (bool, error)
+	ReleaseExportProfileOperationLock(ctx context.Context, dollar_1 int64) (bool, error)
+	// The updated_at expression is the optimistic-lock token; see MarkExportStarted
+	// for why it must strictly increase.
+	//
+	// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
+	// MarkExportStarted を参照。
+	RequeueExport(ctx context.Context, arg RequeueExportParams) (int64, error)
 	UpdateEmailConfirmationSucceededAt(ctx context.Context, id uuid.UUID) error
 	UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error
 	UpdateProfileLastPostAt(ctx context.Context, arg UpdateProfileLastPostAtParams) error

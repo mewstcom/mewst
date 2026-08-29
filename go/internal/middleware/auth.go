@@ -59,8 +59,8 @@ func (a *Auth) RequireAuth(next http.Handler) http.Handler {
 
 		// Store the user, actor, and profile information in the context.
 		// [Ja] コンテキストにユーザー・アクター・プロフィール情報を設定
-		ctx = context.WithValue(ctx, userContextKey, auth.User)
-		ctx = context.WithValue(ctx, actorContextKey, auth.Actor)
+		ctx = SetUserToContext(ctx, auth.User)
+		ctx = SetActorToContext(ctx, auth.Actor)
 		ctx = SetProfileToContext(ctx, auth.Profile)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -104,18 +104,29 @@ func (a *Auth) SetUser(next http.Handler) http.Handler {
 		}
 
 		if user != nil {
-			ctx = context.WithValue(ctx, userContextKey, user)
+			ctx = SetUserToContext(ctx, user)
 
 			actor, err := a.sessionMgr.GetCurrentActor(ctx, r)
 			if err != nil {
 				slog.WarnContext(ctx, "アクター情報の取得に失敗", "error", err)
 			} else if actor != nil {
-				ctx = context.WithValue(ctx, actorContextKey, actor)
+				ctx = SetActorToContext(ctx, actor)
 			}
 		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// SetUserToContext stores the user information in the context. RequireAuth and
+// SetUser use it in production, and handler tests reuse it to inject a signed-in
+// user (mirroring SetProfileToContext).
+//
+// [Ja] SetUserToContext はコンテキストにユーザー情報を設定する。本番では RequireAuth と
+// SetUser が使い、ハンドラーテストはログイン中ユーザーを注入するために再利用する
+// (SetProfileToContext に倣う)。
+func SetUserToContext(ctx context.Context, user *model.User) context.Context {
+	return context.WithValue(ctx, userContextKey, user)
 }
 
 // UserFromContext はコンテキストからユーザー情報を取得する
@@ -126,6 +137,17 @@ func UserFromContext(ctx context.Context) *model.User {
 		return nil
 	}
 	return user
+}
+
+// SetActorToContext stores the actor information in the context. RequireAuth
+// and SetUser use it in production, and handler tests reuse it to inject the
+// signed-in actor (mirroring SetUserToContext / SetProfileToContext).
+//
+// [Ja] SetActorToContext はコンテキストにアクター情報を設定する。本番では
+// RequireAuth と SetUser が使い、ハンドラーテストはログイン中のアクターを注入する
+// ために再利用する (SetUserToContext / SetProfileToContext に倣う)。
+func SetActorToContext(ctx context.Context, actor *model.Actor) context.Context {
+	return context.WithValue(ctx, actorContextKey, actor)
 }
 
 // ActorFromContext はコンテキストからアクター情報を取得する

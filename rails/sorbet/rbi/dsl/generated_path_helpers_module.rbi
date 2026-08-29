@@ -112,9 +112,6 @@ module GeneratedPathHelpersModule
   def settings_email_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def settings_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def settings_profile_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -122,9 +119,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def sign_in_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def sign_out_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def sign_up_path(*args); end

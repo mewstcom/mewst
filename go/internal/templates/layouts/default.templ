@@ -19,10 +19,10 @@ type DefaultLayoutData struct {
 }
 
 // Default is the shared layout for authenticated pages: head, top navbar, main
-// content, and the mobile bottom navbar. It mirrors the Rails BasicLayoutComponent.
+// content, shared footer, and the mobile bottom navbar.
 //
 // [Ja] 認証後ページの共通レイアウト。head・トップ navbar・main コンテンツ・
-// モバイル用ボトム navbar で構成し、Rails の BasicLayoutComponent に対応する。
+// 共通フッター・モバイル用ボトム navbar で構成する。
 templ Default(data DefaultLayoutData, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang={ templates.Locale(ctx) }>
@@ -45,6 +45,17 @@ templ Default(data DefaultLayoutData, content templ.Component) {
 				<main id="main" tabindex="-1" class="flex-1 pb-safe">
 					@content
 				</main>
+
+				// Keep the shared footer clear of the mobile bottom navbar pill. On lg the
+				// pill is hidden, so a small margin suffices. The layout owns this
+				// placement-specific spacing so BasicFooter remains independent of it.
+				//
+				// [Ja] 共通フッターとモバイルのボトム navbar ピルが重ならないようにする。
+				// lg ではピルが非表示になるため小さいマージンで足りる。配置固有の余白は
+				// レイアウト側に持たせ、BasicFooter を余白から独立させる。
+				<div class="mb-[100px] lg:mb-4">
+					@components.BasicFooter()
+				</div>
 
 				// Pin the bottom navbar to the bottom-center on mobile (the component itself hides it on lg).
 				// mb-safe lifts the pill above the home indicator in standalone mode. Its margin and

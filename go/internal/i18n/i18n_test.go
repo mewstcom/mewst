@@ -2,9 +2,13 @@ package i18n
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"testing"
+
+	"github.com/BurntSushi/toml"
 )
 
 func TestT_Japanese(t *testing.T) {
@@ -339,4 +343,74 @@ func TestMiddleware(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestLocaleMessageIDsMatch pins that both locale files define the same message
+// IDs. A message ID present in only one file does not fall back to the other
+// language: T returns the message ID itself, so the internal identifier reaches
+// the screen in the locale that lacks it. The comparison is at the message ID
+// level, which is the granularity at which a translation is added or removed.
+//
+// [Ja] TestLocaleMessageIDsMatch は 2 つのロケールファイルが同じメッセージ ID を
+// 定義していることを固定する。片方にしかないメッセージ ID はもう一方の言語へ
+// フォールバックしない。T がメッセージ ID そのものを返すため、欠けている側の
+// ロケールでは内部の識別子が画面に出る。比較はメッセージ ID の単位で行う。
+// 翻訳の追加・削除がこの単位で起きるためである。
+func TestLocaleMessageIDsMatch(t *testing.T) {
+	t.Parallel()
+
+	ja := localeMessageIDs(t, LangJa)
+	en := localeMessageIDs(t, LangEn)
+
+	if missing := missingMessageIDs(ja, en); len(missing) > 0 {
+		t.Errorf("%s.toml に %s.toml のメッセージ ID がありません: %v", LangEn, LangJa, missing)
+	}
+	if missing := missingMessageIDs(en, ja); len(missing) > 0 {
+		t.Errorf("%s.toml に %s.toml のメッセージ ID がありません: %v", LangJa, LangEn, missing)
+	}
+}
+
+// localeMessageIDs returns the message IDs defined in the given locale file.
+// Each message is a top-level TOML table, so the top-level keys are the message
+// IDs.
+//
+// [Ja] localeMessageIDs は指定したロケールファイルに定義されたメッセージ ID を
+// 返す。各メッセージはトップレベルの TOML テーブルであるため、トップレベルの
+// キーがメッセージ ID になる。
+func localeMessageIDs(t *testing.T, lang string) map[string]struct{} {
+	t.Helper()
+
+	data, err := localesFS.ReadFile(fmt.Sprintf("locales/%s.toml", lang))
+	if err != nil {
+		t.Fatalf("%s.toml の読み込みに失敗: %v", lang, err)
+	}
+
+	var messages map[string]any
+	if err := toml.Unmarshal(data, &messages); err != nil {
+		t.Fatalf("%s.toml の解析に失敗: %v", lang, err)
+	}
+
+	ids := make(map[string]struct{}, len(messages))
+	for id := range messages {
+		ids[id] = struct{}{}
+	}
+
+	return ids
+}
+
+// missingMessageIDs returns the IDs of from that are absent from in, sorted so
+// that a failure lists them in the same order on every run.
+//
+// [Ja] missingMessageIDs は from にあって in に無いメッセージ ID を返す。失敗時の
+// 一覧が実行ごとに同じ順序になるようソートする。
+func missingMessageIDs(from, in map[string]struct{}) []string {
+	missing := make([]string, 0)
+	for id := range from {
+		if _, ok := in[id]; !ok {
+			missing = append(missing, id)
+		}
+	}
+	sort.Strings(missing)
+
+	return missing
 }

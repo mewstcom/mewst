@@ -10,7 +10,20 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// EnText は英語版のメール確認 (テキスト形式) です
+// EnText is the English email confirmation code notification (plain text).
+//
+// The body goes through templ.Raw so that the blank lines between paragraphs
+// survive: templ normalizes literal whitespace by HTML rules, and its default
+// expression escaping would deliver "didn't" as "didn&#39;t". Passing the
+// address through Raw is safe here because the text/plain part has no markup to
+// break out of; the HTML part still escapes it.
+//
+// [Ja] EnText は英語版のメール確認コード通知 (テキスト形式) です。
+//
+// 段落間の空行を残すため、本文は templ.Raw を通す。templ はリテラルの空白を HTML
+// の規則で正規化し、既定の式エスケープは "didn't" を "didn&#39;t" として配信して
+// しまう。text/plain パートにはメールアドレスが抜け出せるマークアップが無いため、
+// Raw に渡しても安全である (HTML パートでは引き続きエスケープする)。
 func EnText(email, code string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -32,33 +45,7 @@ func EnText(email, code string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "Hello ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(email)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/email_confirmation/en_text.templ`, Line: 5, Col: 14}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, ", Your confirmation code is below. ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(code)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/email_confirmation/en_text.templ`, Line: 9, Col: 7}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " This confirmation code will expire in 15 minutes. If you didn't request this email, please ignore it. -- Mewst https://mewst.com")
+		templ_7745c5c3_Err = templ.Raw("Hello "+email+",\n\nYour confirmation code is below.\n\n"+code+"\n\nThis confirmation code will expire in 15 minutes.\n\nIf you didn't request this email, please ignore it.\n\n-- \nMewst\nhttps://mewst.com\n").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

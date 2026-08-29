@@ -1,0 +1,82 @@
+# The roster of development accounts `mewst seed` creates. The roster in use
+# holds personal email addresses, so it is kept out of version control and this
+# file is committed in its place. To set the seed up, copy this file to
+# go/seed-users.toml, which .gitignore excludes, and replace the addresses with
+# ones whose mail you can read.
+#
+# locale takes a language the application serves ("ja" or "en") and time_zone
+# takes an IANA time zone name: the export HTML picks its wording, its date
+# format and its month boundaries from the two. feature_flags takes either the
+# string "all", which grants every flag the application defines, or a list of
+# flag names such as ["go_export"]. What each role is for is written where the
+# generators name it, in internal/seed/role.go.
+#
+# [Ja] `mewst seed` が作成する開発用アカウントの名簿。実際に使う名簿は個人の
+# メールアドレスを持つためバージョン管理には入れず、代わりに本ファイルをコミットして
+# いる。シードを使えるようにするには、本ファイルを .gitignore が除外している
+# go/seed-users.toml へコピーし、アドレスを自分がメールを読めるものへ置き換える。
+#
+# locale にはアプリケーションが提供する言語 ("ja" か "en") を、time_zone には IANA の
+# タイムゾーン名を書く。エクスポートの HTML は、文言・日時表記・月境界をこの 2 つから
+# 出し分ける。feature_flags には、アプリケーションが定義するフラグを全件与える文字列
+# "all" か、["go_export"] のようなフラグ名の配列のどちらかを書く。それぞれの役割が
+# 何のためにあるのかは、生成器がそれを名指ししている internal/seed/role.go に書いてある。
+
+# password is shared by every account below. The seed refuses to run outside a
+# development environment and the dev site itself sits behind basic auth, so a
+# password per account would buy nothing.
+#
+# [Ja] password は以下のすべてのアカウントで共通。シードは開発環境以外での実行を
+# 拒否し、dev サイト自体も Basic 認証の内側にあるため、アカウントごとに別の
+# パスワードを持たせても得るものが無い。
+password = "password"
+
+[[users]]
+role = "main"
+atname = "seeduser1"
+name = "シードユーザー 1"
+email = "seeduser1@example.com"
+note = "主な確認対象。3 年分のポストを持ち、エクスポートの確認と make browse-login の既定アカウント"
+locale = "ja"
+time_zone = "Asia/Tokyo"
+feature_flags = "all"
+
+[[users]]
+role = "follower"
+atname = "seeduser2"
+name = "シードユーザー 2"
+email = "seeduser2@example.com"
+note = "main と相互フォロー。フィーチャーフラグ未付与時の画面を main と見比べる"
+locale = "ja"
+time_zone = "Asia/Tokyo"
+feature_flags = []
+
+[[users]]
+role = "english"
+atname = "seeduser3"
+name = "シードユーザー 3"
+email = "seeduser3@example.com"
+note = "エクスポート HTML の locale と月境界の出し分けを main と見比べる"
+locale = "en"
+time_zone = "Etc/UTC"
+feature_flags = "all"
+
+[[users]]
+role = "newcomer"
+atname = "seeduser4"
+name = "シードユーザー 4"
+email = "seeduser4@example.com"
+note = "ポスト 0 件。空のエクスポートと、サインアップ直後の画面"
+locale = "ja"
+time_zone = "Asia/Tokyo"
+feature_flags = "all"
+
+[[users]]
+role = "discarded"
+atname = "seeduser5"
+name = "シードユーザー 5"
+email = "seeduser5@example.com"
+note = "削除済みプロフィール。作者が削除されたポストの見え方 (サインインはできない)"
+locale = "ja"
+time_zone = "Asia/Tokyo"
+feature_flags = []

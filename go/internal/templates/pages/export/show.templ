@@ -1,0 +1,128 @@
+package export
+
+import (
+	"github.com/mewstcom/mewst/go/internal/templates"
+	"github.com/mewstcom/mewst/go/internal/templates/components"
+	"github.com/mewstcom/mewst/go/internal/viewmodel"
+)
+
+// ShowPageData holds the data for the export page.
+//
+// [Ja] ShowPageData はエクスポート画面のデータを保持する。
+type ShowPageData struct {
+	CSRFToken string
+	Export    viewmodel.Export
+}
+
+// stateMessageID returns the message ID describing the given export state.
+// Every state maps to a message, so the status region is never empty and the
+// page never leaves the reader to infer the state from which buttons are
+// present.
+//
+// [Ja] stateMessageID は指定したエクスポート状態を説明するメッセージ ID を返す。
+// すべての状態がメッセージへ対応するため、状態領域が空になることはなく、どの
+// ボタンがあるかから状態を推測させることもない。
+func stateMessageID(state viewmodel.ExportState) string {
+	switch state {
+	case viewmodel.ExportStateUnavailable:
+		return "export_show_state_unavailable"
+	case viewmodel.ExportStateInProgress:
+		return "export_show_state_in_progress"
+	case viewmodel.ExportStateSucceeded:
+		return "export_show_state_succeeded"
+	case viewmodel.ExportStateFailed:
+		return "export_show_state_failed"
+	case viewmodel.ExportStateNone:
+		return "export_show_state_none"
+	default:
+		// Fall back to the same in-progress reading viewmodel.exportState uses
+		// for an unrecognized status, so both layers describe an unknown state
+		// the same way.
+		//
+		// [Ja] 未知の状態は viewmodel.exportState が未知の status に対して行うのと
+		// 同じく進行中として読む。2 つの層が未知の状態を同じ形で説明するため。
+		return "export_show_state_in_progress"
+	}
+}
+
+// downloadLinkMessageID returns the message ID for the download link. The zip is
+// named as the current export only when the latest export is the one that
+// produced it; in every other state, including an unrecognized one, the link
+// names it as an earlier export so the label never claims more than what is
+// offered.
+//
+// [Ja] downloadLinkMessageID はダウンロードリンクのメッセージ ID を返す。zip を
+// 現在のエクスポートとして示すのは、最新のエクスポートがそれを作った場合だけであり、
+// 未知の状態を含むそれ以外では以前のエクスポートとして示す。ラベルが提供している
+// ものより大きいことを言わないようにするため。
+func downloadLinkMessageID(state viewmodel.ExportState) string {
+	if state == viewmodel.ExportStateSucceeded {
+		return "export_show_download_link"
+	}
+
+	return "export_show_previous_download_link"
+}
+
+// Show renders the export page: what an export contains, the state of this
+// profile's latest export, and the actions that state allows.
+//
+// [Ja] Show はエクスポート画面を描画する。エクスポートに何が含まれるか、この
+// プロフィールの最新のエクスポートの状態、およびその状態で行える操作を示す。
+templ Show(data ShowPageData) {
+	<div class="mx-auto w-full max-w-2xl px-4 py-4">
+		@components.BackLink(templates.SettingListPath())
+
+		<h1 class="mt-2 text-2xl font-semibold antialiased">
+			{ templates.T(ctx, "export_show_heading") }
+		</h1>
+
+		<hr class="my-4"/>
+
+		<div class="card flex flex-col gap-4 rounded-xl bg-white p-4 dark:bg-secondary">
+			<p class="text-sm text-muted-foreground">
+				{ templates.T(ctx, "export_show_description") }
+			</p>
+
+			// The state is plain text rather than a colour or an icon, so it is
+			// readable without colour perception. role="status" marks it as the
+			// region that carries the export's state, so that an in-place update
+			// added later is announced instead of being left for the reader to
+			// notice. A full page load announces nothing on its own.
+			//
+			// [Ja] 状態は色やアイコンではなくテキストで示し、色の知覚に依存せず
+			// 読めるようにする。role="status" はこの領域がエクスポートの状態を担うことを
+			// 示し、後からその場での更新を加えたときに、読み手が気づくのに任せず通知させる。
+			// ページ全体の再読み込みだけでは通知は起きない。
+			<p class="text-sm" role="status">
+				{ templates.T(ctx, stateMessageID(data.Export.State)) }
+			</p>
+
+			if data.Export.CanDownload {
+				// py-1 raises the tap target to about 28px tall (text-sm line height
+				// plus padding) without drawing a box, clearing the WCAG 2.5.8 AA
+				// 24x24 minimum for a standalone action link. The focus-visible
+				// outline is declared here because the link style carries none.
+				//
+				// [Ja] py-1 でタップ領域を約 28px 高 (text-sm の行高 + パディング) に
+				// 広げる。枠は描かないまま、単独の操作リンクとして WCAG 2.5.8 AA の
+				// 24x24 最小を満たす。リンクのスタイルは focus-visible の輪郭を持たない
+				// ため、ここで指定する。
+				<a
+					class="link-primary-foreground flex w-fit items-center py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+					href={ templates.SettingExportDownloadPath() }
+				>
+					{ templates.T(ctx, downloadLinkMessageID(data.Export.State)) }
+				</a>
+			}
+
+			if data.Export.CanStart {
+				<form action={ templates.SettingExportPath() } hx-on:submit="disableSubmitButtons(this)" method="POST">
+					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+					<button class="btn rounded-full" type="submit">
+						{ templates.T(ctx, "export_show_submit") }
+					</button>
+				</form>
+			}
+		</div>
+	</div>
+}

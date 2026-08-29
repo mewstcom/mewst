@@ -36,7 +36,7 @@ templ New(data NewPageData) {
 		@components.AuthFormCard() {
 			<form
 				action="/email_confirmation"
-				class="form grid gap-6"
+				class="grid gap-6"
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -46,7 +46,7 @@ templ New(data NewPageData) {
 				}
 
 				<div class="grid gap-2">
-					<label for="code">
+					<label class="label" for="code">
 						{ templates.T(ctx, "email_confirmation_new_code_label") }
 					</label>
 
@@ -58,6 +58,7 @@ templ New(data NewPageData) {
 						}
 						autocomplete="one-time-code"
 						autofocus
+						class="input"
 						id="code"
 						inputmode="numeric"
 						maxlength="6"
@@ -79,7 +80,7 @@ templ New(data NewPageData) {
 				</div>
 
 				<button
-					class="btn-primary rounded-full w-fit"
+					class="btn rounded-full w-fit"
 					tabindex="2"
 					type="submit"
 				>

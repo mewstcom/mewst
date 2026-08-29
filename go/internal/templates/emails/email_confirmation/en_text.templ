@@ -1,18 +1,19 @@
 package email_confirmation
 
-// EnText は英語版のメール確認 (テキスト形式) です
+// EnText is the English email confirmation code notification (plain text).
+//
+// The body goes through templ.Raw so that the blank lines between paragraphs
+// survive: templ normalizes literal whitespace by HTML rules, and its default
+// expression escaping would deliver "didn't" as "didn&#39;t". Passing the
+// address through Raw is safe here because the text/plain part has no markup to
+// break out of; the HTML part still escapes it.
+//
+// [Ja] EnText は英語版のメール確認コード通知 (テキスト形式) です。
+//
+// 段落間の空行を残すため、本文は templ.Raw を通す。templ はリテラルの空白を HTML
+// の規則で正規化し、既定の式エスケープは "didn't" を "didn&#39;t" として配信して
+// しまう。text/plain パートにはメールアドレスが抜け出せるマークアップが無いため、
+// Raw に渡しても安全である (HTML パートでは引き続きエスケープする)。
 templ EnText(email, code string) {
-	Hello { email },
-
-	Your confirmation code is below.
-
-	{ code }
-
-	This confirmation code will expire in 15 minutes.
-
-	If you didn't request this email, please ignore it.
-
-	--
-	Mewst
-	https://mewst.com
+	@templ.Raw("Hello " + email + ",\n\nYour confirmation code is below.\n\n" + code + "\n\nThis confirmation code will expire in 15 minutes.\n\nIf you didn't request this email, please ignore it.\n\n-- \nMewst\nhttps://mewst.com\n")
 }

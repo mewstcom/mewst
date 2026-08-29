@@ -30,6 +30,11 @@ func setupTestEnv(t *testing.T) func() {
 		"MEWST_SENTRY_ENVIRONMENT":        os.Getenv("MEWST_SENTRY_ENVIRONMENT"),
 		"MEWST_SENTRY_TRACES_SAMPLE_RATE": os.Getenv("MEWST_SENTRY_TRACES_SAMPLE_RATE"),
 		"MEWST_SENTRY_DEBUG":              os.Getenv("MEWST_SENTRY_DEBUG"),
+		"MEWST_S3_BUCKET_NAME":            os.Getenv("MEWST_S3_BUCKET_NAME"),
+		"MEWST_S3_ENDPOINT":               os.Getenv("MEWST_S3_ENDPOINT"),
+		"MEWST_S3_ACCESS_KEY_ID":          os.Getenv("MEWST_S3_ACCESS_KEY_ID"),
+		"MEWST_S3_SECRET_ACCESS_KEY":      os.Getenv("MEWST_S3_SECRET_ACCESS_KEY"),
+		"MEWST_S3_REGION":                 os.Getenv("MEWST_S3_REGION"),
 	}
 
 	// 必須の環境変数を設定
@@ -53,6 +58,17 @@ func setupTestEnv(t *testing.T) func() {
 	// [Ja] 各テストが MEWST_TURNSTILE_DISABLE を明示的に制御し、実 .env が config テストの
 	// 挙動を変えないよう、デフォルトでは未設定にする。
 	_ = os.Unsetenv("MEWST_TURNSTILE_DISABLE")
+
+	// Keep MEWST_S3_* unset by default so each test controls the export storage
+	// configuration explicitly and a real .env cannot alter config test behavior.
+	//
+	// [Ja] 各テストがエクスポート用ストレージ設定を明示的に制御し、実 .env が
+	// config テストの挙動を変えないよう、MEWST_S3_* はデフォルトでは未設定にする。
+	_ = os.Unsetenv("MEWST_S3_BUCKET_NAME")
+	_ = os.Unsetenv("MEWST_S3_ENDPOINT")
+	_ = os.Unsetenv("MEWST_S3_ACCESS_KEY_ID")
+	_ = os.Unsetenv("MEWST_S3_SECRET_ACCESS_KEY")
+	_ = os.Unsetenv("MEWST_S3_REGION")
 
 	// クリーンアップ関数を返す
 	return func() {
@@ -931,6 +947,196 @@ func TestGetGitCommitHash(t *testing.T) {
 			got := getGitCommitHash()
 			if got != tt.want {
 				t.Errorf("getGitCommitHash() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestS3Readiness is the contract test for the export storage readiness: all
+// unset is disabled, the full required set is ready, and any partial set
+// (including a region on its own) is invalid.
+//
+// [Ja] TestS3Readiness はエクスポート用ストレージ readiness の契約テスト。
+// 全項目未設定は disabled、必須項目の完全設定は ready、部分設定 (リージョンのみの
+// 設定を含む) は invalid になる。
+func TestS3Readiness(t *testing.T) {
+	t.Parallel()
+
+	const (
+		bucket    = "mewst-export-test"
+		endpoint  = "https://example.r2.cloudflarestorage.com"
+		accessKey = "test-access-key-id"
+		secretKey = "test-secret-access-key"
+	)
+
+	tests := []struct {
+		name string
+		cfg  Config
+		want S3Readiness
+	}{
+		{
+			name: "全項目未設定: disabled",
+			cfg:  Config{},
+			want: S3ReadinessDisabled,
+		},
+		{
+			name: "必須 4 項目設定: ready",
+			cfg: Config{
+				S3BucketName:      bucket,
+				S3Endpoint:        endpoint,
+				S3AccessKeyID:     accessKey,
+				S3SecretAccessKey: secretKey,
+			},
+			want: S3ReadinessReady,
+		},
+		{
+			name: "必須 4 項目 + リージョン設定: ready",
+			cfg: Config{
+				S3BucketName:      bucket,
+				S3Endpoint:        endpoint,
+				S3AccessKeyID:     accessKey,
+				S3SecretAccessKey: secretKey,
+				S3Region:          "apac",
+			},
+			want: S3ReadinessReady,
+		},
+		{
+			name: "バケットのみ設定: invalid",
+			cfg:  Config{S3BucketName: bucket},
+			want: S3ReadinessInvalid,
+		},
+		{
+			name: "シークレットのみ欠け: invalid",
+			cfg: Config{
+				S3BucketName:  bucket,
+				S3Endpoint:    endpoint,
+				S3AccessKeyID: accessKey,
+			},
+			want: S3ReadinessInvalid,
+		},
+		{
+			name: "リージョンのみ設定: invalid",
+			cfg:  Config{S3Region: "auto"},
+			want: S3ReadinessInvalid,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := tt.cfg.S3Readiness(); got != tt.want {
+				t.Errorf("S3Readiness() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestLoad_S3Config verifies the MEWST_S3_* loading contract: the process boots
+// with every variable unset (exports disabled), boots with the full set
+// (region defaulting to "auto"), and fails to boot on a partial set.
+//
+// [Ja] TestLoad_S3Config は MEWST_S3_* の読み込み契約を検証する。全項目未設定なら
+// 起動でき (エクスポート無効)、完全設定でも起動でき (リージョンは "auto" に既定化)、
+// 部分設定では起動に失敗する。
+func TestLoad_S3Config(t *testing.T) {
+	const (
+		bucket    = "mewst-export-test"
+		endpoint  = "https://example.r2.cloudflarestorage.com"
+		accessKey = "test-access-key-id"
+		secretKey = "test-secret-access-key"
+	)
+
+	tests := []struct {
+		name          string
+		env           map[string]string
+		wantErr       bool
+		wantReadiness S3Readiness
+		wantRegion    string
+	}{
+		{
+			name:          "全項目未設定: エクスポート無効のまま起動できる",
+			env:           map[string]string{},
+			wantErr:       false,
+			wantReadiness: S3ReadinessDisabled,
+			wantRegion:    "",
+		},
+		{
+			name: "完全設定 (リージョンあり): 起動できる",
+			env: map[string]string{
+				"MEWST_S3_BUCKET_NAME":       bucket,
+				"MEWST_S3_ENDPOINT":          endpoint,
+				"MEWST_S3_ACCESS_KEY_ID":     accessKey,
+				"MEWST_S3_SECRET_ACCESS_KEY": secretKey,
+				"MEWST_S3_REGION":            "apac",
+			},
+			wantErr:       false,
+			wantReadiness: S3ReadinessReady,
+			wantRegion:    "apac",
+		},
+		{
+			name: "完全設定 (リージョンなし): auto に既定化して起動できる",
+			env: map[string]string{
+				"MEWST_S3_BUCKET_NAME":       bucket,
+				"MEWST_S3_ENDPOINT":          endpoint,
+				"MEWST_S3_ACCESS_KEY_ID":     accessKey,
+				"MEWST_S3_SECRET_ACCESS_KEY": secretKey,
+			},
+			wantErr:       false,
+			wantReadiness: S3ReadinessReady,
+			wantRegion:    "auto",
+		},
+		{
+			name: "部分設定 (バケットのみ): 起動時エラー",
+			env: map[string]string{
+				"MEWST_S3_BUCKET_NAME": bucket,
+			},
+			wantErr: true,
+		},
+		{
+			name: "部分設定 (シークレット欠け): 起動時エラー",
+			env: map[string]string{
+				"MEWST_S3_BUCKET_NAME":   bucket,
+				"MEWST_S3_ENDPOINT":      endpoint,
+				"MEWST_S3_ACCESS_KEY_ID": accessKey,
+			},
+			wantErr: true,
+		},
+		{
+			name: "リージョンのみ設定: 構成ミスとして起動時エラー",
+			env: map[string]string{
+				"MEWST_S3_REGION": "auto",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanup := setupTestEnv(t)
+			defer cleanup()
+
+			for key, value := range tt.env {
+				_ = os.Setenv(key, value)
+			}
+
+			cfg, err := Load()
+
+			if tt.wantErr {
+				if err == nil {
+					t.Fatal("Load() should return error for a partial MEWST_S3_* configuration")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Load() failed: %v", err)
+			}
+			if got := cfg.S3Readiness(); got != tt.wantReadiness {
+				t.Errorf("S3Readiness() = %q, want %q", got, tt.wantReadiness)
+			}
+			if cfg.S3Region != tt.wantRegion {
+				t.Errorf("S3Region = %q, want %q", cfg.S3Region, tt.wantRegion)
 			}
 		})
 	}

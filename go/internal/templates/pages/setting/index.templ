@@ -1,0 +1,97 @@
+package setting
+
+import "github.com/mewstcom/mewst/go/internal/templates"
+
+// IndexPageData holds the data for the settings menu page. ExportEnabled comes
+// from the export feature flag and decides whether the export entry is listed.
+//
+// [Ja] IndexPageData は設定メニューページのデータを保持する。ExportEnabled は
+// エクスポートのフィーチャーフラグ由来で、エクスポート項目を一覧に載せるかを決める。
+type IndexPageData struct {
+	CSRFToken     string
+	ExportEnabled bool
+}
+
+// Index renders the settings menu with links to its subpages and the sign-out
+// form.
+//
+// [Ja] Index はサブページへのリンクとログアウトフォームを持つ設定メニューを描画する。
+templ Index(data IndexPageData) {
+	<div class="mx-auto w-full max-w-2xl px-4 py-4">
+		<h1 class="text-2xl font-semibold antialiased">
+			{ templates.T(ctx, "setting_index_heading") }
+		</h1>
+
+		<hr class="my-4"/>
+
+		<div class="card rounded-xl bg-white p-4 dark:bg-secondary">
+			// Give this navigation a distinct label because the shared layout also
+			// renders top and bottom navigation landmarks.
+			//
+			// [Ja] 共通レイアウトはトップとボトムにもナビゲーションランドマークを描画するため、
+			// このナビゲーションには固有のラベルを付ける。
+			<nav aria-label={ templates.T(ctx, "setting_index_menu_label") }>
+				<ul class="flex flex-col">
+					<li>
+						@settingMenuLink(templates.SettingProfilePath(), templates.T(ctx, "setting_index_profile_link"))
+					</li>
+					<li>
+						@settingMenuLink(templates.SettingUserPath(), templates.T(ctx, "setting_index_user_link"))
+					</li>
+					<li>
+						@settingMenuLink(templates.SettingEmailPath(), templates.T(ctx, "setting_index_email_link"))
+					</li>
+					// Export is listed last: the entries above it act on the account
+					// itself, while export acts on the posts the account has written.
+					//
+					// [Ja] エクスポートは最後に置く。上の各項目がアカウント自体を扱うのに対し、
+					// エクスポートはアカウントが書いたポストを扱うためである。
+					if data.ExportEnabled {
+						<li>
+							@settingMenuLink(templates.SettingExportPath(), templates.T(ctx, "setting_index_export_link"))
+						</li>
+					}
+				</ul>
+			</nav>
+
+			// Use an outline (not filled) button so sign-out does not overpower the
+			// plain menu rows above, and guard the submit with a native confirm so an
+			// accidental click does not sign the user out. With JavaScript disabled the
+			// onclick is skipped and the form submits directly, which is acceptable
+			// because logging out is a fail-open action.
+			//
+			// [Ja] ログアウトが上の素のメニュー行より過度に目立たないよう、塗りつぶしではなく
+			// アウトラインのボタンにし、誤クリックでのログアウトを防ぐため送信をネイティブの
+			// 確認ダイアログでガードする。JavaScript 無効時は onclick が実行されずフォームが
+			// そのまま送信されるが、ログアウトは fail-open な操作のため許容する。
+			<div class="text-center">
+				<form action={ templates.SignOutPath() } method="POST">
+					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+					<button
+						class="btn rounded-full"
+						data-variant="outline"
+						type="submit"
+						{ templ.Attributes{"onclick": "return confirm('" + templates.T(ctx, "setting_index_sign_out_confirm") + "')"}... }
+					>
+						<span aria-hidden="true">
+							@templates.Icon("sign-out-regular")
+						</span>
+						{ templates.T(ctx, "setting_index_sign_out") }
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+templ settingMenuLink(href templates.Path, label string) {
+	<a
+		href={ href }
+		class="flex min-h-11 items-center justify-between rounded-md px-3 py-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+	>
+		{ label }
+		<span aria-hidden="true">
+			@templates.Icon("caret-right-regular", "h-5 w-5 text-muted-foreground")
+		</span>
+	</a>
+}

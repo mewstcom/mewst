@@ -44,6 +44,8 @@ func TestDefault(t *testing.T) {
 		// [Ja] 固定ラッパーの完全な class 一覧を検証し、モバイル用の透明な
 		// ヒット領域がデスクトップのコンテンツ上に残ることを防ぐ。
 		`class="fixed bottom-0 left-1/2 z-50 -translate-x-1/2 py-4 px-safe-offset-4 mb-safe lg:hidden"`,
+		"<footer",
+		`class="mb-[100px] lg:mb-4"`,
 		`href="/@alice"`, // navbar メニュー (プロフィールリンク)
 		`href="#main"`,   // skip link (WCAG 2.4.1). [Ja] スキップリンク (WCAG 2.4.1)
 		"メインコンテンツへスキップ",                 // skip link label. [Ja] スキップリンクのラベル

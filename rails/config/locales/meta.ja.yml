@@ -27,7 +27,6 @@ ja:
       settings:
         emails:
           show: メールアドレスの変更
-        index: 設定
         profiles:
           show: プロフィールの編集
         users:

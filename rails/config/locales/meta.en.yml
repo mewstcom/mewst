@@ -27,7 +27,6 @@ en:
       settings:
         emails:
           show: Change email
-        index: Settings
         profiles:
           show: Edit profile
         users:

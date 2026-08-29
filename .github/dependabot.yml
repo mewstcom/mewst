@@ -18,6 +18,13 @@ updates:
     # メジャー更新は破壊的変更を含むことがあり個別 PR でレビューしたいため、
     # 以下のすべてのグループで update-types を patch / minor のみに絞っている
     groups:
+      aws-sdk-go-v2:
+        patterns:
+          - "github.com/aws/aws-sdk-go-v2"
+          - "github.com/aws/aws-sdk-go-v2/*"
+        update-types:
+          - "patch"
+          - "minor"
       river:
         patterns:
           - "github.com/riverqueue/*"

@@ -37,7 +37,7 @@ templ New(data NewPageData) {
 		@components.AuthFormCard() {
 			<form
 				action="/sign_up"
-				class="form grid gap-6"
+				class="grid gap-6"
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -47,7 +47,7 @@ templ New(data NewPageData) {
 				}
 
 				<div class="grid gap-2">
-					<label for="email">
+					<label class="label" for="email">
 						{ templates.T(ctx, "sign_up_new_email_label") }
 					</label>
 
@@ -59,6 +59,7 @@ templ New(data NewPageData) {
 						}
 						autocomplete="email"
 						autofocus
+						class="input"
 						id="email"
 						name="email"
 						required
@@ -79,7 +80,7 @@ templ New(data NewPageData) {
 				@components.Turnstile(data.TurnstileSiteKey)
 
 				<button
-					class="btn-primary rounded-full w-fit"
+					class="btn rounded-full w-fit"
 					tabindex="2"
 					type="submit"
 				>

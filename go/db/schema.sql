@@ -1,6 +1,6 @@
 
 -- Dumped from database version 18.3 (Debian 18.3-1.pgdg13+1)
--- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
+-- Dumped by pg_dump version 18.6 (Debian 18.6-1.pgdg13+2)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -131,6 +131,55 @@ CREATE TABLE public.email_confirmations (
     succeeded_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: export_completion_notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.export_completion_notifications (
+    export_id uuid NOT NULL,
+    actor_id uuid NOT NULL,
+    recipient_email public.citext NOT NULL,
+    locale character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    profile_id uuid NOT NULL
+);
+
+
+--
+-- Name: export_posts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.export_posts (
+    export_id uuid NOT NULL,
+    post_id uuid NOT NULL,
+    content text NOT NULL,
+    published_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: exports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exports (
+    id uuid DEFAULT public.generate_ulid() NOT NULL,
+    profile_id uuid NOT NULL,
+    actor_id uuid NOT NULL,
+    status character varying DEFAULT 'queued'::character varying NOT NULL,
+    object_key character varying,
+    attempt_count integer DEFAULT 0 NOT NULL,
+    started_at timestamp with time zone,
+    finished_at timestamp with time zone,
+    completion_notified_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT exports_attempt_count_check CHECK ((attempt_count >= 0)),
+    CONSTRAINT exports_completion_notified_at_check CHECK (((completion_notified_at IS NULL) OR ((status)::text = 'succeeded'::text))),
+    CONSTRAINT exports_state_fields_check CHECK (((((status)::text = 'queued'::text) AND (object_key IS NULL) AND (started_at IS NULL) AND (finished_at IS NULL)) OR (((status)::text = 'started'::text) AND (object_key IS NULL) AND (started_at IS NOT NULL) AND (finished_at IS NULL)) OR (((status)::text = 'succeeded'::text) AND (object_key IS NOT NULL) AND (started_at IS NOT NULL) AND (finished_at IS NOT NULL)) OR (((status)::text = 'failed'::text) AND (object_key IS NULL) AND (started_at IS NOT NULL) AND (finished_at IS NOT NULL)))),
+    CONSTRAINT exports_status_check CHECK (((status)::text = ANY ((ARRAY['queued'::character varying, 'started'::character varying, 'succeeded'::character varying, 'failed'::character varying])::text[])))
 );
 
 
@@ -406,7 +455,8 @@ CREATE TABLE public.profiles (
     last_post_at timestamp(6) without time zone,
     gravatar_email character varying DEFAULT ''::character varying NOT NULL,
     gravatar_url character varying DEFAULT ''::character varying NOT NULL,
-    avatar_kind character varying DEFAULT 'default'::character varying NOT NULL
+    avatar_kind character varying DEFAULT 'default'::character varying NOT NULL,
+    export_deletion_started_at timestamp with time zone
 );
 
 
@@ -643,6 +693,14 @@ ALTER TABLE ONLY public.river_notification ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: actors actors_id_profile_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT actors_id_profile_id_key UNIQUE (id, profile_id);
+
+
+--
 -- Name: actors actors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -664,6 +722,30 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.email_confirmations
     ADD CONSTRAINT email_confirmations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: export_completion_notifications export_completion_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_completion_notifications
+    ADD CONSTRAINT export_completion_notifications_pkey PRIMARY KEY (export_id);
+
+
+--
+-- Name: export_posts export_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_posts
+    ADD CONSTRAINT export_posts_pkey PRIMARY KEY (export_id, published_at, post_id);
+
+
+--
+-- Name: exports exports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exports
+    ADD CONSTRAINT exports_pkey PRIMARY KEY (id);
 
 
 --
@@ -943,6 +1025,13 @@ CREATE INDEX idx_rate_limits_window_start ON public.rate_limits USING btree (win
 
 
 --
+-- Name: index_actors_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_actors_on_profile_id ON public.actors USING btree (profile_id);
+
+
+--
 -- Name: index_actors_on_user_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -961,6 +1050,76 @@ CREATE INDEX index_email_confirmations_on_created_at ON public.email_confirmatio
 --
 
 CREATE UNIQUE INDEX index_email_confirmations_on_email_and_code ON public.email_confirmations USING btree (email, code);
+
+
+--
+-- Name: index_export_completion_notifications_on_actor_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_export_completion_notifications_on_actor_id ON public.export_completion_notifications USING btree (actor_id);
+
+
+--
+-- Name: index_export_completion_notifications_on_created_at_and_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_export_completion_notifications_on_created_at_and_id ON public.export_completion_notifications USING btree (created_at, export_id);
+
+
+--
+-- Name: index_export_completion_notifications_on_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_export_completion_notifications_on_profile_id ON public.export_completion_notifications USING btree (profile_id);
+
+
+--
+-- Name: index_exports_on_actor_id_and_profile_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_actor_id_and_profile_id ON public.exports USING btree (actor_id, profile_id);
+
+
+--
+-- Name: index_exports_on_created_at_where_queued; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_created_at_where_queued ON public.exports USING btree (created_at, id) WHERE ((status)::text = 'queued'::text);
+
+
+--
+-- Name: index_exports_on_finished_at_where_unnotified; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_finished_at_where_unnotified ON public.exports USING btree (finished_at, id) WHERE (((status)::text = 'succeeded'::text) AND (completion_notified_at IS NULL));
+
+
+--
+-- Name: index_exports_on_profile_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_profile_id_and_created_at ON public.exports USING btree (profile_id, created_at DESC, id DESC);
+
+
+--
+-- Name: index_exports_on_profile_id_where_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_exports_on_profile_id_where_active ON public.exports USING btree (profile_id) WHERE ((status)::text = ANY ((ARRAY['queued'::character varying, 'started'::character varying])::text[]));
+
+
+--
+-- Name: index_exports_on_profile_id_where_succeeded; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_profile_id_where_succeeded ON public.exports USING btree (profile_id) WHERE ((status)::text = 'succeeded'::text);
+
+
+--
+-- Name: index_exports_on_started_at_where_started; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_exports_on_started_at_where_started ON public.exports USING btree (started_at, id) WHERE ((status)::text = 'started'::text);
 
 
 --
@@ -1419,6 +1578,38 @@ CREATE INDEX river_notification_topic_id_idx ON public.river_notification USING 
 
 
 --
+-- Name: export_completion_notifications export_completion_notifications_actor_profile_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_completion_notifications
+    ADD CONSTRAINT export_completion_notifications_actor_profile_fkey FOREIGN KEY (actor_id, profile_id) REFERENCES public.actors(id, profile_id) ON DELETE CASCADE;
+
+
+--
+-- Name: export_posts export_posts_export_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.export_posts
+    ADD CONSTRAINT export_posts_export_id_fkey FOREIGN KEY (export_id) REFERENCES public.exports(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exports exports_actor_profile_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exports
+    ADD CONSTRAINT exports_actor_profile_fkey FOREIGN KEY (actor_id, profile_id) REFERENCES public.actors(id, profile_id);
+
+
+--
+-- Name: exports exports_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exports
+    ADD CONSTRAINT exports_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id);
+
+
+--
 -- Name: feature_flags feature_flags_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1670,4 +1861,13 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260204100000'),
     ('20260226100000'),
     ('20260526063449'),
-    ('20260712112942');
+    ('20260712112942'),
+    ('20260724060554'),
+    ('20260730151312'),
+    ('20260801162000'),
+    ('20260801162001'),
+    ('20260801170000'),
+    ('20260801210000'),
+    ('20260804120000'),
+    ('20260805120000'),
+    ('20260805161245');
