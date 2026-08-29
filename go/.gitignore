@@ -5,8 +5,9 @@
 /.pnpm-store
 /bin
 /e2e/node_modules
+/mewst
 /node_modules
-/server
+/seed-users.toml
 /static/css/*
 !/static/css/.gitkeep
 /static/js/*

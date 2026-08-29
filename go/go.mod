@@ -4,6 +4,7 @@ go 1.26.4
 
 require (
 	github.com/BurntSushi/toml v1.6.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/a-h/templ v0.3.1020
 	github.com/aws/aws-sdk-go-v2 v1.43.8
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.38

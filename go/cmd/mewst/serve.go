@@ -48,8 +48,11 @@ import (
 	"github.com/mewstcom/mewst/go/internal/worker"
 )
 
-func main() {
-	// 設定を読み込み
+// runServe starts the HTTP server and blocks until it has finished shutting
+// down.
+//
+// [Ja] runServe は HTTP サーバーを起動し、シャットダウンが完了するまでブロックする。
+func runServe() {
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("設定の読み込みに失敗しました", "error", err)
@@ -58,8 +61,11 @@ func main() {
 
 	slog.Info("サーバーを起動します", "port", cfg.Port, "env", cfg.Env)
 
-	// Sentry を初期化 (DSN が空の場合はスキップされる)。
-	// データベース接続より前に初期化することで、起動時のエラーも Sentry に送信できる。
+	// Initialize Sentry (skipped when the DSN is empty). Initializing it before
+	// the database connection lets startup errors reach Sentry too.
+	//
+	// [Ja] Sentry を初期化する (DSN が空の場合はスキップされる)。データベース接続より
+	// 前に初期化することで、起動時のエラーも Sentry に送信できる。
 	if err := mewstsentry.Init(mewstsentry.Config{
 		DSN:              cfg.SentryDSN,
 		Environment:      cfg.SentryEnvironment,
@@ -72,16 +78,25 @@ func main() {
 	}
 	defer mewstsentry.Flush(2 * time.Second)
 
-	// slog のデフォルトハンドラーを「標準出力 + Sentry」のファンアウトに差し替える。
-	// これ以降の slog.ErrorContext / slog.Error 呼び出しは自動的に Sentry のイベントとして送信される。
-	// 各層 (handler / usecase / validator / repository / middleware) で sentry.CaptureError を
-	// 明示的に呼ぶ必要がない。
-	// Sentry 初期化失敗時のログは引き続き Go 1.21+ のデフォルトハンドラー (TextHandler @ stderr) に出すべきため、
-	// SetDefault は mewstsentry.Init 成功後に呼ぶ。
+	// Replace slog's default handler with a fan-out to stderr and Sentry. Every
+	// slog.ErrorContext / slog.Error call from here on is sent as a Sentry event,
+	// so no layer (handler / usecase / validator / repository / middleware) has to
+	// call sentry.CaptureError explicitly.
+	//
+	// SetDefault is called after mewstsentry.Init succeeds, because a log written
+	// when that initialization fails should still reach the Go 1.21+ default
+	// handler (TextHandler @ stderr).
+	//
+	// [Ja] slog のデフォルトハンドラーを「標準エラー出力 + Sentry」のファンアウトに
+	// 差し替える。これ以降の slog.ErrorContext / slog.Error 呼び出しは自動的に Sentry の
+	// イベントとして送信されるため、各層 (handler / usecase / validator / repository /
+	// middleware) で sentry.CaptureError を明示的に呼ぶ必要がない。
+	//
+	// SetDefault を mewstsentry.Init の成功後に呼ぶのは、初期化に失敗したときのログを
+	// 引き続き Go 1.21+ のデフォルトハンドラー (TextHandler @ stderr) へ出すため。
 	baseSlogHandler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelInfo})
 	slog.SetDefault(slog.New(mewstsentry.NewSlogHandler(baseSlogHandler)))
 
-	// データベース接続
 	db, err := database.Connect(cfg.DatabaseDSN())
 	if err != nil {
 		slog.Error("データベース接続に失敗しました", "error", err)
@@ -94,10 +109,8 @@ func main() {
 	}()
 	slog.Info("データベースに接続しました")
 
-	// クエリの初期化
 	queries := query.New(db)
 
-	// リポジトリの初期化
 	userRepo := repository.NewUserRepository(queries)
 	sessionRepo := repository.NewSessionRepository(queries)
 	actorRepo := repository.NewActorRepository(queries)
@@ -117,7 +130,6 @@ func main() {
 	exportProfileDeletionGuardRepo := repository.NewExportProfileDeletionGuardRepository(db)
 	exportPostRepo := repository.NewExportPostRepository(queries)
 
-	// セッションマネージャーの初期化
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
@@ -174,7 +186,6 @@ func main() {
 		jobDispatcher,
 	)
 
-	// Workerの初期化
 	workerClient, err := worker.NewClient(context.Background(), cfg.DatabaseDSN(), emailSender, fanoutPostUC, addPostToTimelineUC, exportUCs)
 	if err != nil {
 		slog.Error("Workerクライアントの初期化に失敗しました", "error", err)
@@ -186,17 +197,14 @@ func main() {
 	// [Ja] River クライアント生成後に DeferredInserter へ実体を注入する (循環を断った配線の完了)。
 	deferredInserter.SetInserter(workerClient.Client())
 
-	// Workerを開始
 	if err := workerClient.Start(context.Background()); err != nil {
 		slog.Error("Workerの開始に失敗しました", "error", err)
 		os.Exit(1)
 	}
 	slog.Info("Workerを開始しました")
 
-	// レートリミッターの初期化
 	rateLimiter := ratelimit.NewLimiter(rateLimitRepo)
 
-	// バリデーターの初期化
 	signInValidator := validator.NewSignInCreateValidator(userRepo)
 	signUpValidator := validator.NewSignUpCreateValidator(userRepo)
 	emailConfirmationValidator := validator.NewEmailConfirmationCreateValidator(emailConfirmationRepo)
@@ -206,7 +214,6 @@ func main() {
 	postCreateValidator := validator.NewPostCreateValidator()
 	linkDataFetcherValidator := validator.NewLinkDataFetcherValidator()
 
-	// ユースケースの初期化
 	createSessionUC := usecase.NewCreateSessionUsecase(actorRepo, sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUsecase(sessionRepo)
 	createSignInUC := usecase.NewCreateSignInUsecase(signInValidator, actorRepo, sessionRepo)
@@ -263,10 +270,8 @@ func main() {
 	// 拒否する。
 	getExportDownloadUC := usecase.NewGetExportDownloadUsecase(userProfileRepo, userRepo, exportRepo, exportStorage, exportStorageReady)
 
-	// Turnstileクライアントの初期化
 	turnstileClient := turnstile.NewClient(cfg.TurnstileSecretKey)
 
-	// ハンドラーの初期化
 	manifestHandler := manifest.NewHandler(cfg)
 	signInHandler := sign_in.NewHandler(cfg, sessionMgr, flashMgr, createSignInUC, turnstileClient)
 	signUpHandler := sign_up.NewHandler(cfg, sessionMgr, flashMgr, createSignUpUC, turnstileClient, rateLimiter)
@@ -281,19 +286,19 @@ func main() {
 	exportHandler := export.NewHandler(cfg, flashMgr, getExportShowUC, createExportUC)
 	exportDownloadHandler := export_download.NewHandler(getExportDownloadUC)
 
-	// ミドルウェアの初期化
 	authMiddleware := middleware.NewAuth(sessionMgr)
 	csrfMiddleware := middleware.NewCSRF(cfg)
 	sentryUserContextMW := middleware.NewSentryUserContext(profileRepo)
 
-	// Sentry の HTTP ミドルウェア。
-	// Repanic: true により、panic を Sentry に送ったあと再 panic させて後続の Recoverer に処理を委ねる。
+	// Sentry's HTTP middleware. Repanic: true sends the panic to Sentry and then
+	// re-panics, leaving the response to the Recoverer that follows it.
+	//
+	// [Ja] Sentry の HTTP ミドルウェア。Repanic: true により、panic を Sentry に送った
+	// あと再 panic させて、後続の Recoverer に処理を委ねる。
 	sentryHTTPHandler := sentryhttp.New(sentryhttp.Options{Repanic: true})
 
-	// Chiルーターの設定
 	r := chi.NewRouter()
 
-	// 基本ミドルウェア
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.RequestID)
 	// Client IP is resolved on demand via internal/clientip (CF-Connecting-IP first),
@@ -304,20 +309,37 @@ func main() {
 	// chi の IP ミドルウェアは意図的に登録しない。chi の RealIP は IP spoofing
 	// (GHSA-3fxj-6jh8-hvhx) のため deprecated でもあり、再導入しないこと。
 
-	// Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
-	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic しないため、
-	// sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、sentryhttp が panic を見られない。
+	// Register Recoverer as the outer middleware (in chi, the first r.Use is the
+	// outermost link of the chain). chi's Recoverer recovers everything except
+	// http.ErrAbortHandler, writes a 500 and does not re-panic, so unless it sits
+	// outside sentryhttp (= where a propagating panic arrives last), sentryhttp
+	// never gets to see the panic.
+	//
+	// [Ja] Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
+	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic
+	// しないため、sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、
+	// sentryhttp が panic を見られない。
 	r.Use(chimiddleware.Recoverer)
-	// sentryhttp は Recoverer より「あとに登録」= chi のチェーンでは innermost (= handler に近い側)。
-	// handler の panic を sentryhttp の defer がまず捕捉し、Sentry に送信したあと Repanic: true で再 panic。
-	// 再 panic は outer の Recoverer に到達し、Recoverer が 500 レスポンスを書いて終了する。
+	// sentryhttp is registered after Recoverer, which places it further inside the
+	// chi chain (closer to the handler). A panic in a handler is caught first by
+	// sentryhttp's defer, sent to Sentry, and re-panicked because of Repanic: true.
+	// That re-panic reaches the outer Recoverer, which writes the 500 response and
+	// ends the request.
+	//
+	// [Ja] sentryhttp は Recoverer より「あとに登録」= chi のチェーンでは innermost
+	// (= handler に近い側)。handler の panic を sentryhttp の defer がまず捕捉し、
+	// Sentry に送信したあと Repanic: true で再 panic する。再 panic は outer の
+	// Recoverer に到達し、Recoverer が 500 レスポンスを書いて終了する。
 	r.Use(sentryHTTPHandler.Handle)
-	// chi のルートパターン (例: "/users/{id}") を Sentry のトランザクション名に上書きする。
-	// sentryhttp より「あとに登録」することで、defer (LIFO) のタイミングで sentryhttp の
-	// transaction.Finish() より先に Name を確定できる。
+	// Overwrite the Sentry transaction name with chi's route pattern (for example
+	// "/users/{id}"). Registering it after sentryhttp makes its defer run (LIFO)
+	// before sentryhttp's transaction.Finish(), so the name is settled first.
+	//
+	// [Ja] chi のルートパターン (例: "/users/{id}") を Sentry のトランザクション名に
+	// 上書きする。sentryhttp より「あとに登録」することで、defer (LIFO) のタイミングで
+	// sentryhttp の transaction.Finish() より先に Name を確定できる。
 	r.Use(middleware.SentryTransaction)
 
-	// リバースプロキシの設定（Rails版へのプロキシ）
 	if cfg.RailsAppURL != "" {
 		proxyMiddleware, err := middleware.NewReverseProxyMiddleware(cfg.RailsAppURL, cfg, featureFlagRepo)
 		if err != nil {
@@ -336,23 +358,27 @@ func main() {
 	// パースするミドルウェア / ハンドラー (CSRF、MethodOverride、各ハンドラー) より前に置く。
 	r.Use(middleware.BodyLimit)
 
-	// i18n ミドルウェア(Accept-Language ヘッダーから ctx にロケールをセットする)
-	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには走らせない
+	// The i18n middleware sets the locale on the context from the Accept-Language
+	// header. Placed after reverse_proxy so it does not run for the requests that
+	// are proxied to the Rails version.
+	//
+	// [Ja] i18n ミドルウェアは Accept-Language ヘッダーから ctx にロケールをセットする。
+	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには
+	// 走らせない。
 	r.Use(i18n.Middleware)
 
-	// フラッシュメッセージをCookieからcontextへロード（Go版の全ルートに適用）
 	r.Use(flashMgr.Middleware)
 
-	// 404ハンドラーの設定（ルーティングにマッチしないパス用）
 	r.NotFound(httperror.NotFound)
 
-	// 静的ファイルの配信 (Tailwind CLI + esbuild のビルド結果)
+	// Serve the static files, which are the build output of the Tailwind CLI and
+	// esbuild.
+	//
+	// [Ja] 静的ファイルを配信する (Tailwind CLI と esbuild のビルド結果)。
 	fileServer := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	// ヘルスチェックエンドポイント
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		// DBの接続確認
 		if err := db.PingContext(r.Context()); err != nil {
 			slog.ErrorContext(r.Context(), "ヘルスチェック: データベース接続エラー", "error", err)
 			http.Error(w, "DB connection failed", http.StatusServiceUnavailable)
@@ -362,10 +388,8 @@ func main() {
 		_, _ = w.Write([]byte("OK"))
 	})
 
-	// Web App Manifest
 	r.Get("/manifest.json", manifestHandler.Show)
 
-	// ログイン・サインアップページ（未認証ユーザーのみ）
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
@@ -403,26 +427,28 @@ func main() {
 		r.Post("/sign_out", signOutHandler.Delete)
 	})
 
-	// パスワードリセット・メール確認・アカウント作成（未認証ユーザーのみ）
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMiddleware.Middleware)
 		r.Use(authMiddleware.RequireNoAuth)
 		r.Use(sentryUserContextMW.Middleware)
 
-		// パスワードリセット開始（メールアドレス入力）
 		r.Get("/password_reset", passwordResetHandler.New)
 		r.Post("/password_reset", passwordResetHandler.Create)
 
-		// メール確認（確認コード入力）
 		r.Get("/email_confirmation", emailConfirmationHandler.New)
 		r.Post("/email_confirmation", emailConfirmationHandler.Create)
 
-		// パスワード更新（新しいパスワード設定）
 		r.Get("/password/edit", passwordHandler.Edit)
+		// PATCH and POST are registered for the same handler because the password
+		// edit form is an HTML form: it submits with method="POST" and carries
+		// _method=PATCH, so the request reaches this server as a POST.
+		//
+		// [Ja] PATCH と POST を同じハンドラーへ登録している。パスワード編集フォームは
+		// HTML フォームで、method="POST" に _method=PATCH を添えて送信するため、
+		// リクエストは POST で本サーバーに届く。
 		r.Patch("/password", passwordHandler.Update)
-		r.Post("/password", passwordHandler.Update) // HTMLフォームからのPOST対応（_method=PATCH）
+		r.Post("/password", passwordHandler.Update)
 
-		// アカウント作成（メール確認後）
 		r.Get("/accounts/new", accountHandler.New)
 		r.Post("/accounts", accountHandler.Create)
 	})
@@ -473,12 +499,14 @@ func main() {
 		r.Get("/settings/export/download", exportDownloadHandler.Show)
 	})
 
-	// サーバー起動
-	// Dockerコンテナ内で動かす場合、0.0.0.0でリッスンする必要がある
+	// Listen on 0.0.0.0 rather than the loopback address: inside a Docker
+	// container a listener bound to loopback cannot be reached from outside it.
+	//
+	// [Ja] ループバックではなく 0.0.0.0 でリッスンする。Docker コンテナ内で動かす
+	// 場合、ループバックにバインドしたリスナーには外から到達できないため。
 	addr := fmt.Sprintf("0.0.0.0:%s", cfg.Port)
 	slog.Info("HTTPサーバーを起動します", "addr", addr)
 
-	// HTTPサーバーの作成
 	srv := &http.Server{
 		Addr:           addr,
 		Handler:        r,
@@ -488,7 +516,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	// Graceful shutdown のためのシグナルハンドリング
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt, syscall.SIGTERM)
@@ -499,7 +526,6 @@ func main() {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		// Workerを停止
 		if err := workerClient.Stop(shutdownCtx); err != nil {
 			slog.Error("Workerの停止に失敗しました", "error", err)
 		} else {
@@ -511,7 +537,6 @@ func main() {
 		}
 	}()
 
-	// サーバー起動
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		slog.Error("サーバーの起動に失敗しました", "error", err)
 		os.Exit(1)
