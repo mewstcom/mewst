@@ -3,6 +3,15 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require "spec_helper"
 ENV["RAILS_ENV"] ||= "test"
+
+# The mailer templates call ENV.fetch("MEWST_URL"), which raises when the variable is
+# absent. CI provides only DATABASE_URL and RAILS_ENV, so fall back to a dummy value.
+# A real value (injected by 1Password locally) still takes precedence.
+#
+# [Ja] メーラーのテンプレートが ENV.fetch("MEWST_URL") を呼ぶため、未定義だと例外になる。
+# CI は DATABASE_URL と RAILS_ENV しか渡さないのでダミー値で補う。
+# ローカルで 1Password から注入される実際の値がある場合はそちらが優先される。
+ENV["MEWST_URL"] ||= "https://mewst.test"
 require_relative "../config/environment"
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
