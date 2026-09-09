@@ -184,26 +184,62 @@ func (r *Runner) generate(ctx context.Context, roster *userRoster) ([]seedAccoun
 }
 
 // generateSeedData writes the seed data into tx, in the order the rows depend
-// on each other: the application every post is attributed to, and then the
-// accounts everything else hangs off.
+// on each other: the application every post is attributed to, then the
+// accounts everything else hangs off, then the posts those accounts wrote,
+// then the link cards a few more of their posts carry, then the follows and
+// the timelines all those posts fill, then the stamps those posts were given
+// and the notifications they raised, and last the exports, which stand for an
+// archive of the posts that exist by the time they are created.
 //
 // [Ja] generateSeedData は、行が互いに依存する順序でシードデータを tx へ書き込む。
 // すべてのポストの帰属先となるアプリケーションを作り、次に、それ以外のすべてが
-// ぶら下がるアカウントを作る。
+// ぶら下がるアカウントを作り、次に、そのアカウントが書いたポストを作り、次に、
+// さらに何件かのポストが持つリンクカードを作り、次に、フォローと、それらのポストが
+// 埋めるタイムラインを作り、次に、それらのポストが受け取ったスタンプと、それが
+// 起こした通知を作り、最後に、その時点で存在するポストのアーカイブを表すエクスポートを
+// 作る。
 func generateSeedData(ctx context.Context, tx *sql.Tx, roster *userRoster) ([]seedAccount, error) {
-	if err := createOauthApplication(ctx, tx); err != nil {
+	applicationID, err := createOauthApplication(ctx, tx)
+	if err != nil {
 		return nil, err
 	}
 
-	// One instant stands for the whole run. The accounts are placed relative
-	// to it, and a run that read the clock once per account would place two of
-	// them on either side of a month boundary depending on how long it took to
+	// One instant stands for the whole run. Everything is placed relative to
+	// it, and a run that read the clock again partway through would place two
+	// rows on either side of a month boundary depending on how long it took to
 	// get from the one to the other.
 	//
-	// [Ja] 実行全体を 1 つの時点で代表させる。アカウントはその時点を基準に配置される。
-	// アカウントごとに時計を読む実行は、一方から他方へ到達するまでにかかった時間に
-	// よって、2 つのアカウントを月境界の両側へ置くことになる。
-	return createAccounts(ctx, tx, roster, time.Now())
+	// [Ja] 実行全体を 1 つの時点で代表させる。すべてはその時点を基準に配置される。
+	// 途中でもう一度時計を読む実行は、一方から他方へ到達するまでにかかった時間に
+	// よって、2 つの行を月境界の両側へ置くことになる。
+	now := time.Now()
+
+	accounts, err := createAccounts(ctx, tx, roster, now)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := createPosts(ctx, tx, defaultAmounts, applicationID, accounts, now); err != nil {
+		return nil, err
+	}
+
+	if err := createLinks(ctx, tx, applicationID, accounts, now); err != nil {
+		return nil, err
+	}
+
+	if err := createFollows(ctx, tx, accounts, now); err != nil {
+		return nil, err
+	}
+
+	if err := createReactions(ctx, tx, defaultAmounts, accounts, now); err != nil {
+		return nil, err
+	}
+
+	if err := createExports(ctx, tx, accounts); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
 }
 
 // truncatesEveryManagedTable is why a seed run is confined to a development

@@ -1,8 +1,13 @@
 package seed
 
 import (
+	"context"
+	"database/sql"
 	"strings"
 	"testing"
+
+	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
 // TestRequireDevEnvironment_AllowsOnlyDev verifies that a run is refused under
@@ -98,5 +103,111 @@ func TestRequireDevEnvironment_AllowsOnlyDev(t *testing.T) {
 				t.Errorf("requireDevEnvironment(%q) のエラーが %q を含むことを期待したが %q だった", tt.env, want, err)
 			}
 		})
+	}
+}
+
+// TestGenerateSeedData exercises the actual generator sequence so that its
+// cross-generator contracts stay visible: link-card posts reach the home
+// timeline, and exports include every kept post while remaining in the state
+// assigned to each role.
+//
+// [Ja] TestGenerateSeedData は実際の生成順序を通し、生成器をまたぐ契約を見える形に
+// 保つ。リンクカードのポストがホームタイムラインへ届き、エクスポートが保持ポストの
+// すべてを含みながら、各役割へ割り当てられた状態で残ることを検証する。
+func TestGenerateSeedData(t *testing.T) {
+	t.Parallel()
+
+	_, tx := testutil.SetupTx(t)
+	ctx := context.Background()
+
+	accounts, err := generateSeedData(ctx, tx, newTestRoster(t))
+	if err != nil {
+		t.Fatalf("シードデータの生成に失敗: %v", err)
+	}
+
+	assertStoredLinks(t, ctx, tx, accounts)
+	posts := readLinkPosts(t, ctx, tx, accounts)
+	assertLinkPostsMatchRoster(t, posts, accounts)
+
+	main, err := accountForRole(accounts, roleMain)
+	if err != nil {
+		t.Fatalf("main のアカウントの取得に失敗: %v", err)
+	}
+	follower, err := accountForRole(accounts, roleFollower)
+	if err != nil {
+		t.Fatalf("follower のアカウントの取得に失敗: %v", err)
+	}
+
+	timeline := readHomeTimeline(t, ctx, tx, main.profile.ID)
+	followerCards := 0
+	for _, post := range posts {
+		if post.profileID != follower.profile.ID {
+			continue
+		}
+		followerCards++
+
+		publishedAt, ok := timeline[post.postID]
+		if !ok {
+			t.Errorf("follower のリンク %s を持つポストが main のホームタイムラインにない", post.canonicalURL)
+			continue
+		}
+		if !publishedAt.Equal(post.publishedAt) {
+			t.Errorf("リンク %s のタイムラインの公開日時 = %v, want %v", post.canonicalURL, publishedAt, post.publishedAt)
+		}
+	}
+	if followerCards == 0 {
+		t.Fatal("ホームタイムラインで検証する follower のカード付きポストがない")
+	}
+
+	assertGeneratedExports(t, ctx, tx, accounts)
+}
+
+// assertGeneratedExports verifies the role-to-status assignment independently
+// of exportStates and compares each non-terminal export's snapshot with all
+// posts its profile keeps after the full generator sequence.
+//
+// [Ja] assertGeneratedExports は、役割と状態の対応を exportStates から独立して検証し、
+// 終端状態でない各エクスポートの snapshot を、すべての生成器を通した後にその
+// プロフィールが保持するポストと突き合わせる。
+func assertGeneratedExports(
+	t *testing.T,
+	ctx context.Context,
+	tx *sql.Tx,
+	accounts []seedAccount,
+) {
+	t.Helper()
+
+	wantStatuses := map[seedRole]model.ExportStatus{
+		roleMain:     model.ExportStatusFailed,
+		roleFollower: model.ExportStatusQueued,
+		roleEnglish:  model.ExportStatusStarted,
+	}
+
+	for _, role := range allSeedRoles {
+		account, err := accountForRole(accounts, role)
+		if err != nil {
+			t.Fatalf("役割 %s のアカウントの取得に失敗: %v", role, err)
+		}
+
+		exports := readExports(t, ctx, tx, account.profile.ID)
+		wantStatus, holds := wantStatuses[role]
+		if !holds {
+			if len(exports) != 0 {
+				t.Errorf("役割 %s のエクスポートの件数 = %d, want 0", role, len(exports))
+			}
+			continue
+		}
+
+		if len(exports) != 1 {
+			t.Fatalf("役割 %s のエクスポートの件数 = %d, want 1", role, len(exports))
+		}
+
+		export := exports[0]
+		if export.status != wantStatus {
+			t.Errorf("役割 %s のエクスポートの状態 = %s, want %s", role, export.status, wantStatus)
+		}
+
+		assertExportStateFields(t, role, export)
+		assertExportSnapshot(t, ctx, tx, role, export, account.profile.ID)
 	}
 }

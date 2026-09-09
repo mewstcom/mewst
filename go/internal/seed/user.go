@@ -75,6 +75,20 @@ type roleProfile struct {
 	// どれだけ過去へ置くか。
 	joinedMonthsAgo int
 
+	// createdMinutesAgo is how far back created_at is placed from the instant
+	// the row was written. It is what fixes the order of the suggested
+	// follows: the screen that offers them orders the profiles by
+	// profiles.created_at, descending, and every profile of one run is
+	// inserted with the same instant, so a run that left the column alone
+	// would list them in whatever order the rows came back in.
+	//
+	// [Ja] createdMinutesAgo は、行が書き込まれた時点から数えて created_at を
+	// どれだけ過去へ置くか。おすすめフォローの順序を固定するのはこの値である。
+	// おすすめを提示する画面はプロフィールを profiles.created_at の降順で並べる。
+	// 実行 1 回分のプロフィールはいずれも同じ時点で挿入されるため、このカラムに
+	// 手を触れない実行では、行が返ってきた順序のまま並べられることになる。
+	createdMinutesAgo int
+
 	// description is the profile's self-introduction. Every profile holds one
 	// so that the screens that show it are not looked at in a state no account
 	// in production is in.
@@ -94,16 +108,19 @@ type roleProfile struct {
 // そのプロフィール自身のものなのかを確認できないため。
 var roleProfiles = map[seedRole]roleProfile{
 	roleMain: {
-		joinedMonthsAgo: historyMonths,
-		description:     "毎日のできごとを書き留めています。コーヒーと散歩と、ときどき写真。",
+		joinedMonthsAgo:   historyMonths,
+		createdMinutesAgo: 0,
+		description:       "毎日のできごとを書き留めています。コーヒーと散歩と、ときどき写真。",
 	},
 	roleFollower: {
-		joinedMonthsAgo: 30,
-		description:     "近所のパン屋とサウナの話が多めです。",
+		joinedMonthsAgo:   30,
+		createdMinutesAgo: 1,
+		description:       "近所のパン屋とサウナの話が多めです。",
 	},
 	roleEnglish: {
-		joinedMonthsAgo: 24,
-		description:     "日々のことを英語で書いています。",
+		joinedMonthsAgo:   24,
+		createdMinutesAgo: 2,
+		description:       "日々のことを英語で書いています。",
 	},
 	roleNewcomer: {
 		// A newcomer joined just now: the screens this role is for are the
@@ -176,6 +193,30 @@ func createAccounts(ctx context.Context, tx *sql.Tx, roster *userRoster, now tim
 	return accounts, nil
 }
 
+// accountForRole returns the account that was created for role.
+//
+// The roster is checked at load time for an entry per role, so a role that is
+// missing here is a generator asking for one the seed does not have rather
+// than a roster somebody wrote wrong. It is reported rather than assumed so
+// that the failure names the role, instead of arriving several statements
+// later as a profile that is not there.
+//
+// [Ja] accountForRole は、role のために作成されたアカウントを返す。
+//
+// 名簿は読み込み時に役割ごとの 1 件があることを検査しているため、ここで見つからない
+// 役割は、名簿の書き誤りではなく、シードが持たない役割を生成器が求めていることを
+// 意味する。想定せずに報告するのは、失敗がその役割を名指しするようにするため。そうで
+// なければ、いくつも先の文で、存在しないプロフィールとして現れることになる。
+func accountForRole(accounts []seedAccount, role seedRole) (seedAccount, error) {
+	for _, account := range accounts {
+		if account.roster.role == role {
+			return account, nil
+		}
+	}
+
+	return seedAccount{}, fmt.Errorf("役割 %s のアカウントが作成されていません", role)
+}
+
 // createAccount writes the four rows one account is made of, grants it the
 // feature flags the roster gave it, and discards its profile if that is what
 // its role is there to show.
@@ -213,6 +254,10 @@ func createAccount(
 	})
 	if err != nil {
 		return seedAccount{}, fmt.Errorf("プロフィールの作成に失敗: %w", err)
+	}
+
+	if err := backdateProfileCreatedAt(ctx, tx, profile, shape.createdMinutesAgo); err != nil {
+		return seedAccount{}, err
 	}
 
 	// The digest is the one the roster prepared: the shared password was
@@ -284,6 +329,41 @@ func createFeatureFlags(ctx context.Context, tx *sql.Tx, actorID model.ActorID, 
 			return fmt.Errorf("フィーチャーフラグ %s の付与に失敗: %w", name, err)
 		}
 	}
+
+	return nil
+}
+
+// backdateProfileCreatedAt moves the profile's created_at back by
+// minutesAgo minutes from the instant the row was written.
+//
+// The column is written with the database's clock as the row is inserted,
+// which is one instant for every row of a transaction, so it is moved once
+// the row is there. The model is moved with it, so that the profile a
+// generator is handed on describes the row that was written.
+//
+// [Ja] backdateProfileCreatedAt は、プロフィールの created_at を、行が書き込まれた
+// 時点から minutesAgo 分だけ過去へ動かす。
+//
+// このカラムは行の挿入時にデータベースの時計で書かれ、それは 1 つのトランザクション
+// のどの行にとっても同じ時点になる。そのため、行が置かれた後に動かす。モデルも一緒に
+// 動かすのは、生成器が受け渡すプロフィールが、書き込まれた行を記述しているようにする
+// ため。
+func backdateProfileCreatedAt(ctx context.Context, tx *sql.Tx, profile *model.Profile, minutesAgo int) error {
+	if minutesAgo == 0 {
+		return nil
+	}
+
+	createdAt := storedInstant(profile.CreatedAt.Add(-time.Duration(minutesAgo) * time.Minute))
+
+	if _, err := tx.ExecContext(ctx, `
+		UPDATE profiles
+		SET created_at = $2
+		WHERE id = $1
+	`, uuid.UUID(profile.ID), createdAt); err != nil {
+		return fmt.Errorf("プロフィール作成日時の設定に失敗: %w", err)
+	}
+
+	profile.CreatedAt = createdAt
 
 	return nil
 }
