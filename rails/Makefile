@@ -1,4 +1,4 @@
-.PHONY: test test-file setup console server worker lint lint-fix fmt zeitwerk sorbet sorbet-update db-migrate db-rollback db-setup help
+.PHONY: test test-file setup console server worker lint lint-fix fmt zeitwerk db-migrate db-rollback db-setup help
 
 # APP_ENVのデフォルト値を設定（外部から指定された場合はその値を使用）
 # 例: APP_ENV=test make db-migrate
@@ -38,15 +38,9 @@ lint-fix: ## Rubyコードのリントを実行して自動修正
 
 fmt: lint-fix ## lint-fixのエイリアス
 
-## 型チェック
+## オートロードチェック
 zeitwerk: ## Zeitwerk（オートロード）チェック
 	$(OP_RUN) bin/rails zeitwerk:check
-
-sorbet: ## Sorbet型チェック
-	bin/srb tc
-
-sorbet-update: ## Sorbet型定義を更新
-	$(OP_RUN) bin/rails sorbet:update
 
 ## データベース
 db-migrate: ## マイグレーションを実行 (例: APP_ENV=test make db-migrate)
