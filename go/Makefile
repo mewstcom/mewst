@@ -163,7 +163,7 @@ lint-comments: ## Check [Ja]-marker misuse in code comments (koryluslint). [Ja] 
 	@go tool koryluslint comment -base=$(KORYLUSLINT_BASE)
 
 .PHONY: lint
-lint: lint-golangci lint-comments ## リントを実行（golangci-lint + コメント併記チェック）
+lint: lint-golangci lint-comments sqlc-diff ## Run the lint checks (golangci-lint + bilingual comments + sqlc sync). [Ja] リントを実行 (golangci-lint + コメント併記チェック + sqlc の同期チェック)
 
 .PHONY: clean
 clean: ## ビルド成果物をクリーン
@@ -308,5 +308,9 @@ db-dump: ## データベーススキーマをdb/schema.sqlにダンプ
 	@$(STRIP_SCHEMA_RESTRICT)
 
 .PHONY: sqlc-generate
-sqlc-generate: ## SQLクエリからGoコードを生成
-	sqlc generate
+sqlc-generate: ## Generate Go code from SQL queries. [Ja] SQLクエリからGoコードを生成
+	go tool sqlc generate
+
+.PHONY: sqlc-diff
+sqlc-diff: ## Check that the generated code is in sync with the queries and schema. [Ja] 生成コードがクエリ・スキーマと同期しているかをチェック
+	go tool sqlc diff
