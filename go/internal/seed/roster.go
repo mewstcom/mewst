@@ -281,16 +281,15 @@ func (f rosterFile) toUserRoster(path string) (*userRoster, error) {
 		return nil, err
 	}
 
-	// Hash the shared password while the roster is still being read. Besides
-	// rejecting an input bcrypt cannot handle before the database is touched,
-	// this lets every account use the same prepared digest instead of
-	// discovering a hashing failure after its user row has already been
-	// inserted.
+	// Hash the shared password while the roster is still being read, so that
+	// every account is written with the same prepared digest instead of
+	// hashing once per account after the database has been emptied. What
+	// bcrypt can hash is decided by validate, above.
 	//
-	// [Ja] 名簿を読み込んでいる間に共通パスワードをハッシュ化する。bcrypt が処理
-	// できない入力をデータベースへ触る前に拒否できるだけでなく、各アカウントが準備
-	// 済みの同じダイジェストを使えるため、ユーザー行を INSERT した後でハッシュ化の
-	// 失敗が判明することも防げる。
+	// [Ja] 名簿を読み込んでいる間に共通パスワードをハッシュ化する。データベースを
+	// 空にした後にアカウントごとにハッシュ化するのではなく、各アカウントが準備済みの
+	// 同じダイジェストで書き込まれるようにするため。bcrypt が扱える入力かどうかは、
+	// 上の validate が決めている。
 	passwordDigest, err := auth.HashPassword(f.Password)
 	if err != nil {
 		return nil, fmt.Errorf("password のハッシュ化に失敗: %w", err)
@@ -312,6 +311,22 @@ func (f rosterFile) validate() ([]rosterUser, error) {
 	}
 	if strings.ContainsAny(f.Password, "\r\n") {
 		return nil, errors.New("password に CR / LF は含められません。改行を含まないパスワードを書いてください")
+	}
+	// The limit belongs to bcrypt, but it is checked here, before the seed and
+	// the credentials lookup part ways: a file the seed cannot hash describes
+	// accounts that were never created, and reporting the credentials of such
+	// an account would send a caller to the sign-in form with a password no
+	// account holds. The limit account creation applies is used rather than a
+	// copy of it.
+	//
+	// [Ja] この上限は bcrypt のものだが、検査はここで、seed と資格情報の取得が
+	// 分かれる前に行う。seed がハッシュ化できないファイルは、そのアカウントが
+	// 作成されなかったファイルであり、そのアカウントの資格情報を報告することは、
+	// どのアカウントも持たないパスワードで呼び出し側をサインインフォームへ
+	// 向かわせることになるため。上限はアカウント作成が適用しているものを参照し、
+	// その写しは持たない。
+	if len(f.Password) > validator.PasswordMaxBytes {
+		return nil, fmt.Errorf("password は bcrypt の上限である %d バイト以内にしてください", validator.PasswordMaxBytes)
 	}
 	if len(f.Users) == 0 {
 		return nil, errors.New("[[users]] が 1 件もありません")

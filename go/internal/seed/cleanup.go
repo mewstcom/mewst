@@ -14,20 +14,20 @@ import (
 // what keeps a table added later from quietly falling out of the cleanup: it
 // has to be put in one list or the other.
 //
-// oauth_applications is emptied and written again by the seed rather than left
-// to Rails. posts.oauth_application_id is NOT NULL and every generated post
-// points at that one row, so a seed that does not create it can only run after
-// bin/rails db:seed has, in that order, on a database nobody has emptied since.
+// oauth_applications is emptied and written again by the seed.
+// posts.oauth_application_id is NOT NULL and every generated post points at
+// that one row, so including it in cleanup makes the seed own all application
+// data its generated posts depend on.
 //
 // [Ja] cleanupTables は、実行が生成の前に空にするテーブル。これと
 // preservedTables を合わせるとスキーマのすべてのテーブルが揃う。後から追加された
 // テーブルが黙ってクリーンアップから漏れることを防ぐためであり、どちらか一方の
 // 一覧へ必ず入れることになる。
 //
-// oauth_applications は Rails に任せず、シードが空にして入れ直す。
-// posts.oauth_application_id は NOT NULL で、生成されるすべてのポストがその 1 行を
-// 指す。その行を作らないシードは、bin/rails db:seed をその順序で先に実行し、以降
-// 誰もデータベースを空にしていないという条件のもとでしか実行できない。
+// oauth_applications はシードが空にして入れ直す。
+// posts.oauth_application_id は NOT NULL で、生成されるすべてのポストがその行を
+// 指す。クリーンアップ対象に含めることで、生成するポストが依存するアプリケーション
+// データをシード自身がすべて所有する。
 var cleanupTables = []string{
 	"actors",
 	"email_confirmations",

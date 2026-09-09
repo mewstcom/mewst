@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
@@ -38,30 +40,52 @@ func TestCreateOauthApplication(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	if err := createOauthApplication(ctx, tx); err != nil {
+	applicationID, err := createOauthApplication(ctx, tx)
+	if err != nil {
 		t.Fatalf("OAuth アプリケーションの作成に失敗: %v", err)
 	}
 
 	var (
+		id           uuid.UUID
 		name         string
 		secret       string
 		redirectURI  string
 		scopes       string
 		confidential bool
 	)
+
+	// The row is read back by the uid the application looks it up with, so
+	// what is checked below is the row a running Mewst would have found.
+	//
+	// [Ja] 行は、アプリケーションがそれを引くのに使う uid で読み戻す。以下で確認する
+	// のは、動作している Mewst が見つけたであろう行になる。
 	if err := tx.QueryRowContext(ctx, `
-		SELECT name, secret, redirect_uri, scopes, confidential
+		SELECT id, name, secret, redirect_uri, scopes, confidential
 		FROM oauth_applications
 		WHERE uid = $1
-	`, model.MewstWebUID).Scan(&name, &secret, &redirectURI, &scopes, &confidential); err != nil {
+	`, model.MewstWebUID).Scan(&id, &name, &secret, &redirectURI, &scopes, &confidential); err != nil {
 		t.Fatalf("作成した OAuth アプリケーションの取得に失敗: %v", err)
 	}
 
-	// The row is found by the uid the application looks it up with, which is
-	// the only part of it any caller depends on.
+	// The returned id is what every generated post is attributed to, so it has
+	// to be the id of the row that was written and not a zero value the post
+	// generator would carry into a foreign key.
 	//
-	// [Ja] 行は、アプリケーションがそれを引くのに使う uid で見つける。呼び出し元が
-	// 依存しているのはその 1 点だけであるため。
+	// [Ja] 返された id は、生成されるすべてのポストの帰属先になるため、書き込まれた
+	// 行の id である必要がある。ゼロ値であれば、ポストの生成器がそれを外部キーとして
+	// 持ち回ることになる。
+	if applicationID != model.OauthApplicationID(id) {
+		t.Errorf("返された id = %s, want %s", applicationID, id)
+	}
+
+	// The row has to carry the name and the redirect URI the source names.
+	// Both are written only here, and a redirect URI that did not reach the
+	// row would not show itself until an authorization was refused at the
+	// screen.
+	//
+	// [Ja] 行は、ソースが名指しする name と redirect_uri を持っている必要がある。
+	// どちらもここでしか書き込まれず、redirect_uri が行へ届かなかった場合、それは
+	// 画面で認可が拒否されるまで現れない。
 	if name != mewstWebApplicationName {
 		t.Errorf("name = %q, want %q", name, mewstWebApplicationName)
 	}
@@ -78,13 +102,11 @@ func TestCreateOauthApplication(t *testing.T) {
 		t.Error("secret が空。生成したシークレットが書き込まれていない")
 	}
 
-	// The Rails side leaves both of these at their defaults, and a
-	// development database the seed built has to describe the same
-	// application as one bin/rails db:seed built.
+	// The seed omits scopes and confidential from the insert, so both values
+	// have to come from the schema defaults.
 	//
-	// [Ja] Rails 側はこの 2 つを既定値のままにしている。シードが作った開発用
-	// データベースは、bin/rails db:seed が作ったそれと同じアプリケーションを記述して
-	// いる必要がある。
+	// [Ja] シードは INSERT で scopes と confidential を省略するため、両方の値が
+	// スキーマの既定値から設定される必要がある。
 	if scopes != "" {
 		t.Errorf("scopes = %q, want empty", scopes)
 	}

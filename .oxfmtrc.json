@@ -16,11 +16,9 @@
   ],
   "ignorePatterns": [
     "**/node_modules/",
-    "rails/db/",
     "rails/docs/",
     "rails/fixtures/",
     "rails/app/assets/builds/",
-    "rails/sorbet/",
     "go/internal/query/*.go",
     "go/internal/templates/*_templ.go",
     "go/static/"

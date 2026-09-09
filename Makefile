@@ -2,6 +2,23 @@
 help: ## ヘルプを表示
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+# Entry point for building a development environment. Each step is delegated to
+# the subproject that owns it, and the dependencies are installed before the
+# database is initialized: db-prepare-dev resolves DATABASE_URL through the
+# 1Password CLI, so a failure there stops at a state that is easy to tell apart
+# (dependencies in place, database alone uninitialized).
+#
+# [Ja] 開発環境を構築する入口。各ステップはそれを所有するサブプロジェクトへ委譲し、
+# 依存関係のインストールをデータベースの初期化より先に行う。db-prepare-dev は
+# 1Password CLI 経由で DATABASE_URL を解決するため、そこで失敗しても「依存関係は
+# 入ったが DB だけ未初期化」という切り分けやすい状態で止まる。
+.PHONY: setup
+setup: ## Set up the development environment (dependencies and database). [Ja] 開発環境をセットアップ (依存関係とデータベース)
+	pnpm install
+	$(MAKE) -C go setup
+	$(MAKE) -C rails setup
+	$(MAKE) -C go db-prepare-dev
+
 .PHONY: dev
 dev: ## 全サービスの開発サーバーを起動
 	hivemind Procfile.dev

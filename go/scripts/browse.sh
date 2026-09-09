@@ -4,10 +4,12 @@
 # it generates the Basic-auth config, runs the single-step dev sign-in, reuses
 # the logged-in session for screenshots, and cleans up.
 #
-# It expects KORYLUS_BROWSING_* in the environment, so run it under the op-run
-# wrapper (see the browse-* targets in go/Makefile). Reading credentials through
-# op-run avoids evaluating the .env in a shell, which would corrupt any
-# credential containing a `$`. The dev server must run with Turnstile disabled
+# It expects KORYLUS_BROWSING_BASE_URL in the environment, so run it under the
+# op-run wrapper (see the browse-* targets in go/Makefile). Reading the basic-auth
+# credentials through op-run avoids evaluating the .env in a shell, which would
+# corrupt any credential containing a `$`. The account to sign in as is not read
+# from the environment: it comes from the seed roster, through
+# `mewst devcreds <role>`. The dev server must run with Turnstile disabled
 # (MEWST_TURNSTILE_DISABLE=true in the dev .env) or bot verification blocks the
 # sign-in submit.
 #
@@ -15,16 +17,44 @@
 # Basic 認証 config の生成・単一ステップの dev サインイン・ログイン済み
 # セッションでのスクショ・後片付けをまとめる。
 #
-# KORYLUS_BROWSING_* が環境にある前提なので、op run ラッパー配下 (go/Makefile の
-# browse-* ターゲット) から実行する。creds を op run 経由で読むことで、.env を
-# シェル評価して `$` を含む creds を壊すのを避ける。dev サーバは Turnstile を
-# 無効化 (dev の .env で MEWST_TURNSTILE_DISABLE=true) して起動している必要が
-# あり、でないと Bot 検証でサインインの送信が弾かれる。
+# KORYLUS_BROWSING_BASE_URL が環境にある前提なので、op run ラッパー配下
+# (go/Makefile の browse-* ターゲット) から実行する。Basic 認証の creds を op run
+# 経由で読むことで、.env をシェル評価して `$` を含む creds を壊すのを避ける。
+# サインインするアカウントは環境変数からは読まず、`mewst devcreds <role>` を通じて
+# シードの名簿から取る。dev サーバは Turnstile を無効化 (dev の .env で
+# MEWST_TURNSTILE_DISABLE=true) して起動している必要があり、でないと Bot 検証で
+# サインインの送信が弾かれる。
 set -euo pipefail
 
 SESSION=dev
-TMP_DIR=/workspace/tmp
+
+# GO_DIR is the Go module root, which the mewst command and the roster it reads
+# are both resolved relative to. It is derived from this script's own location
+# rather than left to the working directory, so that a login started from
+# somewhere other than go/ fails on neither of the two.
+#
+# [Ja] GO_DIR は Go モジュールのルート。mewst コマンドと、そのコマンドが読む名簿は
+# どちらもここからの相対で解決される。作業ディレクトリに委ねず本スクリプト自身の
+# 位置から求めるのは、go/ 以外の場所から始めたログインが、そのどちらでも失敗しない
+# ようにするため。
+GO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# DEFAULT_ROLE is the account signed in as when the command line names no role.
+# It is the role the development environment is mostly looked at through.
+#
+# [Ja] DEFAULT_ROLE は、コマンドラインが役割を指定しなかったときにサインインする
+# アカウント。開発環境をおもに見るための役割になる。
+DEFAULT_ROLE=main
+
+# TMP_DIR holds credential-bearing files and screenshots. Tests point it at
+# their own temporary directory so they never touch a developer's files.
+#
+# [Ja] TMP_DIR は資格情報を含むファイルとスクリーンショットの置き場。テストでは
+# 開発者のファイルへ触れないよう、テスト自身の一時ディレクトリへ向ける。
+TMP_DIR="${MEWST_BROWSE_TMP_DIR:-/workspace/tmp}"
+
 CONFIG_FILE="$TMP_DIR/browse-cli.config.json"
+PASSWORD_SCRIPT_FILE="$TMP_DIR/browse-cli.password.js"
 ORIGIN_FILE="$TMP_DIR/browse-cli.origin"
 PROFILE_DIR="$TMP_DIR/browse-cli-profile"
 SHOT_DIR="$TMP_DIR/browse"
@@ -49,6 +79,26 @@ pw_checked() {
     return 1
   fi
   printf '%s\n' "$output"
+}
+
+# pw_checked_secret keeps playwright-cli diagnostics while suppressing any
+# successful-output section that could echo a credential-bearing run-code file.
+#
+# [Ja] pw_checked_secret は playwright-cli の診断を残しつつ、資格情報を含む
+# run-code ファイルを再掲し得る成功出力セクションを抑止する。
+pw_checked_secret() {
+  local output
+  local status=0
+  output="$(pw "$@" 2>&1)" || status=$?
+  if [ "$status" -eq 0 ] && [[ "$output" != *"### Error"* ]]; then
+    return 0
+  fi
+  if [[ "$output" == *"### "* ]]; then
+    printf '%s\n' "$output" | awk '/^### /{ relay = ($0 == "### Error") } relay' >&2
+  else
+    printf '%s\n' "$output" >&2
+  fi
+  return 1
 }
 
 # build_config writes the Basic-auth config (httpCredentials) parsed from
@@ -78,24 +128,64 @@ build_config() {
   ' "$CONFIG_FILE" "$ORIGIN_FILE"
 }
 
+# build_password_script reads the password from stdin and writes a 0600
+# Playwright run-code file. JSON encoding preserves every password character.
+#
+# [Ja] build_password_script は標準入力からパスワードを読み、0600 の Playwright
+# run-code ファイルへ書く。JSON エンコードにより全てのパスワード文字を保持する。
+build_password_script() {
+  mkdir -p "$TMP_DIR"
+  node -e '
+    const fs = require("fs");
+    const password = fs.readFileSync(0, "utf8");
+    const selector = `input[name="password"]`;
+    const source = "async page => {\n" +
+      "  const input = page.locator(" + JSON.stringify(selector) + ");\n" +
+      "  await input.fill(" + JSON.stringify(password) + ");\n" +
+      "  await input.press(\"Enter\");\n" +
+      "}";
+    try { fs.rmSync(process.argv[1]); } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    fs.writeFileSync(process.argv[1], source, { mode: 0o600 });
+  ' "$PASSWORD_SCRIPT_FILE"
+}
+
 cmd_login() {
-  local n="${1:-1}"
-  local email_var="KORYLUS_BROWSING_USER${n}_EMAIL"
-  local pass_var="KORYLUS_BROWSING_USER${n}_PASSWORD"
-  local email="${!email_var:-}"
-  local pass="${!pass_var:-}"
-  if [ -z "$email" ] || [ -z "$pass" ]; then
-    echo "USER${n} credentials are not set (${email_var} / ${pass_var})" >&2
+  local role="${1:-$DEFAULT_ROLE}"
+
+  # The account comes from the seed roster, which bash cannot read: mewst
+  # devcreds prints the address and the password one per line and nothing else.
+  # Taking them from there rather than from the environment leaves one file
+  # describing the development accounts, so an account edited in the roster
+  # cannot leave a sign-in reaching for an account the following seed run no
+  # longer creates. The password arrives on stdout rather than in an argument
+  # because argv is readable by every process on the machine.
+  #
+  # [Ja] アカウントはシードの名簿から取る。bash は名簿を読めないため、mewst
+  # devcreds がアドレスとパスワードを 1 行ずつ、それだけを出力する。環境変数では
+  # なくそこから取ることで、開発用アカウントを記述するファイルが 1 つになり、名簿で
+  # アカウントを変更したときに、その後のシード実行がもう作成しないアカウントへ
+  # サインインが手を伸ばす状態にならない。パスワードを引数ではなく標準出力で受け取る
+  # のは、argv がマシン上のすべてのプロセスから読めるため。
+  local credentials
+  credentials="$(cd "$GO_DIR" && go run ./cmd/mewst devcreds "$role")"
+
+  local lines=()
+  mapfile -t lines <<<"$credentials"
+  local email="${lines[0]:-}"
+  local pass="${lines[1]:-}"
+  if [ "${#lines[@]}" -ne 2 ] || [ -z "$email" ] || [ -z "$pass" ]; then
+    echo "no credentials for role '$role': mewst devcreds must print exactly two non-empty lines" >&2
     exit 1
   fi
 
-  # Remove the credential-bearing config on any exit, so a mid-login failure
-  # (a set -e abort before the explicit rm below) never leaves credentials at
-  # rest.
+  # Remove credential-bearing files on any exit, so a mid-login failure never
+  # leaves credentials at rest.
   #
-  # [Ja] creds を含む config をどの終了経路でも削除し、ログイン途中の失敗
-  # (下の明示 rm へ到達する前の set -e abort) でも creds をディスクに残さない。
-  trap 'rm -f "$CONFIG_FILE"' EXIT
+  # [Ja] 資格情報を含むファイルをどの終了経路でも削除し、ログイン途中の失敗でも
+  # creds をディスクに残さない。
+  trap 'rm -f "$CONFIG_FILE" "$PASSWORD_SCRIPT_FILE"' EXIT
 
   build_config
   local origin
@@ -122,7 +212,12 @@ cmd_login() {
   # 弾かれる。name / attribute ベースのロケータはラベル文言に依存せず、locale で
   # 変わらない。
   pw_checked fill 'input[name="email"]' "$email" >/dev/null
-  pw_checked fill 'input[name="password"]' "$pass" --submit >/dev/null
+  printf '%s' "$pass" | build_password_script
+  if ! pw_checked_secret run-code --filename="$PASSWORD_SCRIPT_FILE"; then
+    echo "sign-in did not complete: filling the password failed" >&2
+    exit 1
+  fi
+  rm -f "$PASSWORD_SCRIPT_FILE"
 
   # The context now holds the credentials, so the on-disk config is no longer
   # needed; drop it to avoid leaving credentials at rest.
@@ -168,7 +263,7 @@ cmd_login() {
     echo "could not verify sign-in at the expected origin: $result" >&2
     exit 1
   fi
-  echo "logged in as USER${n}: ${result#SIGNED_IN }"
+  echo "logged in as ${role}: ${result#SIGNED_IN }"
 }
 
 cmd_shot() {
@@ -216,25 +311,31 @@ cmd_shot() {
 
 cmd_close() {
   pw close >/dev/null 2>&1 || true
-  rm -f "$CONFIG_FILE" "$ORIGIN_FILE"
+  rm -f "$CONFIG_FILE" "$PASSWORD_SCRIPT_FILE" "$ORIGIN_FILE"
   rm -rf "$PROFILE_DIR"
   echo "browser session closed and temp files removed"
 }
 
-case "${1:-}" in
-  login)
-    shift
-    cmd_login "${1:-1}"
-    ;;
-  shot)
-    shift
-    cmd_shot "${1:-/}"
-    ;;
-  close)
-    cmd_close
-    ;;
-  *)
-    echo "usage: browse.sh {login [user_number] | shot <path> | close}" >&2
-    exit 2
-    ;;
-esac
+main() {
+  case "${1:-}" in
+    login)
+      shift
+      cmd_login "${1:-$DEFAULT_ROLE}"
+      ;;
+    shot)
+      shift
+      cmd_shot "${1:-/}"
+      ;;
+    close)
+      cmd_close
+      ;;
+    *)
+      echo "usage: browse.sh {login [role] | shot <path> | close}" >&2
+      return 2
+      ;;
+  esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

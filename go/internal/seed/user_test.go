@@ -467,3 +467,42 @@ func TestRoleProfilesCoverEveryRole(t *testing.T) {
 		}
 	}
 }
+
+// TestAccountForRole verifies that a generator asking for a role gets the
+// account created for it, and is told which role is missing when it is not
+// there.
+//
+// [Ja] TestAccountForRole は、役割を求めた生成器がそのために作成されたアカウントを
+// 受け取ること、そしてそれが無い場合はどの役割が欠けているのかを告げられることを
+// 検証する。
+func TestAccountForRole(t *testing.T) {
+	t.Parallel()
+
+	accounts := []seedAccount{
+		{roster: rosterUser{role: roleMain}},
+		{roster: rosterUser{role: roleFollower}},
+	}
+
+	for _, role := range []seedRole{roleMain, roleFollower} {
+		account, err := accountForRole(accounts, role)
+		if err != nil {
+			t.Fatalf("役割 %s のアカウントの取得に失敗: %v", role, err)
+		}
+		if account.roster.role != role {
+			t.Errorf("役割 = %s, want %s", account.roster.role, role)
+		}
+	}
+
+	// The failure names the role rather than arriving several statements later
+	// as a profile that is not there.
+	//
+	// [Ja] 失敗はその役割を名指しする。いくつも先の文で、存在しないプロフィールと
+	// して現れるのではなく。
+	_, err := accountForRole(accounts, roleNewcomer)
+	if err == nil {
+		t.Fatal("作成されていない役割でエラーが返らなかった")
+	}
+	if !strings.Contains(err.Error(), string(roleNewcomer)) {
+		t.Errorf("エラー = %q, want 役割 %s を含む", err, roleNewcomer)
+	}
+}
