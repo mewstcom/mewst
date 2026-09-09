@@ -5,6 +5,26 @@ default: &default
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   url: <%= ENV["DATABASE_URL"] %>
+  # schema_dump: false marks the database as one Rails does not own. Its
+  # canonical schema is go/db/schema.sql. The Go-side database targets apply it
+  # with psql, while dbmate manages pending migrations.
+  #
+  # Without the flag Rails would keep a schema file of its own under db/:
+  # db:migrate would write it by dumping the live database, and
+  # ActiveRecord::Migration.maintain_test_schema! would purge the test database
+  # to load it over the schema that was just applied from the Go side, dropping
+  # the tables the Go side owns.
+  #
+  # [Ja] schema_dump: false は、このデータベースが Rails の管理下にないことを示す。
+  # 正本は go/db/schema.sql であり、Go 側の DB ターゲットが psql で適用し、
+  # 未適用のマイグレーションは dbmate が管理する。
+  #
+  # このフラグが無いと Rails は db/ 配下に自前のスキーマファイルを持つ。
+  # db:migrate が稼働中のデータベースをダンプしてそのファイルを書き出し、
+  # ActiveRecord::Migration.maintain_test_schema! はテスト用データベースを purge して、
+  # Go 側から適用したばかりのスキーマの上にそれをロードし、Go 側が所有する
+  # テーブルを消してしまう。
+  schema_dump: false
 
 development:
   <<: *default

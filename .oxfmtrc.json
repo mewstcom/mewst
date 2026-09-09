@@ -16,7 +16,6 @@
   ],
   "ignorePatterns": [
     "**/node_modules/",
-    "rails/db/",
     "rails/docs/",
     "rails/fixtures/",
     "rails/app/assets/builds/",
