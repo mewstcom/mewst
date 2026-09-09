@@ -105,7 +105,7 @@ func NewRunner(db *sql.DB, out io.Writer) *Runner {
 // シードへ辿り着く唯一のサブコマンドだけでなく、シードへ辿り着くすべての経路に
 // 対して検査が効く。
 func (r *Runner) Run(ctx context.Context) error {
-	if err := requireDevEnvironment(r.environment()); err != nil {
+	if err := requireDevEnvironment(r.environment(), truncatesEveryManagedTable); err != nil {
 		return err
 	}
 
@@ -206,10 +206,26 @@ func generateSeedData(ctx context.Context, tx *sql.Tx, roster *userRoster) ([]se
 	return createAccounts(ctx, tx, roster, time.Now())
 }
 
+// truncatesEveryManagedTable is why a seed run is confined to a development
+// environment. It is what the refusal reports back, so that the message says
+// what is at stake rather than only which value was expected.
+//
+// [Ja] truncatesEveryManagedTable は、シードの実行を開発環境に限っている理由。
+// 拒否がこれを報告することで、メッセージは、期待されていた値が何かだけでなく、
+// 何が懸かっているのかを述べることになる。
+const truncatesEveryManagedTable = "管理対象のテーブルをすべて空にするため"
+
 // requireDevEnvironment refuses a run outside a development environment.
 //
 // It is given the value rather than reading it, so that what it decides on is
 // visible to a caller and to a test.
+//
+// The reason is taken as a parameter because more than one thing is confined
+// to a development environment, and they are confined for different reasons: a
+// seed run empties every managed table, while a credentials lookup reads a
+// password out of the roster. A message that named the wrong one would
+// describe, to a developer who is deciding what to do next, something the
+// command was never going to do.
 //
 // An unset APP_ENV is refused along with a wrong one. config.Load reads an
 // unset APP_ENV as dev, which is the right default for a process that only
@@ -225,17 +241,17 @@ func generateSeedData(ctx context.Context, tx *sql.Tx, roster *userRoster) ([]se
 // dev として読み、それは求められたものを提供するだけのプロセスにとって正しい既定
 // だが、環境を一度も名指ししなかった実行に、DATABASE_URL がたまたま指している
 // データベースを空にさせることになる。
-func requireDevEnvironment(env string) error {
+func requireDevEnvironment(env, reason string) error {
 	if env == "" {
 		return fmt.Errorf(
-			"%s が設定されていません。管理対象のテーブルをすべて空にするため、開発環境でだけ実行できます。%s=%s を明示してください",
-			appEnvVar, appEnvVar, devEnvironment,
+			"%s が設定されていません。%s、開発環境でだけ実行できます。%s=%s を明示してください",
+			appEnvVar, reason, appEnvVar, devEnvironment,
 		)
 	}
 	if env != devEnvironment {
 		return fmt.Errorf(
-			"%s=%s では実行できません。管理対象のテーブルをすべて空にするため、開発環境 (%s=%s) でだけ実行できます",
-			appEnvVar, env, appEnvVar, devEnvironment,
+			"%s=%s では実行できません。%s、開発環境 (%s=%s) でだけ実行できます",
+			appEnvVar, env, reason, appEnvVar, devEnvironment,
 		)
 	}
 

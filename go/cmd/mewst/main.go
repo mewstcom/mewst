@@ -1,13 +1,15 @@
 // Command mewst is Mewst's command-line entry point. The serve subcommand
-// starts the HTTP server, and the seed subcommand rebuilds a development
-// database from the seed data.
+// starts the HTTP server, the seed subcommand rebuilds a development database
+// from the seed data, and the devcreds subcommand writes the credentials one of
+// the accounts that seed created signs in with.
 //
 // The binary is named after the service rather than after the one role it
 // started out filling, so that the operational one-off tasks that follow are
 // added as subcommands instead of as a binary each.
 //
 // [Ja] mewst コマンドは Mewst のコマンドラインエントリーポイント。serve サブコマンドが
-// HTTP サーバーを起動し、seed サブコマンドが開発用データベースをシードデータで作り直す。
+// HTTP サーバーを起動し、seed サブコマンドが開発用データベースをシードデータで作り直し、
+// devcreds サブコマンドが seed の作成したアカウント 1 件がサインインに使う資格情報を書き出す。
 //
 // バイナリ名を、当初に担っていた 1 つの役割ではなくサービス名にしているのは、この後に
 // 増える運用の one-off タスクを、バイナリを 1 つずつ増やすのではなくサブコマンドとして
@@ -37,31 +39,46 @@ const exitUsage = 2
 // 値にまとめるのは、後から追加するサブコマンドが、すべての呼び出し箇所で増える引数では
 // なく、1 つのフィールドで済むようにするため。
 type commands struct {
-	serve func()
-	seed  func()
+	serve    func()
+	seed     func()
+	devcreds func(stdout io.Writer, role string)
 }
 
 func main() {
-	os.Exit(run(os.Args[1:], os.Stderr, commands{serve: runServe, seed: runSeed}))
+	os.Exit(run(
+		os.Args[1:],
+		os.Stdout,
+		os.Stderr,
+		commands{serve: runServe, seed: runSeed, devcreds: runDevCredentials},
+	))
 }
 
 // run dispatches args to a subcommand and returns the process exit code. It
-// takes the arguments, the diagnostic stream, and the subcommand
-// implementations as parameters, rather than using the process's own values
-// directly, so that the dispatch can be verified without terminating the test
-// process, starting a server or emptying a database.
+// takes the arguments, both output streams, and the subcommand implementations
+// as parameters, rather than using the process's own values directly, so that
+// the dispatch can be verified without terminating the test process, starting a
+// server or emptying a database.
+//
+// Standard output is threaded through for devcreds, whose standard output is
+// the machine-readable contract scripts/browse.sh reads. Reaching for os.Stdout
+// inside the dispatch would put the one stream a caller parses out of a test's
+// reach.
 //
 // No subcommand defaults to serve: an invocation that names nothing prints the
 // usage and fails, so every call site has to state which subcommand it wants.
 //
 // [Ja] run は args をサブコマンドへ振り分け、プロセスの終了コードを返す。プロセス自身の値を
-// 直接使わず、引数・診断情報の出力先・サブコマンドの実装を仮引数で受け取るのは、テスト
+// 直接使わず、引数・2 つの出力先・サブコマンドの実装を仮引数で受け取るのは、テスト
 // プロセスを終了させたり、サーバーを起動したり、データベースを空にしたりせずに振り分けを
 // 検証できるようにするため。
 //
+// 標準出力を通しているのは devcreds のためで、その標準出力は scripts/browse.sh が読む
+// 機械可読な契約になっている。振り分けの中で os.Stdout を直接掴むと、呼び出し側が解釈する
+// 唯一のストリームがテストから触れなくなる。
+//
 // サブコマンド無しのときに serve へ既定することはしない。何も指定しない実行は usage を
 // 表示して失敗するため、各呼び出し箇所がどのサブコマンドを使うのかを明示することになる。
-func run(args []string, stderr io.Writer, cmds commands) int {
+func run(args []string, stdout, stderr io.Writer, cmds commands) int {
 	if len(args) == 0 {
 		usage(stderr)
 
@@ -73,6 +90,10 @@ func run(args []string, stderr io.Writer, cmds commands) int {
 		return runWithoutArguments("serve", args[1:], stderr, cmds.serve)
 	case "seed":
 		return runWithoutArguments("seed", args[1:], stderr, cmds.seed)
+	case "devcreds":
+		return runWithOneArgument("devcreds", "<role>", args[1:], stderr, func(role string) {
+			cmds.devcreds(stdout, role)
+		})
 	default:
 		// The write error is discarded on purpose: this is the diagnostic
 		// channel itself, so there is nowhere left to report a failure to write
@@ -120,6 +141,35 @@ func runWithoutArguments(name string, rest []string, stderr io.Writer, command f
 	return 0
 }
 
+// runWithOneArgument runs a subcommand that takes exactly one, and answers a
+// command line that gave it none or several with the usage instead.
+//
+// What the argument is for is named back along with what was written, because
+// this subcommand is reached from a shell script as often as from a terminal: a
+// script that lost its variable passes an empty string, and one that lost its
+// quoting passes several words, and neither of those reads as "the role is
+// missing" from the command line alone.
+//
+// [Ja] runWithOneArgument は、引数をちょうど 1 つ取るサブコマンドを実行し、それを
+// 与えなかった / 複数与えたコマンドラインには、代わりに usage で応答する。
+//
+// 何のための引数なのかを、書かれていたものと並べて出力に含める。このサブコマンドは
+// 端末からと同じくらいシェルスクリプトからも呼ばれるためで、変数を取りこぼした
+// スクリプトは空文字列を渡し、引用符を取りこぼしたスクリプトは複数の語を渡す。その
+// どちらも、コマンドラインを見ただけでは「役割が足りない」とは読み取れない。
+func runWithOneArgument(name, argument string, rest []string, stderr io.Writer, command func(string)) int {
+	if len(rest) != 1 {
+		_, _ = fmt.Fprintf(stderr, "%s takes exactly one argument %s: %q\n\n", name, argument, rest)
+		usage(stderr)
+
+		return exitUsage
+	}
+
+	command(rest[0])
+
+	return 0
+}
+
 // usage writes the list of available subcommands to w. The write error is
 // discarded for the same reason as in run.
 //
@@ -129,7 +179,8 @@ func usage(w io.Writer) {
 	_, _ = fmt.Fprint(w, `usage: mewst <command>
 
 commands:
-  serve   start the HTTP server
-  seed    rebuild the development database from the seed data
+  serve              start the HTTP server
+  seed               rebuild the development database from the seed data
+  devcreds <role>    print the email address and password of a seeded account
 `)
 }

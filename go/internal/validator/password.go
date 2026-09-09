@@ -38,7 +38,7 @@ func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUp
 	}
 
 	// 最大バイト数チェック (bcrypt 制限)
-	if len(input.Password) > maxPasswordLength {
+	if len(input.Password) > PasswordMaxBytes {
 		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return ve
 	}

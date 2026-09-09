@@ -44,8 +44,14 @@ const AtnameMaxLength = 20
 // minPasswordLength はパスワードの最小文字数
 const minPasswordLength = 8
 
-// maxPasswordLength はパスワードの最大文字数 (bcryptの制限)
-const maxPasswordLength = 72
+// PasswordMaxBytes is the longest password bcrypt can hash. It is exported so
+// that a caller writing an account outside the account creation form checks the
+// same limit instead of a copy of it.
+//
+// [Ja] PasswordMaxBytes は bcrypt がハッシュ化できるパスワードの最大バイト数。
+// アカウント作成フォームの外でアカウントを書き込む呼び出し元が、制約の写しでは
+// なく同じ上限を検査できるよう公開している。
+const PasswordMaxBytes = 72
 
 // IsValidAtname reports whether the atname satisfies the format and the length
 // every account's atname has to have. It is exported so that a caller creating
@@ -154,7 +160,7 @@ func (v *AccountCreateValidator) validatePassword(ctx context.Context, ve *model
 		return
 	}
 
-	if len(password) > maxPasswordLength {
+	if len(password) > PasswordMaxBytes {
 		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return
 	}

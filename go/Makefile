@@ -39,8 +39,8 @@ seed: ## Rebuild the development database from the seed data. [Ja] 開発用デ�
 	$(OP_RUN_DEV) go run ./cmd/mewst seed
 
 .PHONY: browse-login
-browse-login: ## Log in to the dev site in a browser (other user: make browse-login BROWSE_USER=2). [Ja] dev サイトへブラウザでログイン (別ユーザーは make browse-login BROWSE_USER=2)
-	$(OP_RUN_DEV) bash scripts/browse.sh login $(BROWSE_USER)
+browse-login: ## Log in to the dev site in a browser as a role in seed-users.toml (other role: make browse-login BROWSE_USER=follower). [Ja] seed-users.toml の役割で dev サイトへブラウザでログイン (別の役割は make browse-login BROWSE_USER=follower)
+	$(OP_RUN_DEV) bash scripts/browse.sh login "$(BROWSE_USER)"
 
 .PHONY: browse-shot
 browse-shot: ## Open a page with the logged-in session and screenshot it (e.g. make browse-shot URL=/). [Ja] ログイン済みセッションでページを開きスクショ (例: make browse-shot URL=/)

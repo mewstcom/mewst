@@ -9,6 +9,7 @@ import (
 
 	"github.com/mewstcom/mewst/go/internal/auth"
 	"github.com/mewstcom/mewst/go/internal/model"
+	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
 // validRoster is a roster that passes every check, which the tests below break
@@ -246,8 +247,8 @@ func TestLoadUserRosterRejectsInvalidRoster(t *testing.T) {
 		},
 		{
 			name: "パスワードがbcryptの上限を超えるとき",
-			body: strings.Replace(validRoster, "seed-password", strings.Repeat("a", 73), 1),
-			want: "password のハッシュ化に失敗",
+			body: strings.Replace(validRoster, "seed-password", strings.Repeat("a", validator.PasswordMaxBytes+1), 1),
+			want: "password は bcrypt の上限である 72 バイト以内にしてください",
 		},
 		{
 			name: "アカウントが1件も無いとき",

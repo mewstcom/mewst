@@ -71,7 +71,7 @@ func TestRequireDevEnvironment_AllowsOnlyDev(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := requireDevEnvironment(tt.env)
+			err := requireDevEnvironment(tt.env, truncatesEveryManagedTable)
 
 			if tt.wantErrContains == "" {
 				if err != nil {
