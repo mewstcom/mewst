@@ -38,16 +38,34 @@ type IndexMonth struct {
 	PostCount int64
 }
 
-// IndexMain renders the content of index.html: a heading and one link per
-// month with its post count. The archive of a profile with no posts still gets
-// an index, so an empty table of contents says so instead of showing an empty
-// list.
+// IndexMain renders the content of index.html: the Mewst brand, a heading and
+// one link per month with its post count. The archive of a profile with no
+// posts still gets an index, so an empty table of contents says so instead of
+// showing an empty list.
 //
-// [Ja] IndexMain は index.html の内容 (見出しと、月ごとのリンクおよびその投稿
-// 件数) を描画する。投稿が 1 件も無いプロフィールのアーカイブにも index は
-// 含まれるため、目次が空のときは空のリストではなくその旨を示す。
+// [Ja] IndexMain は index.html の内容 (Mewst のブランド表示、見出し、月ごとの
+// リンクおよびその投稿件数) を描画する。投稿が 1 件も無いプロフィールの
+// アーカイブにも index は含まれるため、目次が空のときは空のリストではなく
+// その旨を示す。
 templ IndexMain(data IndexData) {
 	<main>
+		// The archive is unpacked and read long after it was downloaded, away from
+		// the site it came from, so the table of contents names the service it was
+		// exported from. The mark is decorative: the brand name beside it is what a
+		// screen reader announces, so an aria-hidden wrapper removes the glyph from
+		// the accessibility tree.
+		//
+		// [Ja] アーカイブはダウンロードから時間が経った後、取得元のサイトから
+		// 離れた場所で解凍・閲覧されるため、目次にはエクスポート元のサービス名を
+		// 示す。マークは装飾であり、スクリーンリーダーが読み上げるのは隣の
+		// ブランド名のため、aria-hidden のラッパーでグリフをアクセシビリティ
+		// ツリーから除外する。
+		<div class="brand">
+			<span aria-hidden="true">
+				@templates.Icon("logo")
+			</span>
+			Mewst
+		</div>
 		<h1>{ templates.T(ctx, "export_archive_index_heading") }</h1>
 		if len(data.Months) == 0 {
 			<p>{ templates.T(ctx, "export_archive_index_empty") }</p>

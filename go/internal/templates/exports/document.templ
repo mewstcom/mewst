@@ -36,6 +36,9 @@ templ documentHead(data DocumentData) {
 		// readable on a desktop. Colours follow the reader's light or dark
 		// preference. A post body is displayed with white-space: pre-wrap, so
 		// that the newlines it was written with are shown rather than collapsed.
+		// The brand mark is sized in rem so that it grows with the reader's text
+		// size; its colour comes from the surrounding text, which is why the
+		// stylesheet gives it no colour of its own.
 		//
 		// [Ja] アーカイブはファイルアプリからオフラインで読まれ、リンクした
 		// スタイルシートは解決できないため、スタイルシートはインラインにする。
@@ -43,7 +46,9 @@ templ documentHead(data DocumentData) {
 		// スマートフォンでは横スクロールを生じさせずに画面幅を使い、デスクトップ
 		// でも読みやすい幅に収まる。配色は読み手のライト / ダークの設定に従う。
 		// ポストの本文は white-space: pre-wrap で表示し、書かれたときの改行を
-		// 折り畳まずそのまま見せる。
+		// 折り畳まずそのまま見せる。ブランドマークの寸法は rem 指定にして読み手の
+		// 文字サイズに合わせて拡大させる。色は周囲のテキストから受け取るため、
+		// スタイルシートでは色を指定しない。
 		<style>
 			:root { color-scheme: light dark; }
 			body {
@@ -56,6 +61,14 @@ templ documentHead(data DocumentData) {
 				overflow-wrap: anywhere;
 			}
 			main { margin: 0 auto; max-width: 40rem; }
+			.brand {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+				margin: 0 0 1.5rem;
+				font-weight: 700;
+			}
+			.brand svg { width: 1.5rem; height: 1.5rem; }
 			h1 { margin: 0 0 1rem; font-size: 1.5rem; line-height: 1.4; }
 			ul { margin: 1.5rem 0 0; padding: 0; list-style: none; }
 			li {

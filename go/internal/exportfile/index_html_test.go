@@ -14,6 +14,14 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
+// svgNamespaceDeclaration is the namespace an inline SVG declares on its root
+// element. It looks like a URL but names a namespace, so a file carrying it
+// still fetches nothing.
+//
+// [Ja] svgNamespaceDeclaration はインライン SVG がルート要素で宣言する名前空間。
+// URL のように見えるが名前空間の名前であり、これを含むファイルも何も取得しない。
+const svgNamespaceDeclaration = `xmlns="http://www.w3.org/2000/svg"`
+
 // buildArchiveEntries builds a complete archive from its declared months,
 // writing as many posts into each month as that month declares.
 //
@@ -138,12 +146,22 @@ func TestIndexHTML_IsSelfContainedAndFluid(t *testing.T) {
 	// that shell, but their post bodies can hold any text, so this is asserted
 	// on the index.
 	//
+	// The inline brand mark declares the SVG namespace, whose value is a
+	// constant identifier rather than an address the file fetches. It is taken
+	// out before the scan so that the remaining text has to be free of any
+	// scheme at all.
+	//
 	// [Ja] アーカイブはファイルアプリからオフラインで開かれるため、ドキュメントの
 	// 外枠は何ひとつ外部から読み込んではならない。月のファイルもその外枠を共有
 	// するが、そちらは本文に任意のテキストが入りうるため、この検証は index に
 	// 対して行う。
+	//
+	// インラインのブランドマークは SVG の名前空間を宣言しており、その値はファイル
+	// が取得しに行くアドレスではなく定数の識別子である。走査の前にこれだけを取り
+	// 除くことで、残りのテキストにはスキームが 1 つも無いことを要求できる。
+	scanned := strings.ReplaceAll(body, svgNamespaceDeclaration, "")
 	for _, unwanted := range []string{"<script", "javascript:", "http://", "https://", "//fonts"} {
-		if strings.Contains(body, unwanted) {
+		if strings.Contains(scanned, unwanted) {
 			t.Errorf("index.html に %q が含まれている: %s", unwanted, body)
 		}
 	}
@@ -230,5 +248,66 @@ func TestIndexHTML_FallsBackToDefaultLanguage(t *testing.T) {
 
 	if got := attribute(findElement(t, parseHTML(t, buildIndex(t, archive)), "html"), "lang"); got != "ja" {
 		t.Errorf("未知のロケールの html[lang] = %q, want %q", got, "ja")
+	}
+}
+
+func TestIndexHTML_OpensWithTheMewstBrand(t *testing.T) {
+	t.Parallel()
+
+	body := buildIndex(t, newArchive(t, newMonth(2026, time.July, 1)))
+	document := parseHTML(t, body)
+
+	// The reader opens this file from a folder on their own disk, with nothing
+	// around it to say where it came from, so the brand is the first thing the
+	// table of contents shows.
+	//
+	// [Ja] 読み手はこのファイルを自分のディスク上のフォルダーから開き、周囲には
+	// 出所を示すものが何も無いため、目次が最初に見せるのはブランド表示とする。
+	brand := firstMeaningfulChild(findElement(t, document, "main"))
+	if brand == nil || brand.Type != html.ElementNode || attribute(brand, "class") != "brand" {
+		t.Fatalf("目次の先頭がブランド表示ではない: %s", body)
+	}
+
+	logos := findElements(brand, "svg")
+	if len(logos) != 1 {
+		t.Fatalf("ブランド表示のロゴの数 = %d, want 1", len(logos))
+	}
+	if got := attribute(logos[0], "viewBox"); got != "0 0 700 700" {
+		t.Errorf("ブランド表示のロゴの viewBox = %q, want %q", got, "0 0 700 700")
+	}
+	if !strings.Contains(elementText(brand), "Mewst") {
+		t.Errorf("ブランド表示にサービス名が無い: %s", body)
+	}
+
+	// The logo is decorative and the brand name next to it carries the name, so
+	// its wrapper removes the glyph from the accessibility tree. Giving the
+	// glyph a name of its own would make a screen reader announce the same thing
+	// twice.
+	//
+	// [Ja] ロゴは装飾で、名前は隣のブランド名が担うため、ラッパーでグリフを
+	// アクセシビリティツリーから除外する。グリフにも名前を与えるとスクリーン
+	// リーダーが同じものを 2 度読み上げることになる。
+	if logos[0].Parent == nil || attribute(logos[0].Parent, "aria-hidden") != "true" {
+		t.Errorf("装飾ロゴが aria-hidden の要素に包まれていない: %s", body)
+	}
+	for _, attr := range []string{"role", "aria-label", "aria-labelledby"} {
+		if got := attribute(logos[0], attr); got != "" {
+			t.Errorf("ロゴの %s = %q, want 空 (装飾として扱う)", attr, got)
+		}
+	}
+	if titles := findElements(logos[0], "title"); len(titles) != 0 {
+		t.Errorf("ロゴにアクセシブルな名前が付いている: %s", body)
+	}
+
+	// The mark is drawn from the markup itself rather than fetched, which is why
+	// it survives being read offline.
+	//
+	// [Ja] マークは取得されるのではなくマークアップ自体から描かれる。オフライン
+	// で読んでも失われないのはこのため。
+	if len(findElements(logos[0], "path")) == 0 {
+		t.Errorf("ロゴに描画される図形が無い: %s", body)
+	}
+	if len(findElements(document, "img")) != 0 {
+		t.Errorf("index.html が画像ファイルを参照している: %s", body)
 	}
 }
