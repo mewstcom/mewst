@@ -1024,21 +1024,17 @@ func TestReverseProxyMiddleware_Middleware_Settings(t *testing.T) {
 	}
 }
 
-// TestReverseProxyMiddleware_getFeatureFlagForRequest_Export verifies the real
-// (production) featureFlaggedPatterns registration for the export feature:
-// GET/POST /settings/export and GET /settings/export/download are gated by
-// go_export, while method mismatches and sub-paths do not match and fall
-// through to the Rails proxy.
+// TestReverseProxyMiddleware_isGoHandledPattern_Export verifies the real
+// (production) goHandledPatterns registration for the export feature:
+// GET/POST /settings/export and GET /settings/export/download are always
+// handled by Go, while method mismatches and neighbouring paths do not match
+// and fall through to the Rails proxy.
 //
-// [Ja] エクスポート機能の実 (本番) featureFlaggedPatterns 登録を検証する。
-// GET/POST /settings/export と GET /settings/export/download は go_export で
-// ゲートされ、メソッド不一致とサブパスは一致せず Rails へのプロキシに進む。
-func TestReverseProxyMiddleware_getFeatureFlagForRequest_Export(t *testing.T) {
-	// This test reads the real entries of the global featureFlaggedPatterns,
-	// which other tests overwrite, so it does not use t.Parallel().
-	//
-	// [Ja] このテストは他テストが上書きするグローバル変数 featureFlaggedPatterns の
-	// 実登録内容を読むため、t.Parallel() を使わない。
+// [Ja] エクスポート機能の実 (本番) goHandledPatterns 登録を検証する。
+// GET/POST /settings/export と GET /settings/export/download は常に Go 版で
+// 処理され、メソッド不一致と近接するパスは一致せず Rails へのプロキシに進む。
+func TestReverseProxyMiddleware_isGoHandledPattern_Export(t *testing.T) {
+	t.Parallel()
 
 	cfg := &config.Config{Domain: "mewst-test.com"}
 	m, err := NewReverseProxyMiddleware("http://localhost:3000", cfg, nil)
@@ -1050,59 +1046,53 @@ func TestReverseProxyMiddleware_getFeatureFlagForRequest_Export(t *testing.T) {
 		name     string
 		method   string
 		path     string
-		expected model.FeatureFlagName
+		expected bool
 	}{
-		{"GET /settings/export は go_export でゲート", http.MethodGet, "/settings/export", model.FeatureFlagExport},
-		{"POST /settings/export は go_export でゲート", http.MethodPost, "/settings/export", model.FeatureFlagExport},
-		{"GET /settings/export/download は go_export でゲート", http.MethodGet, "/settings/export/download", model.FeatureFlagExport},
-		{"POST /settings/export/download はメソッド不一致で対象外", http.MethodPost, "/settings/export/download", ""},
-		{"DELETE /settings/export はメソッド不一致で対象外", http.MethodDelete, "/settings/export", ""},
-		{"GET /settings はマッチしない", http.MethodGet, "/settings", ""},
-		{"サブパス /settings/export/foo はマッチしない (末尾 $)", http.MethodGet, "/settings/export/foo", ""},
-		{"前方一致 /settings/exports はマッチしない (完全一致)", http.MethodGet, "/settings/exports", ""},
+		{"GET /settings/export は Go 処理対象", http.MethodGet, "/settings/export", true},
+		{"POST /settings/export は Go 処理対象", http.MethodPost, "/settings/export", true},
+		{"GET /settings/export/download は Go 処理対象", http.MethodGet, "/settings/export/download", true},
+		{"POST /settings/export/download はメソッド不一致で対象外", http.MethodPost, "/settings/export/download", false},
+		{"DELETE /settings/export はメソッド不一致で対象外", http.MethodDelete, "/settings/export", false},
+		{"サブパス /settings/export/foo はマッチしない (末尾 $)", http.MethodGet, "/settings/export/foo", false},
+		{"前方一致 /settings/exports はマッチしない (完全一致)", http.MethodGet, "/settings/exports", false},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			req := httptest.NewRequest(tc.method, tc.path, nil)
-			if got := m.getFeatureFlagForRequest(req); got != tc.expected {
-				t.Errorf("getFeatureFlagForRequest(%s %q) = %q, want %q", tc.method, tc.path, got, tc.expected)
+			if got := m.isGoHandledPattern(req); got != tc.expected {
+				t.Errorf("isGoHandledPattern(%s %q) = %v, want %v", tc.method, tc.path, got, tc.expected)
 			}
 		})
 	}
 }
 
 // TestReverseProxyMiddleware_Middleware_Export verifies the end-to-end routing
-// of the export routes through the real featureFlaggedPatterns entries: a
-// viewer holding the go_export flag is served by Go, while a viewer without the
-// flag and a cookie-less request fall through to the Rails proxy, keeping the
-// routes unpublished until the flag is granted.
+// of the export routes through the real goHandledPatterns entries: the Go
+// handler serves them whatever cookies the request carries, now that no flag
+// gates the feature, while a method mismatch still falls through to Rails.
 //
-// [Ja] エクスポート系ルートが実際の featureFlaggedPatterns エントリを通じて
-// 振り分けられることを E2E で検証する。go_export フラグを持つ閲覧者は Go 版で
-// 処理され、フラグを持たない閲覧者と Cookie なしのリクエストは Rails への
-// プロキシに進み、フラグを付与するまでルートが非公開のままであることを確認する。
+// [Ja] エクスポート系ルートが実際の goHandledPatterns エントリを通じて振り分け
+// られることを E2E で検証する。フラグでゲートしなくなったため Cookie の有無に
+// 依らず Go 版で処理し、メソッド不一致は引き続き Rails に抜けることを確認する。
 func TestReverseProxyMiddleware_Middleware_Export(t *testing.T) {
-	// This test reads the real entries of the global featureFlaggedPatterns,
-	// which other tests overwrite, so it does not use t.Parallel().
+	// The Rails fall-through case runs the full middleware, which reads the
+	// featureFlaggedPatterns global. Skip t.Parallel() so this does not race the
+	// tests that overwrite that global.
 	//
-	// [Ja] このテストは他テストが上書きするグローバル変数 featureFlaggedPatterns の
-	// 実登録内容を読むため、t.Parallel() を使わない。
+	// [Ja] Rails にフォールバックするケースはミドルウェア全体を通り
+	// featureFlaggedPatterns グローバルを読むため、それを上書きする他テストと
+	// 競合しないよう t.Parallel() は使わない。
 
 	_, tx := testutil.SetupTx(t)
 
-	flaggedUserID := testutil.NewUserBuilder(t, tx).WithEmail("export-mw-flagged@example.com").Build()
-	flaggedProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("exportmwflag").Build()
-	flaggedActorID := testutil.NewActorBuilder(t, tx).WithUserID(flaggedUserID).WithProfileID(flaggedProfileID).Build()
-	flaggedSessionToken := "export-mw-flagged-session-token"
-	_ = testutil.NewSessionBuilder(t, tx).WithActorID(flaggedActorID).WithToken(flaggedSessionToken).Build()
-	_ = testutil.NewFeatureFlagBuilder(t, tx).WithActorID(flaggedActorID).WithName(model.FeatureFlagExport).Build()
-
-	otherUserID := testutil.NewUserBuilder(t, tx).WithEmail("export-mw-other@example.com").Build()
-	otherProfileID := testutil.NewProfileBuilder(t, tx).WithAtname("exportmwother").Build()
-	otherActorID := testutil.NewActorBuilder(t, tx).WithUserID(otherUserID).WithProfileID(otherProfileID).Build()
-	otherSessionToken := "export-mw-other-session-token"
-	_ = testutil.NewSessionBuilder(t, tx).WithActorID(otherActorID).WithToken(otherSessionToken).Build()
+	userID := testutil.NewUserBuilder(t, tx).WithEmail("export-mw@example.com").Build()
+	profileID := testutil.NewProfileBuilder(t, tx).WithAtname("exportmw").Build()
+	actorID := testutil.NewActorBuilder(t, tx).WithUserID(userID).WithProfileID(profileID).Build()
+	sessionToken := "export-mw-session-token"
+	_ = testutil.NewSessionBuilder(t, tx).WithActorID(actorID).WithToken(sessionToken).Build()
 
 	railsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Rails-Handled", "true")
@@ -1130,15 +1120,19 @@ func TestReverseProxyMiddleware_Middleware_Export(t *testing.T) {
 		name   string
 		method string
 		path   string
+		cookie *http.Cookie
 	}{
-		{"フラグ有効: GET /settings/export は Go 版で処理される", http.MethodGet, "/settings/export"},
-		{"フラグ有効: POST /settings/export は Go 版で処理される", http.MethodPost, "/settings/export"},
-		{"フラグ有効: GET /settings/export/download は Go 版で処理される", http.MethodGet, "/settings/export/download"},
+		{"GET /settings/export は Go 版で処理される", http.MethodGet, "/settings/export", &http.Cookie{Name: session.CookieName, Value: sessionToken}},
+		{"POST /settings/export は Go 版で処理される", http.MethodPost, "/settings/export", &http.Cookie{Name: session.CookieName, Value: sessionToken}},
+		{"GET /settings/export/download は Go 版で処理される", http.MethodGet, "/settings/export/download", &http.Cookie{Name: session.CookieName, Value: sessionToken}},
+		{"Cookie なしの GET /settings/export も Go 版で処理される", http.MethodGet, "/settings/export", nil},
 	}
 	for _, tc := range goCases {
 		t.Run(tc.name, func(t *testing.T) {
 			req := httptest.NewRequest(tc.method, tc.path, nil)
-			req.AddCookie(&http.Cookie{Name: session.CookieName, Value: flaggedSessionToken})
+			if tc.cookie != nil {
+				req.AddCookie(tc.cookie)
+			}
 			rr := httptest.NewRecorder()
 
 			handler.ServeHTTP(rr, req)
@@ -1149,33 +1143,17 @@ func TestReverseProxyMiddleware_Middleware_Export(t *testing.T) {
 		})
 	}
 
-	// Rails-proxied cases: without the flag the routes fall through to Rails
-	// (which has no such route and responds 404), so the feature stays dark.
-	//
-	// [Ja] Rails プロキシ対象: フラグがなければ Rails にフォールバックし
-	// (Rails 側にルートは無く 404 になる)、機能は非公開のまま。
-	railsCases := []struct {
-		name   string
-		cookie *http.Cookie
-	}{
-		{"フラグ無効なセッションは Rails 版に転送される", &http.Cookie{Name: session.CookieName, Value: otherSessionToken}},
-		{"Cookie なしのリクエストは Rails 版に転送される", nil},
-	}
-	for _, tc := range railsCases {
-		t.Run(tc.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, "/settings/export", nil)
-			if tc.cookie != nil {
-				req.AddCookie(tc.cookie)
-			}
-			rr := httptest.NewRecorder()
+	t.Run("DELETE /settings/export はメソッド不一致で Rails 版に転送される", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/settings/export", nil)
+		req.AddCookie(&http.Cookie{Name: session.CookieName, Value: sessionToken})
+		rr := httptest.NewRecorder()
 
-			handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(rr, req)
 
-			if rr.Header().Get("X-Rails-Handled") != "true" {
-				t.Errorf("GET /settings/export が Rails 版に転送されなかった")
-			}
-		})
-	}
+		if rr.Header().Get("X-Rails-Handled") != "true" {
+			t.Error("DELETE /settings/export が Rails 版に転送されなかった")
+		}
+	})
 }
 
 func TestReverseProxyMiddleware_Middleware_FeatureFlag_NilRepo(t *testing.T) {

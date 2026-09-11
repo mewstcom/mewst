@@ -2,14 +2,11 @@ package setting
 
 import "github.com/mewstcom/mewst/go/internal/templates"
 
-// IndexPageData holds the data for the settings menu page. ExportEnabled comes
-// from the export feature flag and decides whether the export entry is listed.
+// IndexPageData holds the data for the settings menu page.
 //
-// [Ja] IndexPageData は設定メニューページのデータを保持する。ExportEnabled は
-// エクスポートのフィーチャーフラグ由来で、エクスポート項目を一覧に載せるかを決める。
+// [Ja] IndexPageData は設定メニューページのデータを保持する。
 type IndexPageData struct {
-	CSRFToken     string
-	ExportEnabled bool
+	CSRFToken string
 }
 
 // Index renders the settings menu with links to its subpages and the sign-out
@@ -46,11 +43,9 @@ templ Index(data IndexPageData) {
 					//
 					// [Ja] エクスポートは最後に置く。上の各項目がアカウント自体を扱うのに対し、
 					// エクスポートはアカウントが書いたポストを扱うためである。
-					if data.ExportEnabled {
-						<li>
-							@settingMenuLink(templates.SettingExportPath(), templates.T(ctx, "setting_index_export_link"))
-						</li>
-					}
+					<li>
+						@settingMenuLink(templates.SettingExportPath(), templates.T(ctx, "setting_index_export_link"))
+					</li>
 				</ul>
 			</nav>
 

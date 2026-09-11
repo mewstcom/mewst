@@ -151,14 +151,14 @@ func TestLoadUserRoster(t *testing.T) {
 func TestLoadUserRosterAcceptsSelectedFeatureFlags(t *testing.T) {
 	t.Parallel()
 
-	body := strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_export"]`, 1)
+	body := strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_example"]`, 1)
 
 	roster, err := loadUserRoster(writeRoster(t, body))
 	if err != nil {
 		t.Fatalf("名簿の読み込みに失敗: %v", err)
 	}
 
-	want := []model.FeatureFlagName{model.FeatureFlagExport}
+	want := []model.FeatureFlagName{model.FeatureFlagExample}
 	if !slices.Equal(roster.users[0].featureFlags, want) {
 		t.Errorf("フィーチャーフラグが %v であることを期待したが %v だった", want, roster.users[0].featureFlags)
 	}
@@ -365,12 +365,12 @@ func TestLoadUserRosterRejectsInvalidRoster(t *testing.T) {
 		},
 		{
 			name: "定義されていないフィーチャーフラグを指定したとき",
-			body: strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_exprot"]`, 1),
+			body: strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_exmaple"]`, 1),
 			want: "定義されていないフィーチャーフラグです",
 		},
 		{
 			name: "フィーチャーフラグが重複しているとき",
-			body: strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_export", "go_export"]`, 1),
+			body: strings.Replace(validRoster, `feature_flags = "all"`, `feature_flags = ["go_example", "go_example"]`, 1),
 			want: "2 回以上指定されています",
 		},
 		{

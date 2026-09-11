@@ -130,3 +130,47 @@ func TestIndexMain_TellsTheReaderWhenThereAreNoPosts(t *testing.T) {
 		})
 	}
 }
+
+func TestIndexMain_OpensWithTheMewstBrand(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		locale string
+	}{
+		{name: "日本語", locale: i18n.LangJa},
+		{name: "英語", locale: i18n.LangEn},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := renderIndex(t, tt.locale, exports.IndexData{Months: []exports.IndexMonth{
+				newIndexMonth(2026, time.July, 1),
+			}})
+
+			// The brand is a name, not a message, so it reads the same whichever
+			// language the rest of the file is written in.
+			//
+			// [Ja] ブランド表示は文言ではなく名前のため、ファイルの他の部分が
+			// どの言語で書かれていても同じように読める。
+			if !strings.Contains(got, "Mewst") {
+				t.Errorf("目次にブランド名が含まれていない: %s", got)
+			}
+			if !strings.Contains(got, `viewBox="0 0 700 700"`) {
+				t.Errorf("目次に Mewst ロゴが含まれていない: %s", got)
+			}
+
+			// The logo is decorative and the brand name beside it carries the
+			// name, so the template wraps the glyph in an element that takes it
+			// out of the accessibility tree.
+			//
+			// [Ja] ロゴは装飾で、名前は隣のブランド名が担うため、テンプレートは
+			// グリフをアクセシビリティツリーから外す要素で包む。
+			if !strings.Contains(got, `<span aria-hidden="true">`) {
+				t.Errorf("装飾ロゴが aria-hidden の要素に包まれていない: %s", got)
+			}
+		})
+	}
+}
