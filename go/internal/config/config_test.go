@@ -82,6 +82,25 @@ func setupTestEnv(t *testing.T) func() {
 	}
 }
 
+// setExportStorageEnv sets the MEWST_S3_* variables Load requires in
+// production. A test that boots a production configuration to look at
+// something else (Turnstile, Sentry) has to satisfy that requirement, and
+// setting the four in one call keeps the requirement out of those tests'
+// tables.
+//
+// [Ja] setExportStorageEnv は Load が本番で必須とする MEWST_S3_* を設定する。
+// 別のもの (Turnstile・Sentry) を見るために本番構成で起動するテストもこの要求を
+// 満たす必要があるため、4 項目を 1 回の呼び出しにまとめ、それらのテストの
+// テーブルから必須項目を締め出す。
+func setExportStorageEnv(t *testing.T) {
+	t.Helper()
+
+	_ = os.Setenv("MEWST_S3_BUCKET_NAME", "mewst-export-config-test")
+	_ = os.Setenv("MEWST_S3_ENDPOINT", "https://example.r2.cloudflarestorage.com")
+	_ = os.Setenv("MEWST_S3_ACCESS_KEY_ID", "config-test-access-key-id")
+	_ = os.Setenv("MEWST_S3_SECRET_ACCESS_KEY", "config-test-secret-access-key")
+}
+
 // TestLoad は環境変数から設定を読み込むテスト
 func TestLoad(t *testing.T) {
 	cleanup := setupTestEnv(t)
@@ -492,6 +511,9 @@ func TestLoad_TurnstileDisable(t *testing.T) {
 			defer cleanup()
 
 			_ = os.Setenv("APP_ENV", tt.appEnv)
+			if tt.appEnv == "prod" {
+				setExportStorageEnv(t)
+			}
 			_ = os.Setenv("MEWST_TURNSTILE_SITE_KEY", siteKey)
 			_ = os.Setenv("MEWST_TURNSTILE_SECRET_KEY", secretKey)
 			if tt.disable != "" {
@@ -811,6 +833,9 @@ func TestLoad_SentryEnvironment_FallbackToAppEnv(t *testing.T) {
 			defer cleanup()
 
 			_ = os.Setenv("APP_ENV", tt.appEnv)
+			if tt.appEnv == "prod" {
+				setExportStorageEnv(t)
+			}
 			_ = os.Unsetenv("MEWST_SENTRY_ENVIRONMENT")
 
 			cfg, err := Load()
@@ -1137,6 +1162,82 @@ func TestLoad_S3Config(t *testing.T) {
 			}
 			if cfg.S3Region != tt.wantRegion {
 				t.Errorf("S3Region = %q, want %q", cfg.S3Region, tt.wantRegion)
+			}
+		})
+	}
+}
+
+// TestLoad_S3ConfigInProduction verifies that production requires the export
+// storage: with export released to every user, a production process that boots
+// without MEWST_S3_* would answer the export page with the unavailable screen
+// for everyone, so Load refuses instead. Outside production the same absence
+// still boots, which keeps a local run and the test suite free of bucket
+// credentials.
+//
+// [Ja] TestLoad_S3ConfigInProduction は、本番がエクスポート用ストレージを必須と
+// することを検証する。エクスポートが全ユーザーに公開された今、MEWST_S3_* 無しで
+// 起動した本番プロセスはエクスポート画面を全員に対して利用不可の画面で返すことに
+// なるため、Load はこれを拒否する。非本番では同じ未設定でも起動でき、ローカル実行
+// とテストがバケットの資格情報を持たずに済む。
+func TestLoad_S3ConfigInProduction(t *testing.T) {
+	tests := []struct {
+		name         string
+		appEnv       string
+		fullS3Config bool
+		partialS3Env map[string]string
+		wantErr      bool
+	}{
+		{
+			name:    "本番・全項目未設定: 起動時エラー",
+			appEnv:  "prod",
+			wantErr: true,
+		},
+		{
+			name:         "本番・完全設定: 起動できる",
+			appEnv:       "prod",
+			fullS3Config: true,
+			wantErr:      false,
+		},
+		{
+			name:         "本番・部分設定: 起動時エラー",
+			appEnv:       "prod",
+			partialS3Env: map[string]string{"MEWST_S3_BUCKET_NAME": "mewst-export-prod"},
+			wantErr:      true,
+		},
+		{
+			name:    "開発・全項目未設定: 起動できる",
+			appEnv:  "dev",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanup := setupTestEnv(t)
+			defer cleanup()
+
+			_ = os.Setenv("APP_ENV", tt.appEnv)
+			if tt.fullS3Config {
+				setExportStorageEnv(t)
+			}
+			for key, value := range tt.partialS3Env {
+				_ = os.Setenv(key, value)
+			}
+
+			cfg, err := Load()
+
+			if tt.wantErr {
+				if err == nil {
+					t.Fatal("Load() should return error when the export storage is not fully configured in production")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Load() failed: %v", err)
+			}
+			if cfg.Env != tt.appEnv {
+				t.Errorf("Env = %q, want %q", cfg.Env, tt.appEnv)
 			}
 		})
 	}

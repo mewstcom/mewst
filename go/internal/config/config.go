@@ -80,12 +80,16 @@ type S3Readiness string
 
 const (
 	// S3ReadinessDisabled means every MEWST_S3_* variable is unset: the server
-	// and worker boot with the export feature disabled. A flag-off deploy must
-	// not require the R2 configuration.
+	// and worker boot with the export feature disabled. Only a non-production
+	// environment may boot this way, so that a local run or a test need not hold
+	// bucket credentials; Load rejects it in production, where export is a
+	// released feature every signed-in user can reach.
 	//
 	// [Ja] S3ReadinessDisabled は MEWST_S3_* がすべて未設定の状態。server / worker は
-	// エクスポート機能を無効化したまま起動できる。フラグ OFF のデプロイに R2 設定を
-	// 必須化しない。
+	// エクスポート機能を無効化したまま起動できる。この状態で起動できるのは非本番の
+	// 環境だけで、ローカル実行やテストがバケットの資格情報を持たなくて済むようにする。
+	// 本番ではエクスポートがログイン中の全ユーザーに公開された機能のため、Load が
+	// この状態を拒否する。
 	S3ReadinessDisabled S3Readiness = "disabled"
 
 	// S3ReadinessReady means every required MEWST_S3_* variable is set and the
@@ -219,12 +223,13 @@ func Load() (*Config, error) {
 	cfg.SentryDebug = os.Getenv("MEWST_SENTRY_DEBUG") == "true"
 
 	// Object storage for exports (S3-compatible - Cloudflare R2). A partial
-	// MEWST_S3_* set is a configuration mistake: fail the boot here instead of
-	// letting it surface later as a broken export.
+	// MEWST_S3_* set is a configuration mistake, and in production a missing one
+	// is too: fail the boot here instead of letting either surface later as a
+	// broken export.
 	//
 	// [Ja] エクスポート用オブジェクトストレージ (S3 互換 - Cloudflare R2)。
-	// MEWST_S3_* の部分設定は構成ミスのため、後からエクスポートの故障として
-	// 表面化させず、ここで起動を失敗させる。
+	// MEWST_S3_* の部分設定は構成ミスであり、本番では未設定も同じく構成ミスとなる。
+	// どちらも後からエクスポートの故障として表面化させず、ここで起動を失敗させる。
 	cfg.S3BucketName = os.Getenv("MEWST_S3_BUCKET_NAME")
 	cfg.S3Endpoint = os.Getenv("MEWST_S3_ENDPOINT")
 	cfg.S3AccessKeyID = os.Getenv("MEWST_S3_ACCESS_KEY_ID")
@@ -234,6 +239,10 @@ func Load() (*Config, error) {
 	switch cfg.S3Readiness() {
 	case S3ReadinessInvalid:
 		return nil, fmt.Errorf("MEWST_S3_* 環境変数が一部だけ設定されています (未設定の必須項目: %s)。必須 4 項目を設定するか、MEWST_S3_REGION を含む全項目を未設定にしてください", strings.Join(missingS3EnvVars(cfg), ", "))
+	case S3ReadinessDisabled:
+		if cfg.IsProduction() {
+			return nil, fmt.Errorf("本番環境では MEWST_S3_* 環境変数が必須です (未設定の必須項目: %s)。エクスポートは全ユーザーに公開された機能のため、ストレージ未設定のまま起動させない", strings.Join(missingS3EnvVars(cfg), ", "))
+		}
 	case S3ReadinessReady:
 		if cfg.S3Region == "" {
 			cfg.S3Region = "auto"
