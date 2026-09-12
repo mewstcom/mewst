@@ -3,10 +3,17 @@ package email
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/templates/emails/email_confirmation"
+	"github.com/mewstcom/mewst/go/internal/templates/emails/export_completed"
 )
 
 func TestResendSender_from_WithName(t *testing.T) {
@@ -32,6 +39,37 @@ func TestResendSender_from_WithoutName(t *testing.T) {
 
 	if got != want {
 		t.Errorf("from() = %q, want %q", got, want)
+	}
+}
+
+func TestDiscardSender_SendConcurrently(t *testing.T) {
+	t.Parallel()
+
+	sender := NewDiscardSender()
+	ctx := context.Background()
+
+	const sendCount = 32
+	errCh := make(chan error, sendCount)
+	var wg sync.WaitGroup
+
+	for i := 0; i < sendCount; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			errCh <- sender.Send(ctx, SendInput{
+				To:      "test@example.com",
+				Subject: "テスト件名",
+			})
+		}()
+	}
+
+	wg.Wait()
+	close(errCh)
+
+	for err := range errCh {
+		if err != nil {
+			t.Errorf("Send failed: %v", err)
+		}
 	}
 }
 
@@ -209,5 +247,121 @@ func TestEmailConfirmationTemplate_English_Text(t *testing.T) {
 	// 英語メッセージが含まれているか
 	if !strings.Contains(text, "confirmation code") {
 		t.Error("expected English message in text")
+	}
+}
+
+// capturedRequest is what the fake Resend endpoint saw.
+//
+// [Ja] capturedRequest は偽の Resend エンドポイントが見たもの。
+type capturedRequest struct {
+	idempotencyKey        string
+	idempotencyKeyPresent bool
+	body                  map[string]any
+}
+
+// newTestResendSender points a ResendSender at a local endpoint that records
+// the request, so that the header the SDK actually puts on the wire can be
+// asserted rather than the field the caller set.
+//
+// [Ja] newTestResendSender は ResendSender をリクエストを記録するローカルの
+// エンドポイントへ向ける。呼び出し元が設定したフィールドではなく、SDK が実際に
+// 通信へ載せるヘッダーを検証するため。
+func newTestResendSender(t *testing.T, captured *capturedRequest) *ResendSender {
+	t.Helper()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		captured.idempotencyKey = r.Header.Get("Idempotency-Key")
+		_, captured.idempotencyKeyPresent = r.Header[http.CanonicalHeaderKey("Idempotency-Key")]
+
+		rawBody, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("failed to read request body: %v", err)
+		}
+		if err := json.Unmarshal(rawBody, &captured.body); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if _, err := w.Write([]byte(`{"id":"test-email-id"}`)); err != nil {
+			t.Errorf("failed to write response: %v", err)
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	baseURL, err := url.Parse(server.URL + "/")
+	if err != nil {
+		t.Fatalf("failed to parse test server URL: %v", err)
+	}
+
+	sender := NewResendSender("dummy-api-key", "noreply@example.com", "Mewst")
+	sender.client.BaseURL = baseURL
+
+	return sender
+}
+
+func TestResendSender_Send_WithIdempotencyKey(t *testing.T) {
+	t.Parallel()
+
+	var captured capturedRequest
+	sender := newTestResendSender(t, &captured)
+
+	exportURL := "https://mewst.com/settings/export"
+	err := sender.Send(context.Background(), SendInput{
+		To:             "test@example.com",
+		Subject:        "[Mewst] エクスポートの準備ができました",
+		HTMLBody:       export_completed.JaHTML(exportURL),
+		TextBody:       export_completed.JaText(exportURL),
+		IdempotencyKey: "export-completed/01J000000000000000000EXPRT",
+	})
+	if err != nil {
+		t.Fatalf("Send failed: %v", err)
+	}
+
+	if captured.idempotencyKey != "export-completed/01J000000000000000000EXPRT" {
+		t.Errorf("Idempotency-Key header = %q, want %q", captured.idempotencyKey, "export-completed/01J000000000000000000EXPRT")
+	}
+
+	if html, _ := captured.body["html"].(string); !strings.Contains(html, exportURL) {
+		t.Error("request body does not contain the rendered HTML body")
+	}
+	if text, _ := captured.body["text"].(string); !strings.Contains(text, exportURL) {
+		t.Error("request body does not contain the rendered text body")
+	}
+}
+
+// TestResendSender_Send_WithoutIdempotencyKey pins the compatibility of the
+// mails that predate the key: they leave it unset, and the request must go out
+// without the header rather than with an empty one, which the API would reject
+// or treat as a shared key.
+//
+// [Ja] TestResendSender_Send_WithoutIdempotencyKey は、キー導入前からのメールの
+// 互換性を固定する。それらはキーを設定しないため、リクエストは空のヘッダーでは
+// なくヘッダー無しで出る必要がある (空のヘッダーは API に拒否されるか、共有された
+// キーとして扱われる)。
+func TestResendSender_Send_WithoutIdempotencyKey(t *testing.T) {
+	t.Parallel()
+
+	var captured capturedRequest
+	sender := newTestResendSender(t, &captured)
+
+	err := sender.Send(context.Background(), SendInput{
+		To:       "test@example.com",
+		Subject:  "[Mewst] 確認用コード",
+		HTMLBody: email_confirmation.JaHTML("test@example.com", "123456"),
+		TextBody: email_confirmation.JaText("test@example.com", "123456"),
+	})
+	if err != nil {
+		t.Fatalf("Send failed: %v", err)
+	}
+
+	if captured.idempotencyKeyPresent {
+		t.Errorf("Idempotency-Key header is present with value %q, want it to be absent", captured.idempotencyKey)
+	}
+
+	if from, _ := captured.body["from"].(string); from != "Mewst <noreply@example.com>" {
+		t.Errorf("from = %q, want %q", from, "Mewst <noreply@example.com>")
+	}
+	if html, _ := captured.body["html"].(string); !strings.Contains(html, "123456") {
+		t.Error("request body does not contain the rendered HTML body")
 	}
 }

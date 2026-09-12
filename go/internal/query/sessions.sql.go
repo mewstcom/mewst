@@ -59,7 +59,7 @@ const getAuthByToken = `-- name: GetAuthByToken :one
 SELECT
     actors.id, actors.user_id, actors.profile_id, actors.created_at, actors.updated_at,
     users.id, users.email, users.password_digest, users.locale, users.signed_up_at, users.created_at, users.updated_at, users.time_zone,
-    profiles.id, profiles.owner_type, profiles.atname, profiles.name, profiles.description, profiles.image_url, profiles.joined_at, profiles.created_at, profiles.updated_at, profiles.discarded_at, profiles.last_post_at, profiles.gravatar_email, profiles.gravatar_url, profiles.avatar_kind
+    profiles.id, profiles.owner_type, profiles.atname, profiles.name, profiles.description, profiles.image_url, profiles.joined_at, profiles.created_at, profiles.updated_at, profiles.discarded_at, profiles.last_post_at, profiles.gravatar_email, profiles.gravatar_url, profiles.avatar_kind, profiles.export_deletion_started_at
 FROM sessions
 INNER JOIN actors ON actors.id = sessions.actor_id
 INNER JOIN users ON users.id = actors.user_id
@@ -111,6 +111,7 @@ func (q *Queries) GetAuthByToken(ctx context.Context, token string) (GetAuthByTo
 		&i.Profile.GravatarEmail,
 		&i.Profile.GravatarUrl,
 		&i.Profile.AvatarKind,
+		&i.Profile.ExportDeletionStartedAt,
 	)
 	return i, err
 }

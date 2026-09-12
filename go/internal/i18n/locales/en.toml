@@ -309,6 +309,18 @@ other = "Password updated. Please sign in with your new password."
 description = "Post created success message"
 other = "Post created."
 
+[flash_export_started]
+description = "Export started success message"
+other = "Your export has started. We will email you once it is ready."
+
+[flash_export_already_in_progress]
+description = "Message shown when starting an export is refused because one is already in progress"
+other = "An export is already in progress. Please wait for it to finish."
+
+[flash_export_profile_deleting]
+description = "Message shown when starting an export is refused because the profile is being deleted"
+other = "Your profile is being deleted, so an export cannot be started."
+
 # ============================================
 # Error pages (error_*)
 # ============================================
@@ -340,6 +352,10 @@ other = "Please try again later."
 [error_bad_gateway_back_to_home]
 description = "502 error page link to home"
 other = "Back to home"
+
+[error_export_unavailable]
+description = "Refusal message on a deployment that does not serve exports (returned as 503, so it is never rendered)"
+other = "The export feature is currently unavailable."
 
 # ============================================
 # Navigation (navbar_*)
@@ -394,6 +410,94 @@ description = "New post form submit button"
 other = "Post"
 
 # ============================================
+# Settings menu page (setting_index_*)
+# ============================================
+
+[setting_index_title]
+description = "Settings menu page title"
+other = "Settings"
+
+[setting_index_heading]
+description = "Settings menu page heading"
+other = "Settings"
+
+[setting_index_menu_label]
+description = "Accessible label for the settings menu landmark (to distinguish it from the navbars)"
+other = "Settings menu"
+
+[setting_index_profile_link]
+description = "Link text from the settings menu to the profile edit page"
+other = "Edit profile"
+
+[setting_index_user_link]
+description = "Link text from the settings menu to the user edit page"
+other = "Edit user"
+
+[setting_index_email_link]
+description = "Link text from the settings menu to the email change page"
+other = "Change email"
+
+[setting_index_export_link]
+description = "Link text from the settings menu to the export page"
+other = "Export posts"
+
+[setting_index_sign_out]
+description = "Sign-out button on the settings menu"
+other = "Sign out"
+
+[setting_index_sign_out_confirm]
+description = "Message shown in the native confirmation dialog when the settings menu sign-out button is clicked"
+other = "Are you sure you want to sign out?"
+
+# ============================================
+# Export page (export_show_*)
+# ============================================
+
+[export_show_title]
+description = "Export page title"
+other = "Export"
+
+[export_show_heading]
+description = "Export page heading"
+other = "Export"
+
+[export_show_description]
+description = "Sentence on the export page describing what an export contains"
+other = "Your posts are collected into monthly HTML files in a zip file. Creating it may take a while."
+
+[export_show_state_none]
+description = "Export page state message: no export has been created yet"
+other = "You have not created an export yet."
+
+[export_show_state_in_progress]
+description = "Export page state message: the export is being created"
+other = "Your export is being created. We will email you once it is ready."
+
+[export_show_state_succeeded]
+description = "Export page state message: the export has been created"
+other = "Your export is ready."
+
+[export_show_state_failed]
+description = "Export page state message: creating the export failed"
+other = "Creating your export failed. Please try again."
+
+[export_show_state_unavailable]
+description = "Export page state message: the export feature is unavailable"
+other = "Export is unavailable right now."
+
+[export_show_submit]
+description = "Button on the export page that starts an export"
+other = "Create an export"
+
+[export_show_download_link]
+description = "Link text on the export page for downloading the latest export"
+other = "Download your export"
+
+[export_show_previous_download_link]
+description = "Link text on the export page for downloading the previous export while a newer one is being created or has failed"
+other = "Download your previous export"
+
+# ============================================
 # Back link (back_link)
 # ============================================
 
@@ -420,3 +524,68 @@ other = "Add link card: {{.HostAndPath}}"
 [link_create_remove]
 description = "Accessible label for the link card remove button"
 other = "Remove link card"
+
+# ============================================
+# Footer (footer_*)
+# ============================================
+
+[footer_opens_in_new_tab]
+description = "Visually hidden hint telling users that a footer link opens in a new tab"
+other = "Opens in new tab"
+
+# ============================================
+# Export archive (export_archive_*)
+# ============================================
+
+[export_archive_index_title]
+description = "Title of the export zip's table of contents (index.html)"
+other = "Post export - Mewst"
+
+[export_archive_index_heading]
+description = "Heading of the export zip's table of contents"
+other = "Post export"
+
+[export_archive_index_description]
+description = "Explains that the export zip splits posts into one file per month"
+other = "Your posts are split into one file per month. Choose the month you want to read."
+
+[export_archive_index_empty]
+description = "Tells the reader that the export zip contains no posts"
+other = "This export contains no posts."
+
+[export_archive_index_month_link]
+description = "Text of the link from the export zip's table of contents to a month's file"
+other = "Posts from {{.MonthLabel}}"
+
+[export_archive_index_post_count]
+description = "Number of posts a month holds, shown in the export zip's table of contents"
+one = "{{.Count}} post"
+other = "{{.Count}} posts"
+
+[export_archive_month_label]
+description = "How a calendar month is written inside the export zip"
+other = "{{.MonthName}} {{.Year}}"
+
+[export_archive_month_title]
+description = "Title of a month's file (posts/2026-07.html) inside the export zip"
+other = "Posts from {{.MonthLabel}} - Mewst"
+
+[export_archive_month_heading]
+description = "Heading of a month's file inside the export zip"
+other = "Posts from {{.MonthLabel}}"
+
+[export_archive_post_published_at]
+description = "Published time of a post, shown in a month's file inside the export zip"
+other = "{{.MonthName}} {{.Day}}, {{.Year}} {{.Time}}"
+
+[export_archive_format_comment]
+description = "HTML comment at the top of a month's file inside the export zip, documenting the output contract of a post"
+other = "Mewst export format v{{.Version}}: each post is an article.h-entry. Its ID is in the data-post-id attribute, its published time in the datetime attribute of time.dt-published (RFC 3339), and its body in .e-content."
+
+# ============================================
+# Export completion email (export_completed_email_*)
+# ============================================
+
+[export_completed_email_subject]
+description = "Subject of the export completion notification email"
+other = "[Mewst] Your export is ready"

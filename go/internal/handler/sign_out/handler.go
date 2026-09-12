@@ -1,27 +1,33 @@
-// Package sign_out はログアウトハンドラーを提供します
+// Package sign_out provides the sign-out handler.
+//
+// [Ja] Package sign_out はログアウトハンドラーを提供します。
 package sign_out
 
 import (
-	"github.com/mewstcom/mewst/go/internal/config"
 	"github.com/mewstcom/mewst/go/internal/session"
+	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Handler はログアウト機能のHTTPハンドラー
+// Handler is the HTTP handler for the sign-out endpoint.
+//
+// [Ja] Handler はログアウトの HTTP ハンドラー。
 type Handler struct {
-	cfg        *config.Config
-	sessionMgr *session.Manager
-	flashMgr   *session.FlashManager
+	sessionMgr      *session.Manager
+	flashMgr        *session.FlashManager
+	deleteSessionUC *usecase.DeleteSessionUsecase
 }
 
-// NewHandler はHandlerを生成する
+// NewHandler creates a new Handler.
+//
+// [Ja] NewHandler は新しい Handler を作成する。
 func NewHandler(
-	cfg *config.Config,
 	sessionMgr *session.Manager,
 	flashMgr *session.FlashManager,
+	deleteSessionUC *usecase.DeleteSessionUsecase,
 ) *Handler {
 	return &Handler{
-		cfg:        cfg,
-		sessionMgr: sessionMgr,
-		flashMgr:   flashMgr,
+		sessionMgr:      sessionMgr,
+		flashMgr:        flashMgr,
+		deleteSessionUC: deleteSessionUC,
 	}
 }

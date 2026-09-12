@@ -16,7 +16,7 @@ import (
 const createProfile = `-- name: CreateProfile :one
 INSERT INTO profiles (owner_type, atname, name, description, image_url, joined_at, avatar_kind, gravatar_email, gravatar_url, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-RETURNING id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind
+RETURNING id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind, export_deletion_started_at
 `
 
 type CreateProfileParams struct {
@@ -59,6 +59,7 @@ func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (P
 		&i.GravatarEmail,
 		&i.GravatarUrl,
 		&i.AvatarKind,
+		&i.ExportDeletionStartedAt,
 	)
 	return i, err
 }
@@ -77,7 +78,7 @@ func (q *Queries) ExistsProfileByAtname(ctx context.Context, atname string) (boo
 }
 
 const getProfileByAtname = `-- name: GetProfileByAtname :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind FROM profiles WHERE atname = $1 LIMIT 1
+SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind, export_deletion_started_at FROM profiles WHERE atname = $1 LIMIT 1
 `
 
 func (q *Queries) GetProfileByAtname(ctx context.Context, atname string) (Profile, error) {
@@ -98,12 +99,13 @@ func (q *Queries) GetProfileByAtname(ctx context.Context, atname string) (Profil
 		&i.GravatarEmail,
 		&i.GravatarUrl,
 		&i.AvatarKind,
+		&i.ExportDeletionStartedAt,
 	)
 	return i, err
 }
 
 const getProfileByID = `-- name: GetProfileByID :one
-SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind FROM profiles WHERE id = $1 LIMIT 1
+SELECT id, owner_type, atname, name, description, image_url, joined_at, created_at, updated_at, discarded_at, last_post_at, gravatar_email, gravatar_url, avatar_kind, export_deletion_started_at FROM profiles WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error) {
@@ -124,6 +126,7 @@ func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, er
 		&i.GravatarEmail,
 		&i.GravatarUrl,
 		&i.AvatarKind,
+		&i.ExportDeletionStartedAt,
 	)
 	return i, err
 }

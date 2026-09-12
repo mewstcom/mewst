@@ -26,7 +26,9 @@ templ AttachedLinkCard(link viewmodel.Link) {
 			// 両方消えるため、次の投稿はリンク無しで送信される。
 			<button
 				aria-label={ templates.T(ctx, "link_create_remove") }
-				class="btn-icon-outline absolute right-0 top-0 m-2 rounded-full"
+				class="btn absolute right-0 top-0 m-2 rounded-full"
+				data-size="icon"
+				data-variant="outline"
 				hx-on:click="document.getElementById('link-form').replaceChildren()"
 				type="button"
 			>

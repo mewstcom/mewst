@@ -298,6 +298,8 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
 
+	testutil.WaitForRateLimitWindow(t)
+
 	// レート制限を超過するためにリクエストを5回送信 (制限: 5回/分)
 	for i := 0; i < 5; i++ {
 		form := url.Values{}

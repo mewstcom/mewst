@@ -2,6 +2,7 @@ package validator
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/i18n"
@@ -349,5 +350,34 @@ func TestAccountCreateValidator_ValidAtnameFormats(t *testing.T) {
 		if err != nil {
 			t.Errorf("バリデーションエラーが発生すべきではありません (atname=%s): %v", atname, err)
 		}
+	}
+}
+
+func TestIsValidAtname(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		atname string
+		want   bool
+	}{
+		{name: "英数字とアンダースコア", atname: "seed_user1", want: true},
+		{name: "大文字を含む", atname: "SeedUser1", want: true},
+		{name: "上限ちょうど", atname: strings.Repeat("a", AtnameMaxLength), want: true},
+		{name: "上限を1文字超える", atname: strings.Repeat("a", AtnameMaxLength+1), want: false},
+		{name: "空文字列", atname: "", want: false},
+		{name: "ハイフンを含む", atname: "seed-user1", want: false},
+		{name: "空白を含む", atname: "seed user1", want: false},
+		{name: "日本語を含む", atname: "シードユーザー", want: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := IsValidAtname(tt.atname); got != tt.want {
+				t.Errorf("IsValidAtname(%q) = %v であることを期待したが %v だった", tt.atname, tt.want, got)
+			}
+		})
 	}
 }

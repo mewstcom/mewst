@@ -113,7 +113,7 @@ RUN pnpm build
 # [Ja] Go バイナリをビルド
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o bin/server cmd/server/main.go
+    CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o bin/mewst ./cmd/mewst
 
 # ========================================
 # Runtime stage
@@ -156,7 +156,7 @@ COPY --from=builder /usr/local/bin/dbmate /usr/local/bin/dbmate
 # Migrations only: schema.sql is a dev-time snapshot, not consumed by `dbmate up`.
 # [Ja] ビルドステージから必要なファイルをコピー。
 # migrations のみ: schema.sql は開発時のスナップショットで `dbmate up` は使わない。
-COPY --from=builder /app/bin/server /app/bin/server
+COPY --from=builder /app/bin/mewst /app/bin/mewst
 COPY --from=builder /app/static /app/static
 COPY --from=builder /app/db/migrations /app/db/migrations
 
@@ -175,4 +175,4 @@ EXPOSE 8080
 # [Ja] デフォルトの起動コマンド。Dokku は Procfile の `web` を優先するため、
 # 本番デプロイは Procfile 経由のままになる。CMD は `docker run <image>` で
 # ローカルや CI のスモークテストを行うために置く。
-CMD ["/app/bin/server"]
+CMD ["/app/bin/mewst", "serve"]

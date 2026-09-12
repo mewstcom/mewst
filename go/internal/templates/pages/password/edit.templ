@@ -33,7 +33,7 @@ templ Edit(data EditPageData) {
 		@components.AuthFormCard() {
 			<form
 				action="/password"
-				class="form grid gap-6"
+				class="grid gap-6"
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -41,7 +41,7 @@ templ Edit(data EditPageData) {
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 
 				<div class="grid gap-2">
-					<label for="password">
+					<label class="label" for="password">
 						{ templates.T(ctx, "password_edit_password_label") }
 					</label>
 
@@ -53,6 +53,7 @@ templ Edit(data EditPageData) {
 						}
 						autocomplete="new-password"
 						autofocus
+						class="input"
 						id="password"
 						minlength="8"
 						name="password"
@@ -75,7 +76,7 @@ templ Edit(data EditPageData) {
 				</div>
 
 				<button
-					class="btn-primary rounded-full w-fit"
+					class="btn rounded-full w-fit"
 					tabindex="2"
 					type="submit"
 				>

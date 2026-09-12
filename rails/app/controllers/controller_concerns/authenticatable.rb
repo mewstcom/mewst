@@ -19,12 +19,6 @@ module ControllerConcerns::Authenticatable
     true
   end
 
-  sig(:final) { returns(T::Boolean) }
-  def sign_out
-    cookies.delete(SessionRecord::COOKIE_KEY)
-    true
-  end
-
   sig(:final) { returns(T.nilable(ActorRecord)) }
   def viewer
     @viewer ||= T.let(begin

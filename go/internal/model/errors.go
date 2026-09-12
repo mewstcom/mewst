@@ -92,6 +92,17 @@ const (
 	AppErrCodeForbidden
 	AppErrCodeConflict
 	AppErrCodeInternal
+
+	// AppErrCodeServiceUnavailable means this deployment cannot serve the
+	// request because a dependency the feature needs is not configured. It is
+	// kept apart from AppErrCodeInternal because nothing failed: the capability
+	// was never present, so the Handler answers 503 rather than 500.
+	//
+	// [Ja] AppErrCodeServiceUnavailable は、機能が必要とする依存が設定されていない
+	// ため、そのデプロイがリクエストに応えられないことを表す。AppErrCodeInternal と
+	// 分けるのは、何かが失敗したのではないためである。その能力を最初から備えて
+	// いないため、Handler は 500 ではなく 503 を返す。
+	AppErrCodeServiceUnavailable
 )
 
 // AppError はアプリケーションエラーを表す (SafeError パターン) 。

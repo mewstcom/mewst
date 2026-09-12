@@ -88,6 +88,36 @@ type EmailConfirmation struct {
 	UpdatedAt   time.Time    `db:"updated_at"`
 }
 
+type Export struct {
+	ID                   uuid.UUID      `db:"id"`
+	ProfileID            uuid.UUID      `db:"profile_id"`
+	ActorID              uuid.UUID      `db:"actor_id"`
+	Status               string         `db:"status"`
+	ObjectKey            sql.NullString `db:"object_key"`
+	AttemptCount         int32          `db:"attempt_count"`
+	StartedAt            sql.NullTime   `db:"started_at"`
+	FinishedAt           sql.NullTime   `db:"finished_at"`
+	CompletionNotifiedAt sql.NullTime   `db:"completion_notified_at"`
+	CreatedAt            time.Time      `db:"created_at"`
+	UpdatedAt            time.Time      `db:"updated_at"`
+}
+
+type ExportCompletionNotification struct {
+	ExportID       uuid.UUID `db:"export_id"`
+	ActorID        uuid.UUID `db:"actor_id"`
+	RecipientEmail string    `db:"recipient_email"`
+	Locale         string    `db:"locale"`
+	CreatedAt      time.Time `db:"created_at"`
+	ProfileID      uuid.UUID `db:"profile_id"`
+}
+
+type ExportPost struct {
+	ExportID    uuid.UUID `db:"export_id"`
+	PostID      uuid.UUID `db:"post_id"`
+	Content     string    `db:"content"`
+	PublishedAt time.Time `db:"published_at"`
+}
+
 type FeatureFlag struct {
 	ID          uuid.UUID      `db:"id"`
 	DeviceToken sql.NullString `db:"device_token"`
@@ -267,20 +297,21 @@ type PostLink struct {
 }
 
 type Profile struct {
-	ID            uuid.UUID    `db:"id"`
-	OwnerType     string       `db:"owner_type"`
-	Atname        string       `db:"atname"`
-	Name          string       `db:"name"`
-	Description   string       `db:"description"`
-	ImageUrl      string       `db:"image_url"`
-	JoinedAt      time.Time    `db:"joined_at"`
-	CreatedAt     time.Time    `db:"created_at"`
-	UpdatedAt     time.Time    `db:"updated_at"`
-	DiscardedAt   sql.NullTime `db:"discarded_at"`
-	LastPostAt    sql.NullTime `db:"last_post_at"`
-	GravatarEmail string       `db:"gravatar_email"`
-	GravatarUrl   string       `db:"gravatar_url"`
-	AvatarKind    string       `db:"avatar_kind"`
+	ID                      uuid.UUID    `db:"id"`
+	OwnerType               string       `db:"owner_type"`
+	Atname                  string       `db:"atname"`
+	Name                    string       `db:"name"`
+	Description             string       `db:"description"`
+	ImageUrl                string       `db:"image_url"`
+	JoinedAt                time.Time    `db:"joined_at"`
+	CreatedAt               time.Time    `db:"created_at"`
+	UpdatedAt               time.Time    `db:"updated_at"`
+	DiscardedAt             sql.NullTime `db:"discarded_at"`
+	LastPostAt              sql.NullTime `db:"last_post_at"`
+	GravatarEmail           string       `db:"gravatar_email"`
+	GravatarUrl             string       `db:"gravatar_url"`
+	AvatarKind              string       `db:"avatar_kind"`
+	ExportDeletionStartedAt sql.NullTime `db:"export_deletion_started_at"`
 }
 
 type RateLimit struct {

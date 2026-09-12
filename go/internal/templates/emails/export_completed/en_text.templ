@@ -1,0 +1,16 @@
+package export_completed
+
+// EnText is the English export completion notification (plain text).
+//
+// The body goes through templ.Raw: this is the text/plain part, where templ's
+// default expression escaping has no HTML context to protect and would turn an
+// ampersand in the URL into &amp; in the delivered mail.
+//
+// [Ja] EnText は英語版のエクスポート完了通知 (テキスト形式) です。
+//
+// 本文は templ.Raw を通す。ここは text/plain パートであり、templ の既定の式
+// エスケープには守るべき HTML 文脈が無く、URL 中のアンパサンドを配信されるメール
+// では &amp; にしてしまうため。
+templ EnText(exportURL string) {
+	@templ.Raw("Your posts have been exported.\n\nYou can download the archive from the page below.\n\n" + exportURL + "\n\nOnly your most recent export is available for download.\nOnce a newer export completes successfully, this export can no longer be downloaded.\n\n-- \nMewst\nhttps://mewst.com\n")
+}

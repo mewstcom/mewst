@@ -107,6 +107,30 @@ func TestIcon(t *testing.T) {
 			wantContains: []string{"<svg", `class="icon-sm"`, "viewBox=\"0 0 256 256\""},
 		},
 		{
+			// The path fragment is unique to caret-right-regular, so it also
+			// rules out the info-regular fallback, which shares the same
+			// 256x256 viewBox and would otherwise be indistinguishable.
+			//
+			// [Ja] path 片は caret-right-regular 固有のため、同じ 256x256 の
+			// viewBox を持ち区別できない info-regular フォールバックに
+			// 落ちていないことも同時に確認できる。
+			name:         "settingsのメニューで使うphosphorアイコン(caret-right-regular)が描画される",
+			iconName:     "caret-right-regular",
+			class:        nil,
+			wantContains: []string{"<svg", `d="M181.66,133.66l-80,80`},
+		},
+		{
+			// The path fragment is unique to sign-out-regular, so it also rules
+			// out the info-regular fallback used for an unregistered icon name.
+			//
+			// [Ja] path 片は sign-out-regular 固有のため、未登録のアイコン名に
+			// 適用される info-regular フォールバックも同時に除外できる。
+			name:         "settingsのログアウトボタンで使うphosphorアイコン(sign-out-regular)が描画される",
+			iconName:     "sign-out-regular",
+			class:        nil,
+			wantContains: []string{"<svg", `fill="currentColor"`, `d="M120,216a8,8,0,0,1-8,8H48`},
+		},
+		{
 			name:         "未定義のアイコン名はinfo-regularにフォールバックする",
 			iconName:     "nonexistent-icon-xyz",
 			class:        nil,

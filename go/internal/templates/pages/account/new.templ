@@ -37,7 +37,7 @@ templ New(data NewPageData) {
 		@components.AuthFormCard() {
 			<form
 				action="/accounts"
-				class="form grid gap-6"
+				class="grid gap-6"
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -47,11 +47,12 @@ templ New(data NewPageData) {
 				}
 
 				<div class="grid gap-2">
-					<label for="email">
+					<label class="label" for="email">
 						{ templates.T(ctx, "account_new_email_label") }
 					</label>
 
 					<input
+						class="input"
 						disabled
 						id="email"
 						type="email"
@@ -60,7 +61,7 @@ templ New(data NewPageData) {
 				</div>
 
 				<div class="grid gap-2">
-					<label for="atname">
+					<label class="label" for="atname">
 						{ templates.T(ctx, "account_new_atname_label") }
 					</label>
 
@@ -78,6 +79,7 @@ templ New(data NewPageData) {
 							aria-describedby="atname-prefix"
 							autocomplete="username"
 							autofocus
+							class="input"
 							id="atname"
 							name="atname"
 							required
@@ -101,7 +103,7 @@ templ New(data NewPageData) {
 				</div>
 
 				<div class="grid gap-2">
-					<label for="password">
+					<label class="label" for="password">
 						{ templates.T(ctx, "account_new_password_label") }
 					</label>
 
@@ -112,6 +114,7 @@ templ New(data NewPageData) {
 							aria-invalid="false"
 						}
 						autocomplete="new-password"
+						class="input"
 						id="password"
 						name="password"
 						required
@@ -135,7 +138,7 @@ templ New(data NewPageData) {
 				@components.Turnstile(data.TurnstileSiteKey)
 
 				<button
-					class="btn-primary rounded-full w-fit"
+					class="btn rounded-full w-fit"
 					tabindex="3"
 					type="submit"
 				>

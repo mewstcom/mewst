@@ -4,10 +4,5 @@
       "command": "bin/rails suggested_follow:create",
       "schedule": "0 * * * *"
     }
-  ],
-  "scripts": {
-    "dokku": {
-      "postdeploy": "bin/rails db:migrate"
-    }
-  }
+  ]
 }

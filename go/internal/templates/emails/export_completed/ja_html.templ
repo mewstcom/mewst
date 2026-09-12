@@ -1,0 +1,26 @@
+package export_completed
+
+// JaHTML is the Japanese export completion notification (HTML).
+//
+// [Ja] JaHTML は日本語版のエクスポート完了通知 (HTML形式) です。
+templ JaHTML(exportURL string) {
+	<!DOCTYPE html>
+	<html lang="ja">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>エクスポートの準備ができました</title>
+		</head>
+		<body style="font-family: sans-serif; line-height: 1.6; color: #333; padding: 20px;">
+			<p>ポストのエクスポートが完了しました。</p>
+			<p>下記のページからダウンロードできます。</p>
+			<p><a href={ exportURL }>エクスポート画面を開く</a></p>
+			<p>ダウンロードできるのは最新のエクスポート 1 件です。新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。</p>
+			<hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+			<p style="color: #666; font-size: 12px;">
+				Mewst<br/>
+				<a href="https://mewst.com" style="color: #666;">Mewst 公式サイト</a>
+			</p>
+		</body>
+	</html>
+}

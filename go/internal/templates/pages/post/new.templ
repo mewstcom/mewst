@@ -76,7 +76,7 @@ templ New(data NewPageData) {
 
 			<form
 				action="/posts"
-				class="form grid gap-4"
+				class="grid gap-4"
 				hx-on:submit="disableSubmitButtons(this)"
 				method="POST"
 			>
@@ -87,14 +87,16 @@ templ New(data NewPageData) {
 					// post form has no separate heading and no generic "Content" label).
 					// [Ja] Rails の「いま何してる？」を本文 textarea のラベルに使う (Rails の
 					// 投稿フォームは独立見出しも汎用的な「本文」ラベルも持たない)。
-					<label class="font-bold" for="content">
+					<label class="label font-bold" for="content">
 						{ templates.T(ctx, "post_new_content_label") }
 					</label>
 
 					// Bordered container shared by the textarea, the link card area, and the
 					// character counter (the Rails post form's .textarea wrapper). The basecoat
-					// .textarea styles paint the border here, so the inner textarea strips its
-					// own border/shadow/ring, and the focus ring is recreated via focus-within.
+					// .textarea styles paint the border here rather than on the inner textarea,
+					// and the focus ring is recreated via focus-within. The inner textarea sets
+					// outline-none so that ring is the only focus indicator, instead of doubling
+					// up with the browser's own outline.
 					//
 					// The basecoat .textarea only transitions [color,box-shadow], so on focus the
 					// border-color flips instantly while the ring (box-shadow) fades in, making the
@@ -103,8 +105,10 @@ templ New(data NewPageData) {
 					//
 					// [Ja] textarea・リンクカード領域・文字数カウンターを収める枠付きコンテナ
 					// (Rails 投稿フォームの .textarea ラッパーに対応)。枠線は basecoat の
-					// .textarea スタイルでこのコンテナに描き、内側の textarea は自身の枠線・
-					// 影・リングを消す。フォーカスリングは focus-within で再現する。
+					// .textarea スタイルで内側の textarea ではなくこのコンテナに描き、
+					// フォーカスリングは focus-within で再現する。内側の textarea には
+					// outline-none を付け、ブラウザ既定の outline と二重にならず、このリングだけが
+					// フォーカス表示になるようにする。
 					//
 					// basecoat の .textarea は [color,box-shadow] しか遷移しないため、フォーカス時に
 					// 枠線色は即座に切り替わり、リング (box-shadow) だけ遅れてフェードインして両者の
@@ -133,7 +137,7 @@ templ New(data NewPageData) {
 						// キーへの書き込みではなく自動保存の無効化とする。
 						<textarea
 							autofocus
-							class="min-h-0 w-full resize-none border-0 bg-transparent px-4 py-2 leading-loose shadow-none focus-visible:ring-0"
+							class="w-full resize-none px-4 py-2 text-base leading-loose outline-none md:text-sm"
 							data-autosize
 							if data.DraftStorageKey != "" {
 								data-draft-key={ data.DraftStorageKey }
@@ -209,10 +213,11 @@ templ New(data NewPageData) {
 				// [Ja] マイクロブログの compose 慣習では添付を左、投稿操作を右に置くため、
 				// この操作行は添付コントロールを追加できる構成にする。
 				<div class="flex items-center justify-end">
-					<button class="btn-primary rounded-full w-fit" type="submit">
-						// Leading send icon. btn-primary sizes the bare svg to size-4 and adds the
+					<button class="btn rounded-full w-fit" type="submit">
+						// Leading send icon. btn sizes the bare svg to size-4 and adds the
 						// gap, and the icon inherits the button text color via fill="currentColor".
-						// [Ja] 先頭の送信アイコン。btn-primary が size 指定無しの svg を size-4 にし
+						//
+						// [Ja] 先頭の送信アイコン。btn が size 指定無しの svg を size-4 にし
 						// gap も付ける。アイコンは fill="currentColor" でボタンの文字色を継承する。
 						@templates.Icon("paper-plane-tilt-regular")
 						{ templates.T(ctx, "post_new_submit") }

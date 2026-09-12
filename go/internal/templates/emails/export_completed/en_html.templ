@@ -1,0 +1,26 @@
+package export_completed
+
+// EnHTML is the English export completion notification (HTML).
+//
+// [Ja] EnHTML は英語版のエクスポート完了通知 (HTML形式) です。
+templ EnHTML(exportURL string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Your export is ready</title>
+		</head>
+		<body style="font-family: sans-serif; line-height: 1.6; color: #333; padding: 20px;">
+			<p>Your posts have been exported.</p>
+			<p>You can download the archive from the page below.</p>
+			<p><a href={ exportURL }>Open your export page</a></p>
+			<p>Only your most recent export is available for download. Once a newer export completes successfully, this export can no longer be downloaded.</p>
+			<hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+			<p style="color: #666; font-size: 12px;">
+				Mewst<br/>
+				<a href="https://mewst.com" style="color: #666;">Mewst website</a>
+			</p>
+		</body>
+	</html>
+}

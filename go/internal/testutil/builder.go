@@ -13,7 +13,7 @@ import (
 
 // UserBuilder はユーザーテストデータのビルダー
 type UserBuilder struct {
-	t              *testing.T
+	t              testing.TB
 	tx             *sql.Tx
 	email          string
 	passwordDigest string
@@ -22,7 +22,7 @@ type UserBuilder struct {
 }
 
 // NewUserBuilder はUserBuilderを生成する
-func NewUserBuilder(t *testing.T, tx *sql.Tx) *UserBuilder {
+func NewUserBuilder(t testing.TB, tx *sql.Tx) *UserBuilder {
 	t.Helper()
 	return &UserBuilder{
 		t:              t,
@@ -79,7 +79,7 @@ func (b *UserBuilder) Build() model.UserID {
 
 // ProfileBuilder はプロフィールテストデータのビルダー
 type ProfileBuilder struct {
-	t           *testing.T
+	t           testing.TB
 	tx          *sql.Tx
 	ownerType   string
 	atname      string
@@ -89,7 +89,7 @@ type ProfileBuilder struct {
 }
 
 // NewProfileBuilder はProfileBuilderを生成する
-func NewProfileBuilder(t *testing.T, tx *sql.Tx) *ProfileBuilder {
+func NewProfileBuilder(t testing.TB, tx *sql.Tx) *ProfileBuilder {
 	t.Helper()
 	return &ProfileBuilder{
 		t:           t,
@@ -99,6 +99,14 @@ func NewProfileBuilder(t *testing.T, tx *sql.Tx) *ProfileBuilder {
 		name:        "Test User",
 		description: "",
 	}
+}
+
+// WithOwnerType sets the profile owner type.
+//
+// [Ja] WithOwnerType はプロフィールの所有種別を設定する。
+func (b *ProfileBuilder) WithOwnerType(ownerType string) *ProfileBuilder {
+	b.ownerType = ownerType
+	return b
 }
 
 // WithAtname は@nameを設定する
@@ -141,14 +149,14 @@ func (b *ProfileBuilder) Build() model.ProfileID {
 
 // ActorBuilder はアクターテストデータのビルダー
 type ActorBuilder struct {
-	t         *testing.T
+	t         testing.TB
 	tx        *sql.Tx
 	userID    model.UserID
 	profileID model.ProfileID
 }
 
 // NewActorBuilder はActorBuilderを生成する
-func NewActorBuilder(t *testing.T, tx *sql.Tx) *ActorBuilder {
+func NewActorBuilder(t testing.TB, tx *sql.Tx) *ActorBuilder {
 	t.Helper()
 	return &ActorBuilder{
 		t:  t,
@@ -187,9 +195,111 @@ func (b *ActorBuilder) Build() model.ActorID {
 	return model.ActorID(id)
 }
 
+// UserProfileBuilder builds the association that records a user owning a
+// profile. Ownership is what authorizes a user to act on a profile's data, so
+// tests that go through an authorization check need this row and not only an
+// actor.
+//
+// [Ja] UserProfileBuilder はユーザーがプロフィールを所有していることを記録する
+// 関連付けのビルダー。ユーザーがプロフィールのデータを操作できる根拠は所有関係で
+// あるため、認可を通るテストは actor だけでなくこの行を必要とする。
+type UserProfileBuilder struct {
+	t         testing.TB
+	tx        *sql.Tx
+	userID    model.UserID
+	profileID model.ProfileID
+}
+
+// NewUserProfileBuilder creates a UserProfileBuilder.
+//
+// [Ja] NewUserProfileBuilder は UserProfileBuilder を生成する。
+func NewUserProfileBuilder(t testing.TB, tx *sql.Tx) *UserProfileBuilder {
+	t.Helper()
+	return &UserProfileBuilder{
+		t:  t,
+		tx: tx,
+	}
+}
+
+// WithUserID sets the owning user ID.
+//
+// [Ja] WithUserID は所有するユーザー ID を設定する。
+func (b *UserProfileBuilder) WithUserID(userID model.UserID) *UserProfileBuilder {
+	b.userID = userID
+	return b
+}
+
+// WithProfileID sets the owned profile ID.
+//
+// [Ja] WithProfileID は所有されるプロフィール ID を設定する。
+func (b *UserProfileBuilder) WithProfileID(profileID model.ProfileID) *UserProfileBuilder {
+	b.profileID = profileID
+	return b
+}
+
+// Build inserts the association into the DB and returns its ID.
+//
+// [Ja] Build は関連付けを DB に作成し、ID を返す。
+func (b *UserProfileBuilder) Build() model.UserProfileID {
+	b.t.Helper()
+
+	now := time.Now()
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO user_profiles (user_id, profile_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id
+	`, uuid.UUID(b.userID), uuid.UUID(b.profileID), now, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("ユーザープロフィール関連付けの作成に失敗: %v", err)
+	}
+
+	return model.UserProfileID(id)
+}
+
+// ProfileOwner is a profile together with the user who owns it and the actor
+// that acts as that user on it. The right to act on a profile's data comes
+// from the ownership, so a test that goes through an authorization check needs
+// all of these rows and not only an actor.
+//
+// [Ja] ProfileOwner はプロフィールと、それを所有するユーザー、およびその
+// ユーザーとしてそのプロフィール上で活動するアクター。プロフィールのデータを
+// 操作できる根拠は所有関係であるため、認可を通るテストは actor だけでなく
+// これらの行をすべて必要とする。
+type ProfileOwner struct {
+	UserID    model.UserID
+	ProfileID model.ProfileID
+	ActorID   model.ActorID
+}
+
+// NewProfileOwner creates a user, a profile, the association recording that the
+// user owns it, and the actor for that pair.
+//
+// [Ja] NewProfileOwner はユーザー、プロフィール、そのユーザーがプロフィールを
+// 所有していることを記録する関連付け、およびその組み合わせのアクターを作成する。
+func NewProfileOwner(t testing.TB, tx *sql.Tx) ProfileOwner {
+	t.Helper()
+
+	userID := NewUserBuilder(t, tx).Build()
+	profileID := NewProfileBuilder(t, tx).
+		WithOwnerType(model.ProfileOwnerTypeUser).
+		Build()
+	NewUserProfileBuilder(t, tx).
+		WithUserID(userID).
+		WithProfileID(profileID).
+		Build()
+	actorID := NewActorBuilder(t, tx).
+		WithUserID(userID).
+		WithProfileID(profileID).
+		Build()
+
+	return ProfileOwner{UserID: userID, ProfileID: profileID, ActorID: actorID}
+}
+
 // SessionBuilder はセッションテストデータのビルダー
 type SessionBuilder struct {
-	t         *testing.T
+	t         testing.TB
 	tx        *sql.Tx
 	actorID   model.ActorID
 	token     string
@@ -198,7 +308,7 @@ type SessionBuilder struct {
 }
 
 // NewSessionBuilder はSessionBuilderを生成する
-func NewSessionBuilder(t *testing.T, tx *sql.Tx) *SessionBuilder {
+func NewSessionBuilder(t testing.TB, tx *sql.Tx) *SessionBuilder {
 	t.Helper()
 	return &SessionBuilder{
 		t:         t,
@@ -254,7 +364,7 @@ func (b *SessionBuilder) Build() model.SessionID {
 
 // EmailConfirmationBuilder はメール確認テストデータのビルダー
 type EmailConfirmationBuilder struct {
-	t           *testing.T
+	t           testing.TB
 	tx          *sql.Tx
 	email       string
 	event       string
@@ -264,7 +374,7 @@ type EmailConfirmationBuilder struct {
 }
 
 // NewEmailConfirmationBuilder はEmailConfirmationBuilderを生成する
-func NewEmailConfirmationBuilder(t *testing.T, tx *sql.Tx) *EmailConfirmationBuilder {
+func NewEmailConfirmationBuilder(t testing.TB, tx *sql.Tx) *EmailConfirmationBuilder {
 	t.Helper()
 	return &EmailConfirmationBuilder{
 		t:     t,
@@ -332,7 +442,7 @@ func (b *EmailConfirmationBuilder) Build() model.EmailConfirmationID {
 // FeatureFlagBuilder builds feature flag test data.
 // [Ja] FeatureFlagBuilder はフィーチャーフラグテストデータのビルダー。
 type FeatureFlagBuilder struct {
-	t           *testing.T
+	t           testing.TB
 	tx          *sql.Tx
 	deviceToken string
 	actorID     *model.ActorID
@@ -341,7 +451,7 @@ type FeatureFlagBuilder struct {
 
 // NewFeatureFlagBuilder creates a FeatureFlagBuilder.
 // [Ja] NewFeatureFlagBuilder は FeatureFlagBuilder を生成する。
-func NewFeatureFlagBuilder(t *testing.T, tx *sql.Tx) *FeatureFlagBuilder {
+func NewFeatureFlagBuilder(t testing.TB, tx *sql.Tx) *FeatureFlagBuilder {
 	t.Helper()
 	return &FeatureFlagBuilder{
 		t:    t,
@@ -417,7 +527,7 @@ func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 // ユニークな値をデフォルトにしており、並行テストが oauth_applications.name /
 // .uid の unique インデックスで競合しないようにしている。
 type OauthApplicationBuilder struct {
-	t           *testing.T
+	t           testing.TB
 	tx          *sql.Tx
 	name        string
 	uid         string
@@ -427,7 +537,7 @@ type OauthApplicationBuilder struct {
 
 // NewOauthApplicationBuilder creates an OauthApplicationBuilder.
 // [Ja] NewOauthApplicationBuilder は OauthApplicationBuilder を生成する。
-func NewOauthApplicationBuilder(t *testing.T, tx *sql.Tx) *OauthApplicationBuilder {
+func NewOauthApplicationBuilder(t testing.TB, tx *sql.Tx) *OauthApplicationBuilder {
 	t.Helper()
 	return &OauthApplicationBuilder{
 		t:           t,
@@ -476,17 +586,18 @@ func (b *OauthApplicationBuilder) Build() model.OauthApplicationID {
 // PostBuilder builds post test data.
 // [Ja] PostBuilder は投稿テストデータのビルダー。
 type PostBuilder struct {
-	t                  *testing.T
+	t                  testing.TB
 	tx                 *sql.Tx
 	profileID          model.ProfileID
 	oauthApplicationID model.OauthApplicationID
 	content            string
 	publishedAt        time.Time
+	discardedAt        sql.NullTime
 }
 
 // NewPostBuilder creates a PostBuilder.
 // [Ja] NewPostBuilder は PostBuilder を生成する。
-func NewPostBuilder(t *testing.T, tx *sql.Tx) *PostBuilder {
+func NewPostBuilder(t testing.TB, tx *sql.Tx) *PostBuilder {
 	t.Helper()
 	return &PostBuilder{
 		t:           t,
@@ -524,6 +635,13 @@ func (b *PostBuilder) WithPublishedAt(publishedAt time.Time) *PostBuilder {
 	return b
 }
 
+// WithDiscardedAt marks the post as discarded (soft-deleted) at the given time.
+// [Ja] WithDiscardedAt は投稿を指定時刻で discard (論理削除) 済みにする。
+func (b *PostBuilder) WithDiscardedAt(discardedAt time.Time) *PostBuilder {
+	b.discardedAt = sql.NullTime{Time: discardedAt, Valid: true}
+	return b
+}
+
 // Build inserts the post into the DB and returns its ID.
 // [Ja] Build は投稿を DB に作成し、ID を返す。
 func (b *PostBuilder) Build() model.PostID {
@@ -532,10 +650,10 @@ func (b *PostBuilder) Build() model.PostID {
 	now := time.Now()
 	var id uuid.UUID
 	err := b.tx.QueryRow(`
-		INSERT INTO posts (profile_id, content, published_at, oauth_application_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO posts (profile_id, content, published_at, oauth_application_id, discarded_at, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
-	`, uuid.UUID(b.profileID), b.content, b.publishedAt, uuid.UUID(b.oauthApplicationID), now, now).Scan(&id)
+	`, uuid.UUID(b.profileID), b.content, b.publishedAt, uuid.UUID(b.oauthApplicationID), b.discardedAt, now, now).Scan(&id)
 
 	if err != nil {
 		b.t.Fatalf("投稿の作成に失敗: %v", err)
@@ -544,10 +662,42 @@ func (b *PostBuilder) Build() model.PostID {
 	return model.PostID(id)
 }
 
+// BuildMany inserts count posts in a single statement, spacing their published
+// times by interval starting from the builder's published time. It is meant for
+// the large fixtures a benchmark needs, where inserting row by row would
+// dominate the measurement, so it returns no ID: such a fixture is addressed
+// through its profile rather than one post at a time.
+//
+// [Ja] BuildMany は count 件の投稿を 1 文で挿入し、公開日時をビルダーの公開時刻から
+// interval 間隔で並べる。1 行ずつの挿入では計測が挿入時間に支配されるベンチマークの
+// 大規模フィクスチャ向けで、ID は返さない。この種のフィクスチャは投稿 1 件ずつでは
+// なくプロフィール単位で参照するため。
+func (b *PostBuilder) BuildMany(count int, interval time.Duration) {
+	b.t.Helper()
+
+	now := time.Now()
+	_, err := b.tx.Exec(`
+		INSERT INTO posts (profile_id, content, published_at, oauth_application_id, discarded_at, created_at, updated_at)
+		SELECT
+			$1::uuid,
+			$2::text,
+			$3::timestamp + ((i - 1) * $4::bigint) * INTERVAL '1 microsecond',
+			$5::uuid,
+			$6::timestamp,
+			$7::timestamp,
+			$7::timestamp
+		FROM generate_series(1, $8::bigint) AS i
+	`, uuid.UUID(b.profileID), b.content, b.publishedAt, interval.Microseconds(), uuid.UUID(b.oauthApplicationID), b.discardedAt, now, count)
+
+	if err != nil {
+		b.t.Fatalf("投稿の一括作成に失敗: %v", err)
+	}
+}
+
 // FollowBuilder builds follow test data.
 // [Ja] FollowBuilder はフォローテストデータのビルダー。
 type FollowBuilder struct {
-	t               *testing.T
+	t               testing.TB
 	tx              *sql.Tx
 	sourceProfileID model.ProfileID
 	targetProfileID model.ProfileID
@@ -555,7 +705,7 @@ type FollowBuilder struct {
 
 // NewFollowBuilder creates a FollowBuilder.
 // [Ja] NewFollowBuilder は FollowBuilder を生成する。
-func NewFollowBuilder(t *testing.T, tx *sql.Tx) *FollowBuilder {
+func NewFollowBuilder(t testing.TB, tx *sql.Tx) *FollowBuilder {
 	t.Helper()
 	return &FollowBuilder{
 		t:  t,
@@ -605,7 +755,7 @@ func (b *FollowBuilder) Build() model.FollowID {
 // ユニークな値をデフォルトにしており、並行テストが links.canonical_url の unique
 // インデックスで競合しないようにしている。
 type LinkBuilder struct {
-	t            *testing.T
+	t            testing.TB
 	tx           *sql.Tx
 	canonicalURL string
 	domain       string
@@ -615,7 +765,7 @@ type LinkBuilder struct {
 
 // NewLinkBuilder creates a LinkBuilder.
 // [Ja] NewLinkBuilder は LinkBuilder を生成する。
-func NewLinkBuilder(t *testing.T, tx *sql.Tx) *LinkBuilder {
+func NewLinkBuilder(t testing.TB, tx *sql.Tx) *LinkBuilder {
 	t.Helper()
 	return &LinkBuilder{
 		t:            t,
@@ -675,10 +825,253 @@ func (b *LinkBuilder) Build() model.LinkID {
 	return model.LinkID(id)
 }
 
+// ExportBuilder builds export test data. Build derives the state fields
+// (object_key / started_at / finished_at) from the status so the inserted row
+// always satisfies the exports_state_fields_check constraint.
+//
+// [Ja] ExportBuilder はエクスポートテストデータのビルダー。Build は status から
+// 状態カラム (object_key / started_at / finished_at) を導出し、挿入する行が常に
+// exports_state_fields_check 制約を満たすようにする。
+type ExportBuilder struct {
+	t            testing.TB
+	tx           *sql.Tx
+	profileID    model.ProfileID
+	actorID      model.ActorID
+	status       model.ExportStatus
+	objectKey    string
+	attemptCount int32
+	createdAt    *time.Time
+}
+
+// NewExportBuilder creates an ExportBuilder. The status defaults to queued.
+//
+// [Ja] NewExportBuilder は ExportBuilder を生成する。status は queued を既定とする。
+func NewExportBuilder(t testing.TB, tx *sql.Tx) *ExportBuilder {
+	t.Helper()
+	return &ExportBuilder{
+		t:      t,
+		tx:     tx,
+		status: model.ExportStatusQueued,
+	}
+}
+
+// WithProfileID sets the profile ID (the export target).
+//
+// [Ja] WithProfileID はプロフィール ID (エクスポート対象) を設定する。
+func (b *ExportBuilder) WithProfileID(profileID model.ProfileID) *ExportBuilder {
+	b.profileID = profileID
+	return b
+}
+
+// WithActorID sets the actor ID (the requester).
+//
+// [Ja] WithActorID はアクター ID (申請者) を設定する。
+func (b *ExportBuilder) WithActorID(actorID model.ActorID) *ExportBuilder {
+	b.actorID = actorID
+	return b
+}
+
+// WithStatus sets the export status.
+//
+// [Ja] WithStatus はエクスポートの status を設定する。
+func (b *ExportBuilder) WithStatus(status model.ExportStatus) *ExportBuilder {
+	b.status = status
+	return b
+}
+
+// WithObjectKey sets the object key used for a succeeded export.
+//
+// [Ja] WithObjectKey は succeeded エクスポートの object key を設定する。
+func (b *ExportBuilder) WithObjectKey(objectKey string) *ExportBuilder {
+	b.objectKey = objectKey
+	return b
+}
+
+// WithAttemptCount sets attempt_count, which counts how many times a Worker has
+// started the export. Recovery decides between retrying a stalled export and
+// giving up on it by this number, and reaching the limit through the Repository
+// would also stamp started_at with the current time, leaving the export too
+// recent to be recovered.
+//
+// [Ja] WithAttemptCount は attempt_count (Worker がそのエクスポートの処理を開始した
+// 回数) を設定する。回復処理は停滞したエクスポートを再試行するか諦めるかをこの回数で
+// 判断する。Repository 経由で上限まで増やすと started_at も現在時刻で打刻され、
+// 回復対象になるほど古くないエクスポートになってしまう。
+func (b *ExportBuilder) WithAttemptCount(attemptCount int32) *ExportBuilder {
+	b.attemptCount = attemptCount
+	return b
+}
+
+// WithCreatedAt sets the created_at timestamp, letting tests order exports
+// deterministically instead of relying on generated IDs.
+//
+// [Ja] WithCreatedAt は created_at を設定し、生成 ID に頼らずテストが
+// エクスポートの順序を決定的に並べられるようにする。
+func (b *ExportBuilder) WithCreatedAt(createdAt time.Time) *ExportBuilder {
+	b.createdAt = &createdAt
+	return b
+}
+
+// Build inserts the export into the DB and returns its ID.
+//
+// [Ja] Build はエクスポートを DB に作成し、ID を返す。
+func (b *ExportBuilder) Build() model.ExportID {
+	b.t.Helper()
+
+	now := time.Now()
+	createdAt := now
+	if b.createdAt != nil {
+		createdAt = *b.createdAt
+	}
+
+	var (
+		objectKey  sql.NullString
+		startedAt  sql.NullTime
+		finishedAt sql.NullTime
+	)
+	switch b.status {
+	case model.ExportStatusStarted:
+		startedAt = sql.NullTime{Time: createdAt, Valid: true}
+	case model.ExportStatusSucceeded:
+		key := b.objectKey
+		if key == "" {
+			key = fmt.Sprintf("exports/%s/%d.zip", b.profileID, time.Now().UnixNano())
+		}
+		objectKey = sql.NullString{String: key, Valid: true}
+		startedAt = sql.NullTime{Time: createdAt, Valid: true}
+		finishedAt = sql.NullTime{Time: createdAt, Valid: true}
+	case model.ExportStatusFailed:
+		startedAt = sql.NullTime{Time: createdAt, Valid: true}
+		finishedAt = sql.NullTime{Time: createdAt, Valid: true}
+	}
+
+	var id uuid.UUID
+	err := b.tx.QueryRow(`
+		INSERT INTO exports (
+			profile_id, actor_id, status, object_key, attempt_count, started_at, finished_at, created_at, updated_at
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING id
+	`, uuid.UUID(b.profileID), uuid.UUID(b.actorID), string(b.status),
+		objectKey, b.attemptCount, startedAt, finishedAt, createdAt, now).Scan(&id)
+
+	if err != nil {
+		b.t.Fatalf("エクスポートの作成に失敗: %v", err)
+	}
+
+	return model.ExportID(id)
+}
+
+// ExportCompletionNotificationBuilder builds pending completion-notification
+// test data independently of an export row.
+//
+// [Ja] ExportCompletionNotificationBuilder は export 行から独立した送信待ち完了通知の
+// テストデータを作成する。
+type ExportCompletionNotificationBuilder struct {
+	t              testing.TB
+	tx             *sql.Tx
+	exportID       model.ExportID
+	actorID        model.ActorID
+	recipientEmail string
+	locale         string
+	createdAt      *time.Time
+}
+
+// NewExportCompletionNotificationBuilder creates an
+// ExportCompletionNotificationBuilder.
+//
+// [Ja] NewExportCompletionNotificationBuilder は
+// ExportCompletionNotificationBuilder を生成する。
+func NewExportCompletionNotificationBuilder(t testing.TB, tx *sql.Tx) *ExportCompletionNotificationBuilder {
+	t.Helper()
+	return &ExportCompletionNotificationBuilder{
+		t:              t,
+		tx:             tx,
+		recipientEmail: fmt.Sprintf("export-%d@example.com", time.Now().UnixNano()),
+		locale:         "ja",
+	}
+}
+
+// WithExportID sets the export ID. The export row does not need to exist.
+//
+// [Ja] WithExportID は export ID を設定する。export 行が存在する必要はない。
+func (b *ExportCompletionNotificationBuilder) WithExportID(exportID model.ExportID) *ExportCompletionNotificationBuilder {
+	b.exportID = exportID
+	return b
+}
+
+// WithActorID sets the requester actor. Deleting it cancels the notification.
+//
+// [Ja] WithActorID は申請 actor を設定する。actor が削除されると通知も取り消される。
+func (b *ExportCompletionNotificationBuilder) WithActorID(actorID model.ActorID) *ExportCompletionNotificationBuilder {
+	b.actorID = actorID
+	return b
+}
+
+// WithRecipientEmail sets the snapshotted recipient email.
+//
+// [Ja] WithRecipientEmail は snapshot 済みの宛先メールアドレスを設定する。
+func (b *ExportCompletionNotificationBuilder) WithRecipientEmail(recipientEmail string) *ExportCompletionNotificationBuilder {
+	b.recipientEmail = recipientEmail
+	return b
+}
+
+// WithLocale sets the snapshotted recipient locale.
+//
+// [Ja] WithLocale は snapshot 済みの宛先 locale を設定する。
+func (b *ExportCompletionNotificationBuilder) WithLocale(locale string) *ExportCompletionNotificationBuilder {
+	b.locale = locale
+	return b
+}
+
+// WithCreatedAt sets when the notification became pending.
+//
+// [Ja] WithCreatedAt は通知が pending になった時刻を設定する。
+func (b *ExportCompletionNotificationBuilder) WithCreatedAt(createdAt time.Time) *ExportCompletionNotificationBuilder {
+	b.createdAt = &createdAt
+	return b
+}
+
+// Build inserts the pending notification. The profile is read from the
+// requester the same way the succeeded transition snapshots it, so the pair the
+// foreign key checks can never be built inconsistently from a test.
+//
+// [Ja] Build は送信待ち通知を作成する。プロフィールは succeeded 遷移が snapshot する
+// のと同じく申請者から読むため、外部キーが検査する組をテストから不整合に作ることは
+// ない。
+func (b *ExportCompletionNotificationBuilder) Build() {
+	b.t.Helper()
+
+	createdAt := time.Now()
+	if b.createdAt != nil {
+		createdAt = *b.createdAt
+	}
+
+	result, err := b.tx.Exec(`
+		INSERT INTO export_completion_notifications (
+			export_id, actor_id, profile_id, recipient_email, locale, created_at
+		)
+		SELECT $1, actors.id, actors.profile_id, $3, $4, $5
+		FROM actors
+		WHERE actors.id = $2
+	`, uuid.UUID(b.exportID), uuid.UUID(b.actorID), b.recipientEmail, b.locale, createdAt)
+	if err != nil {
+		b.t.Fatalf("エクスポート完了通知の作成に失敗: %v", err)
+	}
+
+	inserted, err := result.RowsAffected()
+	if err != nil {
+		b.t.Fatalf("エクスポート完了通知の作成行数の取得に失敗: %v", err)
+	}
+	if inserted != 1 {
+		b.t.Fatalf("エクスポート完了通知を作成できない (actor_id: %s が存在しない)", b.actorID.String())
+	}
+}
+
 // PostLinkBuilder builds post-link association test data.
 // [Ja] PostLinkBuilder は投稿とリンクの関連付けテストデータのビルダー。
 type PostLinkBuilder struct {
-	t      *testing.T
+	t      testing.TB
 	tx     *sql.Tx
 	postID model.PostID
 	linkID model.LinkID
@@ -686,7 +1079,7 @@ type PostLinkBuilder struct {
 
 // NewPostLinkBuilder creates a PostLinkBuilder.
 // [Ja] NewPostLinkBuilder は PostLinkBuilder を生成する。
-func NewPostLinkBuilder(t *testing.T, tx *sql.Tx) *PostLinkBuilder {
+func NewPostLinkBuilder(t testing.TB, tx *sql.Tx) *PostLinkBuilder {
 	t.Helper()
 	return &PostLinkBuilder{
 		t:  t,

@@ -49,12 +49,47 @@ func SetupTestMain(m *testing.M) int {
 // SetupTx はテスト用のトランザクションをセットアップする。
 // DB 接続は sync.Once で 1 回だけ確立し、パッケージ内の全テストで共有する。
 // テスト終了時にはトランザクションのロールバックのみ実行する。
-func SetupTx(t *testing.T) (*sql.DB, *sql.Tx) {
+func SetupTx(t testing.TB) (*sql.DB, *sql.Tx) {
+	t.Helper()
+
+	return setupTx(t, nil)
+}
+
+// SetupTxRepeatableRead is SetupTx with the transaction pinned to REPEATABLE
+// READ, giving the test one stable view of the rows other packages committed
+// while keeping its own later writes visible.
+//
+// Use it when the queries under test are not scoped to the rows the test
+// created (a global recovery query, an aggregate over a whole table). `go test
+// ./...` runs packages as separate processes sharing the same test DB, so rows
+// another package commits mid-test would otherwise appear between two queries
+// of the same test and break assertions about the full result.
+//
+// [Ja] SetupTxRepeatableRead は SetupTx のトランザクションを REPEATABLE READ に
+// 固定したもの。他パッケージがコミットした行の安定したスナップショットをテストに
+// 与えつつ、自身の後続の書き込みは引き続き見えるようにする。
+//
+// テスト対象のクエリが、そのテストが作った行にスコープされない場合 (テーブル全体を
+// 走査する回復クエリや集計など) に使う。`go test ./...` はパッケージごとに別プロセス
+// で同じテスト DB を共有するため、他パッケージが実行中にコミットした行が同一テスト
+// 内の 2 つのクエリの間で現れ、結果全体に対するアサーションが壊れる。
+func SetupTxRepeatableRead(t testing.TB) (*sql.DB, *sql.Tx) {
+	t.Helper()
+
+	return setupTx(t, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
+}
+
+// setupTx opens a test transaction with the given options and registers its
+// rollback.
+//
+// [Ja] setupTx は指定したオプションでテスト用トランザクションを開き、ロールバックを
+// 登録する。
+func setupTx(t testing.TB, opts *sql.TxOptions) (*sql.DB, *sql.Tx) {
 	t.Helper()
 
 	initTestDB()
 
-	tx, err := testDB.Begin()
+	tx, err := testDB.BeginTx(context.Background(), opts)
 	if err != nil {
 		t.Fatalf("トランザクションの開始に失敗: %v", err)
 	}
@@ -140,7 +175,7 @@ func QueriesWithTx(tx *sql.Tx) *query.Queries {
 // インデックスで衝突し、一方のパッケージの cleanup が他方の依存中の行を削除
 // しうる。コミットされた mewst-web 行に触れるテストは、必ず先にこのロックを
 // 獲得してパッケージ間で直列化すること。
-func AcquireMewstWebLock(t *testing.T) {
+func AcquireMewstWebLock(t testing.TB) {
 	t.Helper()
 
 	initTestDB()

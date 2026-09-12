@@ -1,6 +1,6 @@
 -- name: IsFeatureFlagEnabledForActor :one
--- Reports whether the flag is enabled for the given actor (prepared for future in-app control).
--- [Ja] 指定 actor に対してフラグが有効かを返す (アプリ内制御の将来利用のために用意)。
+-- Reports whether the flag is enabled for the given actor, used for in-app control such as the settings menu.
+-- [Ja] 指定 actor に対してフラグが有効かを返す。設定メニューなどのアプリ内制御で使う。
 SELECT EXISTS(
     SELECT 1 FROM feature_flags
     WHERE actor_id = $1 AND name = $2

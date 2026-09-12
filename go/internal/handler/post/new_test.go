@@ -111,11 +111,11 @@ func TestNew(t *testing.T) {
 		t.Errorf("戻るリンク数 = %d, want 1", got)
 	}
 
-	const actionRowStart = `<div class="flex items-center justify-end"><button class="btn-primary`
+	const actionRowStart = `<div class="flex items-center justify-end"><button class="btn`
 	if !strings.Contains(body, actionRowStart) {
 		t.Errorf("投稿ボタンだけを右寄せする操作行 %q がありません", actionRowStart)
 	}
-	const unexpectedActionRowStart = `<div class="flex items-center justify-between"><button class="btn-primary`
+	const unexpectedActionRowStart = `<div class="flex items-center justify-between"><button class="btn`
 	if strings.Contains(body, unexpectedActionRowStart) {
 		t.Errorf("投稿ボタンを justify-between で配置する操作行 %q が含まれています", unexpectedActionRowStart)
 	}

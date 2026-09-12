@@ -309,6 +309,18 @@ other = "パスワードを更新しました。新しいパスワードでロ�
 description = "投稿作成成功メッセージ"
 other = "投稿しました。"
 
+[flash_export_started]
+description = "エクスポート開始成功メッセージ"
+other = "エクスポートを開始しました。完了したらメールでお知らせします。"
+
+[flash_export_already_in_progress]
+description = "エクスポート開始を拒否したメッセージ: すでに進行中のエクスポートがある"
+other = "エクスポートは既に処理中です。完了までお待ちください。"
+
+[flash_export_profile_deleting]
+description = "エクスポート開始を拒否したメッセージ: プロフィールの削除処理が始まっている"
+other = "プロフィールの削除処理中のため、エクスポートを開始できません。"
+
 # ============================================
 # エラーページ (error_*)
 # ============================================
@@ -340,6 +352,10 @@ other = "しばらくしてから再度お試しください。"
 [error_bad_gateway_back_to_home]
 description = "502エラーページのホームリンク"
 other = "ホームに戻る"
+
+[error_export_unavailable]
+description = "エクスポート機能を提供していないデプロイでの拒否メッセージ (503 で返すため画面には表示しない)"
+other = "エクスポート機能は現在ご利用いただけません。"
 
 # ============================================
 # ナビゲーション (navbar_*)
@@ -394,6 +410,94 @@ description = "新規投稿フォームの送信ボタン"
 other = "投稿する"
 
 # ============================================
+# 設定メニューページ (setting_index_*)
+# ============================================
+
+[setting_index_title]
+description = "設定メニューページのタイトル"
+other = "設定"
+
+[setting_index_heading]
+description = "設定メニューページの見出し"
+other = "設定"
+
+[setting_index_menu_label]
+description = "設定メニューのランドマークのアクセシブルラベル (navbar と区別するため)"
+other = "設定メニュー"
+
+[setting_index_profile_link]
+description = "設定メニューからプロフィール編集ページへのリンクテキスト"
+other = "プロフィールの編集"
+
+[setting_index_user_link]
+description = "設定メニューからユーザー編集ページへのリンクテキスト"
+other = "ユーザーの編集"
+
+[setting_index_email_link]
+description = "設定メニューからメールアドレス変更ページへのリンクテキスト"
+other = "メールアドレスの変更"
+
+[setting_index_export_link]
+description = "設定メニューからエクスポート画面へのリンクテキスト"
+other = "ポストのエクスポート"
+
+[setting_index_sign_out]
+description = "設定メニューのログアウトボタン"
+other = "ログアウト"
+
+[setting_index_sign_out_confirm]
+description = "設定メニューのログアウトボタン押下時にネイティブ確認ダイアログへ表示する文言"
+other = "ログアウトしますか？"
+
+# ============================================
+# エクスポート画面 (export_show_*)
+# ============================================
+
+[export_show_title]
+description = "エクスポート画面のタイトル"
+other = "エクスポート"
+
+[export_show_heading]
+description = "エクスポート画面の見出し"
+other = "エクスポート"
+
+[export_show_description]
+description = "エクスポート画面で、エクスポートに何が含まれるかを説明する文"
+other = "あなたのポストを月ごとの HTML ファイルにまとめた zip ファイルを作成します。作成には時間がかかることがあります。"
+
+[export_show_state_none]
+description = "エクスポート画面の状態表示: まだエクスポートを作成していない"
+other = "まだエクスポートを作成していません。"
+
+[export_show_state_in_progress]
+description = "エクスポート画面の状態表示: エクスポートを作成中"
+other = "エクスポートを作成しています。完了したらメールでお知らせします。"
+
+[export_show_state_succeeded]
+description = "エクスポート画面の状態表示: エクスポートの作成が完了した"
+other = "エクスポートの準備ができました。"
+
+[export_show_state_failed]
+description = "エクスポート画面の状態表示: エクスポートの作成に失敗した"
+other = "エクスポートの作成に失敗しました。もう一度お試しください。"
+
+[export_show_state_unavailable]
+description = "エクスポート画面の状態表示: エクスポート機能を利用できない"
+other = "エクスポートは現在ご利用いただけません。"
+
+[export_show_submit]
+description = "エクスポート画面のエクスポート開始ボタン"
+other = "エクスポートする"
+
+[export_show_download_link]
+description = "エクスポート画面から最新のエクスポートをダウンロードするリンクテキスト"
+other = "エクスポートをダウンロードする"
+
+[export_show_previous_download_link]
+description = "エクスポート画面から、より新しいエクスポートが作成中または失敗のときに、以前のエクスポートをダウンロードするリンクテキスト"
+other = "以前のエクスポートをダウンロードする"
+
+# ============================================
 # 戻るリンク (back_link)
 # ============================================
 
@@ -420,3 +524,67 @@ other = "リンクカードを追加する: {{.HostAndPath}}"
 [link_create_remove]
 description = "リンクカード削除ボタンのアクセシブルラベル"
 other = "リンクカードを削除"
+
+# ============================================
+# フッター (footer_*)
+# ============================================
+
+[footer_opens_in_new_tab]
+description = "フッターの外部リンクが新規タブで開くことを伝える、視覚的に隠したヒント"
+other = "新しいタブで開く"
+
+# ============================================
+# エクスポートアーカイブ (export_archive_*)
+# ============================================
+
+[export_archive_index_title]
+description = "エクスポート zip の目次 (index.html) の title"
+other = "ポストのエクスポート - Mewst"
+
+[export_archive_index_heading]
+description = "エクスポート zip の目次の見出し"
+other = "ポストのエクスポート"
+
+[export_archive_index_description]
+description = "エクスポート zip の目次で、ポストが月ごとのファイルに分かれていることを伝える説明"
+other = "ポストは月ごとのファイルに分かれています。読みたい月を選んでください。"
+
+[export_archive_index_empty]
+description = "エクスポート zip の目次で、含まれるポストが 1 件も無いことを伝える文"
+other = "このエクスポートに含まれるポストはありません。"
+
+[export_archive_index_month_link]
+description = "エクスポート zip の目次から、その月のファイルへ移動するリンクのテキスト"
+other = "{{.MonthLabel}}のポスト"
+
+[export_archive_index_post_count]
+description = "エクスポート zip の目次に表示する、その月のポスト件数"
+other = "{{.Count}} 件"
+
+[export_archive_month_label]
+description = "エクスポート zip 内での暦月の表記"
+other = "{{.Year}}年{{.Month}}月"
+
+[export_archive_month_title]
+description = "エクスポート zip の月ごとのファイル (posts/2026-07.html) の title"
+other = "{{.MonthLabel}}のポスト - Mewst"
+
+[export_archive_month_heading]
+description = "エクスポート zip の月ごとのファイルの見出し"
+other = "{{.MonthLabel}}のポスト"
+
+[export_archive_post_published_at]
+description = "エクスポート zip の月ごとのファイルに表示する、ポストの投稿日時"
+other = "{{.Year}}年{{.Month}}月{{.Day}}日 {{.Time}}"
+
+[export_archive_format_comment]
+description = "エクスポート zip の月ごとのファイルの先頭に置く、ポストの出力契約を説明する HTML コメント"
+other = "Mewst エクスポート形式 v{{.Version}}: 各ポストは article.h-entry です。ポスト ID は data-post-id 属性、投稿日時は time.dt-published の datetime 属性 (RFC 3339)、本文は .e-content に入っています。"
+
+# ============================================
+# エクスポート完了メール (export_completed_email_*)
+# ============================================
+
+[export_completed_email_subject]
+description = "エクスポート完了通知メールの件名"
+other = "[Mewst] エクスポートの準備ができました"

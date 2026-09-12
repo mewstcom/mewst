@@ -49,16 +49,21 @@ type featureFlaggedPattern struct {
 // Each entry anchors its path regexp with "^...$" so it matches the exact path
 // and not sub-paths, and pairs it with an HTTP method set and the flag that
 // gates it. A matching request is served by Go only when the flag is enabled
-// for the viewer; otherwise it falls through to the Rails proxy. The list is
-// currently empty; add an entry here to gate the next feature behind a flag.
+// for the viewer; otherwise it falls through to the Rails proxy.
+//
+// The list is empty while no route sits behind a flag. A released feature moves
+// its routes to goHandledPatterns and leaves the list to the next one.
 //
 // [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
 //
 // 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
 // させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
 // リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
-// プロキシに進む。現在は空で、次の機能をフラグでゲートするときにエントリを追加する。
-var featureFlaggedPatterns []featureFlaggedPattern
+// プロキシに進む。
+//
+// フラグの内側にあるルートが無い間、一覧は空になる。公開した機能は自身の
+// ルートを goHandledPatterns へ移し、この一覧は次の機能に譲る。
+var featureFlaggedPatterns = []featureFlaggedPattern{}
 
 // ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
 // [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
@@ -123,6 +128,22 @@ var goHandledPatterns = []goHandledPattern{
 	// POST /links: link card creation.
 	// [Ja] POST /links: リンクカード作成。
 	{pattern: regexp.MustCompile(`^/links$`), methods: []string{http.MethodPost}},
+	// GET /settings: the settings menu page. The "^/settings$" anchor leaves the
+	// Rails-owned sub-pages (GET /settings/profile, /settings/user, /settings/email)
+	// with Rails.
+	//
+	// [Ja] GET /settings: 設定メニューページ。"^/settings$" のアンカーにより、
+	// サブページ (GET /settings/profile・/settings/user・/settings/email) は Rails に残す。
+	{pattern: regexp.MustCompile(`^/settings$`), methods: []string{http.MethodGet}},
+	// GET/POST /settings/export: the export screen and the start of an export.
+	// The route exists only in the Go version, so Go owns it outright.
+	//
+	// [Ja] GET/POST /settings/export: エクスポート画面とエクスポートの開始。
+	// Go 版にしか存在しないルートのため、Go 版が単独で持つ。
+	{pattern: regexp.MustCompile(`^/settings/export$`), methods: []string{http.MethodGet, http.MethodPost}},
+	// GET /settings/export/download: the download of the generated zip.
+	// [Ja] GET /settings/export/download: 生成した zip のダウンロード。
+	{pattern: regexp.MustCompile(`^/settings/export/download$`), methods: []string{http.MethodGet}},
 }
 
 // NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.

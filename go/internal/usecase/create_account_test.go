@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/mewstcom/mewst/go/internal/auth"
+	"github.com/mewstcom/mewst/go/internal/model"
 	"github.com/mewstcom/mewst/go/internal/repository"
 	"github.com/mewstcom/mewst/go/internal/testutil"
 	"github.com/mewstcom/mewst/go/internal/usecase"
@@ -146,8 +147,8 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 				t.Errorf("Profile.Atname = %v, want %v", profile.Atname, tt.input.Atname)
 			}
 
-			if profile.OwnerType != usecase.ProfileOwnerTypeUser {
-				t.Errorf("Profile.OwnerType = %v, want %v", profile.OwnerType, usecase.ProfileOwnerTypeUser)
+			if profile.OwnerType != model.ProfileOwnerTypeUser {
+				t.Errorf("Profile.OwnerType = %v, want %v", profile.OwnerType, model.ProfileOwnerTypeUser)
 			}
 
 			if profile.AvatarKind != usecase.DefaultAvatarKind {

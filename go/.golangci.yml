@@ -126,6 +126,8 @@ linters:
               desc: "HandlerはRepositoryに直接依存できません。UseCaseを経由してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/validator
               desc: "HandlerはValidatorに直接依存できません。UseCaseを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/storage
+              desc: "HandlerはStorageに直接依存できません。UseCaseを経由してください。"
 
         # Validator層のルール: 形式バリデーション+状態バリデーションを統合
         # Queryへの直接アクセスは禁止、Repositoryを経由
@@ -184,6 +186,10 @@ linters:
               desc: "Application層はWorker(Presentation層)に依存できません。Dispatcher経由でジョブを投入してください。"
             - pkg: github.com/mewstcom/mewst/go/internal/session
               desc: "Application層はPresentation層のヘルパーに依存できません。トークン生成はauthパッケージを使用してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/storage
+              desc: "Application層はStorageに直接依存できません。UseCase側で定義したinterface (ExportObjectStorage) を経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/exportfile
+              desc: "Application層はPresentation層に依存できません。エクスポートアーカイブの描画はUseCase側で定義したinterface (ExportArchiveBuilder) を経由してください。"
 
         # Email層のルール: テンプレートレンダリング + メール送信
         # templates, i18n, Sender に依存可能。上位層や他のPresentation層パッケージに依存しない
@@ -289,6 +295,8 @@ linters:
               desc: "WorkerはPresentation層に依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/templates
               desc: "WorkerはPresentation層に依存できません。テンプレートレンダリングはemailパッケージを経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/storage
+              desc: "WorkerはStorageに直接依存できません。UseCaseを経由してください。"
 
         # Dispatcher層のルール: ジョブキューへの投入を抽象化（Infrastructure層）
         # 上位層や同レイヤーの他パッケージに依存しない
@@ -316,6 +324,104 @@ linters:
               desc: "DispatcherはRepositoryに依存できません。"
             - pkg: github.com/mewstcom/mewst/go/internal/model
               desc: "DispatcherはModelに依存できません。"
+
+        # Storage layer rules: the Infrastructure-layer adapter for the
+        # S3-compatible object storage (Cloudflare R2). It depends only on
+        # external libraries (aws-sdk-go-v2) and must not depend on upper
+        # layers or on sibling packages in the same layer.
+        #
+        # [Ja] Storage層のルール: S3互換オブジェクトストレージ (Cloudflare R2) へのアダプタ (Infrastructure層)
+        # 外部ライブラリ (aws-sdk-go-v2) のみに依存し、上位層や同レイヤーの他パッケージに依存しない
+        storage-layer:
+          files:
+            - "**/internal/storage/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/usecase
+              desc: "StorageはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "StorageはApplication層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "StorageはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "StorageはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "StorageはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "StorageはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/templates
+              desc: "StorageはPresentation層に依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "StorageはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "StorageはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "StorageはDispatcherに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "StorageはModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/config
+              desc: "StorageはConfigに依存できません。接続設定はS3Config構造体で受け取ってください。"
+
+        # ExportFile layer rules: the Presentation-layer builder of the export
+        # zip archive (the usecase.ExportArchiveBuilder implementation). It may
+        # depend on usecase (the port and its primitive DTOs), templates and
+        # i18n, the same way the email package renders and localizes what it
+        # sends. Data access and the domain model stay out: the builder renders
+        # the view data it is handed.
+        #
+        # [Ja] ExportFile層のルール: エクスポート zip アーカイブを構築する
+        # Presentation層のbuilder (usecase.ExportArchiveBuilder の実装)。
+        # email パッケージが送信物を描画・ローカライズするのと同じく、
+        # usecase (port とプリミティブな DTO)・templates・i18n に依存してよい。
+        # データアクセスとドメインモデルは対象外で、builder は渡された view data
+        # を描画する。
+        exportfile-layer:
+          files:
+            - "**/internal/exportfile/**"
+          deny:
+            - pkg: github.com/mewstcom/mewst/go/internal/query
+              desc: "ExportFileはQueryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/repository
+              desc: "ExportFileはRepositoryに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/model
+              desc: "ExportFileはModelに依存できません。出力に必要なプリミティブだけのDTO (usecase.ExportArchive など) を経由してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/validator
+              desc: "ExportFileはValidatorに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/handler
+              desc: "ExportFileはHandlerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/middleware
+              desc: "ExportFileはMiddlewareに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/viewmodel
+              desc: "ExportFileはViewModelに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/worker
+              desc: "ExportFileはWorkerに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/dispatcher
+              desc: "ExportFileはDispatcherに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/storage
+              desc: "ExportFileはStorageに依存できません。アーカイブは渡されたio.Writerへ書き出し、アップロードはUseCaseが行います。"
+            - pkg: github.com/mewstcom/mewst/go/internal/session
+              desc: "ExportFileはSessionに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/auth
+              desc: "ExportFileはAuthに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/clientip
+              desc: "ExportFileはClientIPに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/config
+              desc: "ExportFileはConfigに依存できません。描画に必要な値はDTOで受け取ってください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/database
+              desc: "ExportFileはDatabaseに依存できません。データアクセスはUseCaseが行います。"
+            - pkg: github.com/mewstcom/mewst/go/internal/email
+              desc: "ExportFileは他のPresentation層パッケージに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/httperror
+              desc: "ExportFileはHTTPErrorに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/ratelimit
+              desc: "ExportFileはRateLimitに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/redirect
+              desc: "ExportFileはRedirectに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/sentry
+              desc: "ExportFileはSentryに依存できません。エラーは呼び出し元へ返してください。"
+            - pkg: github.com/mewstcom/mewst/go/internal/testutil
+              desc: "ExportFileはテスト用ヘルパーに依存できません。"
+            - pkg: github.com/mewstcom/mewst/go/internal/turnstile
+              desc: "ExportFileはTurnstileに依存できません。"
 
         # HTTPError層のルール: 全リソース共通のHTTPエラーレスポンスヘルパー
         # templates / i18n に依存可能。リソース固有のハンドラーやビジネスロジック層には依存しない

@@ -41,7 +41,7 @@ templ New(data NewPageData) {
 			}
 		}
 
-		<button class="btn-outline rounded-full" type="submit">
+		<button class="btn rounded-full" data-variant="outline" type="submit">
 			{ templates.T(ctx, "link_new_submit", map[string]any{"HostAndPath": data.HostAndPath}) }
 		</button>
 	</form>
