@@ -51,16 +51,16 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 		})
 
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output == nil {
-			t.Fatal("Execute() returned nil output")
+			t.Fatal("Execute()の出力 = nil、非nilを期待")
 		}
 		if output.Token == "" {
-			t.Error("Execute() returned empty token")
+			t.Error("Execute()のトークン = 空文字列、非空を期待")
 		}
 		if output.Session == nil {
-			t.Fatal("Execute() returned nil session")
+			t.Fatal("Execute()のセッション = nil、非nilを期待")
 		}
 	})
 
@@ -100,16 +100,16 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 
 		output1, err := uc.Execute(ctx, input)
 		if err != nil {
-			t.Fatalf("Execute() first call error = %v", err)
+			t.Fatalf("1回目のExecute()のエラー = %v", err)
 		}
 
 		output2, err := uc.Execute(ctx, input)
 		if err != nil {
-			t.Fatalf("Execute() second call error = %v", err)
+			t.Fatalf("2回目のExecute()のエラー = %v", err)
 		}
 
 		if output1.Token == output2.Token {
-			t.Error("Execute() returned same token for different calls")
+			t.Error("異なる呼び出しのExecute()が同じトークンを返した")
 		}
 	})
 
@@ -134,14 +134,14 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 		})
 
 		if output != nil {
-			t.Error("expected nil output")
+			t.Error("出力 = 非nil、nilを期待")
 		}
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatal("expected ValidationError, got nil")
+			t.Fatal("エラー = nil、ValidationErrorを期待")
 		}
 		if !ve.HasFieldError("email") {
-			t.Error("expected email field error")
+			t.Error("emailのフィールドエラーを期待したが、無かった")
 		}
 	})
 
@@ -166,14 +166,14 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 		})
 
 		if output != nil {
-			t.Error("expected nil output")
+			t.Error("出力 = 非nil、nilを期待")
 		}
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatal("expected ValidationError, got nil")
+			t.Fatal("エラー = nil、ValidationErrorを期待")
 		}
 		if len(ve.Global) == 0 {
-			t.Error("expected global error")
+			t.Error("グローバルエラーを期待したが、無かった")
 		}
 	})
 
@@ -203,14 +203,14 @@ func TestCreateSignInUsecase_Execute(t *testing.T) {
 		})
 
 		if output != nil {
-			t.Error("expected nil output")
+			t.Error("出力 = 非nil、nilを期待")
 		}
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatal("expected ValidationError, got nil")
+			t.Fatal("エラー = nil、ValidationErrorを期待")
 		}
 		if len(ve.Global) == 0 {
-			t.Error("expected global error")
+			t.Error("グローバルエラーを期待したが、無かった")
 		}
 	})
 }

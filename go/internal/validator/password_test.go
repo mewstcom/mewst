@@ -112,7 +112,7 @@ func TestPasswordUpdateValidator_Validate(t *testing.T) {
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
 				if tt.expectedField != "" && ve != nil && !ve.HasFieldError(tt.expectedField) {
-					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
+					t.Errorf("フィールド%qのエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
 				if err != nil {

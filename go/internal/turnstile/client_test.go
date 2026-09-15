@@ -16,7 +16,7 @@ func TestVerify_Success(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Content-Typeがapplication/jsonであることを確認
 		if r.Header.Get("Content-Type") != "application/json" {
-			t.Errorf("Content-Type = %v, want application/json", r.Header.Get("Content-Type"))
+			t.Errorf("Content-Type = %v、期待値 = application/json", r.Header.Get("Content-Type"))
 		}
 
 		// 成功レスポンスを返す
@@ -43,10 +43,10 @@ func TestVerify_Success(t *testing.T) {
 
 	// アサーション
 	if err != nil {
-		t.Errorf("Verify() error = %v, want nil", err)
+		t.Errorf("Verify()のエラー = %v、期待値 = nil", err)
 	}
 	if !success {
-		t.Errorf("Verify() success = %v, want true", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = true", success)
 	}
 }
 
@@ -74,13 +74,13 @@ func TestVerify_Failure(t *testing.T) {
 
 	// アサーション (検証失敗の場合はエラーが返る)
 	if err == nil {
-		t.Error("Verify() error = nil, want error")
+		t.Error("Verify()のエラー = nil、エラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 	if !strings.Contains(err.Error(), "turnstile検証に失敗しました") {
-		t.Errorf("Verify() error = %v, want error containing 'turnstile検証に失敗しました'", err)
+		t.Errorf("Verify()のエラー = %v、'turnstile検証に失敗しました'を含むエラーを期待", err)
 	}
 }
 
@@ -111,13 +111,13 @@ func TestVerify_FailureWithErrorCodes(t *testing.T) {
 
 	// アサーション
 	if err == nil {
-		t.Error("Verify() error = nil, want error")
+		t.Error("Verify()のエラー = nil、エラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 	if !strings.Contains(err.Error(), "エラーコード") {
-		t.Errorf("Verify() error = %v, want error containing 'エラーコード'", err)
+		t.Errorf("Verify()のエラー = %v、'エラーコード'を含むエラーを期待", err)
 	}
 }
 
@@ -133,13 +133,13 @@ func TestVerify_EmptyToken(t *testing.T) {
 
 	// アサーション
 	if err == nil {
-		t.Error("Verify() error = nil, want error")
+		t.Error("Verify()のエラー = nil、エラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 	if !strings.Contains(err.Error(), "トークンが空です") {
-		t.Errorf("Verify() error = %v, want error containing 'トークンが空です'", err)
+		t.Errorf("Verify()のエラー = %v、'トークンが空です'を含むエラーを期待", err)
 	}
 }
 
@@ -155,10 +155,10 @@ func TestVerify_EmptySecretKey(t *testing.T) {
 
 	// アサーション (SecretKeyが空の場合は常に成功を返す)
 	if err != nil {
-		t.Errorf("Verify() error = %v, want nil", err)
+		t.Errorf("Verify()のエラー = %v、期待値 = nil", err)
 	}
 	if !success {
-		t.Errorf("Verify() success = %v, want true", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = true", success)
 	}
 }
 
@@ -189,10 +189,10 @@ func TestVerify_Timeout(t *testing.T) {
 
 	// アサーション
 	if err == nil {
-		t.Error("Verify() error = nil, want timeout error")
+		t.Error("Verify()のエラー = nil、タイムアウトのエラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 }
 
@@ -220,13 +220,13 @@ func TestVerify_InvalidJSON(t *testing.T) {
 
 	// アサーション
 	if err == nil {
-		t.Error("Verify() error = nil, want JSON decode error")
+		t.Error("Verify()のエラー = nil、JSONのデコードエラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 	if !strings.Contains(err.Error(), "JSONデコードに失敗しました") {
-		t.Errorf("Verify() error = %v, want error containing 'JSONデコードに失敗しました'", err)
+		t.Errorf("Verify()のエラー = %v、'JSONデコードに失敗しました'を含むエラーを期待", err)
 	}
 }
 
@@ -253,13 +253,13 @@ func TestVerify_NonOKStatusCode(t *testing.T) {
 
 	// アサーション
 	if err == nil {
-		t.Error("Verify() error = nil, want HTTP error")
+		t.Error("Verify()のエラー = nil、HTTPのエラーを期待")
 	}
 	if success {
-		t.Errorf("Verify() success = %v, want false", success)
+		t.Errorf("Verify()のsuccess = %v、期待値 = false", success)
 	}
 	if !strings.Contains(err.Error(), "siteverify APIがエラーを返しました") {
-		t.Errorf("Verify() error = %v, want error containing 'siteverify APIがエラーを返しました'", err)
+		t.Errorf("Verify()のエラー = %v、'siteverify APIがエラーを返しました'を含むエラーを期待", err)
 	}
 }
 
@@ -269,20 +269,20 @@ func TestNewClient(t *testing.T) {
 	client := NewClient("my-secret-key")
 
 	if client == nil {
-		t.Fatal("NewClient() returned nil")
+		t.Fatal("NewClient() = nil、非nilを期待")
 	}
 	if client.secretKey != "my-secret-key" {
-		t.Errorf("client.secretKey = %v, want my-secret-key", client.secretKey)
+		t.Errorf("client.secretKey = %v、期待値 = my-secret-key", client.secretKey)
 	}
 	if client.httpClient == nil {
-		t.Error("client.httpClient is nil")
+		t.Error("client.httpClient = nil、非nilを期待")
 	}
 	if client.httpClient.Timeout != requestTimeout {
-		t.Errorf("client.httpClient.Timeout = %v, want %v", client.httpClient.Timeout, requestTimeout)
+		t.Errorf("client.httpClient.Timeout = %v、期待値 = %v", client.httpClient.Timeout, requestTimeout)
 	}
 }
 
-// mockTransport はHTTPリクエストをモックサーバーにリダイレクトするTransport
+// mockTransportはHTTPリクエストをモックサーバーにリダイレクトするTransport
 type mockTransport struct {
 	target string
 }

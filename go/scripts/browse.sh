@@ -1,55 +1,31 @@
 #!/usr/bin/env bash
 #
-# browse.sh drives playwright-cli for browser verification of the dev site:
-# it generates the Basic-auth config, runs the single-step dev sign-in, reuses
-# the logged-in session for screenshots, and cleans up.
-#
-# It expects KORYLUS_BROWSING_BASE_URL in the environment, so run it under the
-# op-run wrapper (see the browse-* targets in go/Makefile). Reading the basic-auth
-# credentials through op-run avoids evaluating the .env in a shell, which would
-# corrupt any credential containing a `$`. The account to sign in as is not read
-# from the environment: it comes from the seed roster, through
-# `mewst devcreds <role>`. The dev server must run with Turnstile disabled
-# (MEWST_TURNSTILE_DISABLE=true in the dev .env) or bot verification blocks the
-# sign-in submit.
-#
-# [Ja] browse.sh は playwright-cli を駆動して dev サイトのブラウザ確認を行う。
-# Basic 認証 config の生成・単一ステップの dev サインイン・ログイン済み
+# browse.shはplaywright-cliを駆動してdevサイトのブラウザ確認を行う。
+# Basic認証configの生成・単一ステップのdevサインイン・ログイン済み
 # セッションでのスクショ・後片付けをまとめる。
 #
-# KORYLUS_BROWSING_BASE_URL が環境にある前提なので、op run ラッパー配下
-# (go/Makefile の browse-* ターゲット) から実行する。Basic 認証の creds を op run
-# 経由で読むことで、.env をシェル評価して `$` を含む creds を壊すのを避ける。
+# KORYLUS_BROWSING_BASE_URLが環境にある前提なので、op runラッパー配下
+# (go/Makefileのbrowse-* ターゲット) から実行する。Basic認証のcredsをop run
+# 経由で読むことで、.envをシェル評価して `$` を含むcredsを壊すのを避ける。
 # サインインするアカウントは環境変数からは読まず、`mewst devcreds <role>` を通じて
-# シードの名簿から取る。dev サーバは Turnstile を無効化 (dev の .env で
-# MEWST_TURNSTILE_DISABLE=true) して起動している必要があり、でないと Bot 検証で
+# シードの名簿から取る。devサーバはTurnstileを無効化 (devの .envで
+# MEWST_TURNSTILE_DISABLE=true) して起動している必要があり、でないとBot検証で
 # サインインの送信が弾かれる。
 set -euo pipefail
 
 SESSION=dev
 
-# GO_DIR is the Go module root, which the mewst command and the roster it reads
-# are both resolved relative to. It is derived from this script's own location
-# rather than left to the working directory, so that a login started from
-# somewhere other than go/ fails on neither of the two.
-#
-# [Ja] GO_DIR は Go モジュールのルート。mewst コマンドと、そのコマンドが読む名簿は
+# GO_DIRはGoモジュールのルート。mewstコマンドと、そのコマンドが読む名簿は
 # どちらもここからの相対で解決される。作業ディレクトリに委ねず本スクリプト自身の
 # 位置から求めるのは、go/ 以外の場所から始めたログインが、そのどちらでも失敗しない
 # ようにするため。
 GO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# DEFAULT_ROLE is the account signed in as when the command line names no role.
-# It is the role the development environment is mostly looked at through.
-#
-# [Ja] DEFAULT_ROLE は、コマンドラインが役割を指定しなかったときにサインインする
+# DEFAULT_ROLEは、コマンドラインが役割を指定しなかったときにサインインする
 # アカウント。開発環境をおもに見るための役割になる。
 DEFAULT_ROLE=main
 
-# TMP_DIR holds credential-bearing files and screenshots. Tests point it at
-# their own temporary directory so they never touch a developer's files.
-#
-# [Ja] TMP_DIR は資格情報を含むファイルとスクリーンショットの置き場。テストでは
+# TMP_DIRは資格情報を含むファイルとスクリーンショットの置き場。テストでは
 # 開発者のファイルへ触れないよう、テスト自身の一時ディレクトリへ向ける。
 TMP_DIR="${MEWST_BROWSE_TMP_DIR:-/workspace/tmp}"
 
@@ -61,13 +37,9 @@ SHOT_DIR="$TMP_DIR/browse"
 
 pw() { playwright-cli -s="$SESSION" "$@"; }
 
-# pw_checked handles command-level Playwright errors, which playwright-cli
-# reports in its output while still exiting with status 0. Callers may discard
-# successful output, but errors are always preserved on stderr.
-#
-# [Ja] pw_checked は、playwright-cli が終了コード 0 のまま出力へ記録する
-# Playwright のコマンドレベルエラーを検出する。呼び出し側は成功時の出力を
-# 捨てられるが、エラーは常に stderr へ残す。
+# pw_checkedは、playwright-cliが終了コード0のまま出力へ記録する
+# Playwrightのコマンドレベルエラーを検出する。呼び出し側は成功時の出力を
+# 捨てられるが、エラーは常にstderrへ残す。
 pw_checked() {
   local output
   if ! output="$(pw "$@" 2>&1)"; then
@@ -81,11 +53,8 @@ pw_checked() {
   printf '%s\n' "$output"
 }
 
-# pw_checked_secret keeps playwright-cli diagnostics while suppressing any
-# successful-output section that could echo a credential-bearing run-code file.
-#
-# [Ja] pw_checked_secret は playwright-cli の診断を残しつつ、資格情報を含む
-# run-code ファイルを再掲し得る成功出力セクションを抑止する。
+# pw_checked_secretはplaywright-cliの診断を残しつつ、資格情報を含む
+# run-codeファイルを再掲し得る成功出力セクションを抑止する。
 pw_checked_secret() {
   local output
   local status=0
@@ -101,15 +70,9 @@ pw_checked_secret() {
   return 1
 }
 
-# build_config writes the Basic-auth config (httpCredentials) parsed from
-# KORYLUS_BROWSING_BASE_URL, plus a credential-free origin file for later
-# navigation. The config carries the credentials, so it is written 0600 under
-# the gitignored tmp dir and removed as soon as login captures it in the
-# browser context.
-#
-# [Ja] build_config は KORYLUS_BROWSING_BASE_URL から Basic 認証 config
-# (httpCredentials) を生成し、以降の遷移用に creds を抜いた origin ファイルも書く。
-# config は creds を含むため gitignore 済み tmp に 0600 で書き、ログインが
+# build_configはKORYLUS_BROWSING_BASE_URLからBasic認証config
+# (httpCredentials) を生成し、以降の遷移用にcredsを抜いたoriginファイルも書く。
+# configはcredsを含むためgitignore済みtmpに0600で書き、ログインが
 # ブラウザコンテキストに取り込んだ直後に削除する。
 build_config() {
   mkdir -p "$TMP_DIR"
@@ -128,11 +91,8 @@ build_config() {
   ' "$CONFIG_FILE" "$ORIGIN_FILE"
 }
 
-# build_password_script reads the password from stdin and writes a 0600
-# Playwright run-code file. JSON encoding preserves every password character.
-#
-# [Ja] build_password_script は標準入力からパスワードを読み、0600 の Playwright
-# run-code ファイルへ書く。JSON エンコードにより全てのパスワード文字を保持する。
+# build_password_scriptは標準入力からパスワードを読み、0600のPlaywright
+# run-codeファイルへ書く。JSONエンコードにより全てのパスワード文字を保持する。
 build_password_script() {
   mkdir -p "$TMP_DIR"
   node -e '
@@ -154,20 +114,12 @@ build_password_script() {
 cmd_login() {
   local role="${1:-$DEFAULT_ROLE}"
 
-  # The account comes from the seed roster, which bash cannot read: mewst
-  # devcreds prints the address and the password one per line and nothing else.
-  # Taking them from there rather than from the environment leaves one file
-  # describing the development accounts, so an account edited in the roster
-  # cannot leave a sign-in reaching for an account the following seed run no
-  # longer creates. The password arrives on stdout rather than in an argument
-  # because argv is readable by every process on the machine.
-  #
-  # [Ja] アカウントはシードの名簿から取る。bash は名簿を読めないため、mewst
-  # devcreds がアドレスとパスワードを 1 行ずつ、それだけを出力する。環境変数では
-  # なくそこから取ることで、開発用アカウントを記述するファイルが 1 つになり、名簿で
+  # アカウントはシードの名簿から取る。bashは名簿を読めないため、mewst
+  # devcredsがアドレスとパスワードを1行ずつ、それだけを出力する。環境変数では
+  # なくそこから取ることで、開発用アカウントを記述するファイルが1つになり、名簿で
   # アカウントを変更したときに、その後のシード実行がもう作成しないアカウントへ
   # サインインが手を伸ばす状態にならない。パスワードを引数ではなく標準出力で受け取る
-  # のは、argv がマシン上のすべてのプロセスから読めるため。
+  # のは、argvがマシン上のすべてのプロセスから読めるため。
   local credentials
   credentials="$(cd "$GO_DIR" && go run ./cmd/mewst devcreds "$role")"
 
@@ -180,36 +132,23 @@ cmd_login() {
     exit 1
   fi
 
-  # Remove credential-bearing files on any exit, so a mid-login failure never
-  # leaves credentials at rest.
-  #
-  # [Ja] 資格情報を含むファイルをどの終了経路でも削除し、ログイン途中の失敗でも
-  # creds をディスクに残さない。
+  # 資格情報を含むファイルをどの終了経路でも削除し、ログイン途中の失敗でも
+  # credsをディスクに残さない。
   trap 'rm -f "$CONFIG_FILE" "$PASSWORD_SCRIPT_FILE"' EXIT
 
   build_config
   local origin
   origin="$(cat "$ORIGIN_FILE")"
 
-  # Basic auth is passed via the config (httpCredentials); the persistent
-  # profile keeps the login cookies on disk so a still-running session survives
-  # across separate shell invocations.
-  #
-  # [Ja] Basic 認証は config (httpCredentials) で渡す。永続プロファイルはログイン
-  # Cookie をディスクに残し、起動中のセッションが別々のシェル呼び出しをまたいで
+  # Basic認証はconfig (httpCredentials) で渡す。永続プロファイルはログイン
+  # Cookieをディスクに残し、起動中のセッションが別々のシェル呼び出しをまたいで
   # 生き続けられるようにする。
   pw_checked open "$origin/sign_in" --browser=chromium --persistent --profile="$PROFILE_DIR" --config="$CONFIG_FILE" >/dev/null
 
-  # Mewst's sign-in is a single-step form (email + password submitted together).
-  # Fill email without submitting, then submit with Enter on the password field.
-  # Turnstile must be disabled (MEWST_TURNSTILE_DISABLE=true) or the submit is
-  # blocked. The name/attribute locators avoid depending on label text, which
-  # changes with the locale.
-  #
-  # [Ja] Mewst のサインインは単一ステップのフォーム (email + password を一括送信)。
-  # email は送信せずに入力し、password で Enter を押して送信する。Turnstile は
+  # Mewstのサインインは単一ステップのフォーム (email + passwordを一括送信)。
+  # emailは送信せずに入力し、passwordでEnterを押して送信する。Turnstileは
   # 無効化 (MEWST_TURNSTILE_DISABLE=true) されている必要があり、でないと送信が
-  # 弾かれる。name / attribute ベースのロケータはラベル文言に依存せず、locale で
+  # 弾かれる。name / attributeベースのロケータはラベル文言に依存せず、localeで
   # 変わらない。
   pw_checked fill 'input[name="email"]' "$email" >/dev/null
   printf '%s' "$pass" | build_password_script
@@ -219,28 +158,17 @@ cmd_login() {
   fi
   rm -f "$PASSWORD_SCRIPT_FILE"
 
-  # The context now holds the credentials, so the on-disk config is no longer
-  # needed; drop it to avoid leaving credentials at rest.
-  #
-  # [Ja] コンテキストが creds を保持したので、ディスク上の config はもう不要。
-  # creds を残さないため削除する。
+  # コンテキストがcredsを保持したので、ディスク上のconfigはもう不要。
+  # credsを残さないため削除する。
   rm -f "$CONFIG_FILE"
 
-  # Report the post-login URL. A successful sign-in redirects away from
-  # /sign_in (to home or the back URL); staying on /sign_in (a 422 form
-  # re-render) means not signed in and fails the command. The pathname is
-  # extracted with a regex rather than `new URL()`: playwright-cli's run-code
-  # runs in a sandbox where the URL constructor is not defined. The signed-in
-  # decision is returned as a sentinel and acted on in bash so a failed login
-  # exits non-zero (a throw inside run-code only prints an error and exits 0).
-  #
-  # [Ja] ログイン後の URL を報告する。サインイン成功時は /sign_in から離れる
-  # (ホームか back URL へ)。/sign_in に留まる (422 のフォーム再描画) 場合は
-  # 未ログインを意味するため、コマンドを失敗させる。pathname は `new URL()` では
-  # なく正規表現で取り出す。playwright-cli の run-code は URL コンストラクタが
-  # 未定義のサンドボックスで動くため。ログイン可否は sentinel で返して bash 側で
-  # 判定し、失敗時に非ゼロ終了させる (run-code 内の throw はエラーを表示するだけで
-  # 終了コードは 0 になるため)。
+  # ログイン後のURLを報告する。サインイン成功時は /sign_inから離れる
+  # (ホームかback URLへ)。/sign_inに留まる (422のフォーム再描画) 場合は
+  # 未ログインを意味するため、コマンドを失敗させる。pathnameは `new URL()` では
+  # なく正規表現で取り出す。playwright-cliのrun-codeはURLコンストラクタが
+  # 未定義のサンドボックスで動くため。ログイン可否はsentinelで返してbash側で
+  # 判定し、失敗時に非ゼロ終了させる (run-code内のthrowはエラーを表示するだけで
+  # 終了コードは0になるため)。
   local result
   result="$(pw_checked --raw run-code "async page => {
     await page.waitForLoadState('networkidle');
@@ -249,9 +177,7 @@ cmd_login() {
     return (path === '/sign_in' ? 'NOT_SIGNED_IN ' : 'SIGNED_IN ') + href;
   }")"
 
-  # --raw wraps the returned string in double quotes; strip them before matching.
-  #
-  # [Ja] --raw は返り値の文字列を二重引用符で囲むため、判定前に取り除く。
+  # --rawは返り値の文字列を二重引用符で囲むため、判定前に取り除く。
   result="${result%\"}"
   result="${result#\"}"
 
@@ -280,10 +206,7 @@ cmd_shot() {
   [ -n "$name" ] || name=home
   local filename="$SHOT_DIR/$name.png"
 
-  # Remove a previous screenshot before navigating so a failed capture can
-  # never be mistaken for a fresh result.
-  #
-  # [Ja] 撮影前に同名の既存スクリーンショットを削除し、撮影失敗時に古い画像を
+  # 撮影前に同名の既存スクリーンショットを削除し、撮影失敗時に古い画像を
   # 新しい結果と誤認できないようにする。
   rm -f "$filename"
 

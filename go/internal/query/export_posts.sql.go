@@ -44,32 +44,17 @@ type ListExportPostMonthsByExportIDRow struct {
 	PostCount       int64     `db:"post_count"`
 }
 
-// Return one row per calendar month in an export's immutable post snapshot,
-// with the post count and a UTC scan range containing those posts, oldest
-// first. The export writes one HTML file per month and needs the counts before
-// the first file, so the summary is taken up front and each month is then paged
-// over its range from the same materialized snapshot.
-//
-// export_posts.published_at is timestamp without time zone holding UTC, so the
-// month a post belongs to is found by reading it as UTC and converting to the
-// target zone before truncating. A local month start can be ambiguous during a
-// daylight saving fold, so converting that wall clock back to one UTC instant
-// is not a safe scan boundary. Instead, MIN / MAX derive a tight half-open
-// range from the exact export_posts rows in the group. The paging query repeats
-// the local-month predicate as a correctness guard and uses the range for its
-// index scan.
-//
-// [Ja] export の不変な投稿 snapshot に含まれる暦月ごとに 1 行を、投稿件数と
-// その投稿を含む UTC 走査範囲とともに古い順で返す。
-// エクスポートは月ごとに 1 つの HTML ファイルを書き、最初のファイルより前に
-// 件数を必要とするため、先にサマリーを取得し、その後で同じ固定済み snapshot
+// exportの不変な投稿snapshotに含まれる暦月ごとに1行を、投稿件数と
+// その投稿を含むUTC走査範囲とともに古い順で返す。
+// エクスポートは月ごとに1つのHTMLファイルを書き、最初のファイルより前に
+// 件数を必要とするため、先にサマリーを取得し、その後で同じ固定済みsnapshot
 // から各月をその範囲で分割取得する。
 //
-// export_posts.published_at は UTC を保持する timestamp without time zone
-// のため、投稿が属する月は UTC として読んでから対象タイムゾーンへ変換し、
-// truncate して求める。夏時間のフォールド中はローカル月初が曖昧になりうるため、
-// その壁時計を 1 つの UTC 時刻へ逆変換しても安全な走査境界にはならない。
-// 代わりに、グループの正確な export_posts 行から MIN / MAX で狭い半開区間を
+// export_posts.published_atはUTCを保持するtimestamp without time zone
+// のため、投稿が属する月はUTCとして読んでから対象タイムゾーンへ変換し、
+// truncateして求める。夏時間のフォールド中はローカル月初が曖昧になりうるため、
+// その壁時計を1つのUTC時刻へ逆変換しても安全な走査境界にはならない。
+// 代わりに、グループの正確なexport_posts行からMIN / MAXで狭い半開区間を
 // 導出する。分割取得クエリは正しさを守るためローカル月の述語を再適用し、
 // 範囲はインデックス走査に使う。
 func (q *Queries) ListExportPostMonthsByExportID(ctx context.Context, arg ListExportPostMonthsByExportIDParams) ([]ListExportPostMonthsByExportIDRow, error) {
@@ -128,28 +113,16 @@ type ListExportPostsByExportIDInRangeRow struct {
 	PublishedAt time.Time `db:"published_at"`
 }
 
-// Return a page from an export's immutable post snapshot, published within the
-// half-open UTC scan range [starts_at, ends_at), and in the requested local
-// calendar month. Rows are oldest first and strictly after the cursor. The
-// order is fully deterministic because post_id breaks ties between posts
-// sharing one published_at, so successive pages visit every post exactly once.
+// exportの不変な投稿snapshotのうち、半開区間のUTC走査範囲
+// [starts_at, ends_at) に公開され、指定したローカル暦月に属するものをcursor
+// より後から古い順に1ページ返す。published_atが同値の投稿はpost_idで
+// tie-breakされるため並び順は完全に決定的で、ページを順に辿ると各投稿を
+// ちょうど1回ずつ訪れる。
 //
-// The first page passes the zero timestamp and the zero UUID, which sort before
-// every stored row, so one unconditional comparison drives both the first and
-// later pages. Wrapping it in an OR with a has-cursor flag instead would keep
-// the planner from using the cursor as the starting point of an index scan
-// whenever the parameter value is unknown at plan time.
-//
-// [Ja] export の不変な投稿 snapshot のうち、半開区間の UTC 走査範囲
-// [starts_at, ends_at) に公開され、指定したローカル暦月に属するものを cursor
-// より後から古い順に 1 ページ返す。published_at が同値の投稿は post_id で
-// tie-break されるため並び順は完全に決定的で、ページを順に辿ると各投稿を
-// ちょうど 1 回ずつ訪れる。
-//
-// 1 ページ目はゼロ時刻とゼロ UUID を渡す。どちらも保存されるどの行よりも前に
-// 並ぶため、1 つの無条件な比較で 1 ページ目と 2 ページ目以降の両方をまかなえる。
-// cursor の有無フラグと OR で包むと、パラメータ値がプラン時に未知の場合に
-// cursor を索引スキャンの開始位置として使えなくなる。
+// 1ページ目はゼロ時刻とゼロUUIDを渡す。どちらも保存されるどの行よりも前に
+// 並ぶため、1つの無条件な比較で1ページ目と2ページ目以降の両方をまかなえる。
+// cursorの有無フラグとORで包むと、パラメータ値がプラン時に未知の場合に
+// cursorを索引スキャンの開始位置として使えなくなる。
 func (q *Queries) ListExportPostsByExportIDInRange(ctx context.Context, arg ListExportPostsByExportIDInRangeParams) ([]ListExportPostsByExportIDInRangeRow, error) {
 	rows, err := q.db.QueryContext(ctx, listExportPostsByExportIDInRange,
 		arg.ExportID,

@@ -7,7 +7,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/i18n"
 )
 
-// Show はWeb App Manifestを返します (GET /manifest.json)
+// ShowはWeb App Manifestを返します (GET /manifest.json)
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

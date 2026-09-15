@@ -5,13 +5,11 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG USERNAME=developer
 
-# Keep apt downloads for BuildKit cache mounts
-# [Ja] BuildKit のキャッシュマウントで apt のダウンロード結果を保持する
+# BuildKitのキャッシュマウントでaptのダウンロード結果を保持する
 RUN rm -f /etc/apt/apt.conf.d/docker-clean && \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
-# --- System packages ---
-# [Ja] システムパッケージ
+# --- システムパッケージ ---
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     <<EOF
@@ -21,33 +19,33 @@ apt update
 apt dist-upgrade -yq
 
 PACKAGES=$(cat <<'PKGLIST' | sed 's/#.*//'
-  bubblewrap                # Required by Codex for Linux sandboxing [Ja] Codex の Linux sandbox に必要
+  bubblewrap                # CodexのLinux sandboxに必要
   build-essential
-  ca-certificates           # Required for HTTPS connections [Ja] HTTPS 接続に必要
+  ca-certificates           # HTTPS接続に必要
   curl
-  file                      # Required for Shrine image uploads (Rails) [Ja] Shrine による画像アップロードに必要 (Rails)
-  fonts-noto-cjk            # CJK glyphs for playwright-cli screenshots [Ja] playwright-cli のスクショで CJK を描画 (豆腐回避)
-  fzf                       # Used by Claude Code [Ja] Claude Code で使用
+  file                      # Shrineによる画像アップロードに必要 (Rails)
+  fonts-noto-cjk            # playwright-cliのスクショでCJKを描画 (豆腐回避)
+  fzf                       # Claude Codeで使用
   git
-  gnupg                     # Required for PostgreSQL GPG key and apt repository [Ja] PostgreSQL の GPG キーと apt リポジトリに必要
-  jq                        # Used by Claude Code [Ja] Claude Code で使用
-  libffi-dev                # Required for Ruby extension builds [Ja] Ruby 拡張のビルドに必要
-  libglib2.0-0              # libvips dependency (Rails) [Ja] libvips の依存パッケージ (Rails)
-  libreadline-dev           # Required for Ruby readline extension [Ja] Ruby の readline 拡張に必要
-  libssl-dev                # Required for SSL-related builds [Ja] SSL 関連のビルドに必要
-  libvips42                 # Image processing library (Rails) [Ja] 画像処理ライブラリ (Rails)
-  libyaml-dev               # Required for psych gem installation (Rails) [Ja] psych gem のインストールに必要 (Rails)
-  lsb-release               # Required for PostgreSQL apt repository setup [Ja] PostgreSQL の apt リポジトリ設定に必要
-  nano                      # Used by Claude Code [Ja] Claude Code で使用
-  net-tools                 # Used by Claude Code: netstat (network debugging) [Ja] Claude Code で使用 netstat (ネットワークデバッグ用)
-  procps                    # ps for playwright-cli kill-all [Ja] playwright-cli の kill-all 用 (ps を提供)
-  psmisc                    # Used by Claude Code: fuser (process identification) [Ja] Claude Code で使用 fuser (プロセス特定用)
-  ripgrep                   # Used by Claude Code [Ja] Claude Code で使用
+  gnupg                     # PostgreSQLのGPGキーとaptリポジトリに必要
+  jq                        # Claude Codeで使用
+  libffi-dev                # Ruby拡張のビルドに必要
+  libglib2.0-0              # libvipsの依存パッケージ (Rails)
+  libreadline-dev           # Rubyのreadline拡張に必要
+  libssl-dev                # SSL関連のビルドに必要
+  libvips42                 # 画像処理ライブラリ (Rails)
+  libyaml-dev               # psych gemのインストールに必要 (Rails)
+  lsb-release               # PostgreSQLのaptリポジトリ設定に必要
+  nano                      # Claude Codeで使用
+  net-tools                 # Claude Codeで使用: netstat (ネットワークデバッグ用)
+  procps                    # playwright-cliのkill-all用 (psを提供)
+  psmisc                    # Claude Codeで使用: fuser (プロセス特定用)
+  ripgrep                   # Claude Codeで使用
   sudo
-  tree                      # Used by Claude Code [Ja] Claude Code で使用
+  tree                      # Claude Codeで使用
   unzip
-  vim                       # Used by Claude Code [Ja] Claude Code で使用
-  zlib1g-dev                # Required for Ruby zlib extension (required for gem install) [Ja] Ruby の zlib 拡張に必要 (gem install に必須)
+  vim                       # Claude Codeで使用
+  zlib1g-dev                # Rubyのzlib拡張に必要 (gem installに必須)
   zsh
 PKGLIST
 )
@@ -55,8 +53,7 @@ PKGLIST
 apt install -y --no-install-recommends $PACKAGES
 EOF
 
-# --- PostgreSQL client ---
-# [Ja] PostgreSQL クライアント
+# --- PostgreSQLクライアント ---
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     mkdir -p -m 755 /etc/apt/keyrings && \
@@ -66,10 +63,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
       > /etc/apt/sources.list.d/pgdg.list && \
     apt update && apt install -y libpq-dev postgresql-client-18
 
-# --- mise (dev tool version manager) ---
-# [Ja] mise (開発ツールバージョンマネージャー)
-# Recommended config for Docker: use the shims approach.
-# [Ja] Docker 環境向けの推奨設定: shims 方式を使用する。
+# --- mise (開発ツールバージョンマネージャー) ---
+# Docker環境向けの推奨設定: shims方式を使用する。
 ENV MISE_DATA_DIR="/mise"
 ENV MISE_CONFIG_DIR="/mise"
 ENV MISE_CACHE_DIR="/mise/cache"
@@ -77,8 +72,7 @@ ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV PATH="/mise/shims:${PATH}"
 RUN curl -fsSL https://mise.run | sh
 
-# Install Go, Ruby, Node.js, pnpm, and Yarn via mise
-# [Ja] Go、Ruby、Node.js、pnpm、Yarn を mise 経由でインストール
+# Go、Ruby、Node.js、pnpm、Yarnをmise経由でインストール
 RUN mise install go@1.26.4 && \
     mise install ruby@3.3.6 && \
     mise install node@24.11.1 && \
@@ -86,8 +80,7 @@ RUN mise install go@1.26.4 && \
     mise install pnpm@10.24.0 && \
     mise install yarn@1.22.19
 
-# Set global defaults
-# [Ja] グローバルデフォルトを設定
+# グローバルデフォルトを設定
 RUN mise use --global go@1.26.4 && \
     mise use --global ruby@3.3.6 && \
     mise use --global node@24.11.1 && \
@@ -134,25 +127,20 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
       > /etc/apt/sources.list.d/github-cli.list && \
     apt update && apt install -y gh
 
-# --- User setup ---
+# --- ユーザー設定 ---
 RUN groupadd -g ${GROUP_ID} ${USERNAME} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/zsh ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# --- Go cache directories ---
+# --- Goのキャッシュディレクトリ ---
 RUN mkdir -p /go/.cache/go-build /go/pkg && \
     chown -R ${USER_ID}:${GROUP_ID} /go
 
-# --- mise data directory permissions ---
-# [Ja] mise のデータディレクトリの権限設定
+# --- miseのデータディレクトリの権限設定 ---
 RUN chown -R ${USER_ID}:${GROUP_ID} /mise
 
-# --- 1Password CLI config directory ---
-# The op-config named volume is mounted here. Docker copies ownership from the
-# image only when the volume is created empty, so the directory has to exist
-# with the developer user's ownership beforehand for `op` to write its config.
-#
-# [Ja] 名前付きボリューム op-config をここにマウントする。Docker がイメージ側の
+# --- 1Password CLIの設定ディレクトリ ---
+# 名前付きボリュームop-configをここにマウントする。Dockerがイメージ側の
 # 所有権を引き継ぐのはボリュームが空で新規作成されたときだけのため、`op` が設定を
 # 書き込めるよう開発者ユーザー所有のディレクトリを事前に用意しておく。
 RUN install -d -o ${USER_ID} -g ${GROUP_ID} /home/${USERNAME}/.config && \
@@ -161,20 +149,13 @@ RUN install -d -o ${USER_ID} -g ${GROUP_ID} /home/${USERNAME}/.config && \
 WORKDIR /workspace
 USER ${USERNAME}
 
-# --- Create .zshrc ---
-# [Ja] .zshrc の作成
+# --- .zshrcの作成 ---
 RUN touch ~/.zshrc
 
-# --- mise shell setup ---
-# [Ja] mise シェル設定
-# Use the shims approach in Docker (already configured via PATH="/mise/shims:...").
-# `mise activate` bypasses shims and prepends the direct paths of the global
-# defaults to PATH, which breaks per-directory version switching. With the
-# shims approach, activate is unnecessary.
-#
-# [Ja] Docker 環境では shims 方式を使用 (PATH="/mise/shims:..." で設定済み)。
-# mise activate は shims をバイパスしてグローバルデフォルトの直接パスを PATH に
-# 追加するため、ディレクトリごとのバージョン切り替えが効かなくなる。shims 方式では不要。
+# --- miseシェル設定 ---
+# Docker環境ではshims方式を使用 (PATH="/mise/shims:..." で設定済み)。
+# mise activateはshimsをバイパスしてグローバルデフォルトの直接パスをPATHに
+# 追加するため、ディレクトリごとのバージョン切り替えが効かなくなる。shims方式では不要。
 RUN mise reshim
 
 # --- 1Password CLI ---
@@ -186,37 +167,31 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 # --- Codex ---
 RUN curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
-# --- Go tools ---
+# --- Goツール ---
 ENV GOCACHE=/go/.cache/go-build
 ENV GOMODCACHE=/go/pkg/mod
 ENV GOPATH=/go
 ENV PATH="${GOPATH}/bin:${PATH}"
 RUN go install github.com/air-verse/air@latest
 
-# --- Ruby tools ---
+# --- Rubyツール ---
 RUN gem install bundler -v 2.5.9
 
-# --- Playwright CLI (browser verification) ---
-# Install @playwright/cli into every Node version mise selects across the
-# monorepo (24.11.1 for /workspace and /workspace/go, 20.11.1 for
-# /workspace/rails) so the shim resolves from any directory, then bake the
-# Chromium browser and its system dependencies with --with-deps (Mewst ships
-# neither a Playwright browser nor its system libs by default).
-#
-# [Ja] monorepo で mise が選ぶ全 Node バージョン (/workspace と /workspace/go は 24.11.1、
-# /workspace/rails は 20.11.1) に @playwright/cli を install し、どのディレクトリからでも
-# shim が解決できるようにする。その後 --with-deps で Chromium 本体と system 依存を焼き込む
-# (Mewst は Playwright のブラウザも system 依存も未導入のため)。
+# --- Playwright CLI (ブラウザ確認) ---
+# monorepoでmiseが選ぶ全Nodeバージョン (/workspaceと /workspace/goは24.11.1、
+# /workspace/railsは20.11.1) に @playwright/cliをinstallし、どのディレクトリからでも
+# shimが解決できるようにする。その後 --with-depsでChromium本体とsystem依存を焼き込む
+# (MewstはPlaywrightのブラウザもsystem依存も未導入のため)。
 RUN mise exec node@24.11.1 -- npm install -g @playwright/cli@0.1.17 && \
     mise exec node@20.11.1 -- npm install -g @playwright/cli@0.1.17 && \
     mise reshim && \
     playwright-cli install-browser chromium --with-deps
 
-# --- Shell setup ---
+# --- シェル設定 ---
 SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 
-# --- Git config ---
+# --- Git設定 ---
 RUN git config --global user.email "me@shimba.co" && \
     git config --global user.name "Koji Shimba"
 

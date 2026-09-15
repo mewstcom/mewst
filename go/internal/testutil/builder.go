@@ -11,7 +11,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// UserBuilder はユーザーテストデータのビルダー
+// UserBuilderはユーザーテストデータのビルダー
 type UserBuilder struct {
 	t              testing.TB
 	tx             *sql.Tx
@@ -21,7 +21,7 @@ type UserBuilder struct {
 	timeZone       string
 }
 
-// NewUserBuilder はUserBuilderを生成する
+// NewUserBuilderはUserBuilderを生成する
 func NewUserBuilder(t testing.TB, tx *sql.Tx) *UserBuilder {
 	t.Helper()
 	return &UserBuilder{
@@ -34,31 +34,31 @@ func NewUserBuilder(t testing.TB, tx *sql.Tx) *UserBuilder {
 	}
 }
 
-// WithEmail はメールアドレスを設定する
+// WithEmailはメールアドレスを設定する
 func (b *UserBuilder) WithEmail(email string) *UserBuilder {
 	b.email = email
 	return b
 }
 
-// WithPasswordDigest はパスワードダイジェストを設定する
+// WithPasswordDigestはパスワードダイジェストを設定する
 func (b *UserBuilder) WithPasswordDigest(passwordDigest string) *UserBuilder {
 	b.passwordDigest = passwordDigest
 	return b
 }
 
-// WithLocale はロケールを設定する
+// WithLocaleはロケールを設定する
 func (b *UserBuilder) WithLocale(locale string) *UserBuilder {
 	b.locale = locale
 	return b
 }
 
-// WithTimeZone はタイムゾーンを設定する
+// WithTimeZoneはタイムゾーンを設定する
 func (b *UserBuilder) WithTimeZone(timeZone string) *UserBuilder {
 	b.timeZone = timeZone
 	return b
 }
 
-// Build はユーザーをDBに作成し、IDを返す
+// BuildはユーザーをDBに作成し、IDを返す
 func (b *UserBuilder) Build() model.UserID {
 	b.t.Helper()
 
@@ -77,7 +77,7 @@ func (b *UserBuilder) Build() model.UserID {
 	return model.UserID(id)
 }
 
-// ProfileBuilder はプロフィールテストデータのビルダー
+// ProfileBuilderはプロフィールテストデータのビルダー
 type ProfileBuilder struct {
 	t           testing.TB
 	tx          *sql.Tx
@@ -88,7 +88,7 @@ type ProfileBuilder struct {
 	discardedAt sql.NullTime
 }
 
-// NewProfileBuilder はProfileBuilderを生成する
+// NewProfileBuilderはProfileBuilderを生成する
 func NewProfileBuilder(t testing.TB, tx *sql.Tx) *ProfileBuilder {
 	t.Helper()
 	return &ProfileBuilder{
@@ -101,34 +101,31 @@ func NewProfileBuilder(t testing.TB, tx *sql.Tx) *ProfileBuilder {
 	}
 }
 
-// WithOwnerType sets the profile owner type.
-//
-// [Ja] WithOwnerType はプロフィールの所有種別を設定する。
+// WithOwnerTypeはプロフィールの所有種別を設定する。
 func (b *ProfileBuilder) WithOwnerType(ownerType string) *ProfileBuilder {
 	b.ownerType = ownerType
 	return b
 }
 
-// WithAtname は@nameを設定する
+// WithAtnameは@nameを設定する
 func (b *ProfileBuilder) WithAtname(atname string) *ProfileBuilder {
 	b.atname = atname
 	return b
 }
 
-// WithName は表示名を設定する
+// WithNameは表示名を設定する
 func (b *ProfileBuilder) WithName(name string) *ProfileBuilder {
 	b.name = name
 	return b
 }
 
-// WithDiscardedAt marks the profile as discarded (soft-deleted) at the given time.
-// [Ja] WithDiscardedAt はプロフィールを指定時刻で discard (論理削除) 済みにする。
+// WithDiscardedAtはプロフィールを指定時刻でdiscard (論理削除) 済みにする。
 func (b *ProfileBuilder) WithDiscardedAt(discardedAt time.Time) *ProfileBuilder {
 	b.discardedAt = sql.NullTime{Time: discardedAt, Valid: true}
 	return b
 }
 
-// Build はプロフィールをDBに作成し、IDを返す
+// BuildはプロフィールをDBに作成し、IDを返す
 func (b *ProfileBuilder) Build() model.ProfileID {
 	b.t.Helper()
 
@@ -147,7 +144,7 @@ func (b *ProfileBuilder) Build() model.ProfileID {
 	return model.ProfileID(id)
 }
 
-// ActorBuilder はアクターテストデータのビルダー
+// ActorBuilderはアクターテストデータのビルダー
 type ActorBuilder struct {
 	t         testing.TB
 	tx        *sql.Tx
@@ -155,7 +152,7 @@ type ActorBuilder struct {
 	profileID model.ProfileID
 }
 
-// NewActorBuilder はActorBuilderを生成する
+// NewActorBuilderはActorBuilderを生成する
 func NewActorBuilder(t testing.TB, tx *sql.Tx) *ActorBuilder {
 	t.Helper()
 	return &ActorBuilder{
@@ -164,19 +161,19 @@ func NewActorBuilder(t testing.TB, tx *sql.Tx) *ActorBuilder {
 	}
 }
 
-// WithUserID はユーザーIDを設定する
+// WithUserIDはユーザーIDを設定する
 func (b *ActorBuilder) WithUserID(userID model.UserID) *ActorBuilder {
 	b.userID = userID
 	return b
 }
 
-// WithProfileID はプロフィールIDを設定する
+// WithProfileIDはプロフィールIDを設定する
 func (b *ActorBuilder) WithProfileID(profileID model.ProfileID) *ActorBuilder {
 	b.profileID = profileID
 	return b
 }
 
-// Build はアクターをDBに作成し、IDを返す
+// BuildはアクターをDBに作成し、IDを返す
 func (b *ActorBuilder) Build() model.ActorID {
 	b.t.Helper()
 
@@ -195,14 +192,9 @@ func (b *ActorBuilder) Build() model.ActorID {
 	return model.ActorID(id)
 }
 
-// UserProfileBuilder builds the association that records a user owning a
-// profile. Ownership is what authorizes a user to act on a profile's data, so
-// tests that go through an authorization check need this row and not only an
-// actor.
-//
-// [Ja] UserProfileBuilder はユーザーがプロフィールを所有していることを記録する
+// UserProfileBuilderはユーザーがプロフィールを所有していることを記録する
 // 関連付けのビルダー。ユーザーがプロフィールのデータを操作できる根拠は所有関係で
-// あるため、認可を通るテストは actor だけでなくこの行を必要とする。
+// あるため、認可を通るテストはactorだけでなくこの行を必要とする。
 type UserProfileBuilder struct {
 	t         testing.TB
 	tx        *sql.Tx
@@ -210,9 +202,7 @@ type UserProfileBuilder struct {
 	profileID model.ProfileID
 }
 
-// NewUserProfileBuilder creates a UserProfileBuilder.
-//
-// [Ja] NewUserProfileBuilder は UserProfileBuilder を生成する。
+// NewUserProfileBuilderはUserProfileBuilderを生成する。
 func NewUserProfileBuilder(t testing.TB, tx *sql.Tx) *UserProfileBuilder {
 	t.Helper()
 	return &UserProfileBuilder{
@@ -221,25 +211,19 @@ func NewUserProfileBuilder(t testing.TB, tx *sql.Tx) *UserProfileBuilder {
 	}
 }
 
-// WithUserID sets the owning user ID.
-//
-// [Ja] WithUserID は所有するユーザー ID を設定する。
+// WithUserIDは所有するユーザーIDを設定する。
 func (b *UserProfileBuilder) WithUserID(userID model.UserID) *UserProfileBuilder {
 	b.userID = userID
 	return b
 }
 
-// WithProfileID sets the owned profile ID.
-//
-// [Ja] WithProfileID は所有されるプロフィール ID を設定する。
+// WithProfileIDは所有されるプロフィールIDを設定する。
 func (b *UserProfileBuilder) WithProfileID(profileID model.ProfileID) *UserProfileBuilder {
 	b.profileID = profileID
 	return b
 }
 
-// Build inserts the association into the DB and returns its ID.
-//
-// [Ja] Build は関連付けを DB に作成し、ID を返す。
+// Buildは関連付けをDBに作成し、IDを返す。
 func (b *UserProfileBuilder) Build() model.UserProfileID {
 	b.t.Helper()
 
@@ -258,14 +242,9 @@ func (b *UserProfileBuilder) Build() model.UserProfileID {
 	return model.UserProfileID(id)
 }
 
-// ProfileOwner is a profile together with the user who owns it and the actor
-// that acts as that user on it. The right to act on a profile's data comes
-// from the ownership, so a test that goes through an authorization check needs
-// all of these rows and not only an actor.
-//
-// [Ja] ProfileOwner はプロフィールと、それを所有するユーザー、およびその
+// ProfileOwnerはプロフィールと、それを所有するユーザー、およびその
 // ユーザーとしてそのプロフィール上で活動するアクター。プロフィールのデータを
-// 操作できる根拠は所有関係であるため、認可を通るテストは actor だけでなく
+// 操作できる根拠は所有関係であるため、認可を通るテストはactorだけでなく
 // これらの行をすべて必要とする。
 type ProfileOwner struct {
 	UserID    model.UserID
@@ -273,10 +252,7 @@ type ProfileOwner struct {
 	ActorID   model.ActorID
 }
 
-// NewProfileOwner creates a user, a profile, the association recording that the
-// user owns it, and the actor for that pair.
-//
-// [Ja] NewProfileOwner はユーザー、プロフィール、そのユーザーがプロフィールを
+// NewProfileOwnerはユーザー、プロフィール、そのユーザーがプロフィールを
 // 所有していることを記録する関連付け、およびその組み合わせのアクターを作成する。
 func NewProfileOwner(t testing.TB, tx *sql.Tx) ProfileOwner {
 	t.Helper()
@@ -297,7 +273,7 @@ func NewProfileOwner(t testing.TB, tx *sql.Tx) ProfileOwner {
 	return ProfileOwner{UserID: userID, ProfileID: profileID, ActorID: actorID}
 }
 
-// SessionBuilder はセッションテストデータのビルダー
+// SessionBuilderはセッションテストデータのビルダー
 type SessionBuilder struct {
 	t         testing.TB
 	tx        *sql.Tx
@@ -307,7 +283,7 @@ type SessionBuilder struct {
 	userAgent string
 }
 
-// NewSessionBuilder はSessionBuilderを生成する
+// NewSessionBuilderはSessionBuilderを生成する
 func NewSessionBuilder(t testing.TB, tx *sql.Tx) *SessionBuilder {
 	t.Helper()
 	return &SessionBuilder{
@@ -319,31 +295,31 @@ func NewSessionBuilder(t testing.TB, tx *sql.Tx) *SessionBuilder {
 	}
 }
 
-// WithActorID はアクターIDを設定する
+// WithActorIDはアクターIDを設定する
 func (b *SessionBuilder) WithActorID(actorID model.ActorID) *SessionBuilder {
 	b.actorID = actorID
 	return b
 }
 
-// WithToken はトークンを設定する
+// WithTokenはトークンを設定する
 func (b *SessionBuilder) WithToken(token string) *SessionBuilder {
 	b.token = token
 	return b
 }
 
-// WithIPAddress はIPアドレスを設定する
+// WithIPAddressはIPアドレスを設定する
 func (b *SessionBuilder) WithIPAddress(ipAddress string) *SessionBuilder {
 	b.ipAddress = ipAddress
 	return b
 }
 
-// WithUserAgent はUser-Agentを設定する
+// WithUserAgentはUser-Agentを設定する
 func (b *SessionBuilder) WithUserAgent(userAgent string) *SessionBuilder {
 	b.userAgent = userAgent
 	return b
 }
 
-// Build はセッションをDBに作成し、IDを返す
+// BuildはセッションをDBに作成し、IDを返す
 func (b *SessionBuilder) Build() model.SessionID {
 	b.t.Helper()
 
@@ -362,7 +338,7 @@ func (b *SessionBuilder) Build() model.SessionID {
 	return model.SessionID(id)
 }
 
-// EmailConfirmationBuilder はメール確認テストデータのビルダー
+// EmailConfirmationBuilderはメール確認テストデータのビルダー
 type EmailConfirmationBuilder struct {
 	t           testing.TB
 	tx          *sql.Tx
@@ -373,7 +349,7 @@ type EmailConfirmationBuilder struct {
 	createdAt   *time.Time
 }
 
-// NewEmailConfirmationBuilder はEmailConfirmationBuilderを生成する
+// NewEmailConfirmationBuilderはEmailConfirmationBuilderを生成する
 func NewEmailConfirmationBuilder(t testing.TB, tx *sql.Tx) *EmailConfirmationBuilder {
 	t.Helper()
 	return &EmailConfirmationBuilder{
@@ -385,37 +361,37 @@ func NewEmailConfirmationBuilder(t testing.TB, tx *sql.Tx) *EmailConfirmationBui
 	}
 }
 
-// WithEmail はメールアドレスを設定する
+// WithEmailはメールアドレスを設定する
 func (b *EmailConfirmationBuilder) WithEmail(email string) *EmailConfirmationBuilder {
 	b.email = email
 	return b
 }
 
-// WithEvent はイベント種別を設定する
+// WithEventはイベント種別を設定する
 func (b *EmailConfirmationBuilder) WithEvent(event string) *EmailConfirmationBuilder {
 	b.event = event
 	return b
 }
 
-// WithCode は確認コードを設定する
+// WithCodeは確認コードを設定する
 func (b *EmailConfirmationBuilder) WithCode(code string) *EmailConfirmationBuilder {
 	b.code = code
 	return b
 }
 
-// WithSucceededAt は成功日時を設定する
+// WithSucceededAtは成功日時を設定する
 func (b *EmailConfirmationBuilder) WithSucceededAt(succeededAt time.Time) *EmailConfirmationBuilder {
 	b.succeededAt = &succeededAt
 	return b
 }
 
-// WithCreatedAt は作成日時を設定する
+// WithCreatedAtは作成日時を設定する
 func (b *EmailConfirmationBuilder) WithCreatedAt(createdAt time.Time) *EmailConfirmationBuilder {
 	b.createdAt = &createdAt
 	return b
 }
 
-// Build はメール確認をDBに作成し、IDを返す
+// Buildはメール確認をDBに作成し、IDを返す
 func (b *EmailConfirmationBuilder) Build() model.EmailConfirmationID {
 	b.t.Helper()
 
@@ -439,8 +415,7 @@ func (b *EmailConfirmationBuilder) Build() model.EmailConfirmationID {
 	return model.EmailConfirmationID(id)
 }
 
-// FeatureFlagBuilder builds feature flag test data.
-// [Ja] FeatureFlagBuilder はフィーチャーフラグテストデータのビルダー。
+// FeatureFlagBuilderはフィーチャーフラグテストデータのビルダー。
 type FeatureFlagBuilder struct {
 	t           testing.TB
 	tx          *sql.Tx
@@ -449,8 +424,7 @@ type FeatureFlagBuilder struct {
 	name        string
 }
 
-// NewFeatureFlagBuilder creates a FeatureFlagBuilder.
-// [Ja] NewFeatureFlagBuilder は FeatureFlagBuilder を生成する。
+// NewFeatureFlagBuilderはFeatureFlagBuilderを生成する。
 func NewFeatureFlagBuilder(t testing.TB, tx *sql.Tx) *FeatureFlagBuilder {
 	t.Helper()
 	return &FeatureFlagBuilder{
@@ -460,29 +434,25 @@ func NewFeatureFlagBuilder(t testing.TB, tx *sql.Tx) *FeatureFlagBuilder {
 	}
 }
 
-// WithDeviceToken sets the device token.
-// [Ja] WithDeviceToken はデバイストークンを設定する。
+// WithDeviceTokenはデバイストークンを設定する。
 func (b *FeatureFlagBuilder) WithDeviceToken(deviceToken string) *FeatureFlagBuilder {
 	b.deviceToken = deviceToken
 	return b
 }
 
-// WithActorID sets the actor ID.
-// [Ja] WithActorID はアクター ID を設定する。
+// WithActorIDはアクターIDを設定する。
 func (b *FeatureFlagBuilder) WithActorID(actorID model.ActorID) *FeatureFlagBuilder {
 	b.actorID = &actorID
 	return b
 }
 
-// WithName sets the feature flag name.
-// [Ja] WithName はフィーチャーフラグ名を設定する。
+// WithNameはフィーチャーフラグ名を設定する。
 func (b *FeatureFlagBuilder) WithName(name model.FeatureFlagName) *FeatureFlagBuilder {
 	b.name = string(name)
 	return b
 }
 
-// Build inserts the feature flag into the DB and returns its ID.
-// [Ja] Build はフィーチャーフラグを DB に作成し、ID を返す。
+// BuildはフィーチャーフラグをDBに作成し、IDを返す。
 func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 	b.t.Helper()
 
@@ -511,21 +481,13 @@ func (b *FeatureFlagBuilder) Build() model.FeatureFlagID {
 	return model.FeatureFlagID(id)
 }
 
-// OauthApplicationBuilder builds OAuth application test data.
+// OauthApplicationBuilderはOAuthアプリケーションテストデータのビルダー。
 //
-// The test DB (reset from schema.sql) has no mewst-web record, so tests that
-// attribute posts to mewst-web build one with this builder, setting the uid
-// explicitly via WithUID(model.MewstWebUID). The name and uid default to
-// per-call unique values so that parallel tests do not contend on the unique
-// indexes on oauth_applications.name / .uid.
-//
-// [Ja] OauthApplicationBuilder は OAuth アプリケーションテストデータのビルダー。
-//
-// テスト DB (schema.sql からリセット) には mewst-web レコードが無いため、
-// 投稿を mewst-web に紐づけるテストは本ビルダーでレコードを作成し、uid は
-// WithUID(model.MewstWebUID) で明示的に設定する。name と uid は呼び出しごとに
-// ユニークな値をデフォルトにしており、並行テストが oauth_applications.name /
-// .uid の unique インデックスで競合しないようにしている。
+// テストDB (schema.sqlからリセット) にはmewst-webレコードが無いため、
+// 投稿をmewst-webに紐づけるテストは本ビルダーでレコードを作成し、uidは
+// WithUID(model.MewstWebUID) で明示的に設定する。nameとuidは呼び出しごとに
+// ユニークな値をデフォルトにしており、並行テストがoauth_applications.name /
+// .uidのuniqueインデックスで競合しないようにしている。
 type OauthApplicationBuilder struct {
 	t           testing.TB
 	tx          *sql.Tx
@@ -535,8 +497,7 @@ type OauthApplicationBuilder struct {
 	redirectURI string
 }
 
-// NewOauthApplicationBuilder creates an OauthApplicationBuilder.
-// [Ja] NewOauthApplicationBuilder は OauthApplicationBuilder を生成する。
+// NewOauthApplicationBuilderはOauthApplicationBuilderを生成する。
 func NewOauthApplicationBuilder(t testing.TB, tx *sql.Tx) *OauthApplicationBuilder {
 	t.Helper()
 	return &OauthApplicationBuilder{
@@ -549,22 +510,19 @@ func NewOauthApplicationBuilder(t testing.TB, tx *sql.Tx) *OauthApplicationBuild
 	}
 }
 
-// WithName sets the application name.
-// [Ja] WithName はアプリケーション名を設定する。
+// WithNameはアプリケーション名を設定する。
 func (b *OauthApplicationBuilder) WithName(name string) *OauthApplicationBuilder {
 	b.name = name
 	return b
 }
 
-// WithUID sets the application uid.
-// [Ja] WithUID はアプリケーションの uid を設定する。
+// WithUIDはアプリケーションのuidを設定する。
 func (b *OauthApplicationBuilder) WithUID(uid string) *OauthApplicationBuilder {
 	b.uid = uid
 	return b
 }
 
-// Build inserts the OAuth application into the DB and returns its ID.
-// [Ja] Build は OAuth アプリケーションを DB に作成し、ID を返す。
+// BuildはOAuthアプリケーションをDBに作成し、IDを返す。
 func (b *OauthApplicationBuilder) Build() model.OauthApplicationID {
 	b.t.Helper()
 
@@ -577,14 +535,13 @@ func (b *OauthApplicationBuilder) Build() model.OauthApplicationID {
 	`, b.name, b.uid, b.secret, b.redirectURI, now, now).Scan(&id)
 
 	if err != nil {
-		b.t.Fatalf("OAuth アプリケーションの作成に失敗: %v", err)
+		b.t.Fatalf("OAuthアプリケーションの作成に失敗: %v", err)
 	}
 
 	return model.OauthApplicationID(id)
 }
 
-// PostBuilder builds post test data.
-// [Ja] PostBuilder は投稿テストデータのビルダー。
+// PostBuilderは投稿テストデータのビルダー。
 type PostBuilder struct {
 	t                  testing.TB
 	tx                 *sql.Tx
@@ -595,8 +552,7 @@ type PostBuilder struct {
 	discardedAt        sql.NullTime
 }
 
-// NewPostBuilder creates a PostBuilder.
-// [Ja] NewPostBuilder は PostBuilder を生成する。
+// NewPostBuilderはPostBuilderを生成する。
 func NewPostBuilder(t testing.TB, tx *sql.Tx) *PostBuilder {
 	t.Helper()
 	return &PostBuilder{
@@ -607,43 +563,37 @@ func NewPostBuilder(t testing.TB, tx *sql.Tx) *PostBuilder {
 	}
 }
 
-// WithProfileID sets the profile ID.
-// [Ja] WithProfileID はプロフィール ID を設定する。
+// WithProfileIDはプロフィールIDを設定する。
 func (b *PostBuilder) WithProfileID(profileID model.ProfileID) *PostBuilder {
 	b.profileID = profileID
 	return b
 }
 
-// WithOauthApplicationID sets the OAuth application ID.
-// [Ja] WithOauthApplicationID は OAuth アプリケーション ID を設定する。
+// WithOauthApplicationIDはOAuthアプリケーションIDを設定する。
 func (b *PostBuilder) WithOauthApplicationID(oauthApplicationID model.OauthApplicationID) *PostBuilder {
 	b.oauthApplicationID = oauthApplicationID
 	return b
 }
 
-// WithContent sets the post content.
-// [Ja] WithContent は投稿本文を設定する。
+// WithContentは投稿本文を設定する。
 func (b *PostBuilder) WithContent(content string) *PostBuilder {
 	b.content = content
 	return b
 }
 
-// WithPublishedAt sets the published time.
-// [Ja] WithPublishedAt は公開日時を設定する。
+// WithPublishedAtは公開日時を設定する。
 func (b *PostBuilder) WithPublishedAt(publishedAt time.Time) *PostBuilder {
 	b.publishedAt = publishedAt
 	return b
 }
 
-// WithDiscardedAt marks the post as discarded (soft-deleted) at the given time.
-// [Ja] WithDiscardedAt は投稿を指定時刻で discard (論理削除) 済みにする。
+// WithDiscardedAtは投稿を指定時刻でdiscard (論理削除) 済みにする。
 func (b *PostBuilder) WithDiscardedAt(discardedAt time.Time) *PostBuilder {
 	b.discardedAt = sql.NullTime{Time: discardedAt, Valid: true}
 	return b
 }
 
-// Build inserts the post into the DB and returns its ID.
-// [Ja] Build は投稿を DB に作成し、ID を返す。
+// Buildは投稿をDBに作成し、IDを返す。
 func (b *PostBuilder) Build() model.PostID {
 	b.t.Helper()
 
@@ -662,15 +612,9 @@ func (b *PostBuilder) Build() model.PostID {
 	return model.PostID(id)
 }
 
-// BuildMany inserts count posts in a single statement, spacing their published
-// times by interval starting from the builder's published time. It is meant for
-// the large fixtures a benchmark needs, where inserting row by row would
-// dominate the measurement, so it returns no ID: such a fixture is addressed
-// through its profile rather than one post at a time.
-//
-// [Ja] BuildMany は count 件の投稿を 1 文で挿入し、公開日時をビルダーの公開時刻から
-// interval 間隔で並べる。1 行ずつの挿入では計測が挿入時間に支配されるベンチマークの
-// 大規模フィクスチャ向けで、ID は返さない。この種のフィクスチャは投稿 1 件ずつでは
+// BuildManyはcount件の投稿を1文で挿入し、公開日時をビルダーの公開時刻から
+// interval間隔で並べる。1行ずつの挿入では計測が挿入時間に支配されるベンチマークの
+// 大規模フィクスチャ向けで、IDは返さない。この種のフィクスチャは投稿1件ずつでは
 // なくプロフィール単位で参照するため。
 func (b *PostBuilder) BuildMany(count int, interval time.Duration) {
 	b.t.Helper()
@@ -694,8 +638,7 @@ func (b *PostBuilder) BuildMany(count int, interval time.Duration) {
 	}
 }
 
-// FollowBuilder builds follow test data.
-// [Ja] FollowBuilder はフォローテストデータのビルダー。
+// FollowBuilderはフォローテストデータのビルダー。
 type FollowBuilder struct {
 	t               testing.TB
 	tx              *sql.Tx
@@ -703,8 +646,7 @@ type FollowBuilder struct {
 	targetProfileID model.ProfileID
 }
 
-// NewFollowBuilder creates a FollowBuilder.
-// [Ja] NewFollowBuilder は FollowBuilder を生成する。
+// NewFollowBuilderはFollowBuilderを生成する。
 func NewFollowBuilder(t testing.TB, tx *sql.Tx) *FollowBuilder {
 	t.Helper()
 	return &FollowBuilder{
@@ -713,22 +655,19 @@ func NewFollowBuilder(t testing.TB, tx *sql.Tx) *FollowBuilder {
 	}
 }
 
-// WithSourceProfileID sets the source profile ID (the follower).
-// [Ja] WithSourceProfileID は source プロフィール ID (フォローする側) を設定する。
+// WithSourceProfileIDはsourceプロフィールID (フォローする側) を設定する。
 func (b *FollowBuilder) WithSourceProfileID(sourceProfileID model.ProfileID) *FollowBuilder {
 	b.sourceProfileID = sourceProfileID
 	return b
 }
 
-// WithTargetProfileID sets the target profile ID (the followed profile).
-// [Ja] WithTargetProfileID は target プロフィール ID (フォローされる側) を設定する。
+// WithTargetProfileIDはtargetプロフィールID (フォローされる側) を設定する。
 func (b *FollowBuilder) WithTargetProfileID(targetProfileID model.ProfileID) *FollowBuilder {
 	b.targetProfileID = targetProfileID
 	return b
 }
 
-// Build inserts the follow into the DB and returns its ID.
-// [Ja] Build はフォローを DB に作成し、ID を返す。
+// BuildはフォローをDBに作成し、IDを返す。
 func (b *FollowBuilder) Build() model.FollowID {
 	b.t.Helper()
 
@@ -747,12 +686,8 @@ func (b *FollowBuilder) Build() model.FollowID {
 	return model.FollowID(id)
 }
 
-// LinkBuilder builds link test data. The canonical URL defaults to a per-call
-// unique value so that parallel tests do not contend on the unique index on
-// links.canonical_url.
-//
-// [Ja] LinkBuilder はリンクテストデータのビルダー。canonical URL は呼び出しごとに
-// ユニークな値をデフォルトにしており、並行テストが links.canonical_url の unique
+// LinkBuilderはリンクテストデータのビルダー。canonical URLは呼び出しごとに
+// ユニークな値をデフォルトにしており、並行テストがlinks.canonical_urlのunique
 // インデックスで競合しないようにしている。
 type LinkBuilder struct {
 	t            testing.TB
@@ -763,8 +698,7 @@ type LinkBuilder struct {
 	imageURL     string
 }
 
-// NewLinkBuilder creates a LinkBuilder.
-// [Ja] NewLinkBuilder は LinkBuilder を生成する。
+// NewLinkBuilderはLinkBuilderを生成する。
 func NewLinkBuilder(t testing.TB, tx *sql.Tx) *LinkBuilder {
 	t.Helper()
 	return &LinkBuilder{
@@ -777,36 +711,31 @@ func NewLinkBuilder(t testing.TB, tx *sql.Tx) *LinkBuilder {
 	}
 }
 
-// WithCanonicalURL sets the canonical URL.
-// [Ja] WithCanonicalURL は canonical URL を設定する。
+// WithCanonicalURLはcanonical URLを設定する。
 func (b *LinkBuilder) WithCanonicalURL(canonicalURL string) *LinkBuilder {
 	b.canonicalURL = canonicalURL
 	return b
 }
 
-// WithDomain sets the domain.
-// [Ja] WithDomain はドメインを設定する。
+// WithDomainはドメインを設定する。
 func (b *LinkBuilder) WithDomain(domain string) *LinkBuilder {
 	b.domain = domain
 	return b
 }
 
-// WithTitle sets the title.
-// [Ja] WithTitle はタイトルを設定する。
+// WithTitleはタイトルを設定する。
 func (b *LinkBuilder) WithTitle(title string) *LinkBuilder {
 	b.title = title
 	return b
 }
 
-// WithImageURL sets the image URL.
-// [Ja] WithImageURL は画像 URL を設定する。
+// WithImageURLは画像URLを設定する。
 func (b *LinkBuilder) WithImageURL(imageURL string) *LinkBuilder {
 	b.imageURL = imageURL
 	return b
 }
 
-// Build inserts the link into the DB and returns its ID.
-// [Ja] Build はリンクを DB に作成し、ID を返す。
+// BuildはリンクをDBに作成し、IDを返す。
 func (b *LinkBuilder) Build() model.LinkID {
 	b.t.Helper()
 
@@ -825,13 +754,9 @@ func (b *LinkBuilder) Build() model.LinkID {
 	return model.LinkID(id)
 }
 
-// ExportBuilder builds export test data. Build derives the state fields
-// (object_key / started_at / finished_at) from the status so the inserted row
-// always satisfies the exports_state_fields_check constraint.
-//
-// [Ja] ExportBuilder はエクスポートテストデータのビルダー。Build は status から
+// ExportBuilderはエクスポートテストデータのビルダー。Buildはstatusから
 // 状態カラム (object_key / started_at / finished_at) を導出し、挿入する行が常に
-// exports_state_fields_check 制約を満たすようにする。
+// exports_state_fields_check制約を満たすようにする。
 type ExportBuilder struct {
 	t            testing.TB
 	tx           *sql.Tx
@@ -843,9 +768,7 @@ type ExportBuilder struct {
 	createdAt    *time.Time
 }
 
-// NewExportBuilder creates an ExportBuilder. The status defaults to queued.
-//
-// [Ja] NewExportBuilder は ExportBuilder を生成する。status は queued を既定とする。
+// NewExportBuilderはExportBuilderを生成する。statusはqueuedを既定とする。
 func NewExportBuilder(t testing.TB, tx *sql.Tx) *ExportBuilder {
 	t.Helper()
 	return &ExportBuilder{
@@ -855,66 +778,47 @@ func NewExportBuilder(t testing.TB, tx *sql.Tx) *ExportBuilder {
 	}
 }
 
-// WithProfileID sets the profile ID (the export target).
-//
-// [Ja] WithProfileID はプロフィール ID (エクスポート対象) を設定する。
+// WithProfileIDはプロフィールID (エクスポート対象) を設定する。
 func (b *ExportBuilder) WithProfileID(profileID model.ProfileID) *ExportBuilder {
 	b.profileID = profileID
 	return b
 }
 
-// WithActorID sets the actor ID (the requester).
-//
-// [Ja] WithActorID はアクター ID (申請者) を設定する。
+// WithActorIDはアクターID (申請者) を設定する。
 func (b *ExportBuilder) WithActorID(actorID model.ActorID) *ExportBuilder {
 	b.actorID = actorID
 	return b
 }
 
-// WithStatus sets the export status.
-//
-// [Ja] WithStatus はエクスポートの status を設定する。
+// WithStatusはエクスポートのstatusを設定する。
 func (b *ExportBuilder) WithStatus(status model.ExportStatus) *ExportBuilder {
 	b.status = status
 	return b
 }
 
-// WithObjectKey sets the object key used for a succeeded export.
-//
-// [Ja] WithObjectKey は succeeded エクスポートの object key を設定する。
+// WithObjectKeyはsucceededエクスポートのobject keyを設定する。
 func (b *ExportBuilder) WithObjectKey(objectKey string) *ExportBuilder {
 	b.objectKey = objectKey
 	return b
 }
 
-// WithAttemptCount sets attempt_count, which counts how many times a Worker has
-// started the export. Recovery decides between retrying a stalled export and
-// giving up on it by this number, and reaching the limit through the Repository
-// would also stamp started_at with the current time, leaving the export too
-// recent to be recovered.
-//
-// [Ja] WithAttemptCount は attempt_count (Worker がそのエクスポートの処理を開始した
+// WithAttemptCountはattempt_count (Workerがそのエクスポートの処理を開始した
 // 回数) を設定する。回復処理は停滞したエクスポートを再試行するか諦めるかをこの回数で
-// 判断する。Repository 経由で上限まで増やすと started_at も現在時刻で打刻され、
+// 判断する。Repository経由で上限まで増やすとstarted_atも現在時刻で打刻され、
 // 回復対象になるほど古くないエクスポートになってしまう。
 func (b *ExportBuilder) WithAttemptCount(attemptCount int32) *ExportBuilder {
 	b.attemptCount = attemptCount
 	return b
 }
 
-// WithCreatedAt sets the created_at timestamp, letting tests order exports
-// deterministically instead of relying on generated IDs.
-//
-// [Ja] WithCreatedAt は created_at を設定し、生成 ID に頼らずテストが
+// WithCreatedAtはcreated_atを設定し、生成IDに頼らずテストが
 // エクスポートの順序を決定的に並べられるようにする。
 func (b *ExportBuilder) WithCreatedAt(createdAt time.Time) *ExportBuilder {
 	b.createdAt = &createdAt
 	return b
 }
 
-// Build inserts the export into the DB and returns its ID.
-//
-// [Ja] Build はエクスポートを DB に作成し、ID を返す。
+// BuildはエクスポートをDBに作成し、IDを返す。
 func (b *ExportBuilder) Build() model.ExportID {
 	b.t.Helper()
 
@@ -962,10 +866,7 @@ func (b *ExportBuilder) Build() model.ExportID {
 	return model.ExportID(id)
 }
 
-// ExportCompletionNotificationBuilder builds pending completion-notification
-// test data independently of an export row.
-//
-// [Ja] ExportCompletionNotificationBuilder は export 行から独立した送信待ち完了通知の
+// ExportCompletionNotificationBuilderはexport行から独立した送信待ち完了通知の
 // テストデータを作成する。
 type ExportCompletionNotificationBuilder struct {
 	t              testing.TB
@@ -977,11 +878,8 @@ type ExportCompletionNotificationBuilder struct {
 	createdAt      *time.Time
 }
 
-// NewExportCompletionNotificationBuilder creates an
-// ExportCompletionNotificationBuilder.
-//
-// [Ja] NewExportCompletionNotificationBuilder は
-// ExportCompletionNotificationBuilder を生成する。
+// NewExportCompletionNotificationBuilderは
+// ExportCompletionNotificationBuilderを生成する。
 func NewExportCompletionNotificationBuilder(t testing.TB, tx *sql.Tx) *ExportCompletionNotificationBuilder {
 	t.Helper()
 	return &ExportCompletionNotificationBuilder{
@@ -992,51 +890,37 @@ func NewExportCompletionNotificationBuilder(t testing.TB, tx *sql.Tx) *ExportCom
 	}
 }
 
-// WithExportID sets the export ID. The export row does not need to exist.
-//
-// [Ja] WithExportID は export ID を設定する。export 行が存在する必要はない。
+// WithExportIDはexport IDを設定する。export行が存在する必要はない。
 func (b *ExportCompletionNotificationBuilder) WithExportID(exportID model.ExportID) *ExportCompletionNotificationBuilder {
 	b.exportID = exportID
 	return b
 }
 
-// WithActorID sets the requester actor. Deleting it cancels the notification.
-//
-// [Ja] WithActorID は申請 actor を設定する。actor が削除されると通知も取り消される。
+// WithActorIDは申請actorを設定する。actorが削除されると通知も取り消される。
 func (b *ExportCompletionNotificationBuilder) WithActorID(actorID model.ActorID) *ExportCompletionNotificationBuilder {
 	b.actorID = actorID
 	return b
 }
 
-// WithRecipientEmail sets the snapshotted recipient email.
-//
-// [Ja] WithRecipientEmail は snapshot 済みの宛先メールアドレスを設定する。
+// WithRecipientEmailはsnapshot済みの宛先メールアドレスを設定する。
 func (b *ExportCompletionNotificationBuilder) WithRecipientEmail(recipientEmail string) *ExportCompletionNotificationBuilder {
 	b.recipientEmail = recipientEmail
 	return b
 }
 
-// WithLocale sets the snapshotted recipient locale.
-//
-// [Ja] WithLocale は snapshot 済みの宛先 locale を設定する。
+// WithLocaleはsnapshot済みの宛先localeを設定する。
 func (b *ExportCompletionNotificationBuilder) WithLocale(locale string) *ExportCompletionNotificationBuilder {
 	b.locale = locale
 	return b
 }
 
-// WithCreatedAt sets when the notification became pending.
-//
-// [Ja] WithCreatedAt は通知が pending になった時刻を設定する。
+// WithCreatedAtは通知がpendingになった時刻を設定する。
 func (b *ExportCompletionNotificationBuilder) WithCreatedAt(createdAt time.Time) *ExportCompletionNotificationBuilder {
 	b.createdAt = &createdAt
 	return b
 }
 
-// Build inserts the pending notification. The profile is read from the
-// requester the same way the succeeded transition snapshots it, so the pair the
-// foreign key checks can never be built inconsistently from a test.
-//
-// [Ja] Build は送信待ち通知を作成する。プロフィールは succeeded 遷移が snapshot する
+// Buildは送信待ち通知を作成する。プロフィールはsucceeded遷移がsnapshotする
 // のと同じく申請者から読むため、外部キーが検査する組をテストから不整合に作ることは
 // ない。
 func (b *ExportCompletionNotificationBuilder) Build() {
@@ -1064,12 +948,11 @@ func (b *ExportCompletionNotificationBuilder) Build() {
 		b.t.Fatalf("エクスポート完了通知の作成行数の取得に失敗: %v", err)
 	}
 	if inserted != 1 {
-		b.t.Fatalf("エクスポート完了通知を作成できない (actor_id: %s が存在しない)", b.actorID.String())
+		b.t.Fatalf("エクスポート完了通知を作成できない (actor_id: %sが存在しない)", b.actorID.String())
 	}
 }
 
-// PostLinkBuilder builds post-link association test data.
-// [Ja] PostLinkBuilder は投稿とリンクの関連付けテストデータのビルダー。
+// PostLinkBuilderは投稿とリンクの関連付けテストデータのビルダー。
 type PostLinkBuilder struct {
 	t      testing.TB
 	tx     *sql.Tx
@@ -1077,8 +960,7 @@ type PostLinkBuilder struct {
 	linkID model.LinkID
 }
 
-// NewPostLinkBuilder creates a PostLinkBuilder.
-// [Ja] NewPostLinkBuilder は PostLinkBuilder を生成する。
+// NewPostLinkBuilderはPostLinkBuilderを生成する。
 func NewPostLinkBuilder(t testing.TB, tx *sql.Tx) *PostLinkBuilder {
 	t.Helper()
 	return &PostLinkBuilder{
@@ -1087,22 +969,19 @@ func NewPostLinkBuilder(t testing.TB, tx *sql.Tx) *PostLinkBuilder {
 	}
 }
 
-// WithPostID sets the post ID.
-// [Ja] WithPostID は投稿 ID を設定する。
+// WithPostIDは投稿IDを設定する。
 func (b *PostLinkBuilder) WithPostID(postID model.PostID) *PostLinkBuilder {
 	b.postID = postID
 	return b
 }
 
-// WithLinkID sets the link ID.
-// [Ja] WithLinkID はリンク ID を設定する。
+// WithLinkIDはリンクIDを設定する。
 func (b *PostLinkBuilder) WithLinkID(linkID model.LinkID) *PostLinkBuilder {
 	b.linkID = linkID
 	return b
 }
 
-// Build inserts the post-link association into the DB and returns its ID.
-// [Ja] Build は投稿とリンクの関連付けを DB に作成し、ID を返す。
+// Buildは投稿とリンクの関連付けをDBに作成し、IDを返す。
 func (b *PostLinkBuilder) Build() model.PostLinkID {
 	b.t.Helper()
 

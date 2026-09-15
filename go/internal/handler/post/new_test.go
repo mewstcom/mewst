@@ -19,13 +19,9 @@ func TestNew(t *testing.T) {
 
 	h := newCreatePostHandler(t)
 
-	// Set the CSRF token, locale, and current profile on the context. /new sits
-	// under RequireAuth, so in production the CSRF token and profile are supplied via
-	// the context; the profile drives the navbar's profile link (/@{atname}).
-	//
-	// [Ja] CSRF トークン・ロケール・現在プロフィールをコンテキストに設定する。/new は
-	// RequireAuth 配下のため、本番では CSRF トークンとプロフィールは context 経由で渡る。
-	// プロフィールは navbar のプロフィールリンク (/@{atname}) を駆動する。
+	// CSRFトークン・ロケール・現在プロフィールをコンテキストに設定する。/newは
+	// RequireAuth配下のため、本番ではCSRFトークンとプロフィールはcontext経由で渡る。
+	// プロフィールはnavbarのプロフィールリンク (/@{atname}) を駆動する。
 	authorID := model.ProfileID(uuid.MustParse("11111111-1111-1111-1111-111111111111"))
 	ctx := i18n.SetLocale(context.Background(), "ja")
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
@@ -38,106 +34,84 @@ func TestNew(t *testing.T) {
 	h.New(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	if contentType := rr.Header().Get("Content-Type"); !strings.Contains(contentType, "text/html") {
-		t.Errorf("Content-Type が不正: got %v, want text/html", contentType)
+		t.Errorf("Content-Typeが不正: 実測値 = %v、期待値 = text/html", contentType)
 	}
 
 	body := rr.Body.String()
 	checks := []string{
-		"csrf_token",           // CSRF トークン
+		"csrf_token",           // CSRFトークン
 		"disableSubmitButtons", // 二重送信防止 (他フォームと共通)
-		// Body draft autosave PE hook (web/post_draft.ts), scoped to the author's
-		// profile id so a shared device never leaks one user's draft to the next.
-		// [Ja] 本文の下書き自動保存の PE フック (web/post_draft.ts)。投稿者のプロフィール
-		// ID にスコープし、共有端末で前ユーザーの下書きが次のユーザーに漏れないようにする。
+		// 本文の下書き自動保存のPEフック (web/post_draft.ts)。投稿者のプロフィール
+		// IDにスコープし、共有端末で前ユーザーの下書きが次のユーザーに漏れないようにする。
 		`data-draft-key="post_draft:11111111-1111-1111-1111-111111111111"`,
-		`name="content"`,       // 本文 textarea
-		`action="/posts"`,      // フォーム送信先 (Rails の post_list_path)
+		`name="content"`,       // 本文textarea
+		`action="/posts"`,      // フォーム送信先 (Railsのpost_list_path)
 		"いま何してる？",              // 本文ラベル (post_new_content_label)
 		"投稿する",                 // 送信ボタン (post_new_submit)
-		`<h1 class="sr-only">`, // sr-only h1 that establishes the heading hierarchy. [Ja] 見出し階層を確立する sr-only の h1 (heading-hierarchy)
-		"新規投稿",                 // h1 text (post_new_heading). [Ja] h1 の文言 (post_new_heading)
-		`href="#main"`,         // layout skip link (WCAG 2.4.1). [Ja] レイアウトのスキップリンク (WCAG 2.4.1)
-		"メインコンテンツへスキップ",        // skip link label. [Ja] スキップリンクのラベル
-		`<main id="main"`,      // main landmark (semantic-html). [Ja] main ランドマーク (semantic-html)
-		"M227.32,28.68",        // submit button leading paper-plane-tilt icon (path unique to that icon). [Ja] 送信ボタン先頭の paper-plane-tilt アイコン (このアイコン固有の path 片)
-		// Back affordance rendered above the form (BackLink component): a /home
-		// fallback link upgraded to history.back() by the back-link script when the
-		// referrer is same-origin (data-back-link is the PE hook). It is an <a> styled
-		// as a subdued muted link, not a <button>, so it navigates via href without JS
-		// and cannot accidentally submit the form.
-		//
-		// [Ja] フォーム上部に描画される戻る導線 (BackLink コンポーネント):
-		// referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする
-		// /home フォールバックリンク (data-back-link が PE フック)。<button> ではなく muted な
-		// リンクとしてスタイルした <a> で、JS 無しでも href で遷移し、フォームを誤送信しない。
+		`<h1 class="sr-only">`, // 見出し階層を確立するsr-onlyのh1 (heading-hierarchy)
+		"新規投稿",                 // h1の文言 (post_new_heading)
+		`href="#main"`,         // レイアウトのスキップリンク (WCAG 2.4.1)
+		"メインコンテンツへスキップ",        // スキップリンクのラベル
+		`<main id="main"`,      // mainランドマーク (semantic-html)
+		"M227.32,28.68",        // 送信ボタン先頭のpaper-plane-tiltアイコン (このアイコン固有のpath片)
+		// フォーム上部に描画される戻る導線 (BackLinkコンポーネント):
+		// referrerが同一オリジンのときback-linkスクリプトがhistory.back() に格上げする
+		// /homeフォールバックリンク (data-back-linkがPEフック)。<button> ではなくmutedな
+		// リンクとしてスタイルした <a> で、JS無しでもhrefで遷移し、フォームを誤送信しない。
 		"data-back-link",
 		`href="/home"`,
 		"link-bare-muted-foreground",
 		"戻る",
-		// Form enhancements: wiring for the character counter, autosize, and the
-		// link card integration.
-		// [Ja] フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
-		`id="link-form"`,                       // link card fragment htmx target. [Ja] リンクカードフラグメントの htmx ターゲット
-		`data-link-card-path="/links/new"`,     // URL detection fetch path. [Ja] URL 検出モジュールの取得先パス
-		"data-autosize",                        // autosize module marker. [Ja] autosize モジュールの対象マーカー
-		`data-character-counter-for="content"`, // character counter target textarea. [Ja] 文字数カウンターの対象 textarea
-		`data-character-counter-max="160"`,     // content length limit (model.MaximumPostContentLength). [Ja] 文字数上限
-		`data-focus-textarea="content"`,        // lower-area focus proxy: clicking it focuses #content. [Ja] 下部領域のフォーカスプロキシ: クリックで #content にフォーカス
-		"cursor-text",                          // lower area shows the textarea's text cursor. [Ja] 下部領域に textarea と同じテキストカーソルを表示
-		"data-focus-proxy-ignore",              // #link-form opts out so the link card's clicks/cursor survive. [Ja] #link-form は除外しリンクカードのクリック・カーソルを維持
+		// フォーム拡張: 文字数カウンター・autosize・リンクカード連携の配線
+		`id="link-form"`,                       // リンクカードフラグメントのhtmxターゲット
+		`data-link-card-path="/links/new"`,     // URL検出モジュールの取得先パス
+		"data-autosize",                        // autosizeモジュールの対象マーカー
+		`data-character-counter-for="content"`, // 文字数カウンターの対象textarea
+		`data-character-counter-max="160"`,     // 文字数上限 (model.MaximumPostContentLength)
+		`data-focus-textarea="content"`,        // 下部領域のフォーカスプロキシ: クリックで #contentにフォーカス
+		"cursor-text",                          // 下部領域にtextareaと同じテキストカーソルを表示
+		"data-focus-proxy-ignore",              // #link-formは除外しリンクカードのクリック・カーソルを維持
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
-			t.Errorf("レスポンスに %q が含まれていません", want)
+			t.Errorf("レスポンスに%qが含まれていません", want)
 		}
 	}
 
-	// The sole back link must precede the post form, keeping it above and outside
-	// the action row. The action row must contain only the submit button and use
-	// justify-end to place it at the right edge.
-	//
-	// [Ja] 唯一の戻るリンクは投稿フォームより前にあり、フォーム上部かつ操作行の外に
-	// 置かれる必要がある。操作行は投稿ボタンだけを含み、justify-end で右端へ置く。
+	// 唯一の戻るリンクは投稿フォームより前にあり、フォーム上部かつ操作行の外に
+	// 置かれる必要がある。操作行は投稿ボタンだけを含み、justify-endで右端へ置く。
 	backLinkIdx := strings.Index(body, "data-back-link")
 	formIdx := strings.Index(body, `<form action="/posts"`)
 	if backLinkIdx < 0 || formIdx < 0 || backLinkIdx > formIdx {
 		t.Errorf("戻るリンクが投稿フォームより前にありません: backLinkIdx=%d, formIdx=%d", backLinkIdx, formIdx)
 	}
 	if got := strings.Count(body, "data-back-link"); got != 1 {
-		t.Errorf("戻るリンク数 = %d, want 1", got)
+		t.Errorf("戻るリンク数 = %d、期待値 = 1", got)
 	}
 
 	const actionRowStart = `<div class="flex items-center justify-end"><button class="btn`
 	if !strings.Contains(body, actionRowStart) {
-		t.Errorf("投稿ボタンだけを右寄せする操作行 %q がありません", actionRowStart)
+		t.Errorf("投稿ボタンだけを右寄せする操作行%qがありません", actionRowStart)
 	}
 	const unexpectedActionRowStart = `<div class="flex items-center justify-between"><button class="btn`
 	if strings.Contains(body, unexpectedActionRowStart) {
-		t.Errorf("投稿ボタンを justify-between で配置する操作行 %q が含まれています", unexpectedActionRowStart)
+		t.Errorf("投稿ボタンをjustify-betweenで配置する操作行%qが含まれています", unexpectedActionRowStart)
 	}
 
-	// A fresh form must not carry an empty canonical_url hidden field; it is
-	// rendered only when a link card is echoed back.
-	// [Ja] 初回表示のフォームには canonical_url の hidden フィールドを含めない
+	// 初回表示のフォームにはcanonical_urlのhiddenフィールドを含めない
 	// (リンクカードのエコーバック時のみ描画される)。
 	if strings.Contains(body, `name="canonical_url"`) {
-		t.Error("初回表示のフォームに canonical_url の hidden input が含まれています")
+		t.Error("初回表示のフォームにcanonical_urlのhidden inputが含まれています")
 	}
 
-	// /new renders on the authenticated navbar layout (layouts.Centered), so the
-	// top navbar (desktop) and bottom navbar (mobile) each render the five-item menu.
-	// Assert a navbar-only link (search) and the profile link built from the injected
-	// profile's atname to confirm both navbars render. This verifies that the handler
-	// wires /new to the navbar-bearing centered layout.
-	//
-	// [Ja] /new は認証後の navbar 付きレイアウト (layouts.Centered) で描画し、トップ navbar
-	// (PC) とボトム navbar (モバイル) がそれぞれ 5 項目メニューを描画する。navbar 専用リンク
-	// (検索) と、注入したプロフィールの atname から生成されるプロフィールリンクを検証し、
-	// ハンドラーが /new を navbar 付き中央寄せレイアウトへ配線していることを確認する。
+	// /newは認証後のnavbar付きレイアウト (layouts.Centered) で描画し、トップnavbar
+	// (PC) とボトムnavbar (モバイル) がそれぞれ5項目メニューを描画する。navbar専用リンク
+	// (検索) と、注入したプロフィールのatnameから生成されるプロフィールリンクを検証し、
+	// ハンドラーが /newをnavbar付き中央寄せレイアウトへ配線していることを確認する。
 	navbarChecks := []string{
 		`href="/search"`,
 		`href="/@alice"`,
@@ -146,17 +120,14 @@ func TestNew(t *testing.T) {
 	}
 	for _, want := range navbarChecks {
 		if !strings.Contains(body, want) {
-			t.Errorf("navbar を表示する /new に %q が含まれていません", want)
+			t.Errorf("navbarを表示する /newに%qが含まれていません", want)
 		}
 	}
 
-	// The new item is the active one on /new. Both navbars render the menu, so the
-	// active filled-icon fill override appears exactly twice (once per menu).
-	//
-	// [Ja] /new では new 項目がアクティブ。両 navbar がメニューを描画するため、アクティブの
-	// 塗りつぶしアイコンの fill 上書きはちょうど 2 回 (メニューごとに 1 回) 現れる。
+	// /newではnew項目がアクティブ。両navbarがメニューを描画するため、アクティブの
+	// 塗りつぶしアイコンのfill上書きはちょうど2回 (メニューごとに1回) 現れる。
 	if got := strings.Count(body, "[&_.content]:fill-foreground"); got != 2 {
-		t.Errorf("アクティブ表示の fill クラス数 = %d, want 2 (new がトップ / ボトム navbar でアクティブ)", got)
+		t.Errorf("アクティブ表示のfillクラス数 = %d、期待値 = 2 (newがトップ / ボトムnavbarでアクティブ)", got)
 	}
 }
 
@@ -175,20 +146,15 @@ func TestNew_WithoutProfile(t *testing.T) {
 	h.New(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
-	// Without a profile there is no per-user id to scope the draft key to, so the
-	// autosave PE hook must be omitted entirely: web/post_draft.ts only picks up
-	// textarea[data-draft-key], and leaving the attribute out is what keeps a
-	// shared device from storing a draft under a key the next visitor also reads.
-	//
-	// [Ja] プロフィールが無いときは下書きキーをスコープするユーザー別 ID が無いため、
-	// 自動保存の PE フック自体を描画しない。web/post_draft.ts は
+	// プロフィールが無いときは下書きキーをスコープするユーザー別IDが無いため、
+	// 自動保存のPEフック自体を描画しない。web/post_draft.tsは
 	// textarea[data-draft-key] しか拾わないため、属性を省くことが「共有端末で次の
 	// 訪問者も読めるキーに下書きを保存しない」ことの担保になる。
 	if body := rr.Body.String(); strings.Contains(body, "data-draft-key") {
-		t.Error("プロフィール不在時のレスポンスに data-draft-key が含まれています")
+		t.Error("プロフィール不在時のレスポンスにdata-draft-keyが含まれています")
 	}
 }
 
@@ -197,12 +163,7 @@ func TestNew_ContentPrefill(t *testing.T) {
 
 	h := newCreatePostHandler(t)
 
-	// The GET form pre-fills the content textarea from ?content= and intentionally
-	// defers validation until submit. The template renders the value as
-	// `>{ data.Content }</textarea>`, so each case asserts the substring that must sit
-	// just before the closing tag.
-	//
-	// [Ja] GET フォームは ?content= から本文 textarea を事前入力し、送信時まで意図的に
+	// GETフォームは ?content= から本文textareaを事前入力し、送信時まで意図的に
 	// 検証を遅延する。テンプレートは値を `>{ data.Content }</textarea>` として描画するため、
 	// 各ケースは閉じタグ直前に来るはずの部分文字列を検証する。
 	overLimit := strings.Repeat("a", 161)
@@ -212,9 +173,9 @@ func TestNew_ContentPrefill(t *testing.T) {
 		query    string
 		wantBody string
 	}{
-		{name: "prefills the textarea from the query parameter", query: "?content=hello", wantBody: "hello</textarea>"},
-		{name: "leaves the textarea empty without the parameter", query: "", wantBody: "></textarea>"},
-		{name: "shows an over-limit prefill as-is (validation deferred to submit)", query: "?content=" + overLimit, wantBody: overLimit + "</textarea>"},
+		{name: "クエリパラメータからtextareaを事前入力する", query: "?content=hello", wantBody: "hello</textarea>"},
+		{name: "パラメータが無いときはtextareaを空のままにする", query: "", wantBody: "></textarea>"},
+		{name: "上限を超える事前入力もそのまま表示する (検証は送信時に行う)", query: "?content=" + overLimit, wantBody: overLimit + "</textarea>"},
 	}
 
 	for _, tt := range tests {
@@ -231,10 +192,10 @@ func TestNew_ContentPrefill(t *testing.T) {
 			h.New(rr, req)
 
 			if rr.Code != http.StatusOK {
-				t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+				t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 			}
 			if body := rr.Body.String(); !strings.Contains(body, tt.wantBody) {
-				t.Errorf("textarea に %q が含まれていません", tt.wantBody)
+				t.Errorf("textareaに%qが含まれていません", tt.wantBody)
 			}
 		})
 	}
@@ -251,12 +212,10 @@ func TestNew_Locales(t *testing.T) {
 		label  string
 		submit string
 	}{
-		{name: "Japanese", locale: "ja", label: "いま何してる？", submit: "投稿する"},
-		// The apostrophe in the English label "What's happening?" is escaped by
-		// templ, so assert a stable substring instead of the escaped form.
-		// [Ja] 英語ラベル "What's happening?" のアポストロフィは templ がエスケープ
+		{name: "日本語", locale: "ja", label: "いま何してる？", submit: "投稿する"},
+		// 英語ラベル "What's happening?" のアポストロフィはtemplがエスケープ
 		// するため、エスケープ表現に依存せず部分文字列で検証する。
-		{name: "English", locale: "en", label: "happening?", submit: "Post"},
+		{name: "英語", locale: "en", label: "happening?", submit: "Post"},
 	}
 
 	for _, tt := range tests {
@@ -274,10 +233,10 @@ func TestNew_Locales(t *testing.T) {
 
 			body := rr.Body.String()
 			if !strings.Contains(body, tt.label) {
-				t.Errorf("本文ラベル %q がレスポンスに含まれていません", tt.label)
+				t.Errorf("本文ラベル%qがレスポンスに含まれていません", tt.label)
 			}
 			if !strings.Contains(body, tt.submit) {
-				t.Errorf("送信ボタン %q がレスポンスに含まれていません", tt.submit)
+				t.Errorf("送信ボタン%qがレスポンスに含まれていません", tt.submit)
 			}
 		})
 	}

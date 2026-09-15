@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// New は確認コード入力フォームを表示する (GET /email_confirmation)
+// Newは確認コード入力フォームを表示する (GET /email_confirmation)
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

@@ -11,11 +11,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// BasicFooter renders the shared footer for authenticated pages. It contains a
-// wordmark link to the site root and four navigation links.
-//
-// [Ja] BasicFooter は認証後ページ共通のフッターを描画する。サイトルートへの
-// ワードマークリンクと 4 つのナビゲーションリンクで構成する。
+// BasicFooterは認証後ページ共通のフッターを描画する。サイトルートへの
+// ワードマークリンクと4つのナビゲーションリンクで構成する。
 func BasicFooter() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -91,10 +88,7 @@ func BasicFooter() templ.Component {
 	})
 }
 
-// footerLink renders a footer link that opens in a new tab. A localized,
-// visually hidden hint announces this behavior to assistive technology.
-//
-// [Ja] footerLink は新規タブで開くフッターリンクを描画する。この動作を
+// footerLinkは新規タブで開くフッターリンクを描画する。この動作を
 // 支援技術へ伝える、ローカライズ済みで視覚的に隠したヒントを付ける。
 func footerLink(href string, label string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -124,7 +118,7 @@ func footerLink(href string, label string) templ.Component {
 		var templ_7745c5c3_Var4 templ.SafeURL
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 36, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 30, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -137,7 +131,7 @@ func footerLink(href string, label string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 41, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 35, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -150,7 +144,7 @@ func footerLink(href string, label string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "footer_opens_in_new_tab"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 42, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/footer.templ`, Line: 36, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

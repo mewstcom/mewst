@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Edit は新しいパスワード入力フォームを表示する (GET /password/edit)
+// Editは新しいパスワード入力フォームを表示する (GET /password/edit)
 func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -45,7 +45,7 @@ func (h *Handler) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// アカウント作成 / パスワード更新 / メール変更フローを取り違えてフォームに到達しないための防御。
-	// パスワード更新は password_reset イベントのみ受け付ける。
+	// パスワード更新はpassword_resetイベントのみ受け付ける。
 	if ecResult.EmailConfirmation.Event != model.EmailConfirmationEventPasswordReset {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return

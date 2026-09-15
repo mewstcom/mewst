@@ -26,15 +26,10 @@ type CreateHomeTimelinePostParams struct {
 	PublishedAt time.Time `db:"published_at"`
 }
 
-// Idempotently adds a post to a profile's home timeline. On conflict with the
-// unique (profile_id, post_id) index it leaves the existing row untouched
-// (the no-op DO UPDATE preserves the original published_at) so RETURNING still
-// yields the row, mirroring Rails' home_timeline.add_post! (first_or_create!).
-//
-// [Ja] 投稿をプロフィールのホームタイムラインに冪等に追加する。unique な
+// 投稿をプロフィールのホームタイムラインに冪等に追加する。uniqueな
 // (profile_id, post_id) インデックスで衝突した場合は既存行をそのまま残し
-// (no-op の DO UPDATE で元の published_at を保持)、RETURNING で行を返せるように
-// する。Rails の home_timeline.add_post! (first_or_create!) を踏襲している。
+// (no-opのDO UPDATEで元のpublished_atを保持)、RETURNINGで行を返せるように
+// する。Railsのhome_timeline.add_post! (first_or_create!) を踏襲している。
 func (q *Queries) CreateHomeTimelinePost(ctx context.Context, arg CreateHomeTimelinePostParams) (HomeTimelinePost, error) {
 	row := q.db.QueryRowContext(ctx, createHomeTimelinePost, arg.ProfileID, arg.PostID, arg.PublishedAt)
 	var i HomeTimelinePost

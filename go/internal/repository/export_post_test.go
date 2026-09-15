@@ -15,11 +15,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-// mustLoadLocation resolves an IANA time zone for the export listings, which
-// take a location rather than a raw name.
-//
-// [Ja] mustLoadLocation はエクスポート用の一覧が名前ではなく location を受け取る
-// ため、IANA タイムゾーンを解決する。
+// mustLoadLocationはエクスポート用の一覧が名前ではなくlocationを受け取る
+// ため、IANAタイムゾーンを解決する。
 func mustLoadLocation(t testing.TB, name string) *time.Location {
 	t.Helper()
 
@@ -30,11 +27,7 @@ func mustLoadLocation(t testing.TB, name string) *time.Location {
 	return location
 }
 
-// newExportPostFixture creates an export target and returns a builder factory
-// that inserts posts for its profile, so each test only states the published
-// time it cares about.
-//
-// [Ja] newExportPostFixture はエクスポート対象を作成し、そのプロフィールの投稿を
+// newExportPostFixtureはエクスポート対象を作成し、そのプロフィールの投稿を
 // 挿入するビルダーの生成関数を返す。各テストは関心のある公開日時だけを書けばよい。
 func newExportPostFixture(t *testing.T, tx *sql.Tx) (model.ProfileID, model.ActorID, func(publishedAt time.Time) *testutil.PostBuilder) {
 	t.Helper()
@@ -51,11 +44,8 @@ func newExportPostFixture(t *testing.T, tx *sql.Tx) (model.ProfileID, model.Acto
 	}
 }
 
-// createExportSnapshot creates an export whose export_posts rows were
-// materialized by ExportRepository.Create.
-//
-// [Ja] createExportSnapshot は export_posts を ExportRepository.Create が
-// 固定化した export を作成する。
+// createExportSnapshotはexport_postsをExportRepository.Createが
+// 固定化したexportを作成する。
 func createExportSnapshot(t testing.TB, tx *sql.Tx, profileID model.ProfileID, actorID model.ActorID) *model.Export {
 	t.Helper()
 
@@ -64,20 +54,15 @@ func createExportSnapshot(t testing.TB, tx *sql.Tx, profileID model.ProfileID, a
 		repository.CreateExportInput{ProfileID: profileID, ActorID: actorID},
 	)
 	if err != nil {
-		t.Fatalf("export snapshot の作成に失敗: %v", err)
+		t.Fatalf("export snapshotの作成に失敗: %v", err)
 	}
 	return export
 }
 
-// failExportSnapshot walks the export to failed through started, so the
-// partial unique index on active statuses lets the profile create another one.
-// Reaching a terminal status also discards the export's snapshot, so a test
-// that needs to read it has to do so before calling this.
-//
-// [Ja] failExportSnapshot は export を started 経由で failed へ進める。active な
-// status に対する部分ユニークインデックスが、同じプロフィールで次の export を
-// 作れるようにするため。終端状態への到達はその export の snapshot も破棄するため、
-// snapshot を読むテストは本関数を呼ぶ前に読む必要がある。
+// failExportSnapshotはexportをstarted経由でfailedへ進める。activeな
+// statusに対する部分ユニークインデックスが、同じプロフィールで次のexportを
+// 作れるようにするため。終端状態への到達はそのexportのsnapshotも破棄するため、
+// snapshotを読むテストは本関数を呼ぶ前に読む必要がある。
 func failExportSnapshot(t testing.TB, tx *sql.Tx, export *model.Export) {
 	t.Helper()
 
@@ -86,24 +71,21 @@ func failExportSnapshot(t testing.TB, tx *sql.Tx, export *model.Export) {
 
 	started, err := repo.MarkStarted(ctx, export.ID, export.UpdatedAt)
 	if err != nil {
-		t.Fatalf("started への遷移に失敗: %v", err)
+		t.Fatalf("startedへの遷移に失敗: %v", err)
 	}
 	if started == nil {
-		// Fatal ends the test, but the helper takes testing.TB, so the
-		// analyzer cannot tell that and the explicit return is what tells it.
-		//
-		// [Ja] Fatal はテストを終了させるが、本ヘルパーは testing.TB を受け取るため
-		// 解析器がそれを判断できない。明示的な return がそれを伝える。
-		t.Fatal("started への遷移でガードが一致しなかった")
+		// Fatalはテストを終了させるが、本ヘルパーはtesting.TBを受け取るため
+		// 解析器がそれを判断できない。明示的なreturnがそれを伝える。
+		t.Fatal("startedへの遷移でガードが一致しなかった")
 		return
 	}
 
 	updated, err := repo.MarkFailed(ctx, started.ID, started.UpdatedAt)
 	if err != nil {
-		t.Fatalf("failed への遷移に失敗: %v", err)
+		t.Fatalf("failedへの遷移に失敗: %v", err)
 	}
 	if !updated {
-		t.Fatal("failed への遷移でガードが一致しなかった")
+		t.Fatal("failedへの遷移でガードが一致しなかった")
 	}
 }
 
@@ -117,11 +99,8 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 	t.Run("月の境界は対象タイムゾーンで決まる", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		location := mustLoadLocation(t, "Asia/Tokyo")
-		// 2026-06-30T14:59:59Z is 23:59:59 on June 30 in JST, while
-		// 2026-06-30T15:00:00Z is 00:00:00 on July 1.
-		//
-		// [Ja] 2026-06-30T14:59:59Z は JST では 6 月末日の 23:59:59、
-		// 2026-06-30T15:00:00Z は JST では 7 月 1 日の 00:00:00。
+		// 2026-06-30T14:59:59ZはJSTでは6月末日の23:59:59、
+		// 2026-06-30T15:00:00ZはJSTでは7月1日の00:00:00。
 		newPost(time.Date(2026, 6, 30, 14, 59, 59, 0, time.UTC)).Build()
 		newPost(time.Date(2026, 6, 30, 15, 0, 0, 0, time.UTC)).Build()
 		export := createExportSnapshot(t, tx, profileID, actorID)
@@ -131,7 +110,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: location,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 
 		want := []repository.PostMonth{
@@ -156,10 +135,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 	t.Run("夏時間をまたぐ月は境界ごとのオフセットで範囲が決まる", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		location := mustLoadLocation(t, "America/New_York")
-		// US daylight saving time starts on March 8 in 2026. March starts in
-		// EST (-05:00) and ends in EDT (-04:00).
-		//
-		// [Ja] 2026 年の米国夏時間は 3 月 8 日開始。3 月は EST (-05:00) で始まり、
+		// 2026年の米国夏時間は3月8日開始。3月はEST (-05:00) で始まり、
 		// EDT (-04:00) で終わるため、月の開始と終了でオフセットが異なる。
 		newPost(time.Date(2026, 3, 1, 5, 0, 0, 0, time.UTC)).Build()
 		newPost(time.Date(2026, 4, 1, 3, 59, 59, 0, time.UTC)).Build()
@@ -171,7 +147,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: location,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 
 		want := []repository.PostMonth{
@@ -193,7 +169,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 		assertPostMonths(t, months, want)
 	})
 
-	t.Run("月初の DST フォールドでも集計した投稿をすべて返す", func(t *testing.T) {
+	t.Run("月初のDSTフォールドでも集計した投稿をすべて返す", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		location := mustLoadLocation(t, "America/Havana")
 		firstPublishedAt := time.Date(2020, 11, 1, 4, 30, 0, 0, time.UTC)
@@ -209,7 +185,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: location,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 		wantMonths := []repository.PostMonth{
 			{
@@ -228,15 +204,15 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			PageSize: 10,
 		})
 		if err != nil {
-			t.Fatalf("ListByExportIDInRange() error = %v", err)
+			t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 		}
 		if next != nil {
-			t.Errorf("next = %+v, want nil", next)
+			t.Errorf("next = %+v、期待値 = nil", next)
 		}
 		assertPostIDs(t, posts, wantIDs)
 	})
 
-	t.Run("discard 済みの投稿は件数にも月にも含まれない", func(t *testing.T) {
+	t.Run("discard済みの投稿は件数にも月にも含まれない", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		newPost(time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC)).Build()
 		newPost(time.Date(2026, 7, 2, 0, 0, 0, 0, time.UTC)).
@@ -252,7 +228,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: time.UTC,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 
 		want := []repository.PostMonth{
@@ -279,11 +255,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Build()
 		export := createExportSnapshot(t, tx, profileID, actorID)
 
-		// Rails can hard-delete a post after discard. A post created after the
-		// export request is also inside the month scan range. Neither change may
-		// alter the materialized request-time set.
-		//
-		// [Ja] Rails は discard 後に投稿を物理削除し得る。export 申請後に作る投稿も
+		// Railsはdiscard後に投稿を物理削除し得る。export申請後に作る投稿も
 		// 月の走査範囲内に置く。どちらの変更も固定済みの申請時点集合を変えてはならない。
 		if _, err := tx.Exec("DELETE FROM posts WHERE id = $1", uuid.UUID(keptID)); err != nil {
 			t.Fatalf("元投稿の物理削除に失敗: %v", err)
@@ -296,13 +268,13 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: time.UTC,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 		if len(months) != 1 {
-			t.Fatalf("len(months) = %d, want 1", len(months))
+			t.Fatalf("len(months) = %d、期待値 = 1", len(months))
 		}
 		if months[0].PostCount != 2 {
-			t.Fatalf("months[0].PostCount = %d, want 2", months[0].PostCount)
+			t.Fatalf("months[0].PostCount = %d、期待値 = 2", months[0].PostCount)
 		}
 
 		posts, _, err := repo.ListByExportIDInRange(ctx, repository.ListExportPostsByExportIDInRangeInput{
@@ -311,15 +283,15 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			PageSize: 10,
 		})
 		if err != nil {
-			t.Fatalf("ListByExportIDInRange() error = %v", err)
+			t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 		}
 		assertPostIDs(t, posts, []model.PostID{keptID, otherKeptID})
 		if posts[0].Content != "申請時点の本文" {
-			t.Errorf("posts[0].Content = %q, want %q", posts[0].Content, "申請時点の本文")
+			t.Errorf("posts[0].Content = %q、期待値 = %q", posts[0].Content, "申請時点の本文")
 		}
 	})
 
-	t.Run("同じプロフィールの export はそれぞれ申請時点の snapshot を返す", func(t *testing.T) {
+	t.Run("同じプロフィールのexportはそれぞれ申請時点のsnapshotを返す", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 
 		assertSnapshot := func(name string, exportID model.ExportID, wantIDs []model.PostID) {
@@ -330,13 +302,13 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 				Location: time.UTC,
 			})
 			if err != nil {
-				t.Fatalf("%s: ListMonthsByExportID() error = %v", name, err)
+				t.Fatalf("%s: ListMonthsByExportID()のエラー = %v", name, err)
 			}
 			if len(months) != 1 {
-				t.Fatalf("%s: len(months) = %d, want 1", name, len(months))
+				t.Fatalf("%s: len(months) = %d、期待値 = 1", name, len(months))
 			}
 			if months[0].PostCount != int64(len(wantIDs)) {
-				t.Errorf("%s: months[0].PostCount = %d, want %d", name, months[0].PostCount, len(wantIDs))
+				t.Errorf("%s: months[0].PostCount = %d、期待値 = %d", name, months[0].PostCount, len(wantIDs))
 			}
 
 			posts, _, err := repo.ListByExportIDInRange(ctx, repository.ListExportPostsByExportIDInRangeInput{
@@ -345,7 +317,7 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 				PageSize: 10,
 			})
 			if err != nil {
-				t.Fatalf("%s: ListByExportIDInRange() error = %v", name, err)
+				t.Fatalf("%s: ListByExportIDInRange()のエラー = %v", name, err)
 			}
 			assertPostIDs(t, posts, wantIDs)
 		}
@@ -353,22 +325,14 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 		firstID := newPost(time.Date(2026, 7, 1, 1, 0, 0, 0, time.UTC)).Build()
 		first := createExportSnapshot(t, tx, profileID, actorID)
 
-		// The post added after the first request must stay out of the first
-		// snapshot and appear in the second one. The first snapshot is read
-		// while its export is still active, because reaching a terminal status
-		// discards it.
-		//
-		// [Ja] 1 回目の申請より後に追加した投稿は、1 つ目の snapshot には入らず
-		// 2 つ目に現れる必要がある。1 つ目の snapshot は export が active なうちに
+		// 1回目の申請より後に追加した投稿は、1つ目のsnapshotには入らず
+		// 2つ目に現れる必要がある。1つ目のsnapshotはexportがactiveなうちに
 		// 読む。終端状態への到達で破棄されるため。
 		secondID := newPost(time.Date(2026, 7, 1, 2, 0, 0, 0, time.UTC)).Build()
 		assertSnapshot("1 つ目の export", first.ID, []model.PostID{firstID})
 
-		// A profile can only hold one active export, so the first one has to
-		// reach a terminal status before the second request.
-		//
-		// [Ja] プロフィールが同時に持てる active な export は 1 件なので、2 回目の
-		// 申請前に 1 件目を終端状態にする。
+		// プロフィールが同時に持てるactiveなexportは1件なので、2回目の
+		// 申請前に1件目を終端状態にする。
 		failExportSnapshot(t, tx, first)
 		second := createExportSnapshot(t, tx, profileID, actorID)
 		assertSnapshot("2 つ目の export", second.ID, []model.PostID{firstID, secondID})
@@ -383,43 +347,39 @@ func TestExportPostRepository_ListMonthsByExportID(t *testing.T) {
 			Location: time.UTC,
 		})
 		if err != nil {
-			t.Fatalf("ListMonthsByExportID() error = %v", err)
+			t.Fatalf("ListMonthsByExportID()のエラー = %v", err)
 		}
 		if len(months) != 0 {
-			t.Errorf("len(months) = %d, want 0", len(months))
+			t.Errorf("len(months) = %d、期待値 = 0", len(months))
 		}
 	})
 }
 
-// assertPostMonths compares the listing against the expected months in order.
-// Locations are compared by name because the listing copies the caller's
-// pointer and a test states the zone it passed in.
-//
-// [Ja] assertPostMonths は一覧の結果を期待する月と順序込みで比較する。一覧は
-// 呼び出し側の location ポインタをそのまま複製し、テストは渡したゾーンを書くため、
-// location は名前で比較する。
+// assertPostMonthsは一覧の結果を期待する月と順序込みで比較する。一覧は
+// 呼び出し側のlocationポインタをそのまま複製し、テストは渡したゾーンを書くため、
+// locationは名前で比較する。
 func assertPostMonths(t *testing.T, got, want []repository.PostMonth) {
 	t.Helper()
 
 	if len(got) != len(want) {
-		t.Fatalf("len(months) = %d, want %d (months = %+v)", len(got), len(want), got)
+		t.Fatalf("len(months) = %d、期待値 = %d (months = %+v)", len(got), len(want), got)
 	}
 	for i, w := range want {
 		g := got[i]
 		if !g.LocalMonthStart.Equal(w.LocalMonthStart) {
-			t.Errorf("months[%d].LocalMonthStart = %v, want %v", i, g.LocalMonthStart, w.LocalMonthStart)
+			t.Errorf("months[%d].LocalMonthStart = %v、期待値 = %v", i, g.LocalMonthStart, w.LocalMonthStart)
 		}
 		if !g.StartsAt.Equal(w.StartsAt) {
-			t.Errorf("months[%d].StartsAt = %v, want %v", i, g.StartsAt, w.StartsAt)
+			t.Errorf("months[%d].StartsAt = %v、期待値 = %v", i, g.StartsAt, w.StartsAt)
 		}
 		if !g.EndsAt.Equal(w.EndsAt) {
-			t.Errorf("months[%d].EndsAt = %v, want %v", i, g.EndsAt, w.EndsAt)
+			t.Errorf("months[%d].EndsAt = %v、期待値 = %v", i, g.EndsAt, w.EndsAt)
 		}
 		if g.PostCount != w.PostCount {
-			t.Errorf("months[%d].PostCount = %d, want %d", i, g.PostCount, w.PostCount)
+			t.Errorf("months[%d].PostCount = %d、期待値 = %d", i, g.PostCount, w.PostCount)
 		}
 		if g.Location.String() != w.Location.String() {
-			t.Errorf("months[%d].Location = %v, want %v", i, g.Location, w.Location)
+			t.Errorf("months[%d].Location = %v、期待値 = %v", i, g.Location, w.Location)
 		}
 	}
 }
@@ -433,13 +393,9 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 
 	startsAt := time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC)
 	endsAt := time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC)
-	// The month is stated directly instead of taken from ListMonthsByExportID
-	// so each case can place posts on either side of a known boundary. The
-	// listings agree on the same month in the ListMonthsByExportID tests.
-	//
-	// [Ja] 各ケースが既知の境界の内外へ投稿を置けるよう、月は
-	// ListMonthsByExportID から取らずに直接組み立てる。両一覧が同じ月で一致する
-	// ことは ListMonthsByExportID のテストで確認している。
+	// 各ケースが既知の境界の内外へ投稿を置けるよう、月は
+	// ListMonthsByExportIDから取らずに直接組み立てる。両一覧が同じ月で一致する
+	// ことはListMonthsByExportIDのテストで確認している。
 	month := repository.PostMonth{
 		LocalMonthStart: startsAt,
 		StartsAt:        startsAt,
@@ -447,7 +403,7 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 		Location:        time.UTC,
 	}
 
-	t.Run("範囲は半開区間で discard 済みと他プロフィールを除外する", func(t *testing.T) {
+	t.Run("範囲は半開区間でdiscard済みと他プロフィールを除外する", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		wantIDs := []model.PostID{
 			newPost(startsAt).Build(),
@@ -469,15 +425,15 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 			PageSize: 10,
 		})
 		if err != nil {
-			t.Fatalf("ListByExportIDInRange() error = %v", err)
+			t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 		}
 		if next != nil {
-			t.Errorf("next = %+v, want nil", next)
+			t.Errorf("next = %+v、期待値 = nil", next)
 		}
 		assertPostIDs(t, posts, wantIDs)
 	})
 
-	t.Run("同一 published_at は id で tie-break する", func(t *testing.T) {
+	t.Run("同一published_atはidでtie-breakする", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
 		publishedAt := startsAt.Add(3 * time.Hour)
 		for range 5 {
@@ -491,26 +447,23 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 			PageSize: 10,
 		})
 		if err != nil {
-			t.Fatalf("ListByExportIDInRange() error = %v", err)
+			t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 		}
 		if len(posts) != 5 {
-			t.Fatalf("len(posts) = %d, want 5", len(posts))
+			t.Fatalf("len(posts) = %d、期待値 = 5", len(posts))
 		}
 		for i := 1; i < len(posts); i++ {
 			previous, current := uuid.UUID(posts[i-1].ID), uuid.UUID(posts[i].ID)
 			if bytes.Compare(previous[:], current[:]) >= 0 {
-				t.Errorf("posts[%d].ID = %v は posts[%d].ID = %v より後に並ぶべき", i, current, i-1, previous)
+				t.Errorf("posts[%d].ID = %vはposts[%d].ID = %vより後に並ぶべき", i, current, i-1, previous)
 			}
 		}
 	})
 
-	t.Run("cursor でページを辿ると全件をちょうど 1 回ずつ返す", func(t *testing.T) {
+	t.Run("cursorでページを辿ると全件をちょうど1回ずつ返す", func(t *testing.T) {
 		profileID, actorID, newPost := newExportPostFixture(t, tx)
-		// Share one published_at among 41 posts so many page boundaries cross
-		// an ID tie-break, exposing omissions or duplicates over dozens of pages.
-		//
-		// [Ja] 41 件ごとに同じ published_at を共有させ、多数のページ境界が ID の
-		// tie-break をまたぐ場合も取りこぼしや重複が起きないことを確かめる。
+		// 41件ごとに同じpublished_atを共有させ、多数のページ境界がIDの
+		// tie-breakをまたぐ場合も取りこぼしや重複が起きないことを確かめる。
 		const (
 			postCount         = 1003
 			postsPerPublishAt = 41
@@ -521,9 +474,7 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 			wantIDs = append(wantIDs, newPost(startsAt.Add(time.Duration(i/postsPerPublishAt)*time.Hour)).Build())
 		}
 		export := createExportSnapshot(t, tx, profileID, actorID)
-		// The expected order is published_at first and id within each tie.
-		//
-		// [Ja] 期待する並びは published_at 順、同値の中では id 順。
+		// 期待する並びはpublished_at順、同値の中ではid順。
 		for start := 0; start < len(wantIDs); start += postsPerPublishAt {
 			sortPostIDs(wantIDs[start:min(start+postsPerPublishAt, len(wantIDs))])
 		}
@@ -542,7 +493,7 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 				PageSize: pageSize,
 			})
 			if err != nil {
-				t.Fatalf("ListByExportIDInRange() error = %v", err)
+				t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 			}
 			gotPosts = append(gotPosts, posts...)
 			cursor = next
@@ -551,11 +502,11 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 			}
 		}
 		if cursor != nil {
-			t.Fatalf("cursor = %+v, want nil (ページ走査が終端に達していない)", cursor)
+			t.Fatalf("cursor = %+v、期待値 = nil (ページ走査が終端に達していない)", cursor)
 		}
 		wantPageCount := (postCount + pageSize - 1) / pageSize
 		if pageCount != wantPageCount {
-			t.Errorf("page count = %d, want %d", pageCount, wantPageCount)
+			t.Errorf("ページ数 = %d、期待値 = %d", pageCount, wantPageCount)
 		}
 		assertPostIDs(t, gotPosts, wantIDs)
 	})
@@ -578,17 +529,14 @@ func TestExportPostRepository_ListByExportIDInRange(t *testing.T) {
 			PageSize: 10,
 		})
 		if err != nil {
-			t.Fatalf("ListByExportIDInRange() error = %v", err)
+			t.Fatalf("ListByExportIDInRange()のエラー = %v", err)
 		}
 		assertPostIDs(t, posts, wantIDs)
 	})
 }
 
-// sortPostIDs sorts post IDs the way PostgreSQL orders the uuid column, so a
-// test can state the expected order of posts sharing one published_at.
-//
-// [Ja] sortPostIDs は PostgreSQL の uuid カラムと同じ順序で投稿 ID を並べ替える。
-// published_at が同値の投稿の期待する並び順をテストが書けるようにするため。
+// sortPostIDsはPostgreSQLのuuidカラムと同じ順序で投稿IDを並べ替える。
+// published_atが同値の投稿の期待する並び順をテストが書けるようにするため。
 func sortPostIDs(ids []model.PostID) {
 	slices.SortFunc(ids, func(a, b model.PostID) int {
 		left, right := uuid.UUID(a), uuid.UUID(b)
@@ -596,9 +544,7 @@ func sortPostIDs(ids []model.PostID) {
 	})
 }
 
-// assertPostIDs compares the listed posts against the expected IDs in order.
-//
-// [Ja] assertPostIDs は取得した投稿を期待する ID と順序込みで比較する。
+// assertPostIDsは取得した投稿を期待するIDと順序込みで比較する。
 func assertPostIDs(t *testing.T, got []*repository.ExportPost, want []model.PostID) {
 	t.Helper()
 
@@ -607,6 +553,6 @@ func assertPostIDs(t *testing.T, got []*repository.ExportPost, want []model.Post
 		gotIDs[i] = post.ID
 	}
 	if !slices.Equal(gotIDs, want) {
-		t.Errorf("post IDs = %v, want %v", gotIDs, want)
+		t.Errorf("ポストのID = %v、期待値 = %v", gotIDs, want)
 	}
 }

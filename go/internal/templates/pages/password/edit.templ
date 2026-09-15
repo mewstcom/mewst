@@ -6,13 +6,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
-// EditPageData はパスワード更新フォームページのデータ
+// EditPageDataはパスワード更新フォームページのデータ
 type EditPageData struct {
 	CSRFToken  string
 	FormErrors *model.ValidationError
 }
 
-// Edit はパスワード更新フォームを表示する
+// Editはパスワード更新フォームを表示する
 templ Edit(data EditPageData) {
 	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">

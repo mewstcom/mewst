@@ -1,4 +1,4 @@
-// Package session はセッション管理機能を提供します
+// Package sessionはセッション管理機能を提供します
 package session
 
 import (
@@ -12,19 +12,19 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// CookieName はRails版と共有するセッションクッキー名
+// CookieNameはRails版と共有するセッションクッキー名
 const CookieName = "mewst_session_token"
 
-// EmailConfirmationCookieName はメール確認IDを保存するクッキー名
+// EmailConfirmationCookieNameはメール確認IDを保存するクッキー名
 const EmailConfirmationCookieName = "mewst_email_confirmation_id"
 
-// MaxAge はクッキーの有効期限 (10年、Rails版と同じ)
+// MaxAgeはクッキーの有効期限 (10年、Rails版と同じ)
 const MaxAge = 10 * 365 * 24 * 60 * 60
 
-// EmailConfirmationMaxAge はメール確認クッキーの有効期限 (15分)
+// EmailConfirmationMaxAgeはメール確認クッキーの有効期限 (15分)
 const EmailConfirmationMaxAge = 15 * 60
 
-// Manager はセッション管理を行う
+// Managerはセッション管理を行う
 type Manager struct {
 	sessionRepo *repository.SessionRepository
 	actorRepo   *repository.ActorRepository
@@ -32,7 +32,7 @@ type Manager struct {
 	cfg         *config.Config
 }
 
-// NewManager は新しいManagerを作成する
+// NewManagerは新しいManagerを作成する
 func NewManager(
 	sessionRepo *repository.SessionRepository,
 	actorRepo *repository.ActorRepository,
@@ -47,7 +47,7 @@ func NewManager(
 	}
 }
 
-// GetSessionToken はクッキーからセッショントークンを取得する
+// GetSessionTokenはクッキーからセッショントークンを取得する
 func (m *Manager) GetSessionToken(r *http.Request) string {
 	cookie, err := r.Cookie(CookieName)
 	if err != nil {
@@ -56,7 +56,7 @@ func (m *Manager) GetSessionToken(r *http.Request) string {
 	return cookie.Value
 }
 
-// GetCurrentUser は現在のログインユーザーを取得する
+// GetCurrentUserは現在のログインユーザーを取得する
 // セッションが存在しない、または無効な場合はnilを返す
 func (m *Manager) GetCurrentUser(ctx context.Context, r *http.Request) (*model.User, error) {
 	token := m.GetSessionToken(r)
@@ -91,7 +91,7 @@ func (m *Manager) GetCurrentUser(ctx context.Context, r *http.Request) (*model.U
 	return user, nil
 }
 
-// GetCurrentActor は現在のログインアクターを取得する
+// GetCurrentActorは現在のログインアクターを取得する
 // セッションが存在しない、または無効な場合はnilを返す
 func (m *Manager) GetCurrentActor(ctx context.Context, r *http.Request) (*model.Actor, error) {
 	token := m.GetSessionToken(r)
@@ -118,29 +118,19 @@ func (m *Manager) GetCurrentActor(ctx context.Context, r *http.Request) (*model.
 	return actor, nil
 }
 
-// CurrentAuth bundles the user, actor, and profile resolved from the current
-// session. All three fields are non-nil when present; the entire pointer is
-// nil when the session is missing or invalid.
-//
-// [Ja] CurrentAuth は現在のセッションから解決した user / actor / profile を
-// まとめて保持する。セッションが有効なときは 3 つすべてが non-nil。無効な
-// ときはポインタ自体が nil となる。
+// CurrentAuthは現在のセッションから解決したuser / actor / profileを
+// まとめて保持する。セッションが有効なときは3つすべてがnon-nil。無効な
+// ときはポインタ自体がnilとなる。
 type CurrentAuth struct {
 	User    *model.User
 	Actor   *model.Actor
 	Profile *model.Profile
 }
 
-// GetCurrentAuth resolves the session token to user / actor / profile in a
-// single JOIN query, returning them together. It is meant for callers that
-// need all three (such as RequireAuth) so that a single request does not
-// issue four separate queries (session -> actor -> user -> profile). Returns
-// (nil, nil) when the session is missing or invalid.
-//
-// [Ja] GetCurrentAuth はセッショントークンから user / actor / profile を
-// 1 度の JOIN クエリで解決し、まとめて返す。RequireAuth のように 3 つすべてを
-// 必要とする呼び出し元向けで、1 リクエストで session -> actor -> user ->
-// profile の 4 クエリが走らないようにするためのもの。セッションが存在しない、
+// GetCurrentAuthはセッショントークンからuser / actor / profileを
+// 1度のJOINクエリで解決し、まとめて返す。RequireAuthのように3つすべてを
+// 必要とする呼び出し元向けで、1リクエストでsession -> actor -> user ->
+// profileの4クエリが走らないようにするためのもの。セッションが存在しない、
 // または無効な場合は (nil, nil) を返す。
 func (m *Manager) GetCurrentAuth(ctx context.Context, r *http.Request) (*CurrentAuth, error) {
 	token := m.GetSessionToken(r)
@@ -163,7 +153,7 @@ func (m *Manager) GetCurrentAuth(ctx context.Context, r *http.Request) (*Current
 	}, nil
 }
 
-// SetSessionCookie はセッションクッキーを設定する
+// SetSessionCookieはセッションクッキーを設定する
 func (m *Manager) SetSessionCookie(w http.ResponseWriter, token string) {
 	cookie := &http.Cookie{
 		Name:     CookieName,
@@ -178,7 +168,7 @@ func (m *Manager) SetSessionCookie(w http.ResponseWriter, token string) {
 	http.SetCookie(w, cookie)
 }
 
-// DeleteSessionCookie はセッションクッキーを削除する
+// DeleteSessionCookieはセッションクッキーを削除する
 func (m *Manager) DeleteSessionCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:     CookieName,
@@ -193,13 +183,13 @@ func (m *Manager) DeleteSessionCookie(w http.ResponseWriter) {
 	http.SetCookie(w, cookie)
 }
 
-// IsLoggedIn はログイン済みかどうかを返す
+// IsLoggedInはログイン済みかどうかを返す
 func (m *Manager) IsLoggedIn(ctx context.Context, r *http.Request) bool {
 	user, err := m.GetCurrentUser(ctx, r)
 	return err == nil && user != nil
 }
 
-// SetEmailConfirmationID はメール確認IDをクッキーに保存する
+// SetEmailConfirmationIDはメール確認IDをクッキーに保存する
 func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, id model.EmailConfirmationID) {
 	cookie := &http.Cookie{
 		Name:     EmailConfirmationCookieName,
@@ -214,8 +204,8 @@ func (m *Manager) SetEmailConfirmationID(w http.ResponseWriter, id model.EmailCo
 	http.SetCookie(w, cookie)
 }
 
-// GetEmailConfirmationID はクッキーからメール確認IDを取得する。
-// クッキー不在または値が不正な UUID の場合は ok=false を返す。
+// GetEmailConfirmationIDはクッキーからメール確認IDを取得する。
+// クッキー不在または値が不正なUUIDの場合はok=falseを返す。
 func (m *Manager) GetEmailConfirmationID(r *http.Request) (model.EmailConfirmationID, bool) {
 	cookie, err := r.Cookie(EmailConfirmationCookieName)
 	if err != nil {
@@ -228,7 +218,7 @@ func (m *Manager) GetEmailConfirmationID(r *http.Request) (model.EmailConfirmati
 	return model.EmailConfirmationID(parsed), true
 }
 
-// DeleteEmailConfirmationID はメール確認IDクッキーを削除する
+// DeleteEmailConfirmationIDはメール確認IDクッキーを削除する
 func (m *Manager) DeleteEmailConfirmationID(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:     EmailConfirmationCookieName,

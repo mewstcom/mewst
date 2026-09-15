@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Actor はアクターのドメインモデル
+// Actorはアクターのドメインモデル
 // ユーザーとプロフィールを関連付ける中間エンティティ
 type Actor struct {
 	ID        ActorID

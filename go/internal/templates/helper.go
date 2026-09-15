@@ -1,4 +1,4 @@
-// Package templates はHTMLテンプレート機能を提供します
+// Package templatesはHTMLテンプレート機能を提供します
 package templates
 
 import (
@@ -14,17 +14,17 @@ import (
 // templ用ヘルパー関数
 // ========================================
 
-// T は翻訳を取得する(templ用)
+// Tは翻訳を取得する(templ用)
 func T(ctx context.Context, messageID string, data ...map[string]any) string {
 	return i18n.T(ctx, messageID, data...)
 }
 
-// Locale は現在のロケールを取得する
+// Localeは現在のロケールを取得する
 func Locale(ctx context.Context) string {
 	return i18n.GetLocale(ctx)
 }
 
-// Deref はポインタを参照外しする(ジェネリック対応)
+// Derefはポインタを参照外しする(ジェネリック対応)
 func Deref[T any](v *T) T {
 	if v != nil {
 		return *v
@@ -37,7 +37,7 @@ func Deref[T any](v *T) T {
 // アイコン関数
 // ========================================
 
-// Icon はアイコン名からSVGを返す(templ.Component対応)
+// Iconはアイコン名からSVGを返す(templ.Component対応)
 // 可変長引数でクラス名を指定可能: Icon("name", "class1 class2")
 func Icon(name viewmodel.IconName, class ...string) templ.Component {
 	svg, ok := customIcons[name]
@@ -53,7 +53,7 @@ func Icon(name viewmodel.IconName, class ...string) templ.Component {
 
 	// クラス名が指定されている場合は、SVGタグに追加
 	if len(class) > 0 && class[0] != "" {
-		// <svg の直後にclass属性を挿入
+		// <svgの直後にclass属性を挿入
 		svg = `<svg class="` + class[0] + `" ` + svg[5:]
 	}
 

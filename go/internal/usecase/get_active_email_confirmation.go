@@ -9,12 +9,12 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// GetActiveEmailConfirmationUsecase は有効なメール確認を取得するユースケース
+// GetActiveEmailConfirmationUsecaseは有効なメール確認を取得するユースケース
 type GetActiveEmailConfirmationUsecase struct {
 	emailConfirmationRepo *repository.EmailConfirmationRepository
 }
 
-// NewGetActiveEmailConfirmationUsecase はGetActiveEmailConfirmationUsecaseを生成する
+// NewGetActiveEmailConfirmationUsecaseはGetActiveEmailConfirmationUsecaseを生成する
 func NewGetActiveEmailConfirmationUsecase(
 	emailConfirmationRepo *repository.EmailConfirmationRepository,
 ) *GetActiveEmailConfirmationUsecase {
@@ -23,17 +23,17 @@ func NewGetActiveEmailConfirmationUsecase(
 	}
 }
 
-// GetActiveEmailConfirmationInput は有効なメール確認取得の入力パラメータ
+// GetActiveEmailConfirmationInputは有効なメール確認取得の入力パラメータ
 type GetActiveEmailConfirmationInput struct {
 	ID model.EmailConfirmationID
 }
 
-// GetActiveEmailConfirmationOutput は有効なメール確認取得の結果
+// GetActiveEmailConfirmationOutputは有効なメール確認取得の結果
 type GetActiveEmailConfirmationOutput struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute は有効期限内かつ未確認のメール確認を取得する
+// Executeは有効期限内かつ未確認のメール確認を取得する
 func (uc *GetActiveEmailConfirmationUsecase) Execute(ctx context.Context, input GetActiveEmailConfirmationInput) (*GetActiveEmailConfirmationOutput, error) {
 	ec, err := uc.emailConfirmationRepo.FindActiveByID(ctx, input.ID)
 	if err != nil {

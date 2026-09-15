@@ -10,20 +10,12 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// EnText is the English email confirmation code notification (plain text).
+// EnTextは英語版のメール確認コード通知 (テキスト形式) です。
 //
-// The body goes through templ.Raw so that the blank lines between paragraphs
-// survive: templ normalizes literal whitespace by HTML rules, and its default
-// expression escaping would deliver "didn't" as "didn&#39;t". Passing the
-// address through Raw is safe here because the text/plain part has no markup to
-// break out of; the HTML part still escapes it.
-//
-// [Ja] EnText は英語版のメール確認コード通知 (テキスト形式) です。
-//
-// 段落間の空行を残すため、本文は templ.Raw を通す。templ はリテラルの空白を HTML
+// 段落間の空行を残すため、本文はtempl.Rawを通す。templはリテラルの空白をHTML
 // の規則で正規化し、既定の式エスケープは "didn't" を "didn&#39;t" として配信して
-// しまう。text/plain パートにはメールアドレスが抜け出せるマークアップが無いため、
-// Raw に渡しても安全である (HTML パートでは引き続きエスケープする)。
+// しまう。text/plainパートにはメールアドレスが抜け出せるマークアップが無いため、
+// Rawに渡しても安全である (HTMLパートでは引き続きエスケープする)。
 func EnText(email, code string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

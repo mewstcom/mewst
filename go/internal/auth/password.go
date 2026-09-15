@@ -1,17 +1,17 @@
-// Package auth は認証機能を提供します
+// Package authは認証機能を提供します
 package auth
 
 import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// BcryptCost はbcryptのコスト値。テスト時はTestBcryptCostに変更される
+// BcryptCostはbcryptのコスト値。テスト時はTestBcryptCostに変更される
 var BcryptCost = bcrypt.DefaultCost
 
-// TestBcryptCost はテスト用の低コスト値
+// TestBcryptCostはテスト用の低コスト値
 const TestBcryptCost = bcrypt.MinCost
 
-// HashPassword はパスワードをbcryptでハッシュ化する
+// HashPasswordはパスワードをbcryptでハッシュ化する
 func HashPassword(plainPassword string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(plainPassword), BcryptCost)
 	if err != nil {

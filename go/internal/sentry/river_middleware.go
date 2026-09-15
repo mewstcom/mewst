@@ -9,24 +9,24 @@ import (
 	"github.com/riverqueue/river/rivertype"
 )
 
-// RiverWorkerMiddleware は river のジョブ実行をフックして、ジョブ内で発生したエラーを
-// Sentry に自動送信するミドルウェアを返す。
+// RiverWorkerMiddlewareはriverのジョブ実行をフックして、ジョブ内で発生したエラーを
+// Sentryに自動送信するミドルウェアを返す。
 //
 // 動作:
-//   - 各ジョブ実行ごとに独立した Hub を作る (Clone)。これにより並行実行されているジョブの
-//     Scope が混ざらない。Clone 元は ctx に既に Hub が乗っていればそれを優先し、なければ
-//     `sentry.CurrentHub()` を使う (river 経由の通常運用では ctx に Hub は乗っていない
+//   - 各ジョブ実行ごとに独立したHubを作る (Clone)。これにより並行実行されているジョブの
+//     Scopeが混ざらない。Clone元はctxに既にHubが乗っていればそれを優先し、なければ
+//     `sentry.CurrentHub()` を使う (river経由の通常運用ではctxにHubは乗っていない
 //     ため後者が使われる)。
-//   - Hub の Scope にジョブ種別 (`job.kind`) と試行回数 (`job.attempt`) をタグとしてセットする。
-//     Sentry の UI 上で「どのジョブで起きたエラーか」「何回目の試行か」を絞り込めるようにする。
-//   - 作成した Hub を ctx に bind してから `doInner(ctx)` を呼ぶ。
-//     Worker 内部の `slog.ErrorContext` 経由のキャプチャ (sentryslog) も
-//     このジョブ固有 Hub に紐付くため、タグが付いた状態で送信される。
-//   - `doInner` のエラーが非 nil かつ無視対象 (context.Canceled 等) でなければ
-//     `hub.CaptureException(err)` を呼んで「ジョブ全体としての失敗」を Sentry に送る。
+//   - HubのScopeにジョブ種別 (`job.kind`) と試行回数 (`job.attempt`) をタグとしてセットする。
+//     SentryのUI上で「どのジョブで起きたエラーか」「何回目の試行か」を絞り込めるようにする。
+//   - 作成したHubをctxにbindしてから `doInner(ctx)` を呼ぶ。
+//     Worker内部の `slog.ErrorContext` 経由のキャプチャ (sentryslog) も
+//     このジョブ固有Hubに紐付くため、タグが付いた状態で送信される。
+//   - `doInner` のエラーが非nilかつ無視対象 (context.Canceled等) でなければ
+//     `hub.CaptureException(err)` を呼んで「ジョブ全体としての失敗」をSentryに送る。
 //
-// `worker.NewClient` 内の `river.Config.Middleware` に登録することで、すべての Worker に
-// 自動適用される。新しい Worker を追加してもキャプチャ漏れが起きない。
+// `worker.NewClient` 内の `river.Config.Middleware` に登録することで、すべてのWorkerに
+// 自動適用される。新しいWorkerを追加してもキャプチャ漏れが起きない。
 func RiverWorkerMiddleware() rivertype.Middleware {
 	return river.WorkerMiddlewareFunc(func(ctx context.Context, job *rivertype.JobRow, doInner func(ctx context.Context) error) error {
 		hub := cloneHubForJob(ctx)
@@ -42,8 +42,8 @@ func RiverWorkerMiddleware() rivertype.Middleware {
 	})
 }
 
-// cloneHubForJob はジョブ固有の Hub を返す。ctx に既存の Hub があればそれを Clone し、
-// なければ CurrentHub を Clone する。テストでは ctx に Hub を bind して注入できる。
+// cloneHubForJobはジョブ固有のHubを返す。ctxに既存のHubがあればそれをCloneし、
+// なければCurrentHubをCloneする。テストではctxにHubをbindして注入できる。
 func cloneHubForJob(ctx context.Context) *sentry.Hub {
 	if existing := sentry.GetHubFromContext(ctx); existing != nil {
 		return existing.Clone()

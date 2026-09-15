@@ -1,5 +1,5 @@
 # 日本語翻訳ファイル
-# Mewst Go プロジェクトの日本語メッセージ定義
+# Mewst Goプロジェクトの日本語メッセージ定義
 
 # ============================================
 # サイト全体のデフォルト
@@ -354,7 +354,7 @@ description = "502エラーページのホームリンク"
 other = "ホームに戻る"
 
 [error_export_unavailable]
-description = "エクスポート機能を提供していないデプロイでの拒否メッセージ (503 で返すため画面には表示しない)"
+description = "エクスポート機能を提供していないデプロイでの拒否メッセージ (503で返すため画面には表示しない)"
 other = "エクスポート機能は現在ご利用いただけません。"
 
 # ============================================
@@ -362,31 +362,31 @@ other = "エクスポート機能は現在ご利用いただけません。"
 # ============================================
 
 [navbar_home]
-description = "navbar のホームリンクのアクセシブルラベル"
+description = "navbarのホームリンクのアクセシブルラベル"
 other = "ホーム"
 
 [navbar_search]
-description = "navbar の検索リンクのアクセシブルラベル"
+description = "navbarの検索リンクのアクセシブルラベル"
 other = "検索"
 
 [navbar_new_post]
-description = "navbar の新規投稿リンクのアクセシブルラベル"
+description = "navbarの新規投稿リンクのアクセシブルラベル"
 other = "新規投稿"
 
 [navbar_notifications]
-description = "navbar の通知リンクのアクセシブルラベル"
+description = "navbarの通知リンクのアクセシブルラベル"
 other = "通知"
 
 [navbar_profile]
-description = "navbar のプロフィールリンクのアクセシブルラベル"
+description = "navbarのプロフィールリンクのアクセシブルラベル"
 other = "プロフィール"
 
 [navbar_top_label]
-description = "トップ navbar (PC) のランドマークのアクセシブルラベル"
+description = "トップnavbar (PC) のランドマークのアクセシブルラベル"
 other = "グローバル (PC)"
 
 [navbar_bottom_label]
-description = "ボトム navbar (モバイル) のランドマークのアクセシブルラベル"
+description = "ボトムnavbar (モバイル) のランドマークのアクセシブルラベル"
 other = "グローバル (モバイル)"
 
 # ============================================
@@ -398,7 +398,7 @@ description = "新規投稿ページのタイトル"
 other = "新規投稿"
 
 [post_new_heading]
-description = "新規投稿ページの見出し (視覚上はフォームのラベルが担うため sr-only)"
+description = "新規投稿ページの見出し (視覚上はフォームのラベルが担うためsr-only)"
 other = "新規投稿"
 
 [post_new_content_label]
@@ -422,7 +422,7 @@ description = "設定メニューページの見出し"
 other = "設定"
 
 [setting_index_menu_label]
-description = "設定メニューのランドマークのアクセシブルラベル (navbar と区別するため)"
+description = "設定メニューのランドマークのアクセシブルラベル (navbarと区別するため)"
 other = "設定メニュー"
 
 [setting_index_profile_link]
@@ -463,7 +463,7 @@ other = "エクスポート"
 
 [export_show_description]
 description = "エクスポート画面で、エクスポートに何が含まれるかを説明する文"
-other = "あなたのポストを月ごとの HTML ファイルにまとめた zip ファイルを作成します。作成には時間がかかることがあります。"
+other = "あなたのポストを月ごとのHTMLファイルにまとめたzipファイルを作成します。作成には時間がかかることがあります。"
 
 [export_show_state_none]
 description = "エクスポート画面の状態表示: まだエクスポートを作成していない"
@@ -502,7 +502,7 @@ other = "以前のエクスポートをダウンロードする"
 # ============================================
 
 [back_link]
-description = "戻る導線 (BackLink コンポーネント) のリンクテキスト"
+description = "戻る導線 (BackLinkコンポーネント) のリンクテキスト"
 other = "戻る"
 
 # ============================================
@@ -538,48 +538,48 @@ other = "新しいタブで開く"
 # ============================================
 
 [export_archive_index_title]
-description = "エクスポート zip の目次 (index.html) の title"
+description = "エクスポートzipの目次 (index.html) のtitle"
 other = "ポストのエクスポート - Mewst"
 
 [export_archive_index_heading]
-description = "エクスポート zip の目次の見出し"
+description = "エクスポートzipの目次の見出し"
 other = "ポストのエクスポート"
 
 [export_archive_index_description]
-description = "エクスポート zip の目次で、ポストが月ごとのファイルに分かれていることを伝える説明"
+description = "エクスポートzipの目次で、ポストが月ごとのファイルに分かれていることを伝える説明"
 other = "ポストは月ごとのファイルに分かれています。読みたい月を選んでください。"
 
 [export_archive_index_empty]
-description = "エクスポート zip の目次で、含まれるポストが 1 件も無いことを伝える文"
+description = "エクスポートzipの目次で、含まれるポストが1件も無いことを伝える文"
 other = "このエクスポートに含まれるポストはありません。"
 
 [export_archive_index_month_link]
-description = "エクスポート zip の目次から、その月のファイルへ移動するリンクのテキスト"
+description = "エクスポートzipの目次から、その月のファイルへ移動するリンクのテキスト"
 other = "{{.MonthLabel}}のポスト"
 
 [export_archive_index_post_count]
-description = "エクスポート zip の目次に表示する、その月のポスト件数"
+description = "エクスポートzipの目次に表示する、その月のポスト件数"
 other = "{{.Count}} 件"
 
 [export_archive_month_label]
-description = "エクスポート zip 内での暦月の表記"
+description = "エクスポートzip内での暦月の表記"
 other = "{{.Year}}年{{.Month}}月"
 
 [export_archive_month_title]
-description = "エクスポート zip の月ごとのファイル (posts/2026-07.html) の title"
+description = "エクスポートzipの月ごとのファイル (posts/2026-07.html) のtitle"
 other = "{{.MonthLabel}}のポスト - Mewst"
 
 [export_archive_month_heading]
-description = "エクスポート zip の月ごとのファイルの見出し"
+description = "エクスポートzipの月ごとのファイルの見出し"
 other = "{{.MonthLabel}}のポスト"
 
 [export_archive_post_published_at]
-description = "エクスポート zip の月ごとのファイルに表示する、ポストの投稿日時"
+description = "エクスポートzipの月ごとのファイルに表示する、ポストの投稿日時"
 other = "{{.Year}}年{{.Month}}月{{.Day}}日 {{.Time}}"
 
 [export_archive_format_comment]
-description = "エクスポート zip の月ごとのファイルの先頭に置く、ポストの出力契約を説明する HTML コメント"
-other = "Mewst エクスポート形式 v{{.Version}}: 各ポストは article.h-entry です。ポスト ID は data-post-id 属性、投稿日時は time.dt-published の datetime 属性 (RFC 3339)、本文は .e-content に入っています。"
+description = "エクスポートzipの月ごとのファイルの先頭に置く、ポストの出力契約を説明するHTMLコメント"
+other = "Mewstエクスポート形式v{{.Version}}: 各ポストはarticle.h-entryです。ポストIDはdata-post-id属性、投稿日時はtime.dt-publishedのdatetime属性 (RFC 3339)、本文は .e-contentに入っています。"
 
 # ============================================
 # エクスポート完了メール (export_completed_email_*)

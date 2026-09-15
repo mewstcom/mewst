@@ -12,21 +12,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// BottomNavbar renders the mobile bottom navigation menu, shown only below lg,
-// matching the Rails BottomNavbarComponent. The menu carries a border so it
-// stands out as a floating pill at the bottom of the screen.
-//
-// The wrapper is a <nav> landmark with a distinct aria-label, paired with
-// TopNavbar's so assistive tech can tell the two coexisting navigation regions
-// apart (see TopNavbar for the rationale).
-//
-// [Ja] モバイル向けのボトムナビゲーションメニューを描画する。lg 未満でのみ
-// 表示する点は Rails の BottomNavbarComponent に合わせている。画面下部に
+// BottomNavbarはモバイル向けのボトムナビゲーションメニューを描画する。lg未満でのみ
+// 表示する点はRailsのBottomNavbarComponentに合わせている。画面下部に
 // 浮かぶピルとして目立つよう、メニューに枠線を付けている。
 //
-// ラッパーは固有の aria-label を持つ <nav> ランドマーク。TopNavbar と対になり、
-// 支援技術が共存する 2 つのナビゲーション領域を区別できるようにする (理由は
-// TopNavbar を参照)。
+// ラッパーは固有のaria-labelを持つ <nav> ランドマーク。TopNavbarと対になり、
+// 支援技術が共存する2つのナビゲーション領域を区別できるようにする (理由は
+// TopNavbarを参照)。
 func BottomNavbar(navbar viewmodel.Navbar) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -55,7 +47,7 @@ func BottomNavbar(navbar viewmodel.Navbar) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.T(ctx, "navbar_bottom_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/bottom_navbar.templ`, Line: 24, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/bottom_navbar.templ`, Line: 16, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {

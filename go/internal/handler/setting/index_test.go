@@ -14,24 +14,17 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-// newSettingHandler builds a Handler for the settings menu.
-//
-// [Ja] newSettingHandler は設定メニューの Handler を構築する。
+// newSettingHandlerは設定メニューのHandlerを構築する。
 func newSettingHandler(t *testing.T) *setting.Handler {
 	t.Helper()
 
 	return setting.NewHandler(testutil.NewTestConfig(t))
 }
 
-// newIndexRequest builds a GET /settings request whose context carries what the
-// CSRF and RequireAuth middleware supply in production: the locale, the CSRF
-// token the sign-out form submits, and the signed-in actor and profile. The
-// profile drives the navbar's profile link.
-//
-// [Ja] newIndexRequest は GET /settings のリクエストを組み立てる。context には
-// 本番で CSRF / RequireAuth ミドルウェアが渡すもの (ロケール、ログアウトフォームが
-// 送信する CSRF トークン、ログイン中の actor とプロフィール) を載せる。プロフィール
-// は navbar のプロフィールリンクを駆動する。
+// newIndexRequestはGET /settingsのリクエストを組み立てる。contextには
+// 本番でCSRF / RequireAuthミドルウェアが渡すもの (ロケール、ログアウトフォームが
+// 送信するCSRFトークン、ログイン中のactorとプロフィール) を載せる。プロフィール
+// はnavbarのプロフィールリンクを駆動する。
 func newIndexRequest(t *testing.T, locale string, owner testutil.ProfileOwner) *http.Request {
 	t.Helper()
 
@@ -51,10 +44,7 @@ func newIndexRequest(t *testing.T, locale string, owner testutil.ProfileOwner) *
 	return req.WithContext(ctx)
 }
 
-// settingsNav returns the settings menu's <nav> element, so assertions about
-// the menu cannot be satisfied by links elsewhere in the shared layout.
-//
-// [Ja] settingsNav は設定メニューの <nav> 要素を返す。メニューについての検証が、
+// settingsNavは設定メニューの <nav> 要素を返す。メニューについての検証が、
 // 共通レイアウト内の別のリンクで満たされてしまわないようにするため。
 func settingsNav(t *testing.T, body string, label string) string {
 	t.Helper()
@@ -62,12 +52,12 @@ func settingsNav(t *testing.T, body string, label string) string {
 	start := `<nav aria-label="` + label + `">`
 	navIdx := strings.Index(body, start)
 	if navIdx < 0 {
-		t.Fatal("設定メニューの nav がありません")
+		t.Fatal("設定メニューのnavがありません")
 	}
 
 	endOffset := strings.Index(body[navIdx:], `</nav>`)
 	if endOffset < 0 {
-		t.Fatal("設定メニューの nav に閉じタグがありません")
+		t.Fatal("設定メニューのnavに閉じタグがありません")
 	}
 
 	return body[navIdx : navIdx+endOffset+len(`</nav>`)]
@@ -84,11 +74,11 @@ func TestIndex(t *testing.T) {
 	h.Index(rr, newIndexRequest(t, "ja", owner))
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	if contentType := rr.Header().Get("Content-Type"); !strings.Contains(contentType, "text/html") {
-		t.Errorf("Content-Type が不正: got %v, want text/html", contentType)
+		t.Errorf("Content-Typeが不正: 実測値 = %v、期待値 = text/html", contentType)
 	}
 
 	body := rr.Body.String()
@@ -108,37 +98,26 @@ func TestIndex(t *testing.T) {
 		`name="csrf_token"`,
 		`value="test-csrf-token"`,
 		"ログアウト",
-		// The sign-out button is an outline basecoat button whose submit is guarded
-		// by a native confirm dialog. RenderAttributes HTML-escapes the onclick
-		// value, so the message text is asserted separately from the "confirm("
-		// fragment.
-		//
-		// [Ja] ログアウトボタンはアウトラインの basecoat ボタンで、その送信はネイティブ
-		// 確認ダイアログでガードされる。RenderAttributes は onclick の値を HTML エスケープ
+		// ログアウトボタンはアウトラインのbasecoatボタンで、その送信はネイティブ
+		// 確認ダイアログでガードされる。RenderAttributesはonclickの値をHTMLエスケープ
 		// するため、確認文言は "confirm(" の断片とは分けて検証する。
 		`class="btn rounded-full"`,
 		`data-variant="outline"`,
 		"confirm(",
 		"ログアウトしますか？",
 		`aria-label="設定メニュー"`,
-		// Path fragment unique to caret-right-regular. Index falls back to
-		// info-regular for unknown icon names, and both share viewBox="0 0 256 256",
-		// so asserting the caret's own path proves it resolved rather than fell back.
-		//
-		// [Ja] caret-right-regular 固有の path 片。Index は未知のアイコン名を
-		// info-regular にフォールバックし、両者は viewBox="0 0 256 256" を共有するため、
-		// caret 固有の path を確認することでフォールバックではなく解決されたことを保証する。
+		// caret-right-regular固有のpath片。Indexは未知のアイコン名を
+		// info-regularにフォールバックし、両者はviewBox="0 0 256 256" を共有するため、
+		// caret固有のpathを確認することでフォールバックではなく解決されたことを保証する。
 		"M181.66,133.66l-80,80",
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
-			t.Errorf("レスポンスに %q が含まれていません", want)
+			t.Errorf("レスポンスに%qが含まれていません", want)
 		}
 	}
 
-	// The settings menu links must stay inside a labelled <nav> containing a list.
-	//
-	// [Ja] 設定メニューのリンクは、ラベル付き <nav> 内のリストに置く。
+	// 設定メニューのリンクは、ラベル付き <nav> 内のリストに置く。
 	nav := settingsNav(t, body, "設定メニュー")
 	for _, want := range []string{
 		`<ul class="flex flex-col">`,
@@ -148,28 +127,23 @@ func TestIndex(t *testing.T) {
 		`href="/settings/export"`,
 	} {
 		if !strings.Contains(nav, want) {
-			t.Errorf("設定メニューの nav に %q が含まれていません", want)
+			t.Errorf("設定メニューのnavに%qが含まれていません", want)
 		}
 	}
 	if got := strings.Count(nav, `<li>`); got != 4 {
-		t.Errorf("設定メニューの li 数 = %d, want 4", got)
+		t.Errorf("設定メニューのli数 = %d、期待値 = 4", got)
 	}
 	if got := strings.Count(nav, `aria-hidden="true"`); got != 4 {
-		t.Errorf("装飾キャレットの aria-hidden 数 = %d, want 4", got)
+		t.Errorf("装飾キャレットのaria-hidden数 = %d、期待値 = 4", got)
 	}
 	if got := strings.Count(nav, "M181.66,133.66l-80,80"); got != 4 {
-		t.Errorf("caret-right-regular の path 数 = %d, want 4", got)
+		t.Errorf("caret-right-regularのpath数 = %d、期待値 = 4", got)
 	}
 
-	// The page renders on the authenticated navbar layout (layouts.Default), so
-	// the top navbar (desktop) and bottom navbar (mobile) render the five-item
-	// menu. Assert a navbar-only link (search) and the profile link built from the
-	// injected atname to confirm both navbars render around the settings content.
-	//
-	// [Ja] このページは認証後の navbar 付きレイアウト (layouts.Default) で描画するため、
-	// トップ navbar (PC) とボトム navbar (モバイル) が 5 項目メニューを描画する。navbar
-	// 専用リンク (検索) と、注入した atname から生成されるプロフィールリンクを検証し、
-	// 設定コンテンツの周囲に両 navbar が描画されることを確認する。
+	// このページは認証後のnavbar付きレイアウト (layouts.Default) で描画するため、
+	// トップnavbar (PC) とボトムnavbar (モバイル) が5項目メニューを描画する。navbar
+	// 専用リンク (検索) と、注入したatnameから生成されるプロフィールリンクを検証し、
+	// 設定コンテンツの周囲に両navbarが描画されることを確認する。
 	navbarChecks := []struct {
 		link string
 		want int
@@ -179,28 +153,19 @@ func TestIndex(t *testing.T) {
 	}
 	for _, check := range navbarChecks {
 		if got := strings.Count(body, check.link); got != check.want {
-			t.Errorf("navbar の %q の数 = %d, want %d", check.link, got, check.want)
+			t.Errorf("navbarの%qの数 = %d、期待値 = %d", check.link, got, check.want)
 		}
 	}
 
-	// Settings is not one of the navbar's five items, so the navbar renders with no
-	// active item (NavbarItemNone). The active filled-icon fill override must
-	// therefore be absent entirely.
-	//
-	// [Ja] 設定は navbar の 5 項目に含まれないため、navbar はアクティブ項目なし
-	// (NavbarItemNone) で描画する。したがってアクティブの塗りつぶしアイコンの fill
+	// 設定はnavbarの5項目に含まれないため、navbarはアクティブ項目なし
+	// (NavbarItemNone) で描画する。したがってアクティブの塗りつぶしアイコンのfill
 	// 上書きは一切現れない。
 	if got := strings.Count(body, "[&_.content]:fill-foreground"); got != 0 {
-		t.Errorf("アクティブ表示の fill クラス数 = %d, want 0 (設定は navbar 項目を持たない)", got)
+		t.Errorf("アクティブ表示のfillクラス数 = %d、期待値 = 0 (設定はnavbar項目を持たない)", got)
 	}
 }
 
-// TestIndex_PlacesTheExportEntryLast pins where the export entry sits in the
-// menu and how its link reads: it is the last row, after the rows that act on
-// the account itself, and its text names what the page is for rather than
-// reading as a bare action.
-//
-// [Ja] TestIndex_PlacesTheExportEntryLast は、エクスポート項目がメニューの
+// TestIndex_PlacesTheExportEntryLastは、エクスポート項目がメニューの
 // どこに置かれ、そのリンクがどう読めるかを固定する。項目はアカウント自体を扱う
 // 各行の後、最後の行に置き、リンクテキストは素の操作名ではなく遷移先が何で
 // あるかを示す。
@@ -215,22 +180,17 @@ func TestIndex_PlacesTheExportEntryLast(t *testing.T) {
 	h.Index(rr, newIndexRequest(t, "ja", owner))
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	nav := settingsNav(t, rr.Body.String(), "設定メニュー")
 
-	// The export entry goes last, after the account settings rows.
-	//
-	// [Ja] エクスポート項目はアカウント設定の各行の後、最後に置く。
+	// エクスポート項目はアカウント設定の各行の後、最後に置く。
 	if exportIdx, emailIdx := strings.Index(nav, `href="/settings/export"`), strings.Index(nav, `href="/settings/email"`); exportIdx < emailIdx {
 		t.Errorf("エクスポート項目の位置 = %d, メールアドレス項目の位置 = %d (エクスポートは末尾に置く)", exportIdx, emailIdx)
 	}
 
-	// The link text must stand on its own in a screen reader's link list, so it
-	// names the object it acts on instead of the bare verb.
-	//
-	// [Ja] リンクテキストはスクリーンリーダーのリンク一覧で単独で意味を成す必要が
+	// リンクテキストはスクリーンリーダーのリンク一覧で単独で意味を成す必要が
 	// あるため、素の動詞ではなく対象を含めて示す。
 	if strings.Contains(nav, `>エクスポート<`) {
 		t.Error("設定メニューのリンクテキストが素の「エクスポート」になっています")
@@ -254,7 +214,7 @@ func TestIndex_Locales(t *testing.T) {
 		signOutConfirm string
 	}{
 		{
-			name:           "Japanese",
+			name:           "日本語",
 			locale:         "ja",
 			title:          "設定",
 			heading:        "設定",
@@ -267,7 +227,7 @@ func TestIndex_Locales(t *testing.T) {
 			signOutConfirm: "ログアウトしますか？",
 		},
 		{
-			name:           "English",
+			name:           "英語",
 			locale:         "en",
 			title:          "Settings",
 			heading:        "Settings",
@@ -305,7 +265,7 @@ func TestIndex_Locales(t *testing.T) {
 				tt.signOutConfirm,
 			} {
 				if !strings.Contains(body, want) {
-					t.Errorf("%s のレスポンスに %q が含まれていません", tt.locale, want)
+					t.Errorf("%sのレスポンスに%qが含まれていません", tt.locale, want)
 				}
 			}
 		})

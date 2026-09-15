@@ -9,13 +9,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// VerifyEmailConfirmationUsecase はメール確認コード検証のユースケース
+// VerifyEmailConfirmationUsecaseはメール確認コード検証のユースケース
 type VerifyEmailConfirmationUsecase struct {
 	emailConfirmationValidator *validator.EmailConfirmationCreateValidator
 	emailConfirmRepo           *repository.EmailConfirmationRepository
 }
 
-// NewVerifyEmailConfirmationUsecase は VerifyEmailConfirmationUsecase を生成する
+// NewVerifyEmailConfirmationUsecaseはVerifyEmailConfirmationUsecaseを生成する
 func NewVerifyEmailConfirmationUsecase(
 	emailConfirmationValidator *validator.EmailConfirmationCreateValidator,
 	emailConfirmRepo *repository.EmailConfirmationRepository,
@@ -26,20 +26,20 @@ func NewVerifyEmailConfirmationUsecase(
 	}
 }
 
-// VerifyEmailConfirmationInput はメール確認コード検証の入力パラメータ
+// VerifyEmailConfirmationInputはメール確認コード検証の入力パラメータ
 type VerifyEmailConfirmationInput struct {
 	ID   model.EmailConfirmationID
 	Code string
 }
 
-// VerifyEmailConfirmationOutput はメール確認コード検証の出力パラメータ
+// VerifyEmailConfirmationOutputはメール確認コード検証の出力パラメータ
 type VerifyEmailConfirmationOutput struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute はメール確認コード検証を実行する。
+// Executeはメール確認コード検証を実行する。
 // バリデーション → 単一の永続化 (Succeed) で完結するため、
-// オーケストレーションすべき対象がなく Execute 内で完結させている。
+// オーケストレーションすべき対象がなくExecute内で完結させている。
 func (uc *VerifyEmailConfirmationUsecase) Execute(ctx context.Context, input VerifyEmailConfirmationInput) (*VerifyEmailConfirmationOutput, error) {
 	emailConfirmation, err := uc.emailConfirmationValidator.Validate(ctx, validator.EmailConfirmationCreateValidatorInput{
 		ID:   input.ID,

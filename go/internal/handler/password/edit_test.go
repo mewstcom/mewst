@@ -22,7 +22,7 @@ func TestEdit_WithValidSucceededEmailConfirmation(t *testing.T) {
 	// 確認済みのメール確認レコードを作成
 	now := time.Now()
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-edit-success@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithSucceededAt(now).
@@ -44,7 +44,7 @@ func TestEdit_WithValidSucceededEmailConfirmation(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにパスワード入力フォームが含まれているか確認
@@ -81,12 +81,12 @@ func TestEdit_WithoutEmailConfirmationID(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -112,12 +112,12 @@ func TestEdit_WithInvalidEmailConfirmationID(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -129,7 +129,7 @@ func TestEdit_WithUnsuccessfulEmailConfirmation(t *testing.T) {
 
 	// 未確認のメール確認レコードを作成(succeeded_atがNULL)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-edit-unsuccessful@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -149,12 +149,12 @@ func TestEdit_WithUnsuccessfulEmailConfirmation(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -164,9 +164,9 @@ func TestEdit_WithMismatchedEvent(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// password_reset 以外のイベント(sign_up)の確認済みレコードを作成
+	// password_reset以外のイベント(sign_up)の確認済みレコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-edit-mismatched-event@example.com").
 		WithCode("123456").
 		WithEvent("sign_up").
 		WithSucceededAt(time.Now()).
@@ -187,11 +187,11 @@ func TestEdit_WithMismatchedEvent(t *testing.T) {
 
 	// イベント種別が異なるためルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }

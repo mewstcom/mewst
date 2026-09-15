@@ -58,7 +58,7 @@ func TestBadGatewayTemplate(t *testing.T) {
 			body := buf.String()
 			for _, expected := range tt.expected {
 				if !strings.Contains(body, expected) {
-					t.Errorf("レスポンスに %q が含まれていません", expected)
+					t.Errorf("レスポンスに%qが含まれていません", expected)
 				}
 			}
 		})
@@ -112,7 +112,7 @@ func TestNotFoundTemplate(t *testing.T) {
 			body := buf.String()
 			for _, expected := range tt.expected {
 				if !strings.Contains(body, expected) {
-					t.Errorf("レスポンスに %q が含まれていません", expected)
+					t.Errorf("レスポンスに%qが含まれていません", expected)
 				}
 			}
 		})

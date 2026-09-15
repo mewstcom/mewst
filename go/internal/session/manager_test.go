@@ -53,7 +53,7 @@ func TestManager_GetSessionToken(t *testing.T) {
 
 			got := manager.GetSessionToken(req)
 			if got != tt.expected {
-				t.Errorf("GetSessionToken() = %q, want %q", got, tt.expected)
+				t.Errorf("GetSessionToken() = %q、期待値 = %q", got, tt.expected)
 			}
 		})
 	}
@@ -134,20 +134,20 @@ func TestManager_GetCurrentUser(t *testing.T) {
 
 			user, err := manager.GetCurrentUser(context.Background(), req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetCurrentUser() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetCurrentUser()のエラー = %v、エラーの有無の期待値 = %v", err, tt.wantErr)
 				return
 			}
 
 			if tt.wantUser && user == nil {
-				t.Error("GetCurrentUser() = nil, want user")
+				t.Error("GetCurrentUser() = nil、ユーザーを期待")
 			}
 			if !tt.wantUser && user != nil {
-				t.Errorf("GetCurrentUser() = %v, want nil", user)
+				t.Errorf("GetCurrentUser() = %v、期待値 = nil", user)
 			}
 
 			if tt.wantUser && user != nil {
 				if user.Email != "session-test@example.com" {
-					t.Errorf("GetCurrentUser().Email = %q, want %q", user.Email, "session-test@example.com")
+					t.Errorf("GetCurrentUser().Email = %q、期待値 = %q", user.Email, "session-test@example.com")
 				}
 			}
 		})
@@ -223,20 +223,20 @@ func TestManager_GetCurrentActor(t *testing.T) {
 
 			actor, err := manager.GetCurrentActor(context.Background(), req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetCurrentActor() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetCurrentActor()のエラー = %v、エラーの有無の期待値 = %v", err, tt.wantErr)
 				return
 			}
 
 			if tt.wantActor && actor == nil {
-				t.Error("GetCurrentActor() = nil, want actor")
+				t.Error("GetCurrentActor() = nil、actorを期待")
 			}
 			if !tt.wantActor && actor != nil {
-				t.Errorf("GetCurrentActor() = %v, want nil", actor)
+				t.Errorf("GetCurrentActor() = %v、期待値 = nil", actor)
 			}
 
 			if tt.wantActor && actor != nil {
 				if actor.ID != actorID {
-					t.Errorf("GetCurrentActor().ID = %v, want %v", actor.ID, actorID)
+					t.Errorf("GetCurrentActor().ID = %v、期待値 = %v", actor.ID, actorID)
 				}
 			}
 		})
@@ -248,8 +248,7 @@ func TestManager_GetCurrentAuth(t *testing.T) {
 
 	_, tx := testutil.SetupTx(t)
 
-	// Set up a user / profile / actor / session to act as the valid case.
-	// [Ja] 正常系で参照する user / profile / actor / session を準備する。
+	// 正常系で参照するuser / profile / actor / sessionを準備する。
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("auth-test@example.com").
 		Build()
@@ -319,31 +318,31 @@ func TestManager_GetCurrentAuth(t *testing.T) {
 
 			auth, err := manager.GetCurrentAuth(context.Background(), req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetCurrentAuth() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetCurrentAuth()のエラー = %v、エラーの有無の期待値 = %v", err, tt.wantErr)
 				return
 			}
 
 			if tt.wantAuth {
 				if auth == nil {
-					t.Fatal("GetCurrentAuth() = nil, want CurrentAuth")
+					t.Fatal("GetCurrentAuth() = nil、CurrentAuthを期待")
 				}
 				if auth.User == nil || auth.User.ID != userID {
-					t.Errorf("GetCurrentAuth().User.ID = %v, want %v", auth.User, userID)
+					t.Errorf("GetCurrentAuth().User.ID = %v、期待値 = %v", auth.User, userID)
 				}
 				if auth.Actor == nil || auth.Actor.ID != actorID {
-					t.Errorf("GetCurrentAuth().Actor.ID = %v, want %v", auth.Actor, actorID)
+					t.Errorf("GetCurrentAuth().Actor.ID = %v、期待値 = %v", auth.Actor, actorID)
 				}
 				if auth.Profile == nil || auth.Profile.ID != profileID {
-					t.Errorf("GetCurrentAuth().Profile.ID = %v, want %v", auth.Profile, profileID)
+					t.Errorf("GetCurrentAuth().Profile.ID = %v、期待値 = %v", auth.Profile, profileID)
 				}
 				if auth.Profile != nil && auth.Profile.Atname != "authcurrentuser" {
-					t.Errorf("GetCurrentAuth().Profile.Atname = %q, want %q", auth.Profile.Atname, "authcurrentuser")
+					t.Errorf("GetCurrentAuth().Profile.Atname = %q、期待値 = %q", auth.Profile.Atname, "authcurrentuser")
 				}
 				return
 			}
 
 			if auth != nil {
-				t.Errorf("GetCurrentAuth() = %v, want nil", auth)
+				t.Errorf("GetCurrentAuth() = %v、期待値 = nil", auth)
 			}
 		})
 	}
@@ -365,27 +364,27 @@ func TestManager_SetSessionCookie(t *testing.T) {
 
 	cookies := rr.Result().Cookies()
 	if len(cookies) != 1 {
-		t.Fatalf("SetSessionCookie() set %d cookies, want 1", len(cookies))
+		t.Fatalf("SetSessionCookie()が設定したCookieの件数 = %d、期待値 = 1", len(cookies))
 	}
 
 	cookie := cookies[0]
 	if cookie.Name != CookieName {
-		t.Errorf("Cookie.Name = %q, want %q", cookie.Name, CookieName)
+		t.Errorf("Cookie.Name = %q、期待値 = %q", cookie.Name, CookieName)
 	}
 	if cookie.Value != "test-token" {
-		t.Errorf("Cookie.Value = %q, want %q", cookie.Value, "test-token")
+		t.Errorf("Cookie.Value = %q、期待値 = %q", cookie.Value, "test-token")
 	}
 	if !cookie.Secure {
-		t.Error("Cookie.Secure = false, want true")
+		t.Error("Cookie.Secure = false、期待値 = true")
 	}
 	if !cookie.HttpOnly {
-		t.Error("Cookie.HttpOnly = false, want true")
+		t.Error("Cookie.HttpOnly = false、期待値 = true")
 	}
 	if cookie.SameSite != http.SameSiteLaxMode {
-		t.Errorf("Cookie.SameSite = %v, want %v", cookie.SameSite, http.SameSiteLaxMode)
+		t.Errorf("Cookie.SameSite = %v、期待値 = %v", cookie.SameSite, http.SameSiteLaxMode)
 	}
 	if cookie.MaxAge != MaxAge {
-		t.Errorf("Cookie.MaxAge = %d, want %d", cookie.MaxAge, MaxAge)
+		t.Errorf("Cookie.MaxAge = %d、期待値 = %d", cookie.MaxAge, MaxAge)
 	}
 }
 
@@ -405,18 +404,18 @@ func TestManager_DeleteSessionCookie(t *testing.T) {
 
 	cookies := rr.Result().Cookies()
 	if len(cookies) != 1 {
-		t.Fatalf("DeleteSessionCookie() set %d cookies, want 1", len(cookies))
+		t.Fatalf("DeleteSessionCookie()が設定したCookieの件数 = %d、期待値 = 1", len(cookies))
 	}
 
 	cookie := cookies[0]
 	if cookie.Name != CookieName {
-		t.Errorf("Cookie.Name = %q, want %q", cookie.Name, CookieName)
+		t.Errorf("Cookie.Name = %q、期待値 = %q", cookie.Name, CookieName)
 	}
 	if cookie.Value != "" {
-		t.Errorf("Cookie.Value = %q, want empty string", cookie.Value)
+		t.Errorf("Cookie.Value = %q、空文字列を期待", cookie.Value)
 	}
 	if cookie.MaxAge != -1 {
-		t.Errorf("Cookie.MaxAge = %d, want -1", cookie.MaxAge)
+		t.Errorf("Cookie.MaxAge = %d、期待値 = -1", cookie.MaxAge)
 	}
 }
 
@@ -491,7 +490,7 @@ func TestManager_IsLoggedIn(t *testing.T) {
 
 			got := manager.IsLoggedIn(context.Background(), req)
 			if got != tt.want {
-				t.Errorf("IsLoggedIn() = %v, want %v", got, tt.want)
+				t.Errorf("IsLoggedIn() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}

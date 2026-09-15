@@ -13,20 +13,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// ShowPageData holds the data for the export page.
-//
-// [Ja] ShowPageData はエクスポート画面のデータを保持する。
+// ShowPageDataはエクスポート画面のデータを保持する。
 type ShowPageData struct {
 	CSRFToken string
 	Export    viewmodel.Export
 }
 
-// stateMessageID returns the message ID describing the given export state.
-// Every state maps to a message, so the status region is never empty and the
-// page never leaves the reader to infer the state from which buttons are
-// present.
-//
-// [Ja] stateMessageID は指定したエクスポート状態を説明するメッセージ ID を返す。
+// stateMessageIDは指定したエクスポート状態を説明するメッセージIDを返す。
 // すべての状態がメッセージへ対応するため、状態領域が空になることはなく、どの
 // ボタンがあるかから状態を推測させることもない。
 func stateMessageID(state viewmodel.ExportState) string {
@@ -42,23 +35,13 @@ func stateMessageID(state viewmodel.ExportState) string {
 	case viewmodel.ExportStateNone:
 		return "export_show_state_none"
 	default:
-		// Fall back to the same in-progress reading viewmodel.exportState uses
-		// for an unrecognized status, so both layers describe an unknown state
-		// the same way.
-		//
-		// [Ja] 未知の状態は viewmodel.exportState が未知の status に対して行うのと
-		// 同じく進行中として読む。2 つの層が未知の状態を同じ形で説明するため。
+		// 未知の状態はviewmodel.exportStateが未知のstatusに対して行うのと
+		// 同じく進行中として読む。2つの層が未知の状態を同じ形で説明するため。
 		return "export_show_state_in_progress"
 	}
 }
 
-// downloadLinkMessageID returns the message ID for the download link. The zip is
-// named as the current export only when the latest export is the one that
-// produced it; in every other state, including an unrecognized one, the link
-// names it as an earlier export so the label never claims more than what is
-// offered.
-//
-// [Ja] downloadLinkMessageID はダウンロードリンクのメッセージ ID を返す。zip を
+// downloadLinkMessageIDはダウンロードリンクのメッセージIDを返す。zipを
 // 現在のエクスポートとして示すのは、最新のエクスポートがそれを作った場合だけであり、
 // 未知の状態を含むそれ以外では以前のエクスポートとして示す。ラベルが提供している
 // ものより大きいことを言わないようにするため。
@@ -70,10 +53,7 @@ func downloadLinkMessageID(state viewmodel.ExportState) string {
 	return "export_show_previous_download_link"
 }
 
-// Show renders the export page: what an export contains, the state of this
-// profile's latest export, and the actions that state allows.
-//
-// [Ja] Show はエクスポート画面を描画する。エクスポートに何が含まれるか、この
+// Showはエクスポート画面を描画する。エクスポートに何が含まれるか、この
 // プロフィールの最新のエクスポートの状態、およびその状態で行える操作を示す。
 func Show(data ShowPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -111,7 +91,7 @@ func Show(data ShowPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_show_heading"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 76, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 56, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -124,7 +104,7 @@ func Show(data ShowPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_show_description"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 83, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 63, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -137,7 +117,7 @@ func Show(data ShowPageData) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, stateMessageID(data.Export.State)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 97, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 71, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -148,14 +128,14 @@ func Show(data ShowPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.Export.CanDownload {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "         <a class=\"link-primary-foreground flex w-fit items-center py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring\" href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "    <a class=\"link-primary-foreground flex w-fit items-center py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 templ.SafeURL
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(templates.SettingExportDownloadPath())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 112, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 81, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -168,7 +148,7 @@ func Show(data ShowPageData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, downloadLinkMessageID(data.Export.State)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 114, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 83, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +167,7 @@ func Show(data ShowPageData) templ.Component {
 			var templ_7745c5c3_Var7 templ.SafeURL
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templates.SettingExportPath())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 119, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 88, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -200,7 +180,7 @@ func Show(data ShowPageData) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 120, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 89, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -213,7 +193,7 @@ func Show(data ShowPageData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_show_submit"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 122, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/export/show.templ`, Line: 91, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

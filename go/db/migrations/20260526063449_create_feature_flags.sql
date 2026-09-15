@@ -6,8 +6,7 @@ CREATE TABLE feature_flags (
     actor_id uuid REFERENCES actors(id),
     name varchar NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    -- Require at least one owner so a flag always belongs to a device or an actor.
-    -- [Ja] フラグが必ずデバイスまたは actor のいずれかに属するよう、最低 1 つの所有者を必須にする。
+    -- フラグが必ずデバイスまたはactorのいずれかに属するよう、最低1つの所有者を必須にする。
     CONSTRAINT chk_feature_flags_identifier CHECK (device_token IS NOT NULL OR actor_id IS NOT NULL),
     UNIQUE (actor_id, name),
     UNIQUE (device_token, name)

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// UserProfile はユーザーとプロフィールの関連付けを表す
+// UserProfileはユーザーとプロフィールの関連付けを表す
 type UserProfile struct {
 	ID        UserProfileID
 	UserID    UserID

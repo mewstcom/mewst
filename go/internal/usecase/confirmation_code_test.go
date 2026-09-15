@@ -13,11 +13,11 @@ func TestGenerateConfirmationCode(t *testing.T) {
 
 		code, err := generateConfirmationCode()
 		if err != nil {
-			t.Fatalf("generateConfirmationCode() error = %v", err)
+			t.Fatalf("generateConfirmationCode()のエラー = %v", err)
 		}
 
 		if len(code) != 6 {
-			t.Errorf("コード長 = %d, want 6", len(code))
+			t.Errorf("コード長 = %d、期待値 = 6", len(code))
 		}
 
 		matched, _ := regexp.MatchString(`^[0-9]{6}$`, code)
@@ -33,14 +33,14 @@ func TestGenerateConfirmationCode(t *testing.T) {
 		for i := 0; i < 100; i++ {
 			code, err := generateConfirmationCode()
 			if err != nil {
-				t.Fatalf("generateConfirmationCode() error = %v", err)
+				t.Fatalf("generateConfirmationCode()のエラー = %v", err)
 			}
 			codes[code] = true
 		}
 
 		// 100回生成して、少なくとも90種類以上の異なるコードが生成されることを確認
 		if len(codes) < 90 {
-			t.Errorf("ユニークなコード数 = %d, want >= 90", len(codes))
+			t.Errorf("ユニークなコード数 = %d、期待値 = 90以上", len(codes))
 		}
 	})
 }

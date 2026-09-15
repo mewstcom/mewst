@@ -8,29 +8,21 @@ import (
 	"testing"
 )
 
-// noCommands is the set of implementations for a dispatch that is expected to
-// reach none of them. Calling one is the failure, so each records that it was
-// called rather than doing anything.
-//
-// [Ja] noCommands は、どの実装にも辿り着かないことを期待する振り分けのための実装の
+// noCommandsは、どの実装にも辿り着かないことを期待する振り分けのための実装の
 // 組。呼ばれること自体が失敗であるため、それぞれは何かを行うのではなく、呼ばれた
 // ことを記録する。
 func noCommands(t *testing.T) commands {
 	t.Helper()
 
 	return commands{
-		serve:    func() { t.Error("serve が呼ばれた") },
-		seed:     func() { t.Error("seed が呼ばれた") },
-		devcreds: func(_ io.Writer, role string) { t.Errorf("devcreds が役割 %q で呼ばれた", role) },
+		serve:    func() { t.Error("serveが呼ばれた") },
+		seed:     func() { t.Error("seedが呼ばれた") },
+		devcreds: func(_ io.Writer, role string) { t.Errorf("devcredsが役割%qで呼ばれた", role) },
 	}
 }
 
-// TestRun_RejectsAnInvocationWithoutAKnownSubcommand verifies that a command
-// line naming no subcommand, or one this command does not know, is answered
-// with the usage and the usage exit code.
-//
-// [Ja] TestRun_RejectsAnInvocationWithoutAKnownSubcommand は、サブコマンドを指定して
-// いない / 本コマンドの知らないサブコマンドを指定したコマンドラインが、usage と使用方法の
+// TestRun_RejectsAnInvocationWithoutAKnownSubcommandは、サブコマンドを指定して
+// いない / 本コマンドの知らないサブコマンドを指定したコマンドラインが、usageと使用方法の
 // 誤りを示す終了コードで応答されることを検証する。
 func TestRun_RejectsAnInvocationWithoutAKnownSubcommand(t *testing.T) {
 	t.Parallel()
@@ -52,7 +44,7 @@ func TestRun_RejectsAnInvocationWithoutAKnownSubcommand(t *testing.T) {
 			code := run(tt.args, io.Discard, &stderr, noCommands(t))
 
 			if code != exitUsage {
-				t.Errorf("run() exit code = %d, want %d", code, exitUsage)
+				t.Errorf("run()の終了コード = %d、期待値 = %d", code, exitUsage)
 			}
 			for _, want := range []string{
 				"usage: mewst <command>",
@@ -61,18 +53,14 @@ func TestRun_RejectsAnInvocationWithoutAKnownSubcommand(t *testing.T) {
 				"  devcreds <role>    print the email address and password of a seeded account",
 			} {
 				if !strings.Contains(stderr.String(), want) {
-					t.Errorf("run() stderr = %q, want it to contain %q", stderr.String(), want)
+					t.Errorf("run()の標準エラー出力 = %q、%qを含むことを期待", stderr.String(), want)
 				}
 			}
 		})
 	}
 }
 
-// TestRun_NamesTheUnknownSubcommand pins the quoting of the name that was not
-// understood. Without it the output tells the reader only that some name was
-// rejected, which is the one thing they already know.
-//
-// [Ja] TestRun_NamesTheUnknownSubcommand は、解釈できなかった名前を引用符付きで
+// TestRun_NamesTheUnknownSubcommandは、解釈できなかった名前を引用符付きで
 // 出力することを固定する。これが無いと、出力は「何らかの名前が拒否された」ことしか
 // 伝えず、それは読み手がすでに知っている唯一のことになる。
 func TestRun_NamesTheUnknownSubcommand(t *testing.T) {
@@ -83,16 +71,12 @@ func TestRun_NamesTheUnknownSubcommand(t *testing.T) {
 	run([]string{"nosuchcommand"}, io.Discard, &stderr, noCommands(t))
 
 	if want := `unknown subcommand: "nosuchcommand"`; !strings.Contains(stderr.String(), want) {
-		t.Errorf("run() stderr = %q, want it to contain %q", stderr.String(), want)
+		t.Errorf("run()の標準エラー出力 = %q、%qを含むことを期待", stderr.String(), want)
 	}
 }
 
-// TestRun_DispatchesToTheNamedSubcommand verifies that each name reaches its
-// own implementation, and only its own, without starting the blocking HTTP
-// server or emptying a database.
-//
-// [Ja] TestRun_DispatchesToTheNamedSubcommand は、それぞれの名前が自身の実装に、
-// かつ自身の実装だけに辿り着くことを、ブロックする HTTP サーバーを起動したり
+// TestRun_DispatchesToTheNamedSubcommandは、それぞれの名前が自身の実装に、
+// かつ自身の実装だけに辿り着くことを、ブロックするHTTPサーバーを起動したり
 // データベースを空にしたりせずに検証する。
 func TestRun_DispatchesToTheNamedSubcommand(t *testing.T) {
 	t.Parallel()
@@ -119,31 +103,25 @@ func TestRun_DispatchesToTheNamedSubcommand(t *testing.T) {
 			})
 
 			if code != 0 {
-				t.Errorf("run() exit code = %d, want 0", code)
+				t.Errorf("run()の終了コード = %d、期待値 = 0", code)
 			}
 			if calls[tt.arg] != 1 {
-				t.Errorf("%s calls = %d, want 1", tt.arg, calls[tt.arg])
+				t.Errorf("%sの呼び出し回数 = %d、期待値 = 1", tt.arg, calls[tt.arg])
 			}
 			if len(calls) != 1 {
-				t.Errorf("run() reached %v, want only %s", calls, tt.arg)
+				t.Errorf("run()が%vまで進んだ、期待値 = %sだけ", calls, tt.arg)
 			}
 			if stderr.Len() != 0 {
-				t.Errorf("run() stderr = %q, want empty", stderr.String())
+				t.Errorf("run()の標準エラー出力 = %q、空を期待", stderr.String())
 			}
 		})
 	}
 }
 
-// TestRun_RejectsArgumentsAfterASubcommand verifies that a command line that
-// puts anything after a subcommand is answered with the usage instead of the
-// work. Neither of these subcommands takes an argument, and both look the same
-// however they were invoked once they have started, so an ignored argument
-// would leave a mistyped flag with no symptom at all.
-//
-// [Ja] TestRun_RejectsArgumentsAfterASubcommand は、サブコマンドの後ろに何かを続けた
-// コマンドラインが、その処理ではなく usage で応答されることを検証する。ここに並ぶ
+// TestRun_RejectsArgumentsAfterASubcommandは、サブコマンドの後ろに何かを続けた
+// コマンドラインが、その処理ではなくusageで応答されることを検証する。ここに並ぶ
 // サブコマンドはいずれも引数を取らず、走り出してしまえばどう起動されても見え方が同じで
-// あるため、引数を無視すると打ち間違えたフラグには症状が 1 つも残らない。
+// あるため、引数を無視すると打ち間違えたフラグには症状が1つも残らない。
 func TestRun_RejectsArgumentsAfterASubcommand(t *testing.T) {
 	t.Parallel()
 
@@ -173,25 +151,18 @@ func TestRun_RejectsArgumentsAfterASubcommand(t *testing.T) {
 			code := run(tt.args, io.Discard, &stderr, noCommands(t))
 
 			if code != exitUsage {
-				t.Errorf("run() exit code = %d, want %d", code, exitUsage)
+				t.Errorf("run()の終了コード = %d、期待値 = %d", code, exitUsage)
 			}
 			for _, want := range []string{tt.wantMsg, "usage: mewst <command>"} {
 				if !strings.Contains(stderr.String(), want) {
-					t.Errorf("run() stderr = %q, want it to contain %q", stderr.String(), want)
+					t.Errorf("run()の標準エラー出力 = %q、%qを含むことを期待", stderr.String(), want)
 				}
 			}
 		})
 	}
 }
 
-// TestRun_DispatchesTheRoleToDevcreds verifies that the role written on the
-// command line reaches the subcommand as it was written, and that what the
-// subcommand writes reaches the standard output the caller supplied. The role
-// is the only argument any subcommand takes, and it decides which account's
-// password is printed; that standard output is the stream the caller reads the
-// password from.
-//
-// [Ja] TestRun_DispatchesTheRoleToDevcreds は、コマンドラインに書かれた役割が
+// TestRun_DispatchesTheRoleToDevcredsは、コマンドラインに書かれた役割が
 // 書かれたままサブコマンドへ届くこと、そしてサブコマンドが書いたものが、呼び出し側の
 // 渡した標準出力へ届くことを検証する。役割はどのサブコマンドを通しても唯一の引数で
 // あり、どのアカウントのパスワードを出力するのかを決めるものになる。その標準出力は、
@@ -203,8 +174,8 @@ func TestRun_DispatchesTheRoleToDevcreds(t *testing.T) {
 	var got []string
 
 	code := run([]string{"devcreds", "follower"}, &stdout, &stderr, commands{
-		serve: func() { t.Error("serve が呼ばれた") },
-		seed:  func() { t.Error("seed が呼ばれた") },
+		serve: func() { t.Error("serveが呼ばれた") },
+		seed:  func() { t.Error("seedが呼ばれた") },
 		devcreds: func(w io.Writer, role string) {
 			got = append(got, role)
 			if _, err := io.WriteString(w, "seeduser2@example.com\nseed-password\n"); err != nil {
@@ -214,30 +185,21 @@ func TestRun_DispatchesTheRoleToDevcreds(t *testing.T) {
 	})
 
 	if code != 0 {
-		t.Errorf("run() exit code = %d, want 0", code)
+		t.Errorf("run()の終了コード = %d、期待値 = 0", code)
 	}
 	if want := []string{"follower"}; !slices.Equal(got, want) {
-		t.Errorf("devcreds calls = %v, want %v", got, want)
+		t.Errorf("devcredsの呼び出し = %v、期待値 = %v", got, want)
 	}
 	if want := "seeduser2@example.com\nseed-password\n"; stdout.String() != want {
-		t.Errorf("run() stdout = %q, want %q", stdout.String(), want)
+		t.Errorf("run()の標準出力 = %q、期待値 = %q", stdout.String(), want)
 	}
 	if stderr.Len() != 0 {
-		t.Errorf("run() stderr = %q, want empty", stderr.String())
+		t.Errorf("run()の標準エラー出力 = %q、空を期待", stderr.String())
 	}
 }
 
-// TestRun_RejectsDevcredsWithoutExactlyOneRole verifies that a command line
-// that named no role, or more than one, is answered with the usage. A role it
-// does not receive is one the subcommand would otherwise have to guess at,
-// and the account it guessed would be the one whose password is printed.
-//
-// The standard output has to stay empty in that case: the caller reads that
-// stream as the credentials themselves, so a rejected invocation says what
-// happened on standard error and leaves nothing to be read as a password.
-//
-// [Ja] TestRun_RejectsDevcredsWithoutExactlyOneRole は、役割を指定していない /
-// 2 つ以上指定したコマンドラインが usage で応答されることを検証する。受け取れな
+// TestRun_RejectsDevcredsWithoutExactlyOneRoleは、役割を指定していない /
+// 2つ以上指定したコマンドラインがusageで応答されることを検証する。受け取れな
 // かった役割は、サブコマンドが推測するほかないものであり、推測されたアカウントは
 // そのパスワードが出力されるアカウントになる。
 //
@@ -258,7 +220,7 @@ func TestRun_RejectsDevcredsWithoutExactlyOneRole(t *testing.T) {
 			wantMsg: `devcreds takes exactly one argument <role>: []`,
 		},
 		{
-			name:    "役割を 2 つ指定した",
+			name:    "役割を2つ指定した",
 			args:    []string{"devcreds", "main", "follower"},
 			wantMsg: `devcreds takes exactly one argument <role>: ["main" "follower"]`,
 		},
@@ -273,15 +235,15 @@ func TestRun_RejectsDevcredsWithoutExactlyOneRole(t *testing.T) {
 			code := run(tt.args, &stdout, &stderr, noCommands(t))
 
 			if code != exitUsage {
-				t.Errorf("run() exit code = %d, want %d", code, exitUsage)
+				t.Errorf("run()の終了コード = %d、期待値 = %d", code, exitUsage)
 			}
 			for _, want := range []string{tt.wantMsg, "usage: mewst <command>"} {
 				if !strings.Contains(stderr.String(), want) {
-					t.Errorf("run() stderr = %q, want it to contain %q", stderr.String(), want)
+					t.Errorf("run()の標準エラー出力 = %q、%qを含むことを期待", stderr.String(), want)
 				}
 			}
 			if stdout.Len() != 0 {
-				t.Errorf("run() stdout = %q, want empty", stdout.String())
+				t.Errorf("run()の標準出力 = %q、空を期待", stdout.String())
 			}
 		})
 	}

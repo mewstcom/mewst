@@ -12,24 +12,14 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// TopNavbar renders the desktop top navigation bar (logo on the left, menu on
-// the right). It sticks below the top safe-area inset and is shown only on lg
-// and above, matching the Rails TopNavbarComponent. The Rails daisyUI bg-base-100 becomes
-// bg-background, and the BasicContainer (max-w-2xl) is reproduced inline.
-//
-// The wrapper is a <nav> landmark. Because the top and bottom navbars are both
-// rendered into the same DOM (toggled by CSS breakpoints), each carries a
-// distinct aria-label so assistive tech can tell the two navigation regions
-// apart.
-//
-// [Ja] PC 向けのトップナビゲーションバー (左にロゴ、右にメニュー) を描画する。
-// 上辺の safe-area inset より下に固定し、lg 以上でのみ表示する点は Rails の TopNavbarComponent に
-// 合わせている。Rails の daisyUI bg-base-100 は bg-background に置き換え、
+// TopNavbarはPC向けのトップナビゲーションバー (左にロゴ、右にメニュー) を描画する。
+// 上辺のsafe-area insetより下に固定し、lg以上でのみ表示する点はRailsのTopNavbarComponentに
+// 合わせている。RailsのdaisyUI bg-base-100はbg-backgroundに置き換え、
 // BasicContainer (max-w-2xl) はインラインで再現する。
 //
-// ラッパーは <nav> ランドマーク。トップとボトムの navbar は CSS のブレークポイント
-// で切り替わるが両方とも同一 DOM に描画されるため、支援技術が 2 つのナビゲーション
-// 領域を区別できるよう、それぞれに固有の aria-label を付けている。
+// ラッパーは <nav> ランドマーク。トップとボトムのnavbarはCSSのブレークポイント
+// で切り替わるが両方とも同一DOMに描画されるため、支援技術が2つのナビゲーション
+// 領域を区別できるよう、それぞれに固有のaria-labelを付けている。
 func TopNavbar(navbar viewmodel.Navbar) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -58,7 +48,7 @@ func TopNavbar(navbar viewmodel.Navbar) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.T(ctx, "navbar_top_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/top_navbar.templ`, Line: 27, Col: 114}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/top_navbar.templ`, Line: 17, Col: 114}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {

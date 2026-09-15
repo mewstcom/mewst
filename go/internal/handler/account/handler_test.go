@@ -22,7 +22,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// mockTurnstile はテスト用のTurnstile検証モック
+// mockTurnstileはテスト用のTurnstile検証モック
 type mockTurnstile struct {
 	shouldSucceed bool
 }
@@ -31,7 +31,7 @@ func (m *mockTurnstile) Verify(_ context.Context, _ string) (bool, error) {
 	return m.shouldSucceed, nil
 }
 
-// setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
+// setupTestHandlerはテスト用のハンドラーとテストデータをセットアップする
 func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
@@ -60,7 +60,7 @@ func setupTestHandler(t *testing.T, db *sql.DB, tx *sql.Tx, turnstileSuccess boo
 	return h, cfg
 }
 
-// createVerifiedEmailConfirmation は確認済みのメール確認レコードを作成し、そのIDをクッキーに設定する
+// createVerifiedEmailConfirmationは確認済みのメール確認レコードを作成し、そのIDをクッキーに設定する
 func createVerifiedEmailConfirmation(t *testing.T, tx *sql.Tx, email string, req *http.Request) {
 	t.Helper()
 
@@ -96,7 +96,7 @@ func TestNew(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにフォームが含まれているか確認
@@ -136,12 +136,12 @@ func TestNew_WithoutEmailConfirmation(t *testing.T) {
 
 	// トップページにリダイレクトされるべき
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -154,7 +154,7 @@ func TestNew_WithMismatchedEvent(t *testing.T) {
 	ctx := context.Background()
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
 
-	// sign_up 以外のイベント (password_reset) の確認済みレコードを作成
+	// sign_up以外のイベント (password_reset) の確認済みレコードを作成
 	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("mismatched@example.com").
 		WithEvent("password_reset").
@@ -173,12 +173,12 @@ func TestNew_WithMismatchedEvent(t *testing.T) {
 
 	// イベント種別が異なるためルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -209,13 +209,13 @@ func TestCreate_Success(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// リダイレクト先を検証
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	// セッションクッキーが設定されているか確認
@@ -283,12 +283,12 @@ func TestCreate_WithoutEmailConfirmation(t *testing.T) {
 
 	// トップページにリダイレクトされるべき
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -311,7 +311,7 @@ func TestCreate_WithMismatchedEvent(t *testing.T) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req = req.WithContext(ctx)
 
-	// sign_up 以外のイベント (password_reset) の確認済みレコードを設定
+	// sign_up以外のイベント (password_reset) の確認済みレコードを設定
 	ecID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("mismatched-create@example.com").
 		WithEvent("password_reset").
@@ -327,12 +327,12 @@ func TestCreate_WithMismatchedEvent(t *testing.T) {
 
 	// イベント種別が異なるためルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -384,7 +384,7 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// レート制限エラーメッセージが表示されているか確認
@@ -420,7 +420,7 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// Turnstileエラーメッセージが表示されているか確認
@@ -456,7 +456,7 @@ func TestCreate_ValidationError_EmptyAtname(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// バリデーションエラーが表示されているか確認
@@ -497,7 +497,7 @@ func TestCreate_ValidationError_DuplicateAtname(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// 重複エラーメッセージが表示されているか確認
@@ -540,7 +540,7 @@ func TestCreate_ValidationError_DuplicateEmail(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// 重複エラーメッセージが表示されているか確認

@@ -20,53 +20,35 @@ import (
 	"github.com/mewstcom/mewst/go/internal/session"
 )
 
-// DeviceTokenCookieName is the cookie key that identifies a browser (device)
-// regardless of login state, used for feature-flag targeting.
-//
-// [Ja] DeviceTokenCookieName はログイン状態に依らずブラウザ (デバイス) を
-// 識別する Cookie キー名。フィーチャーフラグの出し分けに使う。
+// DeviceTokenCookieNameはログイン状態に依らずブラウザ (デバイス) を
+// 識別するCookieキー名。フィーチャーフラグの出し分けに使う。
 const DeviceTokenCookieName = "device_token"
 
-// featureFlagChecker reports whether a feature flag is enabled for the viewer.
-// repository.FeatureFlagRepository satisfies this interface.
-//
-// [Ja] featureFlagChecker は閲覧者に対してフィーチャーフラグが有効かを返す。
-// repository.FeatureFlagRepository がこのインターフェースを満たす。
+// featureFlagCheckerは閲覧者に対してフィーチャーフラグが有効かを返す。
+// repository.FeatureFlagRepositoryがこのインターフェースを満たす。
 type featureFlagChecker interface {
 	IsEnabledForDevice(ctx context.Context, deviceToken string, sessionToken string, name model.FeatureFlagName) (bool, error)
 }
 
-// featureFlaggedPattern defines a URL pattern gated by a feature flag.
-// [Ja] featureFlaggedPattern はフィーチャーフラグで制御する URL パターンを定義する。
+// featureFlaggedPatternはフィーチャーフラグで制御するURLパターンを定義する。
 type featureFlaggedPattern struct {
 	pattern *regexp.Regexp
 	flag    model.FeatureFlagName
-	methods []string // nil or empty matches every method. [Ja] nil または空なら全メソッドにマッチ
+	methods []string // nilまたは空なら全メソッドにマッチ
 }
 
-// featureFlaggedPatterns lists the URL patterns gated by a feature flag.
-//
-// Each entry anchors its path regexp with "^...$" so it matches the exact path
-// and not sub-paths, and pairs it with an HTTP method set and the flag that
-// gates it. A matching request is served by Go only when the flag is enabled
-// for the viewer; otherwise it falls through to the Rails proxy.
-//
-// The list is empty while no route sits behind a flag. A released feature moves
-// its routes to goHandledPatterns and leaves the list to the next one.
-//
-// [Ja] featureFlaggedPatterns はフィーチャーフラグで制御する URL パターンの一覧。
+// featureFlaggedPatternsはフィーチャーフラグで制御するURLパターンの一覧。
 //
 // 各エントリはパスの正規表現を "^...$" でアンカーしてサブパスではなく完全一致
-// させ、HTTP メソッドの集合とそれをゲートするフラグを対応付ける。一致した
-// リクエストは閲覧者にフラグが有効なときだけ Go 版で処理し、無効なら Rails への
+// させ、HTTPメソッドの集合とそれをゲートするフラグを対応付ける。一致した
+// リクエストは閲覧者にフラグが有効なときだけGo版で処理し、無効ならRailsへの
 // プロキシに進む。
 //
 // フラグの内側にあるルートが無い間、一覧は空になる。公開した機能は自身の
-// ルートを goHandledPatterns へ移し、この一覧は次の機能に譲る。
+// ルートをgoHandledPatternsへ移し、この一覧は次の機能に譲る。
 var featureFlaggedPatterns = []featureFlaggedPattern{}
 
-// ReverseProxyMiddleware is the reverse-proxy middleware to the Rails version.
-// [Ja] ReverseProxyMiddleware は Rails 版へのリバースプロキシミドルウェア。
+// ReverseProxyMiddlewareはRails版へのリバースプロキシミドルウェア。
 type ReverseProxyMiddleware struct {
 	railsURL        *url.URL
 	proxy           *httputil.ReverseProxy
@@ -89,68 +71,41 @@ var goHandledPaths = []string{
 	"/accounts",           // アカウント作成
 }
 
-// goHandledPattern defines an exact URL pattern and HTTP method set always
-// handled by Go.
-//
-// [Ja] goHandledPattern は常に Go 版で処理する完全一致 URL パターンと HTTP
+// goHandledPatternは常にGo版で処理する完全一致URLパターンとHTTP
 // メソッドの集合を定義する。
 type goHandledPattern struct {
 	pattern *regexp.Regexp
-	methods []string // nil or empty matches every method. [Ja] nil または空なら全メソッドにマッチ
+	methods []string // nilまたは空なら全メソッドにマッチ
 }
 
-// goHandledPatterns lists the URL patterns always handled by Go, identified by
-// an exact path regexp and an HTTP method set.
+// goHandledPatternsは常にGo版で処理するURLパターンの一覧。完全一致の
+// パス正規表現とHTTPメソッドの集合で識別する。
 //
-// goHandledPaths matches by prefix, which is too coarse here: adding "/posts"
-// there would also steal the Rails-owned GET /posts/:id (post detail). These
-// endpoints need exact-path + method precision, so the "^...$" anchor plus the
-// method set keeps POST /posts matching only POST /posts and leaves GET
-// /posts/:id with Rails.
-//
-// [Ja] goHandledPatterns は常に Go 版で処理する URL パターンの一覧。完全一致の
-// パス正規表現と HTTP メソッドの集合で識別する。
-//
-// goHandledPaths は prefix 一致のため、ここでは粗すぎる: "/posts" を足すと Rails
-// に残す GET /posts/:id (投稿詳細) まで奪ってしまう。これらのエンドポイントは
-// exact-path + method の精度が要るため、"^...$" のアンカーとメソッド集合により
-// POST /posts は POST /posts だけにマッチさせ、GET /posts/:id は Rails に残す。
+// goHandledPathsはprefix一致のため、ここでは粗すぎる: "/posts" を足すとRails
+// に残すGET /posts/:id (投稿詳細) まで奪ってしまう。これらのエンドポイントは
+// exact-path + methodの精度が要るため、"^...$" のアンカーとメソッド集合により
+// POST /postsはPOST /postsだけにマッチさせ、GET /posts/:idはRailsに残す。
 var goHandledPatterns = []goHandledPattern{
-	// GET /new: the new-post form.
-	// [Ja] GET /new: 新規投稿フォーム。
+	// GET /new: 新規投稿フォーム。
 	{pattern: regexp.MustCompile(`^/new$`), methods: []string{http.MethodGet}},
-	// POST /posts: post creation. The "^/posts$" anchor leaves GET /posts/:id with Rails.
-	// [Ja] POST /posts: 投稿作成。"^/posts$" のアンカーで GET /posts/:id は Rails に残す。
+	// POST /posts: 投稿作成。"^/posts$" のアンカーでGET /posts/:idはRailsに残す。
 	{pattern: regexp.MustCompile(`^/posts$`), methods: []string{http.MethodPost}},
-	// GET /links/new: the link card prompt fragment fetched via htmx from the /new form.
-	// [Ja] GET /links/new: /new フォームから htmx で取得するリンクカードプロンプトのフラグメント。
+	// GET /links/new: /newフォームからhtmxで取得するリンクカードプロンプトのフラグメント。
 	{pattern: regexp.MustCompile(`^/links/new$`), methods: []string{http.MethodGet}},
-	// POST /links: link card creation.
-	// [Ja] POST /links: リンクカード作成。
+	// POST /links: リンクカード作成。
 	{pattern: regexp.MustCompile(`^/links$`), methods: []string{http.MethodPost}},
-	// GET /settings: the settings menu page. The "^/settings$" anchor leaves the
-	// Rails-owned sub-pages (GET /settings/profile, /settings/user, /settings/email)
-	// with Rails.
-	//
-	// [Ja] GET /settings: 設定メニューページ。"^/settings$" のアンカーにより、
-	// サブページ (GET /settings/profile・/settings/user・/settings/email) は Rails に残す。
+	// GET /settings: 設定メニューページ。"^/settings$" のアンカーにより、
+	// サブページ (GET /settings/profile・/settings/user・/settings/email) はRailsに残す。
 	{pattern: regexp.MustCompile(`^/settings$`), methods: []string{http.MethodGet}},
-	// GET/POST /settings/export: the export screen and the start of an export.
-	// The route exists only in the Go version, so Go owns it outright.
-	//
-	// [Ja] GET/POST /settings/export: エクスポート画面とエクスポートの開始。
-	// Go 版にしか存在しないルートのため、Go 版が単独で持つ。
+	// GET/POST /settings/export: エクスポート画面とエクスポートの開始。
+	// Go版にしか存在しないルートのため、Go版が単独で持つ。
 	{pattern: regexp.MustCompile(`^/settings/export$`), methods: []string{http.MethodGet, http.MethodPost}},
-	// GET /settings/export/download: the download of the generated zip.
-	// [Ja] GET /settings/export/download: 生成した zip のダウンロード。
+	// GET /settings/export/download: 生成したzipのダウンロード。
 	{pattern: regexp.MustCompile(`^/settings/export/download$`), methods: []string{http.MethodGet}},
 }
 
-// NewReverseProxyMiddleware creates a new ReverseProxyMiddleware.
-// When featureFlagRepo is nil, feature-flag checks are skipped.
-//
-// [Ja] NewReverseProxyMiddleware は新しい ReverseProxyMiddleware を作成する。
-// featureFlagRepo が nil の場合、フィーチャーフラグ判定はスキップされる。
+// NewReverseProxyMiddlewareは新しいReverseProxyMiddlewareを作成する。
+// featureFlagRepoがnilの場合、フィーチャーフラグ判定はスキップされる。
 func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagRepo featureFlagChecker) (*ReverseProxyMiddleware, error) {
 	parsedURL, err := url.Parse(railsURL)
 	if err != nil {
@@ -177,19 +132,12 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 
-	// Customize header rewriting via the proxy's Rewrite function. ReverseProxy strips Forwarded /
-	// X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto from Out.Header before calling Rewrite,
-	// so read the original values from pr.In.Header when they need to be preserved.
-	//
-	// [Ja] プロキシの Rewrite 関数でヘッダー設定を行う。httputil.ReverseProxy は Rewrite 呼び出し前に
-	// Forwarded / X-Forwarded-For / X-Forwarded-Host / X-Forwarded-Proto を Out.Header から削除するため、
-	// 元の値を参照したい場合は pr.In.Header から取得する必要がある。
+	// プロキシのRewrite関数でヘッダー設定を行う。httputil.ReverseProxyはRewrite呼び出し前に
+	// Forwarded / X-Forwarded-For / X-Forwarded-Host / X-Forwarded-ProtoをOut.Headerから削除するため、
+	// 元の値を参照したい場合はpr.In.Headerから取得する必要がある。
 	proxy.Rewrite = func(pr *httputil.ProxyRequest) {
-		// Rewrite the URL to the Rails host. SetURL sets Out.Host = "", so follow it with
-		// Out.Host = In.Host to keep forwarding the client's Host header to Rails unchanged.
-		//
-		// [Ja] URL を Rails 版のホストに書き換える。SetURL は Out.Host = "" をセットしてしまうため、
-		// 続けて Out.Host = In.Host を設定し、クライアントが送ってきた Host ヘッダをそのまま Rails 版に
+		// URLをRails版のホストに書き換える。SetURLはOut.Host = "" をセットしてしまうため、
+		// 続けてOut.Host = In.Hostを設定し、クライアントが送ってきたHostヘッダをそのままRails版に
 		// 転送する挙動を維持する。
 		pr.SetURL(parsedURL)
 		pr.Out.Host = pr.In.Host
@@ -244,10 +192,10 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 		ctx := r.Context()
 
-		// Rails 版が 502 を返したり接続が切れた場合は Go 版の障害ではなく
-		// Rails 版の外部要因 (= Go 版の Sentry に Issue を作るほどではない) のため Warn に留める。
-		// slog handler は LevelError 以上のみ Sentry に送るので、ここを Warn にすることで
-		// Sentry へのノイズ送信を構造的に防止する。
+		// Rails版が502を返したり接続が切れた場合はGo版の障害ではなく
+		// Rails版の外部要因 (= Go版のSentryにIssueを作るほどではない) のためWarnに留める。
+		// slog handlerはLevelError以上のみSentryに送るので、ここをWarnにすることで
+		// Sentryへのノイズ送信を構造的に防止する。
 		slog.WarnContext(ctx, "Rails版へのプロキシでエラーが発生",
 			"error", err,
 			"path", r.URL.Path,
@@ -255,7 +203,7 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 			"remote_addr", r.RemoteAddr,
 		)
 
-		// reverse_proxy は i18n.Middleware より前に動くため、ロケールを検出して context に載せ替えてから httperror に委譲する
+		// reverse_proxyはi18n.Middlewareより前に動くため、ロケールを検出してcontextに載せ替えてからhttperrorに委譲する
 		locale := i18n.DetectLanguage(r)
 		ctx = i18n.SetLocale(ctx, locale)
 		httperror.BadGateway(w, r.WithContext(ctx))
@@ -269,38 +217,25 @@ func NewReverseProxyMiddleware(railsURL string, cfg *config.Config, featureFlagR
 	}, nil
 }
 
-// Middleware returns the HTTP middleware.
-// [Ja] Middleware は HTTP ミドルウェアを返す。
+// MiddlewareはHTTPミドルウェアを返す。
 func (m *ReverseProxyMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 1. Paths always handled by Go (prefix whitelist), plus exact-path +
-		// method patterns that prefix matching is too coarse for (e.g. POST
-		// /posts must be Go while GET /posts/:id stays with Rails).
-		//
-		// [Ja] 1. 常に Go 版で処理するパス (prefix ホワイトリスト)。加えて prefix
-		// 一致では粗すぎる完全一致 + メソッドのパターン (例: POST /posts は Go・
-		// GET /posts/:id は Rails) もここで処理する。
+		// 1. 常にGo版で処理するパス (prefixホワイトリスト)。加えてprefix
+		// 一致では粗すぎる完全一致 + メソッドのパターン (例: POST /postsはGo・
+		// GET /posts/:idはRails) もここで処理する。
 		if m.isGoHandledPath(r.URL.Path) || m.isGoHandledPattern(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// Issue a device_token cookie when one is absent, so feature-flag
-		// decisions can identify the browser regardless of login state. This
-		// runs after the Go-handled check so static assets and health checks
-		// (which never need feature-flag targeting) don't emit a Set-Cookie.
-		//
-		// [Ja] device_token Cookie が無ければ発行する。ログイン状態に依らず
+		// device_token Cookieが無ければ発行する。ログイン状態に依らず
 		// ブラウザを識別してフィーチャーフラグ判定に使えるようにするため。
 		// 静的アセットやヘルスチェック (フィーチャーフラグの出し分けが不要なパス) に
-		// Set-Cookie を出さないよう、Go 処理パスの判定より後で発行する。
+		// Set-Cookieを出さないよう、Go処理パスの判定より後で発行する。
 		m.ensureDeviceToken(w, r)
 
-		// 2. Feature-flagged paths: handle in Go only when the flag is enabled
-		// for this viewer; otherwise fall through to the Rails proxy.
-		//
-		// [Ja] 2. フィーチャーフラグで制御するパス。閲覧者に対してフラグが
-		// 有効なときだけ Go 版で処理し、無効なら Rails へのプロキシに進む。
+		// 2. フィーチャーフラグで制御するパス。閲覧者に対してフラグが
+		// 有効なときだけGo版で処理し、無効ならRailsへのプロキシに進む。
 		if flagName := m.getFeatureFlagForRequest(r); flagName != "" {
 			if m.isFeatureFlagEnabled(r, flagName) {
 				next.ServeHTTP(w, r)
@@ -308,17 +243,15 @@ func (m *ReverseProxyMiddleware) Middleware(next http.Handler) http.Handler {
 			}
 		}
 
-		// 3. Everything else proxies to Rails.
-		// [Ja] 3. それ以外はすべて Rails にプロキシする。
+		// 3. それ以外はすべてRailsにプロキシする。
 		m.proxy.ServeHTTP(w, r)
 	})
 }
 
-// ensureDeviceToken issues a device_token cookie when the request has none.
-// [Ja] ensureDeviceToken はリクエストに device_token Cookie が無ければ発行する。
+// ensureDeviceTokenはリクエストにdevice_token Cookieが無ければ発行する。
 func (m *ReverseProxyMiddleware) ensureDeviceToken(w http.ResponseWriter, r *http.Request) {
 	if _, err := r.Cookie(DeviceTokenCookieName); err == nil {
-		return // Cookie already exists. [Ja] 既に Cookie が存在する
+		return // 既にCookieが存在する
 	}
 
 	token, err := auth.GenerateSecureToken()
@@ -332,14 +265,14 @@ func (m *ReverseProxyMiddleware) ensureDeviceToken(w http.ResponseWriter, r *htt
 		Value:    token,
 		Path:     "/",
 		Domain:   m.cfg.CookieDomain,
-		MaxAge:   10 * 365 * 24 * 60 * 60, // 10 years. [Ja] 10年
+		MaxAge:   10 * 365 * 24 * 60 * 60, // 10年
 		HttpOnly: true,
 		Secure:   m.cfg.SessionSecure,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
 
-// isGoHandledPath はGo版で処理するパスかどうかを判定
+// isGoHandledPathはGo版で処理するパスかどうかを判定
 func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 	for _, p := range goHandledPaths {
 		if strings.HasPrefix(path, p) {
@@ -349,11 +282,8 @@ func (m *ReverseProxyMiddleware) isGoHandledPath(path string) bool {
 	return false
 }
 
-// isGoHandledPattern reports whether the request matches a goHandledPatterns
-// entry by exact path and method, meaning Go always handles it.
-//
-// [Ja] isGoHandledPattern はリクエストが goHandledPatterns のエントリに完全一致
-// パスとメソッドで一致するか (= 常に Go 版で処理する) を判定する。
+// isGoHandledPatternはリクエストがgoHandledPatternsのエントリに完全一致
+// パスとメソッドで一致するか (= 常にGo版で処理する) を判定する。
 func (m *ReverseProxyMiddleware) isGoHandledPattern(r *http.Request) bool {
 	for _, gp := range goHandledPatterns {
 		if matchesPattern(gp.pattern, gp.methods, r) {
@@ -363,10 +293,7 @@ func (m *ReverseProxyMiddleware) isGoHandledPattern(r *http.Request) bool {
 	return false
 }
 
-// getFeatureFlagForRequest returns the feature flag name matching the request's
-// path and method, or an empty string when no pattern matches.
-//
-// [Ja] getFeatureFlagForRequest はリクエストのパスとメソッドに一致する
+// getFeatureFlagForRequestはリクエストのパスとメソッドに一致する
 // フィーチャーフラグ名を返す。一致するパターンが無ければ空文字列を返す。
 func (m *ReverseProxyMiddleware) getFeatureFlagForRequest(r *http.Request) model.FeatureFlagName {
 	for _, fp := range featureFlaggedPatterns {
@@ -377,16 +304,10 @@ func (m *ReverseProxyMiddleware) getFeatureFlagForRequest(r *http.Request) model
 	return ""
 }
 
-// matchesPattern reports whether the request's path and method match the given
-// path regexp and method set. An empty method set matches every method. It is
-// shared by isGoHandledPattern and getFeatureFlagForRequest, which apply the
-// same regexp-plus-method matching to goHandledPatterns and
-// featureFlaggedPatterns respectively.
-//
-// [Ja] matchesPattern はリクエストのパスとメソッドが、指定したパス正規表現と
+// matchesPatternはリクエストのパスとメソッドが、指定したパス正規表現と
 // メソッド集合に一致するかを判定する。メソッド集合が空ならすべてのメソッドに
-// 一致する。goHandledPatterns / featureFlaggedPatterns に同じ「正規表現 +
-// メソッド」のマッチを適用する isGoHandledPattern と getFeatureFlagForRequest で
+// 一致する。goHandledPatterns / featureFlaggedPatternsに同じ「正規表現 +
+// メソッド」のマッチを適用するisGoHandledPatternとgetFeatureFlagForRequestで
 // 共有する。
 func matchesPattern(pattern *regexp.Regexp, methods []string, r *http.Request) bool {
 	if !pattern.MatchString(r.URL.Path) {
@@ -398,19 +319,12 @@ func matchesPattern(pattern *regexp.Regexp, methods []string, r *http.Request) b
 	return true
 }
 
-// containsMethod reports whether method is contained in methods.
+// containsMethodはmethodがmethodsに含まれるかを判定する。
 //
-// HTML forms support only GET and POST, so PATCH/PUT/DELETE requests are sent
-// as POST plus a _method parameter (the Method Override pattern). This
-// middleware runs before the Method Override middleware, so a POST request must
-// also match PATCH/PUT/DELETE patterns.
-//
-// [Ja] containsMethod は method が methods に含まれるかを判定する。
-//
-// HTML フォームは GET と POST のみをサポートするため、PATCH/PUT/DELETE は
-// POST + _method パラメータとして送信される (Method Override パターン)。
-// 本ミドルウェアは Method Override ミドルウェアより前に実行されるため、
-// POST リクエストも PATCH/PUT/DELETE パターンにマッチさせる必要がある。
+// HTMLフォームはGETとPOSTのみをサポートするため、PATCH/PUT/DELETEは
+// POST + _methodパラメータとして送信される (Method Overrideパターン)。
+// 本ミドルウェアはMethod Overrideミドルウェアより前に実行されるため、
+// POSTリクエストもPATCH/PUT/DELETEパターンにマッチさせる必要がある。
 func containsMethod(methods []string, method string) bool {
 	for _, m := range methods {
 		if m == method {
@@ -418,8 +332,7 @@ func containsMethod(methods []string, method string) bool {
 		}
 	}
 
-	// A POST request may be converted to PATCH/PUT/DELETE via Method Override.
-	// [Ja] POST リクエストは Method Override 経由で PATCH/PUT/DELETE に変換される可能性がある。
+	// POSTリクエストはMethod Override経由でPATCH/PUT/DELETEに変換される可能性がある。
 	if method == http.MethodPost {
 		for _, m := range methods {
 			switch m {
@@ -432,40 +345,32 @@ func containsMethod(methods []string, method string) bool {
 	return false
 }
 
-// isFeatureFlagEnabled reports whether the feature flag is enabled for the
-// request based on its cookies. It returns false on error or when no identifying
-// cookie is present, so the request falls back to the Rails version.
-//
-// [Ja] isFeatureFlagEnabled はリクエストの Cookie からフィーチャーフラグが
-// 有効かどうかを判定する。エラー時または識別用 Cookie 不在時は false を返し、
-// Rails 版にフォールバックする。
+// isFeatureFlagEnabledはリクエストのCookieからフィーチャーフラグが
+// 有効かどうかを判定する。エラー時または識別用Cookie不在時はfalseを返し、
+// Rails版にフォールバックする。
 func (m *ReverseProxyMiddleware) isFeatureFlagEnabled(r *http.Request, flagName model.FeatureFlagName) bool {
 	if m.featureFlagRepo == nil {
 		return false
 	}
 
-	// Read the device_token cookie value.
-	// [Ja] device_token Cookie の値を取得する。
+	// device_token Cookieの値を取得する。
 	deviceToken := ""
 	if cookie, err := r.Cookie(DeviceTokenCookieName); err == nil {
 		deviceToken = cookie.Value
 	}
 
-	// Read the session token cookie shared with the Rails version.
-	// [Ja] Rails 版と共有するセッショントークン Cookie の値を取得する。
+	// Rails版と共有するセッショントークンCookieの値を取得する。
 	sessionToken := ""
 	if cookie, err := r.Cookie(session.CookieName); err == nil {
 		sessionToken = cookie.Value
 	}
 
-	// Fall back to Rails when neither cookie is present.
-	// [Ja] どちらの Cookie も存在しない場合は Rails 版にフォールバックする。
+	// どちらのCookieも存在しない場合はRails版にフォールバックする。
 	if deviceToken == "" && sessionToken == "" {
 		return false
 	}
 
-	// Evaluate device_token and the session-derived actor in a single query.
-	// [Ja] device_token とセッション経由の actor を 1 クエリで判定する。
+	// device_tokenとセッション経由のactorを1クエリで判定する。
 	enabled, err := m.featureFlagRepo.IsEnabledForDevice(r.Context(), deviceToken, sessionToken, flagName)
 	if err != nil {
 		slog.WarnContext(r.Context(), "フィーチャーフラグ判定でエラーが発生 (Rails版にフォールバック)",

@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
+// setupTestHandlerはテスト用のハンドラーとテストデータをセットアップする
 func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 

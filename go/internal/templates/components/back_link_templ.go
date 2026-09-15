@@ -11,25 +11,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// BackLink renders a subdued "back" affordance for the top of a form: an anchor
-// carrying a leading back-arrow icon and the visible label, styled as a plain
-// muted link (no underline, no button chrome) rather than a button. The href is
-// the fallback used for direct visits, external referrers, or JS-disabled
-// clients (progressive enhancement); the back-link script (web/back_link.ts,
-// keyed on data-back-link) upgrades it to history.back() when the referrer is
-// same-origin. It is an <a>, not a <button>, so it navigates via the href
-// without JS and cannot accidentally submit an enclosing form (a bare <button>
-// in a form defaults to type="submit"). The visible label carries the
-// accessible name and the leading arrow is decorative. The caller places it
-// (e.g. above the form's first field); it is reusable across forms.
-//
-// [Ja] BackLink はフォーム上部に置く控えめな「戻る」導線を描画する。先頭に戻る
-// 矢印アイコンと可視ラベルを持つアンカーで、ボタンではなくただの muted なリンク
-// (下線なし・ボタン風の装飾なし) としてスタイルする。href は直接アクセス・外部
-// からの遷移・JS 無効時のフォールバック (プログレッシブエンハンスメント)。referrer
-// が同一オリジンのときは back-link スクリプト (web/back_link.ts、data-back-link を
-// キーにする) が history.back() に格上げする。<button> ではなく <a> にしているのは、
-// JS 無効でも href で遷移でき、かつフォーム内の素の <button> の既定 type="submit"
+// BackLinkはフォーム上部に置く控えめな「戻る」導線を描画する。先頭に戻る
+// 矢印アイコンと可視ラベルを持つアンカーで、ボタンではなくただのmutedなリンク
+// (下線なし・ボタン風の装飾なし) としてスタイルする。hrefは直接アクセス・外部
+// からの遷移・JS無効時のフォールバック (プログレッシブエンハンスメント)。referrer
+// が同一オリジンのときはback-linkスクリプト (web/back_link.ts、data-back-linkを
+// キーにする) がhistory.back() に格上げする。<button> ではなく <a> にしているのは、
+// JS無効でもhrefで遷移でき、かつフォーム内の素の <button> の既定type="submit"
 // による誤送信を避けるため。アクセシブルネームは可視ラベルが担い、先頭の矢印は装飾。
 // 配置 (例: フォーム最初の項目の上) は呼び出し側が決め、フォームを問わず再利用できる。
 func BackLink(href templates.Path) templ.Component {
@@ -60,7 +48,7 @@ func BackLink(href templates.Path) templ.Component {
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 40, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 22, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -77,7 +65,7 @@ func BackLink(href templates.Path) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "back_link"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 43, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/back_link.templ`, Line: 25, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

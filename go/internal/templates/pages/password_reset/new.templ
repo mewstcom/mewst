@@ -6,7 +6,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
-// NewPageData はパスワードリセットフォームページのデータ
+// NewPageDataはパスワードリセットフォームページのデータ
 type NewPageData struct {
 	CSRFToken        string
 	TurnstileSiteKey string
@@ -14,7 +14,7 @@ type NewPageData struct {
 	Email            string
 }
 
-// New はパスワードリセットフォームを表示する
+// Newはパスワードリセットフォームを表示する
 templ New(data NewPageData) {
 	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">

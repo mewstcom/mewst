@@ -11,14 +11,14 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// CreateSignInUsecase はサインインユースケース
+// CreateSignInUsecaseはサインインユースケース
 type CreateSignInUsecase struct {
 	signInValidator *validator.SignInCreateValidator
 	actorRepo       *repository.ActorRepository
 	sessionRepo     *repository.SessionRepository
 }
 
-// NewCreateSignInUsecase は CreateSignInUsecase を生成する
+// NewCreateSignInUsecaseはCreateSignInUsecaseを生成する
 func NewCreateSignInUsecase(
 	signInValidator *validator.SignInCreateValidator,
 	actorRepo *repository.ActorRepository,
@@ -31,7 +31,7 @@ func NewCreateSignInUsecase(
 	}
 }
 
-// CreateSignInInput はサインインの入力パラメータ
+// CreateSignInInputはサインインの入力パラメータ
 type CreateSignInInput struct {
 	Email     string
 	Password  string
@@ -39,13 +39,13 @@ type CreateSignInInput struct {
 	UserAgent string
 }
 
-// CreateSignInOutput はサインインの出力パラメータ
+// CreateSignInOutputはサインインの出力パラメータ
 type CreateSignInOutput struct {
 	Session *model.Session
 	Token   string
 }
 
-// Execute はサインイン処理を実行する
+// Executeはサインイン処理を実行する
 func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInInput) (*CreateSignInOutput, error) {
 	// 1. バリデーション (トランザクション外)
 	user, err := uc.signInValidator.Validate(ctx, validator.SignInCreateValidatorInput{
@@ -56,7 +56,7 @@ func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInIn
 		return nil, err
 	}
 
-	// 2. データ取得: Validator が引いたユーザーを使ってアクターを取得 (トランザクション外)
+	// 2. データ取得: Validatorが引いたユーザーを使ってアクターを取得 (トランザクション外)
 	actor, err := uc.actorRepo.FindByUserID(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("アクターの取得に失敗: %w", err)
@@ -72,7 +72,7 @@ func (uc *CreateSignInUsecase) Execute(ctx context.Context, input CreateSignInIn
 	return uc.createSignIn(ctx, actor.ID, input)
 }
 
-// createSignIn はトークンを生成しセッションを作成する
+// createSignInはトークンを生成しセッションを作成する
 func (uc *CreateSignInUsecase) createSignIn(ctx context.Context, actorID model.ActorID, input CreateSignInInput) (*CreateSignInOutput, error) {
 	token, err := auth.GenerateSecureToken()
 	if err != nil {

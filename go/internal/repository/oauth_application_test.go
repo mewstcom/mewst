@@ -25,29 +25,29 @@ func TestOauthApplicationRepository_FindByUID(t *testing.T) {
 	t.Run("uidでOAuthアプリケーションを取得できる", func(t *testing.T) {
 		app, err := repo.FindByUID(ctx, model.MewstWebUID)
 		if err != nil {
-			t.Fatalf("FindByUID() error = %v", err)
+			t.Fatalf("FindByUID()のエラー = %v", err)
 		}
 		if app == nil {
-			t.Fatal("FindByUID() = nil, want oauth application")
+			t.Fatal("FindByUID() = nil、OAuthアプリケーションを期待")
 		}
 		if app.ID != oauthApplicationID {
-			t.Errorf("app.ID = %v, want %v", app.ID, oauthApplicationID)
+			t.Errorf("app.ID = %v、期待値 = %v", app.ID, oauthApplicationID)
 		}
 		if app.UID != model.MewstWebUID {
-			t.Errorf("app.UID = %v, want %v", app.UID, model.MewstWebUID)
+			t.Errorf("app.UID = %v、期待値 = %v", app.UID, model.MewstWebUID)
 		}
 		if app.Name != "Mewst for Web" {
-			t.Errorf("app.Name = %v, want Mewst for Web", app.Name)
+			t.Errorf("app.Name = %v、期待値 = Mewst for Web", app.Name)
 		}
 	})
 
 	t.Run("存在しないuidはnilを返す", func(t *testing.T) {
 		app, err := repo.FindByUID(ctx, "nonexistent-uid")
 		if err != nil {
-			t.Errorf("FindByUID() error = %v, want nil", err)
+			t.Errorf("FindByUID()のエラー = %v、期待値 = nil", err)
 		}
 		if app != nil {
-			t.Errorf("FindByUID() app = %v, want nil", app)
+			t.Errorf("FindByUID()のapp = %v、期待値 = nil", app)
 		}
 	})
 }

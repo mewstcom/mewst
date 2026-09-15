@@ -8,33 +8,33 @@ import (
 	"github.com/mewstcom/mewst/go/internal/query"
 )
 
-// RateLimitRepository はRate Limitのリポジトリ
+// RateLimitRepositoryはRate Limitのリポジトリ
 type RateLimitRepository struct {
 	q *query.Queries
 }
 
-// NewRateLimitRepository はRateLimitRepositoryを生成する
+// NewRateLimitRepositoryはRateLimitRepositoryを生成する
 func NewRateLimitRepository(q *query.Queries) *RateLimitRepository {
 	return &RateLimitRepository{q: q}
 }
 
-// WithTx はトランザクションを設定したRateLimitRepositoryを返す
+// WithTxはトランザクションを設定したRateLimitRepositoryを返す
 func (r *RateLimitRepository) WithTx(tx *sql.Tx) *RateLimitRepository {
 	return &RateLimitRepository{q: r.q.WithTx(tx)}
 }
 
-// IncrementInput はRate Limitカウンターインクリメントの入力パラメータ
+// IncrementInputはRate Limitカウンターインクリメントの入力パラメータ
 type IncrementInput struct {
 	Key         string
 	WindowStart time.Time
 }
 
-// IncrementResult はRate Limitカウンターインクリメントの結果
+// IncrementResultはRate Limitカウンターインクリメントの結果
 type IncrementResult struct {
 	Count int32
 }
 
-// Increment はRate Limitカウンターをインクリメントする
+// IncrementはRate Limitカウンターをインクリメントする
 func (r *RateLimitRepository) Increment(ctx context.Context, input IncrementInput) (*IncrementResult, error) {
 	row, err := r.q.IncrementRateLimit(ctx, query.IncrementRateLimitParams{
 		Key:         input.Key,
@@ -49,7 +49,7 @@ func (r *RateLimitRepository) Increment(ctx context.Context, input IncrementInpu
 	}, nil
 }
 
-// DeleteOldRecords は指定された時刻より古いRate Limitレコードを削除する
+// DeleteOldRecordsは指定された時刻より古いRate Limitレコードを削除する
 func (r *RateLimitRepository) DeleteOldRecords(ctx context.Context, cutoff time.Time) error {
 	return r.q.DeleteOldRateLimits(ctx, cutoff)
 }

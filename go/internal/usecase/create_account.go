@@ -12,10 +12,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// DefaultAvatarKind はデフォルトのアバター種別
+// DefaultAvatarKindはデフォルトのアバター種別
 const DefaultAvatarKind = "default"
 
-// CreateAccountUsecase はアカウント作成のユースケース
+// CreateAccountUsecaseはアカウント作成のユースケース
 type CreateAccountUsecase struct {
 	db               *sql.DB
 	accountValidator *validator.AccountCreateValidator
@@ -25,7 +25,7 @@ type CreateAccountUsecase struct {
 	actorRepo        *repository.ActorRepository
 }
 
-// NewCreateAccountUsecase はCreateAccountUsecaseを生成する
+// NewCreateAccountUsecaseはCreateAccountUsecaseを生成する
 func NewCreateAccountUsecase(
 	db *sql.DB,
 	accountValidator *validator.AccountCreateValidator,
@@ -44,7 +44,7 @@ func NewCreateAccountUsecase(
 	}
 }
 
-// CreateAccountInput はアカウント作成の入力パラメータ
+// CreateAccountInputはアカウント作成の入力パラメータ
 type CreateAccountInput struct {
 	Email    string
 	Atname   string
@@ -53,13 +53,13 @@ type CreateAccountInput struct {
 	TimeZone string
 }
 
-// CreateAccountOutput はアカウント作成の出力パラメータ
+// CreateAccountOutputはアカウント作成の出力パラメータ
 type CreateAccountOutput struct {
 	Actor *model.Actor
 }
 
-// Execute はアカウントを作成する
-// Profile, User, UserProfile, Actor を一括で作成し、トランザクション管理を行う
+// Executeはアカウントを作成する
+// Profile, User, UserProfile, Actorを一括で作成し、トランザクション管理を行う
 func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccountInput) (*CreateAccountOutput, error) {
 	// 1. バリデーション (トランザクション外)
 	if err := uc.accountValidator.Validate(ctx, validator.AccountCreateValidatorInput{
@@ -70,9 +70,9 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 		return nil, err
 	}
 
-	// 2. CPU 計算 (bcrypt) と時刻取得をトランザクション外で済ませる。
-	// bcrypt はコスト 10 で 100ms 級の処理になるため、トランザクション内で実行すると
-	// その間 DB 接続を専有してロック競合の原因になる。
+	// 2. CPU計算 (bcrypt) と時刻取得をトランザクション外で済ませる。
+	// bcryptはコスト10で100ms級の処理になるため、トランザクション内で実行すると
+	// その間DB接続を専有してロック競合の原因になる。
 	passwordDigest, err := auth.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("パスワードのハッシュ化に失敗: %w", err)
@@ -83,7 +83,7 @@ func (uc *CreateAccountUsecase) Execute(ctx context.Context, input CreateAccount
 	return uc.createAccount(ctx, input, passwordDigest, currentTime)
 }
 
-// createAccount は Profile / User / UserProfile / Actor を 1 トランザクションで作成する
+// createAccountはProfile / User / UserProfile / Actorを1トランザクションで作成する
 func (uc *CreateAccountUsecase) createAccount(ctx context.Context, input CreateAccountInput, passwordDigest string, currentTime time.Time) (*CreateAccountOutput, error) {
 	tx, err := uc.db.BeginTx(ctx, nil)
 	if err != nil {

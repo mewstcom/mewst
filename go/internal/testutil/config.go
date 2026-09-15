@@ -6,9 +6,9 @@ import (
 	"github.com/mewstcom/mewst/go/internal/config"
 )
 
-// NewTestConfig はテスト用の標準的な *config.Config を返す。
-// 各 handler の setupTestHandler から重複した cfg 構築を排除するために利用する。
-// TurnstileSiteKey は常にダミー値を設定する (使わない handler でも害はない) 。
+// NewTestConfigはテスト用の標準的な *config.Configを返す。
+// 各handlerのsetupTestHandlerから重複したcfg構築を排除するために利用する。
+// TurnstileSiteKeyは常にダミー値を設定する (使わないhandlerでも害はない) 。
 func NewTestConfig(t testing.TB) *config.Config {
 	t.Helper()
 

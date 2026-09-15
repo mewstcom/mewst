@@ -11,11 +11,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// LinkCard renders a link card (domain + title + optional OGP image), mirroring
-// the Rails Cards::LinkCardComponent.
-//
-// [Ja] LinkCard はリンクカード (ドメイン + タイトル + 任意の OGP 画像) を描画する。
-// Rails の Cards::LinkCardComponent に対応する。
+// LinkCardはリンクカード (ドメイン + タイトル + 任意のOGP画像) を描画する。
+// RailsのCards::LinkCardComponentに対応する。
 func LinkCard(link viewmodel.Link) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -42,14 +39,14 @@ func LinkCard(link viewmodel.Link) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if link.ImageURL != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "    <img alt=\"\" class=\"aspect-video max-h-[300px] object-contain w-full\" height=\"9\" loading=\"lazy\" src=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "  <img alt=\"\" class=\"aspect-video max-h-[300px] object-contain w-full\" height=\"9\" loading=\"lazy\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(link.ImageURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 23, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 18, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
@@ -67,7 +64,7 @@ func LinkCard(link viewmodel.Link) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(link.Domain)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 29, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 24, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -80,7 +77,7 @@ func LinkCard(link viewmodel.Link) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(link.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 32, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/link_card.templ`, Line: 27, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

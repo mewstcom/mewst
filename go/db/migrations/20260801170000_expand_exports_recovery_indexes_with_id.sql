@@ -1,13 +1,8 @@
 -- migrate:up
 
--- Recreate the time-ordered recovery indexes with id as the tie-break key.
--- The recovery queries compare and order by the complete (timestamp, id)
--- keyset, so including both columns lets the cursor become the exact starting
--- point of each index scan even when many exports share the same timestamp.
---
--- [Ja] 時刻順の回復インデックスを、tie-break キーの id を含めて作り直す。
--- 回復クエリは完全な (timestamp, id) keyset で比較・整列するため、両方の
--- カラムを含めることで、同じ時刻を持つエクスポートが多数あっても cursor が
+-- 時刻順の回復インデックスを、tie-breakキーのidを含めて作り直す。
+-- 回復クエリは完全な (timestamp, id) keysetで比較・整列するため、両方の
+-- カラムを含めることで、同じ時刻を持つエクスポートが多数あってもcursorが
 -- 各インデックス走査の正確な開始位置になる。
 DROP INDEX index_exports_on_created_at_where_queued;
 DROP INDEX index_exports_on_started_at_where_started;
