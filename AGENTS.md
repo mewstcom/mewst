@@ -1,87 +1,80 @@
-<!-- last_synced: 2026-07-12 -->
+# Mewst開発ガイドライン
 
-# Mewst Development Guide
+このファイルは、コーディングエージェントがこのリポジトリで作業する際のガイダンスを提供します。
 
-> English | [日本語](./AGENTS.ja.md)
+## 概要
 
-This file provides guidance to coding agents when working in this repository.
+Mewstはマイクロブログサービスです。
+ユーザーは短文のポストを作成することができ、ユーザーをフォローするとタイムラインにポストが時系列で表示されます。
 
-## Overview
+## プロジェクト構造
 
-Mewst is a microblogging service.
-Users can create short posts, and following other users displays their posts in a chronological timeline.
-
-## Project Structure
-
-This repository manages two subprojects—the Go version and the Rails version—as a monorepo.
+このリポジトリは、Go版とRails版の2つのサブプロジェクトをモノレポとして管理しています。
 
 ```
 /workspace/
-├── go/                  # Go version implementation (features being migrated gradually)
-├── rails/               # Rails version implementation (existing production system)
-├── caddy/               # Reverse proxy configuration
-├── docs/                # Mewst-specific documentation (ADRs, work plans, etc.)
-├── .github/             # Shared CI/CD configuration
-├── Dockerfile.dev       # Dockerfile for the integrated development container
-├── docker-compose.yml   # Docker Compose configuration
-├── AGENTS.md            # This file (project-wide guide)
-└── CLAUDE.md            # Pointer to AGENTS.md (for Claude Code)
+├── go/                  # Go版の実装 (段階的に機能を移行中)
+├── rails/               # Rails版の実装 (既存の本番システム)
+├── caddy/               # リバースプロキシ設定
+├── docs/                # Mewst固有のドキュメント (ADR、作業計画書など)
+├── .github/             # 共通のCI/CD設定
+├── Dockerfile.dev       # 統合開発コンテナのDockerfile
+├── docker-compose.yml   # Docker Compose設定
+├── AGENTS.md            # このファイル (プロジェクト全体のガイド)
+└── CLAUDE.md            # AGENTS.mdへのポインタ (Claude Code用)
 ```
 
-## Rails to Go Migration
+## RailsからGoへの移行について
 
-A project to gradually reimplement the existing Rails Mewst in Go is currently underway.
+現在、既存のRails実装のMewstをGoで段階的に再実装するプロジェクトが進行中です。
 
-### Migration Strategy
+### 移行の基本方針
 
-- **Use the existing DB as-is**: Share the PostgreSQL database managed on the Rails side
-- **Gradual migration**: Rails and Go share the same DB and session store, and features are migrated incrementally
-- **Data migrations are run from the Go side**: Use the migration mechanism set up on the Go side (dbmate)
-- **Continued use of shared infrastructure**: Shared infrastructure such as PostgreSQL continues to be used after the Go version takes over
-- **Do not modify the Rails source code**: When a feature needs to be added or changed, migrate it to Go first rather than touching the Rails side
-  - The following cases fall outside this principle, and a minimal-diff fix on the Rails side is acceptable:
-    - Minimal maintenance changes required to follow up on a dependency's security fix (e.g., adapting to breaking changes from a gem major upgrade)
-    - When deleting Rails-side processing that has become unused after migrating the feature to Go
-    - Minimal fixes made in response to an error reported by production error monitoring such as Sentry (e.g., suppressing a 500 caused by an unhandled exception)
+- **既存DBをそのまま使用**: Rails側で管理されているPostgreSQLデータベースを共有
+- **段階的移行**: RailsとGoが同一のDBとセッションストアを共有し、段階的に機能を移行
+- **データマイグレーションはGo側で実行**: Go側に用意しているマイグレーション機構 (dbmate) を使用
+- **共通インフラの継続利用**: PostgreSQLなどの共通インフラはGo版移行後も継続して使用
+- **Rails側のソースコードは変更しない**: 機能の追加・変更が必要なときは、Rails側をいじらずまずGoに移行する
+  - ただし、以下の場合はこの原則の対象外とし、Rails側で最小差分の修正を行って良い
+    - 依存パッケージのセキュリティ修正に追随するための最小限の保守変更 (例: gemのメジャーアップに伴う破壊的変更への対応)
+    - Go移行に伴って不要になったRails側の処理を削除するとき
+    - 本番のエラー監視 (Sentry) で通知されたエラーへの対応として行う最小限の修正 (例: 未処理例外による500の抑止)
 
-When implementing the Go version, refer to the Rails code to understand the existing specifications.
+Go版を実装する際は、Rails版のコードを参考にすることで既存の仕様を理解できます。
 
-## Feature Flag-Based Development
+## フィーチャーフラグによる開発
 
-Mewst uses **feature flags** rather than feature branches to control feature visibility.
-Pre-release features are developed with the flag off, and the flag is flipped to release them once they are ready for production.
+Mewstではフィーチャーブランチではなく **フィーチャーフラグ** を使って機能の公開を制御しています。
+リリース前の機能はフラグでオフのまま開発し、本番投入の準備が整ってからフラグを切り替えて公開します。
 
-## Development Workflow
+## 開発ワークフロー
 
-### Implementation Guidelines
+### 実装時のガイドライン
 
-**Consistency with existing code**:
+**既存コードとの一貫性**:
 
-Before implementing, check whether the codebase already contains similar processing.
-If similar processing exists, follow that pattern to maintain consistency across the codebase.
+実装を行う前に、コードベース内に類似の処理がないか確認してください。
+類似処理が存在する場合は、そのパターンに従って実装することで、コードベース全体の一貫性を保ちます。
 
-### Post-Implementation Checks
+### 実装後のチェック
 
-Before reporting work as complete, always verify the following:
+実装を終え作業の完了を伝える前に、必ず以下を確認してください:
 
-- Code formatting
-- Linting
-- Tests
+- コードフォーマット
+- リント
+- テスト
 
-The commands to run are managed in `Makefile`.
-See [Makefile](./Makefile), [go/Makefile](./go/Makefile), and [rails/Makefile](./rails/Makefile).
+実行するコマンドは `Makefile` で管理しています。
+[Makefile](./Makefile), [go/Makefile](./go/Makefile), [rails/Makefile](./rails/Makefile) を参照してください。
 
-## Documentation
+## ドキュメント
 
-Design decisions—the chosen approach, its background, and the alternatives that were rejected—are recorded as ADRs (Architecture Decision Records) under `docs/private/adr/`.
-To understand the current state of the system, read the code and tests rather than a separate spec document.
+設計判断 (採用した方式・背景・採用しなかった代替案) は `docs/private/adr/` 配下のADR (Architecture Decision Record) に記録しています。
+システムの現在の状態は、仕様書ではなくコードとテストを参照してください。
 
-## Language and Writing Conventions
+## 言語・文章ルール
 
-- **Canonical version is English; authoring workflow is Japanese-first**: The English version is the official authoritative source. Author by writing Japanese first, then translate to English (the coding agent assists). After translation, also review the English version to catch meaning drift and unnatural wording. When a discrepancy arises, the English version takes precedence
-- **Code comments**: English block → blank line → Japanese block prefixed with `[Ja]`. Short comments can be one-line pairs like `# Returns ... / [Ja] ... を返す`
-- **Markdown documents**: Maintain `xxx.md` (English, canonical) and `xxx.ja.md` (Japanese translation) in parallel. Both files carry a `<!-- last_synced: YYYY-MM-DD -->` HTML comment on the first line; keep the dates aligned
-- **Commit messages**: English title + English body + blank line + Japanese body prefixed with `[Ja]`. Do not preserve a Japanese title (prioritize English scannability of `git log --oneline`)
-- **Identifiers**: Type, function, and variable names are English only
-- **Update both sides in the same commit**: Prevents translation drift
-- **Existing code**: Apply this rule to new writing. Migrate existing monolingual code to bilingual when editing it (no bulk migration required)
+- **日本語のみで書く**: コードコメント・ドキュメント・コミットメッセージ・プルリクエストなど、リポジトリ内のテキストは日本語で書く
+- **英語を使うのは2種類だけ**: 識別子やプログラムが解釈する文字列 (ログのフィールドキー・環境変数名など) と、入口ファイル (`README` / `CONTRIBUTING` / `SECURITY`) に併置する英語版 (`xxx.en.md`)
+
+詳細と日本語テキストの表記は `.claude/rules/korylus-lang.md` を参照してください。
