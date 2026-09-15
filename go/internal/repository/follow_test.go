@@ -22,7 +22,7 @@ func TestFollowRepository_ListByTargetProfileID(t *testing.T) {
 		follower1 := testutil.NewProfileBuilder(t, tx).Build()
 		follower2 := testutil.NewProfileBuilder(t, tx).Build()
 
-		// target をフォローする 2 件
+		// targetをフォローする2件
 		testutil.NewFollowBuilder(t, tx).
 			WithSourceProfileID(follower1).
 			WithTargetProfileID(target).
@@ -32,9 +32,7 @@ func TestFollowRepository_ListByTargetProfileID(t *testing.T) {
 			WithTargetProfileID(target).
 			Build()
 
-		// A follow where target is the source (target follows someone) must
-		// not be returned.
-		// [Ja] target が誰かをフォローしている関係 (source = target) は対象外。
+		// targetが誰かをフォローしている関係 (source = target) は対象外。
 		other := testutil.NewProfileBuilder(t, tx).Build()
 		testutil.NewFollowBuilder(t, tx).
 			WithSourceProfileID(target).
@@ -43,22 +41,22 @@ func TestFollowRepository_ListByTargetProfileID(t *testing.T) {
 
 		follows, err := repo.ListByTargetProfileID(ctx, target)
 		if err != nil {
-			t.Fatalf("ListByTargetProfileID() error = %v", err)
+			t.Fatalf("ListByTargetProfileID()のエラー = %v", err)
 		}
 
 		if len(follows) != 2 {
-			t.Fatalf("len(follows) = %d, want 2", len(follows))
+			t.Fatalf("len(follows) = %d、期待値 = 2", len(follows))
 		}
 
 		gotFollowers := map[model.ProfileID]bool{}
 		for _, f := range follows {
 			if f.TargetProfileID != target {
-				t.Errorf("f.TargetProfileID = %v, want %v", f.TargetProfileID, target)
+				t.Errorf("f.TargetProfileID = %v、期待値 = %v", f.TargetProfileID, target)
 			}
 			gotFollowers[f.SourceProfileID] = true
 		}
 		if !gotFollowers[follower1] || !gotFollowers[follower2] {
-			t.Errorf("follower source profiles = %v, want both %v and %v", gotFollowers, follower1, follower2)
+			t.Errorf("フォローしている側のプロフィール = %v、%vと%vの両方を期待", gotFollowers, follower1, follower2)
 		}
 	})
 
@@ -67,10 +65,10 @@ func TestFollowRepository_ListByTargetProfileID(t *testing.T) {
 
 		follows, err := repo.ListByTargetProfileID(ctx, target)
 		if err != nil {
-			t.Fatalf("ListByTargetProfileID() error = %v", err)
+			t.Fatalf("ListByTargetProfileID()のエラー = %v", err)
 		}
 		if len(follows) != 0 {
-			t.Errorf("len(follows) = %d, want 0", len(follows))
+			t.Errorf("len(follows) = %d、期待値 = 0", len(follows))
 		}
 	})
 }

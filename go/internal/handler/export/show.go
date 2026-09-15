@@ -14,25 +14,16 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Show renders the export page (GET /settings/export). The user and profile of
-// the session decide whose exports are read, so the handler passes both to the
-// UseCase and leaves the authorization there. The export page is not one of the
-// navbar's five items, so the navbar renders with no active item.
-//
-// [Ja] Show はエクスポート画面を描画する (GET /settings/export)。誰のエクスポートを
-// 読むかはセッションのユーザーとプロフィールが決めるため、ハンドラーは両方を UseCase
-// へ渡し、認可は UseCase に委ねる。エクスポート画面は navbar の 5 項目には含まれない
-// ため、navbar はアクティブ項目なしで描画する。
+// Showはエクスポート画面を描画する (GET /settings/export)。誰のエクスポートを
+// 読むかはセッションのユーザーとプロフィールが決めるため、ハンドラーは両方をUseCase
+// へ渡し、認可はUseCaseに委ねる。エクスポート画面はnavbarの5項目には含まれない
+// ため、navbarはアクティブ項目なしで描画する。
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// RequireAuth puts both on the context before this handler runs, so a
-	// missing one means the route was wired without it rather than a signed-out
-	// visitor. Fail with 500 instead of reading exports for an unknown owner.
-	//
-	// [Ja] RequireAuth がこのハンドラーの前に両方を context へ格納するため、欠けて
-	// いる場合は未ログインではなく RequireAuth 無しでルートを登録したことを意味する。
-	// 所有者が不明なままエクスポートを読まず、500 で失敗させる。
+	// RequireAuthがこのハンドラーの前に両方をcontextへ格納するため、欠けて
+	// いる場合は未ログインではなくRequireAuth無しでルートを登録したことを意味する。
+	// 所有者が不明なままエクスポートを読まず、500で失敗させる。
 	user := middleware.UserFromContext(ctx)
 	profile := middleware.ProfileFromContext(ctx)
 	if user == nil || profile == nil {
@@ -78,11 +69,8 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if !output.Available {
-		// WriteHeader runs before templ writes the first body bytes, so set the
-		// content type explicitly instead of relying on net/http sniffing it.
-		//
-		// [Ja] templ が最初の本文を書き込む前に WriteHeader を呼ぶため、net/http の
-		// 自動判定に頼らず Content-Type を明示する。
+		// templが最初の本文を書き込む前にWriteHeaderを呼ぶため、net/httpの
+		// 自動判定に頼らずContent-Typeを明示する。
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}

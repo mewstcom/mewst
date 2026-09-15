@@ -19,7 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Create はアカウント作成処理を実行する (POST /accounts)
+// Createはアカウント作成処理を実行する (POST /accounts)
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -51,7 +51,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// アカウント作成 / パスワード更新 / メール変更フローを取り違えてフォームに到達しないための防御。
-	// アカウント作成は sign_up イベントのみ受け付ける。
+	// アカウント作成はsign_upイベントのみ受け付ける。
 	if ecOutput.EmailConfirmation.Event != model.EmailConfirmationEventSignUp {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -90,7 +90,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UseCase を実行 (バリデーション + アカウント作成)
+	// UseCaseを実行 (バリデーション + アカウント作成)
 	accountOutput, err := h.createAccountUC.Execute(ctx, usecase.CreateAccountInput{
 		Email:    email,
 		Atname:   atname,
@@ -131,11 +131,11 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// フラッシュメッセージを設定
 	h.flashMgr.SetSuccess(w, i18n.T(ctx, "flash_account_created"))
 
-	// /sign_in からの「アカウント登録」フローで戻り先を指定されていた場合はそこに戻す
+	// /sign_inからの「アカウント登録」フローで戻り先を指定されていた場合はそこに戻す
 	http.Redirect(w, r, redirect.GetSafeRedirectURL(backURL), http.StatusFound)
 }
 
-// checkRateLimit はIPアドレスベースのレート制限をチェックする
+// checkRateLimitはIPアドレスベースのレート制限をチェックする
 func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	return h.rateLimiter.Allow(ctx, ratelimit.CheckInput{
 		Key:    ratelimit.IPKey(ipAddress),
@@ -144,7 +144,7 @@ func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	})
 }
 
-// handleCreateError はアカウント作成処理のエラーを処理する
+// handleCreateErrorはアカウント作成処理のエラーを処理する
 func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email, atname, backURL string) {
 	ctx := r.Context()
 
@@ -158,7 +158,7 @@ func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err 
 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
-// renderAccountForm はアカウント作成フォームを再表示する
+// renderAccountFormはアカウント作成フォームを再表示する
 func (h *Handler) renderAccountForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, atname, backURL string) {
 	ctx := r.Context()
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)

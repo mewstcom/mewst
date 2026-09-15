@@ -1,4 +1,4 @@
-// Package sign_up はサインアップハンドラーを提供します
+// Package sign_upはサインアップハンドラーを提供します
 package sign_up
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Handler はサインアップ機能のHTTPハンドラー
+// Handlerはサインアップ機能のHTTPハンドラー
 type Handler struct {
 	cfg          *config.Config
 	sessionMgr   *session.Manager
@@ -19,7 +19,7 @@ type Handler struct {
 	rateLimiter  *ratelimit.Limiter
 }
 
-// NewHandler はHandlerを生成する
+// NewHandlerはHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,

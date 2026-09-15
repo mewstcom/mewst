@@ -36,18 +36,18 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Password: newPassword,
 		})
 		if err != nil {
-			t.Fatalf("Execute failed: %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		// 更新後のパスワードで検証できることを確認
 		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("FindByEmail failed: %v", err)
+			t.Fatalf("FindByEmail()のエラー = %v", err)
 		}
 
 		err = auth.CheckPassword(user.PasswordDigest, newPassword)
 		if err != nil {
-			t.Errorf("new password should be valid: %v", err)
+			t.Errorf("新しいパスワードが有効であることを期待したが、無効だった: %v", err)
 		}
 	})
 
@@ -74,20 +74,20 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Password: newPassword,
 		})
 		if err != nil {
-			t.Fatalf("Execute failed: %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		// 更新後のユーザーを取得
 		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("FindByEmail failed: %v", err)
+			t.Fatalf("FindByEmail()のエラー = %v", err)
 		}
 
 		// 古いパスワードでは検証できないことを確認
 		oldPassword := "password"
 		err = auth.CheckPassword(user.PasswordDigest, oldPassword)
 		if err == nil {
-			t.Error("old password should not be valid")
+			t.Error("古いパスワードが無効であることを期待したが、有効だった")
 		}
 	})
 
@@ -114,18 +114,18 @@ func TestUpdatePasswordUsecase_Execute(t *testing.T) {
 			Password: newPassword,
 		})
 		if err != nil {
-			t.Fatalf("Execute failed: %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		// 更新後のパスワードで検証できることを確認
 		user, err := userRepo.FindByEmail(context.Background(), email)
 		if err != nil {
-			t.Fatalf("FindByEmail failed: %v", err)
+			t.Fatalf("FindByEmail()のエラー = %v", err)
 		}
 
 		err = auth.CheckPassword(user.PasswordDigest, newPassword)
 		if err != nil {
-			t.Errorf("Japanese password should be valid: %v", err)
+			t.Errorf("日本語のパスワードが有効であることを期待したが、無効だった: %v", err)
 		}
 	})
 }

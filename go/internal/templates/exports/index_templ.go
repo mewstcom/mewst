@@ -13,48 +13,29 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// IndexData is the table of contents of an archive.
-//
-// [Ja] IndexData はアーカイブの目次。
+// IndexDataはアーカイブの目次。
 type IndexData struct {
-	// Months lists every month file of the archive, oldest first.
-	//
-	// [Ja] Months はアーカイブの月ごとのファイルを古い順に列挙する。
+	// Monthsはアーカイブの月ごとのファイルを古い順に列挙する。
 	Months []IndexMonth
 }
 
-// IndexMonth is one month file linked from the table of contents.
-//
-// [Ja] IndexMonth は目次からリンクする月のファイル 1 つ。
+// IndexMonthは目次からリンクする月のファイル1つ。
 type IndexMonth struct {
-	// EntryName is the file's path inside the archive, for example
-	// posts/2026-07.html.
-	//
-	// [Ja] EntryName はアーカイブ内でのそのファイルのパス (例:
+	// EntryNameはアーカイブ内でのそのファイルのパス (例:
 	// posts/2026-07.html)。
 	EntryName string
 
-	// MonthStart names the month the file holds. It is a calendar label rather
-	// than an instant, so it is read as written.
-	//
-	// [Ja] MonthStart はそのファイルが持つ月を指す。時点ではなく暦月のラベルの
+	// MonthStartはそのファイルが持つ月を指す。時点ではなく暦月のラベルの
 	// ため、書かれたとおりに読む。
 	MonthStart time.Time
 
-	// PostCount is how many posts the file holds.
-	//
-	// [Ja] PostCount はそのファイルが持つ投稿の件数。
+	// PostCountはそのファイルが持つ投稿の件数。
 	PostCount int64
 }
 
-// IndexMain renders the content of index.html: the Mewst brand, a heading and
-// one link per month with its post count. The archive of a profile with no
-// posts still gets an index, so an empty table of contents says so instead of
-// showing an empty list.
-//
-// [Ja] IndexMain は index.html の内容 (Mewst のブランド表示、見出し、月ごとの
-// リンクおよびその投稿件数) を描画する。投稿が 1 件も無いプロフィールの
-// アーカイブにも index は含まれるため、目次が空のときは空のリストではなく
+// IndexMainはindex.htmlの内容 (Mewstのブランド表示、見出し、月ごとの
+// リンクおよびその投稿件数) を描画する。投稿が1件も無いプロフィールの
+// アーカイブにもindexは含まれるため、目次が空のときは空のリストではなく
 // その旨を示す。
 func IndexMain(data IndexData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -92,7 +73,7 @@ func IndexMain(data IndexData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_archive_index_heading"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 69, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 44, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -110,7 +91,7 @@ func IndexMain(data IndexData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_archive_index_empty"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 71, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 46, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -128,7 +109,7 @@ func IndexMain(data IndexData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "export_archive_index_description"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 73, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 48, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -146,7 +127,7 @@ func IndexMain(data IndexData) templ.Component {
 				var templ_7745c5c3_Var5 templ.SafeURL
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(month.EntryName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 82, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 54, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -159,7 +140,7 @@ func IndexMain(data IndexData) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(monthLinkText(ctx, month.MonthStart))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 82, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 54, Col: 72}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -172,7 +153,7 @@ func IndexMain(data IndexData) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(postCountText(ctx, month.PostCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 83, Col: 68}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/index.templ`, Line: 55, Col: 68}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {

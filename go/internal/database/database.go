@@ -1,4 +1,4 @@
-// Package database はデータベース接続を管理します
+// Package databaseはデータベース接続を管理します
 package database
 
 import (
@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Connect はPostgreSQLデータベースに接続します
+// ConnectはPostgreSQLデータベースに接続します
 // dsnはDATABASE_URL形式の接続文字列です
 func Connect(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", dsn)

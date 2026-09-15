@@ -1,4 +1,4 @@
-// Package sign_in はログインハンドラーを提供します
+// Package sign_inはログインハンドラーを提供します
 package sign_in
 
 import (
@@ -16,7 +16,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Handler はログイン機能のHTTPハンドラー
+// Handlerはログイン機能のHTTPハンドラー
 type Handler struct {
 	cfg               *config.Config
 	sessionMgr        *session.Manager
@@ -25,7 +25,7 @@ type Handler struct {
 	turnstileVerifier turnstile.Verifier
 }
 
-// NewHandler はHandlerを生成する
+// NewHandlerはHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,
@@ -42,9 +42,9 @@ func NewHandler(
 	}
 }
 
-// renderSignInForm はログインフォームを描画する。
+// renderSignInFormはログインフォームを描画する。
 // 初回表示・バリデーションエラー時の再表示の両方から共通利用する。
-// Create のバリデーション失敗時のみ呼び出し側で 422 を設定する。それ以外は status を設定せずデフォルト 200 を使う。
+// Createのバリデーション失敗時のみ呼び出し側で422を設定する。それ以外はstatusを設定せずデフォルト200を使う。
 func (h *Handler) renderSignInForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, backURL string) {
 	ctx := r.Context()
 

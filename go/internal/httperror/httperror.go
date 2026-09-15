@@ -1,5 +1,5 @@
-// Package httperror は全リソース共通の HTTP エラーレスポンスヘルパーを提供します。
-// リソースディレクトリには属さない、404 や 502 などの汎用エラーページのレンダリングを担当します。
+// Package httperrorは全リソース共通のHTTPエラーレスポンスヘルパーを提供します。
+// リソースディレクトリには属さない、404や502などの汎用エラーページのレンダリングを担当します。
 package httperror
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/pages/errors"
 )
 
-// NotFound はスタイル付きの404ページをレンダリングする
+// NotFoundはスタイル付きの404ページをレンダリングする
 func NotFound(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -21,7 +21,7 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// BadGateway はスタイル付きの502ページをレンダリングする
+// BadGatewayはスタイル付きの502ページをレンダリングする
 func BadGateway(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

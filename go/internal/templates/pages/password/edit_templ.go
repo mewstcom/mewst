@@ -13,13 +13,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
-// EditPageData はパスワード更新フォームページのデータ
+// EditPageDataはパスワード更新フォームページのデータ
 type EditPageData struct {
 	CSRFToken  string
 	FormErrors *model.ValidationError
 }
 
-// Edit はパスワード更新フォームを表示する
+// Editはパスワード更新フォームを表示する
 func Edit(data EditPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

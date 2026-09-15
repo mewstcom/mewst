@@ -15,12 +15,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// newFetchLinkMetadataUsecase builds the UseCase for these tests. The httptest
-// servers listen on loopback (127.0.0.1), so private host blocking is disabled
-// here; the block itself is verified in a dedicated subtest.
-//
-// [Ja] newFetchLinkMetadataUsecase は本テスト用に FetchLinkMetadataUsecase を組み立てる。
-// httptest サーバーは loopback (127.0.0.1) でリッスンするため、private host ブロックは
+// newFetchLinkMetadataUsecaseは本テスト用にFetchLinkMetadataUsecaseを組み立てる。
+// httptestサーバーはloopback (127.0.0.1) でリッスンするため、private hostブロックは
 // 無効化する (ブロック自体の検証は専用のサブテストで行う)。
 func newFetchLinkMetadataUsecase(linkRepo *repository.LinkRepository) *usecase.FetchLinkMetadataUsecase {
 	return usecase.NewFetchLinkMetadataUsecase(
@@ -34,7 +30,7 @@ func newFetchLinkMetadataUsecase(linkRepo *repository.LinkRepository) *usecase.F
 func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 	t.Parallel()
 
-	t.Run("OGP 付きページから新規リンクを作成する", func(t *testing.T) {
+	t.Run("OGP付きページから新規リンクを作成する", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -55,47 +51,45 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		linkRepo := repository.NewLinkRepository(testutil.QueriesWithTx(tx))
 		uc := newFetchLinkMetadataUsecase(linkRepo)
 
-		// The target URL differs from the canonical URL (e.g. it has tracking
-		// params); the link must be stored under the canonical URL.
-		// [Ja] 対象 URL は canonical URL と異なる (トラッキングパラメータ付きなど)。
-		// リンクは canonical URL で保存される必要がある。
+		// 対象URLはcanonical URLと異なる (トラッキングパラメータ付きなど)。
+		// リンクはcanonical URLで保存される必要がある。
 		targetURL := server.URL + "/articles/1?utm_source=x"
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		link := output.Link
 		if link == nil {
-			t.Fatal("output.Link = nil, want link")
+			t.Fatal("output.Link = nil、リンクを期待")
 		}
 		if link.CanonicalURL != canonicalURL {
-			t.Errorf("link.CanonicalURL = %q, want %q", link.CanonicalURL, canonicalURL)
+			t.Errorf("link.CanonicalURL = %q、期待値 = %q", link.CanonicalURL, canonicalURL)
 		}
 		if link.Domain != "127.0.0.1" {
-			t.Errorf("link.Domain = %q, want 127.0.0.1", link.Domain)
+			t.Errorf("link.Domain = %q、期待値 = 127.0.0.1", link.Domain)
 		}
 		if link.Title != "OGP Title" {
-			t.Errorf("link.Title = %q, want OGP Title", link.Title)
+			t.Errorf("link.Title = %q、期待値 = OGP Title", link.Title)
 		}
 		if link.ImageURL != "https://example.com/og.png" {
-			t.Errorf("link.ImageURL = %q, want https://example.com/og.png", link.ImageURL)
+			t.Errorf("link.ImageURL = %q、期待値 = https://example.com/og.png", link.ImageURL)
 		}
 
 		// リンクが永続化されていることを確認する
 		saved, err := linkRepo.FindByCanonicalURL(ctx, canonicalURL)
 		if err != nil {
-			t.Fatalf("FindByCanonicalURL() error = %v", err)
+			t.Fatalf("FindByCanonicalURL()のエラー = %v", err)
 		}
 		if saved == nil {
-			t.Fatal("作成されたリンクが DB に存在しません")
+			t.Fatal("作成されたリンクがDBに存在しません")
 		}
 		if saved.ID != link.ID {
-			t.Errorf("saved.ID = %v, want %v", saved.ID, link.ID)
+			t.Errorf("saved.ID = %v、期待値 = %v", saved.ID, link.ID)
 		}
 	})
 
-	t.Run("og:title が無い場合は <title> にフォールバックする", func(t *testing.T) {
+	t.Run("og:titleが無い場合は <title> にフォールバックする", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -111,22 +105,22 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: server.URL + "/no-ogp"})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output.Link.Title != "Page Title" {
-			t.Errorf("link.Title = %q, want Page Title", output.Link.Title)
+			t.Errorf("link.Title = %q、期待値 = Page Title", output.Link.Title)
 		}
-		// canonical タグが無いため canonical URL は対象 URL にフォールバックする
+		// canonicalタグが無いためcanonical URLは対象URLにフォールバックする
 		if output.Link.CanonicalURL != server.URL+"/no-ogp" {
-			t.Errorf("link.CanonicalURL = %q, want %q", output.Link.CanonicalURL, server.URL+"/no-ogp")
+			t.Errorf("link.CanonicalURL = %q、期待値 = %q", output.Link.CanonicalURL, server.URL+"/no-ogp")
 		}
-		// og:image が無い場合は空文字列で保存される
+		// og:imageが無い場合は空文字列で保存される
 		if output.Link.ImageURL != "" {
-			t.Errorf("link.ImageURL = %q, want empty", output.Link.ImageURL)
+			t.Errorf("link.ImageURL = %q、空を期待", output.Link.ImageURL)
 		}
 	})
 
-	t.Run("タイトルが一切無い場合は canonical URL をタイトルにする", func(t *testing.T) {
+	t.Run("タイトルが一切無い場合はcanonical URLをタイトルにする", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -143,14 +137,14 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		targetURL := server.URL + "/no-title"
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output.Link.Title != targetURL {
-			t.Errorf("link.Title = %q, want %q", output.Link.Title, targetURL)
+			t.Errorf("link.Title = %q、期待値 = %q", output.Link.Title, targetURL)
 		}
 	})
 
-	t.Run("対象 URL と一致する既存リンクは取得せずに再利用する", func(t *testing.T) {
+	t.Run("対象URLと一致する既存リンクは取得せずに再利用する", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -173,17 +167,17 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output.Link.ID != linkID {
-			t.Errorf("output.Link.ID = %v, want %v", output.Link.ID, linkID)
+			t.Errorf("output.Link.ID = %v、期待値 = %v", output.Link.ID, linkID)
 		}
 		if got := hits.Load(); got != 0 {
-			t.Errorf("HTTP リクエスト回数 = %d, want 0 (既存リンク再利用時は取得しない)", got)
+			t.Errorf("HTTPリクエスト回数 = %d、期待値 = 0 (既存リンク再利用時は取得しない)", got)
 		}
 	})
 
-	t.Run("canonical タグの URL で見つかる既存リンクを再利用する", func(t *testing.T) {
+	t.Run("canonicalタグのURLで見つかる既存リンクを再利用する", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -203,23 +197,23 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		linkRepo := repository.NewLinkRepository(testutil.QueriesWithTx(tx))
 		uc := newFetchLinkMetadataUsecase(linkRepo)
 
-		// 対象 URL は既存リンクとは別だが、canonical タグが既存リンクを指す
+		// 対象URLは既存リンクとは別だが、canonicalタグが既存リンクを指す
 		targetURL := server.URL + "/canonical-page?ref=timeline"
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output.Link.ID != linkID {
-			t.Errorf("output.Link.ID = %v, want %v (既存リンクの再利用)", output.Link.ID, linkID)
+			t.Errorf("output.Link.ID = %v、期待値 = %v (既存リンクの再利用)", output.Link.ID, linkID)
 		}
 
-		// 対象 URL では新しいリンクが作成されていないことを確認する
+		// 対象URLでは新しいリンクが作成されていないことを確認する
 		duplicated, err := linkRepo.FindByCanonicalURL(ctx, targetURL)
 		if err != nil {
-			t.Fatalf("FindByCanonicalURL() error = %v", err)
+			t.Fatalf("FindByCanonicalURL()のエラー = %v", err)
 		}
 		if duplicated != nil {
-			t.Error("対象 URL で新しいリンクが作成されています (canonical の既存リンクを再利用すべき)")
+			t.Error("対象URLで新しいリンクが作成されています (canonicalの既存リンクを再利用すべき)")
 		}
 	})
 
@@ -245,18 +239,15 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		targetURL := server.URL + "/start"
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if output.Link.Title != "Redirected Page" {
-			t.Errorf("link.Title = %q, want Redirected Page", output.Link.Title)
+			t.Errorf("link.Title = %q、期待値 = Redirected Page", output.Link.Title)
 		}
-		// The page has no canonical tag, so the canonical URL falls back to the
-		// original target URL, not the redirect destination (Rails parses with
-		// the original target_url).
-		// [Ja] ページに canonical タグが無いため、canonical URL はリダイレクト先ではなく
-		// 元の対象 URL にフォールバックする (Rails も元の target_url でパースする)。
+		// ページにcanonicalタグが無いため、canonical URLはリダイレクト先ではなく
+		// 元の対象URLにフォールバックする (Railsも元のtarget_urlでパースする)。
 		if output.Link.CanonicalURL != targetURL {
-			t.Errorf("link.CanonicalURL = %q, want %q", output.Link.CanonicalURL, targetURL)
+			t.Errorf("link.CanonicalURL = %q、期待値 = %q", output.Link.CanonicalURL, targetURL)
 		}
 	})
 
@@ -267,10 +258,8 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		ctx := context.Background()
 
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Write the redirect without a body: the redirect is not followed,
-			// the empty 302 body is used as the HTML, and the fetch fails.
-			// [Ja] ボディ無しでリダイレクトを返す。リダイレクトは追跡されず、空の 302
-			// ボディが HTML として扱われ、取得エラーになる。
+			// ボディ無しでリダイレクトを返す。リダイレクトは追跡されず、空の302
+			// ボディがHTMLとして扱われ、取得エラーになる。
 			w.Header().Set("Location", "http://disallowed.invalid/")
 			w.WriteHeader(http.StatusFound)
 		}))
@@ -282,20 +271,20 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		targetURL := server.URL + "/phishing"
 		output, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		if output != nil {
-			t.Errorf("output = %v, want nil", output)
+			t.Errorf("出力 = %v、期待値 = nil", output)
 		}
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatalf("ValidationError が期待されましたが err = %v", err)
+			t.Fatalf("ValidationErrorが期待されましたがerr = %v", err)
 		}
 		if !ve.HasFieldError("target_url") {
-			t.Error("target_url フィールドのエラーが期待されましたが、ありません")
+			t.Error("target_urlフィールドのエラーが期待されましたが、ありません")
 		}
 
 		// リンクが作成されていないことを確認する
 		link, err := linkRepo.FindByCanonicalURL(ctx, targetURL)
 		if err != nil {
-			t.Fatalf("FindByCanonicalURL() error = %v", err)
+			t.Fatalf("FindByCanonicalURL()のエラー = %v", err)
 		}
 		if link != nil {
 			t.Error("取得エラー時にリンクが作成されています")
@@ -319,14 +308,14 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		_, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: targetURL})
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatalf("ValidationError が期待されましたが err = %v", err)
+			t.Fatalf("ValidationErrorが期待されましたがerr = %v", err)
 		}
 		if !ve.HasFieldError("target_url") {
-			t.Error("target_url フィールドのエラーが期待されましたが、ありません")
+			t.Error("target_urlフィールドのエラーが期待されましたが、ありません")
 		}
 	})
 
-	t.Run("og:image が不正な URL の場合は取得エラーになる", func(t *testing.T) {
+	t.Run("og:imageが不正なURLの場合は取得エラーになる", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -343,21 +332,19 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		linkRepo := repository.NewLinkRepository(testutil.QueriesWithTx(tx))
 		uc := newFetchLinkMetadataUsecase(linkRepo)
 
-		// Rails LinkForm validates image_url with url: {allow_blank: true}; an
-		// unparsable og:image therefore surfaces as a fetch error.
-		// [Ja] Rails の LinkForm は image_url を url: {allow_blank: true} で検証する
-		// ため、パース不能な og:image は取得エラーとして表示される。
+		// RailsのLinkFormはimage_urlをurl: {allow_blank: true} で検証する
+		// ため、パース不能なog:imageは取得エラーとして表示される。
 		_, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: server.URL + "/broken-image"})
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatalf("ValidationError が期待されましたが err = %v", err)
+			t.Fatalf("ValidationErrorが期待されましたがerr = %v", err)
 		}
 		if !ve.HasFieldError("target_url") {
-			t.Error("target_url フィールドのエラーが期待されましたが、ありません")
+			t.Error("target_urlフィールドのエラーが期待されましたが、ありません")
 		}
 	})
 
-	t.Run("対象 URL が空の場合はバリデーションエラーになる", func(t *testing.T) {
+	t.Run("対象URLが空の場合はバリデーションエラーになる", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -369,14 +356,14 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		_, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: ""})
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatalf("ValidationError が期待されましたが err = %v", err)
+			t.Fatalf("ValidationErrorが期待されましたがerr = %v", err)
 		}
 		if !ve.HasFieldError("target_url") {
-			t.Error("target_url フィールドのエラーが期待されましたが、ありません")
+			t.Error("target_urlフィールドのエラーが期待されましたが、ありません")
 		}
 	})
 
-	t.Run("private host への取得をブロックすると取得エラーになる", func(t *testing.T) {
+	t.Run("private hostへの取得をブロックすると取得エラーになる", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -388,10 +375,8 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		defer server.Close()
 
 		linkRepo := repository.NewLinkRepository(testutil.QueriesWithTx(tx))
-		// Enable private host blocking (production setting). httptest listens on
-		// loopback (127.0.0.1), so the fetch is refused as an SSRF guard.
-		// [Ja] private host ブロックを有効化する (本番設定)。httptest は loopback
-		// (127.0.0.1) でリッスンするため、SSRF 防御として取得が拒否される。
+		// private hostブロックを有効化する (本番設定)。httptestはloopback
+		// (127.0.0.1) でリッスンするため、SSRF防御として取得が拒否される。
 		uc := usecase.NewFetchLinkMetadataUsecase(
 			validator.NewLinkDataFetcherValidator(),
 			linkRepo,
@@ -402,19 +387,19 @@ func TestFetchLinkMetadataUsecase_Execute(t *testing.T) {
 		_, err := uc.Execute(ctx, usecase.FetchLinkMetadataInput{TargetURL: server.URL})
 		ve := model.AsValidationError(err)
 		if ve == nil {
-			t.Fatalf("ValidationError が期待されましたが err = %v", err)
+			t.Fatalf("ValidationErrorが期待されましたがerr = %v", err)
 		}
 		if !ve.HasFieldError("target_url") {
-			t.Error("target_url フィールドのエラーが期待されましたが、ありません")
+			t.Error("target_urlフィールドのエラーが期待されましたが、ありません")
 		}
 
 		// ブロックされたため、リンクは作成されていないこと
 		link, err := linkRepo.FindByCanonicalURL(ctx, server.URL)
 		if err != nil {
-			t.Fatalf("FindByCanonicalURL() error = %v", err)
+			t.Fatalf("FindByCanonicalURL()のエラー = %v", err)
 		}
 		if link != nil {
-			t.Error("private host へのブロック時にリンクが作成されています")
+			t.Error("private hostへのブロック時にリンクが作成されています")
 		}
 	})
 }

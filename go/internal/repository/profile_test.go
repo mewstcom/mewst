@@ -28,17 +28,17 @@ func TestProfileRepository_FindByID(t *testing.T) {
 	t.Run("存在するプロフィールを取得できる", func(t *testing.T) {
 		profile, err := repo.FindByID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 
 		if profile.ID != profileID {
-			t.Errorf("profile.ID = %v, want %v", profile.ID, profileID)
+			t.Errorf("profile.ID = %v、期待値 = %v", profile.ID, profileID)
 		}
 		if profile.Atname != "testuser" {
-			t.Errorf("profile.Atname = %v, want testuser", profile.Atname)
+			t.Errorf("profile.Atname = %v、期待値 = testuser", profile.Atname)
 		}
 		if profile.Name != "Test User" {
-			t.Errorf("profile.Name = %v, want Test User", profile.Name)
+			t.Errorf("profile.Name = %v、期待値 = Test User", profile.Name)
 		}
 	})
 
@@ -51,10 +51,10 @@ func TestProfileRepository_FindByID(t *testing.T) {
 
 		profile, err := repo.FindByID(ctx, nonExistentID)
 		if err != nil {
-			t.Errorf("FindByID() error = %v, want nil", err)
+			t.Errorf("FindByID()のエラー = %v、期待値 = nil", err)
 		}
 		if profile != nil {
-			t.Errorf("FindByID() profile = %v, want nil", profile)
+			t.Errorf("FindByID()のprofile = %v、期待値 = nil", profile)
 		}
 	})
 }
@@ -76,24 +76,24 @@ func TestProfileRepository_FindByAtname(t *testing.T) {
 	t.Run("存在するプロフィールをアットネームで取得できる", func(t *testing.T) {
 		profile, err := repo.FindByAtname(ctx, "findbyatname")
 		if err != nil {
-			t.Fatalf("FindByAtname() error = %v", err)
+			t.Fatalf("FindByAtname()のエラー = %v", err)
 		}
 
 		if profile.ID != profileID {
-			t.Errorf("profile.ID = %v, want %v", profile.ID, profileID)
+			t.Errorf("profile.ID = %v、期待値 = %v", profile.ID, profileID)
 		}
 		if profile.Atname != "findbyatname" {
-			t.Errorf("profile.Atname = %v, want findbyatname", profile.Atname)
+			t.Errorf("profile.Atname = %v、期待値 = findbyatname", profile.Atname)
 		}
 	})
 
 	t.Run("存在しないアットネームはnilを返す", func(t *testing.T) {
 		profile, err := repo.FindByAtname(ctx, "nonexistent")
 		if err != nil {
-			t.Errorf("FindByAtname() error = %v, want nil", err)
+			t.Errorf("FindByAtname()のエラー = %v、期待値 = nil", err)
 		}
 		if profile != nil {
-			t.Errorf("FindByAtname() profile = %v, want nil", profile)
+			t.Errorf("FindByAtname()のprofile = %v、期待値 = nil", profile)
 		}
 	})
 }
@@ -114,20 +114,20 @@ func TestProfileRepository_ExistsByAtname(t *testing.T) {
 	t.Run("存在するアットネームはtrueを返す", func(t *testing.T) {
 		exists, err := repo.ExistsByAtname(ctx, "existstest")
 		if err != nil {
-			t.Fatalf("ExistsByAtname() error = %v", err)
+			t.Fatalf("ExistsByAtname()のエラー = %v", err)
 		}
 		if !exists {
-			t.Error("ExistsByAtname() = false, want true")
+			t.Error("ExistsByAtname() = false、期待値 = true")
 		}
 	})
 
 	t.Run("存在しないアットネームはfalseを返す", func(t *testing.T) {
 		exists, err := repo.ExistsByAtname(ctx, "nonexistent")
 		if err != nil {
-			t.Fatalf("ExistsByAtname() error = %v", err)
+			t.Fatalf("ExistsByAtname()のエラー = %v", err)
 		}
 		if exists {
-			t.Error("ExistsByAtname() = true, want false")
+			t.Error("ExistsByAtname() = true、期待値 = false")
 		}
 	})
 }
@@ -154,23 +154,23 @@ func TestProfileRepository_Create(t *testing.T) {
 			GravatarURL:   "",
 		})
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		if profile.Atname != "newuser" {
-			t.Errorf("profile.Atname = %v, want newuser", profile.Atname)
+			t.Errorf("profile.Atname = %v、期待値 = newuser", profile.Atname)
 		}
 		if profile.Name != "New User" {
-			t.Errorf("profile.Name = %v, want New User", profile.Name)
+			t.Errorf("profile.Name = %v、期待値 = New User", profile.Name)
 		}
 		if profile.Description != "This is a test user" {
-			t.Errorf("profile.Description = %v, want This is a test user", profile.Description)
+			t.Errorf("profile.Description = %v、期待値 = This is a test user", profile.Description)
 		}
 		if profile.OwnerType != "Actor" {
-			t.Errorf("profile.OwnerType = %v, want Actor", profile.OwnerType)
+			t.Errorf("profile.OwnerType = %v、期待値 = Actor", profile.OwnerType)
 		}
 		if profile.AvatarKind != "default" {
-			t.Errorf("profile.AvatarKind = %v, want default", profile.AvatarKind)
+			t.Errorf("profile.AvatarKind = %v、期待値 = default", profile.AvatarKind)
 		}
 	})
 }
@@ -186,30 +186,29 @@ func TestProfileRepository_UpdateLastPostAt(t *testing.T) {
 	repo := repository.NewProfileRepository(testutil.QueriesWithTx(tx))
 
 	t.Run("last_post_atを更新できる", func(t *testing.T) {
-		// last_post_at is NULL right after creation.
-		// [Ja] 作成直後の last_post_at は NULL であることを確認する。
+		// 作成直後のlast_post_atはNULLであることを確認する。
 		before, err := repo.FindByID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 		if before.LastPostAt != nil {
-			t.Errorf("before.LastPostAt = %v, want nil", before.LastPostAt)
+			t.Errorf("before.LastPostAt = %v、期待値 = nil", before.LastPostAt)
 		}
 
 		lastPostAt := time.Date(2024, 6, 7, 8, 9, 10, 0, time.UTC)
 		if err := repo.UpdateLastPostAt(ctx, profileID, lastPostAt); err != nil {
-			t.Fatalf("UpdateLastPostAt() error = %v", err)
+			t.Fatalf("UpdateLastPostAt()のエラー = %v", err)
 		}
 
 		after, err := repo.FindByID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 		if after.LastPostAt == nil {
-			t.Fatal("after.LastPostAt = nil, want non-nil")
+			t.Fatal("after.LastPostAt = nil、非nilを期待")
 		}
 		if !after.LastPostAt.Equal(lastPostAt) {
-			t.Errorf("after.LastPostAt = %v, want %v", after.LastPostAt, lastPostAt)
+			t.Errorf("after.LastPostAt = %v、期待値 = %v", after.LastPostAt, lastPostAt)
 		}
 	})
 }
@@ -238,16 +237,16 @@ func TestProfileRepository_WithTx(t *testing.T) {
 			GravatarURL:   "",
 		})
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		// 作成したプロフィールを取得できることを確認
 		fetched, err := txRepo.FindByID(ctx, profile.ID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 		if fetched.Atname != "txuser" {
-			t.Errorf("fetched.Atname = %v, want txuser", fetched.Atname)
+			t.Errorf("fetched.Atname = %v、期待値 = txuser", fetched.Atname)
 		}
 	})
 }

@@ -8,20 +8,20 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// PasswordUpdateValidator はパスワード更新フォームのバリデーションを行う
+// PasswordUpdateValidatorはパスワード更新フォームのバリデーションを行う
 type PasswordUpdateValidator struct{}
 
-// NewPasswordUpdateValidator はPasswordUpdateValidatorを生成する
+// NewPasswordUpdateValidatorはPasswordUpdateValidatorを生成する
 func NewPasswordUpdateValidator() *PasswordUpdateValidator {
 	return &PasswordUpdateValidator{}
 }
 
-// PasswordUpdateValidatorInput はバリデーションの入力パラメータ
+// PasswordUpdateValidatorInputはバリデーションの入力パラメータ
 type PasswordUpdateValidatorInput struct {
 	Password string
 }
 
-// Validate は入力値の形式をチェックする (DBアクセスなし)
+// Validateは入力値の形式をチェックする (DBアクセスなし)
 func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUpdateValidatorInput) error {
 	ve := model.NewValidationError()
 
@@ -37,7 +37,7 @@ func (v *PasswordUpdateValidator) Validate(ctx context.Context, input PasswordUp
 		return ve
 	}
 
-	// 最大バイト数チェック (bcrypt 制限)
+	// 最大バイト数チェック (bcrypt制限)
 	if len(input.Password) > PasswordMaxBytes {
 		ve.AddField("password", i18n.T(ctx, "validation_password_too_long"))
 		return ve

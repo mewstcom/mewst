@@ -19,7 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// mockTurnstile はテスト用のTurnstile検証モック
+// mockTurnstileはテスト用のTurnstile検証モック
 type mockTurnstile struct {
 	shouldSucceed bool
 }
@@ -28,7 +28,7 @@ func (m *mockTurnstile) Verify(ctx context.Context, token string) (bool, error) 
 	return m.shouldSucceed, nil
 }
 
-// setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
+// setupTestHandlerはテスト用のハンドラーとテストデータをセットアップする
 func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
@@ -50,7 +50,7 @@ func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler
 	return h, cfg
 }
 
-// createTestUser はテスト用のユーザー、プロフィール、アクターを作成する
+// createTestUserはテスト用のユーザー、プロフィール、アクターを作成する
 func createTestUser(t *testing.T, tx *sql.Tx, email string) {
 	t.Helper()
 
@@ -89,7 +89,7 @@ func TestNew(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにログインフォームが含まれているか確認
@@ -138,13 +138,13 @@ func TestCreate_Success(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// リダイレクト先を検証
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	// セッションクッキーが設定されているか確認
@@ -198,7 +198,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認
@@ -233,7 +233,7 @@ func TestCreate_UserNotFound(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認
@@ -272,7 +272,7 @@ func TestCreate_WrongPassword(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認
@@ -310,7 +310,7 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// Turnstileエラーメッセージが表示されているか確認
@@ -345,7 +345,7 @@ func TestCreate_EmptyFields(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// バリデーションエラーが表示されているか確認
@@ -373,7 +373,7 @@ func TestNew_WithBackParameter(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにback hiddenフィールドが含まれているか確認
@@ -421,13 +421,13 @@ func TestCreate_SuccessWithBackParameter(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// リダイレクト先がbackパラメータの値であることを検証
 	location := rr.Header().Get("Location")
 	if location != "/settings" {
-		t.Errorf("リダイレクト先が不正: got %v, want /settings", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /settings", location)
 	}
 }
 
@@ -502,13 +502,13 @@ func TestCreate_SuccessWithInvalidBackParameter(t *testing.T) {
 
 			// リダイレクトを検証
 			if rr.Code != http.StatusFound {
-				t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+				t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 			}
 
 			// リダイレクト先を検証
 			location := rr.Header().Get("Location")
 			if location != tc.wantURL {
-				t.Errorf("リダイレクト先が不正: got %v, want %v", location, tc.wantURL)
+				t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = %v", location, tc.wantURL)
 			}
 		})
 	}
@@ -540,7 +540,7 @@ func TestCreate_ValidationErrorWithBackParameter(t *testing.T) {
 
 	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// レスポンスにback hiddenフィールドが保持されているか確認

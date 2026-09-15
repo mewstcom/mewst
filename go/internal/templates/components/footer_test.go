@@ -17,7 +17,7 @@ func TestBasicFooter(t *testing.T) {
 
 	var buf bytes.Buffer
 	if err := components.BasicFooter().Render(ctx, &buf); err != nil {
-		t.Fatalf("failed to render: %v", err)
+		t.Fatalf("描画に失敗: %v", err)
 	}
 	html := buf.String()
 
@@ -36,43 +36,37 @@ func TestBasicFooter(t *testing.T) {
 		"sr-only",
 	} {
 		if !strings.Contains(html, want) {
-			t.Errorf("BasicFooter output missing %q", want)
+			t.Errorf("BasicFooterの出力に%qが含まれていない", want)
 		}
 	}
 
-	// Each of the four footer links opens in a new tab, so target/rel appear
-	// once per link. The wordmark link is same-tab and must not carry them.
-	//
-	// [Ja] 4 つのフッターリンクはそれぞれ新規タブで開くため、target/rel はリンクごとに
-	// 1 回ずつ現れる。ワードマークのリンクは同一タブで開くため付かない。
+	// 4つのフッターリンクはそれぞれ新規タブで開くため、target/relはリンクごとに
+	// 1回ずつ現れる。ワードマークのリンクは同一タブで開くため付かない。
 	if got := strings.Count(html, `target="_blank"`); got != 4 {
-		t.Errorf(`target="_blank" count = %d, want 4`, got)
+		t.Errorf(`target="_blank"の件数 = %d、期待値 = 4`, got)
 	}
 	if got := strings.Count(html, `rel="nofollow noopener"`); got != 4 {
-		t.Errorf(`rel="nofollow noopener" count = %d, want 4`, got)
+		t.Errorf(`rel="nofollow noopener"の件数 = %d、期待値 = 4`, got)
 	}
 	if got := strings.Count(html, `lang="en"`); got != 4 {
-		t.Errorf(`lang="en" count = %d, want 4`, got)
+		t.Errorf(`lang="en"の件数 = %d、期待値 = 4`, got)
 	}
 	if got := strings.Count(html, "inline-flex min-h-6 items-center"); got != 4 {
-		t.Errorf("minimum touch target class count = %d, want 4", got)
+		t.Errorf("最小タッチターゲットのクラスの件数 = %d、期待値 = 4", got)
 	}
 }
 
 func TestBasicFooter_NewTabHintLocalized(t *testing.T) {
 	t.Parallel()
 
-	// The new-tab hint follows the current locale while the visible labels stay
-	// fixed English strings.
-	//
-	// [Ja] 新規タブのヒントは現在のロケールに従い、表示ラベルは英語固定とする。
+	// 新規タブのヒントは現在のロケールに従い、表示ラベルは英語固定とする。
 	tests := []struct {
 		name   string
 		locale string
 		want   string
 	}{
-		{name: "Japanese", locale: "ja", want: "新しいタブで開く"},
-		{name: "English", locale: "en", want: "Opens in new tab"},
+		{name: "日本語", locale: "ja", want: "新しいタブで開く"},
+		{name: "英語", locale: "en", want: "Opens in new tab"},
 	}
 
 	for _, tt := range tests {
@@ -83,11 +77,11 @@ func TestBasicFooter_NewTabHintLocalized(t *testing.T) {
 
 			var buf bytes.Buffer
 			if err := components.BasicFooter().Render(ctx, &buf); err != nil {
-				t.Fatalf("failed to render: %v", err)
+				t.Fatalf("描画に失敗: %v", err)
 			}
 
 			if !strings.Contains(buf.String(), tt.want) {
-				t.Errorf("BasicFooter (%s) output missing new-tab hint %q", tt.locale, tt.want)
+				t.Errorf("BasicFooter (%s) の出力に新しいタブで開く旨の%qが含まれていない", tt.locale, tt.want)
 			}
 		})
 	}

@@ -60,7 +60,7 @@ func TestT_Japanese(t *testing.T) {
 
 			got := T(ctx, tt.messageID)
 			if got != tt.expected {
-				t.Errorf("T(ctx, %q) = %q, want %q", tt.messageID, got, tt.expected)
+				t.Errorf("T(ctx, %q) = %q、期待値 = %q", tt.messageID, got, tt.expected)
 			}
 		})
 	}
@@ -75,32 +75,32 @@ func TestT_English(t *testing.T) {
 		expected  string
 	}{
 		{
-			name:      "Sign in page title",
+			name:      "サインインページのタイトル",
 			messageID: "sign_in_new_title",
 			expected:  "Sign in to Mewst",
 		},
 		{
-			name:      "Email label",
+			name:      "メールアドレスのラベル",
 			messageID: "sign_in_new_email_label",
 			expected:  "Email",
 		},
 		{
-			name:      "Password label",
+			name:      "パスワードのラベル",
 			messageID: "sign_in_new_password_label",
 			expected:  "Password",
 		},
 		{
-			name:      "Sign in button",
+			name:      "サインインのボタン",
 			messageID: "sign_in_new_submit",
 			expected:  "Sign in",
 		},
 		{
-			name:      "Sign in success message",
+			name:      "サインイン成功のメッセージ",
 			messageID: "flash_sign_in_success",
 			expected:  "Signed in successfully.",
 		},
 		{
-			name:      "Required validation error",
+			name:      "必須のバリデーションエラー",
 			messageID: "validation_required",
 			expected:  "is required",
 		},
@@ -115,7 +115,7 @@ func TestT_English(t *testing.T) {
 
 			got := T(ctx, tt.messageID)
 			if got != tt.expected {
-				t.Errorf("T(ctx, %q) = %q, want %q", tt.messageID, got, tt.expected)
+				t.Errorf("T(ctx, %q) = %q、期待値 = %q", tt.messageID, got, tt.expected)
 			}
 		})
 	}
@@ -130,7 +130,7 @@ func TestT_FallbackToMessageID(t *testing.T) {
 	unknownKey := "unknown.message.key"
 	got := T(ctx, unknownKey)
 	if got != unknownKey {
-		t.Errorf("T(ctx, %q) = %q, want %q", unknownKey, got, unknownKey)
+		t.Errorf("T(ctx, %q) = %q、期待値 = %q", unknownKey, got, unknownKey)
 	}
 }
 
@@ -143,7 +143,7 @@ func TestT_DefaultLocale(t *testing.T) {
 	got := T(ctx, "sign_in_new_title")
 	expected := "Mewstにログイン"
 	if got != expected {
-		t.Errorf("T(ctx, %q) = %q, want %q (default locale should be Japanese)", "sign_in_new_title", got, expected)
+		t.Errorf("T(ctx, %q) = %q、期待値 = %q (既定のロケールは日本語)", "sign_in_new_title", got, expected)
 	}
 }
 
@@ -176,7 +176,7 @@ func TestGetLocale(t *testing.T) {
 
 			got := GetLocale(ctx)
 			if got != tt.expected {
-				t.Errorf("GetLocale(ctx) = %q, want %q", got, tt.expected)
+				t.Errorf("GetLocale(ctx) = %q、期待値 = %q", got, tt.expected)
 			}
 		})
 	}
@@ -189,7 +189,7 @@ func TestGetLocale_Default(t *testing.T) {
 
 	got := GetLocale(ctx)
 	if got != DefaultLang {
-		t.Errorf("GetLocale(ctx) = %q, want %q (default)", got, DefaultLang)
+		t.Errorf("GetLocale(ctx) = %q、期待値 = %q (既定値)", got, DefaultLang)
 	}
 }
 
@@ -239,7 +239,7 @@ func TestDetectLanguage(t *testing.T) {
 
 			got := DetectLanguage(req)
 			if got != tt.expected {
-				t.Errorf("DetectLanguage() = %q, want %q", got, tt.expected)
+				t.Errorf("DetectLanguage() = %q、期待値 = %q", got, tt.expected)
 			}
 		})
 	}
@@ -253,13 +253,13 @@ func TestSetLocale_And_GetLocale(t *testing.T) {
 	// 日本語を設定
 	ctx = SetLocale(ctx, LangJa)
 	if got := GetLocale(ctx); got != LangJa {
-		t.Errorf("GetLocale() = %q, want %q", got, LangJa)
+		t.Errorf("GetLocale() = %q、期待値 = %q", got, LangJa)
 	}
 
 	// 英語に変更
 	ctx = SetLocale(ctx, LangEn)
 	if got := GetLocale(ctx); got != LangEn {
-		t.Errorf("GetLocale() = %q, want %q", got, LangEn)
+		t.Errorf("GetLocale() = %q、期待値 = %q", got, LangEn)
 	}
 }
 
@@ -271,7 +271,7 @@ func TestGetLocalizer(t *testing.T) {
 
 	localizer := GetLocalizer(ctx)
 	if localizer == nil {
-		t.Error("GetLocalizer() returned nil")
+		t.Error("GetLocalizer() = nil、非nilを期待")
 	}
 }
 
@@ -280,7 +280,7 @@ func TestNewLocalizer(t *testing.T) {
 
 	localizer := NewLocalizer(LangJa)
 	if localizer == nil {
-		t.Error("NewLocalizer() returned nil")
+		t.Error("NewLocalizer() = nil、非nilを期待")
 	}
 }
 
@@ -335,26 +335,20 @@ func TestMiddleware(t *testing.T) {
 			Middleware(testHandler).ServeHTTP(rr, req)
 
 			if capturedLocale != tt.wantLocale {
-				t.Errorf("Middleware() locale = %q, want %q", capturedLocale, tt.wantLocale)
+				t.Errorf("Middleware()のロケール = %q、期待値 = %q", capturedLocale, tt.wantLocale)
 			}
 
 			if capturedTranslation != tt.wantTranslated {
-				t.Errorf("Middleware() translation = %q, want %q", capturedTranslation, tt.wantTranslated)
+				t.Errorf("Middleware()の翻訳 = %q、期待値 = %q", capturedTranslation, tt.wantTranslated)
 			}
 		})
 	}
 }
 
-// TestLocaleMessageIDsMatch pins that both locale files define the same message
-// IDs. A message ID present in only one file does not fall back to the other
-// language: T returns the message ID itself, so the internal identifier reaches
-// the screen in the locale that lacks it. The comparison is at the message ID
-// level, which is the granularity at which a translation is added or removed.
-//
-// [Ja] TestLocaleMessageIDsMatch は 2 つのロケールファイルが同じメッセージ ID を
-// 定義していることを固定する。片方にしかないメッセージ ID はもう一方の言語へ
-// フォールバックしない。T がメッセージ ID そのものを返すため、欠けている側の
-// ロケールでは内部の識別子が画面に出る。比較はメッセージ ID の単位で行う。
+// TestLocaleMessageIDsMatchは2つのロケールファイルが同じメッセージIDを
+// 定義していることを固定する。片方にしかないメッセージIDはもう一方の言語へ
+// フォールバックしない。TがメッセージIDそのものを返すため、欠けている側の
+// ロケールでは内部の識別子が画面に出る。比較はメッセージIDの単位で行う。
 // 翻訳の追加・削除がこの単位で起きるためである。
 func TestLocaleMessageIDsMatch(t *testing.T) {
 	t.Parallel()
@@ -363,31 +357,27 @@ func TestLocaleMessageIDsMatch(t *testing.T) {
 	en := localeMessageIDs(t, LangEn)
 
 	if missing := missingMessageIDs(ja, en); len(missing) > 0 {
-		t.Errorf("%s.toml に %s.toml のメッセージ ID がありません: %v", LangEn, LangJa, missing)
+		t.Errorf("%s.tomlに%s.tomlのメッセージIDがありません: %v", LangEn, LangJa, missing)
 	}
 	if missing := missingMessageIDs(en, ja); len(missing) > 0 {
-		t.Errorf("%s.toml に %s.toml のメッセージ ID がありません: %v", LangJa, LangEn, missing)
+		t.Errorf("%s.tomlに%s.tomlのメッセージIDがありません: %v", LangJa, LangEn, missing)
 	}
 }
 
-// localeMessageIDs returns the message IDs defined in the given locale file.
-// Each message is a top-level TOML table, so the top-level keys are the message
-// IDs.
-//
-// [Ja] localeMessageIDs は指定したロケールファイルに定義されたメッセージ ID を
-// 返す。各メッセージはトップレベルの TOML テーブルであるため、トップレベルの
-// キーがメッセージ ID になる。
+// localeMessageIDsは指定したロケールファイルに定義されたメッセージIDを
+// 返す。各メッセージはトップレベルのTOMLテーブルであるため、トップレベルの
+// キーがメッセージIDになる。
 func localeMessageIDs(t *testing.T, lang string) map[string]struct{} {
 	t.Helper()
 
 	data, err := localesFS.ReadFile(fmt.Sprintf("locales/%s.toml", lang))
 	if err != nil {
-		t.Fatalf("%s.toml の読み込みに失敗: %v", lang, err)
+		t.Fatalf("%s.tomlの読み込みに失敗: %v", lang, err)
 	}
 
 	var messages map[string]any
 	if err := toml.Unmarshal(data, &messages); err != nil {
-		t.Fatalf("%s.toml の解析に失敗: %v", lang, err)
+		t.Fatalf("%s.tomlの解析に失敗: %v", lang, err)
 	}
 
 	ids := make(map[string]struct{}, len(messages))
@@ -398,10 +388,7 @@ func localeMessageIDs(t *testing.T, lang string) map[string]struct{} {
 	return ids
 }
 
-// missingMessageIDs returns the IDs of from that are absent from in, sorted so
-// that a failure lists them in the same order on every run.
-//
-// [Ja] missingMessageIDs は from にあって in に無いメッセージ ID を返す。失敗時の
+// missingMessageIDsはfromにあってinに無いメッセージIDを返す。失敗時の
 // 一覧が実行ごとに同じ順序になるようソートする。
 func missingMessageIDs(from, in map[string]struct{}) []string {
 	missing := make([]string, 0)

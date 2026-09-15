@@ -14,7 +14,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Update はパスワードを更新する (PATCH /password)
+// Updateはパスワードを更新する (PATCH /password)
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -46,13 +46,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// アカウント作成 / パスワード更新 / メール変更フローを取り違えてフォームに到達しないための防御。
-	// パスワード更新は password_reset イベントのみ受け付ける。
+	// パスワード更新はpassword_resetイベントのみ受け付ける。
 	if ecResult.EmailConfirmation.Event != model.EmailConfirmationEventPasswordReset {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
-	// UseCase を実行 (バリデーション + パスワード更新)
+	// UseCaseを実行 (バリデーション + パスワード更新)
 	password := r.FormValue("password")
 	ucInput := usecase.UpdatePasswordInput{
 		Email:    ecResult.EmailConfirmation.Email,
@@ -76,7 +76,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/sign_in", http.StatusFound)
 }
 
-// handleUpdateError はパスワード更新処理のエラーを処理する
+// handleUpdateErrorはパスワード更新処理のエラーを処理する
 func (h *Handler) handleUpdateError(w http.ResponseWriter, r *http.Request, err error, email string) {
 	ctx := r.Context()
 
@@ -94,7 +94,7 @@ func (h *Handler) handleUpdateError(w http.ResponseWriter, r *http.Request, err 
 	}
 }
 
-// renderPasswordEditForm はパスワード更新フォームを再表示する
+// renderPasswordEditFormはパスワード更新フォームを再表示する
 func (h *Handler) renderPasswordEditForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError) {
 	ctx := r.Context()
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)

@@ -6,11 +6,8 @@ import (
 	"testing"
 )
 
-// TestProgress_Accounts verifies that the report a run ends with carries, for
-// every account, the four things an account is picked by.
-//
-// [Ja] TestProgress_Accounts は、実行の最後の報告が、すべてのアカウントについて、
-// アカウントを選ぶための 4 つを持つことを検証する。
+// TestProgress_Accountsは、実行の最後の報告が、すべてのアカウントについて、
+// アカウントを選ぶための4つを持つことを検証する。
 func TestProgress_Accounts(t *testing.T) {
 	t.Parallel()
 
@@ -40,26 +37,20 @@ func TestProgress_Accounts(t *testing.T) {
 		"discarded", "seeduser5", "seeduser5@example.com", "削除済みプロフィール",
 	} {
 		if !strings.Contains(out.String(), want) {
-			t.Errorf("報告が %q を含むことを期待したが、出力は %q だった", want, out.String())
+			t.Errorf("報告が%qを含むことを期待したが、出力は%qだった", want, out.String())
 		}
 	}
 
-	// One account per line is what makes the report readable down a column,
-	// which is how it is read when one account out of five is being picked.
-	//
-	// [Ja] 1 行に 1 アカウントであることが、報告を列に沿って読めるものにする。
-	// 5 件から 1 件を選ぶときに読まれるのがその読み方であるため。
+	// 1行に1アカウントであることが、報告を列に沿って読めるものにする。
+	// 5件から1件を選ぶときに読まれるのがその読み方であるため。
 	for _, line := range strings.Split(strings.TrimSpace(out.String()), "\n") {
 		if strings.Contains(line, "seeduser1") && strings.Contains(line, "seeduser5") {
-			t.Errorf("1 行に複数のアカウントが並んでいる: %q", line)
+			t.Errorf("1行に複数のアカウントが並んでいる: %q", line)
 		}
 	}
 }
 
-// TestProgress_Line verifies that a line goes out whole and on its own, since
-// it shares a stream with the log lines around it.
-//
-// [Ja] TestProgress_Line は、1 行がそのまま 1 行として出ることを検証する。前後の
+// TestProgress_Lineは、1行がそのまま1行として出ることを検証する。前後の
 // ログ行とストリームを共有するため。
 func TestProgress_Line(t *testing.T) {
 	t.Parallel()
@@ -72,6 +63,6 @@ func TestProgress_Line(t *testing.T) {
 
 	want := "データベース mewst_dev を空にします\n名簿は seed-users.toml です\n"
 	if out.String() != want {
-		t.Errorf("出力が %q であることを期待したが %q だった", want, out.String())
+		t.Errorf("出力が%qであることを期待したが%qだった", want, out.String())
 	}
 }

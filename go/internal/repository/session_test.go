@@ -39,30 +39,30 @@ func TestSessionRepository_FindByToken(t *testing.T) {
 	t.Run("存在するセッションをトークンで取得できる", func(t *testing.T) {
 		session, err := repo.FindByToken(ctx, token)
 		if err != nil {
-			t.Fatalf("FindByToken() error = %v", err)
+			t.Fatalf("FindByToken()のエラー = %v", err)
 		}
 
 		if session.Token != token {
-			t.Errorf("session.Token = %v, want %v", session.Token, token)
+			t.Errorf("session.Token = %v、期待値 = %v", session.Token, token)
 		}
 		if session.ActorID != actorID {
-			t.Errorf("session.ActorID = %v, want %v", session.ActorID, actorID)
+			t.Errorf("session.ActorID = %v、期待値 = %v", session.ActorID, actorID)
 		}
 		if session.IPAddress != "192.168.1.1" {
-			t.Errorf("session.IPAddress = %v, want 192.168.1.1", session.IPAddress)
+			t.Errorf("session.IPAddress = %v、期待値 = 192.168.1.1", session.IPAddress)
 		}
 		if session.UserAgent != "Test Browser/1.0" {
-			t.Errorf("session.UserAgent = %v, want Test Browser/1.0", session.UserAgent)
+			t.Errorf("session.UserAgent = %v、期待値 = Test Browser/1.0", session.UserAgent)
 		}
 	})
 
 	t.Run("存在しないトークンはnilを返す", func(t *testing.T) {
 		session, err := repo.FindByToken(ctx, "nonexistent-token")
 		if err != nil {
-			t.Errorf("FindByToken() error = %v, want nil", err)
+			t.Errorf("FindByToken()のエラー = %v、期待値 = nil", err)
 		}
 		if session != nil {
-			t.Errorf("FindByToken() session = %v, want nil", session)
+			t.Errorf("FindByToken()のsession = %v、期待値 = nil", session)
 		}
 	})
 }
@@ -73,8 +73,7 @@ func TestSessionRepository_FindAuthByToken(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// Set up user / profile / actor / session for the happy path.
-	// [Ja] 正常系で参照する user / profile / actor / session を準備する。
+	// 正常系で参照するuser / profile / actor / sessionを準備する。
 	userID := testutil.NewUserBuilder(t, tx).
 		WithEmail("session-findauth@example.com").
 		Build()
@@ -94,38 +93,38 @@ func TestSessionRepository_FindAuthByToken(t *testing.T) {
 
 	repo := repository.NewSessionRepository(testutil.QueriesWithTx(tx))
 
-	t.Run("既存のトークンで user / actor / profile を 1 度に取得できる", func(t *testing.T) {
+	t.Run("既存のトークンでuser / actor / profileを1度に取得できる", func(t *testing.T) {
 		lookup, err := repo.FindAuthByToken(ctx, token)
 		if err != nil {
-			t.Fatalf("FindAuthByToken() error = %v", err)
+			t.Fatalf("FindAuthByToken()のエラー = %v", err)
 		}
 		if lookup == nil {
-			t.Fatal("FindAuthByToken() = nil, want AuthLookup")
+			t.Fatal("FindAuthByToken() = nil、AuthLookupを期待")
 		}
 		if lookup.Actor == nil || lookup.Actor.ID != actorID {
-			t.Errorf("lookup.Actor.ID = %v, want %v", lookup.Actor, actorID)
+			t.Errorf("lookup.Actor.ID = %v、期待値 = %v", lookup.Actor, actorID)
 		}
 		if lookup.User == nil || lookup.User.ID != userID {
-			t.Errorf("lookup.User.ID = %v, want %v", lookup.User, userID)
+			t.Errorf("lookup.User.ID = %v、期待値 = %v", lookup.User, userID)
 		}
 		if lookup.User != nil && lookup.User.Email != "session-findauth@example.com" {
-			t.Errorf("lookup.User.Email = %q, want %q", lookup.User.Email, "session-findauth@example.com")
+			t.Errorf("lookup.User.Email = %q、期待値 = %q", lookup.User.Email, "session-findauth@example.com")
 		}
 		if lookup.Profile == nil || lookup.Profile.ID != profileID {
-			t.Errorf("lookup.Profile.ID = %v, want %v", lookup.Profile, profileID)
+			t.Errorf("lookup.Profile.ID = %v、期待値 = %v", lookup.Profile, profileID)
 		}
 		if lookup.Profile != nil && lookup.Profile.Atname != "authlookupuser" {
-			t.Errorf("lookup.Profile.Atname = %q, want %q", lookup.Profile.Atname, "authlookupuser")
+			t.Errorf("lookup.Profile.Atname = %q、期待値 = %q", lookup.Profile.Atname, "authlookupuser")
 		}
 	})
 
 	t.Run("存在しないトークンは (nil, nil) を返す", func(t *testing.T) {
 		lookup, err := repo.FindAuthByToken(ctx, "nonexistent-token-for-findauth")
 		if err != nil {
-			t.Errorf("FindAuthByToken() error = %v, want nil", err)
+			t.Errorf("FindAuthByToken()のエラー = %v、期待値 = nil", err)
 		}
 		if lookup != nil {
-			t.Errorf("FindAuthByToken() = %v, want nil", lookup)
+			t.Errorf("FindAuthByToken() = %v、期待値 = nil", lookup)
 		}
 	})
 }
@@ -160,23 +159,23 @@ func TestSessionRepository_Create(t *testing.T) {
 
 		session, err := repo.Create(ctx, params)
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		if session.Token != params.Token {
-			t.Errorf("session.Token = %v, want %v", session.Token, params.Token)
+			t.Errorf("session.Token = %v、期待値 = %v", session.Token, params.Token)
 		}
 		if session.ActorID != params.ActorID {
-			t.Errorf("session.ActorID = %v, want %v", session.ActorID, params.ActorID)
+			t.Errorf("session.ActorID = %v、期待値 = %v", session.ActorID, params.ActorID)
 		}
 		if session.IPAddress != params.IPAddress {
-			t.Errorf("session.IPAddress = %v, want %v", session.IPAddress, params.IPAddress)
+			t.Errorf("session.IPAddress = %v、期待値 = %v", session.IPAddress, params.IPAddress)
 		}
 		if session.UserAgent != params.UserAgent {
-			t.Errorf("session.UserAgent = %v, want %v", session.UserAgent, params.UserAgent)
+			t.Errorf("session.UserAgent = %v、期待値 = %v", session.UserAgent, params.UserAgent)
 		}
 		if session.SignedInAt.IsZero() {
-			t.Error("session.SignedInAt should not be zero")
+			t.Error("session.SignedInAt = ゼロ値、非ゼロ値を期待")
 		}
 	})
 }
@@ -217,23 +216,23 @@ func TestSessionRepository_DeleteByToken(t *testing.T) {
 		// 削除
 		err = repo.DeleteByToken(ctx, token)
 		if err != nil {
-			t.Fatalf("DeleteByToken() error = %v", err)
+			t.Fatalf("DeleteByToken()のエラー = %v", err)
 		}
 
 		// 削除後に存在しないことを確認
 		session, err := repo.FindByToken(ctx, token)
 		if err != nil {
-			t.Errorf("FindByToken() after delete error = %v, want nil", err)
+			t.Errorf("削除後のFindByToken()のエラー = %v、期待値 = nil", err)
 		}
 		if session != nil {
-			t.Errorf("FindByToken() after delete session = %v, want nil", session)
+			t.Errorf("削除後のFindByToken()のsession = %v、期待値 = nil", session)
 		}
 	})
 
 	t.Run("存在しないトークンの削除はエラーにならない", func(t *testing.T) {
 		err := repo.DeleteByToken(ctx, "nonexistent-token-for-delete")
 		if err != nil {
-			t.Errorf("DeleteByToken() should not return error for non-existent token, got %v", err)
+			t.Errorf("存在しないトークンでDeleteByToken()のエラー = %v、期待値 = nil", err)
 		}
 	})
 }

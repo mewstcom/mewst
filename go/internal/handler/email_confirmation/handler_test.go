@@ -20,7 +20,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
+// setupTestHandlerはテスト用のハンドラーとテストデータをセットアップする
 func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
@@ -73,7 +73,7 @@ func TestNew_WithValidEmailConfirmationID(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスに確認コード入力フォームが含まれているか確認
@@ -107,12 +107,12 @@ func TestNew_WithoutEmailConfirmationID(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -138,12 +138,12 @@ func TestNew_WithInvalidEmailConfirmationID(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -176,12 +176,12 @@ func TestNew_WithExpiredEmailConfirmation(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -218,13 +218,13 @@ func TestCreate_Success(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// パスワード編集ページへリダイレクトを検証
 	location := rr.Header().Get("Location")
 	if location != "/password/edit" {
-		t.Errorf("リダイレクト先が不正: got %v, want /password/edit", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /password/edit", location)
 	}
 
 	// フラッシュメッセージクッキーが設定されているか確認
@@ -274,7 +274,7 @@ func TestCreate_IncorrectCode(t *testing.T) {
 
 	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認
@@ -317,7 +317,7 @@ func TestCreate_EmptyCode(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// バリデーションエラーが表示されているか確認
@@ -360,7 +360,7 @@ func TestCreate_InvalidCodeFormat(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// バリデーションエラーが表示されているか確認
@@ -394,12 +394,12 @@ func TestCreate_WithoutEmailConfirmationID(t *testing.T) {
 
 	// ルートへリダイレクトされることを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 }
 
@@ -436,13 +436,13 @@ func TestCreate_SignUpEvent_RedirectsToAccountsNew(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// /accounts/newへリダイレクトを検証
 	location := rr.Header().Get("Location")
 	if location != "/accounts/new" {
-		t.Errorf("リダイレクト先が不正: got %v, want /accounts/new", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /accounts/new", location)
 	}
 
 	// フラッシュメッセージクッキーが設定されているか確認
@@ -494,7 +494,7 @@ func TestCreate_WithExpiredEmailConfirmation(t *testing.T) {
 
 	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認

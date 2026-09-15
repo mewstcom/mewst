@@ -22,21 +22,14 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// S3ExportStorage must satisfy the Application-layer port.
-//
-// [Ja] S3ExportStorage は Application 層の port を満たさなければならない。
+// S3ExportStorageはApplication層のportを満たさなければならない。
 var _ usecase.ExportObjectStorage = (*storage.S3ExportStorage)(nil)
 
 const testBucket = "test-bucket"
 
-// fakeS3 is a minimal path-style S3 server covering only the operations the
-// adapter issues: PutObject, CreateMultipartUpload, UploadPart,
-// CompleteMultipartUpload, AbortMultipartUpload, GetObject, DeleteObject and
-// ListObjectsV2.
-//
-// [Ja] fakeS3 はアダプタが発行する操作 (PutObject, CreateMultipartUpload,
+// fakeS3はアダプタが発行する操作 (PutObject, CreateMultipartUpload,
 // UploadPart, CompleteMultipartUpload, AbortMultipartUpload, GetObject,
-// DeleteObject, ListObjectsV2) だけを実装した最小のパス形式 S3 サーバー。
+// DeleteObject, ListObjectsV2) だけを実装した最小のパス形式S3サーバー。
 type fakeS3 struct {
 	mu               sync.Mutex
 	objects          map[string][]byte
@@ -50,43 +43,26 @@ type fakeS3 struct {
 	deleteErrorCode  string
 	listCalls        int
 
-	// listStartAfters records the start-after parameter of every ListObjectsV2
-	// request, so a test can tell which of them carried a resume position.
-	//
-	// [Ja] listStartAfters は各 ListObjectsV2 リクエストの start-after を記録し、
+	// listStartAftersは各ListObjectsV2リクエストのstart-afterを記録し、
 	// どのリクエストが再開位置を運んだかをテストが判別できるようにする。
 	listStartAfters []string
 
-	// listPageSize caps the number of keys per ListObjectsV2 page. A value
-	// smaller than the object count forces the adapter through the
-	// continuation-token pagination path. Zero means no cap.
-	//
-	// [Ja] listPageSize は ListObjectsV2 の 1 ページあたりのキー数の上限。
-	// オブジェクト数より小さい値にすると、アダプタは continuation token に
-	// よるページング経路を通る。0 は上限なし。
+	// listPageSizeはListObjectsV2の1ページあたりのキー数の上限。
+	// オブジェクト数より小さい値にすると、アダプタはcontinuation tokenに
+	// よるページング経路を通る。0は上限なし。
 	listPageSize int
 
-	// listOmitNextToken makes a truncated ListObjectsV2 page omit the
-	// NextContinuationToken, and listOmitLastModified makes each Contents
-	// entry omit LastModified. Both produce the malformed responses the
-	// adapter must reject instead of looping forever or yielding a zero time.
-	//
-	// [Ja] listOmitNextToken は切り詰められた ListObjectsV2 ページから
-	// NextContinuationToken を省き、listOmitLastModified は各 Contents から
-	// LastModified を省く。いずれもアダプタが無限ループやゼロ値の時刻を
-	// yield せずに拒否すべき不正な応答を作る。
+	// listOmitNextTokenは切り詰められたListObjectsV2ページから
+	// NextContinuationTokenを省き、listOmitLastModifiedは各Contentsから
+	// LastModifiedを省く。いずれもアダプタが無限ループやゼロ値の時刻を
+	// yieldせずに拒否すべき不正な応答を作る。
 	listOmitNextToken    bool
 	listOmitLastModified bool
 
-	// blockPut / blockParts make PutObject / UploadPart hang until the client
-	// disconnects or unblock is closed, for the context-cancellation tests.
-	// partStarted is closed when the first blocked UploadPart arrives so a
-	// test can cancel only after the multipart upload has actually started.
-	//
-	// [Ja] blockPut / blockParts は context キャンセルのテスト用に、PutObject /
-	// UploadPart をクライアント切断か unblock の close までブロックさせる。
-	// partStarted は最初にブロックした UploadPart の到達時に close され、
-	// テストが multipart upload の開始後にだけキャンセルできるようにする。
+	// blockPut / blockPartsはcontextキャンセルのテスト用に、PutObject /
+	// UploadPartをクライアント切断かunblockのcloseまでブロックさせる。
+	// partStartedは最初にブロックしたUploadPartの到達時にcloseされ、
+	// テストがmultipart uploadの開始後にだけキャンセルできるようにする。
 	blockPut        bool
 	blockParts      bool
 	unblock         chan struct{}
@@ -105,16 +81,10 @@ func newFakeS3() *fakeS3 {
 	}
 }
 
-// waitForClientOrUnblock parks the handler until the client disconnects or
-// unblock is closed. Callers must drain the request body first: net/http
-// starts watching for a client disconnect only after the body is consumed,
-// so an unread body would keep the request context alive forever. unblock is
-// the fallback so the test server can always shut down.
-//
-// [Ja] waitForClientOrUnblock はクライアント切断か unblock の close まで
+// waitForClientOrUnblockはクライアント切断かunblockのcloseまで
 // ハンドラーを停止させる。呼び出し側は先にリクエストボディを読み切ること。
-// net/http はボディを消費し終えた後にだけクライアント切断の監視を開始する
-// ため、ボディが未読のままだとリクエスト context が永遠に生き続ける。unblock
+// net/httpはボディを消費し終えた後にだけクライアント切断の監視を開始する
+// ため、ボディが未読のままだとリクエストcontextが永遠に生き続ける。unblock
 // はテストサーバーを確実に終了させるための保険。
 func (f *fakeS3) waitForClientOrUnblock(r *http.Request) {
 	select {
@@ -159,10 +129,7 @@ func (f *fakeS3) handler() http.Handler {
 			w.Header().Set("ETag", fmt.Sprintf("%q", "etag-"+q.Get("partNumber")))
 
 		case r.Method == http.MethodPost && q.Get("uploadId") != "":
-			// CompleteMultipartUpload: concatenate the parts in part-number
-			// order into the final object.
-			//
-			// [Ja] CompleteMultipartUpload: パート番号順に連結して最終
+			// CompleteMultipartUpload: パート番号順に連結して最終
 			// オブジェクトにする。
 			f.mu.Lock()
 			numbers := make([]int, 0, len(f.parts))
@@ -188,12 +155,8 @@ func (f *fakeS3) handler() http.Handler {
 			w.WriteHeader(http.StatusNoContent)
 
 		case r.Method == http.MethodDelete:
-			// Real S3 answers 204 even for a missing key, but the fake returns
-			// 404 NoSuchKey instead so the adapter's 404-as-success path is
-			// exercised.
-			//
-			// [Ja] 実際の S3 は存在しないキーにも 204 を返すが、fake はあえて
-			// 404 NoSuchKey を返し、アダプタの「404 は成功扱い」経路を通す。
+			// 実際のS3は存在しないキーにも204を返すが、fakeはあえて
+			// 404 NoSuchKeyを返し、アダプタの「404は成功扱い」経路を通す。
 			if f.deleteErrorCode != "" {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusNotFound)
@@ -218,12 +181,8 @@ func (f *fakeS3) handler() http.Handler {
 			w.WriteHeader(http.StatusNoContent)
 
 		case r.Method == http.MethodGet && q.Get("list-type") == "2":
-			// ListObjectsV2: return the prefix-matched keys in lexicographic
-			// order, paginated by listPageSize. The continuation token is the
-			// last key of the previous page.
-			//
-			// [Ja] ListObjectsV2: prefix に一致するキーを辞書順で返し、
-			// listPageSize 単位でページングする。continuation token は前ページ
+			// ListObjectsV2: prefixに一致するキーを辞書順で返し、
+			// listPageSize単位でページングする。continuation tokenは前ページ
 			// の最後のキー。
 			f.mu.Lock()
 			f.listCalls++
@@ -239,11 +198,8 @@ func (f *fakeS3) handler() http.Handler {
 			f.mu.Unlock()
 			sort.Strings(keys)
 
-			// A request carrying a continuation token resumes from the token;
-			// start-after applies only to a request without one.
-			//
-			// [Ja] continuation token を持つリクエストは token の位置から再開する。
-			// start-after が効くのは token を持たないリクエストだけ。
+			// continuation tokenを持つリクエストはtokenの位置から再開する。
+			// start-afterが効くのはtokenを持たないリクエストだけ。
 			start := 0
 			if resumeAfter := cmp.Or(q.Get("continuation-token"), q.Get("start-after")); resumeAfter != "" {
 				start = sort.SearchStrings(keys, resumeAfter)
@@ -335,7 +291,7 @@ func TestS3ExportStorage_Upload(t *testing.T) {
 	key := "exports/profile-id/export-id.zip"
 
 	if err := st.Upload(context.Background(), key, bytes.NewReader(body)); err != nil {
-		t.Fatalf("Upload() error = %v", err)
+		t.Fatalf("Upload()のエラー = %v", err)
 	}
 
 	f.mu.Lock()
@@ -344,13 +300,13 @@ func TestS3ExportStorage_Upload(t *testing.T) {
 	f.mu.Unlock()
 
 	if !bytes.Equal(stored, body) {
-		t.Errorf("stored object = %q, want %q", stored, body)
+		t.Errorf("保存したオブジェクト = %q、期待値 = %q", stored, body)
 	}
 	if got := headers.Get("Content-Type"); got != "application/zip" {
-		t.Errorf("Content-Type = %q, want %q", got, "application/zip")
+		t.Errorf("Content-Type = %q、期待値 = %q", got, "application/zip")
 	}
 	if got := headers.Get("Cache-Control"); got != "private, no-store" {
-		t.Errorf("Cache-Control = %q, want %q", got, "private, no-store")
+		t.Errorf("Cache-Control = %q、期待値 = %q", got, "private, no-store")
 	}
 }
 
@@ -360,11 +316,8 @@ func TestS3ExportStorage_Upload_MultipartStreaming(t *testing.T) {
 	f := newFakeS3()
 	st := newTestStorage(t, f)
 
-	// 6 MiB exceeds the 5 MiB default part size, forcing the multipart path
-	// (2 parts) while streaming through an io.Pipe like the real generator.
-	//
-	// [Ja] 6 MiB は既定パートサイズ 5 MiB を超えるため multipart 経路
-	// (2 パート) を通る。実際の生成処理と同じく io.Pipe でストリーミングする。
+	// 6 MiBは既定パートサイズ5 MiBを超えるためmultipart経路
+	// (2パート) を通る。実際の生成処理と同じくio.Pipeでストリーミングする。
 	content := deterministicBytes(6 << 20)
 	pr, pw := io.Pipe()
 	go func() {
@@ -374,7 +327,7 @@ func TestS3ExportStorage_Upload_MultipartStreaming(t *testing.T) {
 
 	key := "exports/profile-id/export-id.zip"
 	if err := st.Upload(context.Background(), key, pr); err != nil {
-		t.Fatalf("Upload() error = %v", err)
+		t.Fatalf("Upload()のエラー = %v", err)
 	}
 
 	f.mu.Lock()
@@ -385,16 +338,16 @@ func TestS3ExportStorage_Upload_MultipartStreaming(t *testing.T) {
 	f.mu.Unlock()
 
 	if !created {
-		t.Error("CreateMultipartUpload was not called")
+		t.Error("CreateMultipartUploadが呼ばれていない")
 	}
 	if !completed {
-		t.Error("CompleteMultipartUpload was not called")
+		t.Error("CompleteMultipartUploadが呼ばれていない")
 	}
 	if partCount < 2 {
-		t.Errorf("part count = %d, want >= 2", partCount)
+		t.Errorf("パートの件数 = %d、期待値 = 2以上", partCount)
 	}
 	if !bytes.Equal(stored, content) {
-		t.Errorf("stored object length = %d, want %d (content mismatch)", len(stored), len(content))
+		t.Errorf("保存したオブジェクトの長さ = %d、期待値 = %d (内容が一致しない)", len(stored), len(content))
 	}
 }
 
@@ -404,13 +357,9 @@ func TestS3ExportStorage_Upload_ProducerErrorAbortsMultipart(t *testing.T) {
 	f := newFakeS3()
 	st := newTestStorage(t, f)
 
-	// The producer fails after the first part, mimicking an archive builder
-	// that errors mid-generation. The adapter must abort the started
-	// multipart upload and propagate the producer error.
-	//
-	// [Ja] 最初のパートの後で producer を失敗させ、生成途中でエラーになる
-	// アーカイブ builder を模す。アダプタは開始済みの multipart upload を
-	// 中断し、producer のエラーを伝搬しなければならない。
+	// 最初のパートの後でproducerを失敗させ、生成途中でエラーになる
+	// アーカイブbuilderを模す。アダプタは開始済みのmultipart uploadを
+	// 中断し、producerのエラーを伝搬しなければならない。
 	producerErr := errors.New("archive build failed")
 	pr, pw := io.Pipe()
 	go func() {
@@ -423,10 +372,10 @@ func TestS3ExportStorage_Upload_ProducerErrorAbortsMultipart(t *testing.T) {
 
 	err := st.Upload(context.Background(), "exports/profile-id/export-id.zip", pr)
 	if err == nil {
-		t.Fatal("Upload() error = nil, want producer error")
+		t.Fatal("Upload()のエラー = nil、生成側のエラーを期待")
 	}
 	if !strings.Contains(err.Error(), producerErr.Error()) {
-		t.Errorf("Upload() error = %v, want to contain %q", err, producerErr.Error())
+		t.Errorf("Upload()のエラー = %v、%qを含むことを期待", err, producerErr.Error())
 	}
 
 	f.mu.Lock()
@@ -435,10 +384,10 @@ func TestS3ExportStorage_Upload_ProducerErrorAbortsMultipart(t *testing.T) {
 	f.mu.Unlock()
 
 	if !aborted {
-		t.Error("AbortMultipartUpload was not called")
+		t.Error("AbortMultipartUploadが呼ばれていない")
 	}
 	if completed {
-		t.Error("CompleteMultipartUpload was called for a failed upload")
+		t.Error("失敗したアップロードでCompleteMultipartUploadが呼ばれた")
 	}
 }
 
@@ -448,18 +397,13 @@ func TestS3ExportStorage_Upload_ContextCancellation(t *testing.T) {
 	f := newFakeS3()
 	f.blockPut = true
 	st := newTestStorage(t, f)
-	// Registered after newTestStorage, so this runs before the server Close
-	// (cleanups run in LIFO order) and releases a still-blocked handler.
-	//
-	// [Ja] newTestStorage の後に登録することで (cleanup は LIFO 順)、サーバーの
-	// Close より先に実行され、ブロックしたままのハンドラーを解放する。
+	// newTestStorageの後に登録することで (cleanupはLIFO順)、サーバーの
+	// Closeより先に実行され、ブロックしたままのハンドラーを解放する。
 	t.Cleanup(func() { close(f.unblock) })
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		// Cancel while the fake server is holding the PutObject request open.
-		//
-		// [Ja] fake サーバーが PutObject リクエストを保持している間に
+		// fakeサーバーがPutObjectリクエストを保持している間に
 		// キャンセルする。
 		time.Sleep(100 * time.Millisecond)
 		cancel()
@@ -467,27 +411,24 @@ func TestS3ExportStorage_Upload_ContextCancellation(t *testing.T) {
 
 	err := st.Upload(ctx, "exports/profile-id/export-id.zip", bytes.NewReader([]byte("zip-bytes")))
 	if err == nil {
-		t.Fatal("Upload() error = nil, want context cancellation error")
+		t.Fatal("Upload()のエラー = nil、コンテキストのキャンセルによるエラーを期待")
 	}
 	if !errors.Is(err, context.Canceled) {
-		t.Errorf("Upload() error = %v, want errors.Is(err, context.Canceled)", err)
+		t.Errorf("Upload()のエラー = %v、errors.Is(err, context.Canceled) を満たすエラーを期待", err)
 	}
 
-	// Pin the no-op contract of abortMultipartUpload: the single PutObject
-	// path must neither start nor abort a multipart upload.
-	//
-	// [Ja] abortMultipartUpload の no-op 契約を固定する: 単発 PutObject 経路
-	// では multipart upload を開始も中断もしない。
+	// abortMultipartUploadのno-op契約を固定する: 単発PutObject経路
+	// ではmultipart uploadを開始も中断もしない。
 	f.mu.Lock()
 	created := f.multipartCreated
 	aborted := f.aborted
 	f.mu.Unlock()
 
 	if created {
-		t.Error("CreateMultipartUpload was called for a small single-put upload")
+		t.Error("1回で送る小さなアップロードでCreateMultipartUploadが呼ばれた")
 	}
 	if aborted {
-		t.Error("AbortMultipartUpload was called for a non-multipart failure")
+		t.Error("マルチパートではない失敗でAbortMultipartUploadが呼ばれた")
 	}
 }
 
@@ -499,23 +440,16 @@ func TestS3ExportStorage_Upload_ContextCancellationAbortsMultipart(t *testing.T)
 	st := newTestStorage(t, f)
 	t.Cleanup(func() { close(f.unblock) })
 
-	// Stream more than one part so the multipart upload starts, then cancel
-	// only after the fake server has received the first UploadPart. The
-	// adapter must still abort the started multipart upload: its cleanup
-	// context is detached from the canceled upload context.
-	//
-	// [Ja] 複数パート分をストリーミングして multipart upload を開始させ、fake
-	// サーバーが最初の UploadPart を受信した後にだけキャンセルする。アダプタは
-	// 開始済みの multipart upload をそれでも中断しなければならない (cleanup
-	// context はキャンセル済みの upload context から切り離されている)。
+	// 複数パート分をストリーミングしてmultipart uploadを開始させ、fake
+	// サーバーが最初のUploadPartを受信した後にだけキャンセルする。アダプタは
+	// 開始済みのmultipart uploadをそれでも中断しなければならない (cleanup
+	// contextはキャンセル済みのupload contextから切り離されている)。
 	pr, pw := io.Pipe()
 	go func() {
 		_, err := pw.Write(deterministicBytes(6 << 20))
 		_ = pw.CloseWithError(err)
 	}()
-	// Unblock the writer goroutine in case the uploader stops reading early.
-	//
-	// [Ja] アップローダーが途中で読むのをやめた場合に備え、writer goroutine の
+	// アップローダーが途中で読むのをやめた場合に備え、writer goroutineの
 	// ブロックを解除する。
 	t.Cleanup(func() { _ = pr.Close() })
 
@@ -528,10 +462,10 @@ func TestS3ExportStorage_Upload_ContextCancellationAbortsMultipart(t *testing.T)
 
 	err := st.Upload(ctx, "exports/profile-id/export-id.zip", pr)
 	if err == nil {
-		t.Fatal("Upload() error = nil, want context cancellation error")
+		t.Fatal("Upload()のエラー = nil、コンテキストのキャンセルによるエラーを期待")
 	}
 	if !errors.Is(err, context.Canceled) {
-		t.Errorf("Upload() error = %v, want errors.Is(err, context.Canceled)", err)
+		t.Errorf("Upload()のエラー = %v、errors.Is(err, context.Canceled) を満たすエラーを期待", err)
 	}
 
 	f.mu.Lock()
@@ -541,13 +475,13 @@ func TestS3ExportStorage_Upload_ContextCancellationAbortsMultipart(t *testing.T)
 	f.mu.Unlock()
 
 	if !created {
-		t.Error("CreateMultipartUpload was not called")
+		t.Error("CreateMultipartUploadが呼ばれていない")
 	}
 	if !aborted {
-		t.Error("AbortMultipartUpload was not called after context cancellation")
+		t.Error("コンテキストのキャンセル後にAbortMultipartUploadが呼ばれていない")
 	}
 	if completed {
-		t.Error("CompleteMultipartUpload was called for a canceled upload")
+		t.Error("キャンセルしたアップロードでCompleteMultipartUploadが呼ばれた")
 	}
 }
 
@@ -562,22 +496,22 @@ func TestS3ExportStorage_Download(t *testing.T) {
 
 	body, size, err := st.Download(context.Background(), key)
 	if err != nil {
-		t.Fatalf("Download() error = %v", err)
+		t.Fatalf("Download()のエラー = %v", err)
 	}
 	defer func() { _ = body.Close() }()
 
 	if size != int64(len(content)) {
-		t.Errorf("size = %d, want %d", size, len(content))
+		t.Errorf("size = %d、期待値 = %d", size, len(content))
 	}
 	got, err := io.ReadAll(body)
 	if err != nil {
-		t.Fatalf("reading body: %v", err)
+		t.Fatalf("本文の読み込みに失敗: %v", err)
 	}
 	if !bytes.Equal(got, content) {
-		t.Errorf("body length = %d, want %d (content mismatch)", len(got), len(content))
+		t.Errorf("本文の長さ = %d、期待値 = %d (内容が一致しない)", len(got), len(content))
 	}
 	if err := body.Close(); err != nil {
-		t.Errorf("Close() error = %v", err)
+		t.Errorf("Close()のエラー = %v", err)
 	}
 }
 
@@ -591,24 +525,21 @@ func TestS3ExportStorage_Download_CloseBeforeEOF(t *testing.T) {
 
 	body, _, err := st.Download(context.Background(), key)
 	if err != nil {
-		t.Fatalf("Download() error = %v", err)
+		t.Fatalf("Download()のエラー = %v", err)
 	}
 
-	// A client disconnect closes the stream mid-download; the returned body
-	// must release the underlying HTTP response without hanging.
-	//
-	// [Ja] クライアント切断ではダウンロード途中でストリームを閉じる。
-	// 返された body はハングせずに背後の HTTP レスポンスを解放しなければ
+	// クライアント切断ではダウンロード途中でストリームを閉じる。
+	// 返されたbodyはハングせずに背後のHTTPレスポンスを解放しなければ
 	// ならない。
 	buf := make([]byte, 1024)
 	if _, err := io.ReadFull(body, buf); err != nil {
-		t.Fatalf("reading first chunk: %v", err)
+		t.Fatalf("最初のチャンクの読み込みに失敗: %v", err)
 	}
 	if err := body.Close(); err != nil {
-		t.Fatalf("Close() error = %v", err)
+		t.Fatalf("Close()のエラー = %v", err)
 	}
 	if _, err := body.Read(buf); err == nil {
-		t.Error("Read() after Close() error = nil, want error")
+		t.Error("Close()後のRead()のエラー = nil、エラーを期待")
 	}
 }
 
@@ -623,7 +554,7 @@ func TestS3ExportStorage_Delete(t *testing.T) {
 	st := newTestStorage(t, f)
 
 	if err := st.Delete(context.Background(), key); err != nil {
-		t.Fatalf("Delete() error = %v", err)
+		t.Fatalf("Delete()のエラー = %v", err)
 	}
 
 	f.mu.Lock()
@@ -633,13 +564,13 @@ func TestS3ExportStorage_Delete(t *testing.T) {
 	f.mu.Unlock()
 
 	if exists {
-		t.Error("object still exists after Delete()")
+		t.Error("Delete()の後もオブジェクトが残っている")
 	}
 	if !otherExists {
-		t.Error("Delete() removed an unrelated object")
+		t.Error("Delete()が無関係なオブジェクトを削除した")
 	}
 	if len(deleted) != 1 || deleted[0] != key {
-		t.Errorf("deleted keys = %v, want [%s]", deleted, key)
+		t.Errorf("削除したキー = %v、期待値 = [%s]", deleted, key)
 	}
 }
 
@@ -649,14 +580,11 @@ func TestS3ExportStorage_Delete_MissingKeyIsSuccess(t *testing.T) {
 	f := newFakeS3()
 	st := newTestStorage(t, f)
 
-	// The fake answers 404 NoSuchKey for a missing key; the adapter must
-	// treat it as success so retried cleanup jobs stay idempotent.
-	//
-	// [Ja] fake は存在しないキーに 404 NoSuchKey を返す。リトライされる
-	// cleanup ジョブが冪等であるよう、アダプタはこれを成功として扱わなければ
+	// fakeは存在しないキーに404 NoSuchKeyを返す。リトライされる
+	// cleanupジョブが冪等であるよう、アダプタはこれを成功として扱わなければ
 	// ならない。
 	if err := st.Delete(context.Background(), "exports/profile-id/missing.zip"); err != nil {
-		t.Fatalf("Delete() error = %v, want nil for a missing key", err)
+		t.Fatalf("存在しないキーでDelete()のエラー = %v、期待値 = nil", err)
 	}
 }
 
@@ -669,10 +597,10 @@ func TestS3ExportStorage_Delete_NoSuchBucketIsError(t *testing.T) {
 
 	err := st.Delete(context.Background(), "exports/profile-id/export-id.zip")
 	if err == nil {
-		t.Fatal("Delete() error = nil, want NoSuchBucket error")
+		t.Fatal("Delete()のエラー = nil、NoSuchBucketのエラーを期待")
 	}
 	if !strings.Contains(err.Error(), "NoSuchBucket") {
-		t.Errorf("Delete() error = %v, want NoSuchBucket", err)
+		t.Errorf("Delete()のエラー = %v、NoSuchBucketを期待", err)
 	}
 }
 
@@ -680,11 +608,8 @@ func TestS3ExportStorage_ListPrefix(t *testing.T) {
 	t.Parallel()
 
 	f := newFakeS3()
-	// Force pagination: 5 matching objects with 2 keys per page require 3
-	// ListObjectsV2 calls.
-	//
-	// [Ja] ページングを強制する: 一致する 5 オブジェクトを 1 ページ 2 キーで
-	// 返すと、ListObjectsV2 は 3 回呼ばれる。
+	// ページングを強制する: 一致する5オブジェクトを1ページ2キーで
+	// 返すと、ListObjectsV2は3回呼ばれる。
 	f.listPageSize = 2
 	exportKeys := []string{
 		"exports/profile-a/export-1.zip",
@@ -700,9 +625,7 @@ func TestS3ExportStorage_ListPrefix(t *testing.T) {
 		f.objectModifiedAt[k] = modifiedAt
 		wantModifiedAt[k] = modifiedAt
 	}
-	// An object of another feature sharing the bucket must not be listed.
-	//
-	// [Ja] バケットを共有する他機能のオブジェクトは一覧されてはならない。
+	// バケットを共有する他機能のオブジェクトは一覧されてはならない。
 	f.objects["images/profile-a/avatar.png"] = []byte("png-bytes")
 	st := newTestStorage(t, f)
 
@@ -712,36 +635,29 @@ func TestS3ExportStorage_ListPrefix(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatalf("ListPrefix() error = %v", err)
+		t.Fatalf("ListPrefix()のエラー = %v", err)
 	}
 
 	if !maps.Equal(gotModifiedAt, wantModifiedAt) {
-		t.Errorf("ListPrefix() = %v, want %v", gotModifiedAt, wantModifiedAt)
+		t.Errorf("ListPrefix() = %v、期待値 = %v", gotModifiedAt, wantModifiedAt)
 	}
 
 	f.mu.Lock()
 	listCalls := f.listCalls
 	f.mu.Unlock()
 	if listCalls != 3 {
-		t.Errorf("ListObjectsV2 calls = %d, want 3 (pagination not followed)", listCalls)
+		t.Errorf("ListObjectsV2の呼び出し回数 = %d、期待値 = 3 (ページングを辿っていない)", listCalls)
 	}
 }
 
-// TestS3ExportStorage_ListPrefix_StartAfter pins the resume position. A caller
-// whose walk is bounded hands the key it stopped at to the next walk, so the
-// listing has to begin strictly after that key and the pagination that follows
-// has to keep going forward rather than back to it.
-//
-// [Ja] TestS3ExportStorage_ListPrefix_StartAfter は再開位置を固定する。走査が有界な
+// TestS3ExportStorage_ListPrefix_StartAfterは再開位置を固定する。走査が有界な
 // 呼び出し側は止まったキーを次の走査へ渡すため、一覧はそのキーより厳密に後ろから始まり、
 // 続くページングはそこへ戻らず前進し続ける必要がある。
 func TestS3ExportStorage_ListPrefix_StartAfter(t *testing.T) {
 	t.Parallel()
 
 	f := newFakeS3()
-	// Two keys per page, so the walk resumes and then pages at least once.
-	//
-	// [Ja] 1 ページ 2 キーにして、再開したあと少なくとも 1 回はページングさせる。
+	// 1ページ2キーにして、再開したあと少なくとも1回はページングさせる。
 	f.listPageSize = 2
 	for i, k := range []string{
 		"exports/profile-a/export-1.zip",
@@ -761,7 +677,7 @@ func TestS3ExportStorage_ListPrefix_StartAfter(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatalf("ListPrefix() error = %v", err)
+		t.Fatalf("ListPrefix()のエラー = %v", err)
 	}
 
 	want := []string{
@@ -770,15 +686,11 @@ func TestS3ExportStorage_ListPrefix_StartAfter(t *testing.T) {
 		"exports/profile-c/export-5.zip",
 	}
 	if !slices.Equal(got, want) {
-		t.Errorf("ListPrefix() = %v, want %v", got, want)
+		t.Errorf("ListPrefix() = %v、期待値 = %v", got, want)
 	}
 
-	// Only the first request carries the resume position. The later ones resume
-	// from their continuation token, which already stands for a position further
-	// on, so sending the original key again could only pull the walk backwards.
-	//
-	// [Ja] 再開位置を運ぶのは最初のリクエストだけである。以降は continuation token の
-	// 位置から再開し、token はすでに先の位置を表しているため、元のキーを再送しても走査を
+	// 再開位置を運ぶのは最初のリクエストだけである。以降はcontinuation tokenの
+	// 位置から再開し、tokenはすでに先の位置を表しているため、元のキーを再送しても走査を
 	// 後ろへ引き戻すことしかできない。
 	f.mu.Lock()
 	gotStartAfters := slices.Clone(f.listStartAfters)
@@ -786,7 +698,7 @@ func TestS3ExportStorage_ListPrefix_StartAfter(t *testing.T) {
 
 	wantStartAfters := []string{"exports/profile-a/export-2.zip", ""}
 	if !slices.Equal(gotStartAfters, wantStartAfters) {
-		t.Errorf("各 ListObjectsV2 の start-after = %v, want %v", gotStartAfters, wantStartAfters)
+		t.Errorf("各ListObjectsV2のstart-after = %v、期待値 = %v", gotStartAfters, wantStartAfters)
 	}
 }
 
@@ -802,10 +714,10 @@ func TestS3ExportStorage_ListPrefix_Empty(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatalf("ListPrefix() error = %v", err)
+		t.Fatalf("ListPrefix()のエラー = %v", err)
 	}
 	if len(keys) != 0 {
-		t.Errorf("ListPrefix() = %v, want empty", keys)
+		t.Errorf("ListPrefix() = %v、空を期待", keys)
 	}
 }
 
@@ -823,7 +735,7 @@ func TestS3ExportStorage_ListPrefix_YieldError(t *testing.T) {
 		return wantErr
 	})
 	if !errors.Is(err, wantErr) {
-		t.Errorf("ListPrefix() error = %v, want errors.Is(err, wantErr)", err)
+		t.Errorf("ListPrefix()のエラー = %v、errors.Is(err, wantErr) を満たすエラーを期待", err)
 	}
 }
 
@@ -831,12 +743,8 @@ func TestS3ExportStorage_ListPrefix_TruncatedWithoutTokenIsError(t *testing.T) {
 	t.Parallel()
 
 	f := newFakeS3()
-	// One key per page with two matching objects makes the first page
-	// truncated, and omitting the token leaves the adapter no way to advance.
-	// It must fail instead of refetching the first page forever.
-	//
-	// [Ja] 1 ページ 1 キーで一致オブジェクトが 2 件だと最初のページが切り詰め
-	// られ、token を省くとアダプタは次へ進めない。1 ページ目を永久に取り直さず
+	// 1ページ1キーで一致オブジェクトが2件だと最初のページが切り詰め
+	// られ、tokenを省くとアダプタは次へ進めない。1ページ目を永久に取り直さず
 	// 失敗しなければならない。
 	f.listPageSize = 1
 	f.listOmitNextToken = true
@@ -848,14 +756,14 @@ func TestS3ExportStorage_ListPrefix_TruncatedWithoutTokenIsError(t *testing.T) {
 		return nil
 	})
 	if err == nil {
-		t.Fatal("ListPrefix() error = nil, want error for a truncated page without a continuation token")
+		t.Fatal("継続トークンの無い途中のページでListPrefix()のエラー = nil、エラーを期待")
 	}
 
 	f.mu.Lock()
 	listCalls := f.listCalls
 	f.mu.Unlock()
 	if listCalls != 1 {
-		t.Errorf("ListObjectsV2 calls = %d, want 1 (adapter looped on the first page)", listCalls)
+		t.Errorf("ListObjectsV2の呼び出し回数 = %d、期待値 = 1 (アダプタが最初のページを繰り返した)", listCalls)
 	}
 }
 
@@ -863,12 +771,8 @@ func TestS3ExportStorage_ListPrefix_MissingLastModifiedIsError(t *testing.T) {
 	t.Parallel()
 
 	f := newFakeS3()
-	// A Contents entry without LastModified gives the caller no time to judge
-	// the grace period against, so the adapter must reject it rather than
-	// yield a zero time.
-	//
-	// [Ja] LastModified の無い Contents は猶予期間を判定する時刻を呼び出し側に
-	// 渡せないため、アダプタはゼロ値の時刻を yield せず拒否しなければならない。
+	// LastModifiedの無いContentsは猶予期間を判定する時刻を呼び出し側に
+	// 渡せないため、アダプタはゼロ値の時刻をyieldせず拒否しなければならない。
 	f.listOmitLastModified = true
 	f.objects["exports/profile-a/export-1.zip"] = []byte("zip-bytes")
 	st := newTestStorage(t, f)
@@ -877,14 +781,11 @@ func TestS3ExportStorage_ListPrefix_MissingLastModifiedIsError(t *testing.T) {
 		return nil
 	})
 	if err == nil {
-		t.Fatal("ListPrefix() error = nil, want error for a Contents entry without LastModified")
+		t.Fatal("LastModifiedの無いContentsの要素でListPrefix()のエラー = nil、エラーを期待")
 	}
 }
 
-// deterministicBytes returns size bytes with a deterministic pattern so that
-// content comparisons detect reordering or truncation.
-//
-// [Ja] deterministicBytes は決定的なパターンの size バイトを返す。内容比較で
+// deterministicBytesは決定的なパターンのsizeバイトを返す。内容比較で
 // 並び替えや欠落を検出できるようにする。
 func deterministicBytes(size int) []byte {
 	b := make([]byte, size)

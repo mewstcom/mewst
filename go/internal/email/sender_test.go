@@ -25,7 +25,7 @@ func TestResendSender_from_WithName(t *testing.T) {
 	want := "Mewst <noreply@example.com>"
 
 	if got != want {
-		t.Errorf("from() = %q, want %q", got, want)
+		t.Errorf("from() = %q、期待値 = %q", got, want)
 	}
 }
 
@@ -38,7 +38,7 @@ func TestResendSender_from_WithoutName(t *testing.T) {
 	want := "noreply@example.com"
 
 	if got != want {
-		t.Errorf("from() = %q, want %q", got, want)
+		t.Errorf("from() = %q、期待値 = %q", got, want)
 	}
 }
 
@@ -68,7 +68,7 @@ func TestDiscardSender_SendConcurrently(t *testing.T) {
 
 	for err := range errCh {
 		if err != nil {
-			t.Errorf("Send failed: %v", err)
+			t.Errorf("Send()のエラー = %v", err)
 		}
 	}
 }
@@ -88,20 +88,20 @@ func TestNoopSender_Send(t *testing.T) {
 
 	err := sender.Send(ctx, input)
 	if err != nil {
-		t.Fatalf("Send failed: %v", err)
+		t.Fatalf("Send()のエラー = %v", err)
 	}
 
 	// 送信されたメールが記録されているか確認
 	if len(sender.SentEmails) != 1 {
-		t.Errorf("expected 1 sent email, got %d", len(sender.SentEmails))
+		t.Errorf("送信したメールの件数 = %d、期待値 = 1", len(sender.SentEmails))
 	}
 
 	if sender.SentEmails[0].To != "test@example.com" {
-		t.Errorf("expected to=test@example.com, got %s", sender.SentEmails[0].To)
+		t.Errorf("to = %s、期待値 = test@example.com", sender.SentEmails[0].To)
 	}
 
 	if sender.SentEmails[0].Subject != "テスト件名" {
-		t.Errorf("expected subject=テスト件名, got %s", sender.SentEmails[0].Subject)
+		t.Errorf("subject = %s、期待値 = テスト件名", sender.SentEmails[0].Subject)
 	}
 }
 
@@ -121,12 +121,12 @@ func TestNoopSender_MultipleSends(t *testing.T) {
 		}
 		err := sender.Send(ctx, input)
 		if err != nil {
-			t.Fatalf("Send failed: %v", err)
+			t.Fatalf("Send()のエラー = %v", err)
 		}
 	}
 
 	if len(sender.SentEmails) != 3 {
-		t.Errorf("expected 3 sent emails, got %d", len(sender.SentEmails))
+		t.Errorf("送信したメールの件数 = %d、期待値 = 3", len(sender.SentEmails))
 	}
 }
 
@@ -139,29 +139,29 @@ func TestEmailConfirmationTemplate_Japanese_HTML(t *testing.T) {
 	var buf bytes.Buffer
 	err := email_confirmation.JaHTML("user@example.com", "654321").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("JaHTML render failed: %v", err)
+		t.Fatalf("JaHTMLの描画に失敗: %v", err)
 	}
 
 	html := buf.String()
 
 	// 確認コードが含まれているか
 	if !strings.Contains(html, "654321") {
-		t.Error("expected confirmation code in HTML")
+		t.Error("HTMLに確認コードが含まれていない")
 	}
 
 	// HTMLタグが含まれているか (templは小文字に変換する)
 	if !strings.Contains(html, "<!doctype html>") {
-		t.Error("expected doctype in HTML")
+		t.Error("HTMLにdoctypeが含まれていない")
 	}
 
 	// lang属性が日本語になっているか
 	if !strings.Contains(html, `lang="ja"`) {
-		t.Error("expected lang=ja in HTML")
+		t.Error("HTMLにlang=jaが含まれていない")
 	}
 
 	// メールアドレスが含まれているか
 	if !strings.Contains(html, "user@example.com") {
-		t.Error("expected email address in HTML")
+		t.Error("HTMLにメールアドレスが含まれていない")
 	}
 }
 
@@ -174,24 +174,24 @@ func TestEmailConfirmationTemplate_Japanese_Text(t *testing.T) {
 	var buf bytes.Buffer
 	err := email_confirmation.JaText("user@example.com", "654321").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("JaText render failed: %v", err)
+		t.Fatalf("JaTextの描画に失敗: %v", err)
 	}
 
 	text := buf.String()
 
 	// 確認コードが含まれているか
 	if !strings.Contains(text, "654321") {
-		t.Error("expected confirmation code in text")
+		t.Error("テキスト本文に確認コードが含まれていない")
 	}
 
 	// メールアドレスが含まれているか
 	if !strings.Contains(text, "user@example.com") {
-		t.Error("expected email address in text")
+		t.Error("テキスト本文にメールアドレスが含まれていない")
 	}
 
 	// 日本語メッセージが含まれているか
 	if !strings.Contains(text, "確認用コード") {
-		t.Error("expected Japanese message in text")
+		t.Error("テキスト本文に日本語のメッセージが含まれていない")
 	}
 }
 
@@ -204,24 +204,24 @@ func TestEmailConfirmationTemplate_English_HTML(t *testing.T) {
 	var buf bytes.Buffer
 	err := email_confirmation.EnHTML("user@example.com", "987654").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("EnHTML render failed: %v", err)
+		t.Fatalf("EnHTMLの描画に失敗: %v", err)
 	}
 
 	html := buf.String()
 
 	// 確認コードが含まれているか
 	if !strings.Contains(html, "987654") {
-		t.Error("expected confirmation code in HTML")
+		t.Error("HTMLに確認コードが含まれていない")
 	}
 
 	// lang属性が英語になっているか
 	if !strings.Contains(html, `lang="en"`) {
-		t.Error("expected lang=en in HTML")
+		t.Error("HTMLにlang=enが含まれていない")
 	}
 
 	// 英語メッセージが含まれているか
 	if !strings.Contains(html, "confirmation code") {
-		t.Error("expected English message in HTML")
+		t.Error("HTMLに英語のメッセージが含まれていない")
 	}
 }
 
@@ -234,37 +234,31 @@ func TestEmailConfirmationTemplate_English_Text(t *testing.T) {
 	var buf bytes.Buffer
 	err := email_confirmation.EnText("user@example.com", "987654").Render(ctx, &buf)
 	if err != nil {
-		t.Fatalf("EnText render failed: %v", err)
+		t.Fatalf("EnTextの描画に失敗: %v", err)
 	}
 
 	text := buf.String()
 
 	// 確認コードが含まれているか
 	if !strings.Contains(text, "987654") {
-		t.Error("expected confirmation code in text")
+		t.Error("テキスト本文に確認コードが含まれていない")
 	}
 
 	// 英語メッセージが含まれているか
 	if !strings.Contains(text, "confirmation code") {
-		t.Error("expected English message in text")
+		t.Error("テキスト本文に英語のメッセージが含まれていない")
 	}
 }
 
-// capturedRequest is what the fake Resend endpoint saw.
-//
-// [Ja] capturedRequest は偽の Resend エンドポイントが見たもの。
+// capturedRequestは偽のResendエンドポイントが見たもの。
 type capturedRequest struct {
 	idempotencyKey        string
 	idempotencyKeyPresent bool
 	body                  map[string]any
 }
 
-// newTestResendSender points a ResendSender at a local endpoint that records
-// the request, so that the header the SDK actually puts on the wire can be
-// asserted rather than the field the caller set.
-//
-// [Ja] newTestResendSender は ResendSender をリクエストを記録するローカルの
-// エンドポイントへ向ける。呼び出し元が設定したフィールドではなく、SDK が実際に
+// newTestResendSenderはResendSenderをリクエストを記録するローカルの
+// エンドポイントへ向ける。呼び出し元が設定したフィールドではなく、SDKが実際に
 // 通信へ載せるヘッダーを検証するため。
 func newTestResendSender(t *testing.T, captured *capturedRequest) *ResendSender {
 	t.Helper()
@@ -275,22 +269,22 @@ func newTestResendSender(t *testing.T, captured *capturedRequest) *ResendSender 
 
 		rawBody, err := io.ReadAll(r.Body)
 		if err != nil {
-			t.Errorf("failed to read request body: %v", err)
+			t.Errorf("リクエストボディの読み込みに失敗: %v", err)
 		}
 		if err := json.Unmarshal(rawBody, &captured.body); err != nil {
-			t.Errorf("failed to decode request body: %v", err)
+			t.Errorf("リクエストボディのデコードに失敗: %v", err)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		if _, err := w.Write([]byte(`{"id":"test-email-id"}`)); err != nil {
-			t.Errorf("failed to write response: %v", err)
+			t.Errorf("レスポンスの書き込みに失敗: %v", err)
 		}
 	}))
 	t.Cleanup(server.Close)
 
 	baseURL, err := url.Parse(server.URL + "/")
 	if err != nil {
-		t.Fatalf("failed to parse test server URL: %v", err)
+		t.Fatalf("テストサーバーのURLの解析に失敗: %v", err)
 	}
 
 	sender := NewResendSender("dummy-api-key", "noreply@example.com", "Mewst")
@@ -314,29 +308,24 @@ func TestResendSender_Send_WithIdempotencyKey(t *testing.T) {
 		IdempotencyKey: "export-completed/01J000000000000000000EXPRT",
 	})
 	if err != nil {
-		t.Fatalf("Send failed: %v", err)
+		t.Fatalf("Send()のエラー = %v", err)
 	}
 
 	if captured.idempotencyKey != "export-completed/01J000000000000000000EXPRT" {
-		t.Errorf("Idempotency-Key header = %q, want %q", captured.idempotencyKey, "export-completed/01J000000000000000000EXPRT")
+		t.Errorf("Idempotency-Keyヘッダー = %q、期待値 = %q", captured.idempotencyKey, "export-completed/01J000000000000000000EXPRT")
 	}
 
 	if html, _ := captured.body["html"].(string); !strings.Contains(html, exportURL) {
-		t.Error("request body does not contain the rendered HTML body")
+		t.Error("リクエストボディに描画したHTML本文が含まれていない")
 	}
 	if text, _ := captured.body["text"].(string); !strings.Contains(text, exportURL) {
-		t.Error("request body does not contain the rendered text body")
+		t.Error("リクエストボディに描画したテキスト本文が含まれていない")
 	}
 }
 
-// TestResendSender_Send_WithoutIdempotencyKey pins the compatibility of the
-// mails that predate the key: they leave it unset, and the request must go out
-// without the header rather than with an empty one, which the API would reject
-// or treat as a shared key.
-//
-// [Ja] TestResendSender_Send_WithoutIdempotencyKey は、キー導入前からのメールの
+// TestResendSender_Send_WithoutIdempotencyKeyは、キー導入前からのメールの
 // 互換性を固定する。それらはキーを設定しないため、リクエストは空のヘッダーでは
-// なくヘッダー無しで出る必要がある (空のヘッダーは API に拒否されるか、共有された
+// なくヘッダー無しで出る必要がある (空のヘッダーはAPIに拒否されるか、共有された
 // キーとして扱われる)。
 func TestResendSender_Send_WithoutIdempotencyKey(t *testing.T) {
 	t.Parallel()
@@ -351,17 +340,17 @@ func TestResendSender_Send_WithoutIdempotencyKey(t *testing.T) {
 		TextBody: email_confirmation.JaText("test@example.com", "123456"),
 	})
 	if err != nil {
-		t.Fatalf("Send failed: %v", err)
+		t.Fatalf("Send()のエラー = %v", err)
 	}
 
 	if captured.idempotencyKeyPresent {
-		t.Errorf("Idempotency-Key header is present with value %q, want it to be absent", captured.idempotencyKey)
+		t.Errorf("Idempotency-Keyヘッダーが値%qで付いている、無いことを期待", captured.idempotencyKey)
 	}
 
 	if from, _ := captured.body["from"].(string); from != "Mewst <noreply@example.com>" {
-		t.Errorf("from = %q, want %q", from, "Mewst <noreply@example.com>")
+		t.Errorf("from = %q、期待値 = %q", from, "Mewst <noreply@example.com>")
 	}
 	if html, _ := captured.body["html"].(string); !strings.Contains(html, "123456") {
-		t.Error("request body does not contain the rendered HTML body")
+		t.Error("リクエストボディに描画したHTML本文が含まれていない")
 	}
 }

@@ -1,4 +1,4 @@
-// Package config はアプリケーション設定の管理機能を提供します
+// Package configはアプリケーション設定の管理機能を提供します
 package config
 
 import (
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// Config はアプリケーションの設定を保持する構造体です
+// Configはアプリケーションの設定を保持する構造体です
 type Config struct {
 	// 環境
 	Env string
@@ -58,11 +58,8 @@ type Config struct {
 	SentryTracesSampleRate float64
 	SentryDebug            bool
 
-	// Object storage for exports (S3-compatible - Cloudflare R2). The bucket,
-	// endpoint, access key and secret must be set together; the region is optional.
-	//
-	// [Ja] エクスポート用オブジェクトストレージ (S3 互換 - Cloudflare R2)。
-	// バケット・エンドポイント・アクセスキー・シークレットは 4 項目セットで必須とし、
+	// エクスポート用オブジェクトストレージ (S3互換 - Cloudflare R2)。
+	// バケット・エンドポイント・アクセスキー・シークレットは4項目セットで必須とし、
 	// リージョンは任意とする。
 	S3BucketName      string
 	S3Endpoint        string
@@ -71,43 +68,28 @@ type Config struct {
 	S3Region          string
 }
 
-// S3Readiness represents the configuration state of the S3-compatible object
-// storage (Cloudflare R2) used by the export feature.
-//
-// [Ja] S3Readiness はエクスポート機能で使う S3 互換オブジェクトストレージ
+// S3Readinessはエクスポート機能で使うS3互換オブジェクトストレージ
 // (Cloudflare R2) の設定状態を表す。
 type S3Readiness string
 
 const (
-	// S3ReadinessDisabled means every MEWST_S3_* variable is unset: the server
-	// and worker boot with the export feature disabled. Only a non-production
-	// environment may boot this way, so that a local run or a test need not hold
-	// bucket credentials; Load rejects it in production, where export is a
-	// released feature every signed-in user can reach.
-	//
-	// [Ja] S3ReadinessDisabled は MEWST_S3_* がすべて未設定の状態。server / worker は
+	// S3ReadinessDisabledはMEWST_S3_* がすべて未設定の状態。server / workerは
 	// エクスポート機能を無効化したまま起動できる。この状態で起動できるのは非本番の
 	// 環境だけで、ローカル実行やテストがバケットの資格情報を持たなくて済むようにする。
-	// 本番ではエクスポートがログイン中の全ユーザーに公開された機能のため、Load が
+	// 本番ではエクスポートがログイン中の全ユーザーに公開された機能のため、Loadが
 	// この状態を拒否する。
 	S3ReadinessDisabled S3Readiness = "disabled"
 
-	// S3ReadinessReady means every required MEWST_S3_* variable is set and the
-	// export storage can be used.
-	//
-	// [Ja] S3ReadinessReady は必須の MEWST_S3_* がすべて設定され、エクスポート用
+	// S3ReadinessReadyは必須のMEWST_S3_* がすべて設定され、エクスポート用
 	// ストレージを使用できる状態。
 	S3ReadinessReady S3Readiness = "ready"
 
-	// S3ReadinessInvalid means only part of MEWST_S3_* is set, which is a
-	// configuration mistake. Load fails so the process does not boot.
-	//
-	// [Ja] S3ReadinessInvalid は MEWST_S3_* が一部だけ設定された構成ミスの状態。
-	// Load がエラーを返すためプロセスは起動しない。
+	// S3ReadinessInvalidはMEWST_S3_* が一部だけ設定された構成ミスの状態。
+	// Loadがエラーを返すためプロセスは起動しない。
 	S3ReadinessInvalid S3Readiness = "invalid"
 )
 
-// Load は環境変数から設定を読み込みます
+// Loadは環境変数から設定を読み込みます
 func Load() (*Config, error) {
 	// APP_ENVの値を取得 (デフォルト: dev)
 	// dev: 開発環境、test: テスト環境、prod: 本番環境
@@ -128,33 +110,33 @@ func Load() (*Config, error) {
 	// 必須の環境変数をチェック
 	cfg.DatabaseURL = os.Getenv("DATABASE_URL")
 	if cfg.DatabaseURL == "" {
-		return nil, fmt.Errorf("必須の環境変数 DATABASE_URL が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数DATABASE_URLが設定されていません")
 	}
 
 	cfg.Port = os.Getenv("MEWST_PORT")
 	if cfg.Port == "" {
-		return nil, fmt.Errorf("必須の環境変数 MEWST_PORT が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数MEWST_PORTが設定されていません")
 	}
 
 	cfg.Domain = os.Getenv("MEWST_DOMAIN")
 	if cfg.Domain == "" {
-		return nil, fmt.Errorf("必須の環境変数 MEWST_DOMAIN が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数MEWST_DOMAINが設定されていません")
 	}
 
 	cfg.CookieDomain = os.Getenv("MEWST_COOKIE_DOMAIN")
 	if cfg.CookieDomain == "" {
-		return nil, fmt.Errorf("必須の環境変数 MEWST_COOKIE_DOMAIN が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数MEWST_COOKIE_DOMAINが設定されていません")
 	}
 
 	sessionSecureStr := os.Getenv("MEWST_SESSION_SECURE")
 	if sessionSecureStr == "" {
-		return nil, fmt.Errorf("必須の環境変数 MEWST_SESSION_SECURE が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数MEWST_SESSION_SECUREが設定されていません")
 	}
 	cfg.SessionSecure = sessionSecureStr == "true"
 
 	sessionHTTPOnlyStr := os.Getenv("MEWST_SESSION_HTTPONLY")
 	if sessionHTTPOnlyStr == "" {
-		return nil, fmt.Errorf("必須の環境変数 MEWST_SESSION_HTTPONLY が設定されていません")
+		return nil, fmt.Errorf("必須の環境変数MEWST_SESSION_HTTPONLYが設定されていません")
 	}
 	cfg.SessionHTTPOnly = sessionHTTPOnlyStr == "true"
 
@@ -164,30 +146,19 @@ func Load() (*Config, error) {
 	// Rails版アプリのURL (オプショナル - リバースプロキシ機能で使用)
 	cfg.RailsAppURL = os.Getenv("MEWST_RAILS_APP_URL")
 
-	// Cloudflare Turnstile (optional - used by the sign-in and sign-up forms).
-	// An empty key works in the test environment too (used as a mock config).
-	//
-	// [Ja] Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)。
+	// Cloudflare Turnstile (オプショナル - ログイン・サインアップフォームで使用)。
 	// テスト環境では空文字列でも動作する (モック設定として使用)。
 	cfg.TurnstileSiteKey = os.Getenv("MEWST_TURNSTILE_SITE_KEY")
 	cfg.TurnstileSecretKey = os.Getenv("MEWST_TURNSTILE_SECRET_KEY")
 
-	// MEWST_TURNSTILE_DISABLE=true disables Turnstile outside production with a single
-	// flag by blanking both keys, which routes through the existing "empty key"
-	// path (Verify always succeeds and the widget is not rendered), so no new
-	// branch is added to turnstile.Verify or turnstile.templ. It is fail-closed in
-	// production: Turnstile is a bot countermeasure, so a stray disable flag must
-	// never silently turn it off. In production the flag is ignored, the keys are
-	// kept, and a warning is logged.
-	//
-	// [Ja] MEWST_TURNSTILE_DISABLE=true は 2 つのキーを空に落とすことで非本番の Turnstile を
-	// 1 フラグで無効化する。空キーは既存経路 (Verify は常に成功・ウィジェット非描画) にそのまま
-	// 乗るため、turnstile.Verify / turnstile.templ に新たな分岐は足さない。本番では fail-closed
-	// とする。Turnstile は Bot 対策のため、無効化フラグが誤って本番に漏れても黙って無効化されては
+	// MEWST_TURNSTILE_DISABLE=trueは2つのキーを空に落とすことで非本番のTurnstileを
+	// 1フラグで無効化する。空キーは既存経路 (Verifyは常に成功・ウィジェット非描画) にそのまま
+	// 乗るため、turnstile.Verify / turnstile.templに新たな分岐は足さない。本番ではfail-closed
+	// とする。TurnstileはBot対策のため、無効化フラグが誤って本番に漏れても黙って無効化されては
 	// ならない。本番ではフラグを無視してキーを維持し、警告ログを出す。
 	if os.Getenv("MEWST_TURNSTILE_DISABLE") == "true" {
 		if cfg.IsProduction() {
-			slog.Warn("MEWST_TURNSTILE_DISABLE は本番環境では無視されます (Turnstile キーは変更しません)")
+			slog.Warn("MEWST_TURNSTILE_DISABLEは本番環境では無視されます (Turnstileキーは変更しません)")
 		} else {
 			cfg.TurnstileSiteKey = ""
 			cfg.TurnstileSecretKey = ""
@@ -213,7 +184,7 @@ func Load() (*Config, error) {
 	cfg.EmailFromName = os.Getenv("MEWST_EMAIL_FROM_NAME")
 
 	// Sentry (オプショナル - エラー追跡サービス)
-	// DSN が空のときは Sentry を完全に無効化する
+	// DSNが空のときはSentryを完全に無効化する
 	cfg.SentryDSN = os.Getenv("MEWST_SENTRY_DSN")
 	cfg.SentryEnvironment = os.Getenv("MEWST_SENTRY_ENVIRONMENT")
 	if cfg.SentryEnvironment == "" {
@@ -222,12 +193,7 @@ func Load() (*Config, error) {
 	cfg.SentryTracesSampleRate = parseSentryTracesSampleRate(os.Getenv("MEWST_SENTRY_TRACES_SAMPLE_RATE"))
 	cfg.SentryDebug = os.Getenv("MEWST_SENTRY_DEBUG") == "true"
 
-	// Object storage for exports (S3-compatible - Cloudflare R2). A partial
-	// MEWST_S3_* set is a configuration mistake, and in production a missing one
-	// is too: fail the boot here instead of letting either surface later as a
-	// broken export.
-	//
-	// [Ja] エクスポート用オブジェクトストレージ (S3 互換 - Cloudflare R2)。
+	// エクスポート用オブジェクトストレージ (S3互換 - Cloudflare R2)。
 	// MEWST_S3_* の部分設定は構成ミスであり、本番では未設定も同じく構成ミスとなる。
 	// どちらも後からエクスポートの故障として表面化させず、ここで起動を失敗させる。
 	cfg.S3BucketName = os.Getenv("MEWST_S3_BUCKET_NAME")
@@ -238,10 +204,10 @@ func Load() (*Config, error) {
 
 	switch cfg.S3Readiness() {
 	case S3ReadinessInvalid:
-		return nil, fmt.Errorf("MEWST_S3_* 環境変数が一部だけ設定されています (未設定の必須項目: %s)。必須 4 項目を設定するか、MEWST_S3_REGION を含む全項目を未設定にしてください", strings.Join(missingS3EnvVars(cfg), ", "))
+		return nil, fmt.Errorf("MEWST_S3_* 環境変数が一部だけ設定されています (未設定の必須項目: %s)。必須4項目を設定するか、MEWST_S3_REGIONを含む全項目を未設定にしてください", strings.Join(missingS3EnvVars(cfg), ", "))
 	case S3ReadinessDisabled:
 		if cfg.IsProduction() {
-			return nil, fmt.Errorf("本番環境では MEWST_S3_* 環境変数が必須です (未設定の必須項目: %s)。エクスポートは全ユーザーに公開された機能のため、ストレージ未設定のまま起動させない", strings.Join(missingS3EnvVars(cfg), ", "))
+			return nil, fmt.Errorf("本番環境ではMEWST_S3_* 環境変数が必須です (未設定の必須項目: %s)。エクスポートは全ユーザーに公開された機能のため、ストレージ未設定のまま起動させない", strings.Join(missingS3EnvVars(cfg), ", "))
 		}
 	case S3ReadinessReady:
 		if cfg.S3Region == "" {
@@ -252,13 +218,8 @@ func Load() (*Config, error) {
 	return cfg, nil
 }
 
-// S3Readiness reports the export object storage configuration state. The
-// bucket, endpoint, access key and secret are required as a set. The region is
-// optional (it defaults to "auto"), but a region set on its own still counts as
-// a partial, invalid configuration.
-//
-// [Ja] S3Readiness はエクスポート用オブジェクトストレージの設定状態を返す。
-// バケット・エンドポイント・アクセスキー・シークレットは 4 項目セットで必須。
+// S3Readinessはエクスポート用オブジェクトストレージの設定状態を返す。
+// バケット・エンドポイント・アクセスキー・シークレットは4項目セットで必須。
 // リージョンは任意 (既定 "auto") だが、リージョンだけが設定された状態も
 // 部分設定の構成ミス (invalid) として扱う。
 func (c *Config) S3Readiness() S3Readiness {
@@ -280,12 +241,8 @@ func (c *Config) S3Readiness() S3Readiness {
 	}
 }
 
-// requiredS3Vars returns the required MEWST_S3_* variable names and their
-// current values as the single source for both the readiness check and the
-// partial-configuration error message.
-//
-// [Ja] requiredS3Vars は必須の MEWST_S3_* の変数名と現在値の組を返す。
-// readiness 判定と部分設定エラーメッセージの両方がこの一覧を参照する。
+// requiredS3Varsは必須のMEWST_S3_* の変数名と現在値の組を返す。
+// readiness判定と部分設定エラーメッセージの両方がこの一覧を参照する。
 func (c *Config) requiredS3Vars() []struct{ name, value string } {
 	return []struct{ name, value string }{
 		{"MEWST_S3_BUCKET_NAME", c.S3BucketName},
@@ -295,10 +252,7 @@ func (c *Config) requiredS3Vars() []struct{ name, value string } {
 	}
 }
 
-// missingS3EnvVars returns the names of the unset variables among the required
-// MEWST_S3_* set, for the partial-configuration error message.
-//
-// [Ja] missingS3EnvVars は必須の MEWST_S3_* のうち未設定の変数名を返す。
+// missingS3EnvVarsは必須のMEWST_S3_* のうち未設定の変数名を返す。
 // 部分設定エラーのメッセージに使う。
 func missingS3EnvVars(c *Config) []string {
 	vars := c.requiredS3Vars()
@@ -312,56 +266,41 @@ func missingS3EnvVars(c *Config) []string {
 	return missing
 }
 
-// DatabaseDSN は PostgreSQL 接続文字列を返します
+// DatabaseDSNはPostgreSQL接続文字列を返します
 func (c *Config) DatabaseDSN() string {
 	return c.DatabaseURL
 }
 
-// IsDev は開発環境かどうかを返します
+// IsDevは開発環境かどうかを返します
 func (c *Config) IsDev() bool {
 	return c.Env == "dev"
 }
 
-// IsTest はテスト環境かどうかを返します
+// IsTestはテスト環境かどうかを返します
 func (c *Config) IsTest() bool {
 	return c.Env == "test"
 }
 
-// IsProduction は本番環境かどうかを返します
+// IsProductionは本番環境かどうかを返します
 func (c *Config) IsProduction() bool {
 	return c.Env == "prod"
 }
 
-// AppURL はアプリケーションのベースURLを返します
+// AppURLはアプリケーションのベースURLを返します
 func (c *Config) AppURL() string {
 	return "https://" + c.Domain
 }
 
-// getGitCommitHash returns the short Git commit hash of the running build. It
-// is used as the Sentry release and as the CSS/JS query parameter for CDN cache
-// busting.
+// 実行中ビルドのGitコミットハッシュ (短縮版) を返す。Sentryのreleaseと、
+// CDNキャッシュ対策用のCSS/JSクエリパラメータに使う。
 //
-// GIT_REV takes precedence: on Dokku the deployed container has no .git
-// directory, so `git rev-parse` fails there and the value would fall back to
-// "dev". Dokku instead exposes the deploy commit hash via the GIT_REV
-// environment variable, which is provided by the platform (so it carries no
-// MEWST_ prefix). The local git command is the development fallback, and "dev"
-// is the last resort.
-//
-// [Ja] 実行中ビルドの Git コミットハッシュ (短縮版) を返す。Sentry の release と、
-// CDN キャッシュ対策用の CSS/JS クエリパラメータに使う。
-//
-// GIT_REV を最優先する。Dokku のデプロイ先コンテナには .git ディレクトリが無いため
-// `git rev-parse` は失敗し、そのままだと "dev" にフォールバックしてしまう。Dokku は
-// 代わりにデプロイ時のコミットハッシュを GIT_REV 環境変数で渡す (プラットフォームが
-// 提供する変数なので MEWST_ プレフィックスは付けない)。ローカルの git コマンドは
+// GIT_REVを最優先する。Dokkuのデプロイ先コンテナには .gitディレクトリが無いため
+// `git rev-parse` は失敗し、そのままだと "dev" にフォールバックしてしまう。Dokkuは
+// 代わりにデプロイ時のコミットハッシュをGIT_REV環境変数で渡す (プラットフォームが
+// 提供する変数なのでMEWST_ プレフィックスは付けない)。ローカルのgitコマンドは
 // 開発用のフォールバックで、最後の手段が "dev"。
 func getGitCommitHash() string {
-	// Dokku provides the full deploy SHA here; shorten it to 7 characters to
-	// roughly match the abbreviated form the local `git rev-parse --short` path
-	// produces.
-	//
-	// [Ja] Dokku はここに完全なデプロイ SHA を渡すので、7 文字に短縮して
+	// Dokkuはここに完全なデプロイSHAを渡すので、7文字に短縮して
 	// ローカルの `git rev-parse --short` が返す短縮形におおよそ揃える。
 	if rev := strings.TrimSpace(os.Getenv("GIT_REV")); rev != "" {
 		const shortHashLen = 7
@@ -374,15 +313,13 @@ func getGitCommitHash() string {
 	cmd := exec.Command("git", "rev-parse", "--short", "HEAD")
 	out, err := cmd.Output()
 	if err != nil {
-		// Fall back to "dev" when git is unavailable (development environment).
-		//
-		// [Ja] Git が利用できない場合は "dev" を返す (開発環境用のフォールバック)。
+		// Gitが利用できない場合は "dev" を返す (開発環境用のフォールバック)。
 		return "dev"
 	}
 	return strings.TrimSpace(string(out))
 }
 
-// GetAssetVersion はアセットのバージョン文字列を返します
+// GetAssetVersionはアセットのバージョン文字列を返します
 // 開発環境: 現在時刻のUnixタイムスタンプ (ミリ秒) を返す (キャッシュを無効化)
 // 本番/テスト環境: Gitコミットハッシュを返す (起動時に設定された値)
 func (c *Config) GetAssetVersion() string {
@@ -394,7 +331,7 @@ func (c *Config) GetAssetVersion() string {
 	return c.AssetVersion
 }
 
-// parseAdminIPs はカンマ区切りのIP文字列をスライスに変換します
+// parseAdminIPsはカンマ区切りのIP文字列をスライスに変換します
 // 各IPアドレスの前後の空白は除去されます
 func parseAdminIPs(s string) []string {
 	parts := strings.Split(s, ",")
@@ -408,8 +345,8 @@ func parseAdminIPs(s string) []string {
 	return ips
 }
 
-// parseSentryTracesSampleRate は文字列からSentryトレースサンプリングレートをパースします
-// 空文字列、パース失敗、範囲外 (0.0未満 または 1.0超) の場合はデフォルト値 0.5 を返します
+// parseSentryTracesSampleRateは文字列からSentryトレースサンプリングレートをパースします
+// 空文字列、パース失敗、範囲外 (0.0未満 または1.0超) の場合はデフォルト値0.5を返します
 func parseSentryTracesSampleRate(s string) float64 {
 	if s == "" {
 		return 0.5

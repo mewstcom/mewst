@@ -12,25 +12,14 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-// generatorStatement is what the stubbed generation executes in place of the
-// generators. The stub writes a statement of its own so that the mock holds
-// the generation to running inside the transaction, after the cleanup and
-// before the commit: a generation moved outside the transaction, or run before
-// the cleanup that would empty what it had written, surfaces here as an
-// unexpected call rather than passing quietly.
-//
-// [Ja] generatorStatement は、生成器の代わりに置いたスタブが実行する文。スタブが
+// generatorStatementは、生成器の代わりに置いたスタブが実行する文。スタブが
 // 自身の文を書くのは、生成がトランザクションの内側で、クリーンアップの後、コミットの
 // 前に実行されることをモックに固定させるため。トランザクションの外へ出された生成や、
 // 書き込んだものを空にするクリーンアップより前に実行される生成は、黙って通過するのでは
 // なく想定外の呼び出しとしてここに現れる。
 const generatorStatement = `SELECT 'generated'`
 
-// stubbedAccounts is what the stubbed generation reports having created. A run
-// reports the accounts it created rather than the ones the roster listed, so
-// the report has to be fed from here.
-//
-// [Ja] stubbedAccounts は、スタブした生成が作成したと報告するアカウント。実行が
+// stubbedAccountsは、スタブした生成が作成したと報告するアカウント。実行が
 // 報告するのは、名簿に挙がっていたアカウントではなく作成したアカウントであるため、
 // 報告の元はここから与える。
 var stubbedAccounts = []seedAccount{
@@ -44,9 +33,7 @@ var stubbedAccounts = []seedAccount{
 	},
 }
 
-// stubGenerateData stands in for the generators.
-//
-// [Ja] stubGenerateData は生成器の代わりに立つ。
+// stubGenerateDataは生成器の代わりに立つ。
 func stubGenerateData(ctx context.Context, tx *sql.Tx, _ *userRoster) ([]seedAccount, error) {
 	if _, err := tx.ExecContext(ctx, generatorStatement); err != nil {
 		return nil, err
@@ -55,27 +42,18 @@ func stubGenerateData(ctx context.Context, tx *sql.Tx, _ *userRoster) ([]seedAcc
 	return stubbedAccounts, nil
 }
 
-// TestRunner_Run verifies the database operation order and transaction
-// boundary without executing the destructive TRUNCATE against a real database.
-//
-// [Ja] TestRunner_Run は、破壊的な TRUNCATE を実データベースへ実行せずに、
+// TestRunner_Runは、破壊的なTRUNCATEを実データベースへ実行せずに、
 // データベース操作の順序とトランザクション境界を検証する。
 func TestRunner_Run(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name string
-		// environment is the APP_ENV the run sees. Empty means dev, which is
-		// what every case but the guard's own is run under.
-		//
-		// [Ja] environment は実行が見る APP_ENV。空は dev を意味し、ガード自身の
+		// environmentは実行が見るAPP_ENV。空はdevを意味し、ガード自身の
 		// ケース以外はすべてその下で実行される。
 		environment string
-		// generate stands in for the generators. Empty means the stub that
-		// executes generatorStatement and reports stubbedAccounts.
-		//
-		// [Ja] generate は生成器の代わりに立つもの。空は、generatorStatement を
-		// 実行し stubbedAccounts を報告するスタブを意味する。
+		// generateは生成器の代わりに立つもの。空は、generatorStatementを
+		// 実行しstubbedAccountsを報告するスタブを意味する。
 		generate   func(ctx context.Context, tx *sql.Tx, roster *userRoster) ([]seedAccount, error)
 		expect     func(sqlmock.Sqlmock)
 		wantErr    string
@@ -94,11 +72,7 @@ func TestRunner_Run(t *testing.T) {
 			wantReport: true,
 		},
 		{
-			// A generation that failed has left the cleanup uncommitted, and
-			// the rollback is what keeps a developer from being handed a
-			// database that was emptied and never filled back in.
-			//
-			// [Ja] 失敗した生成は、クリーンアップをコミットしないまま残している。
+			// 失敗した生成は、クリーンアップをコミットしないまま残している。
 			// ロールバックは、空にされたきり埋め直されていないデータベースを開発者へ
 			// 渡さないためのもの。
 			name: "生成失敗時はクリーンアップごとロールバックする",
@@ -145,24 +119,16 @@ func TestRunner_Run(t *testing.T) {
 			wantErr: "接続先データベース名の取得に失敗",
 		},
 		{
-			// The guard is what stands between the TRUNCATE and a database
-			// the run was never meant to reach, so it has to hold before
-			// anything at all is asked of the connection. No expectation is
-			// registered here on purpose: the mock refuses every call it was
-			// not told to expect, so a guard removed from Run, or moved below
-			// the work it protects, surfaces as the wrong error rather than
-			// passing quietly.
-			//
-			// [Ja] ガードは TRUNCATE と、実行が辿り着くはずのなかったデータベースと
+			// ガードはTRUNCATEと、実行が辿り着くはずのなかったデータベースと
 			// の間に立つものであるため、接続へ何かを尋ねるより前に効いている必要が
-			// ある。ここで期待値を 1 つも登録しないのは意図的である。モックは期待する
-			// よう告げられていない呼び出しをすべて拒否するため、Run から取り除かれた
+			// ある。ここで期待値を1つも登録しないのは意図的である。モックは期待する
+			// よう告げられていない呼び出しをすべて拒否するため、Runから取り除かれた
 			// ガードや、守るべき処理より後ろへ移されたガードは、黙って通過するのでは
 			// なく異なるエラーとして表面化する。
-			name:        "dev 以外ではデータベースへ触れずに拒否する",
+			name:        "dev以外ではデータベースへ触れずに拒否する",
 			environment: "prod",
 			expect:      func(sqlmock.Sqlmock) {},
-			wantErr:     "APP_ENV=prod では実行できません",
+			wantErr:     "APP_ENV=prodでは実行できません",
 		},
 	}
 
@@ -172,7 +138,7 @@ func TestRunner_Run(t *testing.T) {
 
 			db, mock, err := sqlmock.New()
 			if err != nil {
-				t.Fatalf("SQL モックの作成に失敗: %v", err)
+				t.Fatalf("SQLモックの作成に失敗: %v", err)
 			}
 			t.Cleanup(func() { _ = db.Close() })
 			tt.expect(mock)
@@ -198,20 +164,20 @@ func TestRunner_Run(t *testing.T) {
 					t.Fatalf("Runner.Run() がエラーを返した: %v", err)
 				}
 			} else if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
-				t.Fatalf("Runner.Run() error = %v, want it to contain %q", err, tt.wantErr)
+				t.Fatalf("Runner.Run()のエラー = %v、%qを含むことを期待", err, tt.wantErr)
 			}
 
 			hasAccounts := strings.Contains(out.String(), accountsHeading)
 			if hasAccounts != tt.wantReport {
 				t.Errorf(
-					"Runner.Run() account report = %t, want %t; output = %q",
+					"Runner.Run()のアカウント一覧の出力有無 = %t、期待値 = %t。出力 = %q",
 					hasAccounts,
 					tt.wantReport,
 					out.String(),
 				)
 			}
 			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("満たされていない SQL の期待値がある: %v", err)
+				t.Errorf("満たされていないSQLの期待値がある: %v", err)
 			}
 		})
 	}

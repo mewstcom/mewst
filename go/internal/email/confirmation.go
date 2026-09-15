@@ -10,18 +10,18 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/emails/email_confirmation"
 )
 
-// ConfirmationSender はメール確認コードの送信を担当する
+// ConfirmationSenderはメール確認コードの送信を担当する
 // テンプレートレンダリングとi18nによる件名取得をemailパッケージ内に閉じ込める
 type ConfirmationSender struct {
 	sender Sender
 }
 
-// NewConfirmationSender は新しいConfirmationSenderを作成する
+// NewConfirmationSenderは新しいConfirmationSenderを作成する
 func NewConfirmationSender(sender Sender) *ConfirmationSender {
 	return &ConfirmationSender{sender: sender}
 }
 
-// Send はメール確認コードをレンダリングして送信する
+// Sendはメール確認コードをレンダリングして送信する
 func (s *ConfirmationSender) Send(ctx context.Context, to, code, locale string) error {
 	ctx = i18n.SetLocale(ctx, locale)
 	subject := i18n.T(ctx, "email_confirmation_subject")

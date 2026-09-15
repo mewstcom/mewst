@@ -18,17 +18,17 @@ func TestLinkDataFetcherValidator_Validate(t *testing.T) {
 		expectedField string
 	}{
 		{
-			name:       "正常系: http の URL",
+			name:       "正常系: httpのURL",
 			input:      LinkDataFetcherValidatorInput{TargetURL: "http://example.com"},
 			wantErrors: false,
 		},
 		{
-			name:       "正常系: https の URL (パス・クエリ付き)",
+			name:       "正常系: httpsのURL (パス・クエリ付き)",
 			input:      LinkDataFetcherValidatorInput{TargetURL: "https://example.com/articles/1?ref=home"},
 			wantErrors: false,
 		},
 		{
-			name:          "異常系: URL が空",
+			name:          "異常系: URLが空",
 			input:         LinkDataFetcherValidatorInput{TargetURL: ""},
 			wantErrors:    true,
 			expectedField: "target_url",
@@ -40,23 +40,21 @@ func TestLinkDataFetcherValidator_Validate(t *testing.T) {
 			expectedField: "target_url",
 		},
 		{
-			// A host-less value like a bare domain is not a valid URL in Rails
-			// (Url#valid? requires a host) either.
-			// [Ja] スキームの無い素のドメインはホストを持たないため、Rails の Url#valid?
-			// (host 必須) でも無効になる。
+			// スキームの無い素のドメインはホストを持たないため、RailsのUrl#valid?
+			// (host必須) でも無効になる。
 			name:          "異常系: スキーム無しのドメイン",
 			input:         LinkDataFetcherValidatorInput{TargetURL: "example.com"},
 			wantErrors:    true,
 			expectedField: "target_url",
 		},
 		{
-			name:          "異常系: URL としてパースできない文字列",
+			name:          "異常系: URLとしてパースできない文字列",
 			input:         LinkDataFetcherValidatorInput{TargetURL: "http://exa mple.com"},
 			wantErrors:    true,
 			expectedField: "target_url",
 		},
 		{
-			name:          "異常系: ホストが空の URL",
+			name:          "異常系: ホストが空のURL",
 			input:         LinkDataFetcherValidatorInput{TargetURL: "https://"},
 			wantErrors:    true,
 			expectedField: "target_url",
@@ -80,7 +78,7 @@ func TestLinkDataFetcherValidator_Validate(t *testing.T) {
 					t.Fatal("エラーが期待されたが、エラーがありません")
 				}
 				if tt.expectedField != "" && !ve.HasFieldError(tt.expectedField) {
-					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
+					t.Errorf("フィールド%qのエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			} else {
 				if err != nil {
@@ -113,7 +111,7 @@ func TestIsValidURL(t *testing.T) {
 			t.Parallel()
 
 			if got := IsValidURL(tt.value); got != tt.valid {
-				t.Errorf("IsValidURL(%q) = %v, want %v", tt.value, got, tt.valid)
+				t.Errorf("IsValidURL(%q) = %v、期待値 = %v", tt.value, got, tt.valid)
 			}
 		})
 	}

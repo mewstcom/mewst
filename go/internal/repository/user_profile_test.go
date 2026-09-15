@@ -40,14 +40,14 @@ func TestUserProfileRepository_FindByUserID(t *testing.T) {
 	t.Run("存在するユーザープロフィールをユーザーIDで取得できる", func(t *testing.T) {
 		userProfile, err := repo.FindByUserID(ctx, userID)
 		if err != nil {
-			t.Fatalf("FindByUserID() error = %v", err)
+			t.Fatalf("FindByUserID()のエラー = %v", err)
 		}
 
 		if userProfile.UserID != userID {
-			t.Errorf("userProfile.UserID = %v, want %v", userProfile.UserID, userID)
+			t.Errorf("userProfile.UserID = %v、期待値 = %v", userProfile.UserID, userID)
 		}
 		if userProfile.ProfileID != profileID {
-			t.Errorf("userProfile.ProfileID = %v, want %v", userProfile.ProfileID, profileID)
+			t.Errorf("userProfile.ProfileID = %v、期待値 = %v", userProfile.ProfileID, profileID)
 		}
 	})
 
@@ -56,10 +56,10 @@ func TestUserProfileRepository_FindByUserID(t *testing.T) {
 
 		userProfile, err := repo.FindByUserID(ctx, nonExistentUserID)
 		if err != nil {
-			t.Errorf("FindByUserID() error = %v, want nil", err)
+			t.Errorf("FindByUserID()のエラー = %v、期待値 = nil", err)
 		}
 		if userProfile != nil {
-			t.Errorf("FindByUserID() userProfile = %v, want nil", userProfile)
+			t.Errorf("FindByUserID()のuserProfile = %v、期待値 = nil", userProfile)
 		}
 	})
 }
@@ -92,14 +92,14 @@ func TestUserProfileRepository_FindByProfileID(t *testing.T) {
 	t.Run("存在するユーザープロフィールをプロフィールIDで取得できる", func(t *testing.T) {
 		userProfile, err := repo.FindByProfileID(ctx, profileID)
 		if err != nil {
-			t.Fatalf("FindByProfileID() error = %v", err)
+			t.Fatalf("FindByProfileID()のエラー = %v", err)
 		}
 
 		if userProfile.UserID != userID {
-			t.Errorf("userProfile.UserID = %v, want %v", userProfile.UserID, userID)
+			t.Errorf("userProfile.UserID = %v、期待値 = %v", userProfile.UserID, userID)
 		}
 		if userProfile.ProfileID != profileID {
-			t.Errorf("userProfile.ProfileID = %v, want %v", userProfile.ProfileID, profileID)
+			t.Errorf("userProfile.ProfileID = %v、期待値 = %v", userProfile.ProfileID, profileID)
 		}
 	})
 
@@ -108,10 +108,10 @@ func TestUserProfileRepository_FindByProfileID(t *testing.T) {
 
 		userProfile, err := repo.FindByProfileID(ctx, nonExistentProfileID)
 		if err != nil {
-			t.Errorf("FindByProfileID() error = %v, want nil", err)
+			t.Errorf("FindByProfileID()のエラー = %v、期待値 = nil", err)
 		}
 		if userProfile != nil {
-			t.Errorf("FindByProfileID() userProfile = %v, want nil", userProfile)
+			t.Errorf("FindByProfileID()のuserProfile = %v、期待値 = nil", userProfile)
 		}
 	})
 }
@@ -138,14 +138,14 @@ func TestUserProfileRepository_Create(t *testing.T) {
 			ProfileID: profileID,
 		})
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		if userProfile.UserID != userID {
-			t.Errorf("userProfile.UserID = %v, want %v", userProfile.UserID, userID)
+			t.Errorf("userProfile.UserID = %v、期待値 = %v", userProfile.UserID, userID)
 		}
 		if userProfile.ProfileID != profileID {
-			t.Errorf("userProfile.ProfileID = %v, want %v", userProfile.ProfileID, profileID)
+			t.Errorf("userProfile.ProfileID = %v、期待値 = %v", userProfile.ProfileID, profileID)
 		}
 	})
 }
@@ -175,16 +175,16 @@ func TestUserProfileRepository_WithTx(t *testing.T) {
 			ProfileID: profileID,
 		})
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		// 作成したユーザープロフィールを取得できることを確認
 		fetched, err := txRepo.FindByUserID(ctx, userProfile.UserID)
 		if err != nil {
-			t.Fatalf("FindByUserID() error = %v", err)
+			t.Fatalf("FindByUserID()のエラー = %v", err)
 		}
 		if fetched.ProfileID != profileID {
-			t.Errorf("fetched.ProfileID = %v, want %v", fetched.ProfileID, profileID)
+			t.Errorf("fetched.ProfileID = %v、期待値 = %v", fetched.ProfileID, profileID)
 		}
 	})
 }

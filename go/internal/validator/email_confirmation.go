@@ -12,23 +12,23 @@ import (
 // 確認コードは6桁の数字
 var codeRegex = regexp.MustCompile(`^\d{6}$`)
 
-// EmailConfirmationCreateValidator はメール確認のバリデーションを行う
+// EmailConfirmationCreateValidatorはメール確認のバリデーションを行う
 type EmailConfirmationCreateValidator struct {
 	emailConfirmationRepo *repository.EmailConfirmationRepository
 }
 
-// NewEmailConfirmationCreateValidator はEmailConfirmationCreateValidatorを生成する
+// NewEmailConfirmationCreateValidatorはEmailConfirmationCreateValidatorを生成する
 func NewEmailConfirmationCreateValidator(emailConfirmationRepo *repository.EmailConfirmationRepository) *EmailConfirmationCreateValidator {
 	return &EmailConfirmationCreateValidator{emailConfirmationRepo: emailConfirmationRepo}
 }
 
-// EmailConfirmationCreateValidatorInput はバリデーションの入力パラメータ
+// EmailConfirmationCreateValidatorInputはバリデーションの入力パラメータ
 type EmailConfirmationCreateValidatorInput struct {
 	ID   model.EmailConfirmationID
 	Code string
 }
 
-// Validate はバリデーションを行い、成功時はメール確認情報を返す
+// Validateはバリデーションを行い、成功時はメール確認情報を返す
 func (v *EmailConfirmationCreateValidator) Validate(ctx context.Context, input EmailConfirmationCreateValidatorInput) (*model.EmailConfirmation, error) {
 	// 1. 形式バリデーション
 	ve := model.NewValidationError()

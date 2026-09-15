@@ -1,4 +1,4 @@
-// Package turnstile はCloudflare TurnstileによるBot対策機能を提供します
+// Package turnstileはCloudflare TurnstileによるBot対策機能を提供します
 package turnstile
 
 import (
@@ -18,18 +18,18 @@ const (
 	requestTimeout = 10 * time.Second
 )
 
-// Verifier はTurnstileトークンを検証するインターフェース
+// VerifierはTurnstileトークンを検証するインターフェース
 type Verifier interface {
 	Verify(ctx context.Context, token string) (bool, error)
 }
 
-// Client はTurnstile APIクライアント
+// ClientはTurnstile APIクライアント
 type Client struct {
 	secretKey  string
 	httpClient *http.Client
 }
 
-// VerifyResponse はCloudflare Siteverify APIのレスポンス
+// VerifyResponseはCloudflare Siteverify APIのレスポンス
 type VerifyResponse struct {
 	Success     bool     `json:"success"`
 	ChallengeTS string   `json:"challenge_ts"`
@@ -37,13 +37,13 @@ type VerifyResponse struct {
 	ErrorCodes  []string `json:"error-codes"`
 }
 
-// verifyRequest はCloudflare Siteverify APIへのリクエストボディ
+// verifyRequestはCloudflare Siteverify APIへのリクエストボディ
 type verifyRequest struct {
 	Secret   string `json:"secret"`
 	Response string `json:"response"`
 }
 
-// NewClient は新しいTurnstile APIクライアントを作成する
+// NewClientは新しいTurnstile APIクライアントを作成する
 func NewClient(secretKey string) *Client {
 	return &Client{
 		secretKey: secretKey,
@@ -53,7 +53,7 @@ func NewClient(secretKey string) *Client {
 	}
 }
 
-// Verify はTurnstileトークンを検証する
+// VerifyはTurnstileトークンを検証する
 // トークンが有効な場合はtrue、無効な場合はfalseを返す
 func (c *Client) Verify(ctx context.Context, token string) (bool, error) {
 	// テスト環境用: SecretKeyが空の場合は常に検証成功を返す
@@ -72,11 +72,8 @@ func (c *Client) Verify(ctx context.Context, token string) (bool, error) {
 		Response: token,
 	}
 
-	// The Turnstile siteverify API requires sending secret_key by spec, so the gosec G117
-	// warning on serializing a struct that contains reqBody.Secret is suppressed as a false positive.
-	//
-	// [Ja] Turnstile siteverify API は仕様上 secret_key の送信が必須のため、
-	// reqBody.Secret を含む構造体のシリアライズに対する gosec G117 は false positive として抑制する。
+	// Turnstile siteverify APIは仕様上secret_keyの送信が必須のため、
+	// reqBody.Secretを含む構造体のシリアライズに対するgosec G117はfalse positiveとして抑制する。
 	//nolint:gosec // G117
 	jsonBody, err := json.Marshal(reqBody)
 	if err != nil {

@@ -25,27 +25,18 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// noopJobInserter satisfies dispatcher.JobInserter without enqueuing anything,
-// so the handler tests can exercise CreatePostUsecase without a running River
-// client (the fanout enqueue happens after commit and must not fail the test).
-//
-// [Ja] noopJobInserter は何も enqueue せずに dispatcher.JobInserter を満たす。
-// これにより、River クライアントを動かさずにハンドラーテストで CreatePostUsecase を
-// 実行できる (fanout の enqueue はコミット後に走るが、テストを失敗させてはならない)。
+// noopJobInserterは何もenqueueせずにdispatcher.JobInserterを満たす。
+// これにより、Riverクライアントを動かさずにハンドラーテストでCreatePostUsecaseを
+// 実行できる (fanoutのenqueueはコミット後に走るが、テストを失敗させてはならない)。
 type noopJobInserter struct{}
 
 func (noopJobInserter) Insert(_ context.Context, _ river.JobArgs, _ *river.InsertOpts) (*rivertype.JobInsertResult, error) {
 	return &rivertype.JobInsertResult{}, nil
 }
 
-// newCreatePostHandler builds a post.Handler backed by a CreatePostUsecase whose
-// repositories run against the shared test DB. CreatePostUsecase opens its own
-// transaction, so callers commit prerequisite rows (profile, mewst-web) before
-// invoking Create.
-//
-// [Ja] newCreatePostHandler は共有テスト DB に対して動く CreatePostUsecase を持つ
-// post.Handler を構築する。CreatePostUsecase は独自のトランザクションを開くため、
-// 呼び出し側は Create を呼ぶ前に前提行 (profile・mewst-web) をコミットしておく。
+// newCreatePostHandlerは共有テストDBに対して動くCreatePostUsecaseを持つ
+// post.Handlerを構築する。CreatePostUsecaseは独自のトランザクションを開くため、
+// 呼び出し側はCreateを呼ぶ前に前提行 (profile・mewst-web) をコミットしておく。
 func newCreatePostHandler(t *testing.T) *handler.Handler {
 	t.Helper()
 
@@ -70,13 +61,9 @@ func newCreatePostHandler(t *testing.T) *handler.Handler {
 	return handler.NewHandler(cfg, flashMgr, createPostUC, getLinkUC)
 }
 
-// postRequest builds a POST /posts request carrying the given form content, with
-// the CSRF token and current profile injected into the context the way the CSRF
-// and RequireAuth middleware do in production.
-//
-// [Ja] postRequest は指定の本文を持つ POST /posts リクエストを構築する。CSRF
-// トークンと現在プロフィールは、本番で CSRF / RequireAuth ミドルウェアが行うのと
-// 同じ形で context に注入する。
+// postRequestは指定の本文を持つPOST /postsリクエストを構築する。CSRF
+// トークンと現在プロフィールは、本番でCSRF / RequireAuthミドルウェアが行うのと
+// 同じ形でcontextに注入する。
 func postRequest(t *testing.T, profile *model.Profile, content string) *http.Request {
 	t.Helper()
 
@@ -96,13 +83,9 @@ func postRequest(t *testing.T, profile *model.Profile, content string) *http.Req
 func TestCreate_Success(t *testing.T) {
 	t.Parallel()
 
-	// This commits an oauth_applications row with uid = mewst-web (UNIQUE
-	// index), so serialize against the other tests that commit or assert the
-	// absence of the same row (e.g. the CreatePostUsecase tests, which run as a
-	// separate process on the shared DB).
-	// [Ja] uid = mewst-web (UNIQUE インデックス) の oauth_applications 行を
+	// uid = mewst-web (UNIQUEインデックス) のoauth_applications行を
 	// コミットするため、同じ行をコミットする / 不在を前提とする他テスト
-	// (共有 DB 上で別プロセスとして実行される CreatePostUsecase のテスト等) と
+	// (共有DB上で別プロセスとして実行されるCreatePostUsecaseのテスト等) と
 	// 直列化する。
 	testutil.AcquireMewstWebLock(t)
 
@@ -133,13 +116,13 @@ func TestCreate_Success(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 	if location := rr.Header().Get("Location"); location != "/home" {
-		t.Errorf("リダイレクト先が不正: got %v, want /home", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /home", location)
 	}
 
-	// 成功フラッシュメッセージの Cookie が設定されていること
+	// 成功フラッシュメッセージのCookieが設定されていること
 	var flashCookie *http.Cookie
 	for _, c := range rr.Result().Cookies() {
 		if c.Name == session.FlashCookieName {
@@ -151,24 +134,23 @@ func TestCreate_Success(t *testing.T) {
 		t.Error("フラッシュメッセージクッキーが設定されていません")
 	}
 
-	// 投稿が DB に作成されていること
+	// 投稿がDBに作成されていること
 	var count int
 	if err := db.QueryRow(
 		`SELECT count(*) FROM posts WHERE profile_id = $1 AND content = $2`,
 		uuid.UUID(authorID), "Hello, Mewst!",
 	).Scan(&count); err != nil {
-		t.Fatalf("posts の取得に失敗: %v", err)
+		t.Fatalf("postsの取得に失敗: %v", err)
 	}
 	if count != 1 {
-		t.Errorf("作成された投稿件数 = %d, want 1", count)
+		t.Errorf("作成された投稿件数 = %d、期待値 = 1", count)
 	}
 }
 
 func TestCreate_NormalizesNewlines(t *testing.T) {
 	t.Parallel()
 
-	// Same mewst-web row serialization rationale as TestCreate_Success.
-	// [Ja] mewst-web 行の直列化理由は TestCreate_Success と同じ。
+	// mewst-web行の直列化理由はTestCreate_Successと同じ。
 	testutil.AcquireMewstWebLock(t)
 
 	db := testutil.GetTestDB()
@@ -192,59 +174,54 @@ func TestCreate_NormalizesNewlines(t *testing.T) {
 	})
 
 	h := newCreatePostHandler(t)
-	// Submit a body with CRLF newlines, mirroring what a browser form sends.
-	// [Ja] ブラウザのフォーム送信を模して CRLF の改行を含む本文を送信する。
+	// ブラウザのフォーム送信を模してCRLFの改行を含む本文を送信する。
 	req := postRequest(t, &model.Profile{ID: authorID}, "line1\r\nline2\r\nline3")
 	rr := httptest.NewRecorder()
 
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
-	// The stored body must carry LF newlines (no CR), so a newline counts as a
-	// single code point everywhere.
-	// [Ja] 保存本文は LF 改行 (CR を含まない) でなければならず、改行が全箇所で
-	// 1 コードポイントになる。
+	// 保存本文はLF改行 (CRを含まない) でなければならず、改行が全箇所で
+	// 1コードポイントになる。
 	var stored string
 	if err := db.QueryRow(
 		`SELECT content FROM posts WHERE profile_id = $1`, uuid.UUID(authorID),
 	).Scan(&stored); err != nil {
-		t.Fatalf("posts の取得に失敗: %v", err)
+		t.Fatalf("postsの取得に失敗: %v", err)
 	}
 	if want := "line1\nline2\nline3"; stored != want {
-		t.Errorf("保存された本文が正規化されていません: got %q, want %q", stored, want)
+		t.Errorf("保存された本文が正規化されていません: 実測値 = %q、期待値 = %q", stored, want)
 	}
 }
 
 func TestCreate_ValidationError_EmptyContent(t *testing.T) {
 	t.Parallel()
 
-	// An empty body fails validation before any DB access, so no prerequisite
-	// rows are needed; a synthetic profile ID suffices to build the input.
-	// [Ja] 空の本文は DB アクセス前にバリデーションで弾かれるため、前提行は不要。
-	// 入力構築には合成のプロフィール ID で足りる。
+	// 空の本文はDBアクセス前にバリデーションで弾かれるため、前提行は不要。
+	// 入力構築には合成のプロフィールIDで足りる。
 	h := newCreatePostHandler(t)
 	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
-	req := postRequest(t, profile, "   ") // 空白のみ → presence エラー
+	req := postRequest(t, profile, "   ") // 空白のみ → presenceエラー
 	rr := httptest.NewRecorder()
 
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	body := rr.Body.String()
 	checks := []string{
 		"入力してください",        // validation_required (本文必須エラー)
 		`action="/posts"`, // フォームが再描画されている
-		`name="content"`,  // 本文 textarea
+		`name="content"`,  // 本文textarea
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
-			t.Errorf("レスポンスに %q が含まれていません", want)
+			t.Errorf("レスポンスに%qが含まれていません", want)
 		}
 	}
 
@@ -259,8 +236,7 @@ func TestCreate_ValidationError_EmptyContent(t *testing.T) {
 func TestCreate_ValidationError_TooLongContent(t *testing.T) {
 	t.Parallel()
 
-	// 161 runes exceed the 160-character limit and fail validation before DB access.
-	// [Ja] 161 文字は 160 文字上限を超え、DB アクセス前にバリデーションで弾かれる。
+	// 161文字は160文字上限を超え、DBアクセス前にバリデーションで弾かれる。
 	h := newCreatePostHandler(t)
 	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
 	req := postRequest(t, profile, strings.Repeat("あ", 161))
@@ -269,7 +245,7 @@ func TestCreate_ValidationError_TooLongContent(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 	if body := rr.Body.String(); !strings.Contains(body, "160文字以内で入力してください") {
 		t.Error("レスポンスに文字数超過エラーが含まれていません")
@@ -279,20 +255,15 @@ func TestCreate_ValidationError_TooLongContent(t *testing.T) {
 func TestCreate_ValidationError_PreservesCanonicalURL(t *testing.T) {
 	t.Parallel()
 
-	// An empty body fails validation before reaching the persistence path. The
-	// submitted canonical_url must survive the 422 re-render so the attached
-	// link card is not lost when the post body is invalid. The URL here matches
-	// no links row, so this also covers the fallback: a bare hidden input
-	// instead of a re-rendered link card.
-	// [Ja] 空の本文は永続化パスに到達する前にバリデーションで弾かれる。送信した
-	// canonical_url は 422 再描画でも保持され、本文が不正でも紐付けたリンクカードが
-	// 失われないこと。この URL は links 行に一致しないため、リンクカードの再描画
-	// ではなく hidden input のみ残すフォールバックも併せて検証する。
+	// 空の本文は永続化パスに到達する前にバリデーションで弾かれる。送信した
+	// canonical_urlは422再描画でも保持され、本文が不正でも紐付けたリンクカードが
+	// 失われないこと。このURLはlinks行に一致しないため、リンクカードの再描画
+	// ではなくhidden inputのみ残すフォールバックも併せて検証する。
 	h := newCreatePostHandler(t)
 	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
 
 	form := url.Values{}
-	form.Set("content", "") // presence エラー
+	form.Set("content", "") // presenceエラー
 	form.Set("canonical_url", "https://example.com/article")
 	form.Set("csrf_token", "test-csrf-token")
 
@@ -308,60 +279,49 @@ func TestCreate_ValidationError_PreservesCanonicalURL(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 	body := rr.Body.String()
 	if !strings.Contains(body, `name="canonical_url"`) {
-		t.Error("再描画フォームに canonical_url の hidden input が含まれていません")
+		t.Error("再描画フォームにcanonical_urlのhidden inputが含まれていません")
 	}
 	if !strings.Contains(body, `value="https://example.com/article"`) {
-		t.Error("canonical_url の値がエコーバックされていません")
+		t.Error("canonical_urlの値がエコーバックされていません")
 	}
 
-	// The echoed hidden input must sit inside the #link-form container so the
-	// URL detection module sees the container as occupied and does not attach a
-	// second link (4-3).
-	// [Ja] エコーバックされた hidden input は #link-form コンテナの内側に置かれ、
-	// URL 検出モジュールがコンテナを使用中とみなして 2 つ目のリンクを紐付けない
+	// エコーバックされたhidden inputは #link-formコンテナの内側に置かれ、
+	// URL検出モジュールがコンテナを使用中とみなして2つ目のリンクを紐付けない
 	// ことを保証する (4-3)。
 	linkFormIdx := strings.Index(body, `id="link-form"`)
 	canonicalIdx := strings.Index(body, `name="canonical_url"`)
 	counterIdx := strings.Index(body, `data-character-counter-for`)
 	if linkFormIdx == -1 || counterIdx == -1 {
-		t.Fatal("再描画フォームに #link-form または文字数カウンターが含まれていません")
+		t.Fatal("再描画フォームに #link-formまたは文字数カウンターが含まれていません")
 	}
 	if canonicalIdx < linkFormIdx || counterIdx < canonicalIdx {
-		t.Error("canonical_url の hidden input が #link-form コンテナの内側にありません")
+		t.Error("canonical_urlのhidden inputが #link-formコンテナの内側にありません")
 	}
 
-	// The unknown URL resolves to no link, so no link card (and no remove
-	// button) is re-rendered.
-	// [Ja] 未知の URL はリンクに解決されないため、リンクカード (と削除ボタン) は
+	// 未知のURLはリンクに解決されないため、リンクカード (と削除ボタン) は
 	// 再描画されないこと。
 	if strings.Contains(body, "リンクカードを削除") {
-		t.Error("未知の canonical_url なのにリンクカードが再描画されています")
+		t.Error("未知のcanonical_urlなのにリンクカードが再描画されています")
 	}
 }
 
 func TestCreate_ValidationError_RendersAttachedLinkCard(t *testing.T) {
 	t.Parallel()
 
-	// When the echoed canonical_url matches an existing link, the 422 re-render
-	// shows the full link card (preview + remove button + hidden canonical_url)
-	// inside #link-form, so the attachment stays visible and removable instead
-	// of surviving only as an invisible hidden input.
-	// [Ja] エコーバックされた canonical_url が既存リンクに一致する場合、422 再描画は
-	// #link-form 内にリンクカード一式 (プレビュー + 削除ボタン + hidden の
-	// canonical_url) を表示する。紐付けが不可視の hidden input としてだけ残るのでは
+	// エコーバックされたcanonical_urlが既存リンクに一致する場合、422再描画は
+	// #link-form内にリンクカード一式 (プレビュー + 削除ボタン + hiddenの
+	// canonical_url) を表示する。紐付けが不可視のhidden inputとしてだけ残るのでは
 	// なく、カードとして見え削除ボタンで外せること。
 	db := testutil.GetTestDB()
 
 	canonicalURL := "https://example.com/attached-card-" + uuid.NewString()
 
-	// The handler's link lookup runs outside the test transaction, so commit
-	// the prerequisite link row and clean it up afterwards.
-	// [Ja] ハンドラーのリンク取得はテストのトランザクション外で走るため、前提の
-	// link 行はコミットし、終了時に削除する。
+	// ハンドラーのリンク取得はテストのトランザクション外で走るため、前提の
+	// link行はコミットし、終了時に削除する。
 	setupTx, err := db.Begin()
 	if err != nil {
 		t.Fatalf("セットアップ用トランザクションの開始に失敗: %v", err)
@@ -382,7 +342,7 @@ func TestCreate_ValidationError_RendersAttachedLinkCard(t *testing.T) {
 	profile := &model.Profile{ID: model.ProfileID(uuid.New())}
 
 	form := url.Values{}
-	form.Set("content", "") // presence error. [Ja] presence エラー
+	form.Set("content", "") // presenceエラー
 	form.Set("canonical_url", canonicalURL)
 	form.Set("csrf_token", "test-csrf-token")
 
@@ -398,49 +358,41 @@ func TestCreate_ValidationError_RendersAttachedLinkCard(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 	body := rr.Body.String()
 	checks := []string{
-		"Attached Card Test", // link card preview (link title). [Ja] リンクカードのプレビュー (リンクのタイトル)
-		"リンクカードを削除",          // remove button aria-label (link_create_remove). [Ja] 削除ボタンの aria-label
+		"Attached Card Test", // リンクカードのプレビュー (リンクのタイトル)
+		"リンクカードを削除",          // 削除ボタンのaria-label (link_create_remove)
 		`name="canonical_url"`,
 		`value="` + canonicalURL + `"`,
 	}
 	for _, want := range checks {
 		if !strings.Contains(body, want) {
-			t.Errorf("レスポンスに %q が含まれていません", want)
+			t.Errorf("レスポンスに%qが含まれていません", want)
 		}
 	}
 
-	// The re-rendered card (and its hidden input) must sit inside the
-	// #link-form container so the URL detection sees it as occupied.
-	// [Ja] 再描画されたカード (とその hidden input) は #link-form コンテナの
-	// 内側に置かれ、URL 検出がコンテナを使用中とみなすこと。
+	// 再描画されたカード (とそのhidden input) は #link-formコンテナの
+	// 内側に置かれ、URL検出がコンテナを使用中とみなすこと。
 	linkFormIdx := strings.Index(body, `id="link-form"`)
 	cardIdx := strings.Index(body, "Attached Card Test")
 	counterIdx := strings.Index(body, `data-character-counter-for`)
 	if linkFormIdx == -1 || counterIdx == -1 {
-		t.Fatal("再描画フォームに #link-form または文字数カウンターが含まれていません")
+		t.Fatal("再描画フォームに #link-formまたは文字数カウンターが含まれていません")
 	}
 	if cardIdx < linkFormIdx || counterIdx < cardIdx {
-		t.Error("リンクカードが #link-form コンテナの内側にありません")
+		t.Error("リンクカードが #link-formコンテナの内側にありません")
 	}
 }
 
 func TestCreate_NoProfile_InternalServerError(t *testing.T) {
 	t.Parallel()
 
-	// The profile is supplied by RequireAuth in production; its absence is a
-	// defensive case (the middleware did not run as expected). Build the request
-	// without injecting a profile and confirm Create returns 500 before any DB
-	// access. Validation runs first, so a valid body is needed to reach the
-	// profile check.
-	//
-	// [Ja] 本番では profile は RequireAuth が供給する。その不在は防御的なケース
-	// (ミドルウェアが想定どおり動いていない) なので、profile を注入せずにリクエストを
-	// 構築し、Create が DB アクセス前に 500 を返すことを確認する。バリデーションが
-	// 先に走るため、profile チェックに到達させるには有効な本文が必要。
+	// 本番ではprofileはRequireAuthが供給する。その不在は防御的なケース
+	// (ミドルウェアが想定どおり動いていない) なので、profileを注入せずにリクエストを
+	// 構築し、CreateがDBアクセス前に500を返すことを確認する。バリデーションが
+	// 先に走るため、profileチェックに到達させるには有効な本文が必要。
 	h := newCreatePostHandler(t)
 
 	form := url.Values{}
@@ -452,8 +404,7 @@ func TestCreate_NoProfile_InternalServerError(t *testing.T) {
 
 	ctx := i18n.SetLocale(context.Background(), "ja")
 	ctx = middleware.SetCSRFTokenToContext(ctx, "test-csrf-token")
-	// Do not call SetProfileToContext, leaving the profile absent from the context.
-	// [Ja] SetProfileToContext を呼ばず、profile を context に注入しない。
+	// SetProfileToContextを呼ばず、profileをcontextに注入しない。
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()
@@ -461,6 +412,6 @@ func TestCreate_NoProfile_InternalServerError(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusInternalServerError)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusInternalServerError)
 	}
 }

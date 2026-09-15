@@ -12,16 +12,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// AttachedLinkCard renders an attached link card: the card preview, a remove
-// button that empties the #link-form container, and a hidden canonical_url
-// input that travels with the surrounding post form so the created post is
-// linked to the card. Shared by the POST /links fragment and the post form's
-// 422 re-render.
-//
-// [Ja] AttachedLinkCard は紐付け済みリンクカードを描画する。カードのプレビュー・
-// #link-form コンテナを空にする削除ボタン・外側の投稿フォームと一緒に送信されて
-// 作成される投稿にカードを紐付ける hidden の canonical_url から成る。POST /links の
-// フラグメントと投稿フォームの 422 再描画で共用する。
+// AttachedLinkCardは紐付け済みリンクカードを描画する。カードのプレビュー・
+// #link-formコンテナを空にする削除ボタン・外側の投稿フォームと一緒に送信されて
+// 作成される投稿にカードを紐付けるhiddenのcanonical_urlから成る。POST /linksの
+// フラグメントと投稿フォームの422再描画で共用する。
 func AttachedLinkCard(link viewmodel.Link) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -58,7 +52,7 @@ func AttachedLinkCard(link viewmodel.Link) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.T(ctx, "link_create_remove"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/attached_link_card.templ`, Line: 28, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/attached_link_card.templ`, Line: 20, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -79,7 +73,7 @@ func AttachedLinkCard(link viewmodel.Link) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(link.CanonicalURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/attached_link_card.templ`, Line: 39, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/attached_link_card.templ`, Line: 31, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {

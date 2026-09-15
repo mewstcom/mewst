@@ -10,11 +10,7 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// monthHeading names the month the file holds, so that the file says which
-// month it is when it is opened directly instead of through the table of
-// contents.
-//
-// [Ja] monthHeading はそのファイルが持つ月を示す。目次を介さず直接開いた
+// monthHeadingはそのファイルが持つ月を示す。目次を介さず直接開いた
 // ファイルでも、どの月のものかが分かるようにするため。
 func monthHeading(data MonthData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -44,7 +40,7 @@ func monthHeading(data MonthData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(monthHeadingText(ctx, data.MonthStart))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 10, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 6, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -58,19 +54,11 @@ func monthHeading(data MonthData) templ.Component {
 	})
 }
 
-// monthPost renders one post as the archive's output contract describes it:
-// an article.h-entry carrying the post's ID, its published time in a
-// machine-readable datetime attribute next to the form the reader reads, and
-// its body in .e-content.
+// monthPostはアーカイブの出力契約どおりにポストを1件描画する。ポストの
+// IDを持つarticle.h-entry、読み手が読む表記と並べた機械可読なdatetime属性の
+// 投稿日時、そして .e-contentの本文からなる。
 //
-// The body is written as one line so that no indentation of this template
-// leaks into the text content a parser recovers from the element.
-//
-// [Ja] monthPost はアーカイブの出力契約どおりにポストを 1 件描画する。ポストの
-// ID を持つ article.h-entry、読み手が読む表記と並べた機械可読な datetime 属性の
-// 投稿日時、そして .e-content の本文からなる。
-//
-// 本文を 1 行で書くのは、このテンプレートのインデントが、パーサーが要素から
+// 本文を1行で書くのは、このテンプレートのインデントが、パーサーが要素から
 // 復元するテキストコンテンツへ紛れ込まないようにするため。
 func monthPost(data MonthPostData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -100,7 +88,7 @@ func monthPost(data MonthPostData) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 28, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 16, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -113,7 +101,7 @@ func monthPost(data MonthPostData) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(postPublishedAtMachine(data.PublishedAt))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 29, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 17, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +114,7 @@ func monthPost(data MonthPostData) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(postPublishedAtText(ctx, data.PublishedAt))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 29, Col: 127}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 17, Col: 127}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +127,7 @@ func monthPost(data MonthPostData) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.Content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 30, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/month.templ`, Line: 18, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {

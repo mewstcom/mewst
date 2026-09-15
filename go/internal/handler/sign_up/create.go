@@ -19,7 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Create はサインアップ処理を実行する (POST /sign_up)
+// Createはサインアップ処理を実行する (POST /sign_up)
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -54,7 +54,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UseCase を実行 (バリデーション + メール確認レコード作成)
+	// UseCaseを実行 (バリデーション + メール確認レコード作成)
 	ucResult, err := h.createSignUp.Execute(ctx, usecase.CreateSignUpInput{
 		Email:  email,
 		Locale: i18n.GetLocale(ctx),
@@ -73,7 +73,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirect.AppendSafeBack("/email_confirmation", backURL), http.StatusFound)
 }
 
-// handleCreateError はサインアップ処理のエラーを処理する
+// handleCreateErrorはサインアップ処理のエラーを処理する
 func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err error, email, backURL string) {
 	ctx := r.Context()
 
@@ -87,7 +87,7 @@ func (h *Handler) handleCreateError(w http.ResponseWriter, r *http.Request, err 
 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
-// checkRateLimit はIPアドレスベースのレート制限をチェックする
+// checkRateLimitはIPアドレスベースのレート制限をチェックする
 func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	return h.rateLimiter.Allow(ctx, ratelimit.CheckInput{
 		Key:    ratelimit.IPKey(ipAddress),
@@ -96,7 +96,7 @@ func (h *Handler) checkRateLimit(ctx context.Context, ipAddress string) error {
 	})
 }
 
-// renderSignUpForm はサインアップフォームを再表示する
+// renderSignUpFormはサインアップフォームを再表示する
 func (h *Handler) renderSignUpForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email, backURL string) {
 	ctx := r.Context()
 	csrfToken := middleware.GetCSRFTokenFromContext(ctx)

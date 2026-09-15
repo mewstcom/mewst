@@ -9,7 +9,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// New はサインアップフォームを表示する (GET /sign_up)
+// Newはサインアップフォームを表示する (GET /sign_up)
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

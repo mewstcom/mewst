@@ -12,7 +12,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Create はログイン処理を実行する (POST /sign_in)
+// Createはログイン処理を実行する (POST /sign_in)
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

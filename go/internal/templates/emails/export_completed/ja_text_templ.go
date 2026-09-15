@@ -10,16 +10,10 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// JaText is the Japanese export completion notification (plain text).
+// JaTextは日本語版のエクスポート完了通知 (テキスト形式) です。
 //
-// The body goes through templ.Raw: this is the text/plain part, where templ's
-// default expression escaping has no HTML context to protect and would turn an
-// ampersand in the URL into &amp; in the delivered mail.
-//
-// [Ja] JaText は日本語版のエクスポート完了通知 (テキスト形式) です。
-//
-// 本文は templ.Raw を通す。ここは text/plain パートであり、templ の既定の式
-// エスケープには守るべき HTML 文脈が無く、URL 中のアンパサンドを配信されるメール
+// 本文はtempl.Rawを通す。ここはtext/plainパートであり、templの既定の式
+// エスケープには守るべきHTML文脈が無く、URL中のアンパサンドを配信されるメール
 // では &amp; にしてしまうため。
 func JaText(exportURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -42,7 +36,7 @@ func JaText(exportURL string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.Raw("ポストのエクスポートが完了しました。\n\n下記のページからダウンロードできます。\n\n"+exportURL+"\n\nダウンロードできるのは最新のエクスポート 1 件です。\n新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。\n\n-- \nMewst\nhttps://mewst.com\n").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templ.Raw("ポストのエクスポートが完了しました。\n\n下記のページからダウンロードできます。\n\n"+exportURL+"\n\nダウンロードできるのは最新のエクスポート1件です。\n新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。\n\n-- \nMewst\nhttps://mewst.com\n").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

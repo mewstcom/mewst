@@ -36,7 +36,7 @@ func TestStaticPaths(t *testing.T) {
 			t.Parallel()
 
 			if tt.got != tt.want {
-				t.Errorf("%s = %q, want %q", tt.name, tt.got, tt.want)
+				t.Errorf("%s = %q、期待値 = %q", tt.name, tt.got, tt.want)
 			}
 		})
 	}
@@ -46,6 +46,6 @@ func TestProfilePath(t *testing.T) {
 	t.Parallel()
 
 	if got := templates.ProfilePath("alice"); got != "/@alice" {
-		t.Errorf("ProfilePath(%q) = %q, want %q", "alice", got, "/@alice")
+		t.Errorf("ProfilePath(%q) = %q、期待値 = %q", "alice", got, "/@alice")
 	}
 }

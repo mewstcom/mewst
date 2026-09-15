@@ -15,9 +15,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// recordingJobInserter records every enqueued job so tests can assert how many
-// AddPostToTimeline jobs fanout emitted and with which arguments.
-// [Ja] recordingJobInserter は enqueue された全ジョブを記録し、fanout が AddPostToTimeline
+// recordingJobInserterはenqueueされた全ジョブを記録し、fanoutがAddPostToTimeline
 // ジョブを何件・どの引数で出したかをテストで検証できるようにする。
 type recordingJobInserter struct {
 	inserts []river.JobArgs
@@ -35,7 +33,7 @@ func (m *recordingJobInserter) Insert(_ context.Context, args river.JobArgs, _ *
 func TestFanoutPostUsecase_Execute(t *testing.T) {
 	t.Parallel()
 
-	t.Run("各フォロワーに AddPostToTimeline ジョブを enqueue する", func(t *testing.T) {
+	t.Run("各フォロワーにAddPostToTimelineジョブをenqueueする", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -59,21 +57,21 @@ func TestFanoutPostUsecase_Execute(t *testing.T) {
 		uc := usecase.NewFanoutPostUsecase(postRepo, followRepo, dispatcher.NewDispatcher(mock))
 
 		if err := uc.Execute(ctx, usecase.FanoutPostInput{PostID: postID}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		if len(mock.inserts) != 2 {
-			t.Fatalf("enqueue 件数 = %d, want 2", len(mock.inserts))
+			t.Fatalf("enqueue件数 = %d、期待値 = 2", len(mock.inserts))
 		}
 
 		enqueuedProfiles := map[string]bool{}
 		for _, a := range mock.inserts {
 			args, ok := a.(dispatcher.AddPostToTimelineArgs)
 			if !ok {
-				t.Fatalf("args の型が AddPostToTimelineArgs ではありません: %T", a)
+				t.Fatalf("argsの型がAddPostToTimelineArgsではありません: %T", a)
 			}
 			if args.PostID != postID.String() {
-				t.Errorf("PostID = %s, want %s", args.PostID, postID.String())
+				t.Errorf("PostID = %s、期待値 = %s", args.PostID, postID.String())
 			}
 			enqueuedProfiles[args.ProfileID] = true
 		}
@@ -82,7 +80,7 @@ func TestFanoutPostUsecase_Execute(t *testing.T) {
 		}
 	})
 
-	t.Run("フォロワーがいなければ何も enqueue しない", func(t *testing.T) {
+	t.Run("フォロワーがいなければ何もenqueueしない", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -101,14 +99,14 @@ func TestFanoutPostUsecase_Execute(t *testing.T) {
 		uc := usecase.NewFanoutPostUsecase(postRepo, followRepo, dispatcher.NewDispatcher(mock))
 
 		if err := uc.Execute(ctx, usecase.FanoutPostInput{PostID: postID}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if len(mock.inserts) != 0 {
-			t.Errorf("enqueue 件数 = %d, want 0", len(mock.inserts))
+			t.Errorf("enqueue件数 = %d、期待値 = 0", len(mock.inserts))
 		}
 	})
 
-	t.Run("投稿が存在しなければエラーなく何も enqueue しない", func(t *testing.T) {
+	t.Run("投稿が存在しなければエラーなく何もenqueueしない", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -119,12 +117,12 @@ func TestFanoutPostUsecase_Execute(t *testing.T) {
 		mock := &recordingJobInserter{}
 		uc := usecase.NewFanoutPostUsecase(postRepo, followRepo, dispatcher.NewDispatcher(mock))
 
-		// A random, non-existent post ID. [Ja] 存在しないランダムな投稿 ID。
+		// 存在しないランダムな投稿ID。
 		if err := uc.Execute(ctx, usecase.FanoutPostInput{PostID: model.PostID(uuid.New())}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 		if len(mock.inserts) != 0 {
-			t.Errorf("enqueue 件数 = %d, want 0", len(mock.inserts))
+			t.Errorf("enqueue件数 = %d、期待値 = 0", len(mock.inserts))
 		}
 	})
 }

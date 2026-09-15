@@ -13,62 +13,32 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// amounts is how many rows of each kind a run creates. The counts sit together
-// in one struct rather than beside the loops that read them, so that what a
-// run produces can be read in one place, and so that a test can ask for the
-// few rows it needs where a run asks for thousands.
-//
-// [Ja] amounts は、実行 1 回分が各種の行を何件作るか。件数を、それを読むループの
-// かたわらではなく 1 つの構造体にまとめているのは、実行が何を作るのかを 1 箇所で
+// amountsは、実行1回分が各種の行を何件作るか。件数を、それを読むループの
+// かたわらではなく1つの構造体にまとめているのは、実行が何を作るのかを1箇所で
 // 読めるようにするためと、実行が数千件を求める場所で、テストが必要な数件だけを
 // 求められるようにするため。
 type amounts struct {
-	// mainPosts is how many everyday posts roleMain holds, spread over the
-	// three years it has been here. This is the count the export is checked
-	// against: the archive holds one HTML file per month, so three years of
-	// posts is what makes those files line up in the zip, and what gives the
-	// table of contents a count beside each month that differs from the next.
-	//
-	// [Ja] mainPosts は、roleMain が持つ日常ポストの件数。ここにいる 3 年間へ
+	// mainPostsは、roleMainが持つ日常ポストの件数。ここにいる3年間へ
 	// 散らして配置する。エクスポートの確認対象となるのがこの件数である。アーカイブは
-	// 月ごとに 1 つの HTML ファイルを持つため、3 年分のポストがあることで、それらの
-	// ファイルが zip の中に並び、目次には月ごとに異なる件数が並ぶ。
+	// 月ごとに1つのHTMLファイルを持つため、3年分のポストがあることで、それらの
+	// ファイルがzipの中に並び、目次には月ごとに異なる件数が並ぶ。
 	mainPosts int
 
-	// followerPosts, englishPosts and discardedPosts are how many posts the
-	// remaining roles hold. They are counted in tens rather than thousands:
-	// the export is checked against roleMain alone, and what these three are
-	// there to show — a home timeline with somebody else's posts in it, an
-	// archive whose months break at a different hour, and posts whose author
-	// is gone — needs a screenful each rather than a history.
-	//
-	// [Ja] followerPosts・englishPosts・discardedPosts は、残りの役割が持つ
-	// ポストの件数。数千件ではなく数十件で数える。エクスポートの確認対象は roleMain
-	// だけであり、この 3 つが示すためにいるもの (他人のポストが並ぶホームタイム
+	// followerPosts・englishPosts・discardedPostsは、残りの役割が持つ
+	// ポストの件数。数千件ではなく数十件で数える。エクスポートの確認対象はroleMain
+	// だけであり、この3つが示すためにいるもの (他人のポストが並ぶホームタイム
 	// ライン、月が別の時刻で切り替わるアーカイブ、作者が居なくなったポスト) には、
-	// 履歴ではなく 1 画面分があれば足りるため。
+	// 履歴ではなく1画面分があれば足りるため。
 	followerPosts  int
 	englishPosts   int
 	discardedPosts int
 
-	// followerToMainStamps, mainToFollowerStamps and newcomerToMainStamps are
-	// how many stamps each direction puts on the target's posts. They are
-	// named by both ends of the direction because roleMain's posts are stamped
-	// from two of them, and a count named after whose posts it lands on would
-	// no longer say which direction it belongs to.
-	//
-	// The two directions between roleMain and roleFollower differ in size so
-	// that the notification list can be read once with more than a page of
-	// entries in it and once with a handful: a run that gave both ends the
-	// same number would not show that what the list displays is the
-	// recipient's own.
-	//
-	// [Ja] followerToMainStamps・mainToFollowerStamps・newcomerToMainStamps は、
+	// followerToMainStamps・mainToFollowerStamps・newcomerToMainStampsは、
 	// 各向きが相手のポストへ何件のスタンプを押すか。向きの両端で名前を付けているのは、
-	// roleMain のポストへは 2 つの向きからスタンプが押されるためである。どのポストへ
+	// roleMainのポストへは2つの向きからスタンプが押されるためである。どのポストへ
 	// 押すのかで件数を名付けると、それがどの向きのものなのかを言えなくなる。
 	//
-	// roleMain と roleFollower の間の 2 つの向きは件数を違える。通知一覧を、1 ページを
+	// roleMainとroleFollowerの間の2つの向きは件数を違える。通知一覧を、1ページを
 	// 超える件数がある状態と数件しかない状態の双方で読めるようにするためである。両端へ
 	// 同じ件数を与える実行では、一覧が表示しているものが受け取り手自身のものであることを
 	// 確認できない。
@@ -77,9 +47,7 @@ type amounts struct {
 	newcomerToMainStamps int
 }
 
-// defaultAmounts is what a run creates. Tests pass amounts of their own.
-//
-// [Ja] defaultAmounts は実行 1 回分が作る件数。テストは自前の件数を渡す。
+// defaultAmountsは実行1回分が作る件数。テストは自前の件数を渡す。
 var defaultAmounts = amounts{
 	mainPosts:            3000,
 	followerPosts:        48,
@@ -90,73 +58,35 @@ var defaultAmounts = amounts{
 	newcomerToMainStamps: 4,
 }
 
-// followerPostMonths is how far back roleFollower's posts reach. Half a year
-// is short against the thirty months it has been here, on purpose: its posts
-// are read in a home timeline and under a followed profile, both of which show
-// the newest first, and a few dozen posts spread over its whole membership
-// would leave those screens with about one post a month.
-//
-// [Ja] followerPostMonths は、roleFollower のポストがどこまで遡るか。ここにいる
-// 30 か月に対して半年は短いが、これは意図的である。この役割のポストが読まれるのは
+// followerPostMonthsは、roleFollowerのポストがどこまで遡るか。ここにいる
+// 30か月に対して半年は短いが、これは意図的である。この役割のポストが読まれるのは
 // ホームタイムラインとフォロー中のプロフィールで、どちらも新しいものから表示する。
-// 数十件を在籍期間の全体へ散らすと、それらの画面には月に 1 件ほどしか並ばなくなる。
+// 数十件を在籍期間の全体へ散らすと、それらの画面には月に1件ほどしか並ばなくなる。
 const followerPostMonths = 6
 
-// englishPostMonths is how far back roleEnglish's posts reach. Three months is
-// what an English archive needs to be worth opening: the month boundary is
-// what this role is there to show against roleMain's, and a boundary can only
-// be looked at between two months that both hold posts.
-//
-// [Ja] englishPostMonths は、roleEnglish のポストがどこまで遡るか。英語の
-// アーカイブを開く意味があるのは 3 か月分からになる。この役割が roleMain と並べて
-// 示すのは月境界であり、境界は、双方ともポストを持つ 2 つの月の間でしか見られない。
+// englishPostMonthsは、roleEnglishのポストがどこまで遡るか。英語の
+// アーカイブを開く意味があるのは3か月分からになる。この役割がroleMainと並べて
+// 示すのは月境界であり、境界は、双方ともポストを持つ2つの月の間でしか見られない。
 const englishPostMonths = 3
 
-// discardedPostMonths is how far back roleDiscarded's posts reach. What this
-// role shows is how a post looks once its author is gone, which is visible in
-// a single post, so its posts only need to be recent enough to be reached.
-//
-// [Ja] discardedPostMonths は、roleDiscarded のポストがどこまで遡るか。この役割が
-// 示すのは、作者が居なくなったポストの見え方であり、それは 1 件でも見える。ポストは
+// discardedPostMonthsは、roleDiscardedのポストがどこまで遡るか。この役割が
+// 示すのは、作者が居なくなったポストの見え方であり、それは1件でも見える。ポストは
 // 辿り着ける程度に新しければ足りる。
 const discardedPostMonths = 2
 
-// monthlyPostWeights is how a role's posts are shared out between the months
-// they span, one weight per month, cycled from the oldest month onwards.
-//
-// The months are deliberately given different shares. If every month held the
-// same number of posts, the counts the export's table of contents shows could
-// not be told apart from a count that was taken once and repeated, which is
-// the mistake those numbers are looked at to catch.
-//
-// The list is seventeen long so that it does not line up with the calendar. A
-// list of twelve would give the same month of every year the same count, and a
-// table of contents where March is 64 posts in each of three years reads as
-// generated rather than as a history.
-//
-// [Ja] monthlyPostWeights は、ある役割のポストが、それが広がる月々へどう配分される
-// かを月ごとに 1 つの重みで表したもの。最も古い月から順に、繰り返し使う。
+// monthlyPostWeightsは、ある役割のポストが、それが広がる月々へどう配分される
+// かを月ごとに1つの重みで表したもの。最も古い月から順に、繰り返し使う。
 //
 // 月ごとの取り分を意図的に変えている。どの月も同じ件数であれば、エクスポートの目次が
-// 見せる件数は、1 度数えたものを繰り返しているだけの状態と区別できない。それこそが、
+// 見せる件数は、1度数えたものを繰り返しているだけの状態と区別できない。それこそが、
 // あの数字を見て捕まえたい誤りである。
 //
-// 一覧を 17 個にしているのは、暦と重ならないようにするため。12 個であれば毎年の同じ
-// 月が同じ件数になり、3 年分の 3 月がいずれも 64 件という目次は、履歴ではなく生成物
+// 一覧を17個にしているのは、暦と重ならないようにするため。12個であれば毎年の同じ
+// 月が同じ件数になり、3年分の3月がいずれも64件という目次は、履歴ではなく生成物
 // として読まれることになる。
 var monthlyPostWeights = []int{5, 2, 4, 3, 6, 2, 5, 3, 4, 2, 6, 3, 5, 2, 4, 6, 3}
 
-// mainPostBodies are what roleMain's everyday posts are written from, cycled
-// through in order. They are dull on purpose: these posts exist to be counted
-// by a month's listing and to fill an archive, and anything worth reading here
-// would only compete with the posts that exist to be read (the ones written
-// for the export's output contract).
-//
-// The wording follows what the profile says about itself, so that an account
-// that describes itself as writing about coffee and walks is not one whose
-// posts are about something else.
-//
-// [Ja] mainPostBodies は roleMain の日常ポストを書き起こす材料で、順に繰り返し
+// mainPostBodiesはroleMainの日常ポストを書き起こす材料で、順に繰り返し
 // 使う。意図的に退屈な内容にしている。これらのポストは月ごとの一覧に数えられ、
 // アーカイブを埋めるために存在しており、ここに読ませたい内容を書いても、読ませる
 // ために存在するポスト (エクスポートの出力契約のために書いたもの) と競合するだけで
@@ -185,14 +115,9 @@ var mainPostBodies = []string{
 	"遠くの山がきれいに見えた。空気が澄んでいる。",
 }
 
-// followerPostBodies are what roleFollower writes. It has a list of its own
-// rather than sharing roleMain's, because the two accounts' posts are read
-// side by side in a home timeline, and a timeline where both of them wrote the
-// same sentences would not look like two people.
-//
-// [Ja] followerPostBodies は roleFollower が書く内容。roleMain と共有せず自前の
-// 一覧を持つのは、2 つのアカウントのポストがホームタイムラインで並べて読まれるため。
-// どちらも同じ文を書いているタイムラインは、2 人の人物には見えない。
+// followerPostBodiesはroleFollowerが書く内容。roleMainと共有せず自前の
+// 一覧を持つのは、2つのアカウントのポストがホームタイムラインで並べて読まれるため。
+// どちらも同じ文を書いているタイムラインは、2人の人物には見えない。
 var followerPostBodies = []string{
 	"近所のパン屋、今日はカンパーニュが焼き上がっていた。",
 	"サウナのあとの外気浴がいちばん気持ちいい。",
@@ -206,12 +131,7 @@ var followerPostBodies = []string{
 	"新しいパン屋ができるらしい。開店が楽しみ。",
 }
 
-// englishPostBodies are what roleEnglish writes. They stay in English because
-// this role is the one an English archive is read from, and an archive whose
-// wording is English while its posts are Japanese would only show half of what
-// the locale decides.
-//
-// [Ja] englishPostBodies は roleEnglish が書く内容。英語のままにしているのは、
+// englishPostBodiesはroleEnglishが書く内容。英語のままにしているのは、
 // この役割が英語のアーカイブを読むためのものであるため。文言が英語でポストが日本語の
 // アーカイブでは、ロケールが決めているものの半分しか見えない。
 var englishPostBodies = []string{
@@ -227,12 +147,8 @@ var englishPostBodies = []string{
 	"Something is sprouting in the pot on the balcony. The watering paid off.",
 }
 
-// discardedPostBodies are what roleDiscarded wrote before its profile was
-// deleted. The list is short because these posts are looked at one at a time:
-// what they show is how a post reads once the account behind it is gone.
-//
-// [Ja] discardedPostBodies は、roleDiscarded がプロフィールを削除される前に書いた
-// 内容。一覧が短いのは、これらのポストが 1 件ずつ見られるものであるため。示すのは、
+// discardedPostBodiesは、roleDiscardedがプロフィールを削除される前に書いた
+// 内容。一覧が短いのは、これらのポストが1件ずつ見られるものであるため。示すのは、
 // その背後のアカウントが居なくなったポストがどう読めるのかということである。
 var discardedPostBodies = []string{
 	"先週の山で撮った写真を整理している。",
@@ -241,10 +157,7 @@ var discardedPostBodies = []string{
 	"次はもう少し早い時間に登りたい。",
 }
 
-// rolePostSpec is one role's share of the everyday posts: how many it holds,
-// how far back they reach, and what they are written from.
-//
-// [Ja] rolePostSpec は、日常ポストのうちある役割が持つ分。件数・どこまで遡るか・
+// rolePostSpecは、日常ポストのうちある役割が持つ分。件数・どこまで遡るか・
 // 何から書き起こすかを持つ。
 type rolePostSpec struct {
 	role   seedRole
@@ -253,16 +166,9 @@ type rolePostSpec struct {
 	bodies []string
 }
 
-// rolePostSpecs is what each role holds, with the counts taken from amt.
+// rolePostSpecsは各役割が持つ分。件数はamtから取る。
 //
-// roleNewcomer is absent, which is what gives it no posts. An account that can
-// reach every screen while having written nothing is the only way to see an
-// empty export and a profile page with nothing under it, so its absence here
-// is the whole of what that role is.
-//
-// [Ja] rolePostSpecs は各役割が持つ分。件数は amt から取る。
-//
-// roleNewcomer は含まれておらず、それがこの役割にポストを持たせない方法になる。
+// roleNewcomerは含まれておらず、それがこの役割にポストを持たせない方法になる。
 // すべての画面へ辿り着けるのに何も書いていないアカウントは、空のエクスポートと、
 // 下に何も並ばないプロフィール画面を見るための唯一の手段であり、ここに無いことが
 // その役割のすべてである。
@@ -275,15 +181,7 @@ func rolePostSpecs(amt amounts) []rolePostSpec {
 	}
 }
 
-// postWriter writes the posts of one run.
-//
-// The application every post is attributed to and the instant the run is
-// anchored to are held here rather than passed down each call, because both
-// are fixed for the whole run: a post that named a different application, or
-// a run that read the clock again partway through, would be describing a
-// different run than the one that started.
-//
-// [Ja] postWriter は、実行 1 回分のポストを書き込む。
+// postWriterは、実行1回分のポストを書き込む。
 //
 // すべてのポストの帰属先となるアプリケーションと、実行が基準とする時点を、呼び出し
 // ごとに渡さずここで持つ。どちらも実行全体で固定であるため。別のアプリケーションを
@@ -297,23 +195,13 @@ type postWriter struct {
 	now           time.Time
 }
 
-// newPostWriter binds a post writer to the run's transaction, to the
-// application its posts are attributed to, and to the instant the run is
-// anchored to.
-//
-// It is a function rather than a literal at the one place posts are written,
-// because posts are written from more than one generator: the everyday posts
-// and the posts that carry a link card are both posts, and a second literal
-// would be a second place for the repositories they are written through to
-// drift apart.
-//
-// [Ja] newPostWriter は、ポストの書き込み手を、実行のトランザクション・ポストの
+// newPostWriterは、ポストの書き込み手を、実行のトランザクション・ポストの
 // 帰属先となるアプリケーション・実行が基準とする時点へ束ねる。
 //
-// ポストを書き込む 1 箇所へリテラルで置かず関数にしているのは、ポストを書き込む
-// 生成器が 1 つではないため。日常ポストも、リンクカードを持つポストも、どちらも
-// ポストであり、2 つ目のリテラルは、それらが書き込まれる先のリポジトリが食い違う
-// 2 つ目の場所になる。
+// ポストを書き込む1箇所へリテラルで置かず関数にしているのは、ポストを書き込む
+// 生成器が1つではないため。日常ポストも、リンクカードを持つポストも、どちらも
+// ポストであり、2つ目のリテラルは、それらが書き込まれる先のリポジトリが食い違う
+// 2つ目の場所になる。
 func newPostWriter(tx *sql.Tx, applicationID model.OauthApplicationID, now time.Time) *postWriter {
 	q := query.New(tx)
 
@@ -326,9 +214,7 @@ func newPostWriter(tx *sql.Tx, applicationID model.OauthApplicationID, now time.
 	}
 }
 
-// createPosts writes the everyday posts of every role that holds them.
-//
-// [Ja] createPosts は、日常ポストを持つすべての役割について、そのポストを書き込む。
+// createPostsは、日常ポストを持つすべての役割について、そのポストを書き込む。
 func createPosts(
 	ctx context.Context,
 	tx *sql.Tx,
@@ -346,16 +232,11 @@ func createPosts(
 		}
 
 		if err := writer.writeRolePosts(ctx, account, spec); err != nil {
-			return fmt.Errorf("役割 %s のポストの作成に失敗: %w", spec.role, err)
+			return fmt.Errorf("役割%sのポストの作成に失敗: %w", spec.role, err)
 		}
 	}
 
-	// The posts written for the export's output contract go to roleMain
-	// alone, and they go after its everyday posts: they are placed in months
-	// the everyday posts have already been laid across, and the profile's
-	// newest post should be one of the everyday ones.
-	//
-	// [Ja] エクスポートの出力契約のために書くポストは roleMain だけに置き、その
+	// エクスポートの出力契約のために書くポストはroleMainだけに置き、その
 	// 日常ポストの後に書く。これらは日常ポストがすでに敷かれた月々へ配置されるもので
 	// あり、プロフィールの最も新しいポストは日常ポストのひとつであるべきであるため。
 	main, err := accountForRole(accounts, roleMain)
@@ -364,22 +245,13 @@ func createPosts(
 	}
 
 	if err := writer.writeVariationPosts(ctx, main); err != nil {
-		return fmt.Errorf("役割 %s のエクスポート確認用ポストの作成に失敗: %w", roleMain, err)
+		return fmt.Errorf("役割%sのエクスポート確認用ポストの作成に失敗: %w", roleMain, err)
 	}
 
 	return nil
 }
 
-// writeRolePosts writes one role's posts, oldest first, and records the newest
-// of them on the profile.
-//
-// The months are counted in the account's own time zone. Which month a post
-// falls into is decided by the reader's clock, and the export splits its
-// archive on that boundary, so a run that counted the months in the time zone
-// of whichever machine it happened to run on would place the same post in
-// different files depending on where it was seeded.
-//
-// [Ja] writeRolePosts は、ある役割のポストを古いものから書き込み、その中で最も
+// writeRolePostsは、ある役割のポストを古いものから書き込み、その中で最も
 // 新しいものをプロフィールへ記録する。
 //
 // 月はアカウント自身のタイムゾーンで数える。ポストがどの月に入るのかは読み手の時計が
@@ -387,28 +259,19 @@ func createPosts(
 // タイムゾーンで月を数える実行は、どこでシードしたかによって同じポストを別のファイル
 // へ置くことになる。
 func (w *postWriter) writeRolePosts(ctx context.Context, account seedAccount, spec rolePostSpec) error {
-	// A spec with no months has nowhere to place its posts. Returning here
-	// rather than falling through is what leaves last_post_at unset: a
-	// profile whose newest post is the zero instant reads as one that posted
-	// in the year one.
-	//
-	// [Ja] 月を持たない spec には、ポストを置く先が無い。そのまま先へ進まずここで
-	// 戻ることが、last_post_at を未設定のままにする。最も新しいポストがゼロ値の
-	// 時点であるプロフィールは、西暦 1 年にポストしたものとして読まれる。
+	// 月を持たないspecには、ポストを置く先が無い。そのまま先へ進まずここで
+	// 戻ることが、last_post_atを未設定のままにする。最も新しいポストがゼロ値の
+	// 時点であるプロフィールは、西暦1年にポストしたものとして読まれる。
 	if spec.count <= 0 || spec.months <= 0 {
 		return nil
 	}
 
-	// The zone is read from the account rather than resolved again from the
-	// roster: the roster checked at load time that it names a real zone, and
-	// what the screens use is the value that reached the user row.
-	//
-	// [Ja] タイムゾーンは名簿から引き直さずアカウントから読む。名簿は読み込み時に
+	// タイムゾーンは名簿から引き直さずアカウントから読む。名簿は読み込み時に
 	// それが実在するタイムゾーンを指していることを検査しており、画面が使うのは
 	// ユーザー行へ届いた値であるため。
 	location, err := time.LoadLocation(account.user.TimeZone)
 	if err != nil {
-		return fmt.Errorf("タイムゾーン %q の読み込みに失敗: %w", account.user.TimeZone, err)
+		return fmt.Errorf("タイムゾーン%qの読み込みに失敗: %w", account.user.TimeZone, err)
 	}
 
 	var lastPostAt time.Time
@@ -429,27 +292,14 @@ func (w *postWriter) writeRolePosts(ctx context.Context, account seedAccount, sp
 		}
 	}
 
-	// last_post_at is what the screens that order profiles by activity read,
-	// so it is set from the posts that were just written rather than left for
-	// the next post the account makes through the application.
-	//
-	// [Ja] last_post_at は、プロフィールを活動順に並べる画面が読む値であるため、
+	// last_post_atは、プロフィールを活動順に並べる画面が読む値であるため、
 	// アカウントがアプリケーションを通して次にポストするときまで待たず、たった今
 	// 書き込んだポストから設定する。
 	return w.recordLastPostAt(ctx, account, lastPostAt)
 }
 
-// recordLastPostAt records at as the profile's newest post, unless the profile
-// already holds a newer one.
-//
-// The comparison lives here rather than at either call site because a
-// profile's posts are written in more than one pass: the everyday posts first,
-// then the posts written for the export's output contract. Which pass holds
-// the newest post is a property of where those posts were placed, not of the
-// order the passes run in.
-//
-// [Ja] recordLastPostAt は、プロフィールがすでにより新しいものを持っている場合を
-// 除いて、at をそのプロフィールの最も新しいポストとして記録する。
+// recordLastPostAtは、プロフィールがすでにより新しいものを持っている場合を
+// 除いて、atをそのプロフィールの最も新しいポストとして記録する。
 //
 // 比較を呼び出し側ではなくここに置くのは、プロフィールのポストが複数の段階に
 // 分かれて書き込まれるため。まず日常ポスト、次にエクスポートの出力契約のために書く
@@ -461,33 +311,21 @@ func (w *postWriter) recordLastPostAt(ctx context.Context, account seedAccount, 
 	}
 
 	if err := w.profiles.UpdateLastPostAt(ctx, account.profile.ID, at); err != nil {
-		return fmt.Errorf("プロフィールの last_post_at の更新に失敗: %w", err)
+		return fmt.Errorf("プロフィールのlast_post_atの更新に失敗: %w", err)
 	}
 
-	// The model is brought along with the row it stands for, so that a
-	// generator that receives this account afterwards is not handed a profile
-	// that says nothing has been written under it.
-	//
-	// [Ja] モデルは、それが表す行と一緒に更新する。この後にこのアカウントを受け取る
+	// モデルは、それが表す行と一緒に更新する。この後にこのアカウントを受け取る
 	// 生成器へ、まだ何も書かれていないと告げるプロフィールを渡さないようにするため。
 	account.profile.LastPostAt = &at
 
 	return nil
 }
 
-// writePost writes one post with an ID ordered by its stored publication time,
-// and returns that ID.
-//
-// The ID is returned rather than looked up again by whoever needs it: a post
-// is found by its profile and its publication time, and two posts of the same
-// account can share an instant, so a lookup would be answering a question the
-// caller already knows the answer to and could get wrong.
-//
-// [Ja] writePost は、保存された公開日時順に並ぶIDで 1 件のポストを書き込み、その
+// writePostは、保存された公開日時順に並ぶIDで1件のポストを書き込み、その
 // IDを返す。
 //
 // IDを必要とする側が引き直すのではなく戻り値で渡す。ポストはプロフィールと公開日時で
-// 引くことになるが、同じアカウントの 2 件のポストは同じ時点を共有しうるため、引き直しは、
+// 引くことになるが、同じアカウントの2件のポストは同じ時点を共有しうるため、引き直しは、
 // 呼び出し側がすでに答えを持っている問いに、誤りうる形で答えることになる。
 func (w *postWriter) writePost(
 	ctx context.Context,
@@ -505,16 +343,7 @@ func (w *postWriter) writePost(
 		return model.PostID{}, fmt.Errorf("ポストの作成に失敗: %w", err)
 	}
 
-	// Rails' PostRecord.prev_post / next_post filter by ID. The ULID's first
-	// 48 bits must therefore use publication milliseconds rather than the
-	// insertion clock. The next 10 bits hold the microseconds within that
-	// millisecond, preserving the column's full ordering even when posts share
-	// a millisecond. The remaining 70 random bits keep IDs distinct, including
-	// posts with identical publication times.
-	//
-	// Adjust the ID in the seed transaction before any dependent rows exist.
-	//
-	// [Ja] Railsの PostRecord.prev_post / next_post はIDで絞り込むため、ULIDの
+	// RailsのPostRecord.prev_post / next_postはIDで絞り込むため、ULIDの
 	// 先頭48ビットには挿入時刻ではなく公開日時のミリ秒を設定する。続く10ビットに
 	// ミリ秒内のマイクロ秒を格納し、同じミリ秒のポストでもカラムの精度で順序を保つ。
 	// 残り70ビットの乱数で、公開日時が同じポストも含めてIDを区別する。
@@ -539,24 +368,10 @@ func (w *postWriter) writePost(
 	return model.PostID(id), nil
 }
 
-// storedInstant is how an instant is handed to the database.
+// storedInstantは、時点をデータベースへ渡すときの形。
 //
-// It is offered in UTC. posts.published_at and profiles.last_post_at are
-// timestamps without a time zone, and PostgreSQL takes the wall clock of what
-// it is given and drops the offset, so an instant offered in another zone
-// would be stored as that zone's digits and read back as an instant hours away
-// from the one that was meant — on the far side of a month boundary, for a
-// post placed near the end of a month.
-//
-// It is rounded here rather than left to the column, so that the models the
-// generators carry on to each other describe the rows that were written. A
-// column that holds microseconds rounds a nanosecond away from what the value
-// in hand still says.
-//
-// [Ja] storedInstant は、時点をデータベースへ渡すときの形。
-//
-// 時点は UTC で渡す。posts.published_at と profiles.last_post_at はタイムゾーンを
-// 持たない timestamp であり、PostgreSQL は与えられた値の壁時計を取ってオフセットを
+// 時点はUTCで渡す。posts.published_atとprofiles.last_post_atはタイムゾーンを
+// 持たないtimestampであり、PostgreSQLは与えられた値の壁時計を取ってオフセットを
 // 捨てる。別のタイムゾーンで渡した時点は、そのタイムゾーンの数字として保存され、
 // 後から読むと意図した時点から数時間ずれた時点になる。月の終わり近くに置いたポストで
 // あれば、月境界の向こう側へ移ることになる。
@@ -568,15 +383,8 @@ func storedInstant(at time.Time) time.Time {
 	return at.UTC().Truncate(time.Microsecond)
 }
 
-// monthlyPostCounts shares total posts out between months months, oldest
-// first, in the proportions monthlyPostWeights gives them.
-//
-// The remainder that integer division leaves over is handed to the newest
-// months. A run is looked at from the newest post backwards, so the months a
-// developer opens first are the ones that should not be the short ones.
-//
-// [Ja] monthlyPostCounts は、合計 total 件のポストを、古い月から順に months 個の月へ、
-// monthlyPostWeights が与える比率で配分する。
+// monthlyPostCountsは、合計total件のポストを、古い月から順にmonths個の月へ、
+// monthlyPostWeightsが与える比率で配分する。
 //
 // 整数除算が残した端数は新しい月へ渡す。実行は最も新しいポストから遡って見られる
 // ため、開発者が最初に開く月が、端数で少なくなっている月であってはならない。
@@ -609,17 +417,8 @@ func monthlyPostCounts(total, months int) []int {
 	return counts
 }
 
-// monthWindow returns the half-open interval the month at index covers, where
-// index 0 is the oldest of months months and months-1 is the month the run is
-// happening in.
-//
-// The last window is cut short at the run's own instant. A post is something
-// that was written, so a month still in progress reaches up to now and no
-// further: the alternative is an account whose newest post has not happened
-// yet.
-//
-// [Ja] monthWindow は、index 番目の月が覆う半開区間を返す。index 0 は months 個の
-// 月のうち最も古い月であり、months-1 は実行が行われている月である。
+// monthWindowは、index番目の月が覆う半開区間を返す。index 0はmonths個の
+// 月のうち最も古い月であり、months-1は実行が行われている月である。
 //
 // 最後の区間は実行自身の時点で打ち切る。ポストは書かれたものであるため、進行中の月は
 // 現在までで、その先へは伸びない。そうしなければ、最も新しいポストがまだ起きていない
@@ -637,31 +436,17 @@ func monthWindow(now time.Time, location *time.Location, months, index int) (tim
 	return start, end
 }
 
-// postTimeInWindow places the index-th of count posts inside a month, spacing
-// them evenly and leaving a gap at either end of the month.
-//
-// The posts of a month are spread rather than stamped with one instant,
-// because a month whose posts all share a timestamp is a month whose order is
-// decided by whatever the database returns first.
-//
-// [Ja] postTimeInWindow は、ある月の count 件のうち index 番目のポストを、等間隔に、
+// postTimeInWindowは、ある月のcount件のうちindex番目のポストを、等間隔に、
 // 月の両端に余白を残して配置する。
 //
-// 月のポストを 1 つの時点で押さずに散らすのは、すべてのポストが同じ時刻を持つ月では、
+// 月のポストを1つの時点で押さずに散らすのは、すべてのポストが同じ時刻を持つ月では、
 // その並び順をデータベースが先に返したものが決めることになるため。
 func postTimeInWindow(start, end time.Time, index, count int) time.Time {
-	// The interval is taken before it is multiplied, not after. A 31-day
-	// month is 2.68e15 nanoseconds and an int64 Duration reaches 9.22e18, so
-	// the multiply-first form overflows once the count passes some 3,400.
-	// What reaches here is one month's share — about 130 posts at the volume
-	// a run creates — so neither order overflows today, and dividing first is
-	// what keeps that true however the counts in amounts are raised.
-	//
-	// [Ja] 間隔は掛ける前に割る。31 日の月は 2.68e15 ナノ秒で、Duration の実体で
-	// ある int64 が届くのは 9.22e18 までであるため、先に掛ける形は件数が 3,400 ほど
-	// を超えたところであふれる。ここへ渡るのは 1 か月分の取り分 (実行 1 回分の生成量
-	// で 130 件ほど) であり、今はどちらの順序でもあふれないが、割ってから掛ける形は、
-	// amounts の件数をどう増やしてもそれが成り立ち続けるようにする。
+	// 間隔は掛ける前に割る。31日の月は2.68e15ナノ秒で、Durationの実体で
+	// あるint64が届くのは9.22e18までであるため、先に掛ける形は件数が3,400ほど
+	// を超えたところであふれる。ここへ渡るのは1か月分の取り分 (実行1回分の生成量
+	// で130件ほど) であり、今はどちらの順序でもあふれないが、割ってから掛ける形は、
+	// amountsの件数をどう増やしてもそれが成り立ち続けるようにする。
 	interval := end.Sub(start) / time.Duration(count+1)
 
 	return start.Add(interval * time.Duration(index+1))

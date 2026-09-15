@@ -12,29 +12,20 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// NewPageData holds the data for the add-link-card prompt fragment.
-//
-// [Ja] NewPageData はリンクカード追加プロンプトのフラグメントのデータを保持する。
+// NewPageDataはリンクカード追加プロンプトのフラグメントのデータを保持する。
 type NewPageData struct {
 	CSRFToken string
-	// TargetURL is the URL detected in the post body, carried as a hidden field to POST /links.
-	// [Ja] TargetURL は投稿本文から検出した URL。hidden フィールドとして POST /links に渡す。
+	// TargetURLは投稿本文から検出したURL。hiddenフィールドとしてPOST /linksに渡す。
 	TargetURL string
-	// HostAndPath is the shortened host + path of TargetURL shown on the button label.
-	// [Ja] HostAndPath はボタンラベルに表示する TargetURL の短縮した host + path。
+	// HostAndPathはボタンラベルに表示するTargetURLの短縮したhost + path。
 	HostAndPath string
-	// FormErrors holds validation errors to re-display after a failed POST /links (nil on first render).
-	// [Ja] FormErrors は POST /links 失敗後に再表示するバリデーションエラー (初回表示時は nil)。
+	// FormErrorsはPOST /links失敗後に再表示するバリデーションエラー (初回表示時はnil)。
 	FormErrors *model.ValidationError
 }
 
-// New renders the add-link-card prompt fragment (the Rails links/new/call view):
-// a button that posts the detected URL to POST /links via htmx and swaps the
-// resulting link card into the #link-form container in the post form.
-//
-// [Ja] New はリンクカード追加プロンプトのフラグメント (Rails の links/new/call
-// ビュー) を描画する。検出した URL を htmx で POST /links に送信し、得られた
-// リンクカードを投稿フォーム内の #link-form コンテナにスワップするボタン。
+// Newはリンクカード追加プロンプトのフラグメント (Railsのlinks/new/call
+// ビュー) を描画する。検出したURLをhtmxでPOST /linksに送信し、得られた
+// リンクカードを投稿フォーム内の #link-formコンテナにスワップするボタン。
 func New(data NewPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -63,7 +54,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CSRFToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 33, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 24, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -76,7 +67,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.TargetURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 34, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 25, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -95,7 +86,7 @@ func New(data NewPageData) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(errorMsg)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 39, Col: 15}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 30, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -114,7 +105,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "link_new_submit", map[string]any{"HostAndPath": data.HostAndPath}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 45, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/link/new.templ`, Line: 36, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

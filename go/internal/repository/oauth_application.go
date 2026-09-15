@@ -9,22 +9,22 @@ import (
 	"github.com/mewstcom/mewst/go/internal/query"
 )
 
-// OauthApplicationRepository はOAuthアプリケーションのリポジトリ
+// OauthApplicationRepositoryはOAuthアプリケーションのリポジトリ
 type OauthApplicationRepository struct {
 	q *query.Queries
 }
 
-// NewOauthApplicationRepository はOauthApplicationRepositoryを生成する
+// NewOauthApplicationRepositoryはOauthApplicationRepositoryを生成する
 func NewOauthApplicationRepository(q *query.Queries) *OauthApplicationRepository {
 	return &OauthApplicationRepository{q: q}
 }
 
-// WithTx はトランザクションを設定したOauthApplicationRepositoryを返す
+// WithTxはトランザクションを設定したOauthApplicationRepositoryを返す
 func (r *OauthApplicationRepository) WithTx(tx *sql.Tx) *OauthApplicationRepository {
 	return &OauthApplicationRepository{q: r.q.WithTx(tx)}
 }
 
-// FindByUID はuidでOAuthアプリケーションを取得する
+// FindByUIDはuidでOAuthアプリケーションを取得する
 func (r *OauthApplicationRepository) FindByUID(ctx context.Context, uid string) (*model.OauthApplication, error) {
 	row, err := r.q.GetOauthApplicationByUID(ctx, uid)
 	if err != nil {
@@ -36,8 +36,7 @@ func (r *OauthApplicationRepository) FindByUID(ctx context.Context, uid string) 
 	return toOauthApplicationModel(row), nil
 }
 
-// toOauthApplicationModel converts a query.OauthApplication row into a model.OauthApplication.
-// [Ja] toOauthApplicationModel は query.OauthApplication を model.OauthApplication に変換する
+// toOauthApplicationModelはquery.OauthApplicationをmodel.OauthApplicationに変換する
 // パッケージ非公開の自由関数。
 func toOauthApplicationModel(row query.OauthApplication) *model.OauthApplication {
 	return &model.OauthApplication{

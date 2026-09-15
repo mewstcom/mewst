@@ -1,4 +1,4 @@
-// Package password_reset はパスワードリセット開始ハンドラーを提供します
+// Package password_resetはパスワードリセット開始ハンドラーを提供します
 package password_reset
 
 import (
@@ -15,7 +15,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Handler はパスワードリセット開始機能のHTTPハンドラー
+// Handlerはパスワードリセット開始機能のHTTPハンドラー
 type Handler struct {
 	cfg                   *config.Config
 	sessionMgr            *session.Manager
@@ -24,7 +24,7 @@ type Handler struct {
 	turnstileVerifier     turnstile.Verifier
 }
 
-// NewHandler はHandlerを生成する
+// NewHandlerはHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,
@@ -41,9 +41,9 @@ func NewHandler(
 	}
 }
 
-// renderPasswordResetForm はパスワードリセットフォームを描画する。
+// renderPasswordResetFormはパスワードリセットフォームを描画する。
 // 初回表示・バリデーションエラー時の再表示の両方から共通利用する。
-// Create のバリデーション失敗時のみ呼び出し側で 422 を設定する。それ以外は status を設定せずデフォルト 200 を使う。
+// Createのバリデーション失敗時のみ呼び出し側で422を設定する。それ以外はstatusを設定せずデフォルト200を使う。
 func (h *Handler) renderPasswordResetForm(w http.ResponseWriter, r *http.Request, ve *model.ValidationError, email string) {
 	ctx := r.Context()
 

@@ -8,25 +8,25 @@ import (
 	"github.com/mewstcom/mewst/go/internal/session"
 )
 
-// CSRFCookieName はCSRFトークンを保存するクッキー名
+// CSRFCookieNameはCSRFトークンを保存するクッキー名
 const CSRFCookieName = "mewst_csrf_token"
 
-// csrfTokenContextKey はコンテキストにCSRFトークンを保存するためのキー
+// csrfTokenContextKeyはコンテキストにCSRFトークンを保存するためのキー
 type csrfTokenContextKey struct{}
 
-// CSRF はCSRF保護のためのミドルウェアを提供する
+// CSRFはCSRF保護のためのミドルウェアを提供する
 type CSRF struct {
 	cfg *config.Config
 }
 
-// NewCSRF は新しいCSRFミドルウェアを作成する
+// NewCSRFは新しいCSRFミドルウェアを作成する
 func NewCSRF(cfg *config.Config) *CSRF {
 	return &CSRF{
 		cfg: cfg,
 	}
 }
 
-// Middleware はCSRF保護ミドルウェアを返す
+// MiddlewareはCSRF保護ミドルウェアを返す
 // GET/HEAD/OPTIONSリクエストではCSRFトークンを生成してコンテキストに設定
 // その他のメソッドではCSRFトークンを検証する
 func (c *CSRF) Middleware(next http.Handler) http.Handler {
@@ -70,7 +70,7 @@ func (c *CSRF) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-// getOrCreateCSRFToken は既存のCSRFトークンを取得するか、新しく生成する
+// getOrCreateCSRFTokenは既存のCSRFトークンを取得するか、新しく生成する
 func (c *CSRF) getOrCreateCSRFToken(w http.ResponseWriter, r *http.Request) (string, error) {
 	// 既存のトークンがあれば返す
 	cookie, err := r.Cookie(CSRFCookieName)
@@ -89,7 +89,7 @@ func (c *CSRF) getOrCreateCSRFToken(w http.ResponseWriter, r *http.Request) (str
 	return token, nil
 }
 
-// setCSRFCookie はCSRFトークンをクッキーに設定する
+// setCSRFCookieはCSRFトークンをクッキーに設定する
 func (c *CSRF) setCSRFCookie(w http.ResponseWriter, r *http.Request, token string) {
 	secure := c.cfg.SessionSecure
 	// リバースプロキシ経由のHTTPS接続を検出
@@ -110,12 +110,12 @@ func (c *CSRF) setCSRFCookie(w http.ResponseWriter, r *http.Request, token strin
 	http.SetCookie(w, cookie)
 }
 
-// SetCSRFTokenToContext はコンテキストにCSRFトークンを設定する
+// SetCSRFTokenToContextはコンテキストにCSRFトークンを設定する
 func SetCSRFTokenToContext(ctx context.Context, token string) context.Context {
 	return context.WithValue(ctx, csrfTokenContextKey{}, token)
 }
 
-// GetCSRFTokenFromContext はコンテキストからCSRFトークンを取得する
+// GetCSRFTokenFromContextはコンテキストからCSRFトークンを取得する
 func GetCSRFTokenFromContext(ctx context.Context) string {
 	token, ok := ctx.Value(csrfTokenContextKey{}).(string)
 	if !ok {

@@ -1,4 +1,4 @@
-// Package usecase はビジネスロジックとトランザクション管理を担当します
+// Package usecaseはビジネスロジックとトランザクション管理を担当します
 package usecase
 
 import (
@@ -11,13 +11,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// CreateSessionUsecase はセッション作成のユースケース
+// CreateSessionUsecaseはセッション作成のユースケース
 type CreateSessionUsecase struct {
 	actorRepo   *repository.ActorRepository
 	sessionRepo *repository.SessionRepository
 }
 
-// NewCreateSessionUsecase はCreateSessionUsecaseを生成する
+// NewCreateSessionUsecaseはCreateSessionUsecaseを生成する
 func NewCreateSessionUsecase(actorRepo *repository.ActorRepository, sessionRepo *repository.SessionRepository) *CreateSessionUsecase {
 	return &CreateSessionUsecase{
 		actorRepo:   actorRepo,
@@ -25,20 +25,20 @@ func NewCreateSessionUsecase(actorRepo *repository.ActorRepository, sessionRepo 
 	}
 }
 
-// CreateSessionInput はセッション作成の入力パラメータ
+// CreateSessionInputはセッション作成の入力パラメータ
 type CreateSessionInput struct {
 	UserID    model.UserID
 	IPAddress string
 	UserAgent string
 }
 
-// CreateSessionOutput はセッション作成の出力パラメータ
+// CreateSessionOutputはセッション作成の出力パラメータ
 type CreateSessionOutput struct {
 	Session *model.Session
 	Token   string
 }
 
-// Execute はセッションを作成する
+// Executeはセッションを作成する
 func (uc *CreateSessionUsecase) Execute(ctx context.Context, input CreateSessionInput) (*CreateSessionOutput, error) {
 	// 1. データ取得 (トランザクション外)
 	actor, err := uc.actorRepo.FindByUserID(ctx, input.UserID)
@@ -56,7 +56,7 @@ func (uc *CreateSessionUsecase) Execute(ctx context.Context, input CreateSession
 	return uc.createSession(ctx, actor.ID, input)
 }
 
-// createSession はトークンを生成しセッションを作成する
+// createSessionはトークンを生成しセッションを作成する
 func (uc *CreateSessionUsecase) createSession(ctx context.Context, actorID model.ActorID, input CreateSessionInput) (*CreateSessionOutput, error) {
 	token, err := auth.GenerateSecureToken()
 	if err != nil {

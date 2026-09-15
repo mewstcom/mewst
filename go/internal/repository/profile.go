@@ -12,22 +12,22 @@ import (
 	"github.com/mewstcom/mewst/go/internal/query"
 )
 
-// ProfileRepository はプロフィールのリポジトリ
+// ProfileRepositoryはプロフィールのリポジトリ
 type ProfileRepository struct {
 	q *query.Queries
 }
 
-// NewProfileRepository はProfileRepositoryを生成する
+// NewProfileRepositoryはProfileRepositoryを生成する
 func NewProfileRepository(q *query.Queries) *ProfileRepository {
 	return &ProfileRepository{q: q}
 }
 
-// WithTx はトランザクションを設定したProfileRepositoryを返す
+// WithTxはトランザクションを設定したProfileRepositoryを返す
 func (r *ProfileRepository) WithTx(tx *sql.Tx) *ProfileRepository {
 	return &ProfileRepository{q: r.q.WithTx(tx)}
 }
 
-// CreateProfileInput はプロフィール作成の入力パラメータ
+// CreateProfileInputはプロフィール作成の入力パラメータ
 type CreateProfileInput struct {
 	OwnerType     string
 	Atname        string
@@ -40,7 +40,7 @@ type CreateProfileInput struct {
 	GravatarURL   string
 }
 
-// FindByID はIDでプロフィールを取得する
+// FindByIDはIDでプロフィールを取得する
 func (r *ProfileRepository) FindByID(ctx context.Context, id model.ProfileID) (*model.Profile, error) {
 	row, err := r.q.GetProfileByID(ctx, uuid.UUID(id))
 	if err != nil {
@@ -52,7 +52,7 @@ func (r *ProfileRepository) FindByID(ctx context.Context, id model.ProfileID) (*
 	return toProfileModel(row), nil
 }
 
-// FindByAtname はアットネームでプロフィールを取得する
+// FindByAtnameはアットネームでプロフィールを取得する
 func (r *ProfileRepository) FindByAtname(ctx context.Context, atname string) (*model.Profile, error) {
 	row, err := r.q.GetProfileByAtname(ctx, atname)
 	if err != nil {
@@ -64,13 +64,12 @@ func (r *ProfileRepository) FindByAtname(ctx context.Context, atname string) (*m
 	return toProfileModel(row), nil
 }
 
-// ExistsByAtname はアットネームでプロフィールの存在を確認する
+// ExistsByAtnameはアットネームでプロフィールの存在を確認する
 func (r *ProfileRepository) ExistsByAtname(ctx context.Context, atname string) (bool, error) {
 	return r.q.ExistsProfileByAtname(ctx, atname)
 }
 
-// UpdateLastPostAt updates the profile's last_post_at.
-// [Ja] UpdateLastPostAt はプロフィールの last_post_at を更新する。
+// UpdateLastPostAtはプロフィールのlast_post_atを更新する。
 func (r *ProfileRepository) UpdateLastPostAt(ctx context.Context, id model.ProfileID, lastPostAt time.Time) error {
 	return r.q.UpdateProfileLastPostAt(ctx, query.UpdateProfileLastPostAtParams{
 		ID:         uuid.UUID(id),
@@ -78,7 +77,7 @@ func (r *ProfileRepository) UpdateLastPostAt(ctx context.Context, id model.Profi
 	})
 }
 
-// Create はプロフィールを作成する
+// Createはプロフィールを作成する
 func (r *ProfileRepository) Create(ctx context.Context, input CreateProfileInput) (*model.Profile, error) {
 	row, err := r.q.CreateProfile(ctx, query.CreateProfileParams{
 		OwnerType:     input.OwnerType,
@@ -97,12 +96,8 @@ func (r *ProfileRepository) Create(ctx context.Context, input CreateProfileInput
 	return toProfileModel(row), nil
 }
 
-// toProfileModel converts a query.Profile row into a model.Profile. It is a
-// package-private free function so SessionRepository's JOIN-based auth lookup
-// can reuse the conversion without instantiating a ProfileRepository.
-//
-// [Ja] toProfileModel は query.Profile を model.Profile に変換するパッケージ非公開の
-// 自由関数。SessionRepository が JOIN で取得した profile 行を ProfileRepository
+// toProfileModelはquery.Profileをmodel.Profileに変換するパッケージ非公開の
+// 自由関数。SessionRepositoryがJOINで取得したprofile行をProfileRepository
 // なしで変換できるように、メソッドではなく自由関数にしている。
 func toProfileModel(row query.Profile) *model.Profile {
 	var discardedAt *time.Time

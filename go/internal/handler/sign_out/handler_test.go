@@ -19,9 +19,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// setupTestHandler sets up the handler under test.
-//
-// [Ja] setupTestHandler はテスト用のハンドラーをセットアップする。
+// setupTestHandlerはテスト用のハンドラーをセットアップする。
 func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Config) {
 	t.Helper()
 
@@ -41,9 +39,7 @@ func setupTestHandler(t *testing.T, tx *sql.Tx) (*handler.Handler, *config.Confi
 	return h, cfg
 }
 
-// findCookie returns the cookie with the given name from the response, or nil.
-//
-// [Ja] findCookie はレスポンスから指定名の Cookie を返す (無ければ nil)。
+// findCookieはレスポンスから指定名のCookieを返す (無ければnil)。
 func findCookie(cookies []*http.Cookie, name string) *http.Cookie {
 	for _, c := range cookies {
 		if c.Name == name {
@@ -72,11 +68,11 @@ func TestDelete_Success(t *testing.T) {
 	h.Delete(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	if location := rr.Header().Get("Location"); location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	cookies := rr.Result().Cookies()
@@ -85,7 +81,7 @@ func TestDelete_Success(t *testing.T) {
 	if sessionCookie == nil {
 		t.Error("セッションクッキーがレスポンスに含まれていません")
 	} else if sessionCookie.MaxAge != -1 {
-		t.Errorf("セッションクッキーのMaxAgeが不正: got %v, want -1", sessionCookie.MaxAge)
+		t.Errorf("セッションクッキーのMaxAgeが不正: 実測値 = %v、期待値 = -1", sessionCookie.MaxAge)
 	}
 
 	if findCookie(cookies, session.FlashCookieName) == nil {
@@ -134,15 +130,15 @@ func TestDelete_DeletesSessionRecord(t *testing.T) {
 	h.Delete(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	deleted, err := sessionRepo.FindByToken(ctx, token)
 	if err != nil {
-		t.Fatalf("FindByToken() error = %v", err)
+		t.Fatalf("FindByToken()のエラー = %v", err)
 	}
 	if deleted != nil {
-		t.Error("DB のセッションレコードが削除されていません")
+		t.Error("DBのセッションレコードが削除されていません")
 	}
 }
 
@@ -152,12 +148,8 @@ func TestDelete_SessionDeletionFailure(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// Roll the transaction back before the request so every query through it
-	// fails with sql.ErrTxDone. This is how the test forces the session deletion
-	// to fail without reaching for a mock repository.
-	//
-	// [Ja] リクエスト前にトランザクションをロールバックし、これを経由するクエリを
-	// すべて sql.ErrTxDone で失敗させる。モックの repository を持ち込まずに
+	// リクエスト前にトランザクションをロールバックし、これを経由するクエリを
+	// すべてsql.ErrTxDoneで失敗させる。モックのrepositoryを持ち込まずに
 	// セッション削除の失敗を再現するための手段。
 	if err := tx.Rollback(); err != nil {
 		t.Fatalf("トランザクションのロールバックに失敗: %v", err)
@@ -175,17 +167,14 @@ func TestDelete_SessionDeletionFailure(t *testing.T) {
 
 	h.Delete(rr, req)
 
-	// Sign-out must still succeed: the cookie is cleared, the flash is set and
-	// the user is redirected even though the session row could not be deleted.
-	//
-	// [Ja] セッションレコードを削除できなくてもログアウト自体は成立しなければ
-	// ならない。Cookie が削除され、フラッシュが設定され、リダイレクトされる。
+	// セッションレコードを削除できなくてもログアウト自体は成立しなければ
+	// ならない。Cookieが削除され、フラッシュが設定され、リダイレクトされる。
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	if location := rr.Header().Get("Location"); location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	cookies := rr.Result().Cookies()
@@ -194,7 +183,7 @@ func TestDelete_SessionDeletionFailure(t *testing.T) {
 	if sessionCookie == nil {
 		t.Error("セッションクッキーがレスポンスに含まれていません")
 	} else if sessionCookie.MaxAge != -1 {
-		t.Errorf("セッションクッキーのMaxAgeが不正: got %v, want -1", sessionCookie.MaxAge)
+		t.Errorf("セッションクッキーのMaxAgeが不正: 実測値 = %v、期待値 = -1", sessionCookie.MaxAge)
 	}
 
 	if findCookie(cookies, session.FlashCookieName) == nil {
@@ -217,11 +206,11 @@ func TestDelete_WithoutSession(t *testing.T) {
 	h.Delete(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	if location := rr.Header().Get("Location"); location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	cookies := rr.Result().Cookies()
@@ -262,10 +251,7 @@ func TestDelete_FlashMessage(t *testing.T) {
 				t.Fatal("フラッシュメッセージクッキーが見つかりません")
 			}
 
-			// Decode the same cookie through FlashManager to verify its type and
-			// message.
-			//
-			// [Ja] FlashManager 経由で同じ Cookie をデコードしてタイプとメッセージを検証する。
+			// FlashManager経由で同じCookieをデコードしてタイプとメッセージを検証する。
 			fm := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 			verifyReq := httptest.NewRequest(http.MethodGet, "/", nil)
 			verifyReq.AddCookie(flashCookie)
@@ -274,20 +260,15 @@ func TestDelete_FlashMessage(t *testing.T) {
 				t.Fatal("フラッシュメッセージのデコードに失敗")
 			}
 			if flash.Type != session.FlashSuccess {
-				t.Errorf("フラッシュタイプが不正: got %v, want %v", flash.Type, session.FlashSuccess)
+				t.Errorf("フラッシュタイプが不正: 実測値 = %v、期待値 = %v", flash.Type, session.FlashSuccess)
 			}
-			// Verify the handler honours the locale in ctx and writes the message
-			// translated for that locale into the cookie. The expectation is built
-			// through i18n.T rather than a literal so it follows wording changes in
-			// the translation files.
-			//
-			// [Ja] handler が ctx の locale を尊重し、ロケールごとに翻訳されたメッセージが
-			// Cookie に書かれていることを確認する。翻訳ファイルの文言変更に追従できるよう、
-			// 期待値はリテラルではなく i18n.T 経由で生成する。
+			// handlerがctxのlocaleを尊重し、ロケールごとに翻訳されたメッセージが
+			// Cookieに書かれていることを確認する。翻訳ファイルの文言変更に追従できるよう、
+			// 期待値はリテラルではなくi18n.T経由で生成する。
 			expectedCtx := i18n.SetLocale(context.Background(), tt.locale)
 			want := i18n.T(expectedCtx, "flash_sign_out_success")
 			if flash.Message != want {
-				t.Errorf("フラッシュメッセージが不正: got %q, want %q", flash.Message, want)
+				t.Errorf("フラッシュメッセージが不正: 実測値 = %q、期待値 = %q", flash.Message, want)
 			}
 		})
 	}
@@ -312,39 +293,29 @@ func TestDelete_POSTMethod(t *testing.T) {
 	h.Delete(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 	if location := rr.Header().Get("Location"); location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 
 	sessionCookie := findCookie(rr.Result().Cookies(), session.CookieName)
 	if sessionCookie == nil {
 		t.Error("セッションクッキーがレスポンスに含まれていません")
 	} else if sessionCookie.MaxAge != -1 {
-		t.Errorf("セッションクッキーのMaxAgeが不正: got %v, want -1", sessionCookie.MaxAge)
+		t.Errorf("セッションクッキーのMaxAgeが不正: 実測値 = %v、期待値 = -1", sessionCookie.MaxAge)
 	}
 }
 
-// signOutCSRFToken is an arbitrary token shared by a request's CSRF cookie and
-// form field. The middleware only checks that the two match, so any non-empty
-// value works.
-//
-// [Ja] signOutCSRFToken はリクエストの CSRF Cookie とフォームフィールドで共有する
+// signOutCSRFTokenはリクエストのCSRF Cookieとフォームフィールドで共有する
 // 任意のトークン。ミドルウェアは両者の一致だけを見るため、非空なら何でもよい。
 const signOutCSRFToken = "test-csrf-token-1234567890"
 
-// TestDelete_CSRFMiddleware_RejectsRequestWithoutToken verifies that fronting the
-// sign-out handler with the CSRF middleware (as main.go now does for the
-// /sign_out group) blocks a forged POST that carries no CSRF token, before the
-// handler runs. A CSRF forgery rides the victim's session cookie but cannot read
-// the token, so the session cookie is present while the token is absent.
-//
-// [Ja] TestDelete_CSRFMiddleware_RejectsRequestWithoutToken は、ログアウトハンドラーの
-// 前段に CSRF ミドルウェアを置いたとき (main.go が /sign_out グループに対して行うのと
-// 同じ)、CSRF トークンを持たない偽造 POST をハンドラー実行前に遮断することを検証する。
-// CSRF 偽造は被害者のセッション Cookie に便乗するがトークンは読めないため、セッション
-// Cookie はあってもトークンは無い。
+// TestDelete_CSRFMiddleware_RejectsRequestWithoutTokenは、ログアウトハンドラーの
+// 前段にCSRFミドルウェアを置いたとき (main.goが /sign_outグループに対して行うのと
+// 同じ)、CSRFトークンを持たない偽造POSTをハンドラー実行前に遮断することを検証する。
+// CSRF偽造は被害者のセッションCookieに便乗するがトークンは読めないため、セッション
+// Cookieはあってもトークンは無い。
 func TestDelete_CSRFMiddleware_RejectsRequestWithoutToken(t *testing.T) {
 	t.Parallel()
 
@@ -363,29 +334,20 @@ func TestDelete_CSRFMiddleware_RejectsRequestWithoutToken(t *testing.T) {
 	protected.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusForbidden {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusForbidden)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusForbidden)
 	}
 
-	// The middleware must block before the handler runs, so none of sign-out's
-	// side effects (the flash message) are produced.
-	//
-	// [Ja] ミドルウェアはハンドラー実行前に遮断しなければならないため、ログアウトの
+	// ミドルウェアはハンドラー実行前に遮断しなければならないため、ログアウトの
 	// 副作用 (フラッシュメッセージ) は一切生じない。
 	if findCookie(rr.Result().Cookies(), session.FlashCookieName) != nil {
-		t.Error("403 のはずがフラッシュメッセージクッキーが設定されています")
+		t.Error("403のはずがフラッシュメッセージクッキーが設定されています")
 	}
 }
 
-// TestDelete_CSRFMiddleware_AcceptsRequestWithValidToken verifies that the same
-// wiring lets a POST through when its form token matches the CSRF cookie, so the
-// sign-out completes with the usual redirect. This is the token flow the Go
-// /settings page produces: the CSRF middleware issues the cookie and the page
-// embeds the matching token in the sign-out form.
-//
-// [Ja] TestDelete_CSRFMiddleware_AcceptsRequestWithValidToken は、同じ配線でフォーム
-// トークンが CSRF Cookie と一致する POST を通し、ログアウトが通常のリダイレクトで
-// 完了することを検証する。これは Go 版 /settings ページが生む トークンの流れである。
-// CSRF ミドルウェアが Cookie を発行し、ページがログアウトフォームに一致するトークンを
+// TestDelete_CSRFMiddleware_AcceptsRequestWithValidTokenは、同じ配線でフォーム
+// トークンがCSRF Cookieと一致するPOSTを通し、ログアウトが通常のリダイレクトで
+// 完了することを検証する。これはGo版 /settingsページが生む トークンの流れである。
+// CSRFミドルウェアがCookieを発行し、ページがログアウトフォームに一致するトークンを
 // 埋め込む。
 func TestDelete_CSRFMiddleware_AcceptsRequestWithValidToken(t *testing.T) {
 	t.Parallel()
@@ -413,10 +375,10 @@ func TestDelete_CSRFMiddleware_AcceptsRequestWithValidToken(t *testing.T) {
 	protected.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 	if location := rr.Header().Get("Location"); location != "/" {
-		t.Errorf("リダイレクト先が不正: got %v, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /", location)
 	}
 	if findCookie(rr.Result().Cookies(), session.FlashCookieName) == nil {
 		t.Error("フラッシュメッセージクッキーが設定されていません")

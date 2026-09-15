@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// New はアカウント作成フォームを表示する (GET /accounts/new)
+// Newはアカウント作成フォームを表示する (GET /accounts/new)
 func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -45,7 +45,7 @@ func (h *Handler) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// アカウント作成 / パスワード更新 / メール変更フローを取り違えてフォームに到達しないための防御。
-	// アカウント作成は sign_up イベントのみ受け付ける。
+	// アカウント作成はsign_upイベントのみ受け付ける。
 	if ucResult.EmailConfirmation.Event != model.EmailConfirmationEventSignUp {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
