@@ -22,13 +22,13 @@ func TestUpdate_Success(t *testing.T) {
 
 	// ユーザーを作成
 	testutil.NewUserBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-success@example.com").
 		Build()
 
 	// 確認済みのメール確認レコードを作成
 	now := time.Now()
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-success@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithSucceededAt(now).
@@ -99,7 +99,7 @@ func TestUpdate_EmptyPassword(t *testing.T) {
 	// 確認済みのメール確認レコードを作成
 	now := time.Now()
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-empty-password@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithSucceededAt(now).
@@ -145,7 +145,7 @@ func TestUpdate_ShortPassword(t *testing.T) {
 	// 確認済みのメール確認レコードを作成
 	now := time.Now()
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-short-password@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		WithSucceededAt(now).
@@ -223,7 +223,7 @@ func TestUpdate_WithUnsuccessfulEmailConfirmation(t *testing.T) {
 
 	// 未確認のメール確認レコードを作成(succeeded_atがNULL)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-unsuccessful@example.com").
 		WithCode("123456").
 		WithEvent("password_reset").
 		Build()
@@ -266,7 +266,7 @@ func TestUpdate_WithMismatchedEvent(t *testing.T) {
 
 	// password_reset 以外のイベント(sign_up)の確認済みレコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("handler-password-update-mismatched-event@example.com").
 		WithCode("123456").
 		WithEvent("sign_up").
 		WithSucceededAt(time.Now()).

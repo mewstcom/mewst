@@ -17,7 +17,7 @@ func TestCreateSessionUsecase_Execute(t *testing.T) {
 
 	// テストデータを作成
 	userID := testutil.NewUserBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("usecase-create-session@example.com").
 		Build()
 
 	profileID := testutil.NewProfileBuilder(t, tx).
