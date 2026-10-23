@@ -14,7 +14,7 @@ import (
 // templ用ヘルパー関数
 // ========================================
 
-// Tは翻訳を取得する(templ用)
+// Tは翻訳を取得する (templ用)
 func T(ctx context.Context, messageID string, data ...map[string]any) string {
 	return i18n.T(ctx, messageID, data...)
 }
@@ -24,7 +24,7 @@ func Locale(ctx context.Context) string {
 	return i18n.GetLocale(ctx)
 }
 
-// Derefはポインタを参照外しする(ジェネリック対応)
+// Derefはポインタを参照外しする (ジェネリック対応)
 func Deref[T any](v *T) T {
 	if v != nil {
 		return *v
@@ -37,7 +37,7 @@ func Deref[T any](v *T) T {
 // アイコン関数
 // ========================================
 
-// Iconはアイコン名からSVGを返す(templ.Component対応)
+// Iconはアイコン名からSVGを返す (templ.Component対応)
 // 可変長引数でクラス名を指定可能: Icon("name", "class1 class2")
 func Icon(name viewmodel.IconName, class ...string) templ.Component {
 	svg, ok := customIcons[name]

@@ -127,7 +127,7 @@ func TestEdit_WithUnsuccessfulEmailConfirmation(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// 未確認のメール確認レコードを作成(succeeded_atがNULL)
+	// 未確認のメール確認レコードを作成 (succeeded_atがNULL)
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("handler-password-edit-unsuccessful@example.com").
 		WithCode("123456").
@@ -164,7 +164,7 @@ func TestEdit_WithMismatchedEvent(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	h, _ := setupTestHandler(t, tx)
 
-	// password_reset以外のイベント(sign_up)の確認済みレコードを作成
+	// password_reset以外のイベント (sign_up) の確認済みレコードを作成
 	emailConfirmID := testutil.NewEmailConfirmationBuilder(t, tx).
 		WithEmail("handler-password-edit-mismatched-event@example.com").
 		WithCode("123456").
