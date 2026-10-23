@@ -130,8 +130,8 @@ github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFr
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/kisielk/sqlstruct v0.0.0-20201105191214-5f3e10d3ab46/go.mod h1:yyMNCyc/Ib3bDTKd379tNMpB/7/H5TjM2Y9QJ5THLbE=
-github.com/korylus/tools v1.4.0 h1:ZiW0efLUTjyBKwV1rCD7m58l6xPDl9hhVXLw1UZviGs=
-github.com/korylus/tools v1.4.0/go.mod h1:UwY6zM7bY1yc0TwQzqQ0bKb95cF1a064yg19OIGbXac=
+github.com/korylus/tools v1.5.0 h1:jh8mpNMbzSnOcb+PxewBmTI90wGhdw3kp3n1WCyD2Fg=
+github.com/korylus/tools v1.5.0/go.mod h1:UwY6zM7bY1yc0TwQzqQ0bKb95cF1a064yg19OIGbXac=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
