@@ -16,7 +16,7 @@ Mewstはマイクロブログサービスです。
 ├── go/                  # Go版の実装 (段階的に機能を移行中)
 ├── rails/               # Rails版の実装 (既存の本番システム)
 ├── caddy/               # リバースプロキシ設定
-├── docs/                # Mewst固有のドキュメント (ADR、作業計画書など)
+├── docs/                # ドキュメントガイドなど (ADRと作業計画書はWikinoで管理)
 ├── .github/             # 共通のCI/CD設定
 ├── Dockerfile.dev       # 統合開発コンテナのDockerfile
 ├── docker-compose.yml   # Docker Compose設定
@@ -69,7 +69,7 @@ Mewstではフィーチャーブランチではなく **フィーチャーフラ
 
 ## ドキュメント
 
-設計判断 (採用した方式・背景・採用しなかった代替案) は `docs/private/adr/` 配下のADR (Architecture Decision Record) に記録しています。
+設計判断 (採用した方式・背景・採用しなかった代替案) はADR (Architecture Decision Record) に記録し、作業計画書とともにWikinoで管理しています。
 システムの現在の状態は、仕様書ではなくコードとテストを参照してください。
 
 ## 言語・文章ルール
