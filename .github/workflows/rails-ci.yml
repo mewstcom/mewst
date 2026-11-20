@@ -28,7 +28,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/rails zeitwerk:check
@@ -44,7 +44,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/standardrb
@@ -60,7 +60,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/erb_lint --lint-all
@@ -128,7 +128,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       # スキーマはGo側が管理するため、テスト用データベースは
