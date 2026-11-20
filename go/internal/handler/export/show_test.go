@@ -19,15 +19,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// newExportHandler builds a Handler whose read path runs inside the test's
-// transaction. The start UseCase is wired for completeness but is not exercised
-// here: it opens its own transaction, so it cannot see this one, and the tests
-// that drive it commit their fixtures instead (see create_test.go).
-//
-// [Ja] newExportHandler は読み取り経路がテストの transaction 内で動く Handler を
-// 構築する。開始の UseCase は配線の完全性のために渡すが、ここでは実行しない。
-// 自身の transaction を開くためこの transaction が見えず、それを動かすテストは
-// 代わりにフィクスチャを commit するからである (create_test.go を参照)。
+// newExportHandlerは読み取り経路がテストのtransaction内で動くHandlerを
+// 構築する。開始のUseCaseは配線の完全性のために渡すが、ここでは実行しない。
+// 自身のtransactionを開くためこのtransactionが見えず、それを動かすテストは
+// 代わりにフィクスチャをcommitするからである (create_test.goを参照)。
 func newExportHandler(t *testing.T, tx *sql.Tx, storageReady bool) *export.Handler {
 	t.Helper()
 
@@ -47,13 +42,9 @@ func newExportHandler(t *testing.T, tx *sql.Tx, storageReady bool) *export.Handl
 	)
 }
 
-// newShowRequest builds a GET /settings/export request whose context carries
-// what the CSRF and RequireAuth middleware supply in production: the locale, the
-// CSRF token the start form submits, and the signed-in user and profile.
-//
-// [Ja] newShowRequest は GET /settings/export のリクエストを組み立てる。context には
-// 本番で CSRF / RequireAuth ミドルウェアが渡すもの (ロケール、開始フォームが送信する
-// CSRF トークン、ログイン中のユーザーとプロフィール) を載せる。
+// newShowRequestはGET /settings/exportのリクエストを組み立てる。contextには
+// 本番でCSRF / RequireAuthミドルウェアが渡すもの (ロケール、開始フォームが送信する
+// CSRFトークン、ログイン中のユーザーとプロフィール) を載せる。
 func newShowRequest(t *testing.T, owner testutil.ProfileOwner) *http.Request {
 	t.Helper()
 
@@ -71,7 +62,7 @@ func assertContains(t *testing.T, body string, wants []string) {
 
 	for _, want := range wants {
 		if !strings.Contains(body, want) {
-			t.Errorf("レスポンスに %q が含まれていません", want)
+			t.Errorf("レスポンスに%qが含まれていません", want)
 		}
 	}
 }
@@ -81,15 +72,12 @@ func assertNotContains(t *testing.T, body string, unwants []string) {
 
 	for _, unwant := range unwants {
 		if strings.Contains(body, unwant) {
-			t.Errorf("レスポンスに %q が含まれています", unwant)
+			t.Errorf("レスポンスに%qが含まれています", unwant)
 		}
 	}
 }
 
-// TestShow_WithoutExport pins the page a profile sees before it has ever
-// requested an export: the description, the state in text, and the start form.
-//
-// [Ja] TestShow_WithoutExport は、一度もエクスポートを申請していないプロフィールが
+// TestShow_WithoutExportは、一度もエクスポートを申請していないプロフィールが
 // 見る画面を固定する。説明、テキストによる状態、開始フォームを含む。
 func TestShow_WithoutExport(t *testing.T) {
 	t.Parallel()
@@ -102,49 +90,37 @@ func TestShow_WithoutExport(t *testing.T) {
 	h.Show(rr, newShowRequest(t, owner))
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 	if contentType := rr.Header().Get("Content-Type"); !strings.Contains(contentType, "text/html") {
-		t.Errorf("Content-Type が不正: got %v, want text/html", contentType)
+		t.Errorf("Content-Typeが不正: 実測値 = %v、期待値 = text/html", contentType)
 	}
 
 	body := rr.Body.String()
 	assertContains(t, body, []string{
 		"<h1",
 		"エクスポート",
-		"あなたのポストを月ごとの HTML ファイルにまとめた zip ファイルを作成します。作成には時間がかかることがあります。",
+		"あなたのポストを月ごとのHTMLファイルにまとめたzipファイルを作成します。作成には時間がかかることがあります。",
 		"まだエクスポートを作成していません。",
-		// The state is announced as a live region so a future in-place update is
-		// conveyed to assistive technology.
-		//
-		// [Ja] 状態はライブリージョンとして通知し、将来その場で更新するようになった
+		// 状態はライブリージョンとして通知し、将来その場で更新するようになった
 		// ときに支援技術へ伝わるようにする。
 		`role="status"`,
-		// The start action is a native submit button inside a form that carries
-		// the CSRF token, not a link or a JavaScript-driven control.
-		//
-		// [Ja] 開始操作はリンクや JavaScript 駆動の部品ではなく、CSRF トークンを
-		// 持つフォーム内のネイティブな submit ボタン。
+		// 開始操作はリンクやJavaScript駆動の部品ではなく、CSRFトークンを
+		// 持つフォーム内のネイティブなsubmitボタン。
 		`action="/settings/export"`,
 		`method="POST"`,
 		`name="csrf_token"`,
 		`value="test-csrf-token"`,
 		`<button class="btn rounded-full" type="submit">`,
 		"エクスポートする",
-		// The back affordance returns to the settings menu this page hangs off.
-		//
-		// [Ja] 戻る導線は、このページがぶら下がっている設定メニューへ戻る。
+		// 戻る導線は、このページがぶら下がっている設定メニューへ戻る。
 		`href="/settings"`,
 	})
 	assertNotContains(t, body, []string{`href="/settings/export/download"`})
 }
 
-// TestShow_English pins that the page is localized end to end: the title in the
-// document head, the description, the state message, and both action labels
-// come from the request's locale rather than from the Japanese default.
-//
-// [Ja] TestShow_English は画面が端から端まで国際化されていることを固定する。文書
-// ヘッドのタイトル、説明、状態メッセージ、2 つの操作ラベルのいずれも、日本語の
+// TestShow_Englishは画面が端から端まで国際化されていることを固定する。文書
+// ヘッドのタイトル、説明、状態メッセージ、2つの操作ラベルのいずれも、日本語の
 // 既定ではなくリクエストのロケールから来る。
 func TestShow_English(t *testing.T) {
 	t.Parallel()
@@ -166,7 +142,7 @@ func TestShow_English(t *testing.T) {
 	h.Show(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	body := rr.Body.String()
@@ -180,13 +156,9 @@ func TestShow_English(t *testing.T) {
 	assertNotContains(t, body, []string{"エクスポートの準備ができました。"})
 }
 
-// TestShow_ByState pins the state message and the actions offered for each
-// state of the latest export, including the two-row cases where a newer export
-// is in progress or failed while an earlier one still has a downloadable zip.
-//
-// [Ja] TestShow_ByState は、最新のエクスポートの状態ごとの状態メッセージと提供する
+// TestShow_ByStateは、最新のエクスポートの状態ごとの状態メッセージと提供する
 // 操作を固定する。より新しいエクスポートが進行中または失敗で、以前のものにまだ
-// ダウンロード可能な zip がある 2 行のケースも含む。
+// ダウンロード可能なzipがある2行のケースも含む。
 func TestShow_ByState(t *testing.T) {
 	t.Parallel()
 
@@ -195,9 +167,7 @@ func TestShow_ByState(t *testing.T) {
 
 	tests := []struct {
 		name string
-		// statuses are the profile's exports in creation order.
-		//
-		// [Ja] statuses は作成順に並べたプロフィールのエクスポート。
+		// statusesは作成順に並べたプロフィールのエクスポート。
 		statuses []model.ExportStatus
 		wants    []string
 		unwants  []string
@@ -268,7 +238,7 @@ func TestShow_ByState(t *testing.T) {
 			h.Show(rr, newShowRequest(t, owner))
 
 			if rr.Code != http.StatusOK {
-				t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+				t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 			}
 
 			body := rr.Body.String()
@@ -278,11 +248,7 @@ func TestShow_ByState(t *testing.T) {
 	}
 }
 
-// TestShow_StorageNotConfigured pins that a deployment without the object
-// storage says so instead of offering actions that cannot complete, even for a
-// profile whose earlier export succeeded.
-//
-// [Ja] TestShow_StorageNotConfigured は、オブジェクトストレージの無いデプロイが、
+// TestShow_StorageNotConfiguredは、オブジェクトストレージの無いデプロイが、
 // 以前のエクスポートが成功しているプロフィールに対しても、完了し得ない操作を出さずに
 // その旨を伝えることを固定する。
 func TestShow_StorageNotConfigured(t *testing.T) {
@@ -302,11 +268,11 @@ func TestShow_StorageNotConfigured(t *testing.T) {
 	h.Show(rr, newShowRequest(t, owner))
 
 	if rr.Code != http.StatusServiceUnavailable {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusServiceUnavailable)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusServiceUnavailable)
 	}
 
 	if contentType := rr.Header().Get("Content-Type"); contentType != "text/html; charset=utf-8" {
-		t.Errorf("Content-Type が不正: got %v, want text/html; charset=utf-8", contentType)
+		t.Errorf("Content-Typeが不正: 実測値 = %v、期待値 = text/html; charset=utf-8", contentType)
 	}
 
 	body := rr.Body.String()
@@ -314,12 +280,8 @@ func TestShow_StorageNotConfigured(t *testing.T) {
 	assertNotContains(t, body, []string{"エクスポートする", `href="/settings/export/download"`})
 }
 
-// TestShow_OtherProfile pins that the page refuses a profile the signed-in user
-// does not own. The refusal is the 404 page, so the response does not reveal
-// that the profile exists or that it has exports.
-//
-// [Ja] TestShow_OtherProfile は、ログイン中ユーザーが所有していないプロフィールを
-// 画面が拒否することを固定する。拒否は 404 ページで返すため、応答からそのプロフィールが
+// TestShow_OtherProfileは、ログイン中ユーザーが所有していないプロフィールを
+// 画面が拒否することを固定する。拒否は404ページで返すため、応答からそのプロフィールが
 // 存在することや、エクスポートを持つことは分からない。
 func TestShow_OtherProfile(t *testing.T) {
 	t.Parallel()
@@ -336,19 +298,15 @@ func TestShow_OtherProfile(t *testing.T) {
 		WithObjectKey("exports/" + owner.ProfileID.String() + "/secret.zip").
 		Build()
 
-	// Put the other user and the owner's profile in the request context to verify
-	// that the use case checks the current ownership relation instead of trusting
-	// the profile supplied by middleware.
-	//
-	// [Ja] 別のユーザーと所有者のプロフィールを request Context に組み合わせて入れ、
-	// Usecase がミドルウェアから渡されたプロフィールを信頼せず、現在の所有関係を
+	// 別のユーザーと所有者のプロフィールをrequest Contextに組み合わせて入れ、
+	// Usecaseがミドルウェアから渡されたプロフィールを信頼せず、現在の所有関係を
 	// 検証することを確認する。
 	req := newShowRequest(t, testutil.ProfileOwner{UserID: other.UserID, ProfileID: owner.ProfileID})
 	rr := httptest.NewRecorder()
 	h.Show(rr, req)
 
 	if rr.Code != http.StatusNotFound {
-		t.Fatalf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusNotFound)
+		t.Fatalf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusNotFound)
 	}
 
 	body := rr.Body.String()
@@ -359,20 +317,12 @@ func TestShow_OtherProfile(t *testing.T) {
 	})
 }
 
-// TestShow_WithoutSession pins that the handler refuses to read exports when the
-// context is missing either the signed-in user or the profile, which can only
-// happen if the route is wired without RequireAuth. The user check
-// short-circuits the guard, so a profile missing on its own needs its own case.
-//
-// The injected user carries no ID because the guard refuses before any export is
-// read, so no row has to exist for it.
-//
-// [Ja] TestShow_WithoutSession は、context にログイン中ユーザーとプロフィールの
+// TestShow_WithoutSessionは、contextにログイン中ユーザーとプロフィールの
 // どちらかが無いとき、ハンドラーがエクスポートを読まずに失敗することを固定する。
-// これは RequireAuth 無しでルートを登録した場合にだけ起こりうる。ユーザーの判定で
+// これはRequireAuth無しでルートを登録した場合にだけ起こりうる。ユーザーの判定で
 // ガードが短絡するため、プロフィールだけが欠けた場合は別のケースとして与える。
 //
-// 注入するユーザーが ID を持たないのは、ガードがエクスポートを読む前に拒否するため、
+// 注入するユーザーがIDを持たないのは、ガードがエクスポートを読む前に拒否するため、
 // 対応する行が存在する必要が無いからである。
 func TestShow_WithoutSession(t *testing.T) {
 	t.Parallel()
@@ -407,7 +357,7 @@ func TestShow_WithoutSession(t *testing.T) {
 			h.Show(rr, req)
 
 			if rr.Code != http.StatusInternalServerError {
-				t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusInternalServerError)
+				t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusInternalServerError)
 			}
 		})
 	}

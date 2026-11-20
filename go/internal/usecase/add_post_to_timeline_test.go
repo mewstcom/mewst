@@ -39,7 +39,7 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 		)
 
 		if err := uc.Execute(ctx, usecase.AddPostToTimelineInput{ProfileID: profileID, PostID: postID}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		var gotPublishedAt time.Time
@@ -48,12 +48,11 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 			uuid.UUID(profileID), uuid.UUID(postID),
 		).Scan(&gotPublishedAt)
 		if err != nil {
-			t.Fatalf("home_timeline_posts の取得に失敗: %v", err)
+			t.Fatalf("home_timeline_postsの取得に失敗: %v", err)
 		}
-		// The timeline entry must copy the post's published_at.
-		// [Ja] タイムラインのエントリは投稿の published_at を複製していること。
+		// タイムラインのエントリは投稿のpublished_atを複製していること。
 		if !gotPublishedAt.Equal(publishedAt) {
-			t.Errorf("published_at = %v, want %v", gotPublishedAt, publishedAt)
+			t.Errorf("published_at = %v、期待値 = %v", gotPublishedAt, publishedAt)
 		}
 	})
 
@@ -79,10 +78,10 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 
 		input := usecase.AddPostToTimelineInput{ProfileID: profileID, PostID: postID}
 		if err := uc.Execute(ctx, input); err != nil {
-			t.Fatalf("Execute() (1回目) error = %v", err)
+			t.Fatalf("Execute() (1回目)のエラー = %v", err)
 		}
 		if err := uc.Execute(ctx, input); err != nil {
-			t.Fatalf("Execute() (2回目) error = %v", err)
+			t.Fatalf("Execute() (2回目)のエラー = %v", err)
 		}
 
 		var count int
@@ -91,14 +90,14 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 			uuid.UUID(profileID), uuid.UUID(postID),
 		).Scan(&count)
 		if err != nil {
-			t.Fatalf("home_timeline_posts の件数取得に失敗: %v", err)
+			t.Fatalf("home_timeline_postsの件数取得に失敗: %v", err)
 		}
 		if count != 1 {
-			t.Errorf("home_timeline_posts の件数 = %d, want 1", count)
+			t.Errorf("home_timeline_postsの件数 = %d、期待値 = 1", count)
 		}
 	})
 
-	t.Run("discard 済みフォロワーには追加しない", func(t *testing.T) {
+	t.Run("discard済みフォロワーには追加しない", func(t *testing.T) {
 		t.Parallel()
 
 		_, tx := testutil.SetupTx(t)
@@ -120,10 +119,9 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 			repository.NewHomeTimelinePostRepository(testutil.QueriesWithTx(tx)),
 		)
 
-		// A discarded follower must be skipped without error (Rails kept.find guard).
-		// [Ja] discard 済みフォロワーはエラーなくスキップされること (Rails の kept.find ガード)。
+		// discard済みフォロワーはエラーなくスキップされること (Railsのkept.findガード)。
 		if err := uc.Execute(ctx, usecase.AddPostToTimelineInput{ProfileID: discardedProfileID, PostID: postID}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 
 		var count int
@@ -132,10 +130,10 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 			uuid.UUID(discardedProfileID), uuid.UUID(postID),
 		).Scan(&count)
 		if err != nil {
-			t.Fatalf("home_timeline_posts の件数取得に失敗: %v", err)
+			t.Fatalf("home_timeline_postsの件数取得に失敗: %v", err)
 		}
 		if count != 0 {
-			t.Errorf("home_timeline_posts の件数 = %d, want 0", count)
+			t.Errorf("home_timeline_postsの件数 = %d、期待値 = 0", count)
 		}
 	})
 
@@ -159,7 +157,7 @@ func TestAddPostToTimelineUsecase_Execute(t *testing.T) {
 		)
 
 		if err := uc.Execute(ctx, usecase.AddPostToTimelineInput{ProfileID: model.ProfileID(uuid.New()), PostID: postID}); err != nil {
-			t.Fatalf("Execute() error = %v", err)
+			t.Fatalf("Execute()のエラー = %v", err)
 		}
 	})
 }

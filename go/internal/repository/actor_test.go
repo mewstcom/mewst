@@ -33,17 +33,17 @@ func TestActorRepository_FindByID(t *testing.T) {
 	t.Run("存在するアクターを取得できる", func(t *testing.T) {
 		actor, err := repo.FindByID(ctx, actorID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 
 		if actor.ID != actorID {
-			t.Errorf("actor.ID = %v, want %v", actor.ID, actorID)
+			t.Errorf("actor.ID = %v、期待値 = %v", actor.ID, actorID)
 		}
 		if actor.UserID != userID {
-			t.Errorf("actor.UserID = %v, want %v", actor.UserID, userID)
+			t.Errorf("actor.UserID = %v、期待値 = %v", actor.UserID, userID)
 		}
 		if actor.ProfileID != profileID {
-			t.Errorf("actor.ProfileID = %v, want %v", actor.ProfileID, profileID)
+			t.Errorf("actor.ProfileID = %v、期待値 = %v", actor.ProfileID, profileID)
 		}
 	})
 
@@ -68,10 +68,10 @@ func TestActorRepository_FindByID(t *testing.T) {
 
 		actor, err := repo.FindByID(ctx, tempActorID)
 		if err != nil {
-			t.Errorf("FindByID() error = %v, want nil", err)
+			t.Errorf("FindByID()のエラー = %v、期待値 = nil", err)
 		}
 		if actor != nil {
-			t.Errorf("FindByID() actor = %v, want nil", actor)
+			t.Errorf("FindByID()のactor = %v、期待値 = nil", actor)
 		}
 	})
 }
@@ -99,17 +99,17 @@ func TestActorRepository_FindByUserID(t *testing.T) {
 	t.Run("存在するアクターをユーザーIDで取得できる", func(t *testing.T) {
 		actor, err := repo.FindByUserID(ctx, userID)
 		if err != nil {
-			t.Fatalf("FindByUserID() error = %v", err)
+			t.Fatalf("FindByUserID()のエラー = %v", err)
 		}
 
 		if actor.ID != actorID {
-			t.Errorf("actor.ID = %v, want %v", actor.ID, actorID)
+			t.Errorf("actor.ID = %v、期待値 = %v", actor.ID, actorID)
 		}
 		if actor.UserID != userID {
-			t.Errorf("actor.UserID = %v, want %v", actor.UserID, userID)
+			t.Errorf("actor.UserID = %v、期待値 = %v", actor.UserID, userID)
 		}
 		if actor.ProfileID != profileID {
-			t.Errorf("actor.ProfileID = %v, want %v", actor.ProfileID, profileID)
+			t.Errorf("actor.ProfileID = %v、期待値 = %v", actor.ProfileID, profileID)
 		}
 	})
 
@@ -121,10 +121,10 @@ func TestActorRepository_FindByUserID(t *testing.T) {
 
 		actor, err := repo.FindByUserID(ctx, noActorUserID)
 		if err != nil {
-			t.Errorf("FindByUserID() error = %v, want nil", err)
+			t.Errorf("FindByUserID()のエラー = %v、期待値 = nil", err)
 		}
 		if actor != nil {
-			t.Errorf("FindByUserID() actor = %v, want nil", actor)
+			t.Errorf("FindByUserID()のactor = %v、期待値 = nil", actor)
 		}
 	})
 }

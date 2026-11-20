@@ -1,4 +1,4 @@
-// Package viewmodel はプレゼンテーション層のデータ変換を担当するパッケージ
+// Package viewmodelはプレゼンテーション層のデータ変換を担当するパッケージ
 package viewmodel
 
 import (
@@ -11,7 +11,7 @@ import (
 // サイト名のサフィックス
 const siteSuffix = " | Mewst"
 
-// PageMeta はページのメタ情報を保持する構造体
+// PageMetaはページのメタ情報を保持する構造体
 type PageMeta struct {
 	Title        string // ページタイトル (<title>タグ、og:title用)
 	Description  string // ページ説明 (descriptionメタタグ、og:description用)
@@ -22,7 +22,7 @@ type PageMeta struct {
 	OGLocale     string // og:localeの値 ("ja_JP", "en_US"など)
 }
 
-// DefaultPageMeta はデフォルトのメタ情報を返す
+// DefaultPageMetaはデフォルトのメタ情報を返す
 // コンテキストから検出された言語に応じて、タイトルと説明が自動的に切り替わる
 // Titleには自動的に " | Mewst" サフィックスが付加される
 func DefaultPageMeta(ctx context.Context, cfg *config.Config) PageMeta {
@@ -40,7 +40,7 @@ func DefaultPageMeta(ctx context.Context, cfg *config.Config) PageMeta {
 	}
 }
 
-// ogLocaleFromLocale はロケール文字列からOGP用のロケール文字列に変換する
+// ogLocaleFromLocaleはロケール文字列からOGP用のロケール文字列に変換する
 func ogLocaleFromLocale(locale string) string {
 	switch locale {
 	case "ja":
@@ -52,19 +52,19 @@ func ogLocaleFromLocale(locale string) string {
 	}
 }
 
-// SetTitle はタイトルを設定する (" | Mewst" サフィックス付き)
+// SetTitleはタイトルを設定する (" | Mewst" サフィックス付き)
 // 通常のページで使用する
 func (p *PageMeta) SetTitle(ctx context.Context, titleKey string) {
 	p.Title = i18n.T(ctx, titleKey) + siteSuffix
 }
 
-// SetTitleWithoutSuffix はタイトルを設定する (サフィックスなし)
+// SetTitleWithoutSuffixはタイトルを設定する (サフィックスなし)
 // トップページなど、サフィックスが不要なページで使用する
 func (p *PageMeta) SetTitleWithoutSuffix(ctx context.Context, titleKey string) {
 	p.Title = i18n.T(ctx, titleKey)
 }
 
-// SetOGURL はOGURLを設定する
+// SetOGURLはOGURLを設定する
 // pathにはクエリパラメータを除いたパスを指定する (canonical URLとして適切な形式)
 func (p *PageMeta) SetOGURL(cfg *config.Config, path string) {
 	p.OGURL = cfg.AppURL() + path

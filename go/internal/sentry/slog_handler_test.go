@@ -13,8 +13,8 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
-// slogFakeTransport は sentry.Transport の実装で、送信されたイベントをすべて記録する。
-// slog_handler_test 専用に閉じておくため、既存の sentry_test.go の構造体名と被らない名前にする。
+// slogFakeTransportはsentry.Transportの実装で、送信されたイベントをすべて記録する。
+// slog_handler_test専用に閉じておくため、既存のsentry_test.goの構造体名と被らない名前にする。
 type slogFakeTransport struct {
 	mu     sync.Mutex
 	events []*sentry.Event
@@ -42,20 +42,14 @@ func (t *slogFakeTransport) Events() []*sentry.Event {
 	return out
 }
 
-// newSlogTestHub returns an isolated Hub and fake transport for a test.
-//
-// [Ja] テストごとに独立した Hub と fake transport を返す。
+// テストごとに独立したHubとfake transportを返す。
 func newSlogTestHub(t *testing.T) (*sentry.Hub, *slogFakeTransport) {
 	t.Helper()
 	return newSlogTestHubWithBeforeSend(t, nil)
 }
 
-// newSlogTestHubWithBeforeSend returns an isolated test Hub configured with
-// the supplied BeforeSend callback. It never calls the global sentry.Init, so
-// parallel tests cannot interfere through global Sentry state.
-//
-// [Ja] 指定された BeforeSend callback を設定した独立テスト用 Hub を返す。
-// グローバルな sentry.Init は呼ばないため、並行テスト間で Sentry のグローバル状態を
+// 指定されたBeforeSend callbackを設定した独立テスト用Hubを返す。
+// グローバルなsentry.Initは呼ばないため、並行テスト間でSentryのグローバル状態を
 // 介した干渉は起きない。
 func newSlogTestHubWithBeforeSend(
 	t *testing.T,
@@ -65,20 +59,20 @@ func newSlogTestHubWithBeforeSend(
 
 	transport := &slogFakeTransport{}
 	client, err := sentry.NewClient(sentry.ClientOptions{
-		// 有効な DSN を渡さないと client がイベントを処理しないため、ダミー DSN を設定する
+		// 有効なDSNを渡さないとclientがイベントを処理しないため、ダミーDSNを設定する
 		Dsn:         "https://public@example.com/1",
 		Transport:   transport,
 		Environment: "test",
 		BeforeSend:  beforeSend,
 	})
 	if err != nil {
-		t.Fatalf("sentry.NewClient() error = %v", err)
+		t.Fatalf("sentry.NewClient()のエラー = %v", err)
 	}
 	return sentry.NewHub(client, sentry.NewScope()), transport
 }
 
-// newSlogLogger は base ハンドラー (バッファ書き込み) と Sentry ハンドラーを合成した logger を返す。
-// バッファをアサーションで確認することで、base ハンドラーに「常に」ログが届くことを検証できる。
+// newSlogLoggerはbaseハンドラー (バッファ書き込み) とSentryハンドラーを合成したloggerを返す。
+// バッファをアサーションで確認することで、baseハンドラーに「常に」ログが届くことを検証できる。
 func newSlogLogger() (*slog.Logger, *bytes.Buffer) {
 	var buf bytes.Buffer
 	base := slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo})
@@ -91,37 +85,34 @@ func TestSlogHandler_ErrorIsCapturedToSentry(t *testing.T) {
 	hub, transport := newSlogTestHub(t)
 	logger, buf := newSlogLogger()
 
-	// Putting a test hub on the context makes the Sentry handler capture the
-	// event onto that hub.
-	//
-	// [Ja] context にテスト用 Hub を載せると、Sentry ハンドラーがその Hub に
-	// event をキャプチャする。
+	// contextにテスト用Hubを載せると、SentryハンドラーがそのHubに
+	// eventをキャプチャする。
 	ctx := sentry.SetHubOnContext(context.Background(), hub)
 	logger.ErrorContext(ctx, "テストエラー", "key", "value")
 
-	// base ハンドラーには通常通りログが書き込まれる
+	// baseハンドラーには通常通りログが書き込まれる
 	if !strings.Contains(buf.String(), "テストエラー") {
-		t.Errorf("base ハンドラーにエラーログが書かれていない: got %q", buf.String())
+		t.Errorf("baseハンドラーにエラーログが書かれていない: 実測値 = %q", buf.String())
 	}
 
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("Sentry に送信されたイベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("Sentryに送信されたイベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	if events[0].Level != sentry.LevelError {
-		t.Errorf("Sentry イベントの Level が期待と異なる: got %q, want %q", events[0].Level, sentry.LevelError)
+		t.Errorf("SentryイベントのLevelが期待と異なる: 実測値 = %q、期待値 = %q", events[0].Level, sentry.LevelError)
 	}
 	if events[0].Message != "テストエラー" {
-		t.Errorf("Sentry イベントの Message が期待と異なる: got %q, want %q", events[0].Message, "テストエラー")
+		t.Errorf("SentryイベントのMessageが期待と異なる: 実測値 = %q、期待値 = %q", events[0].Message, "テストエラー")
 	}
 	if events[0].Logger != "slog" {
-		t.Errorf("Sentry イベントの Logger が期待と異なる: got %q, want %q", events[0].Logger, "slog")
+		t.Errorf("SentryイベントのLoggerが期待と異なる: 実測値 = %q、期待値 = %q", events[0].Logger, "slog")
 	}
 	if got := events[0].Tags["key"]; got != "value" {
-		t.Errorf("Sentry イベントの key タグが期待と異なる: got %q, want %q", got, "value")
+		t.Errorf("Sentryイベントのkeyタグが期待と異なる: 実測値 = %q、期待値 = %q", got, "value")
 	}
 	if len(events[0].Exception) != 0 {
-		t.Errorf("error 属性がないログには Exception がないはず: got %+v", events[0].Exception)
+		t.Errorf("error属性がないログにはExceptionがないはず: 実測値 = %+v", events[0].Exception)
 	}
 }
 
@@ -144,28 +135,28 @@ func TestSlogHandler_ErrorAttributeIsCapturedAsException(t *testing.T) {
 
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("Sentry に送信されたイベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("Sentryに送信されたイベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	if len(events[0].Exception) != 1 {
-		t.Fatalf("Sentry イベントの Exception 数が期待と異なる: got %d, want 1", len(events[0].Exception))
+		t.Fatalf("SentryイベントのException数が期待と異なる: 実測値 = %d、期待値 = 1", len(events[0].Exception))
 	}
 	if got := events[0].Exception[0].Value; got != loggedErr.Error() {
-		t.Errorf("Sentry Exception の値が期待と異なる: got %q, want %q", got, loggedErr.Error())
+		t.Errorf("Sentry Exceptionの値が期待と異なる: 実測値 = %q、期待値 = %q", got, loggedErr.Error())
 	}
 	if _, ok := events[0].Tags["error"]; ok {
-		t.Error("例外へ変換した error 属性をタグにも残してはならない")
+		t.Error("例外へ変換したerror属性をタグにも残してはならない")
 	}
 	if got := events[0].Tags["request_id"]; got != "req-123" {
-		t.Errorf("Sentry イベントの request_id タグが期待と異なる: got %q, want %q", got, "req-123")
+		t.Errorf("Sentryイベントのrequest_idタグが期待と異なる: 実測値 = %q、期待値 = %q", got, "req-123")
 	}
 	if capturedHint == nil {
-		t.Fatal("BeforeSend に EventHint が渡されていない")
+		t.Fatal("BeforeSendにEventHintが渡されていない")
 	}
 	if !errors.Is(capturedHint.OriginalException, loggedErr) {
-		t.Errorf("EventHint の OriginalException が期待と異なる: got %v, want %v", capturedHint.OriginalException, loggedErr)
+		t.Errorf("EventHintのOriginalExceptionが期待と異なる: 実測値 = %v、期待値 = %v", capturedHint.OriginalException, loggedErr)
 	}
 	if capturedHint.Context != ctx {
-		t.Error("EventHint にログの context が引き継がれていない")
+		t.Error("EventHintにログのcontextが引き継がれていない")
 	}
 }
 
@@ -179,7 +170,7 @@ func TestSlogHandler_IgnorableExceptionIsDroppedByBeforeSend(t *testing.T) {
 	logger.ErrorContext(ctx, "クライアント切断", "error", context.Canceled)
 
 	if got := len(transport.Events()); got != 0 {
-		t.Errorf("無視対象の例外は BeforeSend で破棄されるべき: got %d events", got)
+		t.Errorf("無視対象の例外はBeforeSendで破棄されるべき: 実測値 = %d件のイベント", got)
 	}
 }
 
@@ -192,17 +183,15 @@ func TestSlogHandler_InfoIsNotCapturedToSentry(t *testing.T) {
 	ctx := sentry.SetHubOnContext(context.Background(), hub)
 	logger.InfoContext(ctx, "テスト情報", "key", "value")
 
-	// base ハンドラーには Info ログが書き込まれる
+	// baseハンドラーにはInfoログが書き込まれる
 	if !strings.Contains(buf.String(), "テスト情報") {
-		t.Errorf("base ハンドラーに Info ログが書かれていない: got %q", buf.String())
+		t.Errorf("baseハンドラーにInfoログが書かれていない: 実測値 = %q", buf.String())
 	}
 
-	// Not sent to Sentry: only error and above are captured.
-	//
-	// [Ja] Sentry には送信されない (error 以上のみをキャプチャするため)。
+	// Sentryには送信されない (error以上のみをキャプチャするため)。
 	events := transport.Events()
 	if len(events) != 0 {
-		t.Errorf("Info レベルでは Sentry に送信されないはず: got %d events", len(events))
+		t.Errorf("InfoレベルではSentryに送信されないはず: 実測値 = %d件のイベント", len(events))
 	}
 }
 
@@ -216,17 +205,14 @@ func TestSlogHandler_WarnIsNotCapturedToSentry(t *testing.T) {
 	logger.WarnContext(ctx, "テスト警告")
 
 	if !strings.Contains(buf.String(), "テスト警告") {
-		t.Errorf("base ハンドラーに Warn ログが書かれていない: got %q", buf.String())
+		t.Errorf("baseハンドラーにWarnログが書かれていない: 実測値 = %q", buf.String())
 	}
 
-	// Warn is below error, so it is not sent to Sentry. This guards the policy
-	// that warning logs are operational noise and should not become issues.
-	//
-	// [Ja] Warn は error 未満のため Sentry には送らない。「警告ログは運用上の
-	// ノイズなので Sentry に流さない」というポリシーを担保する。
+	// Warnはerror未満のためSentryには送らない。「警告ログは運用上の
+	// ノイズなのでSentryに流さない」というポリシーを担保する。
 	events := transport.Events()
 	if len(events) != 0 {
-		t.Errorf("Warn レベルでは Sentry に送信されないはず: got %d events", len(events))
+		t.Errorf("WarnレベルではSentryに送信されないはず: 実測値 = %d件のイベント", len(events))
 	}
 }
 
@@ -237,35 +223,35 @@ func TestSlogHandler_WithAttrs_PropagatesToBothHandlers(t *testing.T) {
 
 	var buf bytes.Buffer
 	base := slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo})
-	// `slog.With(...)` は内部で Handler.WithAttrs を呼ぶ。これが multiHandler 経由で
-	// base / sentry の両方に伝播することを担保する。
+	// `slog.With(...)` は内部でHandler.WithAttrsを呼ぶ。これがmultiHandler経由で
+	// base / sentryの両方に伝播することを担保する。
 	logger := slog.New(NewSlogHandler(base)).With("service", "test", "request_id", "req-123")
 
 	ctx := sentry.SetHubOnContext(context.Background(), hub)
 	logger.ErrorContext(ctx, "属性付きエラー")
 
-	// base ハンドラーには WithAttrs で設定した属性が反映される
+	// baseハンドラーにはWithAttrsで設定した属性が反映される
 	output := buf.String()
 	if !strings.Contains(output, `service=test`) {
-		t.Errorf("base ハンドラーに service 属性が反映されていない: got %q", output)
+		t.Errorf("baseハンドラーにservice属性が反映されていない: 実測値 = %q", output)
 	}
 	if !strings.Contains(output, `request_id=req-123`) {
-		t.Errorf("base ハンドラーに request_id 属性が反映されていない: got %q", output)
+		t.Errorf("baseハンドラーにrequest_id属性が反映されていない: 実測値 = %q", output)
 	}
 
-	// Sentry にもイベントが届く
+	// Sentryにもイベントが届く
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("Sentry に送信されたイベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("Sentryに送信されたイベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	if events[0].Message != "属性付きエラー" {
-		t.Errorf("Sentry イベントの Message が期待と異なる: got %q, want %q", events[0].Message, "属性付きエラー")
+		t.Errorf("SentryイベントのMessageが期待と異なる: 実測値 = %q、期待値 = %q", events[0].Message, "属性付きエラー")
 	}
 	if got := events[0].Tags["service"]; got != "test" {
-		t.Errorf("Sentry イベントの service タグが期待と異なる: got %q, want %q", got, "test")
+		t.Errorf("Sentryイベントのserviceタグが期待と異なる: 実測値 = %q、期待値 = %q", got, "test")
 	}
 	if got := events[0].Tags["request_id"]; got != "req-123" {
-		t.Errorf("Sentry イベントの request_id タグが期待と異なる: got %q, want %q", got, "req-123")
+		t.Errorf("Sentryイベントのrequest_idタグが期待と異なる: 実測値 = %q、期待値 = %q", got, "req-123")
 	}
 }
 
@@ -282,13 +268,13 @@ func TestSlogHandler_ErrorAttributeFromWithAttrsIsCapturedAsException(t *testing
 
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("Sentry に送信されたイベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("Sentryに送信されたイベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	if len(events[0].Exception) != 1 {
-		t.Fatalf("WithAttrs の error 属性が Exception へ変換されていない: got %+v", events[0].Exception)
+		t.Fatalf("WithAttrsのerror属性がExceptionへ変換されていない: 実測値 = %+v", events[0].Exception)
 	}
 	if got := events[0].Exception[0].Value; got != loggedErr.Error() {
-		t.Errorf("Sentry Exception の値が期待と異なる: got %q, want %q", got, loggedErr.Error())
+		t.Errorf("Sentry Exceptionの値が期待と異なる: 実測値 = %q、期待値 = %q", got, loggedErr.Error())
 	}
 }
 
@@ -309,7 +295,7 @@ func TestSlogHandler_WithGroupFlattensTags(t *testing.T) {
 
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("Sentry に送信されたイベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("Sentryに送信されたイベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	wantTags := map[string]string{
 		"http.method":             "POST",
@@ -318,7 +304,7 @@ func TestSlogHandler_WithGroupFlattensTags(t *testing.T) {
 	}
 	for key, want := range wantTags {
 		if got := events[0].Tags[key]; got != want {
-			t.Errorf("Sentry イベントの %s タグが期待と異なる: got %q, want %q", key, got, want)
+			t.Errorf("Sentryイベントの%sタグが期待と異なる: 実測値 = %q、期待値 = %q", key, got, want)
 		}
 	}
 }
@@ -340,7 +326,7 @@ func TestSentryLevel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := sentryLevel(tt.level); got != tt.want {
-				t.Errorf("sentryLevel() = %q, want %q", got, tt.want)
+				t.Errorf("sentryLevel() = %q、期待値 = %q", got, tt.want)
 			}
 		})
 	}
@@ -349,21 +335,21 @@ func TestSentryLevel(t *testing.T) {
 func TestSlogHandler_HubFromContext_PrefersRequestHub(t *testing.T) {
 	t.Parallel()
 
-	// 2 つの独立した Hub を用意し、ctx に bind した Hub にだけイベントが届くことを担保する。
-	// これにより「リクエストごとに別々の Hub にイベントが分離される」挙動 (sentryhttp 経由のリクエスト Hub) を再現する。
+	// 2つの独立したHubを用意し、ctxにbindしたHubにだけイベントが届くことを担保する。
+	// これにより「リクエストごとに別々のHubにイベントが分離される」挙動 (sentryhttp経由のリクエストHub) を再現する。
 	hubA, transportA := newSlogTestHub(t)
 	_, transportB := newSlogTestHub(t)
 
 	logger, _ := newSlogLogger()
 
-	// hubA のみを ctx に bind する。
+	// hubAのみをctxにbindする。
 	ctx := sentry.SetHubOnContext(context.Background(), hubA)
 	logger.ErrorContext(ctx, "hubA に届くべきエラー")
 
 	if len(transportA.Events()) != 1 {
-		t.Errorf("hubA に紐付いた transport にエラーが届かなかった: got %d events", len(transportA.Events()))
+		t.Errorf("hubAに紐付いたtransportにエラーが届かなかった: 実測値 = %d件のイベント", len(transportA.Events()))
 	}
 	if len(transportB.Events()) != 0 {
-		t.Errorf("hubB は ctx に bind されていないため何も届かないはず: got %d events", len(transportB.Events()))
+		t.Errorf("hubBはctxにbindされていないため何も届かないはず: 実測値 = %d件のイベント", len(transportB.Events()))
 	}
 }

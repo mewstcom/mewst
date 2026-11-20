@@ -14,21 +14,15 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// DefaultLayoutData holds the data passed to the authenticated shared layout.
-// Navbar carries the current user's atname and the active menu item.
-//
-// [Ja] 認証後ページ共通レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
-// atname とアクティブなメニュー項目を保持する。
+// DefaultLayoutDataは認証後ページ共通レイアウトに渡すデータ構造体。Navbarは現在ユーザーの
+// atnameとアクティブなメニュー項目を保持する。
 type DefaultLayoutData struct {
 	Meta   viewmodel.PageMeta
 	Navbar viewmodel.Navbar
 }
 
-// Default is the shared layout for authenticated pages: head, top navbar, main
-// content, shared footer, and the mobile bottom navbar.
-//
-// [Ja] 認証後ページの共通レイアウト。head・トップ navbar・main コンテンツ・
-// 共通フッター・モバイル用ボトム navbar で構成する。
+// Defaultは認証後ページの共通レイアウト。head・トップnavbar・mainコンテンツ・
+// 共通フッター・モバイル用ボトムnavbarで構成する。
 func Default(data DefaultLayoutData, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -57,7 +51,7 @@ func Default(data DefaultLayoutData, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.Locale(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/default.templ`, Line: 28, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/default.templ`, Line: 22, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {

@@ -2,11 +2,8 @@ package components
 
 import "github.com/mewstcom/mewst/go/internal/templates"
 
-// BasicFooter renders the shared footer for authenticated pages. It contains a
-// wordmark link to the site root and four navigation links.
-//
-// [Ja] BasicFooter は認証後ページ共通のフッターを描画する。サイトルートへの
-// ワードマークリンクと 4 つのナビゲーションリンクで構成する。
+// BasicFooterは認証後ページ共通のフッターを描画する。サイトルートへの
+// ワードマークリンクと4つのナビゲーションリンクで構成する。
 templ BasicFooter() {
 	<footer class="mx-auto w-full max-w-2xl px-4 py-4">
 		<div class="flex flex-col gap-2">
@@ -26,10 +23,7 @@ templ BasicFooter() {
 	</footer>
 }
 
-// footerLink renders a footer link that opens in a new tab. A localized,
-// visually hidden hint announces this behavior to assistive technology.
-//
-// [Ja] footerLink は新規タブで開くフッターリンクを描画する。この動作を
+// footerLinkは新規タブで開くフッターリンクを描画する。この動作を
 // 支援技術へ伝える、ローカライズ済みで視覚的に隠したヒントを付ける。
 templ footerLink(href string, label string) {
 	<a

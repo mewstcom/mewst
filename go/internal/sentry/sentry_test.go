@@ -23,7 +23,7 @@ func TestInit_EmptyDSN(t *testing.T) {
 	}
 
 	if err := Init(cfg); err != nil {
-		t.Errorf("Init() with empty DSN should return nil, got %v", err)
+		t.Errorf("DSNが空のときのInit()のエラー = %v、期待値 = nil", err)
 	}
 }
 
@@ -40,14 +40,14 @@ func TestInit_InvalidDSN(t *testing.T) {
 	}
 
 	if err := Init(cfg); err == nil {
-		t.Error("Init() with invalid DSN should return error")
+		t.Error("不正なDSNでInit()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
 func TestInit_EmptyRelease(t *testing.T) {
 	t.Parallel()
 
-	// Release が空でも空 DSN ならエラーにならない (Release は Sentry SDK 側で省略扱いになる)
+	// Releaseが空でも空DSNならエラーにならない (ReleaseはSentry SDK側で省略扱いになる)
 	cfg := Config{
 		DSN:              "",
 		Environment:      "test",
@@ -57,7 +57,7 @@ func TestInit_EmptyRelease(t *testing.T) {
 	}
 
 	if err := Init(cfg); err != nil {
-		t.Errorf("Init() with empty Release and empty DSN should return nil, got %v", err)
+		t.Errorf("ReleaseとDSNが空のときのInit()のエラー = %v、期待値 = nil", err)
 	}
 }
 
@@ -159,12 +159,12 @@ func TestBeforeSend_FiltersRequestHeaders(t *testing.T) {
 
 			result := beforeSend(event, nil)
 			if result == nil {
-				t.Fatal("beforeSend は通常イベントを破棄してはならない")
+				t.Fatal("beforeSendは通常イベントを破棄してはならない")
 			}
 
 			for key, expectedValue := range tt.expected {
 				if result.Request.Headers[key] != expectedValue {
-					t.Errorf("ヘッダー %s: got %q, want %q", key, result.Request.Headers[key], expectedValue)
+					t.Errorf("ヘッダー%s: 実測値 = %q、期待値 = %q", key, result.Request.Headers[key], expectedValue)
 				}
 			}
 		})
@@ -228,11 +228,11 @@ func TestBeforeSend_FiltersRequestData(t *testing.T) {
 
 			result := beforeSend(event, nil)
 			if result == nil {
-				t.Fatal("beforeSend は通常イベントを破棄してはならない")
+				t.Fatal("beforeSendは通常イベントを破棄してはならない")
 			}
 
 			if result.Request.Data != tt.expected {
-				t.Errorf("Data: got %q, want %q", result.Request.Data, tt.expected)
+				t.Errorf("Data: 実測値 = %q、期待値 = %q", result.Request.Data, tt.expected)
 			}
 		})
 	}
@@ -290,11 +290,11 @@ func TestBeforeSend_FiltersQueryString(t *testing.T) {
 
 			result := beforeSend(event, nil)
 			if result == nil {
-				t.Fatal("beforeSend は通常イベントを破棄してはならない")
+				t.Fatal("beforeSendは通常イベントを破棄してはならない")
 			}
 
 			if result.Request.QueryString != tt.expected {
-				t.Errorf("QueryString: got %q, want %q", result.Request.QueryString, tt.expected)
+				t.Errorf("QueryString: 実測値 = %q、期待値 = %q", result.Request.QueryString, tt.expected)
 			}
 		})
 	}
@@ -303,11 +303,8 @@ func TestBeforeSend_FiltersQueryString(t *testing.T) {
 func TestBeforeSend_FiltersTags(t *testing.T) {
 	t.Parallel()
 
-	// Tags are populated from slog attributes via sentryslog, so PII logged as
-	// a structured attribute (e.g. "email") must be masked here.
-	//
-	// [Ja] タグには sentryslog 経由で slog 属性が乗るため、構造化属性として
-	// ログに載った PII (例: "email") がここでマスクされることを検証する。
+	// タグにはsentryslog経由でslog属性が乗るため、構造化属性として
+	// ログに載ったPII (例: "email") がここでマスクされることを検証する。
 	tests := []struct {
 		name     string
 		tags     map[string]string
@@ -376,12 +373,12 @@ func TestBeforeSend_FiltersTags(t *testing.T) {
 
 			result := beforeSend(event, nil)
 			if result == nil {
-				t.Fatal("beforeSend は通常イベントを破棄してはならない")
+				t.Fatal("beforeSendは通常イベントを破棄してはならない")
 			}
 
 			for key, expectedValue := range tt.expected {
 				if result.Tags[key] != expectedValue {
-					t.Errorf("タグ %s: got %q, want %q", key, result.Tags[key], expectedValue)
+					t.Errorf("タグ%s: 実測値 = %q、期待値 = %q", key, result.Tags[key], expectedValue)
 				}
 			}
 		})
@@ -407,7 +404,7 @@ func TestBeforeSend_HandlesNilRequest(t *testing.T) {
 
 	result := beforeSend(event, nil)
 	if result == nil {
-		t.Fatal("beforeSend は通常イベントを破棄してはならない")
+		t.Fatal("beforeSendは通常イベントを破棄してはならない")
 	}
 
 	if result.Request != nil {
@@ -426,11 +423,11 @@ func TestBeforeSend_HandlesInvalidData(t *testing.T) {
 
 	result := beforeSend(event, nil)
 	if result == nil {
-		t.Fatal("beforeSend は通常イベントを破棄してはならない")
+		t.Fatal("beforeSendは通常イベントを破棄してはならない")
 	}
 
 	if result.Request.Data != "[FILTERED]" {
-		t.Errorf("無効なデータは[FILTERED]であるべき: got %q", result.Request.Data)
+		t.Errorf("無効なデータは[FILTERED]であるべき: 実測値 = %q", result.Request.Data)
 	}
 }
 
@@ -469,7 +466,7 @@ func TestBeforeSend_DropsIgnorableErrors(t *testing.T) {
 			hint := &sentry.EventHint{OriginalException: tt.err}
 
 			if result := beforeSend(event, hint); result != nil {
-				t.Errorf("無視対象のエラーはイベントを nil にすべき: got %+v", result)
+				t.Errorf("無視対象のエラーはイベントをnilにすべき: 実測値 = %+v", result)
 			}
 		})
 	}
@@ -509,7 +506,7 @@ func TestShouldDropError(t *testing.T) {
 			t.Parallel()
 
 			if got := shouldDropError(tt.err); got != tt.want {
-				t.Errorf("shouldDropError(%v) = %v, want %v", tt.err, got, tt.want)
+				t.Errorf("shouldDropError(%v) = %v、期待値 = %v", tt.err, got, tt.want)
 			}
 		})
 	}

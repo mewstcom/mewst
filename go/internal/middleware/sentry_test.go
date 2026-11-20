@@ -18,8 +18,8 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// fakeTransport は sentry.Transport の実装で、SendEvent された Event をすべて記録する。
-// テスト中の Sentry クライアントに注入することで、グローバル状態を介さずに送信内容を検証できる。
+// fakeTransportはsentry.Transportの実装で、SendEventされたEventをすべて記録する。
+// テスト中のSentryクライアントに注入することで、グローバル状態を介さずに送信内容を検証できる。
 type fakeTransport struct {
 	mu     sync.Mutex
 	events []*sentry.Event
@@ -47,14 +47,14 @@ func (t *fakeTransport) Events() []*sentry.Event {
 	return out
 }
 
-// newSentryTestHub はテスト用に独立した Hub と fakeTransport を返す。
-// グローバルな sentry.Init は呼ばないため、t.Parallel() でも他テストと干渉しない。
+// newSentryTestHubはテスト用に独立したHubとfakeTransportを返す。
+// グローバルなsentry.Initは呼ばないため、t.Parallel() でも他テストと干渉しない。
 func newSentryTestHub(t *testing.T) (*sentry.Hub, *fakeTransport) {
 	t.Helper()
 
 	transport := &fakeTransport{}
 	client, err := sentry.NewClient(sentry.ClientOptions{
-		// 有効な DSN を渡さないと client がイベントを処理しないため、ダミー DSN を設定する
+		// 有効なDSNを渡さないとclientがイベントを処理しないため、ダミーDSNを設定する
 		Dsn:              "https://public@example.com/1",
 		Transport:        transport,
 		EnableTracing:    true,
@@ -62,14 +62,14 @@ func newSentryTestHub(t *testing.T) (*sentry.Hub, *fakeTransport) {
 		Environment:      "test",
 	})
 	if err != nil {
-		t.Fatalf("sentry.NewClient() error = %v", err)
+		t.Fatalf("sentry.NewClient()のエラー = %v", err)
 	}
 	return sentry.NewHub(client, sentry.NewScope()), transport
 }
 
-// bindHubMiddleware はリクエストコンテキストにテスト用 Hub を埋め込むミドルウェア。
-// sentryhttp は GetHubFromContext で Hub を取得するため、これを sentryhttp より前に挿入することで
-// テスト用 Hub に Sentry イベントを集約できる。
+// bindHubMiddlewareはリクエストコンテキストにテスト用Hubを埋め込むミドルウェア。
+// sentryhttpはGetHubFromContextでHubを取得するため、これをsentryhttpより前に挿入することで
+// テスト用HubにSentryイベントを集約できる。
 func bindHubMiddleware(hub *sentry.Hub) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -97,26 +97,26 @@ func TestSentryTransaction_SetsTransactionName(t *testing.T) {
 	r.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Fatalf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusOK)
+		t.Fatalf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 
 	events := transport.Events()
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 
 	tx := events[0]
 	if tx.Type != "transaction" {
-		t.Errorf("Type が期待と異なる: got %q, want %q", tx.Type, "transaction")
+		t.Errorf("Typeが期待と異なる: 実測値 = %q、期待値 = %q", tx.Type, "transaction")
 	}
 	if tx.Transaction != "GET /users/{id}" {
-		t.Errorf("Transaction 名が期待と異なる: got %q, want %q", tx.Transaction, "GET /users/{id}")
+		t.Errorf("Transaction名が期待と異なる: 実測値 = %q、期待値 = %q", tx.Transaction, "GET /users/{id}")
 	}
 	if tx.TransactionInfo == nil {
-		t.Fatal("TransactionInfo が nil")
+		t.Fatal("TransactionInfoがnil")
 	}
 	if tx.TransactionInfo.Source != sentry.SourceRoute {
-		t.Errorf("TransactionInfo.Source が期待と異なる: got %q, want %q", tx.TransactionInfo.Source, sentry.SourceRoute)
+		t.Errorf("TransactionInfo.Sourceが期待と異なる: 実測値 = %q、期待値 = %q", tx.TransactionInfo.Source, sentry.SourceRoute)
 	}
 }
 
@@ -125,11 +125,11 @@ func TestSentryTransaction_PanicCaptured(t *testing.T) {
 
 	hub, transport := newSentryTestHub(t)
 
-	// 本番の main.go と同じ chi 内ミドルウェア順序:
+	// 本番のmain.goと同じchi内ミドルウェア順序:
 	//   Recoverer (outer) → sentryhttp (Repanic: true) → SentryTransaction → handler
-	// この並びでは handler の panic を innermost の sentryhttp の defer がまず捕捉し、
-	// Sentry に送信したあと Repanic: true で再 panic、再 panic が outer の Recoverer に到達して 500 を書く。
-	// Recoverer を chi 内に入れた状態でも sentryhttp が panic を捕捉できることを確認する。
+	// この並びではhandlerのpanicをinnermostのsentryhttpのdeferがまず捕捉し、
+	// Sentryに送信したあとRepanic: trueで再panic、再panicがouterのRecovererに到達して500を書く。
+	// Recovererをchi内に入れた状態でもsentryhttpがpanicを捕捉できることを確認する。
 	r := chi.NewRouter()
 	r.Use(bindHubMiddleware(hub))
 	r.Use(chimiddleware.Recoverer)
@@ -144,12 +144,12 @@ func TestSentryTransaction_PanicCaptured(t *testing.T) {
 	r.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
-		t.Fatalf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusInternalServerError)
+		t.Fatalf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusInternalServerError)
 	}
 
 	events := transport.Events()
 	if len(events) != 2 {
-		t.Fatalf("送信イベント数が期待と異なる (エラーとトランザクションの 2 件): got %d, want 2", len(events))
+		t.Fatalf("送信イベント数が期待と異なる (エラーとトランザクションの2件): 実測値 = %d、期待値 = 2", len(events))
 	}
 
 	var errorEvent, txEvent *sentry.Event
@@ -165,27 +165,27 @@ func TestSentryTransaction_PanicCaptured(t *testing.T) {
 		t.Fatal("エラーイベントが送信されていない")
 	}
 	if errorEvent.Level != sentry.LevelFatal {
-		t.Errorf("エラーイベントの Level が期待と異なる: got %q, want %q", errorEvent.Level, sentry.LevelFatal)
+		t.Errorf("エラーイベントのLevelが期待と異なる: 実測値 = %q、期待値 = %q", errorEvent.Level, sentry.LevelFatal)
 	}
-	// scope.span 経由で error イベントの Transaction にもルートパターンが反映されることを担保する。
-	// Sentry SDK のバージョンアップでこの自動紐付けが壊れた場合、ここで気づける。
+	// scope.span経由でerrorイベントのTransactionにもルートパターンが反映されることを担保する。
+	// Sentry SDKのバージョンアップでこの自動紐付けが壊れた場合、ここで気づける。
 	if errorEvent.Transaction != "GET /users/{id}/panic" {
-		t.Errorf("エラーイベントの Transaction 名が期待と異なる: got %q, want %q", errorEvent.Transaction, "GET /users/{id}/panic")
+		t.Errorf("エラーイベントのTransaction名が期待と異なる: 実測値 = %q、期待値 = %q", errorEvent.Transaction, "GET /users/{id}/panic")
 	}
 
 	if txEvent == nil {
 		t.Fatal("トランザクションイベントが送信されていない")
 	}
 	if txEvent.Transaction != "GET /users/{id}/panic" {
-		t.Errorf("トランザクション名が期待と異なる: got %q, want %q", txEvent.Transaction, "GET /users/{id}/panic")
+		t.Errorf("トランザクション名が期待と異なる: 実測値 = %q、期待値 = %q", txEvent.Transaction, "GET /users/{id}/panic")
 	}
 }
 
 func TestSentryTransaction_NoRouteContext(t *testing.T) {
 	t.Parallel()
 
-	// chi の RouteContext を持たない素の http.Request で middleware を呼んでも panic しないことを確認する。
-	// 静的ファイル配信や chi の外で動くケースを想定。
+	// chiのRouteContextを持たない素のhttp.Requestでmiddlewareを呼んでもpanicしないことを確認する。
+	// 静的ファイル配信やchiの外で動くケースを想定。
 	handler := SentryTransaction(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -195,7 +195,7 @@ func TestSentryTransaction_NoRouteContext(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 }
 
@@ -212,29 +212,29 @@ func TestSentryTransaction_UnmatchedRoute(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// 未登録パスへのリクエストは 404 になる。sentry-go の既定では
-	// TraceIgnoreStatusCodes に [404] が含まれており、404 のトランザクションは送信されない。
-	// SentryTransaction はルートパターンが空のため何もしない (sentryhttp のデフォルト名 + URL ソースのまま)
+	// 未登録パスへのリクエストは404になる。sentry-goの既定では
+	// TraceIgnoreStatusCodesに [404] が含まれており、404のトランザクションは送信されない。
+	// SentryTransactionはルートパターンが空のため何もしない (sentryhttpのデフォルト名 + URLソースのまま)
 	// が、結局トランザクション自体がドロップされるため、本ミドルウェアは未マッチルートでノイズを増やさない。
 	req := httptest.NewRequest(http.MethodGet, "/unknown", nil)
 	rr := httptest.NewRecorder()
 	r.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusNotFound {
-		t.Fatalf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusNotFound)
+		t.Fatalf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusNotFound)
 	}
 
 	events := transport.Events()
 	if len(events) != 0 {
 		for i, e := range events {
-			t.Logf("予期せぬイベント %d: type=%q transaction=%q", i, e.Type, e.Transaction)
+			t.Logf("予期せぬイベント%d: type=%q transaction=%q", i, e.Type, e.Transaction)
 		}
-		t.Fatalf("未マッチルート (404) ではイベントが送信されないはず: got %d, want 0", len(events))
+		t.Fatalf("未マッチルート (404) ではイベントが送信されないはず: 実測値 = %d、期待値 = 0", len(events))
 	}
 }
 
-// stubProfileFinder は sentryProfileFinder インターフェースをテスト用に満たすスタブ。
-// 返却 (profile / err) を保持し、FindByID 呼び出し回数を記録する。
+// stubProfileFinderはsentryProfileFinderインターフェースをテスト用に満たすスタブ。
+// 返却 (profile / err) を保持し、FindByID呼び出し回数を記録する。
 type stubProfileFinder struct {
 	profile *model.Profile
 	err     error
@@ -246,10 +246,10 @@ func (s *stubProfileFinder) FindByID(_ context.Context, _ model.ProfileID) (*mod
 	return s.profile, s.err
 }
 
-// runSentryUserContextRequest は SentryUserContext ミドルウェアの挙動検証用に
-// テスト用 Hub と認証 context をセットアップしたチェーンでリクエストを実行し、
-// Sentry へ送信されたイベント群を返す。handler 内で CaptureMessage を呼ぶことで、
-// その時点でスコープに乗っている User 情報が event.User に反映される。
+// runSentryUserContextRequestはSentryUserContextミドルウェアの挙動検証用に
+// テスト用Hubと認証contextをセットアップしたチェーンでリクエストを実行し、
+// Sentryへ送信されたイベント群を返す。handler内でCaptureMessageを呼ぶことで、
+// その時点でスコープに乗っているUser情報がevent.Userに反映される。
 func runSentryUserContextRequest(t *testing.T, finder sentryProfileFinder, ctxMutator func(context.Context) context.Context) []*sentry.Event {
 	t.Helper()
 
@@ -257,8 +257,8 @@ func runSentryUserContextRequest(t *testing.T, finder sentryProfileFinder, ctxMu
 	mw := NewSentryUserContext(finder)
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// handler 内で CaptureMessage を呼ぶことで、ミドルウェアが SetUser した直後の Scope を
-		// 使ったイベントが送信される。これで Sentry に渡される User 情報を検証できる。
+		// handler内でCaptureMessageを呼ぶことで、ミドルウェアがSetUserした直後のScopeを
+		// 使ったイベントが送信される。これでSentryに渡されるUser情報を検証できる。
 		if hub := sentry.GetHubFromContext(r.Context()); hub != nil {
 			hub.CaptureMessage("test event")
 		}
@@ -275,7 +275,7 @@ func runSentryUserContextRequest(t *testing.T, finder sentryProfileFinder, ctxMu
 	chain.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Fatalf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusOK)
+		t.Fatalf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 	return transport.Events()
 }
@@ -309,17 +309,17 @@ func TestSentryUserContext_SetsUser_WithAtname(t *testing.T) {
 	})
 
 	if finder.calls != 1 {
-		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+		t.Fatalf("FindByID呼び出し回数が期待と異なる: 実測値 = %d、期待値 = 1", finder.calls)
 	}
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	ev := events[0]
 	if ev.User.ID != user.ID.String() {
-		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+		t.Errorf("User.IDが期待と異なる: 実測値 = %q、期待値 = %q", ev.User.ID, user.ID.String())
 	}
 	if ev.User.Username != "alice" {
-		t.Errorf("User.Username が期待と異なる: got %q, want %q", ev.User.Username, "alice")
+		t.Errorf("User.Usernameが期待と異なる: 実測値 = %q、期待値 = %q", ev.User.Username, "alice")
 	}
 }
 
@@ -334,17 +334,17 @@ func TestSentryUserContext_SetsUserIDOnly_WhenActorMissing(t *testing.T) {
 	})
 
 	if finder.calls != 0 {
-		t.Errorf("Actor がない場合は FindByID を呼ばないはず: got %d", finder.calls)
+		t.Errorf("Actorがない場合はFindByIDを呼ばないはず: 実測値 = %d", finder.calls)
 	}
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	ev := events[0]
 	if ev.User.ID != user.ID.String() {
-		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+		t.Errorf("User.IDが期待と異なる: 実測値 = %q、期待値 = %q", ev.User.ID, user.ID.String())
 	}
 	if ev.User.Username != "" {
-		t.Errorf("User.Username は空のはず: got %q", ev.User.Username)
+		t.Errorf("User.Usernameは空のはず: 実測値 = %q", ev.User.Username)
 	}
 }
 
@@ -362,17 +362,17 @@ func TestSentryUserContext_SetsUserIDOnly_WhenProfileNotFound(t *testing.T) {
 	})
 
 	if finder.calls != 1 {
-		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+		t.Fatalf("FindByID呼び出し回数が期待と異なる: 実測値 = %d、期待値 = 1", finder.calls)
 	}
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	ev := events[0]
 	if ev.User.ID != user.ID.String() {
-		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+		t.Errorf("User.IDが期待と異なる: 実測値 = %q、期待値 = %q", ev.User.ID, user.ID.String())
 	}
 	if ev.User.Username != "" {
-		t.Errorf("Profile 未存在では Username は空のはず: got %q", ev.User.Username)
+		t.Errorf("Profile未存在ではUsernameは空のはず: 実測値 = %q", ev.User.Username)
 	}
 }
 
@@ -390,17 +390,17 @@ func TestSentryUserContext_SetsUserIDOnly_WhenProfileFetchFails(t *testing.T) {
 	})
 
 	if finder.calls != 1 {
-		t.Fatalf("FindByID 呼び出し回数が期待と異なる: got %d, want 1", finder.calls)
+		t.Fatalf("FindByID呼び出し回数が期待と異なる: 実測値 = %d、期待値 = 1", finder.calls)
 	}
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	ev := events[0]
 	if ev.User.ID != user.ID.String() {
-		t.Errorf("User.ID が期待と異なる: got %q, want %q", ev.User.ID, user.ID.String())
+		t.Errorf("User.IDが期待と異なる: 実測値 = %q、期待値 = %q", ev.User.ID, user.ID.String())
 	}
 	if ev.User.Username != "" {
-		t.Errorf("Profile 取得失敗時は Username は空のはず: got %q", ev.User.Username)
+		t.Errorf("Profile取得失敗時はUsernameは空のはず: 実測値 = %q", ev.User.Username)
 	}
 }
 
@@ -412,14 +412,14 @@ func TestSentryUserContext_NoOp_WhenUnauthenticated(t *testing.T) {
 	events := runSentryUserContextRequest(t, finder, nil)
 
 	if finder.calls != 0 {
-		t.Errorf("未認証時は FindByID を呼ばないはず: got %d", finder.calls)
+		t.Errorf("未認証時はFindByIDを呼ばないはず: 実測値 = %d", finder.calls)
 	}
 	if len(events) != 1 {
-		t.Fatalf("送信イベント数が期待と異なる: got %d, want 1", len(events))
+		t.Fatalf("送信イベント数が期待と異なる: 実測値 = %d、期待値 = 1", len(events))
 	}
 	ev := events[0]
 	if ev.User.ID != "" || ev.User.Username != "" {
-		t.Errorf("未認証時は User.ID / Username は空のはず: got ID=%q Username=%q", ev.User.ID, ev.User.Username)
+		t.Errorf("未認証時はUser.ID / Usernameは空のはず: 実測値 = ID=%q Username=%q", ev.User.ID, ev.User.Username)
 	}
 }
 
@@ -430,7 +430,7 @@ func TestSentryUserContext_NoOp_WhenHubMissing(t *testing.T) {
 	finder := &stubProfileFinder{}
 	mw := NewSentryUserContext(finder)
 
-	// Hub を context にバインドせずに直接ミドルウェアを呼び、panic せず handler に処理が渡ることを確認する。
+	// Hubをcontextにバインドせずに直接ミドルウェアを呼び、panicせずhandlerに処理が渡ることを確認する。
 	handler := mw.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	}))
@@ -441,9 +441,9 @@ func TestSentryUserContext_NoOp_WhenHubMissing(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusNoContent {
-		t.Errorf("ステータスコードが期待と異なる: got %d, want %d", rr.Code, http.StatusNoContent)
+		t.Errorf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusNoContent)
 	}
 	if finder.calls != 0 {
-		t.Errorf("Hub がない場合は FindByID を呼ばないはず: got %d", finder.calls)
+		t.Errorf("Hubがない場合はFindByIDを呼ばないはず: 実測値 = %d", finder.calls)
 	}
 }

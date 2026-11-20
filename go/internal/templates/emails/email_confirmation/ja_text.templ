@@ -1,17 +1,10 @@
 package email_confirmation
 
-// JaText is the Japanese email confirmation code notification (plain text).
+// JaTextは日本語版のメール確認コード通知 (テキスト形式) です。
 //
-// The body goes through templ.Raw so that the blank lines between paragraphs
-// survive: templ normalizes literal whitespace by HTML rules. Passing the
-// address through Raw is safe here because the text/plain part has no markup to
-// break out of; the HTML part still escapes it.
-//
-// [Ja] JaText は日本語版のメール確認コード通知 (テキスト形式) です。
-//
-// 段落間の空行を残すため、本文は templ.Raw を通す。templ はリテラルの空白を HTML
-// の規則で正規化するためである。text/plain パートにはメールアドレスが抜け出せる
-// マークアップが無いため、Raw に渡しても安全である (HTML パートでは引き続き
+// 段落間の空行を残すため、本文はtempl.Rawを通す。templはリテラルの空白をHTML
+// の規則で正規化するためである。text/plainパートにはメールアドレスが抜け出せる
+// マークアップが無いため、Rawに渡しても安全である (HTMLパートでは引き続き
 // エスケープする)。
 templ JaText(email, code string) {
 	@templ.Raw(email + " さん、こんにちは。\n\n確認用コードは下記になります。\n\n" + code + "\n\n確認用コードの有効期間は15分です。\n\nもしこのメールに心当たりが無い場合は無視してください。\n\n-- \nMewst\nhttps://mewst.com\n")

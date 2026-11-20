@@ -71,7 +71,7 @@ func TestValidateBackURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := ValidateBackURL(tt.backURL); got != tt.want {
-				t.Errorf("ValidateBackURL(%q) = %v, want %v", tt.backURL, got, tt.want)
+				t.Errorf("ValidateBackURL(%q) = %v、期待値 = %v", tt.backURL, got, tt.want)
 			}
 		})
 	}
@@ -116,7 +116,7 @@ func TestGetSafeRedirectURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := GetSafeRedirectURL(tt.backURL); got != tt.want {
-				t.Errorf("GetSafeRedirectURL(%q) = %v, want %v", tt.backURL, got, tt.want)
+				t.Errorf("GetSafeRedirectURL(%q) = %v、期待値 = %v", tt.backURL, got, tt.want)
 			}
 		})
 	}
@@ -173,7 +173,7 @@ func TestAppendSafeBack(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := AppendSafeBack(tt.base, tt.backURL); got != tt.want {
-				t.Errorf("AppendSafeBack(%q, %q) = %v, want %v", tt.base, tt.backURL, got, tt.want)
+				t.Errorf("AppendSafeBack(%q, %q) = %v、期待値 = %v", tt.base, tt.backURL, got, tt.want)
 			}
 		})
 	}

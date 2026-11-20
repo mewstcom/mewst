@@ -10,7 +10,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Create はパスワードリセット処理を実行する (POST /password_reset)
+// Createはパスワードリセット処理を実行する (POST /password_reset)
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

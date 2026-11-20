@@ -13,9 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// Flash renders a flash message as a toast and renders nothing when flash is nil.
-//
-// [Ja] Flash はフラッシュメッセージを toast として表示し、flash が nil なら何も描画しない。
+// Flashはフラッシュメッセージをtoastとして表示し、flashがnilなら何も描画しない。
 func Flash(flash *session.FlashMessage) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -45,7 +43,7 @@ func Flash(flash *session.FlashMessage) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(flashCategory(flash.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 20, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 18, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
@@ -66,7 +64,7 @@ func Flash(flash *session.FlashMessage) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(flash.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 25, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 23, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -79,7 +77,7 @@ func Flash(flash *session.FlashMessage) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "flash_dismiss"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 28, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/flash.templ`, Line: 26, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -94,9 +92,7 @@ func Flash(flash *session.FlashMessage) templ.Component {
 	})
 }
 
-// flashCategory returns the data-category value for the flash type.
-//
-// [Ja] flashCategory はフラッシュタイプに応じた data-category 属性値を返す。
+// flashCategoryはフラッシュタイプに応じたdata-category属性値を返す。
 func flashCategory(flashType session.FlashType) string {
 	switch flashType {
 	case session.FlashSuccess:
@@ -110,17 +106,13 @@ func flashCategory(flashType session.FlashType) string {
 	}
 }
 
-// flashIconStyle pairs an icon name with its fill class.
-//
-// [Ja] flashIconStyle はアイコン名と塗りクラスのペア。
+// flashIconStyleはアイコン名と塗りクラスのペア。
 type flashIconStyle struct {
 	Name viewmodel.IconName
 	Fill string
 }
 
-// flashIconStyles maps flash types to icon styles.
-//
-// [Ja] flashIconStyles はフラッシュタイプとアイコンスタイルの対応表。
+// flashIconStylesはフラッシュタイプとアイコンスタイルの対応表。
 var flashIconStyles = map[session.FlashType]flashIconStyle{
 	session.FlashSuccess: {Name: "check-circle-regular", Fill: "fill-success"},
 	session.FlashError:   {Name: "warning-regular", Fill: "fill-error"},
@@ -128,9 +120,7 @@ var flashIconStyles = map[session.FlashType]flashIconStyle{
 	session.FlashInfo:    {Name: "info-regular", Fill: "fill-info"},
 }
 
-// flashIcon returns the icon for a flash type and falls back to info for unknown types.
-//
-// [Ja] flashIcon はフラッシュタイプに応じたアイコンを返し、未知のタイプは info にフォールバックする。
+// flashIconはフラッシュタイプに応じたアイコンを返し、未知のタイプはinfoにフォールバックする。
 func flashIcon(flashType session.FlashType) templ.Component {
 	style, ok := flashIconStyles[flashType]
 	if !ok {

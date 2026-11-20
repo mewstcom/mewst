@@ -11,9 +11,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/exports"
 )
 
-// renderIndex renders the table of contents in one locale.
-//
-// [Ja] renderIndex は目次を 1 つのロケールで描画する。
+// renderIndexは目次を1つのロケールで描画する。
 func renderIndex(t *testing.T, locale string, data exports.IndexData) string {
 	t.Helper()
 
@@ -26,9 +24,7 @@ func renderIndex(t *testing.T, locale string, data exports.IndexData) string {
 	return buf.String()
 }
 
-// newIndexMonth builds one month of the table of contents.
-//
-// [Ja] newIndexMonth は目次に載せる月を 1 つ組み立てる。
+// newIndexMonthは目次に載せる月を1つ組み立てる。
 func newIndexMonth(year int, month time.Month, postCount int64) exports.IndexMonth {
 	return exports.IndexMonth{
 		EntryName:  "posts/" + time.Date(year, month, 1, 0, 0, 0, 0, time.UTC).Format("2006-01") + ".html",
@@ -48,10 +44,7 @@ func TestIndexMain_WritesItsTextInTheUsersLanguage(t *testing.T) {
 	tests := []struct {
 		name   string
 		locale string
-		// A month reads differently in each language, and English counts its
-		// posts in singular and plural.
-		//
-		// [Ja] 月の読み方は言語ごとに異なり、英語では投稿の件数が単数形と
+		// 月の読み方は言語ごとに異なり、英語では投稿の件数が単数形と
 		// 複数形に分かれる。
 		want []string
 	}{
@@ -74,7 +67,7 @@ func TestIndexMain_WritesItsTextInTheUsersLanguage(t *testing.T) {
 			got := renderIndex(t, tt.locale, data)
 			for _, want := range tt.want {
 				if !strings.Contains(got, want) {
-					t.Errorf("目次に %q が含まれていない: %s", want, got)
+					t.Errorf("目次に%qが含まれていない: %s", want, got)
 				}
 			}
 		})
@@ -89,10 +82,7 @@ func TestIndexMain_KeepsDeclaredMonthOrder(t *testing.T) {
 		newIndexMonth(2026, time.January, 1),
 	}})
 
-	// The months are handed over oldest first, and the reader looks for a month
-	// in that order, so the list keeps it instead of sorting the labels.
-	//
-	// [Ja] 月は古い順に渡され、読み手もその順で目的の月を探すため、リストは
+	// 月は古い順に渡され、読み手もその順で目的の月を探すため、リストは
 	// ラベルを並べ替えず受け取った順を保つ。
 	december := strings.Index(got, "2025年12月")
 	january := strings.Index(got, "2026年1月")
@@ -122,7 +112,7 @@ func TestIndexMain_TellsTheReaderWhenThereAreNoPosts(t *testing.T) {
 
 			got := renderIndex(t, tt.locale, exports.IndexData{})
 			if !strings.Contains(got, tt.want) {
-				t.Errorf("空の目次に %q が含まれていない: %s", tt.want, got)
+				t.Errorf("空の目次に%qが含まれていない: %s", tt.want, got)
 			}
 			if strings.Contains(got, "<ul>") {
 				t.Errorf("空の目次にリストが含まれている: %s", got)
@@ -150,26 +140,19 @@ func TestIndexMain_OpensWithTheMewstBrand(t *testing.T) {
 				newIndexMonth(2026, time.July, 1),
 			}})
 
-			// The brand is a name, not a message, so it reads the same whichever
-			// language the rest of the file is written in.
-			//
-			// [Ja] ブランド表示は文言ではなく名前のため、ファイルの他の部分が
+			// ブランド表示は文言ではなく名前のため、ファイルの他の部分が
 			// どの言語で書かれていても同じように読める。
 			if !strings.Contains(got, "Mewst") {
 				t.Errorf("目次にブランド名が含まれていない: %s", got)
 			}
 			if !strings.Contains(got, `viewBox="0 0 700 700"`) {
-				t.Errorf("目次に Mewst ロゴが含まれていない: %s", got)
+				t.Errorf("目次にMewstロゴが含まれていない: %s", got)
 			}
 
-			// The logo is decorative and the brand name beside it carries the
-			// name, so the template wraps the glyph in an element that takes it
-			// out of the accessibility tree.
-			//
-			// [Ja] ロゴは装飾で、名前は隣のブランド名が担うため、テンプレートは
+			// ロゴは装飾で、名前は隣のブランド名が担うため、テンプレートは
 			// グリフをアクセシビリティツリーから外す要素で包む。
 			if !strings.Contains(got, `<span aria-hidden="true">`) {
-				t.Errorf("装飾ロゴが aria-hidden の要素に包まれていない: %s", got)
+				t.Errorf("装飾ロゴがaria-hiddenの要素に包まれていない: %s", got)
 			}
 		})
 	}

@@ -8,10 +8,10 @@ import (
 	"net/http"
 )
 
-// FlashCookieName はフラッシュメッセージを格納するCookieのキー名
+// FlashCookieNameはフラッシュメッセージを格納するCookieのキー名
 const FlashCookieName = "mewst_flash"
 
-// FlashType はフラッシュメッセージの種類を表す
+// FlashTypeはフラッシュメッセージの種類を表す
 type FlashType string
 
 // フラッシュメッセージのタイプ定数
@@ -22,20 +22,20 @@ const (
 	FlashInfo    FlashType = "info"
 )
 
-// FlashMessage はフラッシュメッセージを表す構造体
+// FlashMessageはフラッシュメッセージを表す構造体
 type FlashMessage struct {
 	Type    FlashType `json:"type"`
 	Message string    `json:"message"`
 }
 
-// FlashManager はフラッシュメッセージを管理する構造体
+// FlashManagerはフラッシュメッセージを管理する構造体
 type FlashManager struct {
 	cookieDomain    string
 	sessionSecure   bool
 	sessionHTTPOnly bool
 }
 
-// NewFlashManager は FlashManager を生成する
+// NewFlashManagerはFlashManagerを生成する
 func NewFlashManager(cookieDomain string, sessionSecure, sessionHTTPOnly bool) *FlashManager {
 	return &FlashManager{
 		cookieDomain:    cookieDomain,
@@ -44,27 +44,27 @@ func NewFlashManager(cookieDomain string, sessionSecure, sessionHTTPOnly bool) *
 	}
 }
 
-// SetSuccess は成功メッセージを設定する
+// SetSuccessは成功メッセージを設定する
 func (f *FlashManager) SetSuccess(w http.ResponseWriter, message string) {
 	f.setFlash(w, FlashSuccess, message)
 }
 
-// SetError はエラーメッセージを設定する
+// SetErrorはエラーメッセージを設定する
 func (f *FlashManager) SetError(w http.ResponseWriter, message string) {
 	f.setFlash(w, FlashError, message)
 }
 
-// SetWarning は警告メッセージを設定する
+// SetWarningは警告メッセージを設定する
 func (f *FlashManager) SetWarning(w http.ResponseWriter, message string) {
 	f.setFlash(w, FlashWarning, message)
 }
 
-// SetInfo は情報メッセージを設定する
+// SetInfoは情報メッセージを設定する
 func (f *FlashManager) SetInfo(w http.ResponseWriter, message string) {
 	f.setFlash(w, FlashInfo, message)
 }
 
-// setFlash はフラッシュメッセージをCookieに設定する
+// setFlashはフラッシュメッセージをCookieに設定する
 func (f *FlashManager) setFlash(w http.ResponseWriter, flashType FlashType, message string) {
 	flash := FlashMessage{
 		Type:    flashType,
@@ -76,7 +76,7 @@ func (f *FlashManager) setFlash(w http.ResponseWriter, flashType FlashType, mess
 		return
 	}
 
-	// JSON の特殊文字 (ダブルクォートなど) が Cookie で無効な文字として扱われるため、Base64 エンコードして保存する
+	// JSONの特殊文字 (ダブルクォートなど) がCookieで無効な文字として扱われるため、Base64エンコードして保存する
 	encoded := base64.StdEncoding.EncodeToString(data)
 
 	cookie := &http.Cookie{
@@ -85,13 +85,13 @@ func (f *FlashManager) setFlash(w http.ResponseWriter, flashType FlashType, mess
 		Path:     "/",
 		Domain:   f.cookieDomain,
 		Secure:   f.sessionSecure,
-		HttpOnly: false, // JavaScript からも参照できるようにする (toast 表示など)
+		HttpOnly: false, // JavaScriptからも参照できるようにする (toast表示など)
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, cookie)
 }
 
-// GetFlash はフラッシュメッセージを取得し、Cookieから削除する
+// GetFlashはフラッシュメッセージを取得し、Cookieから削除する
 func (f *FlashManager) GetFlash(w http.ResponseWriter, r *http.Request) *FlashMessage {
 	cookie, err := r.Cookie(FlashCookieName)
 	if err != nil {
@@ -117,7 +117,7 @@ func (f *FlashManager) GetFlash(w http.ResponseWriter, r *http.Request) *FlashMe
 
 type flashContextKey struct{}
 
-// Middleware はリクエストからフラッシュメッセージを読み取り、contextに格納する。
+// Middlewareはリクエストからフラッシュメッセージを読み取り、contextに格納する。
 // 読み取り後、Cookieは自動的に削除される。
 func (f *FlashManager) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -130,13 +130,13 @@ func (f *FlashManager) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-// FlashFromContext はcontextからフラッシュメッセージを取得する
+// FlashFromContextはcontextからフラッシュメッセージを取得する
 func FlashFromContext(ctx context.Context) *FlashMessage {
 	flash, _ := ctx.Value(flashContextKey{}).(*FlashMessage)
 	return flash
 }
 
-// clearFlash はフラッシュCookieを削除する
+// clearFlashはフラッシュCookieを削除する
 func (f *FlashManager) clearFlash(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:     FlashCookieName,

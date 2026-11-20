@@ -5,24 +5,16 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// AttachedLinkCard renders an attached link card: the card preview, a remove
-// button that empties the #link-form container, and a hidden canonical_url
-// input that travels with the surrounding post form so the created post is
-// linked to the card. Shared by the POST /links fragment and the post form's
-// 422 re-render.
-//
-// [Ja] AttachedLinkCard は紐付け済みリンクカードを描画する。カードのプレビュー・
-// #link-form コンテナを空にする削除ボタン・外側の投稿フォームと一緒に送信されて
-// 作成される投稿にカードを紐付ける hidden の canonical_url から成る。POST /links の
-// フラグメントと投稿フォームの 422 再描画で共用する。
+// AttachedLinkCardは紐付け済みリンクカードを描画する。カードのプレビュー・
+// #link-formコンテナを空にする削除ボタン・外側の投稿フォームと一緒に送信されて
+// 作成される投稿にカードを紐付けるhiddenのcanonical_urlから成る。POST /linksの
+// フラグメントと投稿フォームの422再描画で共用する。
 templ AttachedLinkCard(link viewmodel.Link) {
 	<div class="mb-2">
 		<div class="relative">
 			@LinkCard(link)
 
-			// Clearing #link-form removes both the card preview and the hidden
-			// canonical_url, so the next post submits without a link.
-			// [Ja] #link-form を空にするとカードのプレビューと hidden の canonical_url が
+			// #link-formを空にするとカードのプレビューとhiddenのcanonical_urlが
 			// 両方消えるため、次の投稿はリンク無しで送信される。
 			<button
 				aria-label={ templates.T(ctx, "link_create_remove") }

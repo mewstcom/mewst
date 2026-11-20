@@ -15,15 +15,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// generatedAt is the archive-wide timestamp the fixtures stamp their entries
-// with.
-//
-// [Ja] generatedAt はフィクスチャが各エントリに記録するアーカイブ共通の時刻。
+// generatedAtはフィクスチャが各エントリに記録するアーカイブ共通の時刻。
 var generatedAt = time.Date(2026, 8, 1, 12, 0, 0, 0, time.UTC)
 
-// mustLoadLocation resolves the zone the fixtures render their timestamps in.
-//
-// [Ja] mustLoadLocation はフィクスチャが日時を描画するゾーンを解決する。
+// mustLoadLocationはフィクスチャが日時を描画するゾーンを解決する。
 func mustLoadLocation(t testing.TB, name string) *time.Location {
 	t.Helper()
 
@@ -34,10 +29,7 @@ func mustLoadLocation(t testing.TB, name string) *time.Location {
 	return location
 }
 
-// newMonth builds a declared month. LocalMonthStart is a calendar label, so it
-// is written as the wall clock of the month's first day.
-//
-// [Ja] newMonth は宣言する月を組み立てる。LocalMonthStart は暦月のラベルのため、
+// newMonthは宣言する月を組み立てる。LocalMonthStartは暦月のラベルのため、
 // その月の初日の壁時計として書く。
 func newMonth(year int, month time.Month, postCount int64) usecase.ExportArchiveMonth {
 	return usecase.ExportArchiveMonth{
@@ -46,9 +38,7 @@ func newMonth(year int, month time.Month, postCount int64) usecase.ExportArchive
 	}
 }
 
-// newArchive builds an archive whose months are rendered in Asia/Tokyo.
-//
-// [Ja] newArchive は Asia/Tokyo で描画するアーカイブを組み立てる。
+// newArchiveはAsia/Tokyoで描画するアーカイブを組み立てる。
 func newArchive(t testing.TB, months ...usecase.ExportArchiveMonth) usecase.ExportArchive {
 	t.Helper()
 
@@ -60,16 +50,12 @@ func newArchive(t testing.TB, months ...usecase.ExportArchiveMonth) usecase.Expo
 	}
 }
 
-// newPost builds one post of an archive.
-//
-// [Ja] newPost はアーカイブに含める投稿を 1 件組み立てる。
+// newPostはアーカイブに含める投稿を1件組み立てる。
 func newPost(id string, publishedAt time.Time, content string) usecase.ExportArchivePost {
 	return usecase.ExportArchivePost{ID: id, Content: content, PublishedAt: publishedAt}
 }
 
-// writeMonthEntry writes one month from start to finish.
-//
-// [Ja] writeMonthEntry は 1 か月分のエントリを最初から最後まで書き出す。
+// writeMonthEntryは1か月分のエントリを最初から最後まで書き出す。
 func writeMonthEntry(
 	t *testing.T,
 	ctx context.Context,
@@ -93,18 +79,14 @@ func writeMonthEntry(
 	}
 }
 
-// archiveEntry is one entry read back from a built archive.
-//
-// [Ja] archiveEntry は構築したアーカイブから読み戻したエントリ 1 つ。
+// archiveEntryは構築したアーカイブから読み戻したエントリ1つ。
 type archiveEntry struct {
 	name     string
 	body     string
 	modified time.Time
 }
 
-// readArchive reads every entry of a built archive in stored order.
-//
-// [Ja] readArchive は構築したアーカイブの全エントリを格納順に読み取る。
+// readArchiveは構築したアーカイブの全エントリを格納順に読み取る。
 func readArchive(t *testing.T, data []byte) []archiveEntry {
 	t.Helper()
 
@@ -121,9 +103,7 @@ func readArchive(t *testing.T, data []byte) []archiveEntry {
 	return entries
 }
 
-// readEntry reads one entry's body.
-//
-// [Ja] readEntry はエントリ 1 つの本文を読み取る。
+// readEntryはエントリ1つの本文を読み取る。
 func readEntry(t *testing.T, file *zip.File) string {
 	t.Helper()
 
@@ -140,9 +120,7 @@ func readEntry(t *testing.T, file *zip.File) string {
 	return string(body)
 }
 
-// entryBody returns the body of the named entry.
-//
-// [Ja] entryBody は指定した名前のエントリの本文を返す。
+// entryBodyは指定した名前のエントリの本文を返す。
 func entryBody(t *testing.T, entries []archiveEntry, name string) string {
 	t.Helper()
 
@@ -155,10 +133,7 @@ func entryBody(t *testing.T, entries []archiveEntry, name string) string {
 	return ""
 }
 
-// countingWriter records how many bytes the archive has handed to the
-// underlying writer so far.
-//
-// [Ja] countingWriter はアーカイブがここまでに下位 writer へ渡したバイト数を
+// countingWriterはアーカイブがここまでに下位writerへ渡したバイト数を
 // 記録する。
 type countingWriter struct {
 	written int64
@@ -169,18 +144,11 @@ func (c *countingWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-// errWriterStopped is the failure stoppableWriter returns once it is stopped.
-//
-// [Ja] errWriterStopped は stoppableWriter が停止した後に返す失敗。
+// errWriterStoppedはstoppableWriterが停止した後に返す失敗。
 var errWriterStopped = errors.New("書き込みに失敗")
 
-// stoppableWriter accepts every write until it is stopped, then fails them all.
-// The zip writer buffers its output, so a write only reaches this writer once
-// the archive has produced enough bytes to flush that buffer. Tests that need a
-// failure therefore have to hand the archive a realistic amount of data first.
-//
-// [Ja] stoppableWriter は停止させるまで全ての書き込みを受け付け、停止後は全て
-// 失敗させる。zip writer は出力をバッファするため、この writer まで書き込みが
+// stoppableWriterは停止させるまで全ての書き込みを受け付け、停止後は全て
+// 失敗させる。zip writerは出力をバッファするため、このwriterまで書き込みが
 // 届くのは、アーカイブがそのバッファを流し出すだけのバイト数を生んだ後になる。
 // そのため失敗を起こすテストは、先に相応の量のデータをアーカイブへ渡す必要が
 // ある。
@@ -195,11 +163,8 @@ func (s *stoppableWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-// newPosts builds count posts of one month, each long enough that the archive
-// keeps handing compressed output to the writer underneath it.
-//
-// [Ja] newPosts は 1 か月分の投稿を count 件組み立てる。各投稿は、アーカイブが
-// 下位 writer へ圧縮済みの出力を渡し続ける程度の長さを持つ。
+// newPostsは1か月分の投稿をcount件組み立てる。各投稿は、アーカイブが
+// 下位writerへ圧縮済みの出力を渡し続ける程度の長さを持つ。
 func newPosts(month time.Month, count int) []usecase.ExportArchivePost {
 	posts := make([]usecase.ExportArchivePost, 0, count)
 	for i := range count {
@@ -224,17 +189,14 @@ func TestBuilder_WritesIndexAndMonthEntriesInOrder(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(&buf, archive)
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	writeMonthEntry(t, ctx, writer, june, []usecase.ExportArchivePost{
 		newPost("post-june", time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC), "6 月のポスト"),
 	})
 	writeMonthEntry(t, ctx, writer, july, []usecase.ExportArchivePost{
-		// Published at 00:30 on July 1st in Asia/Tokyo, so a UTC rendering
-		// would put it in the June entry's month.
-		//
-		// [Ja] Asia/Tokyo では 7 月 1 日 00:30 の公開のため、UTC で描画すると
-		// 6 月のエントリの月になってしまう。
+		// Asia/Tokyoでは7月1日00:30の公開のため、UTCで描画すると
+		// 6月のエントリの月になってしまう。
 		newPost("post-july-1", time.Date(2026, 6, 30, 15, 30, 0, 0, time.UTC), "1 行目\n2 行目"),
 		newPost("post-july-2", time.Date(2026, 7, 5, 2, 0, 0, 0, time.UTC), `<script>alert("x")</script>`),
 	})
@@ -245,36 +207,32 @@ func TestBuilder_WritesIndexAndMonthEntriesInOrder(t *testing.T) {
 	entries := readArchive(t, buf.Bytes())
 	wantNames := []string{"index.html", "posts/2026-06.html", "posts/2026-07.html"}
 	if len(entries) != len(wantNames) {
-		t.Fatalf("エントリ数 = %d, want %d", len(entries), len(wantNames))
+		t.Fatalf("エントリ数 = %d、期待値 = %d", len(entries), len(wantNames))
 	}
 	for i, wantName := range wantNames {
 		if entries[i].name != wantName {
-			t.Errorf("エントリ %d の名前 = %q, want %q", i, entries[i].name, wantName)
+			t.Errorf("エントリ%dの名前 = %q、期待値 = %q", i, entries[i].name, wantName)
 		}
 		if got := entries[i].modified.UTC(); !got.Equal(generatedAt) {
-			t.Errorf("エントリ %q の更新時刻 = %v, want %v", entries[i].name, got, generatedAt)
+			t.Errorf("エントリ%qの更新時刻 = %v、期待値 = %v", entries[i].name, got, generatedAt)
 		}
 	}
 
-	// The table of contents links the entries the archive holds. What that
-	// document looks like is fixed by the format contract in
-	// index_html_test.go.
-	//
-	// [Ja] 目次はアーカイブが持つエントリへリンクする。その文書の形は
-	// index_html_test.go の format 契約で固定している。
+	// 目次はアーカイブが持つエントリへリンクする。その文書の形は
+	// index_html_test.goのformat契約で固定している。
 	index := entryBody(t, entries, "index.html")
 	for _, want := range []string{
 		`href="posts/2026-06.html"`,
 		`href="posts/2026-07.html"`,
 	} {
 		if !strings.Contains(index, want) {
-			t.Errorf("index.html に %q が含まれていない: %s", want, index)
+			t.Errorf("index.htmlに%qが含まれていない: %s", want, index)
 		}
 	}
 
 	julyBody := entryBody(t, entries, "posts/2026-07.html")
 	if !strings.HasPrefix(julyBody, "<!doctype html>") {
-		t.Errorf("月のエントリが doctype で始まっていない: %s", julyBody)
+		t.Errorf("月のエントリがdoctypeで始まっていない: %s", julyBody)
 	}
 	if !strings.HasSuffix(julyBody, "</html>\n") {
 		t.Errorf("月のエントリが閉じられていない: %s", julyBody)
@@ -286,14 +244,14 @@ func TestBuilder_WritesIndexAndMonthEntriesInOrder(t *testing.T) {
 		"&lt;script&gt;",
 	} {
 		if !strings.Contains(julyBody, want) {
-			t.Errorf("7 月のエントリに %q が含まれていない: %s", want, julyBody)
+			t.Errorf("7月のエントリに%qが含まれていない: %s", want, julyBody)
 		}
 	}
 	if strings.Contains(julyBody, "<script>") {
 		t.Errorf("投稿本文がエスケープされていない: %s", julyBody)
 	}
 	if strings.Contains(julyBody, "post-june") {
-		t.Errorf("7 月のエントリに 6 月の投稿が含まれている: %s", julyBody)
+		t.Errorf("7月のエントリに6月の投稿が含まれている: %s", julyBody)
 	}
 }
 
@@ -309,7 +267,7 @@ func TestBuilder_StreamsEntriesBeforeClose(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(counter, archive)
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	monthWriter, err := writer.OpenMonth(ctx, july)
 	if err != nil {
@@ -323,17 +281,13 @@ func TestBuilder_StreamsEntriesBeforeClose(t *testing.T) {
 		}
 	}
 
-	// Bytes for the posts must reach the writer while the month is still open.
-	// If the builder buffered the month, the count would not have increased
-	// since OpenMonth wrote the entry header.
-	//
-	// [Ja] 投稿のバイト列は月のエントリが開いている間に writer へ届く必要がある。
-	// builder が月全体をバッファしていれば、OpenMonth がエントリヘッダーを
+	// 投稿のバイト列は月のエントリが開いている間にwriterへ届く必要がある。
+	// builderが月全体をバッファしていれば、OpenMonthがエントリヘッダーを
 	// 書き出した後からバイト数は増えない。
 	beforeClose := counter.written
 	if beforeClose <= afterOpen {
 		t.Fatalf(
-			"投稿の書き出し後のバイト数 = %d, want > OpenMonth 直後の %d",
+			"投稿の書き出し後のバイト数 = %d、期待値 = OpenMonth直後の%dより大きい",
 			beforeClose,
 			afterOpen,
 		)
@@ -346,7 +300,7 @@ func TestBuilder_StreamsEntriesBeforeClose(t *testing.T) {
 		t.Fatalf("アーカイブのクローズに失敗: %v", err)
 	}
 	if counter.written <= beforeClose {
-		t.Errorf("クローズ後の書き出しバイト数 = %d, want > %d", counter.written, beforeClose)
+		t.Errorf("クローズ後の書き出しバイト数 = %d、期待値 = %dより大きい", counter.written, beforeClose)
 	}
 }
 
@@ -367,10 +321,7 @@ func TestBuilder_StopsWhenReaderCloses(t *testing.T) {
 		done <- buildArchive(ctx, writer, july, postCount)
 	}()
 
-	// Consume enough to leave the builder mid-archive, then fail the read side
-	// the way a failed upload does.
-	//
-	// [Ja] builder がアーカイブの途中で止まる程度まで読み進めてから、失敗した
+	// builderがアーカイブの途中で止まる程度まで読み進めてから、失敗した
 	// アップロードと同じように読み取り側を失敗させる。
 	if _, err := io.ReadFull(reader, make([]byte, 512)); err != nil {
 		t.Fatalf("アーカイブの読み取りに失敗: %v", err)
@@ -382,18 +333,15 @@ func TestBuilder_StopsWhenReaderCloses(t *testing.T) {
 	select {
 	case err := <-done:
 		if !errors.Is(err, uploadErr) {
-			t.Errorf("builder のエラー = %v, want %v", err, uploadErr)
+			t.Errorf("builderのエラー = %v、期待値 = %v", err, uploadErr)
 		}
 	case <-time.After(10 * time.Second):
-		t.Fatal("読み取り側を閉じても builder が終了しない")
+		t.Fatal("読み取り側を閉じてもbuilderが終了しない")
 	}
 }
 
-// buildArchive writes a whole archive and returns the first error, mirroring
-// how the generation use case drives the builder.
-//
-// [Ja] buildArchive はアーカイブ全体を書き出し、最初のエラーを返す。生成の
-// UseCase が builder を駆動する形を模している。
+// buildArchiveはアーカイブ全体を書き出し、最初のエラーを返す。生成の
+// UseCaseがbuilderを駆動する形を模している。
 func buildArchive(
 	ctx context.Context,
 	writer usecase.ExportArchiveWriter,
@@ -430,7 +378,7 @@ func TestBuilder_CloseFinishesOpenMonthEntry(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(&buf, archive)
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	monthWriter, err := writer.OpenMonth(ctx, july)
 	if err != nil {
@@ -457,17 +405,17 @@ func TestBuilder_CloseRejectsIncompleteArchive(t *testing.T) {
 	ctx := context.Background()
 	july := newMonth(2026, time.July, 1)
 
-	t.Run("index.html が書き出されていない", func(t *testing.T) {
+	t.Run("index.htmlが書き出されていない", func(t *testing.T) {
 		t.Parallel()
 
 		var buf bytes.Buffer
 		writer := exportfile.NewBuilder().NewArchive(&buf, newArchive(t))
 		if err := writer.Close(); err == nil {
-			t.Fatal("index.html が無いアーカイブの Close がエラーにならない")
+			t.Fatal("index.htmlが無いアーカイブのCloseがエラーにならない")
 		}
 
 		if entries := readArchive(t, buf.Bytes()); len(entries) != 0 {
-			t.Errorf("不完全なアーカイブのエントリ数 = %d, want 0", len(entries))
+			t.Errorf("不完全なアーカイブのエントリ数 = %d、期待値 = 0", len(entries))
 		}
 	})
 
@@ -477,15 +425,15 @@ func TestBuilder_CloseRejectsIncompleteArchive(t *testing.T) {
 		var buf bytes.Buffer
 		writer := exportfile.NewBuilder().NewArchive(&buf, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		if err := writer.Close(); err == nil {
-			t.Fatal("宣言した月が無いアーカイブの Close がエラーにならない")
+			t.Fatal("宣言した月が無いアーカイブのCloseがエラーにならない")
 		}
 
 		entries := readArchive(t, buf.Bytes())
 		if len(entries) != 1 || entries[0].name != "index.html" {
-			t.Errorf("不完全なアーカイブのエントリ = %+v, want index.html のみ", entries)
+			t.Errorf("不完全なアーカイブのエントリ = %+v、期待値 = index.htmlのみ", entries)
 		}
 	})
 
@@ -495,14 +443,14 @@ func TestBuilder_CloseRejectsIncompleteArchive(t *testing.T) {
 		var buf bytes.Buffer
 		writer := exportfile.NewBuilder().NewArchive(&buf, newArchive(t, july, july))
 		if err := writer.WriteIndex(ctx); err == nil {
-			t.Error("月が重複したアーカイブの WriteIndex がエラーにならない")
+			t.Error("月が重複したアーカイブのWriteIndexがエラーにならない")
 		}
 		if err := writer.Close(); err == nil {
-			t.Error("月が重複したアーカイブの Close がエラーにならない")
+			t.Error("月が重複したアーカイブのCloseがエラーにならない")
 		}
 
 		if entries := readArchive(t, buf.Bytes()); len(entries) != 0 {
-			t.Errorf("不完全なアーカイブのエントリ数 = %d, want 0", len(entries))
+			t.Errorf("不完全なアーカイブのエントリ数 = %d、期待値 = 0", len(entries))
 		}
 	})
 }
@@ -511,12 +459,8 @@ func TestBuilder_KeepsIndexWriteFailureUntilClose(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	// The table of contents has to be large enough that writing it reaches the
-	// writer underneath the zip writer's buffer. A small index is still buffered
-	// when WriteIndex returns, so it cannot fail at all.
-	//
-	// [Ja] 目次は、その書き出しが zip writer のバッファの先にある writer まで
-	// 届く大きさである必要がある。小さな index は WriteIndex が返る時点でまだ
+	// 目次は、その書き出しがzip writerのバッファの先にあるwriterまで
+	// 届く大きさである必要がある。小さなindexはWriteIndexが返る時点でまだ
 	// バッファに留まっているため、そもそも失敗しない。
 	const monthCount = 6000
 	months := make([]usecase.ExportArchiveMonth, 0, monthCount)
@@ -531,19 +475,15 @@ func TestBuilder_KeepsIndexWriteFailureUntilClose(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(&stoppableWriter{stopped: true}, newArchive(t, months...))
 
 	if err := writer.WriteIndex(ctx); !errors.Is(err, errWriterStopped) {
-		t.Fatalf("停止した writer での WriteIndex のエラー = %v, want %v", err, errWriterStopped)
+		t.Fatalf("停止したwriterでのWriteIndexのエラー = %v、期待値 = %v", err, errWriterStopped)
 	}
 
-	// Close names the truncated index itself, so an incomplete archive is
-	// detected by the builder's own state rather than by the underlying writer
-	// still returning its error.
-	//
-	// [Ja] Close は切り詰められた index を自身で名指しする。不完全なアーカイブを、
-	// 下位 writer がエラーを返し続けることではなく builder 自身の状態で検出する
+	// Closeは切り詰められたindexを自身で名指しする。不完全なアーカイブを、
+	// 下位writerがエラーを返し続けることではなくbuilder自身の状態で検出する
 	// ため。
 	err := writer.Close()
-	if want := "index.html の書き出しに失敗"; err == nil || !strings.Contains(err.Error(), want) {
-		t.Errorf("Close のエラー = %v, want %q を含む", err, want)
+	if want := "index.htmlの書き出しに失敗"; err == nil || !strings.Contains(err.Error(), want) {
+		t.Errorf("Closeのエラー = %v、%qを含むことを期待", err, want)
 	}
 }
 
@@ -558,36 +498,28 @@ func TestBuilder_KeepsMonthPendingWhenOpenMonthFails(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(sink, newArchive(t, june, july))
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
-	// June's posts leave compressed output that opening July has to flush, so
-	// the stopped writer is reached while OpenMonth is still creating July's
-	// entry, before its header could be written.
-	//
-	// [Ja] 6 月の投稿は、7 月を開くときに流し出す必要がある圧縮出力を残す。
-	// そのため OpenMonth が 7 月のエントリを作っている間、ヘッダーを書き出す
-	// より前に、停止した writer まで書き込みが届く。
+	// 6月の投稿は、7月を開くときに流し出す必要がある圧縮出力を残す。
+	// そのためOpenMonthが7月のエントリを作っている間、ヘッダーを書き出す
+	// より前に、停止したwriterまで書き込みが届く。
 	writeMonthEntry(t, ctx, writer, june, newPosts(time.June, 1000))
 
 	sink.stopped = true
 
 	if _, err := writer.OpenMonth(ctx, july); !errors.Is(err, errWriterStopped) {
-		t.Fatalf("停止した writer での OpenMonth のエラー = %v, want %v", err, errWriterStopped)
+		t.Fatalf("停止したwriterでのOpenMonthのエラー = %v、期待値 = %v", err, errWriterStopped)
 	}
 
-	// A month leaves the pending set only after its entry is created and its
-	// header is written, so a month whose OpenMonth failed is still reported as
-	// missing instead of being taken for written.
-	//
-	// [Ja] 月が未処理の集合から外れるのは、エントリを作りヘッダーを書き出した
-	// 後だけである。そのため OpenMonth が失敗した月は、書き出し済みと見なされず
+	// 月が未処理の集合から外れるのは、エントリを作りヘッダーを書き出した
+	// 後だけである。そのためOpenMonthが失敗した月は、書き出し済みと見なされず
 	// 未出力として報告される。
 	err := writer.Close()
 	if err == nil {
-		t.Fatal("月を書き出せなかったアーカイブの Close がエラーにならない")
+		t.Fatal("月を書き出せなかったアーカイブのCloseがエラーにならない")
 	}
-	if want := "目次に対応する月のエントリが書き出されていない (1 件)"; !strings.Contains(err.Error(), want) {
-		t.Errorf("Close のエラー = %v, want %q を含む", err, want)
+	if want := "目次に対応する月のエントリが書き出されていない (1件)"; !strings.Contains(err.Error(), want) {
+		t.Errorf("Closeのエラー = %v、%qを含むことを期待", err, want)
 	}
 }
 
@@ -602,7 +534,7 @@ func TestBuilder_CloseFailsAfterWritePostFailure(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(sink, newArchive(t, july))
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	monthWriter, err := writer.OpenMonth(ctx, july)
 	if err != nil {
@@ -618,18 +550,14 @@ func TestBuilder_CloseFailsAfterWritePostFailure(t *testing.T) {
 		}
 	}
 	if !errors.Is(writeErr, errWriterStopped) {
-		t.Fatalf("停止した writer での WritePost のエラー = %v, want %v", writeErr, errWriterStopped)
+		t.Fatalf("停止したwriterでのWritePostのエラー = %v、期待値 = %v", writeErr, errWriterStopped)
 	}
 
-	// The month is left open on purpose: a caller that saw the error only on
-	// WritePost must not be able to finish the archive, so Close carries the
-	// write failure even though the month was never closed by the caller.
-	//
-	// [Ja] 月は意図的に開いたままにする。WritePost でしかエラーを見ていない
+	// 月は意図的に開いたままにする。WritePostでしかエラーを見ていない
 	// 呼び出し側がアーカイブを完成させられないよう、呼び出し側が月を閉じて
-	// いなくても Close は書き込みの失敗を持ち越す。
+	// いなくてもCloseは書き込みの失敗を持ち越す。
 	if err := writer.Close(); !errors.Is(err, errWriterStopped) {
-		t.Errorf("アーカイブの Close のエラー = %v, want %v を含む", err, errWriterStopped)
+		t.Errorf("アーカイブのCloseのエラー = %v、%vを含むことを期待", err, errWriterStopped)
 	}
 }
 
@@ -641,7 +569,7 @@ func TestBuilder_CloseIsIdempotent(t *testing.T) {
 
 	writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	writeMonthEntry(t, ctx, writer, july, nil)
 
@@ -649,7 +577,7 @@ func TestBuilder_CloseIsIdempotent(t *testing.T) {
 		t.Fatalf("アーカイブのクローズに失敗: %v", err)
 	}
 	if err := writer.Close(); err != nil {
-		t.Errorf("2 回目の Close のエラー = %v, want nil", err)
+		t.Errorf("2回目のCloseのエラー = %v、期待値 = nil", err)
 	}
 }
 
@@ -667,7 +595,7 @@ func TestBuilder_VerifiesDeclaredPostCount(t *testing.T) {
 		wantArchiveCloseErr bool
 	}{
 		{name: "宣言件数どおり", declaredPostCount: 1, writes: 1},
-		{name: "0 件", declaredPostCount: 0},
+		{name: "0件", declaredPostCount: 0},
 		{name: "宣言件数より少ない", declaredPostCount: 1, wantMonthCloseErr: true, wantArchiveCloseErr: true},
 		{name: "宣言件数より多い", declaredPostCount: 1, writes: 2, wantWriteErr: true, wantMonthCloseErr: true, wantArchiveCloseErr: true},
 	}
@@ -679,7 +607,7 @@ func TestBuilder_VerifiesDeclaredPostCount(t *testing.T) {
 			july := newMonth(2026, time.July, tt.declaredPostCount)
 			writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 			if err := writer.WriteIndex(ctx); err != nil {
-				t.Fatalf("index.html の書き出しに失敗: %v", err)
+				t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 			}
 			monthWriter, err := writer.OpenMonth(ctx, july)
 			if err != nil {
@@ -694,16 +622,16 @@ func TestBuilder_VerifiesDeclaredPostCount(t *testing.T) {
 				}
 			}
 			if got := writeErr != nil; got != tt.wantWriteErr {
-				t.Errorf("WritePost のエラー有無 = %t, want %t (error: %v)", got, tt.wantWriteErr, writeErr)
+				t.Errorf("WritePostのエラー有無 = %t、期待値 = %t (エラー: %v)", got, tt.wantWriteErr, writeErr)
 			}
 
 			monthCloseErr := monthWriter.Close()
 			if got := monthCloseErr != nil; got != tt.wantMonthCloseErr {
-				t.Errorf("月の Close のエラー有無 = %t, want %t (error: %v)", got, tt.wantMonthCloseErr, monthCloseErr)
+				t.Errorf("月のCloseのエラー有無 = %t、期待値 = %t (エラー: %v)", got, tt.wantMonthCloseErr, monthCloseErr)
 			}
 			archiveCloseErr := writer.Close()
 			if got := archiveCloseErr != nil; got != tt.wantArchiveCloseErr {
-				t.Errorf("アーカイブの Close のエラー有無 = %t, want %t (error: %v)", got, tt.wantArchiveCloseErr, archiveCloseErr)
+				t.Errorf("アーカイブのCloseのエラー有無 = %t、期待値 = %t (エラー: %v)", got, tt.wantArchiveCloseErr, archiveCloseErr)
 			}
 		})
 	}
@@ -724,7 +652,7 @@ func TestBuilder_RendersNilLocationAsUTC(t *testing.T) {
 	writer := exportfile.NewBuilder().NewArchive(&buf, archive)
 
 	if err := writer.WriteIndex(ctx); err != nil {
-		t.Fatalf("index.html の書き出しに失敗: %v", err)
+		t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 	}
 	writeMonthEntry(t, ctx, writer, july, []usecase.ExportArchivePost{
 		newPost("post-july", time.Date(2026, 7, 5, 2, 0, 0, 0, time.UTC), "7 月のポスト"),
@@ -735,7 +663,7 @@ func TestBuilder_RendersNilLocationAsUTC(t *testing.T) {
 
 	julyBody := entryBody(t, readArchive(t, buf.Bytes()), "posts/2026-07.html")
 	if want := `datetime="2026-07-05T02:00:00Z"`; !strings.Contains(julyBody, want) {
-		t.Errorf("nil の location のエントリに %q が含まれていない: %s", want, julyBody)
+		t.Errorf("nilのlocationのエントリに%qが含まれていない: %s", want, julyBody)
 	}
 }
 
@@ -752,7 +680,7 @@ func TestBuilder_CanceledContextStopsWriting(t *testing.T) {
 
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); !errors.Is(err, context.Canceled) {
-			t.Errorf("キャンセル後の WriteIndex のエラー = %v, want %v", err, context.Canceled)
+			t.Errorf("キャンセル後のWriteIndexのエラー = %v、期待値 = %v", err, context.Canceled)
 		}
 	})
 
@@ -762,13 +690,13 @@ func TestBuilder_CanceledContextStopsWriting(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 
 		cancel()
 
 		if _, err := writer.OpenMonth(ctx, july); !errors.Is(err, context.Canceled) {
-			t.Errorf("キャンセル後の OpenMonth のエラー = %v, want %v", err, context.Canceled)
+			t.Errorf("キャンセル後のOpenMonthのエラー = %v、期待値 = %v", err, context.Canceled)
 		}
 	})
 
@@ -778,7 +706,7 @@ func TestBuilder_CanceledContextStopsWriting(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		monthWriter, err := writer.OpenMonth(ctx, july)
 		if err != nil {
@@ -789,7 +717,7 @@ func TestBuilder_CanceledContextStopsWriting(t *testing.T) {
 
 		post := newPost("post-july", time.Date(2026, 7, 5, 2, 0, 0, 0, time.UTC), "7 月のポスト")
 		if err := monthWriter.WritePost(ctx, post); !errors.Is(err, context.Canceled) {
-			t.Errorf("キャンセル後の WritePost のエラー = %v, want %v", err, context.Canceled)
+			t.Errorf("キャンセル後のWritePostのエラー = %v、期待値 = %v", err, context.Canceled)
 		}
 	})
 }
@@ -802,24 +730,24 @@ func TestBuilder_RejectsInvalidSequence(t *testing.T) {
 	july := newMonth(2026, time.July, 1)
 	august := newMonth(2026, time.August, 1)
 
-	t.Run("index.html より前に月を開けない", func(t *testing.T) {
+	t.Run("index.htmlより前に月を開けない", func(t *testing.T) {
 		t.Parallel()
 
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if _, err := writer.OpenMonth(ctx, july); err == nil {
-			t.Error("index.html より前の OpenMonth がエラーにならない")
+			t.Error("index.htmlより前のOpenMonthがエラーにならない")
 		}
 	})
 
-	t.Run("index.html を 2 回書き出せない", func(t *testing.T) {
+	t.Run("index.htmlを2回書き出せない", func(t *testing.T) {
 		t.Parallel()
 
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		if err := writer.WriteIndex(ctx); err == nil {
-			t.Error("2 回目の WriteIndex がエラーにならない")
+			t.Error("2回目のWriteIndexがエラーにならない")
 		}
 	})
 
@@ -828,24 +756,24 @@ func TestBuilder_RejectsInvalidSequence(t *testing.T) {
 
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		if _, err := writer.OpenMonth(ctx, august); err == nil {
-			t.Error("宣言されていない月の OpenMonth がエラーにならない")
+			t.Error("宣言されていない月のOpenMonthがエラーにならない")
 		}
 	})
 
-	t.Run("同じ月を 2 回開けない", func(t *testing.T) {
+	t.Run("同じ月を2回開けない", func(t *testing.T) {
 		t.Parallel()
 
 		emptyJuly := newMonth(2026, time.July, 0)
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, emptyJuly))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		writeMonthEntry(t, ctx, writer, emptyJuly, nil)
 		if _, err := writer.OpenMonth(ctx, emptyJuly); err == nil {
-			t.Error("2 回目の OpenMonth がエラーにならない")
+			t.Error("2回目のOpenMonthがエラーにならない")
 		}
 	})
 
@@ -854,13 +782,13 @@ func TestBuilder_RejectsInvalidSequence(t *testing.T) {
 
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, june, july))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		if _, err := writer.OpenMonth(ctx, june); err != nil {
 			t.Fatalf("月のエントリの作成に失敗: %v", err)
 		}
 		if _, err := writer.OpenMonth(ctx, july); err == nil {
-			t.Error("前の月を閉じない OpenMonth がエラーにならない")
+			t.Error("前の月を閉じないOpenMonthがエラーにならない")
 		}
 	})
 
@@ -870,7 +798,7 @@ func TestBuilder_RejectsInvalidSequence(t *testing.T) {
 		emptyJuly := newMonth(2026, time.July, 0)
 		writer := exportfile.NewBuilder().NewArchive(&bytes.Buffer{}, newArchive(t, emptyJuly))
 		if err := writer.WriteIndex(ctx); err != nil {
-			t.Fatalf("index.html の書き出しに失敗: %v", err)
+			t.Fatalf("index.htmlの書き出しに失敗: %v", err)
 		}
 		monthWriter, err := writer.OpenMonth(ctx, emptyJuly)
 		if err != nil {
@@ -882,7 +810,7 @@ func TestBuilder_RejectsInvalidSequence(t *testing.T) {
 
 		post := newPost("post-july", time.Date(2026, 7, 5, 2, 0, 0, 0, time.UTC), "7 月のポスト")
 		if err := monthWriter.WritePost(ctx, post); err == nil {
-			t.Error("閉じた月への WritePost がエラーにならない")
+			t.Error("閉じた月へのWritePostがエラーにならない")
 		}
 	})
 }

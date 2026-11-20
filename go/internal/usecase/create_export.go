@@ -13,21 +13,12 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// CreateExportUsecase starts an export for the signed-in profile. It persists
-// the request as a queued row and then asks the job queue to generate it.
+// CreateExportUsecaseはログイン中プロフィールのエクスポートを開始する。
+// 申請をqueuedの行として永続化し、その後ジョブキューへ生成を依頼する。
 //
-// The row is the durable record of the request, not the job. A queued row and
-// its River job cannot be written atomically (the job queue runs on its own
-// connection), so the insert commits first and the job is inserted after. An
-// insert that fails leaves the queued row in place for reconciliation to pick
-// up, which is why a failed enqueue does not fail the request.
-//
-// [Ja] CreateExportUsecase はログイン中プロフィールのエクスポートを開始する。
-// 申請を queued の行として永続化し、その後ジョブキューへ生成を依頼する。
-//
-// 申請の永続的な記録はジョブではなく行のほうである。queued の行と River のジョブは
-// 原子的に書けない (ジョブキューは自身のコネクションで動く) ため、先に INSERT を
-// commit し、ジョブはその後に投入する。投入が失敗しても queued の行は残り、
+// 申請の永続的な記録はジョブではなく行のほうである。queuedの行とRiverのジョブは
+// 原子的に書けない (ジョブキューは自身のコネクションで動く) ため、先にINSERTを
+// commitし、ジョブはその後に投入する。投入が失敗してもqueuedの行は残り、
 // リコンシリエーションが引き受ける。投入の失敗でリクエストを失敗させないのは
 // このためである。
 type CreateExportUsecase struct {
@@ -38,12 +29,8 @@ type CreateExportUsecase struct {
 	storageReady    bool
 }
 
-// NewCreateExportUsecase creates a CreateExportUsecase. storageReady is the
-// same readiness the export Workers and the export page are gated on, resolved
-// once at composition time.
-//
-// [Ja] NewCreateExportUsecase は CreateExportUsecase を生成する。storageReady は
-// エクスポート系 Worker とエクスポート画面と同じ readiness で、合成時に一度だけ
+// NewCreateExportUsecaseはCreateExportUsecaseを生成する。storageReadyは
+// エクスポート系Workerとエクスポート画面と同じreadinessで、合成時に一度だけ
 // 解決した値である。
 func NewCreateExportUsecase(
 	db *sql.DB,
@@ -61,13 +48,8 @@ func NewCreateExportUsecase(
 	}
 }
 
-// CreateExportInput holds the input parameters for starting an export. UserID
-// and ProfileID are the pair authorization is decided on, exactly as on the
-// export page. ActorID is the requester recorded on the row; it is not part of
-// the authorization decision.
-//
-// [Ja] CreateExportInput はエクスポート開始の入力パラメータ。UserID と ProfileID は
-// エクスポート画面と同じく認可を判断する組である。ActorID は行に記録する申請者で
+// CreateExportInputはエクスポート開始の入力パラメータ。UserIDとProfileIDは
+// エクスポート画面と同じく認可を判断する組である。ActorIDは行に記録する申請者で
 // あり、認可の判断には加わらない。
 type CreateExportInput struct {
 	UserID    model.UserID
@@ -75,31 +57,19 @@ type CreateExportInput struct {
 	ActorID   model.ActorID
 }
 
-// CreateExportOutput is the result of starting an export. Export is the queued
-// row that was created.
-//
-// [Ja] CreateExportOutput はエクスポート開始の結果。Export は作成された queued の
+// CreateExportOutputはエクスポート開始の結果。Exportは作成されたqueuedの
 // 行である。
 type CreateExportOutput struct {
 	Export *model.Export
 }
 
-// Execute authorizes the request, persists the queued export, and asks the job
-// queue to generate it.
-//
-// Authorization runs before the availability check for the same reason as on
-// the export page: a profile the user does not own is refused identically
-// whether or not this deployment can run exports. A deployment that cannot is
-// then refused before anything is written, so no row is created that no Worker
-// exists to generate.
-//
-// [Ja] Execute はリクエストを認可し、queued のエクスポートを永続化し、ジョブキューへ
+// Executeはリクエストを認可し、queuedのエクスポートを永続化し、ジョブキューへ
 // 生成を依頼する。
 //
 // 認可を利用可否の判定より先に行う理由はエクスポート画面と同じで、ユーザーが所有して
 // いないプロフィールを、そのデプロイがエクスポートを実行できるかどうかに関わらず
 // 同じ形で拒否するためである。実行できないデプロイは、何かを書き込む前に拒否される
-// ため、生成する Worker が存在しない行が作られることはない。
+// ため、生成するWorkerが存在しない行が作られることはない。
 func (uc *CreateExportUsecase) Execute(ctx context.Context, input CreateExportInput) (*CreateExportOutput, error) {
 	if err := uc.authorize(ctx, input); err != nil {
 		return nil, err
@@ -124,17 +94,10 @@ func (uc *CreateExportUsecase) Execute(ctx context.Context, input CreateExportIn
 	return &CreateExportOutput{Export: export}, nil
 }
 
-// authorize checks that the signed-in user currently owns the target profile,
-// on the same terms as GetExportShowUsecase: the right to export a profile's
-// posts comes from the ownership the user holds right now, not from the actor
-// row that records who asked. A profile the user does not own is refused as not
-// found, so the response cannot be used to tell an existing profile from a
-// missing one.
-//
-// [Ja] authorize はログイン中ユーザーが対象プロフィールを現在所有していることを
-// 確認する。条件は GetExportShowUsecase と同じで、プロフィールのポストを
-// エクスポートする権利は、誰が申請したかを記録する actor 行ではなく、そのユーザーが
-// 今持っている所有関係から生じる。所有していないプロフィールは not found として
+// authorizeはログイン中ユーザーが対象プロフィールを現在所有していることを
+// 確認する。条件はGetExportShowUsecaseと同じで、プロフィールのポストを
+// エクスポートする権利は、誰が申請したかを記録するactor行ではなく、そのユーザーが
+// 今持っている所有関係から生じる。所有していないプロフィールはnot foundとして
 // 拒否し、応答から既存のプロフィールと存在しないプロフィールを区別できないようにする。
 func (uc *CreateExportUsecase) authorize(ctx context.Context, input CreateExportInput) error {
 	userProfile, err := uc.userProfileRepo.FindByProfileID(ctx, input.ProfileID)
@@ -152,22 +115,13 @@ func (uc *CreateExportUsecase) authorize(ctx context.Context, input CreateExport
 	return nil
 }
 
-// createExport removes the profile's failed exports and inserts the new queued
-// one in a single transaction.
+// createExportはプロフィールのfailedなエクスポートの削除と、新しいqueuedの
+// エクスポートの挿入を1つのtransactionで行う。
 //
-// Both changes belong to the same commit: the failed row is only obsolete
-// because a new request replaces it, so a create that loses the race for the
-// profile's one active slot must leave it standing. Rolling back together also
-// keeps the retention bound intact, since the profile never holds two exports
-// that are neither succeeded nor in progress.
-//
-// [Ja] createExport はプロフィールの failed なエクスポートの削除と、新しい queued の
-// エクスポートの挿入を 1 つの transaction で行う。
-//
-// 2 つの変更は同じ commit に属する。failed の行が不要になるのは新しい申請がそれを
-// 置き換えるからであり、プロフィールの 1 つしかない実行枠を取り損ねた create は、
-// その行を残さなければならない。まとめて rollback することで保持の上限も保たれる。
-// succeeded でも進行中でもないエクスポートをプロフィールが 2 件持つことがなくなる
+// 2つの変更は同じcommitに属する。failedの行が不要になるのは新しい申請がそれを
+// 置き換えるからであり、プロフィールの1つしかない実行枠を取り損ねたcreateは、
+// その行を残さなければならない。まとめてrollbackすることで保持の上限も保たれる。
+// succeededでも進行中でもないエクスポートをプロフィールが2件持つことがなくなる
 // ためである。
 func (uc *CreateExportUsecase) createExport(ctx context.Context, input CreateExportInput) (*model.Export, error) {
 	tx, err := uc.db.BeginTx(ctx, nil)
@@ -197,11 +151,7 @@ func (uc *CreateExportUsecase) createExport(ctx context.Context, input CreateExp
 		}
 		return nil, fmt.Errorf("エクスポートの作成に失敗: %w", err)
 	}
-	// No row means the profile is past the boundary profile deletion
-	// establishes. Nothing failed, so this is a refusal rather than an error:
-	// the posts an export would archive are on their way out.
-	//
-	// [Ja] 行が無いのは、プロフィールが削除処理の確立する境界を越えた場合である。
+	// 行が無いのは、プロフィールが削除処理の確立する境界を越えた場合である。
 	// 失敗ではないため、エラーではなく拒否として扱う。エクスポートがアーカイブする
 	// はずのポストは、これから消えていくものであるため。
 	if export == nil {
@@ -220,15 +170,9 @@ func (uc *CreateExportUsecase) createExport(ctx context.Context, input CreateExp
 	return export, nil
 }
 
-// enqueueGeneration asks the job queue to generate the committed export. A
-// failure is logged and swallowed: the queued row is the durable work intent,
-// and reconciliation inserts a job for a queued export that never got one, so
-// reporting the request as failed here would deny an export that is in fact
-// going to run.
-//
-// [Ja] enqueueGeneration は commit 済みのエクスポートの生成をジョブキューへ依頼する。
-// 失敗はログに記録して握りつぶす。queued の行が durable work intent であり、ジョブを
-// 得られなかった queued のエクスポートにはリコンシリエーションがジョブを投入するため、
+// enqueueGenerationはcommit済みのエクスポートの生成をジョブキューへ依頼する。
+// 失敗はログに記録して握りつぶす。queuedの行がdurable work intentであり、ジョブを
+// 得られなかったqueuedのエクスポートにはリコンシリエーションがジョブを投入するため、
 // ここでリクエストを失敗として報告すると、実際には実行されるエクスポートを拒否する
 // ことになる。
 func (uc *CreateExportUsecase) enqueueGeneration(ctx context.Context, exportID model.ExportID) {

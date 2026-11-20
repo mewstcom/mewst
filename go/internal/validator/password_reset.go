@@ -8,20 +8,20 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// PasswordResetCreateValidator はパスワードリセット開始フォームのバリデーションを行う
+// PasswordResetCreateValidatorはパスワードリセット開始フォームのバリデーションを行う
 type PasswordResetCreateValidator struct{}
 
-// NewPasswordResetCreateValidator はPasswordResetCreateValidatorを生成する
+// NewPasswordResetCreateValidatorはPasswordResetCreateValidatorを生成する
 func NewPasswordResetCreateValidator() *PasswordResetCreateValidator {
 	return &PasswordResetCreateValidator{}
 }
 
-// PasswordResetCreateValidatorInput はバリデーションの入力パラメータ
+// PasswordResetCreateValidatorInputはバリデーションの入力パラメータ
 type PasswordResetCreateValidatorInput struct {
 	Email string
 }
 
-// Validate は入力値の形式をチェックする (DBアクセスなし)
+// Validateは入力値の形式をチェックする (DBアクセスなし)
 //
 // メールアドレスの存在チェックを行わないのは、列挙攻撃 (存在するメールアドレスを
 // 推測する攻撃) を防ぐため。存在しないメールでも「リセットメールを送信しました」

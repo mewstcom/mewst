@@ -12,22 +12,22 @@ import (
 	"github.com/mewstcom/mewst/go/internal/query"
 )
 
-// PostRepository は投稿のリポジトリ
+// PostRepositoryは投稿のリポジトリ
 type PostRepository struct {
 	q *query.Queries
 }
 
-// NewPostRepository はPostRepositoryを生成する
+// NewPostRepositoryはPostRepositoryを生成する
 func NewPostRepository(q *query.Queries) *PostRepository {
 	return &PostRepository{q: q}
 }
 
-// WithTx はトランザクションを設定したPostRepositoryを返す
+// WithTxはトランザクションを設定したPostRepositoryを返す
 func (r *PostRepository) WithTx(tx *sql.Tx) *PostRepository {
 	return &PostRepository{q: r.q.WithTx(tx)}
 }
 
-// FindByID はIDで投稿を取得する
+// FindByIDはIDで投稿を取得する
 func (r *PostRepository) FindByID(ctx context.Context, id model.PostID) (*model.Post, error) {
 	row, err := r.q.GetPostByID(ctx, uuid.UUID(id))
 	if err != nil {
@@ -39,7 +39,7 @@ func (r *PostRepository) FindByID(ctx context.Context, id model.PostID) (*model.
 	return toPostModel(row), nil
 }
 
-// CreatePostInput は投稿作成の入力パラメータ
+// CreatePostInputは投稿作成の入力パラメータ
 type CreatePostInput struct {
 	ProfileID          model.ProfileID
 	Content            string
@@ -47,7 +47,7 @@ type CreatePostInput struct {
 	OauthApplicationID model.OauthApplicationID
 }
 
-// Create は投稿を作成する
+// Createは投稿を作成する
 func (r *PostRepository) Create(ctx context.Context, input CreatePostInput) (*model.Post, error) {
 	row, err := r.q.CreatePost(ctx, query.CreatePostParams{
 		ProfileID:          uuid.UUID(input.ProfileID),
@@ -61,8 +61,7 @@ func (r *PostRepository) Create(ctx context.Context, input CreatePostInput) (*mo
 	return toPostModel(row), nil
 }
 
-// toPostModel converts a query.Post row into a model.Post.
-// [Ja] toPostModel は query.Post を model.Post に変換するパッケージ非公開の自由関数。
+// toPostModelはquery.Postをmodel.Postに変換するパッケージ非公開の自由関数。
 func toPostModel(row query.Post) *model.Post {
 	var discardedAt *time.Time
 	if row.DiscardedAt.Valid {

@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/testutil"
 )
 
-// setupAuthTest はテスト用のAuthミドルウェアをセットアップする
+// setupAuthTestはテスト用のAuthミドルウェアをセットアップする
 func setupAuthTest(t *testing.T) (*Auth, *testutil.SessionBuilder, string) {
 	t.Helper()
 
@@ -82,7 +82,7 @@ func TestRequireAuth_認証済みの場合(t *testing.T) {
 		if profile == nil {
 			t.Error("コンテキストにプロフィールが設定されていない")
 		} else if profile.Atname != "authtestuser" {
-			t.Errorf("ProfileFromContext().Atname = %q, want %q", profile.Atname, "authtestuser")
+			t.Errorf("ProfileFromContext().Atname = %q、期待値 = %q", profile.Atname, "authtestuser")
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -104,7 +104,7 @@ func TestRequireAuth_認証済みの場合(t *testing.T) {
 		t.Error("次のハンドラーが呼び出されなかった")
 	}
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 }
 
@@ -132,11 +132,11 @@ func TestRequireAuth_未認証の場合(t *testing.T) {
 		t.Error("次のハンドラーが呼び出されるべきではない")
 	}
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusFound)
 	}
 	location := rr.Header().Get("Location")
 	if location != "/sign_in" {
-		t.Errorf("リダイレクト先が不正: got %s, want /sign_in", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %s、期待値 = /sign_in", location)
 	}
 }
 
@@ -168,11 +168,11 @@ func TestRequireAuth_無効なトークンの場合(t *testing.T) {
 		t.Error("次のハンドラーが呼び出されるべきではない")
 	}
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusFound)
 	}
 	location := rr.Header().Get("Location")
 	if location != "/sign_in" {
-		t.Errorf("リダイレクト先が不正: got %s, want /sign_in", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %s、期待値 = /sign_in", location)
 	}
 }
 
@@ -204,11 +204,11 @@ func TestRequireNoAuth_認証済みの場合(t *testing.T) {
 		t.Error("次のハンドラーが呼び出されるべきではない")
 	}
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusFound)
 	}
 	location := rr.Header().Get("Location")
 	if location != "/" {
-		t.Errorf("リダイレクト先が不正: got %s, want /", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %s、期待値 = /", location)
 	}
 }
 
@@ -236,7 +236,7 @@ func TestRequireNoAuth_未認証の場合(t *testing.T) {
 		t.Error("次のハンドラーが呼び出されなかった")
 	}
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 }
 
@@ -278,7 +278,7 @@ func TestSetUser_認証済みの場合(t *testing.T) {
 		t.Error("コンテキストにアクターが設定されていない")
 	}
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 }
 
@@ -316,7 +316,7 @@ func TestSetUser_未認証の場合(t *testing.T) {
 		t.Error("未認証なのにコンテキストにアクターが設定されている")
 	}
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %d, want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 }
 

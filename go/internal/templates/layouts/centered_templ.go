@@ -14,29 +14,18 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// CenteredLayoutData holds the data passed to the centered authenticated layout.
-// Navbar carries the current user's atname and the active menu item.
-//
-// [Ja] 中央寄せの認証後レイアウトに渡すデータ構造体。Navbar は現在ユーザーの
-// atname とアクティブなメニュー項目を保持する。
+// CenteredLayoutDataは中央寄せの認証後レイアウトに渡すデータ構造体。Navbarは現在ユーザーの
+// atnameとアクティブなメニュー項目を保持する。
 type CenteredLayoutData struct {
 	Meta   viewmodel.PageMeta
 	Navbar viewmodel.Navbar
 }
 
-// Centered is the authenticated layout for focused single-column pages (such as
-// the new post compose screen): it shows the same navbar as Default but centers
-// the page's content column horizontally. Default keeps content top-left and
-// lets each page own its width; Simple drops the navbar entirely and centers a
-// card in the viewport. Centered sits between them — navbar present, content
-// centered — so a focused page reachable from the navbar keeps global navigation
-// without spreading its form across the full width.
-//
-// [Ja] Centered は集中させたい単一カラムページ (新規投稿の集中作成画面など) 向けの
-// 認証後レイアウト。Default と同じ navbar を表示しつつ、ページのコンテンツカラムを
-// 水平方向に中央寄せする。Default はコンテンツを左上に置き幅をページに委ねる。Simple は
-// navbar を持たずビューポート内にカードを中央寄せする。Centered はその中間で、navbar を
-// 持ちつつコンテンツを中央寄せするため、navbar から到達する集中ページがフォームを全幅に
+// Centeredは集中させたい単一カラムページ (新規投稿の集中作成画面など) 向けの
+// 認証後レイアウト。Defaultと同じnavbarを表示しつつ、ページのコンテンツカラムを
+// 水平方向に中央寄せする。Defaultはコンテンツを左上に置き幅をページに委ねる。Simpleは
+// navbarを持たずビューポート内にカードを中央寄せする。Centeredはその中間で、navbarを
+// 持ちつつコンテンツを中央寄せするため、navbarから到達する集中ページがフォームを全幅に
 // 広げずにグローバルナビゲーションを保てる。
 func Centered(data CenteredLayoutData, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -66,7 +55,7 @@ func Centered(data CenteredLayoutData, content templ.Component) templ.Component 
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templates.Locale(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/centered.templ`, Line: 37, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/layouts/centered.templ`, Line: 26, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {

@@ -1,4 +1,4 @@
-// Package account はアカウント作成ハンドラーを提供します
+// Package accountはアカウント作成ハンドラーを提供します
 package account
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Handler はアカウント作成機能のHTTPハンドラー
+// Handlerはアカウント作成機能のHTTPハンドラー
 type Handler struct {
 	cfg                             *config.Config
 	sessionMgr                      *session.Manager
@@ -21,7 +21,7 @@ type Handler struct {
 	rateLimiter                     *ratelimit.Limiter
 }
 
-// NewHandler はHandlerを生成する
+// NewHandlerはHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,

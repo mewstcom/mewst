@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// setupTestEnv は必須の環境変数を設定するヘルパー関数です
+// setupTestEnvは必須の環境変数を設定するヘルパー関数です
 func setupTestEnv(t *testing.T) func() {
 	t.Helper()
 
@@ -46,24 +46,18 @@ func setupTestEnv(t *testing.T) func() {
 	_ = os.Setenv("MEWST_SESSION_SECURE", "false")
 	_ = os.Setenv("MEWST_SESSION_HTTPONLY", "true")
 
-	// Sentry 関連は各テストが独立して状態を制御できるよう、デフォルトでは未設定にする
+	// Sentry関連は各テストが独立して状態を制御できるよう、デフォルトでは未設定にする
 	_ = os.Unsetenv("MEWST_SENTRY_DSN")
 	_ = os.Unsetenv("MEWST_SENTRY_ENVIRONMENT")
 	_ = os.Unsetenv("MEWST_SENTRY_TRACES_SAMPLE_RATE")
 	_ = os.Unsetenv("MEWST_SENTRY_DEBUG")
 
-	// Keep MEWST_TURNSTILE_DISABLE unset by default so each test controls it
-	// explicitly and a real .env cannot alter config test behavior.
-	//
-	// [Ja] 各テストが MEWST_TURNSTILE_DISABLE を明示的に制御し、実 .env が config テストの
+	// 各テストがMEWST_TURNSTILE_DISABLEを明示的に制御し、実 .envがconfigテストの
 	// 挙動を変えないよう、デフォルトでは未設定にする。
 	_ = os.Unsetenv("MEWST_TURNSTILE_DISABLE")
 
-	// Keep MEWST_S3_* unset by default so each test controls the export storage
-	// configuration explicitly and a real .env cannot alter config test behavior.
-	//
-	// [Ja] 各テストがエクスポート用ストレージ設定を明示的に制御し、実 .env が
-	// config テストの挙動を変えないよう、MEWST_S3_* はデフォルトでは未設定にする。
+	// 各テストがエクスポート用ストレージ設定を明示的に制御し、実 .envが
+	// configテストの挙動を変えないよう、MEWST_S3_* はデフォルトでは未設定にする。
 	_ = os.Unsetenv("MEWST_S3_BUCKET_NAME")
 	_ = os.Unsetenv("MEWST_S3_ENDPOINT")
 	_ = os.Unsetenv("MEWST_S3_ACCESS_KEY_ID")
@@ -82,15 +76,9 @@ func setupTestEnv(t *testing.T) func() {
 	}
 }
 
-// setExportStorageEnv sets the MEWST_S3_* variables Load requires in
-// production. A test that boots a production configuration to look at
-// something else (Turnstile, Sentry) has to satisfy that requirement, and
-// setting the four in one call keeps the requirement out of those tests'
-// tables.
-//
-// [Ja] setExportStorageEnv は Load が本番で必須とする MEWST_S3_* を設定する。
+// setExportStorageEnvはLoadが本番で必須とするMEWST_S3_* を設定する。
 // 別のもの (Turnstile・Sentry) を見るために本番構成で起動するテストもこの要求を
-// 満たす必要があるため、4 項目を 1 回の呼び出しにまとめ、それらのテストの
+// 満たす必要があるため、4項目を1回の呼び出しにまとめ、それらのテストの
 // テーブルから必須項目を締め出す。
 func setExportStorageEnv(t *testing.T) {
 	t.Helper()
@@ -101,41 +89,41 @@ func setExportStorageEnv(t *testing.T) {
 	_ = os.Setenv("MEWST_S3_SECRET_ACCESS_KEY", "config-test-secret-access-key")
 }
 
-// TestLoad は環境変数から設定を読み込むテスト
+// TestLoadは環境変数から設定を読み込むテスト
 func TestLoad(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
 
 	cfg, err := Load()
 	if err != nil {
-		t.Fatalf("Load() failed: %v", err)
+		t.Fatalf("Load()のエラー = %v", err)
 	}
 
 	// 基本的な設定が読み込まれていることを確認
 	if cfg.DatabaseURL == "" {
-		t.Error("DatabaseURL should not be empty")
+		t.Error("DatabaseURL = 空文字列、非空を期待")
 	}
 	if cfg.Port == "" {
-		t.Error("Port should not be empty")
+		t.Error("Port = 空文字列、非空を期待")
 	}
 	if cfg.Env != "test" {
-		t.Errorf("Env = %v, want test", cfg.Env)
+		t.Errorf("Env = %v、期待値 = test", cfg.Env)
 	}
 	if cfg.Domain != "test.mewst.com" {
-		t.Errorf("Domain = %v, want test.mewst.com", cfg.Domain)
+		t.Errorf("Domain = %v、期待値 = test.mewst.com", cfg.Domain)
 	}
 	if cfg.CookieDomain != ".test.mewst.com" {
-		t.Errorf("CookieDomain = %v, want .test.mewst.com", cfg.CookieDomain)
+		t.Errorf("CookieDomain = %v、期待値 = .test.mewst.com", cfg.CookieDomain)
 	}
 	if cfg.SessionSecure != false {
-		t.Errorf("SessionSecure = %v, want false", cfg.SessionSecure)
+		t.Errorf("SessionSecure = %v、期待値 = false", cfg.SessionSecure)
 	}
 	if cfg.SessionHTTPOnly != true {
-		t.Errorf("SessionHTTPOnly = %v, want true", cfg.SessionHTTPOnly)
+		t.Errorf("SessionHTTPOnly = %v、期待値 = true", cfg.SessionHTTPOnly)
 	}
 }
 
-// TestLoad_MissingDatabaseURL は DATABASE_URL が未設定の場合のエラーをテスト
+// TestLoad_MissingDatabaseURLはDATABASE_URLが未設定の場合のエラーをテスト
 func TestLoad_MissingDatabaseURL(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -144,11 +132,11 @@ func TestLoad_MissingDatabaseURL(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when DATABASE_URL is missing")
+		t.Error("DATABASE_URLが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_MissingPort は MEWST_PORT が未設定の場合のエラーをテスト
+// TestLoad_MissingPortはMEWST_PORTが未設定の場合のエラーをテスト
 func TestLoad_MissingPort(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -157,11 +145,11 @@ func TestLoad_MissingPort(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when MEWST_PORT is missing")
+		t.Error("MEWST_PORTが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_MissingDomain は MEWST_DOMAIN が未設定の場合のエラーをテスト
+// TestLoad_MissingDomainはMEWST_DOMAINが未設定の場合のエラーをテスト
 func TestLoad_MissingDomain(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -170,11 +158,11 @@ func TestLoad_MissingDomain(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when MEWST_DOMAIN is missing")
+		t.Error("MEWST_DOMAINが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_MissingCookieDomain は MEWST_COOKIE_DOMAIN が未設定の場合のエラーをテスト
+// TestLoad_MissingCookieDomainはMEWST_COOKIE_DOMAINが未設定の場合のエラーをテスト
 func TestLoad_MissingCookieDomain(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -183,11 +171,11 @@ func TestLoad_MissingCookieDomain(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when MEWST_COOKIE_DOMAIN is missing")
+		t.Error("MEWST_COOKIE_DOMAINが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_MissingSessionSecure は MEWST_SESSION_SECURE が未設定の場合のエラーをテスト
+// TestLoad_MissingSessionSecureはMEWST_SESSION_SECUREが未設定の場合のエラーをテスト
 func TestLoad_MissingSessionSecure(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -196,11 +184,11 @@ func TestLoad_MissingSessionSecure(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when MEWST_SESSION_SECURE is missing")
+		t.Error("MEWST_SESSION_SECUREが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_MissingSessionHTTPOnly は MEWST_SESSION_HTTPONLY が未設定の場合のエラーをテスト
+// TestLoad_MissingSessionHTTPOnlyはMEWST_SESSION_HTTPONLYが未設定の場合のエラーをテスト
 func TestLoad_MissingSessionHTTPOnly(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -209,11 +197,11 @@ func TestLoad_MissingSessionHTTPOnly(t *testing.T) {
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Load() should return error when MEWST_SESSION_HTTPONLY is missing")
+		t.Error("MEWST_SESSION_HTTPONLYが無いとき、Load()がエラーを返すことを期待したが、nilだった")
 	}
 }
 
-// TestLoad_DefaultEnv は APP_ENV が未設定の場合のデフォルト値をテスト
+// TestLoad_DefaultEnvはAPP_ENVが未設定の場合のデフォルト値をテスト
 func TestLoad_DefaultEnv(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -222,15 +210,15 @@ func TestLoad_DefaultEnv(t *testing.T) {
 
 	cfg, err := Load()
 	if err != nil {
-		t.Fatalf("Load() failed: %v", err)
+		t.Fatalf("Load()のエラー = %v", err)
 	}
 
 	if cfg.Env != "dev" {
-		t.Errorf("Env = %v, want dev (default)", cfg.Env)
+		t.Errorf("Env = %v、期待値 = dev (既定値)", cfg.Env)
 	}
 }
 
-// TestDatabaseDSN は DatabaseDSN メソッドをテスト
+// TestDatabaseDSNはDatabaseDSNメソッドをテスト
 func TestDatabaseDSN(t *testing.T) {
 	cfg := &Config{
 		DatabaseURL: "postgres://user:pass@localhost:5432/testdb?sslmode=disable",
@@ -240,11 +228,11 @@ func TestDatabaseDSN(t *testing.T) {
 	expected := "postgres://user:pass@localhost:5432/testdb?sslmode=disable"
 
 	if dsn != expected {
-		t.Errorf("DatabaseDSN() = %v, want %v", dsn, expected)
+		t.Errorf("DatabaseDSN() = %v、期待値 = %v", dsn, expected)
 	}
 }
 
-// TestIsDev は IsDev メソッドをテスト
+// TestIsDevはIsDevメソッドをテスト
 func TestIsDev(t *testing.T) {
 	tests := []struct {
 		env  string
@@ -260,13 +248,13 @@ func TestIsDev(t *testing.T) {
 		t.Run(tt.env, func(t *testing.T) {
 			cfg := &Config{Env: tt.env}
 			if got := cfg.IsDev(); got != tt.want {
-				t.Errorf("IsDev() = %v, want %v", got, tt.want)
+				t.Errorf("IsDev() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestIsTest は IsTest メソッドをテスト
+// TestIsTestはIsTestメソッドをテスト
 func TestIsTest(t *testing.T) {
 	tests := []struct {
 		env  string
@@ -282,13 +270,13 @@ func TestIsTest(t *testing.T) {
 		t.Run(tt.env, func(t *testing.T) {
 			cfg := &Config{Env: tt.env}
 			if got := cfg.IsTest(); got != tt.want {
-				t.Errorf("IsTest() = %v, want %v", got, tt.want)
+				t.Errorf("IsTest() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestIsProduction は IsProduction メソッドをテスト
+// TestIsProductionはIsProductionメソッドをテスト
 func TestIsProduction(t *testing.T) {
 	tests := []struct {
 		env  string
@@ -304,13 +292,13 @@ func TestIsProduction(t *testing.T) {
 		t.Run(tt.env, func(t *testing.T) {
 			cfg := &Config{Env: tt.env}
 			if got := cfg.IsProduction(); got != tt.want {
-				t.Errorf("IsProduction() = %v, want %v", got, tt.want)
+				t.Errorf("IsProduction() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestAppURL は AppURL メソッドをテスト
+// TestAppURLはAppURLメソッドをテスト
 func TestAppURL(t *testing.T) {
 	tests := []struct {
 		env    string
@@ -326,13 +314,13 @@ func TestAppURL(t *testing.T) {
 		t.Run(tt.env, func(t *testing.T) {
 			cfg := &Config{Env: tt.env, Domain: tt.domain}
 			if got := cfg.AppURL(); got != tt.want {
-				t.Errorf("AppURL() = %v, want %v", got, tt.want)
+				t.Errorf("AppURL() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_SessionSecure は MEWST_SESSION_SECURE の bool 変換をテスト
+// TestLoad_SessionSecureはMEWST_SESSION_SECUREのbool変換をテスト
 func TestLoad_SessionSecure(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -353,17 +341,17 @@ func TestLoad_SessionSecure(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.SessionSecure != tt.want {
-				t.Errorf("SessionSecure = %v, want %v", cfg.SessionSecure, tt.want)
+				t.Errorf("SessionSecure = %v、期待値 = %v", cfg.SessionSecure, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_SessionHTTPOnly は MEWST_SESSION_HTTPONLY の bool 変換をテスト
+// TestLoad_SessionHTTPOnlyはMEWST_SESSION_HTTPONLYのbool変換をテスト
 func TestLoad_SessionHTTPOnly(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -384,17 +372,17 @@ func TestLoad_SessionHTTPOnly(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.SessionHTTPOnly != tt.want {
-				t.Errorf("SessionHTTPOnly = %v, want %v", cfg.SessionHTTPOnly, tt.want)
+				t.Errorf("SessionHTTPOnly = %v、期待値 = %v", cfg.SessionHTTPOnly, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_TurnstileConfig は Turnstile 環境変数の読み込みをテスト
+// TestLoad_TurnstileConfigはTurnstile環境変数の読み込みをテスト
 func TestLoad_TurnstileConfig(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -444,24 +432,21 @@ func TestLoad_TurnstileConfig(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.TurnstileSiteKey != tt.wantSiteKey {
-				t.Errorf("TurnstileSiteKey = %q, want %q", cfg.TurnstileSiteKey, tt.wantSiteKey)
+				t.Errorf("TurnstileSiteKey = %q、期待値 = %q", cfg.TurnstileSiteKey, tt.wantSiteKey)
 			}
 			if cfg.TurnstileSecretKey != tt.wantSecretKey {
-				t.Errorf("TurnstileSecretKey = %q, want %q", cfg.TurnstileSecretKey, tt.wantSecretKey)
+				t.Errorf("TurnstileSecretKey = %q、期待値 = %q", cfg.TurnstileSecretKey, tt.wantSecretKey)
 			}
 		})
 	}
 }
 
-// TestLoad_TurnstileDisable verifies one-flag disabling outside production
-// and fail-closed behavior in production.
-//
-// [Ja] MEWST_TURNSTILE_DISABLE による非本番でのワンフラグ無効化と、
-// 本番での fail-closed の挙動を検証する。
+// MEWST_TURNSTILE_DISABLEによる非本番でのワンフラグ無効化と、
+// 本番でのfail-closedの挙動を検証する。
 func TestLoad_TurnstileDisable(t *testing.T) {
 	const (
 		siteKey   = "1x00000000000000000000AA"
@@ -476,7 +461,7 @@ func TestLoad_TurnstileDisable(t *testing.T) {
 		wantSecretKey string
 	}{
 		{
-			name:          "非 prod + true: キーを空に落として無効化",
+			name:          "非prod + true: キーを空に落として無効化",
 			appEnv:        "dev",
 			disable:       "true",
 			wantSiteKey:   "",
@@ -497,7 +482,7 @@ func TestLoad_TurnstileDisable(t *testing.T) {
 			wantSecretKey: secretKey,
 		},
 		{
-			name:          "true 以外の値は無効化しない",
+			name:          "true以外の値は無効化しない",
 			appEnv:        "dev",
 			disable:       "yes",
 			wantSiteKey:   siteKey,
@@ -524,20 +509,20 @@ func TestLoad_TurnstileDisable(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.TurnstileSiteKey != tt.wantSiteKey {
-				t.Errorf("TurnstileSiteKey = %q, want %q", cfg.TurnstileSiteKey, tt.wantSiteKey)
+				t.Errorf("TurnstileSiteKey = %q、期待値 = %q", cfg.TurnstileSiteKey, tt.wantSiteKey)
 			}
 			if cfg.TurnstileSecretKey != tt.wantSecretKey {
-				t.Errorf("TurnstileSecretKey = %q, want %q", cfg.TurnstileSecretKey, tt.wantSecretKey)
+				t.Errorf("TurnstileSecretKey = %q、期待値 = %q", cfg.TurnstileSecretKey, tt.wantSecretKey)
 			}
 		})
 	}
 }
 
-// TestLoad_MaintenanceMode は メンテナンスモード設定のテスト
+// TestLoad_MaintenanceModeは メンテナンスモード設定のテスト
 func TestLoad_MaintenanceMode(t *testing.T) {
 	tests := []struct {
 		name                string
@@ -601,20 +586,20 @@ func TestLoad_MaintenanceMode(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.MaintenanceMode != tt.wantMaintenanceMode {
-				t.Errorf("MaintenanceMode = %v, want %v", cfg.MaintenanceMode, tt.wantMaintenanceMode)
+				t.Errorf("MaintenanceMode = %v、期待値 = %v", cfg.MaintenanceMode, tt.wantMaintenanceMode)
 			}
 			if !reflect.DeepEqual(cfg.AdminIPs, tt.wantAdminIPs) {
-				t.Errorf("AdminIPs = %v, want %v", cfg.AdminIPs, tt.wantAdminIPs)
+				t.Errorf("AdminIPs = %v、期待値 = %v", cfg.AdminIPs, tt.wantAdminIPs)
 			}
 		})
 	}
 }
 
-// TestLoad_DisableRateLimit は DisableRateLimit 設定のテスト
+// TestLoad_DisableRateLimitはDisableRateLimit設定のテスト
 func TestLoad_DisableRateLimit(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -640,17 +625,17 @@ func TestLoad_DisableRateLimit(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.DisableRateLimit != tt.want {
-				t.Errorf("DisableRateLimit = %v, want %v", cfg.DisableRateLimit, tt.want)
+				t.Errorf("DisableRateLimit = %v、期待値 = %v", cfg.DisableRateLimit, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_RailsAppURL は RailsAppURL 設定のテスト
+// TestLoad_RailsAppURLはRailsAppURL設定のテスト
 func TestLoad_RailsAppURL(t *testing.T) {
 	cleanup := setupTestEnv(t)
 	defer cleanup()
@@ -660,15 +645,15 @@ func TestLoad_RailsAppURL(t *testing.T) {
 
 	cfg, err := Load()
 	if err != nil {
-		t.Fatalf("Load() failed: %v", err)
+		t.Fatalf("Load()のエラー = %v", err)
 	}
 
 	if cfg.RailsAppURL != railsURL {
-		t.Errorf("RailsAppURL = %v, want %v", cfg.RailsAppURL, railsURL)
+		t.Errorf("RailsAppURL = %v、期待値 = %v", cfg.RailsAppURL, railsURL)
 	}
 }
 
-// TestParseAdminIPs は parseAdminIPs 関数のテスト
+// TestParseAdminIPsはparseAdminIPs関数のテスト
 func TestParseAdminIPs(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -711,13 +696,13 @@ func TestParseAdminIPs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := parseAdminIPs(tt.input)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("parseAdminIPs(%q) = %v, want %v", tt.input, got, tt.want)
+				t.Errorf("parseAdminIPs(%q) = %v、期待値 = %v", tt.input, got, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_SentryConfig は Sentry 環境変数の読み込みをテスト
+// TestLoad_SentryConfigはSentry環境変数の読み込みをテスト
 func TestLoad_SentryConfig(t *testing.T) {
 	tests := []struct {
 		name                 string
@@ -731,13 +716,13 @@ func TestLoad_SentryConfig(t *testing.T) {
 		wantDebug            bool
 	}{
 		{
-			name:                 "全て未設定 (Sentry 無効化、Environment は APP_ENV にフォールバック)",
+			name:                 "全て未設定 (Sentry無効化、EnvironmentはAPP_ENVにフォールバック)",
 			dsn:                  "",
 			environment:          "",
 			tracesSampleRate:     "",
 			debug:                "",
 			wantDSN:              "",
-			wantEnvironment:      "test", // setupTestEnv で APP_ENV=test に設定済み
+			wantEnvironment:      "test", // setupTestEnvでAPP_ENV=testに設定済み
 			wantTracesSampleRate: 0.5,
 			wantDebug:            false,
 		},
@@ -753,7 +738,7 @@ func TestLoad_SentryConfig(t *testing.T) {
 			wantDebug:            true,
 		},
 		{
-			name:                 "DSN のみ設定 (他はデフォルト)",
+			name:                 "DSNのみ設定 (他はデフォルト)",
 			dsn:                  "https://example@o0.ingest.sentry.io/0",
 			environment:          "",
 			tracesSampleRate:     "",
@@ -764,7 +749,7 @@ func TestLoad_SentryConfig(t *testing.T) {
 			wantDebug:            false,
 		},
 		{
-			name:                 "Debug が true 以外の値は false 扱い",
+			name:                 "Debugがtrue以外の値はfalse扱い",
 			dsn:                  "",
 			environment:          "",
 			tracesSampleRate:     "",
@@ -796,35 +781,35 @@ func TestLoad_SentryConfig(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.SentryDSN != tt.wantDSN {
-				t.Errorf("SentryDSN = %q, want %q", cfg.SentryDSN, tt.wantDSN)
+				t.Errorf("SentryDSN = %q、期待値 = %q", cfg.SentryDSN, tt.wantDSN)
 			}
 			if cfg.SentryEnvironment != tt.wantEnvironment {
-				t.Errorf("SentryEnvironment = %q, want %q", cfg.SentryEnvironment, tt.wantEnvironment)
+				t.Errorf("SentryEnvironment = %q、期待値 = %q", cfg.SentryEnvironment, tt.wantEnvironment)
 			}
 			if cfg.SentryTracesSampleRate != tt.wantTracesSampleRate {
-				t.Errorf("SentryTracesSampleRate = %v, want %v", cfg.SentryTracesSampleRate, tt.wantTracesSampleRate)
+				t.Errorf("SentryTracesSampleRate = %v、期待値 = %v", cfg.SentryTracesSampleRate, tt.wantTracesSampleRate)
 			}
 			if cfg.SentryDebug != tt.wantDebug {
-				t.Errorf("SentryDebug = %v, want %v", cfg.SentryDebug, tt.wantDebug)
+				t.Errorf("SentryDebug = %v、期待値 = %v", cfg.SentryDebug, tt.wantDebug)
 			}
 		})
 	}
 }
 
-// TestLoad_SentryEnvironment_FallbackToAppEnv は SentryEnvironment が APP_ENV にフォールバックすることをテスト
+// TestLoad_SentryEnvironment_FallbackToAppEnvはSentryEnvironmentがAPP_ENVにフォールバックすることをテスト
 func TestLoad_SentryEnvironment_FallbackToAppEnv(t *testing.T) {
 	tests := []struct {
 		name    string
 		appEnv  string
 		wantEnv string
 	}{
-		{name: "dev へフォールバック", appEnv: "dev", wantEnv: "dev"},
-		{name: "test へフォールバック", appEnv: "test", wantEnv: "test"},
-		{name: "prod へフォールバック", appEnv: "prod", wantEnv: "prod"},
+		{name: "devへフォールバック", appEnv: "dev", wantEnv: "dev"},
+		{name: "testへフォールバック", appEnv: "test", wantEnv: "test"},
+		{name: "prodへフォールバック", appEnv: "prod", wantEnv: "prod"},
 	}
 
 	for _, tt := range tests {
@@ -840,31 +825,31 @@ func TestLoad_SentryEnvironment_FallbackToAppEnv(t *testing.T) {
 
 			cfg, err := Load()
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 
 			if cfg.SentryEnvironment != tt.wantEnv {
-				t.Errorf("SentryEnvironment = %q, want %q", cfg.SentryEnvironment, tt.wantEnv)
+				t.Errorf("SentryEnvironment = %q、期待値 = %q", cfg.SentryEnvironment, tt.wantEnv)
 			}
 		})
 	}
 }
 
-// TestParseSentryTracesSampleRate は parseSentryTracesSampleRate 関数のテスト
+// TestParseSentryTracesSampleRateはparseSentryTracesSampleRate関数のテスト
 func TestParseSentryTracesSampleRate(t *testing.T) {
 	tests := []struct {
 		name  string
 		input string
 		want  float64
 	}{
-		{name: "空文字列はデフォルト 0.5", input: "", want: 0.5},
-		{name: "下限 0.0", input: "0.0", want: 0.0},
-		{name: "中間値 0.5", input: "0.5", want: 0.5},
-		{name: "0.25 を受理", input: "0.25", want: 0.25},
-		{name: "上限 1.0", input: "1.0", want: 1.0},
-		{name: "範囲外 (負数) はデフォルト 0.5", input: "-0.1", want: 0.5},
-		{name: "範囲外 (1.0 超過) はデフォルト 0.5", input: "1.5", want: 0.5},
-		{name: "パース不可文字列はデフォルト 0.5", input: "abc", want: 0.5},
+		{name: "空文字列はデフォルト0.5", input: "", want: 0.5},
+		{name: "下限0.0", input: "0.0", want: 0.0},
+		{name: "中間値0.5", input: "0.5", want: 0.5},
+		{name: "0.25を受理", input: "0.25", want: 0.25},
+		{name: "上限1.0", input: "1.0", want: 1.0},
+		{name: "範囲外 (負数) はデフォルト0.5", input: "-0.1", want: 0.5},
+		{name: "範囲外 (1.0超過) はデフォルト0.5", input: "1.5", want: 0.5},
+		{name: "パース不可文字列はデフォルト0.5", input: "abc", want: 0.5},
 		{name: "整数表記も許容", input: "1", want: 1.0},
 	}
 
@@ -872,13 +857,13 @@ func TestParseSentryTracesSampleRate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := parseSentryTracesSampleRate(tt.input)
 			if got != tt.want {
-				t.Errorf("parseSentryTracesSampleRate(%q) = %v, want %v", tt.input, got, tt.want)
+				t.Errorf("parseSentryTracesSampleRate(%q) = %v、期待値 = %v", tt.input, got, tt.want)
 			}
 		})
 	}
 }
 
-// TestGetAssetVersion は GetAssetVersion メソッドのテスト
+// TestGetAssetVersionはGetAssetVersionメソッドのテスト
 func TestGetAssetVersion(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -916,32 +901,25 @@ func TestGetAssetVersion(t *testing.T) {
 			if tt.wantStatic {
 				// 静的値 (AssetVersion) が返されるべき
 				if got1 != tt.assetVersion {
-					t.Errorf("GetAssetVersion() = %v, want %v", got1, tt.assetVersion)
+					t.Errorf("GetAssetVersion() = %v、期待値 = %v", got1, tt.assetVersion)
 				}
 				if got1 != got2 {
-					t.Errorf("GetAssetVersion() should return same value, got %v and %v", got1, got2)
+					t.Errorf("GetAssetVersion()が同じ値を返さない: %vと%v", got1, got2)
 				}
 			} else {
 				// 動的値 (タイムスタンプ) が返されるべき
 				if got1 == "" {
-					t.Error("GetAssetVersion() should not return empty string")
+					t.Error("GetAssetVersion() = 空文字列、非空を期待")
 				}
 			}
 		})
 	}
 }
 
-// TestGetGitCommitHash verifies that the GIT_REV environment variable takes
-// precedence and is shortened to 7 characters.
+// GIT_REV環境変数が最優先され、7文字に短縮されることを検証する。
 //
-// A Dokku deploy target has no .git directory, so the git command fails;
-// whether GIT_REV is usable therefore decides the Sentry release (avoiding a
-// fallback to "dev").
-//
-// [Ja] GIT_REV 環境変数が最優先され、7 文字に短縮されることを検証する。
-//
-// Dokku のデプロイ先には .git が無く git コマンドが失敗するため、GIT_REV を
-// 使えるかどうかが Sentry の release ("dev" 化の回避) を左右する。
+// Dokkuのデプロイ先には .gitが無くgitコマンドが失敗するため、GIT_REVを
+// 使えるかどうかがSentryのrelease ("dev" 化の回避) を左右する。
 func TestGetGitCommitHash(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -971,19 +949,15 @@ func TestGetGitCommitHash(t *testing.T) {
 
 			got := getGitCommitHash()
 			if got != tt.want {
-				t.Errorf("getGitCommitHash() = %q, want %q", got, tt.want)
+				t.Errorf("getGitCommitHash() = %q、期待値 = %q", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestS3Readiness is the contract test for the export storage readiness: all
-// unset is disabled, the full required set is ready, and any partial set
-// (including a region on its own) is invalid.
-//
-// [Ja] TestS3Readiness はエクスポート用ストレージ readiness の契約テスト。
-// 全項目未設定は disabled、必須項目の完全設定は ready、部分設定 (リージョンのみの
-// 設定を含む) は invalid になる。
+// TestS3Readinessはエクスポート用ストレージreadinessの契約テスト。
+// 全項目未設定はdisabled、必須項目の完全設定はready、部分設定 (リージョンのみの
+// 設定を含む) はinvalidになる。
 func TestS3Readiness(t *testing.T) {
 	t.Parallel()
 
@@ -1005,7 +979,7 @@ func TestS3Readiness(t *testing.T) {
 			want: S3ReadinessDisabled,
 		},
 		{
-			name: "必須 4 項目設定: ready",
+			name: "必須4項目設定: ready",
 			cfg: Config{
 				S3BucketName:      bucket,
 				S3Endpoint:        endpoint,
@@ -1015,7 +989,7 @@ func TestS3Readiness(t *testing.T) {
 			want: S3ReadinessReady,
 		},
 		{
-			name: "必須 4 項目 + リージョン設定: ready",
+			name: "必須4項目 + リージョン設定: ready",
 			cfg: Config{
 				S3BucketName:      bucket,
 				S3Endpoint:        endpoint,
@@ -1051,17 +1025,13 @@ func TestS3Readiness(t *testing.T) {
 			t.Parallel()
 
 			if got := tt.cfg.S3Readiness(); got != tt.want {
-				t.Errorf("S3Readiness() = %q, want %q", got, tt.want)
+				t.Errorf("S3Readiness() = %q、期待値 = %q", got, tt.want)
 			}
 		})
 	}
 }
 
-// TestLoad_S3Config verifies the MEWST_S3_* loading contract: the process boots
-// with every variable unset (exports disabled), boots with the full set
-// (region defaulting to "auto"), and fails to boot on a partial set.
-//
-// [Ja] TestLoad_S3Config は MEWST_S3_* の読み込み契約を検証する。全項目未設定なら
+// TestLoad_S3ConfigはMEWST_S3_* の読み込み契約を検証する。全項目未設定なら
 // 起動でき (エクスポート無効)、完全設定でも起動でき (リージョンは "auto" に既定化)、
 // 部分設定では起動に失敗する。
 func TestLoad_S3Config(t *testing.T) {
@@ -1100,7 +1070,7 @@ func TestLoad_S3Config(t *testing.T) {
 			wantRegion:    "apac",
 		},
 		{
-			name: "完全設定 (リージョンなし): auto に既定化して起動できる",
+			name: "完全設定 (リージョンなし): autoに既定化して起動できる",
 			env: map[string]string{
 				"MEWST_S3_BUCKET_NAME":       bucket,
 				"MEWST_S3_ENDPOINT":          endpoint,
@@ -1149,35 +1119,28 @@ func TestLoad_S3Config(t *testing.T) {
 
 			if tt.wantErr {
 				if err == nil {
-					t.Fatal("Load() should return error for a partial MEWST_S3_* configuration")
+					t.Fatal("MEWST_S3_*の設定が一部だけのとき、Load()がエラーを返すことを期待したが、nilだった")
 				}
 				return
 			}
 
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 			if got := cfg.S3Readiness(); got != tt.wantReadiness {
-				t.Errorf("S3Readiness() = %q, want %q", got, tt.wantReadiness)
+				t.Errorf("S3Readiness() = %q、期待値 = %q", got, tt.wantReadiness)
 			}
 			if cfg.S3Region != tt.wantRegion {
-				t.Errorf("S3Region = %q, want %q", cfg.S3Region, tt.wantRegion)
+				t.Errorf("S3Region = %q、期待値 = %q", cfg.S3Region, tt.wantRegion)
 			}
 		})
 	}
 }
 
-// TestLoad_S3ConfigInProduction verifies that production requires the export
-// storage: with export released to every user, a production process that boots
-// without MEWST_S3_* would answer the export page with the unavailable screen
-// for everyone, so Load refuses instead. Outside production the same absence
-// still boots, which keeps a local run and the test suite free of bucket
-// credentials.
-//
-// [Ja] TestLoad_S3ConfigInProduction は、本番がエクスポート用ストレージを必須と
+// TestLoad_S3ConfigInProductionは、本番がエクスポート用ストレージを必須と
 // することを検証する。エクスポートが全ユーザーに公開された今、MEWST_S3_* 無しで
 // 起動した本番プロセスはエクスポート画面を全員に対して利用不可の画面で返すことに
-// なるため、Load はこれを拒否する。非本番では同じ未設定でも起動でき、ローカル実行
+// なるため、Loadはこれを拒否する。非本番では同じ未設定でも起動でき、ローカル実行
 // とテストがバケットの資格情報を持たずに済む。
 func TestLoad_S3ConfigInProduction(t *testing.T) {
 	tests := []struct {
@@ -1228,16 +1191,16 @@ func TestLoad_S3ConfigInProduction(t *testing.T) {
 
 			if tt.wantErr {
 				if err == nil {
-					t.Fatal("Load() should return error when the export storage is not fully configured in production")
+					t.Fatal("本番でエクスポート用ストレージの設定が揃っていないとき、Load()がエラーを返すことを期待したが、nilだった")
 				}
 				return
 			}
 
 			if err != nil {
-				t.Fatalf("Load() failed: %v", err)
+				t.Fatalf("Load()のエラー = %v", err)
 			}
 			if cfg.Env != tt.appEnv {
-				t.Errorf("Env = %q, want %q", cfg.Env, tt.appEnv)
+				t.Errorf("Env = %q、期待値 = %q", cfg.Env, tt.appEnv)
 			}
 		})
 	}

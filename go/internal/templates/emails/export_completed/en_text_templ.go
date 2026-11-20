@@ -10,16 +10,10 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// EnText is the English export completion notification (plain text).
+// EnTextは英語版のエクスポート完了通知 (テキスト形式) です。
 //
-// The body goes through templ.Raw: this is the text/plain part, where templ's
-// default expression escaping has no HTML context to protect and would turn an
-// ampersand in the URL into &amp; in the delivered mail.
-//
-// [Ja] EnText は英語版のエクスポート完了通知 (テキスト形式) です。
-//
-// 本文は templ.Raw を通す。ここは text/plain パートであり、templ の既定の式
-// エスケープには守るべき HTML 文脈が無く、URL 中のアンパサンドを配信されるメール
+// 本文はtempl.Rawを通す。ここはtext/plainパートであり、templの既定の式
+// エスケープには守るべきHTML文脈が無く、URL中のアンパサンドを配信されるメール
 // では &amp; にしてしまうため。
 func EnText(exportURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

@@ -1,4 +1,4 @@
-// Package validator はフォーム入力のバリデーションを提供します
+// Package validatorはフォーム入力のバリデーションを提供します
 package validator
 
 import (
@@ -11,23 +11,23 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// SignInCreateValidator はサインインのバリデーションを行う
+// SignInCreateValidatorはサインインのバリデーションを行う
 type SignInCreateValidator struct {
 	userRepo *repository.UserRepository
 }
 
-// NewSignInCreateValidator はSignInCreateValidatorを生成する
+// NewSignInCreateValidatorはSignInCreateValidatorを生成する
 func NewSignInCreateValidator(userRepo *repository.UserRepository) *SignInCreateValidator {
 	return &SignInCreateValidator{userRepo: userRepo}
 }
 
-// SignInCreateValidatorInput はバリデーションの入力パラメータ
+// SignInCreateValidatorInputはバリデーションの入力パラメータ
 type SignInCreateValidatorInput struct {
 	Email    string
 	Password string
 }
 
-// Validate はバリデーションを行い、成功時はユーザーを返す
+// Validateはバリデーションを行い、成功時はユーザーを返す
 func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreateValidatorInput) (*model.User, error) {
 	ve := model.NewValidationError()
 
@@ -59,7 +59,7 @@ func (v *SignInCreateValidator) Validate(ctx context.Context, input SignInCreate
 	return user, nil
 }
 
-// validateEmail はメールアドレスの形式バリデーションを行う
+// validateEmailはメールアドレスの形式バリデーションを行う
 func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.ValidationError, email string) {
 	if email == "" {
 		ve.AddField("email", i18n.T(ctx, "validation_required"))
@@ -72,7 +72,7 @@ func (v *SignInCreateValidator) validateEmail(ctx context.Context, ve *model.Val
 	}
 }
 
-// validatePassword はパスワードの形式バリデーションを行う
+// validatePasswordはパスワードの形式バリデーションを行う
 func (v *SignInCreateValidator) validatePassword(ctx context.Context, ve *model.ValidationError, password string) {
 	if password == "" {
 		ve.AddField("password", i18n.T(ctx, "validation_required"))

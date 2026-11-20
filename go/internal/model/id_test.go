@@ -16,7 +16,7 @@ func TestUserID_String(t *testing.T) {
 	id := model.UserID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("UserID.String() = %q, want %q", got, u.String())
+		t.Errorf("UserID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -28,11 +28,11 @@ func TestUserIDsToUUIDs(t *testing.T) {
 		ids  []model.UserID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.UserID{},
 		},
 		{
@@ -56,11 +56,11 @@ func TestUserIDsToUUIDs(t *testing.T) {
 			got := model.UserIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -75,11 +75,11 @@ func TestUUIDsToUserIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -99,11 +99,11 @@ func TestUUIDsToUserIDs(t *testing.T) {
 			got := model.UUIDsToUserIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.UserID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.UserID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.UserID(u))
 				}
 			}
 		})
@@ -122,7 +122,7 @@ func TestUserIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToUserIDs(model.UserIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -133,7 +133,7 @@ func TestProfileID_String(t *testing.T) {
 	id := model.ProfileID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("ProfileID.String() = %q, want %q", got, u.String())
+		t.Errorf("ProfileID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -145,11 +145,11 @@ func TestProfileIDsToUUIDs(t *testing.T) {
 		ids  []model.ProfileID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.ProfileID{},
 		},
 		{
@@ -173,11 +173,11 @@ func TestProfileIDsToUUIDs(t *testing.T) {
 			got := model.ProfileIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -192,11 +192,11 @@ func TestUUIDsToProfileIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -216,11 +216,11 @@ func TestUUIDsToProfileIDs(t *testing.T) {
 			got := model.UUIDsToProfileIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.ProfileID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.ProfileID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.ProfileID(u))
 				}
 			}
 		})
@@ -239,7 +239,7 @@ func TestProfileIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToProfileIDs(model.ProfileIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -250,7 +250,7 @@ func TestActorID_String(t *testing.T) {
 	id := model.ActorID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("ActorID.String() = %q, want %q", got, u.String())
+		t.Errorf("ActorID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -262,11 +262,11 @@ func TestActorIDsToUUIDs(t *testing.T) {
 		ids  []model.ActorID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.ActorID{},
 		},
 		{
@@ -290,11 +290,11 @@ func TestActorIDsToUUIDs(t *testing.T) {
 			got := model.ActorIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -309,11 +309,11 @@ func TestUUIDsToActorIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -333,11 +333,11 @@ func TestUUIDsToActorIDs(t *testing.T) {
 			got := model.UUIDsToActorIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.ActorID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.ActorID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.ActorID(u))
 				}
 			}
 		})
@@ -356,7 +356,7 @@ func TestActorIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToActorIDs(model.ActorIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -367,7 +367,7 @@ func TestSessionID_String(t *testing.T) {
 	id := model.SessionID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("SessionID.String() = %q, want %q", got, u.String())
+		t.Errorf("SessionID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -379,11 +379,11 @@ func TestSessionIDsToUUIDs(t *testing.T) {
 		ids  []model.SessionID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.SessionID{},
 		},
 		{
@@ -407,11 +407,11 @@ func TestSessionIDsToUUIDs(t *testing.T) {
 			got := model.SessionIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -426,11 +426,11 @@ func TestUUIDsToSessionIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -450,11 +450,11 @@ func TestUUIDsToSessionIDs(t *testing.T) {
 			got := model.UUIDsToSessionIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.SessionID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.SessionID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.SessionID(u))
 				}
 			}
 		})
@@ -473,7 +473,7 @@ func TestSessionIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToSessionIDs(model.SessionIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -484,7 +484,7 @@ func TestEmailConfirmationID_String(t *testing.T) {
 	id := model.EmailConfirmationID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("EmailConfirmationID.String() = %q, want %q", got, u.String())
+		t.Errorf("EmailConfirmationID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -496,11 +496,11 @@ func TestEmailConfirmationIDsToUUIDs(t *testing.T) {
 		ids  []model.EmailConfirmationID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.EmailConfirmationID{},
 		},
 		{
@@ -524,11 +524,11 @@ func TestEmailConfirmationIDsToUUIDs(t *testing.T) {
 			got := model.EmailConfirmationIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -543,11 +543,11 @@ func TestUUIDsToEmailConfirmationIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -567,11 +567,11 @@ func TestUUIDsToEmailConfirmationIDs(t *testing.T) {
 			got := model.UUIDsToEmailConfirmationIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.EmailConfirmationID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.EmailConfirmationID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.EmailConfirmationID(u))
 				}
 			}
 		})
@@ -590,7 +590,7 @@ func TestEmailConfirmationIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToEmailConfirmationIDs(model.EmailConfirmationIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -601,7 +601,7 @@ func TestUserProfileID_String(t *testing.T) {
 	id := model.UserProfileID(u)
 
 	if got := id.String(); got != u.String() {
-		t.Errorf("UserProfileID.String() = %q, want %q", got, u.String())
+		t.Errorf("UserProfileID.String() = %q、期待値 = %q", got, u.String())
 	}
 }
 
@@ -613,11 +613,11 @@ func TestUserProfileIDsToUUIDs(t *testing.T) {
 		ids  []model.UserProfileID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.UserProfileID{},
 		},
 		{
@@ -641,11 +641,11 @@ func TestUserProfileIDsToUUIDs(t *testing.T) {
 			got := model.UserProfileIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -660,11 +660,11 @@ func TestUUIDsToUserProfileIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -684,11 +684,11 @@ func TestUUIDsToUserProfileIDs(t *testing.T) {
 			got := model.UUIDsToUserProfileIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.UserProfileID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.UserProfileID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.UserProfileID(u))
 				}
 			}
 		})
@@ -707,7 +707,7 @@ func TestUserProfileIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToUserProfileIDs(model.UserProfileIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }
 
@@ -719,11 +719,11 @@ func TestExportIDsToUUIDs(t *testing.T) {
 		ids  []model.ExportID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			ids:  nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			ids:  []model.ExportID{},
 		},
 		{
@@ -747,11 +747,11 @@ func TestExportIDsToUUIDs(t *testing.T) {
 			got := model.ExportIDsToUUIDs(tt.ids)
 
 			if len(got) != len(tt.ids) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.ids))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.ids))
 			}
 			for i, id := range tt.ids {
 				if got[i] != uuid.UUID(id) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], uuid.UUID(id))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], uuid.UUID(id))
 				}
 			}
 		})
@@ -766,11 +766,11 @@ func TestUUIDsToExportIDs(t *testing.T) {
 		us   []uuid.UUID
 	}{
 		{
-			name: "nil スライスは長さ 0 のスライスを返す",
+			name: "nilスライスは長さ0のスライスを返す",
 			us:   nil,
 		},
 		{
-			name: "空スライスは長さ 0 のスライスを返す",
+			name: "空スライスは長さ0のスライスを返す",
 			us:   []uuid.UUID{},
 		},
 		{
@@ -790,11 +790,11 @@ func TestUUIDsToExportIDs(t *testing.T) {
 			got := model.UUIDsToExportIDs(tt.us)
 
 			if len(got) != len(tt.us) {
-				t.Fatalf("len(got) = %d, want %d", len(got), len(tt.us))
+				t.Fatalf("len(got) = %d、期待値 = %d", len(got), len(tt.us))
 			}
 			for i, u := range tt.us {
 				if got[i] != model.ExportID(u) {
-					t.Errorf("got[%d] = %v, want %v", i, got[i], model.ExportID(u))
+					t.Errorf("got[%d] = %v、期待値 = %v", i, got[i], model.ExportID(u))
 				}
 			}
 		})
@@ -813,6 +813,6 @@ func TestExportIDsAndUUIDsRoundTrip(t *testing.T) {
 	got := model.UUIDsToExportIDs(model.ExportIDsToUUIDs(src))
 
 	if !reflect.DeepEqual(src, got) {
-		t.Errorf("round trip mismatch: got %v want %v", got, src)
+		t.Errorf("往復変換の結果が一致しない: 実測値 = %v、期待値 = %v", got, src)
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// mockEmailConfirmationSender はテスト用のEmailConfirmationSender実装
+// mockEmailConfirmationSenderはテスト用のEmailConfirmationSender実装
 type mockEmailConfirmationSender struct {
 	calls []mockEmailConfirmationSendCall
 	err   error
@@ -87,24 +87,24 @@ func TestSendEmailConfirmationUsecase_Execute(t *testing.T) {
 			err := uc.Execute(context.Background(), tt.input)
 
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Execute()のエラー = %v、エラーの有無の期待値 = %v", err, tt.wantErr)
 				return
 			}
 
 			if len(sender.calls) != tt.wantCalls {
-				t.Fatalf("sender.Send() called %d times, want %d", len(sender.calls), tt.wantCalls)
+				t.Fatalf("sender.Send()の呼び出し回数 = %d、期待値 = %d", len(sender.calls), tt.wantCalls)
 			}
 
 			if tt.wantCalls > 0 && !tt.wantErr {
 				call := sender.calls[0]
 				if call.To != tt.wantTo {
-					t.Errorf("To = %q, want %q", call.To, tt.wantTo)
+					t.Errorf("To = %q、期待値 = %q", call.To, tt.wantTo)
 				}
 				if call.Code != tt.wantCode {
-					t.Errorf("Code = %q, want %q", call.Code, tt.wantCode)
+					t.Errorf("Code = %q、期待値 = %q", call.Code, tt.wantCode)
 				}
 				if call.Locale != tt.wantLocale {
-					t.Errorf("Locale = %q, want %q", call.Locale, tt.wantLocale)
+					t.Errorf("Locale = %q、期待値 = %q", call.Locale, tt.wantLocale)
 				}
 			}
 		})

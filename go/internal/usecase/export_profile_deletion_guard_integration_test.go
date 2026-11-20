@@ -34,7 +34,7 @@ func newCommittedExportDeletionTarget(t *testing.T) committedExportDeletionTarge
 	db := testutil.GetTestDB()
 	tx, err := db.Begin()
 	if err != nil {
-		t.Fatalf("前提データ用 transaction の開始に失敗: %v", err)
+		t.Fatalf("前提データ用transactionの開始に失敗: %v", err)
 	}
 	defer func() { _ = tx.Rollback() }()
 
@@ -45,7 +45,7 @@ func newCommittedExportDeletionTarget(t *testing.T) committedExportDeletionTarge
 		WithProfileID(profileID).
 		Build()
 	if err := tx.Commit(); err != nil {
-		t.Fatalf("前提データの commit に失敗: %v", err)
+		t.Fatalf("前提データのcommitに失敗: %v", err)
 	}
 
 	target := committedExportDeletionTarget{
@@ -72,7 +72,7 @@ func receiveExportProfileDeletionRaceResult(t *testing.T, label string, results 
 	case err := <-results:
 		return err
 	case <-time.After(exportProfileDeletionRaceTimeout):
-		t.Fatalf("%s が完了しない", label)
+		t.Fatalf("%sが完了しない", label)
 		return nil
 	}
 }
@@ -115,10 +115,10 @@ func assertCreateRejectedAfterExportDeletionStarted(t *testing.T, target committ
 		ActorID:   target.actorID,
 	})
 	if err != nil {
-		t.Fatalf("削除開始後の Create() error = %v, want nil", err)
+		t.Fatalf("削除開始後のCreate()のエラー = %v、期待値 = nil", err)
 	}
 	if export != nil {
-		t.Errorf("削除開始後の Create() export = %v, want nil", export)
+		t.Errorf("削除開始後のCreate() export = %v、期待値 = nil", export)
 	}
 }
 
@@ -131,7 +131,7 @@ func TestExportProfileDeletionGuard_CreateAndDeleteSerialize(t *testing.T) {
 
 	createTx, err := target.db.BeginTx(ctx, nil)
 	if err != nil {
-		t.Fatalf("Create 用 transaction の開始に失敗: %v", err)
+		t.Fatalf("Create用transactionの開始に失敗: %v", err)
 	}
 	defer func() { _ = createTx.Rollback() }()
 
@@ -141,7 +141,7 @@ func TestExportProfileDeletionGuard_CreateAndDeleteSerialize(t *testing.T) {
 		ActorID:   target.actorID,
 	})
 	if err != nil {
-		t.Fatalf("Create() error = %v", err)
+		t.Fatalf("Create()のエラー = %v", err)
 	}
 
 	queries := query.New(target.db)
@@ -159,29 +159,26 @@ func TestExportProfileDeletionGuard_CreateAndDeleteSerialize(t *testing.T) {
 	}()
 	<-deleteStarted
 
-	// CreateExport's profile-row lock keeps deletion from establishing its
-	// boundary until the export and its snapshot commit together.
-	//
-	// [Ja] CreateExport のプロフィール行 lock により、export と snapshot がまとめて
-	// commit されるまで、削除はその境界を確立できない。
+	// CreateExportのプロフィール行lockにより、exportとsnapshotがまとめて
+	// commitされるまで、削除はその境界を確立できない。
 	select {
 	case err := <-deleteResults:
-		t.Fatalf("Create の commit 前に Delete が完了した: %v", err)
+		t.Fatalf("Createのcommit前にDeleteが完了した: %v", err)
 	case <-time.After(100 * time.Millisecond):
 	}
 
 	if err := createTx.Commit(); err != nil {
-		t.Fatalf("Create の commit に失敗: %v", err)
+		t.Fatalf("Createのcommitに失敗: %v", err)
 	}
 	if err := receiveExportProfileDeletionRaceResult(t, "Delete", deleteResults); err != nil {
-		t.Fatalf("Delete() error = %v", err)
+		t.Fatalf("Delete()のエラー = %v", err)
 	}
 
 	if got, err := exportRepo.FindByID(ctx, export.ID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if _, ok := storage.object(usecase.ExportObjectKey(target.profileID, export.ID)); ok {
-		t.Error("Delete 後もオブジェクトが残っている")
+		t.Error("Delete後もオブジェクトが残っている")
 	}
 	assertCreateRejectedAfterExportDeletionStarted(t, target)
 }
@@ -200,7 +197,7 @@ func TestExportProfileDeletionGuard_GenerateAndDeleteSerialize(t *testing.T) {
 		ActorID:   target.actorID,
 	})
 	if err != nil {
-		t.Fatalf("Create() error = %v", err)
+		t.Fatalf("Create()のエラー = %v", err)
 	}
 
 	storage := newFakeExportObjectStorage(t, target.profileID, export.ID)
@@ -251,7 +248,7 @@ func TestExportProfileDeletionGuard_GenerateAndDeleteSerialize(t *testing.T) {
 	select {
 	case <-uploadReady:
 	case <-ctx.Done():
-		t.Fatalf("upload が完了直前まで進まない: %v", ctx.Err())
+		t.Fatalf("uploadが完了直前まで進まない: %v", ctx.Err())
 	}
 
 	deleteResults := make(chan error, 1)
@@ -260,44 +257,41 @@ func TestExportProfileDeletionGuard_GenerateAndDeleteSerialize(t *testing.T) {
 	}()
 	waitForExportProfileDeletionMarker(t, target)
 	if err := generateUC.Execute(ctx, usecase.GenerateExportInput{ExportID: export.ID}); err != nil {
-		t.Fatalf("削除開始後の Generate() error = %v", err)
+		t.Fatalf("削除開始後のGenerate()のエラー = %v", err)
 	}
 	if got := storage.uploads(); len(got) != 1 {
-		t.Errorf("削除開始後に upload が増えた: %v", got)
+		t.Errorf("削除開始後にuploadが増えた: %v", got)
 	}
 
 	select {
 	case err := <-deleteResults:
-		t.Fatalf("upload の再開前に Delete が完了した: %v", err)
+		t.Fatalf("uploadの再開前にDeleteが完了した: %v", err)
 	default:
 	}
 	close(finishUpload)
 
 	if err := receiveExportProfileDeletionRaceResult(t, "Generate", generateResults); err != nil {
-		t.Fatalf("Generate() error = %v", err)
+		t.Fatalf("Generate()のエラー = %v", err)
 	}
 	if err := receiveExportProfileDeletionRaceResult(t, "Delete", deleteResults); err != nil {
-		t.Fatalf("Delete() error = %v", err)
+		t.Fatalf("Delete()のエラー = %v", err)
 	}
 
 	objectKey := usecase.ExportObjectKey(target.profileID, export.ID)
 	if _, ok := storage.object(objectKey); ok {
-		t.Error("Delete の成功後も upload 済みオブジェクトが残っている")
+		t.Error("Deleteの成功後もupload済みオブジェクトが残っている")
 	}
 	if got, err := exportRepo.FindByID(ctx, export.ID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if got, err := notificationRepo.FindByExportID(ctx, export.ID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByExportID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByExportID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	assertCreateRejectedAfterExportDeletionStarted(t, target)
 }
 
-// newCommittedSucceededExport creates the database and outbox state that
-// completion delivery and profile deletion race over.
-//
-// [Ja] newCommittedSucceededExport は完了通知の配信とプロフィール削除が競合する
-// DB・outbox 状態を作成する。
+// newCommittedSucceededExportは完了通知の配信とプロフィール削除が競合する
+// DB・outbox状態を作成する。
 func newCommittedSucceededExport(
 	t *testing.T,
 	target committedExportDeletionTarget,
@@ -312,23 +306,23 @@ func newCommittedSucceededExport(
 		ActorID:   target.actorID,
 	})
 	if err != nil {
-		t.Fatalf("Create() error = %v", err)
+		t.Fatalf("Create()のエラー = %v", err)
 	}
 	started, err := exportRepo.MarkStarted(context.Background(), export.ID, export.UpdatedAt)
 	if err != nil {
-		t.Fatalf("MarkStarted() error = %v", err)
+		t.Fatalf("MarkStarted()のエラー = %v", err)
 	}
 	if started == nil {
-		t.Fatal("MarkStarted() = nil, want started export")
+		t.Fatal("MarkStarted() = nil、startedのエクスポートを期待")
 	}
 
 	objectKey := usecase.ExportObjectKey(target.profileID, export.ID)
 	succeeded, err := exportRepo.MarkSucceeded(context.Background(), export.ID, objectKey, started.UpdatedAt)
 	if err != nil {
-		t.Fatalf("MarkSucceeded() error = %v", err)
+		t.Fatalf("MarkSucceeded()のエラー = %v", err)
 	}
 	if !succeeded {
-		t.Fatal("MarkSucceeded() = false, want true")
+		t.Fatal("MarkSucceeded() = false、期待値 = true")
 	}
 	return exportRepo, notificationRepo, export.ID, objectKey
 }
@@ -373,10 +367,7 @@ func (s *blockingExportCompletedSender) sends() int {
 	return s.sendCount
 }
 
-// pausingExportProfileDeletionGuard stops a notification delivery after it read
-// the notification but before it enters the real shared guard.
-//
-// [Ja] pausingExportProfileDeletionGuard は通知の読み取り後、実際の共有 guard に
+// pausingExportProfileDeletionGuardは通知の読み取り後、実際の共有guardに
 // 入る前で通知配信を停止する。
 type pausingExportProfileDeletionGuard struct {
 	delegate    usecase.ExportProfileDeletionGuard
@@ -420,13 +411,9 @@ func (g *pausingExportProfileDeletionGuard) unblock() {
 	g.proceedOnce.Do(func() { close(g.proceed) })
 }
 
-// TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerialize proves
-// that profile deletion cannot remove the archive, export, or outbox while a
-// completion delivery owns the profile's shared export-operation lock.
-//
-// [Ja] TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerialize は、
-// 完了通知の配信がプロフィールの export 操作用共有 lock を保持している間、
-// プロフィール削除がアーカイブ・export・outbox を削除できないことを検証する。
+// TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerializeは、
+// 完了通知の配信がプロフィールのexport操作用共有lockを保持している間、
+// プロフィール削除がアーカイブ・export・outboxを削除できないことを検証する。
 func TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerialize(t *testing.T) {
 	t.Parallel()
 
@@ -456,7 +443,7 @@ func TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerialize(t *tes
 	select {
 	case <-sender.started:
 	case <-ctx.Done():
-		t.Fatalf("sender が呼ばれない: %v", ctx.Err())
+		t.Fatalf("senderが呼ばれない: %v", ctx.Err())
 	}
 
 	deleteResults := make(chan error, 1)
@@ -467,47 +454,43 @@ func TestExportProfileDeletionGuard_SendCompletionEmailAndDeleteSerialize(t *tes
 
 	select {
 	case err := <-deleteResults:
-		t.Fatalf("sender の再開前に Delete が完了した: %v", err)
+		t.Fatalf("senderの再開前にDeleteが完了した: %v", err)
 	default:
 	}
 	if got, err := exportRepo.FindByID(ctx, exportID); err != nil || got == nil {
-		t.Errorf("sender 停止中の FindByID() = (%v, %v), want (export, nil)", got, err)
+		t.Errorf("sender停止中のFindByID() = (%v, %v)、期待値 = (エクスポート, nil)", got, err)
 	}
 	if got, err := notificationRepo.FindByExportID(ctx, exportID); err != nil || got == nil {
-		t.Errorf("sender 停止中の FindByExportID() = (%v, %v), want (notification, nil)", got, err)
+		t.Errorf("sender停止中のFindByExportID() = (%v, %v)、期待値 = (通知, nil)", got, err)
 	}
 	if _, ok := storage.object(objectKey); !ok {
-		t.Error("sender 停止中にオブジェクトが削除された")
+		t.Error("sender停止中にオブジェクトが削除された")
 	}
 
 	sender.unblock()
 	if err := receiveExportProfileDeletionRaceResult(t, "Send", sendResults); err != nil {
-		t.Fatalf("Send Execute() error = %v", err)
+		t.Fatalf("送信のExecute()のエラー = %v", err)
 	}
 	if err := receiveExportProfileDeletionRaceResult(t, "Delete", deleteResults); err != nil {
-		t.Fatalf("Delete Execute() error = %v", err)
+		t.Fatalf("削除のExecute()のエラー = %v", err)
 	}
 
 	if got := sender.sends(); got != 1 {
-		t.Errorf("送信件数 = %d, want 1", got)
+		t.Errorf("送信件数 = %d、期待値 = 1", got)
 	}
 	if got, err := exportRepo.FindByID(ctx, exportID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if got, err := notificationRepo.FindByExportID(ctx, exportID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByExportID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByExportID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if _, ok := storage.object(objectKey); ok {
-		t.Error("Delete 後もオブジェクトが残っている")
+		t.Error("Delete後もオブジェクトが残っている")
 	}
 }
 
-// TestExportProfileDeletionGuard_DeleteWinsAfterNotificationSnapshot proves
-// that a deletion boundary established after the delivery read its snapshot
-// still prevents that stale snapshot from reaching the mail provider.
-//
-// [Ja] TestExportProfileDeletionGuard_DeleteWinsAfterNotificationSnapshot は、
-// 配信が snapshot を読み取った後でも、削除境界が先に確立されれば古い snapshot が
+// TestExportProfileDeletionGuard_DeleteWinsAfterNotificationSnapshotは、
+// 配信がsnapshotを読み取った後でも、削除境界が先に確立されれば古いsnapshotが
 // メールプロバイダーへ到達しないことを検証する。
 func TestExportProfileDeletionGuard_DeleteWinsAfterNotificationSnapshot(t *testing.T) {
 	t.Parallel()
@@ -539,27 +522,27 @@ func TestExportProfileDeletionGuard_DeleteWinsAfterNotificationSnapshot(t *testi
 	select {
 	case <-pausingGuard.reached:
 	case <-ctx.Done():
-		t.Fatalf("通知 snapshot の読み取り後まで進まない: %v", ctx.Err())
+		t.Fatalf("通知snapshotの読み取り後まで進まない: %v", ctx.Err())
 	}
 
 	if err := deleteUC.Execute(ctx, target.profileID); err != nil {
-		t.Fatalf("Delete Execute() error = %v", err)
+		t.Fatalf("削除のExecute()のエラー = %v", err)
 	}
 	if got, err := exportRepo.FindByID(ctx, exportID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if got, err := notificationRepo.FindByExportID(ctx, exportID); err != nil || got != nil {
-		t.Errorf("Delete 後の FindByExportID() = (%v, %v), want (nil, nil)", got, err)
+		t.Errorf("Delete後のFindByExportID() = (%v, %v)、期待値 = (nil, nil)", got, err)
 	}
 	if _, ok := storage.object(objectKey); ok {
-		t.Error("Delete 後もオブジェクトが残っている")
+		t.Error("Delete後もオブジェクトが残っている")
 	}
 
 	pausingGuard.unblock()
 	if err := receiveExportProfileDeletionRaceResult(t, "Send", sendResults); err != nil {
-		t.Fatalf("Send Execute() error = %v", err)
+		t.Fatalf("送信のExecute()のエラー = %v", err)
 	}
 	if got := len(sender.sent); got != 0 {
-		t.Errorf("送信件数 = %d, want 0", got)
+		t.Errorf("送信件数 = %d、期待値 = 0", got)
 	}
 }

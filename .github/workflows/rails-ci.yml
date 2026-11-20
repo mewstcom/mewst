@@ -7,8 +7,7 @@ on:
       - develop
     paths:
       - "rails/**"
-      # The RSpec job builds its test database from the Go-owned schema.
-      # [Ja] RSpec ジョブは Go 側が管理するスキーマからテスト用データベースを構築する
+      # RSpecジョブはGo側が管理するスキーマからテスト用データベースを構築する
       - "go/db/schema.sql"
       - ".github/workflows/rails-ci.yml"
   pull_request:
@@ -29,7 +28,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/rails zeitwerk:check
@@ -45,7 +44,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/standardrb
@@ -61,7 +60,7 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
       - run: bin/erb_lint --lint-all
@@ -129,14 +128,11 @@ jobs:
       - name: Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.3.14
           bundler-cache: true
           working-directory: rails
-      # The schema is owned by the Go side, so the test database is built from
-      # go/db/schema.sql.
-      #
-      # [Ja] スキーマは Go 側が管理するため、テスト用データベースは
-      # go/db/schema.sql から構築する。
+      # スキーマはGo側が管理するため、テスト用データベースは
+      # go/db/schema.sqlから構築する。
       - name: Setup Database
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f ../go/db/schema.sql

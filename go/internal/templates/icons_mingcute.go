@@ -2,24 +2,14 @@ package templates
 
 import "github.com/mewstcom/mewst/go/internal/viewmodel"
 
-// MingCute icons (https://www.mingcute.com/) ported from the Rails version's
-// local SVGs under rails/app/assets/images/icons/ (the navbar menu and the
-// link card remove button).
-//
-// Each icon keeps the `content` class on its visible path so callers can
-// override the fill via Tailwind (e.g. [&_.content]:fill-*) to switch between
-// the active and inactive states, mirroring the Rails Mewst::UI::Icon behavior.
-// The `fill-rule` on each <g> is preserved as-is because it differs per icon
-// (evenodd / nonzero / unset) and affects rendering.
-//
-// [Ja] navbar メニューとリンクカード削除ボタン用に Rails 版の
-// rails/app/assets/images/icons/ 配下のローカル SVG から移植した MingCute
+// navbarメニューとリンクカード削除ボタン用にRails版の
+// rails/app/assets/images/icons/ 配下のローカルSVGから移植したMingCute
 // アイコン (https://www.mingcute.com/)。
 //
-// 各アイコンは表示用の path に `content` クラスを残しており、呼び出し側が
-// Tailwind (例: [&_.content]:fill-*) で fill を上書きしてアクティブ / 非アクティブの
-// 状態を切り替えられる。これは Rails の Mewst::UI::Icon の挙動に合わせたもの。
-// 各 <g> の fill-rule はアイコンごとに異なり (evenodd / nonzero / 未指定) 描画に
+// 各アイコンは表示用のpathに `content` クラスを残しており、呼び出し側が
+// Tailwind (例: [&_.content]:fill-*) でfillを上書きしてアクティブ / 非アクティブの
+// 状態を切り替えられる。これはRailsのMewst::UI::Iconの挙動に合わせたもの。
+// 各 <g> のfill-ruleはアイコンごとに異なり (evenodd / nonzero / 未指定) 描画に
 // 影響するため、そのまま保持している。
 var mingcuteIcons = map[viewmodel.IconName]string{
 	"home_4_line":       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" fill-rule="evenodd"><path d="M24 0v24H0V0h24ZM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018Zm.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022Zm-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01-.184-.092Z"/><path class="content" fill="#09244BFF" d="M10.8 2.65a2 2 0 0 1 2.4 0l7 5.25a2 2 0 0 1 .8 1.6V19a2 2 0 0 1-2 2h-4.9a1.1 1.1 0 0 1-1.1-1.1V14a1 1 0 1 0-2 0v5.9A1.1 1.1 0 0 1 9.9 21H5a2 2 0 0 1-2-2V9.5a2 2 0 0 1 .8-1.6l7-5.25Zm1.2 1.6L5 9.5V19h4v-5a3 3 0 1 1 6 0v5h4V9.5l-7-5.25Z"/></g></svg>`,

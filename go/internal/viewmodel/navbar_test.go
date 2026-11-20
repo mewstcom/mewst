@@ -16,13 +16,13 @@ func TestNewNavbar(t *testing.T) {
 		wantAtname string
 	}{
 		{
-			name:       "プロフィールから atname とアクティブ項目を設定する",
+			name:       "プロフィールからatnameとアクティブ項目を設定する",
 			profile:    &model.Profile{Atname: "alice"},
 			activeItem: NavbarItemNew,
 			wantAtname: "alice",
 		},
 		{
-			name:       "プロフィールが nil の場合は atname を空にする",
+			name:       "プロフィールがnilの場合はatnameを空にする",
 			profile:    nil,
 			activeItem: NavbarItemHome,
 			wantAtname: "",
@@ -36,10 +36,10 @@ func TestNewNavbar(t *testing.T) {
 			navbar := NewNavbar(tt.profile, tt.activeItem)
 
 			if navbar.Atname != tt.wantAtname {
-				t.Errorf("NewNavbar().Atname = %q, want %q", navbar.Atname, tt.wantAtname)
+				t.Errorf("NewNavbar().Atname = %q、期待値 = %q", navbar.Atname, tt.wantAtname)
 			}
 			if navbar.ActiveItem != tt.activeItem {
-				t.Errorf("NewNavbar().ActiveItem = %q, want %q", navbar.ActiveItem, tt.activeItem)
+				t.Errorf("NewNavbar().ActiveItem = %q、期待値 = %q", navbar.ActiveItem, tt.activeItem)
 			}
 		})
 	}
@@ -51,9 +51,9 @@ func TestNavbar_IsActive(t *testing.T) {
 	navbar := NewNavbar(&model.Profile{Atname: "bob"}, NavbarItemNew)
 
 	if !navbar.IsActive(NavbarItemNew) {
-		t.Error("IsActive(NavbarItemNew) = false, want true")
+		t.Error("IsActive(NavbarItemNew) = false、期待値 = true")
 	}
 	if navbar.IsActive(NavbarItemHome) {
-		t.Error("IsActive(NavbarItemHome) = true, want false")
+		t.Error("IsActive(NavbarItemHome) = true、期待値 = false")
 	}
 }

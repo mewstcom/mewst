@@ -12,22 +12,15 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// CreatePageData holds the data for the attached-link-card fragment.
-//
-// [Ja] CreatePageData は紐付け済みリンクカードのフラグメントのデータを保持する。
+// CreatePageDataは紐付け済みリンクカードのフラグメントのデータを保持する。
 type CreatePageData struct {
 	Link viewmodel.Link
 }
 
-// Create renders the attached-link-card fragment (the Rails links/create/call
-// view). The markup itself lives in components.AttachedLinkCard, which the post
-// form's 422 re-render also uses. The fragment is swapped into the #link-form
-// container.
-//
-// [Ja] Create は紐付け済みリンクカードのフラグメント (Rails の links/create/call
-// ビュー) を描画する。マークアップ本体は components.AttachedLinkCard にあり、
-// 投稿フォームの 422 再描画でも同じコンポーネントを使う。フラグメントは
-// #link-form コンテナにスワップされる。
+// Createは紐付け済みリンクカードのフラグメント (Railsのlinks/create/call
+// ビュー) を描画する。マークアップ本体はcomponents.AttachedLinkCardにあり、
+// 投稿フォームの422再描画でも同じコンポーネントを使う。フラグメントは
+// #link-formコンテナにスワップされる。
 func Create(data CreatePageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

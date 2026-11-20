@@ -27,23 +27,23 @@ func TestEmailConfirmationRepository_Create(t *testing.T) {
 
 		ec, err := repo.Create(ctx, params)
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		if ec.Email != params.Email {
-			t.Errorf("ec.Email = %v, want %v", ec.Email, params.Email)
+			t.Errorf("ec.Email = %v、期待値 = %v", ec.Email, params.Email)
 		}
 		if ec.Event != params.Event {
-			t.Errorf("ec.Event = %v, want %v", ec.Event, params.Event)
+			t.Errorf("ec.Event = %v、期待値 = %v", ec.Event, params.Event)
 		}
 		if ec.Code != params.Code {
-			t.Errorf("ec.Code = %v, want %v", ec.Code, params.Code)
+			t.Errorf("ec.Code = %v、期待値 = %v", ec.Code, params.Code)
 		}
 		if ec.SucceededAt != nil {
-			t.Errorf("ec.SucceededAt should be nil, got %v", ec.SucceededAt)
+			t.Errorf("ec.SucceededAt = %v、期待値 = nil", ec.SucceededAt)
 		}
 		if ec.CreatedAt.IsZero() {
-			t.Error("ec.CreatedAt should not be zero")
+			t.Error("ec.CreatedAt = ゼロ値、非ゼロ値を期待")
 		}
 	})
 }
@@ -66,14 +66,14 @@ func TestEmailConfirmationRepository_FindByID(t *testing.T) {
 	t.Run("IDでメール確認を取得できる", func(t *testing.T) {
 		ec, err := repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 
 		if ec.ID != id {
-			t.Errorf("ec.ID = %v, want %v", ec.ID, id)
+			t.Errorf("ec.ID = %v、期待値 = %v", ec.ID, id)
 		}
 		if ec.Email != email {
-			t.Errorf("ec.Email = %v, want %v", ec.Email, email)
+			t.Errorf("ec.Email = %v、期待値 = %v", ec.Email, email)
 		}
 	})
 
@@ -81,10 +81,10 @@ func TestEmailConfirmationRepository_FindByID(t *testing.T) {
 		nonExistentID := model.EmailConfirmationID(testutil.MustParseUUID("01234567-89ab-cdef-0123-456789abcdef"))
 		ec, err := repo.FindByID(ctx, nonExistentID)
 		if err != nil {
-			t.Errorf("FindByID() error = %v, want nil", err)
+			t.Errorf("FindByID()のエラー = %v、期待値 = nil", err)
 		}
 		if ec != nil {
-			t.Errorf("FindByID() ec = %v, want nil", ec)
+			t.Errorf("FindByID()のec = %v、期待値 = nil", ec)
 		}
 	})
 }
@@ -106,11 +106,11 @@ func TestEmailConfirmationRepository_FindActiveByID(t *testing.T) {
 
 		ec, err := repo.FindActiveByID(ctx, id)
 		if err != nil {
-			t.Fatalf("FindActiveByID() error = %v", err)
+			t.Fatalf("FindActiveByID()のエラー = %v", err)
 		}
 
 		if ec.ID != id {
-			t.Errorf("ec.ID = %v, want %v", ec.ID, id)
+			t.Errorf("ec.ID = %v、期待値 = %v", ec.ID, id)
 		}
 	})
 
@@ -126,10 +126,10 @@ func TestEmailConfirmationRepository_FindActiveByID(t *testing.T) {
 
 		ec, err := repo.FindActiveByID(ctx, id)
 		if err != nil {
-			t.Errorf("FindActiveByID() error = %v, want nil", err)
+			t.Errorf("FindActiveByID()のエラー = %v、期待値 = nil", err)
 		}
 		if ec != nil {
-			t.Errorf("FindActiveByID() ec = %v, want nil", ec)
+			t.Errorf("FindActiveByID()のec = %v、期待値 = nil", ec)
 		}
 	})
 
@@ -144,10 +144,10 @@ func TestEmailConfirmationRepository_FindActiveByID(t *testing.T) {
 
 		ec, err := repo.FindActiveByID(ctx, id)
 		if err != nil {
-			t.Errorf("FindActiveByID() error = %v, want nil", err)
+			t.Errorf("FindActiveByID()のエラー = %v、期待値 = nil", err)
 		}
 		if ec != nil {
-			t.Errorf("FindActiveByID() ec = %v, want nil", ec)
+			t.Errorf("FindActiveByID()のec = %v、期待値 = nil", ec)
 		}
 	})
 }
@@ -171,14 +171,14 @@ func TestEmailConfirmationRepository_FindSucceededByID(t *testing.T) {
 
 		ec, err := repo.FindSucceededByID(ctx, id)
 		if err != nil {
-			t.Fatalf("FindSucceededByID() error = %v", err)
+			t.Fatalf("FindSucceededByID()のエラー = %v", err)
 		}
 
 		if ec.ID != id {
-			t.Errorf("ec.ID = %v, want %v", ec.ID, id)
+			t.Errorf("ec.ID = %v、期待値 = %v", ec.ID, id)
 		}
 		if ec.SucceededAt == nil {
-			t.Error("ec.SucceededAt should not be nil")
+			t.Error("ec.SucceededAt = nil、非nilを期待")
 		}
 	})
 
@@ -191,10 +191,10 @@ func TestEmailConfirmationRepository_FindSucceededByID(t *testing.T) {
 
 		ec, err := repo.FindSucceededByID(ctx, id)
 		if err != nil {
-			t.Errorf("FindSucceededByID() error = %v, want nil", err)
+			t.Errorf("FindSucceededByID()のエラー = %v、期待値 = nil", err)
 		}
 		if ec != nil {
-			t.Errorf("FindSucceededByID() ec = %v, want nil", ec)
+			t.Errorf("FindSucceededByID()のec = %v、期待値 = nil", ec)
 		}
 	})
 }
@@ -217,25 +217,25 @@ func TestEmailConfirmationRepository_Succeed(t *testing.T) {
 		// マーク前は未確認
 		ec, err := repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 		if ec.SucceededAt != nil {
-			t.Error("ec.SucceededAt should be nil before marking")
+			t.Error("確認済みにする前のec.SucceededAt = 非nil、nilを期待")
 		}
 
 		// 成功済みとしてマーク
 		err = repo.Succeed(ctx, id)
 		if err != nil {
-			t.Fatalf("Succeed() error = %v", err)
+			t.Fatalf("Succeed()のエラー = %v", err)
 		}
 
 		// マーク後は確認済み
 		ec, err = repo.FindByID(ctx, id)
 		if err != nil {
-			t.Fatalf("FindByID() after mark error = %v", err)
+			t.Fatalf("確認済みにした後のFindByID()のエラー = %v", err)
 		}
 		if ec.SucceededAt == nil {
-			t.Error("ec.SucceededAt should not be nil after marking")
+			t.Error("確認済みにした後のec.SucceededAt = nil、非nilを期待")
 		}
 	})
 }

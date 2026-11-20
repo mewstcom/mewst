@@ -70,14 +70,14 @@ func TestShow(t *testing.T) {
 
 			// ステータスコードを確認
 			if rr.Code != http.StatusOK {
-				t.Errorf("期待したステータスコード %d, 実際は %d", http.StatusOK, rr.Code)
+				t.Errorf("期待したステータスコード%d, 実際は%d", http.StatusOK, rr.Code)
 			}
 
 			// Content-Typeを確認
 			contentType := rr.Header().Get("Content-Type")
 			expectedContentType := "application/manifest+json"
 			if contentType != expectedContentType {
-				t.Errorf("期待したContent-Type %s, 実際は %s", expectedContentType, contentType)
+				t.Errorf("期待したContent-Type %s, 実際は%s", expectedContentType, contentType)
 			}
 
 			// JSONをパースして検証
@@ -88,12 +88,12 @@ func TestShow(t *testing.T) {
 
 			// 名前を確認
 			if result.Name != tt.expectedName {
-				t.Errorf("期待したName %s, 実際は %s", tt.expectedName, result.Name)
+				t.Errorf("期待したName %s, 実際は%s", tt.expectedName, result.Name)
 			}
 
 			// ShortNameは常に "Mewst"
 			if result.ShortName != "Mewst" {
-				t.Errorf("期待したShortName Mewst, 実際は %s", result.ShortName)
+				t.Errorf("期待したShortName Mewst, 実際は%s", result.ShortName)
 			}
 
 			// 説明に期待した内容が含まれているか確認
@@ -104,32 +104,32 @@ func TestShow(t *testing.T) {
 			// テーマカラーを確認
 			expectedThemeColor := "#f6f2eb"
 			if result.ThemeColor != expectedThemeColor {
-				t.Errorf("期待したThemeColor %s, 実際は %s", expectedThemeColor, result.ThemeColor)
+				t.Errorf("期待したThemeColor %s, 実際は%s", expectedThemeColor, result.ThemeColor)
 			}
 
 			// BackgroundColorを確認
 			if result.BackgroundColor != expectedThemeColor {
-				t.Errorf("期待したBackgroundColor %s, 実際は %s", expectedThemeColor, result.BackgroundColor)
+				t.Errorf("期待したBackgroundColor %s, 実際は%s", expectedThemeColor, result.BackgroundColor)
 			}
 
 			// Displayを確認
 			if result.Display != "standalone" {
-				t.Errorf("期待したDisplay standalone, 実際は %s", result.Display)
+				t.Errorf("期待したDisplay standalone, 実際は%s", result.Display)
 			}
 
 			// アイコンを確認
 			if len(result.Icons) != 2 {
-				t.Errorf("期待したアイコン数 2, 実際は %d", len(result.Icons))
+				t.Errorf("期待したアイコン数2, 実際は%d", len(result.Icons))
 			}
 
 			// 192x192アイコンを確認
 			if len(result.Icons) > 0 {
 				icon192 := result.Icons[0]
 				if icon192.Sizes != "192x192" {
-					t.Errorf("期待したSizes 192x192, 実際は %s", icon192.Sizes)
+					t.Errorf("期待したSizes 192x192, 実際は%s", icon192.Sizes)
 				}
 				if icon192.Src != "/static/images/icon-192.png" {
-					t.Errorf("期待したSrc /static/images/icon-192.png, 実際は %s", icon192.Src)
+					t.Errorf("期待したSrc /static/images/icon-192.png, 実際は%s", icon192.Src)
 				}
 			}
 
@@ -137,21 +137,21 @@ func TestShow(t *testing.T) {
 			if len(result.Icons) > 1 {
 				icon512 := result.Icons[1]
 				if icon512.Sizes != "512x512" {
-					t.Errorf("期待したSizes 512x512, 実際は %s", icon512.Sizes)
+					t.Errorf("期待したSizes 512x512, 実際は%s", icon512.Sizes)
 				}
 				if icon512.Src != "/static/images/icon-512.png" {
-					t.Errorf("期待したSrc /static/images/icon-512.png, 実際は %s", icon512.Src)
+					t.Errorf("期待したSrc /static/images/icon-512.png, 実際は%s", icon512.Src)
 				}
 			}
 
 			// Scopeを確認
 			if result.Scope != "/" {
-				t.Errorf("期待したScope /, 実際は %s", result.Scope)
+				t.Errorf("期待したScope /, 実際は%s", result.Scope)
 			}
 
 			// StartURLを確認
 			if result.StartURL != "/" {
-				t.Errorf("期待したStartURL /, 実際は %s", result.StartURL)
+				t.Errorf("期待したStartURL /, 実際は%s", result.StartURL)
 			}
 		})
 	}
@@ -175,7 +175,7 @@ func TestShow_EnglishLocale(t *testing.T) {
 
 	// ステータスコードを確認
 	if rr.Code != http.StatusOK {
-		t.Errorf("期待したステータスコード %d, 実際は %d", http.StatusOK, rr.Code)
+		t.Errorf("期待したステータスコード%d, 実際は%d", http.StatusOK, rr.Code)
 	}
 
 	// JSONをパースして検証
@@ -196,7 +196,7 @@ func TestShow_EnglishLocale(t *testing.T) {
 	}
 }
 
-// containsSubstring はsにsubstrが含まれているかをチェックする
+// containsSubstringはsにsubstrが含まれているかをチェックする
 func containsSubstring(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) && (s[:len(substr)] == substr || s[len(s)-len(substr):] == substr || containsSubstringHelper(s, substr)))
 }

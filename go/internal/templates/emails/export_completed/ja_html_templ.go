@@ -10,9 +10,7 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// JaHTML is the Japanese export completion notification (HTML).
-//
-// [Ja] JaHTML は日本語版のエクスポート完了通知 (HTML形式) です。
+// JaHTMLは日本語版のエクスポート完了通知 (HTML形式) です。
 func JaHTML(exportURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -41,13 +39,13 @@ func JaHTML(exportURL string) templ.Component {
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(exportURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/export_completed/ja_html.templ`, Line: 17, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/emails/export_completed/ja_html.templ`, Line: 15, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">エクスポート画面を開く</a></p><p>ダウンロードできるのは最新のエクスポート 1 件です。新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。</p><hr style=\"border: none; border-top: 1px solid #ccc; margin: 20px 0;\"><p style=\"color: #666; font-size: 12px;\">Mewst<br><a href=\"https://mewst.com\" style=\"color: #666;\">Mewst 公式サイト</a></p></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">エクスポート画面を開く</a></p><p>ダウンロードできるのは最新のエクスポート1件です。新しいエクスポートが正常に完了すると、今回のエクスポートはダウンロードできなくなります。</p><hr style=\"border: none; border-top: 1px solid #ccc; margin: 20px 0;\"><p style=\"color: #666; font-size: 12px;\">Mewst<br><a href=\"https://mewst.com\" style=\"color: #666;\">Mewst公式サイト</a></p></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

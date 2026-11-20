@@ -27,11 +27,11 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 			WindowStart: windowStart,
 		})
 		if err != nil {
-			t.Fatalf("Increment() error = %v", err)
+			t.Fatalf("Increment()のエラー = %v", err)
 		}
 
 		if result.Count != 1 {
-			t.Errorf("Count = %d, want 1", result.Count)
+			t.Errorf("Count = %d、期待値 = 1", result.Count)
 		}
 	})
 
@@ -51,7 +51,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 			WindowStart: windowStart,
 		})
 		if err != nil {
-			t.Fatalf("1回目のIncrement() error = %v", err)
+			t.Fatalf("1回目のIncrement()のエラー = %v", err)
 		}
 
 		// 2回目のインクリメント
@@ -60,11 +60,11 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 			WindowStart: windowStart,
 		})
 		if err != nil {
-			t.Fatalf("2回目のIncrement() error = %v", err)
+			t.Fatalf("2回目のIncrement()のエラー = %v", err)
 		}
 
 		if result.Count != 2 {
-			t.Errorf("Count = %d, want 2", result.Count)
+			t.Errorf("Count = %d、期待値 = 2", result.Count)
 		}
 	})
 
@@ -85,7 +85,7 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 				WindowStart: windowStart,
 			})
 			if err != nil {
-				t.Fatalf("key1のIncrement() error = %v", err)
+				t.Fatalf("key1のIncrement()のエラー = %v", err)
 			}
 		}
 
@@ -95,11 +95,11 @@ func TestRateLimitRepository_Increment(t *testing.T) {
 			WindowStart: windowStart,
 		})
 		if err != nil {
-			t.Fatalf("key2のIncrement() error = %v", err)
+			t.Fatalf("key2のIncrement()のエラー = %v", err)
 		}
 
 		if result.Count != 1 {
-			t.Errorf("key2のCount = %d, want 1", result.Count)
+			t.Errorf("key2のCount = %d、期待値 = 1", result.Count)
 		}
 	})
 }
@@ -123,13 +123,13 @@ func TestRateLimitRepository_DeleteOldRecords(t *testing.T) {
 			WindowStart: windowStart,
 		})
 		if err != nil {
-			t.Fatalf("Increment() error = %v", err)
+			t.Fatalf("Increment()のエラー = %v", err)
 		}
 
 		// 現在より未来のcutoffで削除 (削除されない)
 		err = repo.DeleteOldRecords(ctx, now.Add(2*time.Hour))
 		if err != nil {
-			t.Errorf("DeleteOldRecords() error = %v", err)
+			t.Errorf("DeleteOldRecords()のエラー = %v", err)
 		}
 	})
 }

@@ -30,14 +30,14 @@ func TestPostLinkRepository_Create(t *testing.T) {
 			LinkID: linkID,
 		})
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			t.Fatalf("Create()のエラー = %v", err)
 		}
 
 		if postLink.PostID != postID {
-			t.Errorf("postLink.PostID = %v, want %v", postLink.PostID, postID)
+			t.Errorf("postLink.PostID = %v、期待値 = %v", postLink.PostID, postID)
 		}
 		if postLink.LinkID != linkID {
-			t.Errorf("postLink.LinkID = %v, want %v", postLink.LinkID, linkID)
+			t.Errorf("postLink.LinkID = %v、期待値 = %v", postLink.LinkID, linkID)
 		}
 	})
 }

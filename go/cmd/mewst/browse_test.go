@@ -11,25 +11,14 @@ import (
 	"testing"
 )
 
-// browseLoginHarness sources browse.sh for its functions and replaces what
-// reaches outside the process: the Go toolchain, playwright-cli, and the
-// Basic-auth config that would need a base URL to build. Everything the test
-// is about — role selection, credential parsing, and the generated password
-// script — runs as written.
-//
-// The file paths are not restated here. browse.sh takes them from
-// MEWST_BROWSE_TMP_DIR, so its own definitions stay the only ones, and a
-// rename there cannot leave this harness pointing somewhere else while the
-// script writes a real password file to the developer's tmp directory.
-//
-// [Ja] browseLoginHarness は browse.sh を source して関数を取り込み、プロセスの外へ
-// 出るもの (Go ツールチェイン、playwright-cli、ベース URL が要る Basic 認証 config の
+// browseLoginHarnessはbrowse.shをsourceして関数を取り込み、プロセスの外へ
+// 出るもの (Goツールチェイン、playwright-cli、ベースURLが要るBasic認証configの
 // 生成) だけを差し替える。テスト対象 (役割選択、資格情報解析、生成されるパスワード
 // スクリプト) は書かれたまま動く。
 //
-// ファイルパスはここに書き写さない。browse.sh が MEWST_BROWSE_TMP_DIR から取るため、
-// 定義は browse.sh のものだけになり、あちらで改名したときに、このハーネスだけが別の
-// 場所を指したまま、スクリプトが開発者の実 tmp ディレクトリへパスワードのファイルを
+// ファイルパスはここに書き写さない。browse.shがMEWST_BROWSE_TMP_DIRから取るため、
+// 定義はbrowse.shのものだけになり、あちらで改名したときに、このハーネスだけが別の
+// 場所を指したまま、スクリプトが開発者の実tmpディレクトリへパスワードのファイルを
 // 書く、という状態にならない。
 const browseLoginHarness = `
 set -euo pipefail
@@ -71,18 +60,7 @@ build_config() {
   printf '%s' 'https://example.test' > "$ORIGIN_FILE"
 }
 
-# pw stands in for playwright-cli itself rather than for pw_checked, so that
-# both wrappers run as written and the argv captured here is the argv the real
-# command would have been given.
-#
-# run-code is answered the way playwright-cli answers it: with the code it ran
-# echoed back, which for the sign-in is the generated script and the password in
-# it. That is the response pw_checked_secret exists to keep off the terminal.
-# The js code fence the real response puts around it is left out, because a Go
-# raw string literal cannot carry a backtick; the filter keys on the "### "
-# section headers, which are reproduced.
-#
-# [Ja] pw は pw_checked ではなく playwright-cli 自体の代役。どちらのラッパーも書かれた
+# pw は pw_checked ではなく playwright-cli 自体の代役。どちらのラッパーも書かれた
 # まま動かし、ここで捕捉する argv を、実際のコマンドが渡されたはずの argv にするため。
 #
 # run-code には playwright-cli と同じ形で答える。実行したコードを返す形であり、
@@ -126,24 +104,15 @@ await ('
 cmd_login "${1:-}"
 `
 
-// browseLoginPassword carries the characters a shell, a JSON string and a
-// JavaScript source each treat specially, so that what every step of the
-// hand-off does to them is exercised rather than assumed. browseLoginEmail is
-// the address devcreds returns on the first line.
-//
-// [Ja] browseLoginPassword は、シェル・JSON 文字列・JavaScript のソースがそれぞれ
+// browseLoginPasswordは、シェル・JSON文字列・JavaScriptのソースがそれぞれ
 // 特別扱いする文字を含む。受け渡しの各段がそれらに何をするのかを、仮定ではなく実際に
-// 通すため。browseLoginEmail は devcreds が 1 行目に返すアドレス。
+// 通すため。browseLoginEmailはdevcredsが1行目に返すアドレス。
 const (
 	browseLoginPassword = `p@ss word "$\quoted`
 	browseLoginEmail    = "roster-user@example.com"
 )
 
-// browseLoginOptions is what one harness run is set up with. The two switches
-// are named at the call site rather than passed as bare positions, because
-// "false, true" says nothing about which run is being asked for.
-//
-// [Ja] browseLoginOptions は、ハーネスの実行 1 回分の設定。2 つのスイッチを位置では
+// browseLoginOptionsは、ハーネスの実行1回分の設定。2つのスイッチを位置では
 // なく呼び出し側で名前付きにするのは、"false, true" がどちらの実行を求めているのかを
 // 何も語らないため。
 type browseLoginOptions struct {
@@ -158,10 +127,7 @@ type browseLoginResult struct {
 	role   string
 }
 
-// TestBrowseLoginSelectsRole covers the default account and a roster role
-// passed through unchanged. Each path also exercises credential parsing.
-//
-// [Ja] TestBrowseLoginSelectsRole は、既定アカウントと名簿の役割をそのまま指定する
+// TestBrowseLoginSelectsRoleは、既定アカウントと名簿の役割をそのまま指定する
 // 経路を確認する。各経路でログインが使う資格情報解析も通す。
 func TestBrowseLoginSelectsRole(t *testing.T) {
 	t.Parallel()
@@ -182,19 +148,16 @@ func TestBrowseLoginSelectsRole(t *testing.T) {
 			result := runBrowseLogin(t, tt.requested)
 
 			if result.role != tt.want {
-				t.Errorf("資格情報を役割 %q で検索することを期待したが %q だった", tt.want, result.role)
+				t.Errorf("資格情報を役割%qで検索することを期待したが%qだった", tt.want, result.role)
 			}
 			if !strings.Contains(result.stdout, "logged in as "+tt.want+": https://example.test/") {
-				t.Errorf("役割 %q のログイン完了出力を期待したが %q だった", tt.want, result.stdout)
+				t.Errorf("役割%qのログイン完了出力を期待したが%qだった", tt.want, result.stdout)
 			}
 		})
 	}
 }
 
-// TestBrowseLoginRejectsMalformedCredentials verifies the exact two-line
-// devcreds contract.
-//
-// [Ja] TestBrowseLoginRejectsMalformedCredentials は devcreds の厳密な2行契約を確認する。
+// TestBrowseLoginRejectsMalformedCredentialsはdevcredsの厳密な2行契約を確認する。
 func TestBrowseLoginRejectsMalformedCredentials(t *testing.T) {
 	t.Parallel()
 
@@ -224,7 +187,7 @@ func TestBrowseLoginRejectsMalformedCredentials(t *testing.T) {
 				t.Fatalf("不正な資格情報では非ゼロ終了を期待したが成功した\nstdout: %s\nstderr: %s", stdout.String(), stderr.String())
 			}
 			if !strings.Contains(stderr.String(), "must print exactly two non-empty lines") {
-				t.Errorf("2行契約のエラーを期待したが %q だった", stderr.String())
+				t.Errorf("2行契約のエラーを期待したが%qだった", stderr.String())
 			}
 			if strings.Contains(stdout.String(), browseLoginPassword) || strings.Contains(stderr.String(), browseLoginPassword) {
 				t.Errorf("出力にパスワードが含まれている\nstdout: %q\nstderr: %q", stdout.String(), stderr.String())
@@ -233,10 +196,7 @@ func TestBrowseLoginRejectsMalformedCredentials(t *testing.T) {
 	}
 }
 
-// TestBrowseLoginPreservesDevcredsFailure verifies that a child error is not
-// hidden behind an additional generic message.
-//
-// [Ja] TestBrowseLoginPreservesDevcredsFailure は子プロセスのエラーへ汎用エラーを
+// TestBrowseLoginPreservesDevcredsFailureは子プロセスのエラーへ汎用エラーを
 // 付け足さないことを確認する。
 func TestBrowseLoginPreservesDevcredsFailure(t *testing.T) {
 	t.Parallel()
@@ -253,17 +213,14 @@ func TestBrowseLoginPreservesDevcredsFailure(t *testing.T) {
 		t.Fatalf("devcreds失敗時は非ゼロ終了を期待したが成功した")
 	}
 	if stdout.Len() != 0 {
-		t.Errorf("標準出力が空であることを期待したが %q だった", stdout.String())
+		t.Errorf("標準出力が空であることを期待したが%qだった", stdout.String())
 	}
 	if stderr.String() != "role rejected by devcreds\n" {
-		t.Errorf("devcreds自身のstderrだけを期待したが %q だった", stderr.String())
+		t.Errorf("devcreds自身のstderrだけを期待したが%qだった", stderr.String())
 	}
 }
 
-// TestBrowseLoginMakeTargetQuotesRole verifies that shell metacharacters in the
-// make variable remain one quoted script argument.
-//
-// [Ja] TestBrowseLoginMakeTargetQuotesRole は Make 変数内のシェルメタ文字が引用された
+// TestBrowseLoginMakeTargetQuotesRoleはMake変数内のシェルメタ文字が引用された
 // 1つのスクリプト引数に留まることを確認する。
 func TestBrowseLoginMakeTargetQuotesRole(t *testing.T) {
 	t.Parallel()
@@ -279,24 +236,16 @@ func TestBrowseLoginMakeTargetQuotesRole(t *testing.T) {
 		t.Fatalf("browse-loginのdry-runに失敗: %v\n%s", err, output)
 	}
 	if !strings.Contains(string(output), `login "main; printf injected"`) {
-		t.Errorf("役割が引用されたコマンドを期待したが %q だった", output)
+		t.Errorf("役割が引用されたコマンドを期待したが%qだった", output)
 	}
 }
 
-// TestBrowseLoginKeepsPasswordOutOfFailureOutput covers what happens when the
-// password step fails. playwright-cli answers run-code with the code it ran,
-// which here is the generated script and the password in it, so the response
-// body is the one thing the failure must not print.
-//
-// The run fails and says so, the Error section reaches stderr because that is
-// what makes the failure diagnosable, and nothing else from the response does.
-//
-// [Ja] TestBrowseLoginKeepsPasswordOutOfFailureOutput は、パスワード入力の手順が
-// 失敗したときを扱う。playwright-cli は run-code へ、実行したコードを返す。ここでは
+// TestBrowseLoginKeepsPasswordOutOfFailureOutputは、パスワード入力の手順が
+// 失敗したときを扱う。playwright-cliはrun-codeへ、実行したコードを返す。ここでは
 // それが生成スクリプトと、その中のパスワードになるため、応答の本文は、失敗時に
 // 出してはならない唯一のものになる。
 //
-// 実行は失敗してそう告げ、Error セクションは失敗を調査できるようにするため標準エラー
+// 実行は失敗してそう告げ、Errorセクションは失敗を調査できるようにするため標準エラー
 // 出力へ届き、応答のそれ以外は届かない。
 func TestBrowseLoginKeepsPasswordOutOfFailureOutput(t *testing.T) {
 	t.Parallel()
@@ -320,32 +269,25 @@ func TestBrowseLoginKeepsPasswordOutOfFailureOutput(t *testing.T) {
 		t.Errorf("標準出力にパスワードが含まれている: %q", stdout.String())
 	}
 	if strings.Contains(stderr.String(), "Ran Playwright code") {
-		t.Errorf("実行したコードのセクションを出さないことを期待したが %q だった", stderr.String())
+		t.Errorf("実行したコードのセクションを出さないことを期待したが%qだった", stderr.String())
 	}
 	if !strings.Contains(stderr.String(), "TimeoutError: locator.fill") {
-		t.Errorf("Errorセクションの内容を出すことを期待したが %q だった", stderr.String())
+		t.Errorf("Errorセクションの内容を出すことを期待したが%qだった", stderr.String())
 	}
 	if !strings.Contains(stderr.String(), "filling the password failed") {
-		t.Errorf("パスワード入力の失敗を告げる出力を期待したが %q だった", stderr.String())
+		t.Errorf("パスワード入力の失敗を告げる出力を期待したが%qだった", stderr.String())
 	}
 
-	// The trap has to take the script with it on the way out, since the
-	// explicit removal sits after the step that failed.
-	//
-	// [Ja] 明示的な削除は失敗した手順の後ろにあるため、抜ける途中で trap が
+	// 明示的な削除は失敗した手順の後ろにあるため、抜ける途中でtrapが
 	// スクリプトを持って行く必要がある。
 	if _, err := os.Stat(filepath.Join(browseTmpDir(captureDir), "browse-cli.password.js")); !errors.Is(err, os.ErrNotExist) {
-		t.Errorf("失敗時もパスワードスクリプトが削除されることを期待したが err=%v", err)
+		t.Errorf("失敗時もパスワードスクリプトが削除されることを期待したがerr=%v", err)
 	}
 }
 
-// browseLoginCommand builds the harness invocation. captureDir holds both what
-// the stubs record and the tmp directory browse.sh is pointed at, so a test
-// touches nothing outside its own t.TempDir.
-//
-// [Ja] browseLoginCommand はハーネスの実行を組み立てる。captureDir はスタブが記録
-// するものと、browse.sh を向ける tmp ディレクトリの両方を持つため、テストは自身の
-// t.TempDir の外に触れない。
+// browseLoginCommandはハーネスの実行を組み立てる。captureDirはスタブが記録
+// するものと、browse.shを向けるtmpディレクトリの両方を持つため、テストは自身の
+// t.TempDirの外に触れない。
 func browseLoginCommand(t *testing.T, captureDir string, opts browseLoginOptions) *exec.Cmd {
 	t.Helper()
 
@@ -376,21 +318,14 @@ func browseLoginCommand(t *testing.T, captureDir string, opts browseLoginOptions
 	return command
 }
 
-// browseTmpDir is where browse.sh writes its credential-bearing files during a
-// test. It is named here rather than read back from the script, because a test
-// that asked the script where it writes could not tell a wrong answer from a
-// right one.
-//
-// [Ja] browseTmpDir は、テスト中に browse.sh が資格情報を含むファイルを書く場所。
+// browseTmpDirは、テスト中にbrowse.shが資格情報を含むファイルを書く場所。
 // スクリプトから読み取るのではなくここで指定する。どこへ書くのかをスクリプトに
 // 尋ねるテストは、誤った答えと正しい答えを区別できないため。
 func browseTmpDir(captureDir string) string {
 	return filepath.Join(captureDir, "tmp")
 }
 
-// boolFlag renders a switch the harness reads with a string comparison.
-//
-// [Ja] boolFlag は、ハーネスが文字列比較で読むスイッチを組み立てる。
+// boolFlagは、ハーネスが文字列比較で読むスイッチを組み立てる。
 func boolFlag(on bool) string {
 	if on {
 		return "1"
@@ -413,7 +348,7 @@ func runBrowseLogin(t *testing.T, requestedRole string) browseLoginResult {
 		t.Fatalf("browse.shのログインテストに失敗: %v\nstdout: %s\nstderr: %s", err, stdout.String(), stderr.String())
 	}
 	if stderr.Len() != 0 {
-		t.Errorf("標準エラー出力が空であることを期待したが %q だった", stderr.String())
+		t.Errorf("標準エラー出力が空であることを期待したが%qだった", stderr.String())
 	}
 
 	readCapture := func(name string) string {
@@ -432,7 +367,7 @@ func runBrowseLogin(t *testing.T, requestedRole string) browseLoginResult {
 		t.Fatalf("Goモジュールルートの絶対パスを取得できなかった: %v", err)
 	}
 	if goDir := readCapture("go-dir"); goDir != wantGoDir {
-		t.Errorf("モジュール外からでもdevcredsを %q で実行することを期待したが %q だった", wantGoDir, goDir)
+		t.Errorf("モジュール外からでもdevcredsを%qで実行することを期待したが%qだった", wantGoDir, goDir)
 	}
 
 	calls := readCapture("playwright-argv")
@@ -440,7 +375,7 @@ func runBrowseLogin(t *testing.T, requestedRole string) browseLoginResult {
 		t.Errorf("playwright-cliのargvにパスワードが含まれている: %q", calls)
 	}
 	if !strings.Contains(calls, "\tfill\tinput[name=\"email\"]\t"+browseLoginEmail+"\n") {
-		t.Errorf("devcredsの1行目をemail入力に使うことを期待したが %q だった", calls)
+		t.Errorf("devcredsの1行目をemail入力に使うことを期待したが%qだった", calls)
 	}
 
 	passwordScript := readCapture("password-script")
@@ -449,23 +384,19 @@ func runBrowseLogin(t *testing.T, requestedRole string) browseLoginResult {
 		t.Fatalf("パスワードをJSON文字列へ変換できなかった: %v", err)
 	}
 	if !strings.Contains(passwordScript, string(quotedPassword)) {
-		t.Errorf("devcredsの2行目をパスワード入力に使うことを期待したが %q だった", passwordScript)
+		t.Errorf("devcredsの2行目をパスワード入力に使うことを期待したが%qだった", passwordScript)
 	}
 	if mode := strings.TrimSpace(readCapture("password-mode")); mode != "600" {
-		t.Errorf("パスワードスクリプトの権限が600であることを期待したが %q だった", mode)
+		t.Errorf("パスワードスクリプトの権限が600であることを期待したが%qだった", mode)
 	}
-	// The path playwright-cli was given has to be the one this test pointed
-	// browse.sh at. Without this, the removal check below would hold for a run
-	// that wrote the script somewhere else entirely and left it there.
-	//
-	// [Ja] playwright-cli へ渡されたパスは、このテストが browse.sh を向けた先で
+	// playwright-cliへ渡されたパスは、このテストがbrowse.shを向けた先で
 	// ある必要がある。これが無いと、下の削除の確認は、まったく別の場所へスクリプトを
 	// 書いてそのまま残した実行に対しても成立してしまう。
 	if want := "\t--filename=" + filepath.Join(browseTmpDir(captureDir), "browse-cli.password.js") + "\n"; !strings.Contains(calls, want) {
-		t.Errorf("パスワードスクリプトを %q へ書くことを期待したが %q だった", want, calls)
+		t.Errorf("パスワードスクリプトを%qへ書くことを期待したが%qだった", want, calls)
 	}
 	if _, err := os.Stat(filepath.Join(browseTmpDir(captureDir), "browse-cli.password.js")); !errors.Is(err, os.ErrNotExist) {
-		t.Errorf("ログイン後にパスワードスクリプトが削除されることを期待したが err=%v", err)
+		t.Errorf("ログイン後にパスワードスクリプトが削除されることを期待したがerr=%v", err)
 	}
 
 	return browseLoginResult{

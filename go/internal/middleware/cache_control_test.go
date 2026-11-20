@@ -18,19 +18,14 @@ func TestPrivateCache_SetsHeader(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが期待と異なる: got %d want %d", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusOK)
 	}
 	if got := rr.Header().Get("Cache-Control"); got != PrivateCacheControl {
-		t.Errorf("Cache-Control = %q, want %q", got, PrivateCacheControl)
+		t.Errorf("Cache-Control = %q、期待値 = %q", got, PrivateCacheControl)
 	}
 }
 
-// TestPrivateCache_SetsHeaderOnShortCircuit pins that a downstream middleware
-// answering on its own still gets the header. The authentication middleware
-// redirects an unauthenticated request without reaching the handler, and that
-// redirect must not be cacheable by a shared cache either.
-//
-// [Ja] TestPrivateCache_SetsHeaderOnShortCircuit は、下流のミドルウェアが自分で
+// TestPrivateCache_SetsHeaderOnShortCircuitは、下流のミドルウェアが自分で
 // 応答した場合にもヘッダーが付くことを固定する。認証ミドルウェアは未認証の
 // リクエストをハンドラーへ渡さずリダイレクトするが、そのリダイレクトも共有
 // キャッシュに保存されてはならない。
@@ -46,9 +41,9 @@ func TestPrivateCache_SetsHeaderOnShortCircuit(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが期待と異なる: got %d want %d", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが期待と異なる: 実測値 = %d、期待値 = %d", rr.Code, http.StatusFound)
 	}
 	if got := rr.Header().Get("Cache-Control"); got != PrivateCacheControl {
-		t.Errorf("Cache-Control = %q, want %q", got, PrivateCacheControl)
+		t.Errorf("Cache-Control = %q、期待値 = %q", got, PrivateCacheControl)
 	}
 }

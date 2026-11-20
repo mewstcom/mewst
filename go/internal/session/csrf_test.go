@@ -25,7 +25,7 @@ func TestGenerateCSRFToken(t *testing.T) {
 		// 32バイトのランダムデータをBase64エンコードすると44文字になる
 		expectedLen := 44
 		if len(token) != expectedLen {
-			t.Errorf("トークンの長さが正しくありません: got %d want %d", len(token), expectedLen)
+			t.Errorf("トークンの長さが正しくありません: 実測値 = %d、期待値 = %d", len(token), expectedLen)
 		}
 	})
 
@@ -43,7 +43,7 @@ func TestGenerateCSRFToken(t *testing.T) {
 
 		// デコード後のバイト数が32バイトであることを確認
 		if len(decoded) != 32 {
-			t.Errorf("デコード後のバイト数が正しくありません: got %d want 32", len(decoded))
+			t.Errorf("デコード後のバイト数が正しくありません: 実測値 = %d、期待値 = 32", len(decoded))
 		}
 	})
 
@@ -80,7 +80,7 @@ func TestGenerateCSRFToken(t *testing.T) {
 		}
 
 		if len(tokens) != iterations {
-			t.Errorf("生成されたユニークなトークン数が正しくありません: got %d want %d", len(tokens), iterations)
+			t.Errorf("生成されたユニークなトークン数が正しくありません: 実測値 = %d、期待値 = %d", len(tokens), iterations)
 		}
 	})
 }

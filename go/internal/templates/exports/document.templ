@@ -1,52 +1,28 @@
 package exports
 
-// documentHead renders the head every HTML file of the archive shares.
+// documentHeadはアーカイブの各HTMLファイルで共通のheadを描画する。
 //
-// The encoding declaration is the first child of head so that it stays well
-// within the first 1024 bytes a browser reads when it sniffs an encoding: the
-// files are opened from the local file system, where there is no Content-Type
-// header to fall back on.
-//
-// [Ja] documentHead はアーカイブの各 HTML ファイルで共通の head を描画する。
-//
-// 文字コード宣言は head の最初の子に置き、ブラウザが文字コードを判定するために
-// 読む先頭 1024 バイトに余裕をもって収まるようにする。これらのファイルはローカル
-// ファイルシステムから開かれ、頼れる Content-Type ヘッダーが無いため。
+// 文字コード宣言はheadの最初の子に置き、ブラウザが文字コードを判定するために
+// 読む先頭1024バイトに余裕をもって収まるようにする。これらのファイルはローカル
+// ファイルシステムから開かれ、頼れるContent-Typeヘッダーが無いため。
 templ documentHead(data DocumentData) {
 	<head>
 		<meta charset="utf-8"/>
-		// Do not add maximum-scale or user-scalable: taking pinch zoom away from
-		// someone reading their own archive on a phone breaks WCAG 1.4.4.
-		//
-		// [Ja] maximum-scale や user-scalable は加えない。スマートフォンで自分の
-		// アーカイブを読む人からピンチズームを奪うことは WCAG 1.4.4 に反する。
+		// maximum-scaleやuser-scalableは加えない。スマートフォンで自分の
+		// アーカイブを読む人からピンチズームを奪うことはWCAG 1.4.4に反する。
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		// The reader's dark preference reaches the browser before the stylesheet
-		// is parsed, so the page opens dark instead of flashing white first.
-		//
-		// [Ja] 読み手のダーク設定がスタイルシートの解析より前にブラウザへ届く
+		// 読み手のダーク設定がスタイルシートの解析より前にブラウザへ届く
 		// ため、ページは白く光ってからではなく最初からダークで開く。
 		<meta name="color-scheme" content="light dark"/>
 		<meta name="mewst-export-format" content={ FormatVersion }/>
 		<title>{ data.Title }</title>
-		// The stylesheet is inlined because the archive is read offline from a
-		// file manager, where a linked stylesheet would not resolve. The layout
-		// uses no fixed width: the content is centred with a max-width in rem so
-		// that it fills a phone screen without horizontal scrolling and stays
-		// readable on a desktop. Colours follow the reader's light or dark
-		// preference. A post body is displayed with white-space: pre-wrap, so
-		// that the newlines it was written with are shown rather than collapsed.
-		// The brand mark is sized in rem so that it grows with the reader's text
-		// size; its colour comes from the surrounding text, which is why the
-		// stylesheet gives it no colour of its own.
-		//
-		// [Ja] アーカイブはファイルアプリからオフラインで読まれ、リンクした
+		// アーカイブはファイルアプリからオフラインで読まれ、リンクした
 		// スタイルシートは解決できないため、スタイルシートはインラインにする。
-		// レイアウトは固定幅を持たない。rem 指定の max-width で中央寄せすることで、
+		// レイアウトは固定幅を持たない。rem指定のmax-widthで中央寄せすることで、
 		// スマートフォンでは横スクロールを生じさせずに画面幅を使い、デスクトップ
 		// でも読みやすい幅に収まる。配色は読み手のライト / ダークの設定に従う。
-		// ポストの本文は white-space: pre-wrap で表示し、書かれたときの改行を
-		// 折り畳まずそのまま見せる。ブランドマークの寸法は rem 指定にして読み手の
+		// ポストの本文はwhite-space: pre-wrapで表示し、書かれたときの改行を
+		// 折り畳まずそのまま見せる。ブランドマークの寸法はrem指定にして読み手の
 		// 文字サイズに合わせて拡大させる。色は周囲のテキストから受け取るため、
 		// スタイルシートでは色を指定しない。
 		<style>

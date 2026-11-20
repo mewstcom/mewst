@@ -59,7 +59,7 @@ func TestCheckPassword(t *testing.T) {
 			t.Parallel()
 			err := CheckPassword(tt.hashedPassword, tt.plainPassword)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("CheckPassword() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CheckPassword()のエラー = %v、エラーの有無の期待値 = %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -69,7 +69,7 @@ func TestCheckPassword_RailsCompatibility(t *testing.T) {
 	t.Parallel()
 
 	// Railsのhas_secure_passwordで生成されたハッシュ形式との互換性をテスト
-	// bcrypt.DefaultCost = 10 はRailsのデフォルトと同じ
+	// bcrypt.DefaultCost = 10はRailsのデフォルトと同じ
 	plainPassword := "test_password_日本語"
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
 	if err != nil {
@@ -89,7 +89,7 @@ func TestBcryptCostValues(t *testing.T) {
 		t.Parallel()
 
 		if BcryptCost != bcrypt.DefaultCost {
-			t.Errorf("BcryptCost = %d, want %d", BcryptCost, bcrypt.DefaultCost)
+			t.Errorf("BcryptCost = %d、期待値 = %d", BcryptCost, bcrypt.DefaultCost)
 		}
 	})
 
@@ -97,7 +97,7 @@ func TestBcryptCostValues(t *testing.T) {
 		t.Parallel()
 
 		if TestBcryptCost != bcrypt.MinCost {
-			t.Errorf("TestBcryptCost = %d, want %d", TestBcryptCost, bcrypt.MinCost)
+			t.Errorf("TestBcryptCost = %d、期待値 = %d", TestBcryptCost, bcrypt.MinCost)
 		}
 	})
 }
@@ -111,15 +111,15 @@ func TestHashPassword(t *testing.T) {
 		password := "testpassword123"
 		hash, err := HashPassword(password)
 		if err != nil {
-			t.Fatalf("HashPassword failed: %v", err)
+			t.Fatalf("HashPassword()のエラー = %v", err)
 		}
 
 		if hash == "" {
-			t.Error("hash should not be empty")
+			t.Error("ハッシュ = 空文字列、非空を期待")
 		}
 
 		if hash == password {
-			t.Error("hash should not equal plain password")
+			t.Error("ハッシュが平文のパスワードと一致している")
 		}
 	})
 
@@ -129,12 +129,12 @@ func TestHashPassword(t *testing.T) {
 		password := "mySecurePassword456"
 		hash, err := HashPassword(password)
 		if err != nil {
-			t.Fatalf("HashPassword failed: %v", err)
+			t.Fatalf("HashPassword()のエラー = %v", err)
 		}
 
 		err = CheckPassword(hash, password)
 		if err != nil {
-			t.Errorf("CheckPassword should succeed with correct password: %v", err)
+			t.Errorf("正しいパスワードでのCheckPassword()のエラー = %v、期待値 = nil", err)
 		}
 	})
 
@@ -144,24 +144,24 @@ func TestHashPassword(t *testing.T) {
 		password := "samePassword789"
 		hash1, err := HashPassword(password)
 		if err != nil {
-			t.Fatalf("HashPassword failed: %v", err)
+			t.Fatalf("HashPassword()のエラー = %v", err)
 		}
 
 		hash2, err := HashPassword(password)
 		if err != nil {
-			t.Fatalf("HashPassword failed: %v", err)
+			t.Fatalf("HashPassword()のエラー = %v", err)
 		}
 
 		if hash1 == hash2 {
-			t.Error("hashes should be different due to bcrypt salt")
+			t.Error("bcryptのソルトによりハッシュが異なることを期待したが、同じだった")
 		}
 
 		// どちらのハッシュも検証可能であること
 		if err := CheckPassword(hash1, password); err != nil {
-			t.Errorf("CheckPassword should succeed with hash1: %v", err)
+			t.Errorf("hash1でのCheckPassword()のエラー = %v、期待値 = nil", err)
 		}
 		if err := CheckPassword(hash2, password); err != nil {
-			t.Errorf("CheckPassword should succeed with hash2: %v", err)
+			t.Errorf("hash2でのCheckPassword()のエラー = %v、期待値 = nil", err)
 		}
 	})
 
@@ -171,12 +171,12 @@ func TestHashPassword(t *testing.T) {
 		password := "パスワード123"
 		hash, err := HashPassword(password)
 		if err != nil {
-			t.Fatalf("HashPassword failed: %v", err)
+			t.Fatalf("HashPassword()のエラー = %v", err)
 		}
 
 		err = CheckPassword(hash, password)
 		if err != nil {
-			t.Errorf("CheckPassword should succeed: %v", err)
+			t.Errorf("CheckPassword()のエラー = %v、期待値 = nil", err)
 		}
 	})
 }

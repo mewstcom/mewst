@@ -6,14 +6,9 @@ import (
 	"github.com/mewstcom/mewst/go/internal/model"
 )
 
-// allowingExportProfileDeletionGuard is the default guard for transaction-bound
-// UseCase tests. The production coordination is covered by committed-row
-// concurrency tests; these fixtures only need to exercise the work inside an
-// already acquired guard.
-//
-// [Ja] allowingExportProfileDeletionGuard は transaction に束縛した UseCase テストの
-// 既定 guard。production の調整は commit 済み行を使う並行テストで検証し、これらの
-// fixture は取得済み guard の内側にある処理だけを対象とする。
+// allowingExportProfileDeletionGuardはtransactionに束縛したUseCaseテストの
+// 既定guard。productionの調整はcommit済み行を使う並行テストで検証し、これらの
+// fixtureは取得済みguardの内側にある処理だけを対象とする。
 type allowingExportProfileDeletionGuard struct{}
 
 func (allowingExportProfileDeletionGuard) BeginOperation(

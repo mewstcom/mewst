@@ -9,24 +9,24 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// SignUpCreateValidator はサインアップフォームのバリデーションを行う
+// SignUpCreateValidatorはサインアップフォームのバリデーションを行う
 type SignUpCreateValidator struct {
 	userRepo *repository.UserRepository
 }
 
-// NewSignUpCreateValidator はSignUpCreateValidatorを生成する
+// NewSignUpCreateValidatorはSignUpCreateValidatorを生成する
 func NewSignUpCreateValidator(userRepo *repository.UserRepository) *SignUpCreateValidator {
 	return &SignUpCreateValidator{
 		userRepo: userRepo,
 	}
 }
 
-// SignUpCreateValidatorInput はバリデーションの入力パラメータ
+// SignUpCreateValidatorInputはバリデーションの入力パラメータ
 type SignUpCreateValidatorInput struct {
 	Email string
 }
 
-// Validate は入力値をチェックする (形式チェック + DB検証)
+// Validateは入力値をチェックする (形式チェック + DB検証)
 func (v *SignUpCreateValidator) Validate(ctx context.Context, input SignUpCreateValidatorInput) error {
 	ve := model.NewValidationError()
 

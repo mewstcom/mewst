@@ -10,18 +10,11 @@ import (
 	templruntime "github.com/a-h/templ/runtime"
 )
 
-// documentHead renders the head every HTML file of the archive shares.
+// documentHeadはアーカイブの各HTMLファイルで共通のheadを描画する。
 //
-// The encoding declaration is the first child of head so that it stays well
-// within the first 1024 bytes a browser reads when it sniffs an encoding: the
-// files are opened from the local file system, where there is no Content-Type
-// header to fall back on.
-//
-// [Ja] documentHead はアーカイブの各 HTML ファイルで共通の head を描画する。
-//
-// 文字コード宣言は head の最初の子に置き、ブラウザが文字コードを判定するために
-// 読む先頭 1024 バイトに余裕をもって収まるようにする。これらのファイルはローカル
-// ファイルシステムから開かれ、頼れる Content-Type ヘッダーが無いため。
+// 文字コード宣言はheadの最初の子に置き、ブラウザが文字コードを判定するために
+// 読む先頭1024バイトに余裕をもって収まるようにする。これらのファイルはローカル
+// ファイルシステムから開かれ、頼れるContent-Typeヘッダーが無いため。
 func documentHead(data DocumentData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -50,7 +43,7 @@ func documentHead(data DocumentData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(FormatVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/document.templ`, Line: 30, Col: 58}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/document.templ`, Line: 17, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -63,7 +56,7 @@ func documentHead(data DocumentData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/document.templ`, Line: 31, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/exports/document.templ`, Line: 18, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

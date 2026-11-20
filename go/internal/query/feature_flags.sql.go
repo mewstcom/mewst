@@ -24,8 +24,7 @@ type IsFeatureFlagEnabledForActorParams struct {
 	Name    string        `db:"name"`
 }
 
-// Reports whether the flag is enabled for the given actor, used for in-app control such as the settings menu.
-// [Ja] 指定 actor に対してフラグが有効かを返す。設定メニューなどのアプリ内制御で使う。
+// 指定actorに対してフラグが有効かを返す。設定メニューなどのアプリ内制御で使う。
 func (q *Queries) IsFeatureFlagEnabledForActor(ctx context.Context, arg IsFeatureFlagEnabledForActorParams) (bool, error) {
 	row := q.db.QueryRowContext(ctx, isFeatureFlagEnabledForActor, arg.ActorID, arg.Name)
 	var exists bool
@@ -52,8 +51,7 @@ type IsFeatureFlagEnabledForDeviceParams struct {
 	Name        string         `db:"name"`
 }
 
-// Reports whether the flag is enabled via device_token or the actor_id resolved from a session token, in a single query.
-// [Ja] device_token またはセッショントークン経由の actor_id でフラグが有効かを 1 クエリで判定する。
+// device_tokenまたはセッショントークン経由のactor_idでフラグが有効かを1クエリで判定する。
 func (q *Queries) IsFeatureFlagEnabledForDevice(ctx context.Context, arg IsFeatureFlagEnabledForDeviceParams) (bool, error) {
 	row := q.db.QueryRowContext(ctx, isFeatureFlagEnabledForDevice, arg.DeviceToken, arg.Token, arg.Name)
 	var exists bool

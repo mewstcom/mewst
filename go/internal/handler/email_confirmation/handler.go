@@ -1,4 +1,4 @@
-// Package email_confirmation はメール確認ハンドラーを提供します
+// Package email_confirmationはメール確認ハンドラーを提供します
 package email_confirmation
 
 import (
@@ -7,7 +7,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Handler はメール確認機能のHTTPハンドラー
+// Handlerはメール確認機能のHTTPハンドラー
 type Handler struct {
 	cfg                          *config.Config
 	sessionMgr                   *session.Manager
@@ -16,7 +16,7 @@ type Handler struct {
 	verifyEmailConfirmationUC    *usecase.VerifyEmailConfirmationUsecase
 }
 
-// NewHandler はHandlerを生成する
+// NewHandlerはHandlerを生成する
 func NewHandler(
 	cfg *config.Config,
 	sessionMgr *session.Manager,

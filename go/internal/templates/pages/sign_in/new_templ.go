@@ -13,7 +13,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
-// NewPageData はログインフォームページのデータ
+// NewPageDataはログインフォームページのデータ
 type NewPageData struct {
 	CSRFToken        string
 	TurnstileSiteKey string
@@ -23,7 +23,7 @@ type NewPageData struct {
 	SignUpHref       string
 }
 
-// New はログインフォームを表示する
+// Newはログインフォームを表示する
 func New(data NewPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

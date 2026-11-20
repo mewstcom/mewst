@@ -16,41 +16,27 @@ import (
 	"github.com/mewstcom/mewst/go/internal/viewmodel"
 )
 
-// NewPageData holds the data for the new post form page.
-//
-// [Ja] NewPageData は新規投稿フォームページのデータを保持する。
+// NewPageDataは新規投稿フォームページのデータを保持する。
 type NewPageData struct {
 	CSRFToken string
-	// FormErrors holds validation errors to re-display after a failed submit (nil on first render).
-	// [Ja] FormErrors は送信失敗後に再表示するバリデーションエラー (初回表示時は nil)。
+	// FormErrorsは送信失敗後に再表示するバリデーションエラー (初回表示時はnil)。
 	FormErrors *model.ValidationError
-	// Content echoes back the submitted body so a failed submit keeps the user's input.
-	// [Ja] Content は送信した本文をエコーバックし、送信失敗時に入力を保持する。
+	// Contentは送信した本文をエコーバックし、送信失敗時に入力を保持する。
 	Content string
-	// CanonicalURL echoes back the linked card's canonical_url so a failed submit keeps the attached link card (empty when no link is attached).
-	// [Ja] CanonicalURL はリンクカードの canonical_url をエコーバックし、送信失敗時に紐付けたリンクカードを保持する (リンク未紐付け時は空)。
+	// CanonicalURLはリンクカードのcanonical_urlをエコーバックし、送信失敗時に紐付けたリンクカードを保持する (リンク未紐付け時は空)。
 	CanonicalURL string
-	// AttachedLink carries the resolved link card to re-render inside #link-form after a failed submit (nil when no link is attached or the URL resolves to no known link).
-	// [Ja] AttachedLink は送信失敗後に #link-form 内へ再描画する解決済みリンクカード (リンク未紐付け時や URL が既知のリンクに解決できない場合は nil)。
+	// AttachedLinkは送信失敗後に #link-form内へ再描画する解決済みリンクカード (リンク未紐付け時やURLが既知のリンクに解決できない場合はnil)。
 	AttachedLink *viewmodel.Link
-	// BackHref is the fallback destination for the back link (the back-link script upgrades it to history.back() when the referrer is same-origin).
-	// [Ja] BackHref は戻るリンクのフォールバック先 (referrer が同一オリジンのとき back-link スクリプトが history.back() に格上げする)。
+	// BackHrefは戻るリンクのフォールバック先 (referrerが同一オリジンのときback-linkスクリプトがhistory.back() に格上げする)。
 	BackHref templates.Path
-	// DraftStorageKey is the per-user localStorage key for the body draft autosave (web/post_draft.ts). Empty disables autosave (e.g. no profile on the context).
-	// [Ja] DraftStorageKey は本文の下書き自動保存 (web/post_draft.ts) 用のユーザー別 localStorage キー。空なら自動保存を無効化する (例: context にプロフィールが無い場合)。
+	// DraftStorageKeyは本文の下書き自動保存 (web/post_draft.ts) 用のユーザー別localStorageキー。空なら自動保存を無効化する (例: contextにプロフィールが無い場合)。
 	DraftStorageKey string
 }
 
-// New renders the new post form (content textarea + submit button + CSRF). The
-// form posts to /posts, mirroring the Rails post_list_path. On a failed submit
-// it re-renders with the validation errors and the submitted content. The
-// textarea sits in a bordered container together with the #link-form htmx
-// container and the character counter, mirroring the Rails post_form_component.
-//
-// [Ja] New は新規投稿フォーム (本文 textarea + 投稿ボタン + CSRF) を描画する。
-// フォームは Rails の post_list_path に対応する /posts に送信する。送信失敗時は
-// バリデーションエラーと送信済み本文を添えて再描画する。textarea は Rails の
-// post_form_component と同様に、#link-form の htmx コンテナ・文字数カウンターと
+// Newは新規投稿フォーム (本文textarea + 投稿ボタン + CSRF) を描画する。
+// フォームはRailsのpost_list_pathに対応する /postsに送信する。送信失敗時は
+// バリデーションエラーと送信済み本文を添えて再描画する。textareaはRailsの
+// post_form_componentと同様に、#link-formのhtmxコンテナ・文字数カウンターと
 // 同じ枠付きコンテナに収める。
 func New(data NewPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -81,7 +67,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_heading"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 71, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 46, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -106,7 +92,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CSRFToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 83, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 58, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -119,7 +105,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_content_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 91, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 64, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -160,7 +146,7 @@ func New(data NewPageData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.DraftStorageKey)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 143, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 95, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -193,7 +179,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.Content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 155, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 107, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -216,7 +202,7 @@ func New(data NewPageData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(data.CanonicalURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 187, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 125, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -234,7 +220,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(strconv.Itoa(viewmodel.MaximumPostContentLength))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 195, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 133, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -253,7 +239,7 @@ func New(data NewPageData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(errorMsg)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 204, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 142, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -276,7 +262,7 @@ func New(data NewPageData) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "post_new_submit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 223, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/post/new.templ`, Line: 155, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

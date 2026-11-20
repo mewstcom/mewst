@@ -376,7 +376,7 @@ func TestIsValidAtname(t *testing.T) {
 			t.Parallel()
 
 			if got := IsValidAtname(tt.atname); got != tt.want {
-				t.Errorf("IsValidAtname(%q) = %v であることを期待したが %v だった", tt.atname, tt.want, got)
+				t.Errorf("IsValidAtname(%q) = %vであることを期待したが%vだった", tt.atname, tt.want, got)
 			}
 		})
 	}

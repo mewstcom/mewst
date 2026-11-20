@@ -16,14 +16,9 @@ import (
 
 const createExport = `-- name: CreateExport :one
 WITH profile_gate AS MATERIALIZED (
-    -- Lock the profile row before reading the persistent deletion marker.
-    -- FOR SHARE conflicts with the UPDATE that starts deletion: a Create that
-    -- locked first finishes and is then found by cleanup, while a Create that
-    -- waited for deletion observes the new marker and inserts nothing.
-    --
-    -- [Ja] 永続的な削除マーカーを読む前にプロフィール行をロックする。FOR SHARE は
-    -- 削除開始の UPDATE と競合するため、先にロックした Create は完了後に cleanup の
-    -- 対象となり、削除を待った Create は新しいマーカーを見て何も INSERT しない。
+    -- 永続的な削除マーカーを読む前にプロフィール行をロックする。FOR SHAREは
+    -- 削除開始のUPDATEと競合するため、先にロックしたCreateは完了後にcleanupの
+    -- 対象となり、削除を待ったCreateは新しいマーカーを見て何もINSERTしない。
     SELECT profiles.id, profiles.export_deletion_started_at
     FROM profiles
     WHERE profiles.id = $1
@@ -73,19 +68,12 @@ type CreateExportRow struct {
 	UpdatedAt            time.Time      `db:"updated_at"`
 }
 
-// Create the export and materialize its kept posts in one PostgreSQL statement.
-// Both data-modifying CTEs use the same statement snapshot, so a post committed
-// after the request or physically deleted afterward cannot enter or leave the
-// export. A data-modifying CTE runs exactly once and to completion whether or
-// not the primary query reads its output, so the final SELECT does not need to
-// reference snapshotted_posts for the copy to happen.
-//
-// [Ja] export の作成と kept 投稿の固定化を 1 つの PostgreSQL 文で行う。2 つの
-// data-modifying CTE は同じ statement snapshot を使うため、申請より後に commit
+// exportの作成とkept投稿の固定化を1つのPostgreSQL文で行う。2つの
+// data-modifying CTEは同じstatement snapshotを使うため、申請より後にcommit
 // された投稿が入り込んだり、後から物理削除された投稿が抜け落ちたりしない。
-// data-modifying CTE は主問い合わせがその出力を読むかどうかに関係なく、ちょうど
-// 1 回、完了まで実行されるため、複製のために最後の SELECT から
-// snapshotted_posts を参照する必要はない。
+// data-modifying CTEは主問い合わせがその出力を読むかどうかに関係なく、ちょうど
+// 1回、完了まで実行されるため、複製のために最後のSELECTから
+// snapshotted_postsを参照する必要はない。
 func (q *Queries) CreateExport(ctx context.Context, arg CreateExportParams) (CreateExportRow, error) {
 	row := q.db.QueryRowContext(ctx, createExport, arg.ProfileID, arg.ActorID)
 	var i CreateExportRow
@@ -110,10 +98,7 @@ DELETE FROM exports
 WHERE id = $1
 `
 
-// Delete a single export row by ID. Cleanup calls this after the R2 object is
-// gone, so a row is never removed while its object still exists.
-//
-// [Ja] ID 指定でエクスポート行を 1 件削除する。cleanup は R2 オブジェクトが
+// ID指定でエクスポート行を1件削除する。cleanupはR2オブジェクトが
 // 消えた後にこれを呼ぶため、オブジェクトが残ったまま行が消えることはない。
 func (q *Queries) DeleteExport(ctx context.Context, id uuid.UUID) (int64, error) {
 	result, err := q.db.ExecContext(ctx, deleteExport, id)
@@ -129,31 +114,17 @@ WHERE profile_id = $1
   AND status = 'failed'
 `
 
-// Delete the profile's failed exports. Create calls this in the same
-// transaction that inserts the new queued export, so a profile keeps at most
-// its latest success plus one export that is either in progress or failed.
+// プロフィールのfailedなエクスポートを削除する。Createは新しいqueuedの
+// エクスポートを挿入するのと同じtransactionでこれを呼ぶため、プロフィールが
+// 保持するのは最新の成功1件と、進行中またはfailedのエクスポート1件までになる。
 //
-// Only failed rows are removed. A queued or started row is the profile's
-// active export and is protected by the partial unique index, and a succeeded
-// row is the archive that stays downloadable until the next success replaces
-// it.
-//
-// A failed export holds no object_key (the state fields check enforces it), and
-// the terminal transition already released any object it uploaded, so removing
-// the row leaves nothing behind: an object that outlived its transition is not
-// retained by a failed row and is collected by the orphan sweep.
-//
-// [Ja] プロフィールの failed なエクスポートを削除する。Create は新しい queued の
-// エクスポートを挿入するのと同じ transaction でこれを呼ぶため、プロフィールが
-// 保持するのは最新の成功 1 件と、進行中または failed のエクスポート 1 件までになる。
-//
-// 削除するのは failed の行だけである。queued / started の行はプロフィールの実行中の
-// エクスポートで部分ユニークインデックスが守っており、succeeded の行は次の成功が
+// 削除するのはfailedの行だけである。queued / startedの行はプロフィールの実行中の
+// エクスポートで部分ユニークインデックスが守っており、succeededの行は次の成功が
 // 置き換えるまでダウンロードできるアーカイブであるため。
 //
-// failed のエクスポートは object_key を持たず (状態フィールドの CHECK 制約が保証)、
+// failedのエクスポートはobject_keyを持たず (状態フィールドのCHECK制約が保証)、
 // 終端遷移がアップロード済みのオブジェクトを既に手放しているため、行を消しても
-// 取り残しは生じない。遷移より後まで残ったオブジェクトは failed の行に保持されて
+// 取り残しは生じない。遷移より後まで残ったオブジェクトはfailedの行に保持されて
 // おらず、孤児回収が回収する。
 func (q *Queries) DeleteFailedExportsByProfileID(ctx context.Context, profileID uuid.UUID) (int64, error) {
 	result, err := q.db.ExecContext(ctx, deleteFailedExportsByProfileID, profileID)
@@ -245,26 +216,15 @@ WHERE id = ANY($1::uuid[])
   AND status <> 'failed'
 `
 
-// Return the subset of the given IDs whose export still retains an object in
-// the object storage, used by orphan recovery to tell which R2 objects (keyed
-// by export ID) are still claimed. The IDs absent from the result are orphan
-// candidates.
+// 与えたIDのうち、オブジェクトストレージ上のオブジェクトをまだ保持している
+// エクスポートだけを返す。孤児回収が、どのR2オブジェクト (キーはエクスポートID)
+// がまだ保持されているかを判別するために使う。結果に無いIDが孤児の候補。
 //
-// Every status but failed retains: a queued or started export may own an object
-// an earlier attempt uploaded and the current one is about to overwrite, and a
-// succeeded export owns the archive offered for download. A failed export owns
-// nothing, because the terminal transition is what releases the object; an
-// object left under a failed row is precisely what orphan recovery collects.
-//
-// [Ja] 与えた ID のうち、オブジェクトストレージ上のオブジェクトをまだ保持している
-// エクスポートだけを返す。孤児回収が、どの R2 オブジェクト (キーはエクスポート ID)
-// がまだ保持されているかを判別するために使う。結果に無い ID が孤児の候補。
-//
-// failed 以外のすべての status が保持側になる。queued / started のエクスポートは、
+// failed以外のすべてのstatusが保持側になる。queued / startedのエクスポートは、
 // 前の試行がアップロードし現在の試行が上書きしようとしているオブジェクトを保持
-// しうる。succeeded のエクスポートはダウンロード対象のアーカイブを保持する。
-// failed のエクスポートは何も保持しない。オブジェクトを手放すのが終端遷移であり、
-// failed の行の下に残ったオブジェクトはまさに孤児回収が回収するものであるため。
+// しうる。succeededのエクスポートはダウンロード対象のアーカイブを保持する。
+// failedのエクスポートは何も保持しない。オブジェクトを手放すのが終端遷移であり、
+// failedの行の下に残ったオブジェクトはまさに孤児回収が回収するものであるため。
 func (q *Queries) ListExportIDsRetainingObject(ctx context.Context, ids []uuid.UUID) ([]uuid.UUID, error) {
 	rows, err := q.db.QueryContext(ctx, listExportIDsRetainingObject, pq.Array(ids))
 	if err != nil {
@@ -300,31 +260,17 @@ type ListExportsByProfileIDParams struct {
 	PageSize  int32     `db:"page_size"`
 }
 
-// Return a page of the profile's exports whatever their status, oldest first.
-// Deleting a profile has to remove its exports through the application because
-// the foreign key is ON DELETE NO ACTION: a row is not the whole of an export,
-// and the object it may hold in the object storage is beyond what the database
-// can cascade.
-//
-// Every status is returned, not only succeeded: an attempt that uploaded before
-// the transition that records it leaves an object under a queued, started or
-// failed row as well, and a profile being deleted must not leave one behind.
-//
-// Page size bounds one query the same way the cleanup query does, and no cursor
-// is needed for the same reason: the caller deletes the rows it processed, so
-// the oldest-first order exposes the remaining ones on the next query.
-//
-// [Ja] プロフィールのエクスポートを status を問わず古い順に 1 ページ返す。
-// 外部キーが ON DELETE NO ACTION であるため、プロフィールの削除はその
+// プロフィールのエクスポートをstatusを問わず古い順に1ページ返す。
+// 外部キーがON DELETE NO ACTIONであるため、プロフィールの削除はその
 // エクスポートをアプリケーション経由で削除する必要がある。行はエクスポートの
-// すべてではなく、オブジェクトストレージ上のオブジェクトは DB の CASCADE が
+// すべてではなく、オブジェクトストレージ上のオブジェクトはDBのCASCADEが
 // 及ぶ範囲の外にあるからである。
 //
-// succeeded だけでなく全 status を返す。それを記録する遷移より先にアップロードを
-// 終えた試行は、queued / started / failed の行の下にもオブジェクトを残すため、
+// succeededだけでなく全statusを返す。それを記録する遷移より先にアップロードを
+// 終えた試行は、queued / started / failedの行の下にもオブジェクトを残すため、
 // 削除されるプロフィールがそれを残していってはならない。
 //
-// page size は cleanup のクエリと同じく 1 クエリの取得量を抑え、cursor が不要な
+// page sizeはcleanupのクエリと同じく1クエリの取得量を抑え、cursorが不要な
 // 理由も同じである。呼び出し側は処理した行を削除するため、古い順の並びにより次の
 // クエリで残りが現れる。
 func (q *Queries) ListExportsByProfileID(ctx context.Context, arg ListExportsByProfileIDParams) ([]Export, error) {
@@ -381,25 +327,14 @@ type ListOldSucceededExportsByProfileIDParams struct {
 	PageSize  int32     `db:"page_size"`
 }
 
-// Return every succeeded export of the profile except the most recent one, so
-// cleanup can delete the R2 object and the row. The row-value comparison
-// (created_at, id) < (latest created_at, latest id) makes the tie-break on
-// equal created_at fall to id, matching the DESC ordering used to pick the
-// latest, and the strict < excludes the latest succeeded itself so it is never
-// selected for deletion.
-//
-// Page size bounds one query the same way the reconciliation queries do. No
-// cursor is needed: cleanup deletes the rows it processed, so the oldest-first
-// order always exposes the remaining candidates on the next run.
-//
-// [Ja] プロフィールの succeeded のうち最新の 1 件を除いたすべてを返し、cleanup が
-// R2 オブジェクトと行を削除できるようにする。行値比較 (created_at, id) < (最新の
-// created_at, 最新の id) により、created_at が同値のときの tie-break が id に
-// 落ち、最新を選ぶ DESC の並びと一致する。厳密な < により最新の succeeded 自身は
+// プロフィールのsucceededのうち最新の1件を除いたすべてを返し、cleanupが
+// R2オブジェクトと行を削除できるようにする。行値比較 (created_at, id) < (最新の
+// created_at, 最新のid) により、created_atが同値のときのtie-breakがidに
+// 落ち、最新を選ぶDESCの並びと一致する。厳密な < により最新のsucceeded自身は
 // 除外され、削除対象に選ばれない。
 //
-// page size はリコンシリエーションのクエリと同じく 1 クエリの取得量を抑える。
-// cursor は不要で、cleanup は処理した行を削除するため、古い順の並びにより次回の
+// page sizeはリコンシリエーションのクエリと同じく1クエリの取得量を抑える。
+// cursorは不要で、cleanupは処理した行を削除するため、古い順の並びにより次回の
 // 実行で残りの候補が先頭に現れる。
 func (q *Queries) ListOldSucceededExportsByProfileID(ctx context.Context, arg ListOldSucceededExportsByProfileIDParams) ([]Export, error) {
 	rows, err := q.db.QueryContext(ctx, listOldSucceededExportsByProfileID, arg.ProfileID, arg.PageSize)
@@ -451,27 +386,16 @@ type ListProfileIDsWithOldSucceededExportsParams struct {
 	PageSize       int32     `db:"page_size"`
 }
 
-// Return the profile IDs that hold more than one succeeded export, i.e. those
-// with old succeeded rows to clean up. Reconciliation enqueues one unique
-// cleanup job per returned profile as the safety net for a lost cleanup
-// enqueue after a success.
-//
-// The profile-ID cursor lets reconciliation advance past profiles whose unique
-// cleanup job already exists. Page size bounds each query, while the caller
-// separately caps how many new cleanup jobs one run accepts. The first page
-// passes the zero UUID, which sorts before every stored profile ID; see
-// ListStaleQueuedExports for why that beats a "has cursor" flag.
-//
-// [Ja] succeeded のエクスポートを 2 件以上持つ (= 掃除すべき古い succeeded の
-// 行がある) プロフィール ID を返す。リコンシリエーションが返された各プロフィール
-// ごとに一意な cleanup ジョブを 1 件投入し、成功後の cleanup 投入消失に対する
+// succeededのエクスポートを2件以上持つ (= 掃除すべき古いsucceededの
+// 行がある) プロフィールIDを返す。リコンシリエーションが返された各プロフィール
+// ごとに一意なcleanupジョブを1件投入し、成功後のcleanup投入消失に対する
 // 安全網とする。
 //
-// profile ID の cursor により、リコンシリエーションは一意な cleanup ジョブが
-// すでに存在するプロフィールを飛ばせる。page size は各クエリの取得量を抑え、
-// 呼び出し側は 1 回で受理する新しい cleanup ジョブ数を別に制限する。1 ページ目は
-// ゼロ UUID を渡す。保存されるどの profile ID よりも前に並ぶためで、
-// 「cursor の有無」フラグより優れる理由は ListStaleQueuedExports を参照。
+// profile IDのcursorにより、リコンシリエーションは一意なcleanupジョブが
+// すでに存在するプロフィールを飛ばせる。page sizeは各クエリの取得量を抑え、
+// 呼び出し側は1回で受理する新しいcleanupジョブ数を別に制限する。1ページ目は
+// ゼロUUIDを渡す。保存されるどのprofile IDよりも前に並ぶためで、
+// 「cursorの有無」フラグより優れる理由はListStaleQueuedExportsを参照。
 func (q *Queries) ListProfileIDsWithOldSucceededExports(ctx context.Context, arg ListProfileIDsWithOldSucceededExportsParams) ([]uuid.UUID, error) {
 	rows, err := q.db.QueryContext(ctx, listProfileIDsWithOldSucceededExports, arg.AfterProfileID, arg.PageSize)
 	if err != nil {
@@ -516,53 +440,27 @@ type ListStaleQueuedExportsParams struct {
 	PageSize  int32     `db:"page_size"`
 }
 
-// Return queued exports created before the threshold, oldest first. The
-// generation job is inserted right after Create commits, so a queued row that
-// is still queued long after creation means the River insert never happened
-// (the process died between commit and insert, or the insert failed). The
-// threshold is a grace period against re-enqueueing a row whose normal insert
-// is still in flight; created_at (not updated_at) is used because the risk
-// window opens at Create time, and re-enqueueing is idempotent under the
-// unique job.
-//
-// Rows of a profile whose deletion has started are left out. Generation stops
-// at that profile's deletion marker, so a re-enqueued job would return without
-// touching the row, and the marker is never cleared. Without the exclusion the
-// row stays a candidate on every run and keeps producing jobs that do nothing.
-// Converging these rows is profile deletion's work, not reconciliation's.
-//
-// The cursor and page size bound one query without pinning every run to the
-// same head of the backlog. Reconciliation advances the cursor past jobs that
-// already exist and stops only after it has accepted its per-run budget of new
-// work, so a stuck head cannot starve later rows.
-//
-// The first page passes the zero timestamp and the zero UUID, which sort before
-// every stored row, so one unconditional comparison drives both the first and
-// later pages. Wrapping it in an OR with a "has cursor" flag instead would keep
-// the planner from using the cursor as the starting point of an index scan
-// whenever the parameter value is unknown at plan time.
-//
-// [Ja] threshold より前に作成された queued のエクスポートを古い順に返す。生成
-// ジョブは Create のコミット直後に投入されるため、作成から時間が経ってもまだ
-// queued の行は River への投入が起きなかったこと (コミットと投入の間でプロセスが
-// 落ちた、または投入が失敗した) を意味する。threshold は通常の投入がまだ処理中の
-// 行を再投入しないための猶予期間。リスクの窓は Create 時点で開くため updated_at
-// ではなく created_at を使う。再投入は一意ジョブにより冪等。
+// thresholdより前に作成されたqueuedのエクスポートを古い順に返す。生成
+// ジョブはCreateのコミット直後に投入されるため、作成から時間が経ってもまだ
+// queuedの行はRiverへの投入が起きなかったこと (コミットと投入の間でプロセスが
+// 落ちた、または投入が失敗した) を意味する。thresholdは通常の投入がまだ処理中の
+// 行を再投入しないための猶予期間。リスクの窓はCreate時点で開くためupdated_at
+// ではなくcreated_atを使う。再投入は一意ジョブにより冪等。
 //
 // 削除が始まったプロフィールの行は返さない。生成はそのプロフィールの削除マーカーで
 // 止まるため、再投入したジョブは行に触れずに戻り、マーカーが戻ることもない。除外し
 // なければ、その行は毎回の実行で候補になり、何もしないジョブを投入し続ける。これら
 // の行を収束させるのは親削除であって、リコンシリエーションではない。
 //
-// cursor と page size は 1 クエリの取得量を抑えつつ、毎回同じバックログの
-// 先頭へ固定されるのを防ぐ。リコンシリエーションは既存ジョブの候補を cursor で
-// 飛ばし、新しい処理を 1 回の予算まで受理した時点で止まるため、先頭の停滞が後続
+// cursorとpage sizeは1クエリの取得量を抑えつつ、毎回同じバックログの
+// 先頭へ固定されるのを防ぐ。リコンシリエーションは既存ジョブの候補をcursorで
+// 飛ばし、新しい処理を1回の予算まで受理した時点で止まるため、先頭の停滞が後続
 // 行を飢えさせない。
 //
-// 1 ページ目はゼロ時刻とゼロ UUID を渡す。どちらも保存されるどの行よりも前に
-// 並ぶため、1 つの無条件な比較で 1 ページ目と 2 ページ目以降の両方をまかなえる。
-// 「cursor の有無」フラグと OR で包むと、パラメータ値がプラン時に未知の場合に
-// cursor を索引スキャンの開始位置として使えなくなる。
+// 1ページ目はゼロ時刻とゼロUUIDを渡す。どちらも保存されるどの行よりも前に
+// 並ぶため、1つの無条件な比較で1ページ目と2ページ目以降の両方をまかなえる。
+// 「cursorの有無」フラグとORで包むと、パラメータ値がプラン時に未知の場合に
+// cursorを索引スキャンの開始位置として使えなくなる。
 func (q *Queries) ListStaleQueuedExports(ctx context.Context, arg ListStaleQueuedExportsParams) ([]Export, error) {
 	rows, err := q.db.QueryContext(ctx, listStaleQueuedExports,
 		arg.Threshold,
@@ -624,41 +522,21 @@ type ListStaleStartedExportsParams struct {
 	PageSize  int32        `db:"page_size"`
 }
 
-// Return started exports whose current attempt began before the threshold,
-// oldest first. started_at is stamped on every MarkExportStarted (including
-// retries), so it marks when the running attempt began; a started row older
-// than the timeout plus a grace period means the worker died without reaching
-// its cleanup. The caller decides between requeue (attempt_count below the
-// limit) and failed (at the limit).
-//
-// Rows of a profile whose deletion has started are left out, on the same terms
-// as in ListStaleQueuedExports. Generation stops at that profile's deletion
-// marker, so a requeued row would produce a job that returns without touching
-// it. Here the waste is bounded rather than endless, because the requeue moves
-// the row to queued and the queued stream already excludes it; the exclusion
-// spends that budget on work that can still converge, and keeps the rule the
-// same across all three recovery streams.
-//
-// The cursor lets reconciliation scan past a stuck or already-enqueued head in
-// bounded pages while enforcing its new-work budget separately. See
-// ListStaleQueuedExports for why the first page passes zero values instead of a
-// "has cursor" flag.
-//
-// [Ja] 現在の試行が threshold より前に始まった started のエクスポートを古い順に
-// 返す。started_at は MarkExportStarted のたび (リトライを含む) に打刻されるため
+// 現在の試行がthresholdより前に始まったstartedのエクスポートを古い順に
+// 返す。started_atはMarkExportStartedのたび (リトライを含む) に打刻されるため
 // 実行中の試行の開始時刻を表す。タイムアウトと猶予期間を足した時間より古い
-// started の行は、Worker が後処理に到達せず落ちたことを意味する。呼び出し側が
-// 再投入 (attempt_count が上限未満) と failed (上限到達) を判断する。
+// startedの行は、Workerが後処理に到達せず落ちたことを意味する。呼び出し側が
+// 再投入 (attempt_countが上限未満) とfailed (上限到達) を判断する。
 //
-// 削除が始まったプロフィールの行は、ListStaleQueuedExports と同じ理由で返さない。
+// 削除が始まったプロフィールの行は、ListStaleQueuedExportsと同じ理由で返さない。
 // 生成はそのプロフィールの削除マーカーで止まるため、差し戻した行は、それに触れずに
 // 戻るジョブを生むだけである。ここでの無駄は無期限ではなく有界である。差し戻しは行を
-// queued へ移し、queued の系統は既にその行を除外しているためである。除外することで、
-// その予算をまだ収束し得る処理に充て、3 つの回復系統でルールを揃える。
+// queuedへ移し、queuedの系統は既にその行を除外しているためである。除外することで、
+// その予算をまだ収束し得る処理に充て、3つの回復系統でルールを揃える。
 //
-// cursor により、リコンシリエーションは停滞中または投入済みの先頭候補を
-// 有界なページで飛ばし、新しい処理の予算を別に制御できる。1 ページ目が
-// 「cursor の有無」フラグではなくゼロ値を渡す理由は ListStaleQueuedExports を
+// cursorにより、リコンシリエーションは停滞中または投入済みの先頭候補を
+// 有界なページで飛ばし、新しい処理の予算を別に制御できる。1ページ目が
+// 「cursorの有無」フラグではなくゼロ値を渡す理由はListStaleQueuedExportsを
 // 参照。
 func (q *Queries) ListStaleStartedExports(ctx context.Context, arg ListStaleStartedExportsParams) ([]Export, error) {
 	rows, err := q.db.QueryContext(ctx, listStaleStartedExports,
@@ -723,17 +601,10 @@ type MarkExportFailedParams struct {
 	ExpectedUpdatedAt time.Time `db:"expected_updated_at"`
 }
 
-// The updated_at expression is the optimistic-lock token; see MarkExportStarted
-// for why it must strictly increase.
+// updated_at式は楽観ロックのトークン。厳密増加させる理由は
+// MarkExportStartedを参照。
 //
-// failed is terminal, so the request-time post snapshot is discarded in the
-// same statement for the same reason as in MarkExportSucceeded: nothing will
-// read it again.
-//
-// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
-// MarkExportStarted を参照。
-//
-// failed は終端状態のため、MarkExportSucceeded と同じ理由で申請時の投稿 snapshot を
+// failedは終端状態のため、MarkExportSucceededと同じ理由で申請時の投稿snapshotを
 // 同じ文で破棄する。以後それを読むものは無い。
 func (q *Queries) MarkExportFailed(ctx context.Context, arg MarkExportFailedParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, markExportFailed, arg.ID, arg.ExpectedUpdatedAt)
@@ -760,35 +631,19 @@ type MarkExportStartedParams struct {
 	ExpectedUpdatedAt time.Time `db:"expected_updated_at"`
 }
 
-// The four state transitions (MarkExportStarted / MarkExportSucceeded /
-// MarkExportFailed / RequeueExport) guard on the caller's expected updated_at,
-// so updated_at doubles as an optimistic-lock token and must strictly increase
-// on every update. NOW() is frozen within a transaction and clock_timestamp()
-// alone can repeat at microsecond resolution, so
-// GREATEST(clock_timestamp(), updated_at + INTERVAL '1 microsecond') guarantees
-// a strictly larger token. Do not simplify it to NOW() or a bare
-// clock_timestamp(), or a stale attempt could win the guard.
-//
-// The updated row is returned rather than a row count because the generation
-// flow chains this transition into the next guarded update: it has to know the
-// token this statement produced to end the same attempt with
-// MarkExportSucceeded or MarkExportFailed. Reading the row back in a separate
-// statement would reopen the very window the token closes, since a transition
-// committed in between would hand the caller a token it does not own.
-//
-// [Ja] 4 つの状態遷移 (MarkExportStarted / MarkExportSucceeded /
-// MarkExportFailed / RequeueExport) は呼び出し側の期待する updated_at を
-// ガードにするため、updated_at は楽観ロックのトークンを兼ねており、更新のたびに
+// 4つの状態遷移 (MarkExportStarted / MarkExportSucceeded /
+// MarkExportFailed / RequeueExport) は呼び出し側の期待するupdated_atを
+// ガードにするため、updated_atは楽観ロックのトークンを兼ねており、更新のたびに
 // 厳密増加させる必要がある。NOW() はトランザクション内で固定され、
 // clock_timestamp() 単独でもマイクロ秒解像度で同値になり得るため、
 // GREATEST(clock_timestamp(), updated_at + INTERVAL '1 microsecond') で必ず
-// より大きいトークンを保証する。NOW() や素の clock_timestamp() へ単純化しない
+// より大きいトークンを保証する。NOW() や素のclock_timestamp() へ単純化しない
 // こと。古い試行がガードを通過し得る。
 //
 // 行数ではなく更新後の行を返すのは、生成処理がこの遷移を次のガード付き更新へ
-// つなぐため。同じ試行を MarkExportSucceeded / MarkExportFailed で終わらせるには、
+// つなぐため。同じ試行をMarkExportSucceeded / MarkExportFailedで終わらせるには、
 // 本文が生成したトークンを知る必要がある。別の文で行を読み直すとトークンが閉じて
-// いる窓をふたたび開くことになる。その間に commit された遷移があれば、呼び出し側は
+// いる窓をふたたび開くことになる。その間にcommitされた遷移があれば、呼び出し側は
 // 自分が保持していないトークンを受け取ってしまうため。
 func (q *Queries) MarkExportStarted(ctx context.Context, arg MarkExportStartedParams) (Export, error) {
 	row := q.db.QueryRowContext(ctx, markExportStarted, arg.ID, arg.ExpectedUpdatedAt)
@@ -855,39 +710,20 @@ type MarkExportSucceededParams struct {
 	ExpectedUpdatedAt time.Time      `db:"expected_updated_at"`
 }
 
-// The updated_at expression is the optimistic-lock token; see MarkExportStarted
-// for why it must strictly increase.
+// updated_at式は楽観ロックのトークン。厳密増加させる理由は
+// MarkExportStartedを参照。
 //
-// Reaching succeeded creates the completion-notification work intent and
-// discards the request-time post snapshot in the same statement. The
-// notification snapshots the profile, the requester email and the locale so
-// cleanup can delete the export row without losing the pending work, and so
-// delivery can decide against the profile's deletion boundary from the
-// notification alone. The post snapshot exists so that a retried attempt reads
-// the same input as the first one, and the uploaded archive makes it useless.
-// Keeping all three changes atomic prevents a succeeded export without a
-// notification and prevents the row and its post snapshot from diverging.
+// succeededへの到達では、完了通知のwork intentを作成し、申請時の投稿snapshot
+// も同じ文で破棄する。通知にはプロフィール・申請者のメールアドレス・localeを
+// snapshotするため、cleanupがexport行を削除してもpending workは失われず、配信は
+// 通知だけでプロフィールの削除境界に対する判断ができる。投稿snapshotは再試行が
+// 初回と同じ入力を読むために存在し、アーカイブのupload後は不要になる。3つの変更を
+// 原子的に行うことで、通知の無いsucceededや、行と投稿snapshotの食い違いを防ぐ。
 //
-// The final select reads marked so that the row count reports the transition
-// alone, which is what the caller guards on. The notification is created
-// whenever the transition matches, because actor_id and actors.user_id are both
-// NOT NULL foreign keys and the joins therefore cannot come back empty; reading
-// the insert instead would answer "no transition" to a join that did.
-//
-// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
-// MarkExportStarted を参照。
-//
-// succeeded への到達では、完了通知の work intent を作成し、申請時の投稿 snapshot
-// も同じ文で破棄する。通知にはプロフィール・申請者のメールアドレス・locale を
-// snapshot するため、cleanup が export 行を削除しても pending work は失われず、配信は
-// 通知だけでプロフィールの削除境界に対する判断ができる。投稿 snapshot は再試行が
-// 初回と同じ入力を読むために存在し、アーカイブの upload 後は不要になる。3 つの変更を
-// 原子的に行うことで、通知の無い succeeded や、行と投稿 snapshot の食い違いを防ぐ。
-//
-// 最後の select が marked を読むのは、行数が呼び出し側のガード対象である遷移だけを
-// 表すようにするため。遷移が成立すれば通知は必ず作成される。actor_id と
-// actors.user_id はどちらも NOT NULL の外部キーであり、結合が空になり得ないからで
-// ある。insert 側を読むと、結合が失敗したときに「遷移しなかった」と答えてしまう。
+// 最後のselectがmarkedを読むのは、行数が呼び出し側のガード対象である遷移だけを
+// 表すようにするため。遷移が成立すれば通知は必ず作成される。actor_idと
+// actors.user_idはどちらもNOT NULLの外部キーであり、結合が空になり得ないからで
+// ある。insert側を読むと、結合が失敗したときに「遷移しなかった」と答えてしまう。
 func (q *Queries) MarkExportSucceeded(ctx context.Context, arg MarkExportSucceededParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, markExportSucceeded, arg.ObjectKey, arg.ID, arg.ExpectedUpdatedAt)
 	if err != nil {
@@ -911,11 +747,8 @@ type RequeueExportParams struct {
 	ExpectedUpdatedAt time.Time `db:"expected_updated_at"`
 }
 
-// The updated_at expression is the optimistic-lock token; see MarkExportStarted
-// for why it must strictly increase.
-//
-// [Ja] updated_at 式は楽観ロックのトークン。厳密増加させる理由は
-// MarkExportStarted を参照。
+// updated_at式は楽観ロックのトークン。厳密増加させる理由は
+// MarkExportStartedを参照。
 func (q *Queries) RequeueExport(ctx context.Context, arg RequeueExportParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, requeueExport, arg.ID, arg.ExpectedUpdatedAt)
 	if err != nil {

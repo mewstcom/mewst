@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 )
 
-// GenerateCSRFToken は安全なCSRFトークンを生成する
+// GenerateCSRFTokenは安全なCSRFトークンを生成する
 // 32バイトのランダムデータをBase64エンコードして返す
 func GenerateCSRFToken() (string, error) {
 	b := make([]byte, 32)

@@ -19,7 +19,7 @@ func TestDeref(t *testing.T) {
 		v := 42
 		got := templates.Deref(&v)
 		if got != 42 {
-			t.Errorf("Deref(&42) = %d, want 42", got)
+			t.Errorf("Deref(&42) = %d、期待値 = 42", got)
 		}
 	})
 
@@ -29,7 +29,7 @@ func TestDeref(t *testing.T) {
 		var p *int
 		got := templates.Deref(p)
 		if got != 0 {
-			t.Errorf("Deref(nil) = %d, want 0", got)
+			t.Errorf("Deref(nil) = %d、期待値 = 0", got)
 		}
 	})
 
@@ -39,7 +39,7 @@ func TestDeref(t *testing.T) {
 		s := "hello"
 		got := templates.Deref(&s)
 		if got != "hello" {
-			t.Errorf("Deref(&\"hello\") = %q, want \"hello\"", got)
+			t.Errorf("Deref(&\"hello\") = %q、期待値 = \"hello\"", got)
 		}
 	})
 
@@ -49,7 +49,7 @@ func TestDeref(t *testing.T) {
 		var p *string
 		got := templates.Deref(p)
 		if got != "" {
-			t.Errorf("Deref(nil) = %q, want \"\"", got)
+			t.Errorf("Deref(nil) = %q、期待値 = \"\"", got)
 		}
 	})
 
@@ -63,7 +63,7 @@ func TestDeref(t *testing.T) {
 		v := point{X: 1, Y: 2}
 		got := templates.Deref(&v)
 		if got.X != 1 || got.Y != 2 {
-			t.Errorf("Deref(&point{1,2}) = %+v, want {X:1 Y:2}", got)
+			t.Errorf("Deref(&point{1,2}) = %+v、期待値 = {X:1 Y:2}", got)
 		}
 	})
 
@@ -77,7 +77,7 @@ func TestDeref(t *testing.T) {
 		var p *point
 		got := templates.Deref(p)
 		if got.X != 0 || got.Y != 0 {
-			t.Errorf("Deref(nil) = %+v, want {X:0 Y:0}", got)
+			t.Errorf("Deref(nil) = %+v、期待値 = {X:0 Y:0}", got)
 		}
 	})
 }
@@ -107,12 +107,8 @@ func TestIcon(t *testing.T) {
 			wantContains: []string{"<svg", `class="icon-sm"`, "viewBox=\"0 0 256 256\""},
 		},
 		{
-			// The path fragment is unique to caret-right-regular, so it also
-			// rules out the info-regular fallback, which shares the same
-			// 256x256 viewBox and would otherwise be indistinguishable.
-			//
-			// [Ja] path 片は caret-right-regular 固有のため、同じ 256x256 の
-			// viewBox を持ち区別できない info-regular フォールバックに
+			// path片はcaret-right-regular固有のため、同じ256x256の
+			// viewBoxを持ち区別できないinfo-regularフォールバックに
 			// 落ちていないことも同時に確認できる。
 			name:         "settingsのメニューで使うphosphorアイコン(caret-right-regular)が描画される",
 			iconName:     "caret-right-regular",
@@ -120,11 +116,8 @@ func TestIcon(t *testing.T) {
 			wantContains: []string{"<svg", `d="M181.66,133.66l-80,80`},
 		},
 		{
-			// The path fragment is unique to sign-out-regular, so it also rules
-			// out the info-regular fallback used for an unregistered icon name.
-			//
-			// [Ja] path 片は sign-out-regular 固有のため、未登録のアイコン名に
-			// 適用される info-regular フォールバックも同時に除外できる。
+			// path片はsign-out-regular固有のため、未登録のアイコン名に
+			// 適用されるinfo-regularフォールバックも同時に除外できる。
 			name:         "settingsのログアウトボタンで使うphosphorアイコン(sign-out-regular)が描画される",
 			iconName:     "sign-out-regular",
 			class:        nil,
@@ -146,18 +139,18 @@ func TestIcon(t *testing.T) {
 
 			var buf bytes.Buffer
 			if err := component.Render(context.Background(), &buf); err != nil {
-				t.Fatalf("Icon.Render() error = %v", err)
+				t.Fatalf("Icon.Render()のエラー = %v", err)
 			}
 
 			html := buf.String()
 			for _, want := range tt.wantContains {
 				if !strings.Contains(html, want) {
-					t.Errorf("Icon(%q) = %q, want to contain %q", tt.iconName, html, want)
+					t.Errorf("Icon(%q) = %q、%qを含むことを期待", tt.iconName, html, want)
 				}
 			}
 			for _, notWant := range tt.wantNoContains {
 				if strings.Contains(html, notWant) {
-					t.Errorf("Icon(%q) = %q, want NOT to contain %q", tt.iconName, html, notWant)
+					t.Errorf("Icon(%q) = %q、%qを含まないことを期待", tt.iconName, html, notWant)
 				}
 			}
 		})
@@ -166,23 +159,19 @@ func TestIcon(t *testing.T) {
 	t.Run("未定義のアイコン名はinfo-regularと完全一致する", func(t *testing.T) {
 		t.Parallel()
 
-		// An undefined icon name must fall back to info-regular. Compared by exact
-		// equality (not substring) so a future change that makes the fallback emit
-		// anything other than info-regular's exact SVG is caught.
-		//
-		// [Ja] 未定義のアイコン名は info-regular にフォールバックしなければならない。
+		// 未定義のアイコン名はinfo-regularにフォールバックしなければならない。
 		// 部分一致ではなく完全一致で比較することで、将来フォールバックが
-		// info-regular とは異なる SVG を返すようになった場合に検出できる。
+		// info-regularとは異なるSVGを返すようになった場合に検出できる。
 		var fallbackBuf, undefinedBuf bytes.Buffer
 		if err := templates.Icon("info-regular").Render(context.Background(), &fallbackBuf); err != nil {
-			t.Fatalf("Icon(\"info-regular\") error = %v", err)
+			t.Fatalf("Icon(\"info-regular\")のエラー = %v", err)
 		}
 		if err := templates.Icon("does-not-exist").Render(context.Background(), &undefinedBuf); err != nil {
-			t.Fatalf("Icon(\"does-not-exist\") error = %v", err)
+			t.Fatalf("Icon(\"does-not-exist\")のエラー = %v", err)
 		}
 
 		if fallbackBuf.String() != undefinedBuf.String() {
-			t.Errorf("undefined icon should fall back to info-regular, got = %q, want = %q", undefinedBuf.String(), fallbackBuf.String())
+			t.Errorf("未定義のアイコンがinfo-regularにフォールバックしない: 実測値 = %q、期待値 = %q", undefinedBuf.String(), fallbackBuf.String())
 		}
 	})
 }
@@ -190,16 +179,10 @@ func TestIcon(t *testing.T) {
 func TestIcon_MingcuteIcons(t *testing.T) {
 	t.Parallel()
 
-	// Each navbar icon ported from the Rails version must be registered and
-	// rendered as its own SVG: not falling back to info-regular, and not mixed
-	// up with another icon (e.g. its line/fill counterpart). The value is a
-	// substring unique to that icon's visible `content` path, taken from the
-	// Rails source SVG, so a copy-paste swap between two icons is detected.
-	//
-	// [Ja] Rails 版から移植した navbar 用アイコンが、それぞれ固有の SVG として
-	// 登録・描画されることを確認する。info-regular へのフォールバックや、
-	// line / fill など別アイコンとの取り違えに落ちていないこと。値は Rails の
-	// 元 SVG から取った、そのアイコンの表示用 `content` path 固有の部分文字列で、
+	// Rails版から移植したnavbar用アイコンが、それぞれ固有のSVGとして
+	// 登録・描画されることを確認する。info-regularへのフォールバックや、
+	// line / fillなど別アイコンとの取り違えに落ちていないこと。値はRailsの
+	// 元SVGから取った、そのアイコンの表示用 `content` path固有の部分文字列で、
 	// アイコン間のコピペ取り違えを検出できる。
 	pathFragments := map[viewmodel.IconName]string{
 		"home_4_line":       `d="M10.8 2.65`,
@@ -220,22 +203,17 @@ func TestIcon_MingcuteIcons(t *testing.T) {
 
 			var buf bytes.Buffer
 			if err := templates.Icon(name).Render(context.Background(), &buf); err != nil {
-				t.Fatalf("Icon(%q).Render() error = %v", name, err)
+				t.Fatalf("Icon(%q).Render()のエラー = %v", name, err)
 			}
 
 			html := buf.String()
-			// `<svg`, the `content` class and the 24x24 viewBox confirm a ported
-			// mingcute icon is rendered instead of the info-regular fallback
-			// (256x256, no content class); the per-icon path fragment additionally
-			// confirms the correct icon is registered under this key.
-			//
-			// [Ja] `<svg`・`content` クラス・24x24 の viewBox は、info-regular
-			// フォールバック (256x256・content クラスなし) ではなく移植した
-			// mingcute アイコンが描画されていることを示す。加えてアイコン固有の
-			// path 片により、このキーに正しいアイコンが登録されていることを確認する。
+			// `<svg`・`content` クラス・24x24のviewBoxは、info-regular
+			// フォールバック (256x256・contentクラスなし) ではなく移植した
+			// mingcuteアイコンが描画されていることを示す。加えてアイコン固有の
+			// path片により、このキーに正しいアイコンが登録されていることを確認する。
 			for _, want := range []string{"<svg", `class="content"`, `viewBox="0 0 24 24"`, pathFragment} {
 				if !strings.Contains(html, want) {
-					t.Errorf("Icon(%q) = %q, want to contain %q", name, html, want)
+					t.Errorf("Icon(%q) = %q、%qを含むことを期待", name, html, want)
 				}
 			}
 		})

@@ -88,7 +88,7 @@ func TestEmailConfirmationCreateValidator_Validate_FormatValidation(t *testing.T
 					t.Error("エラーが期待されたが、エラーがありません")
 				}
 				if tt.expectedField != "" && !ve.HasFieldError(tt.expectedField) {
-					t.Errorf("フィールド %q のエラーが期待されましたが、ありません", tt.expectedField)
+					t.Errorf("フィールド%qのエラーが期待されましたが、ありません", tt.expectedField)
 				}
 			}
 		})
@@ -170,7 +170,7 @@ func TestCodeRegex(t *testing.T) {
 			t.Parallel()
 
 			if got := codeRegex.MatchString(tt.code); got != tt.valid {
-				t.Errorf("codeRegex.MatchString(%q) = %v, want %v", tt.code, got, tt.valid)
+				t.Errorf("codeRegex.MatchString(%q) = %v、期待値 = %v", tt.code, got, tt.valid)
 			}
 		})
 	}
@@ -199,13 +199,13 @@ func TestEmailConfirmationCreateValidator_Validate_Success(t *testing.T) {
 	emailConfirmation, err := validator.Validate(ctx, input)
 
 	if err != nil {
-		t.Fatalf("Validate() error = %v", err)
+		t.Fatalf("Validate()のエラー = %v", err)
 	}
 	if emailConfirmation == nil {
-		t.Fatal("Validate() emailConfirmation = nil, want non-nil")
+		t.Fatal("Validate()のemailConfirmation = nil、非nilを期待")
 	}
 	if emailConfirmation.Email == "" {
-		t.Error("Validate() emailConfirmation.Email should not be empty")
+		t.Error("Validate()のemailConfirmation.Email = 空文字列、非空を期待")
 	}
 }
 
@@ -230,14 +230,14 @@ func TestEmailConfirmationCreateValidator_Validate_RecordNotFound(t *testing.T) 
 	emailConfirmation, err := validator.Validate(ctx, input)
 
 	if emailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for non-existent record")
+		t.Error("存在しないレコードでValidate()のemailConfirmation = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("Validate() expected ValidationError")
+		t.Fatal("Validate()のエラーからValidationErrorを期待したが、得られなかった")
 	}
 	if !ve.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+		t.Error("Validate()のformErrorsにエラーを期待したが、無かった")
 	}
 }
 
@@ -266,14 +266,14 @@ func TestEmailConfirmationCreateValidator_Validate_ExpiredRecord(t *testing.T) {
 	emailConfirmation, err := validator.Validate(ctx, input)
 
 	if emailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for expired record")
+		t.Error("期限切れのレコードでValidate()のemailConfirmation = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("Validate() expected ValidationError")
+		t.Fatal("Validate()のエラーからValidationErrorを期待したが、得られなかった")
 	}
 	if !ve.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+		t.Error("Validate()のformErrorsにエラーを期待したが、無かった")
 	}
 }
 
@@ -302,14 +302,14 @@ func TestEmailConfirmationCreateValidator_Validate_AlreadySucceeded(t *testing.T
 	emailConfirmation, err := validator.Validate(ctx, input)
 
 	if emailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for already succeeded record")
+		t.Error("確認済みのレコードでValidate()のemailConfirmation = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("Validate() expected ValidationError")
+		t.Fatal("Validate()のエラーからValidationErrorを期待したが、得られなかった")
 	}
 	if !ve.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+		t.Error("Validate()のformErrorsにエラーを期待したが、無かった")
 	}
 }
 
@@ -336,14 +336,14 @@ func TestEmailConfirmationCreateValidator_Validate_InvalidCode(t *testing.T) {
 	emailConfirmation, err := validator.Validate(ctx, input)
 
 	if emailConfirmation != nil {
-		t.Error("Validate() emailConfirmation should be nil for invalid code")
+		t.Error("不正なコードでValidate()のemailConfirmation = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("Validate() expected ValidationError")
+		t.Fatal("Validate()のエラーからValidationErrorを期待したが、得られなかった")
 	}
 	if !ve.HasErrors() {
-		t.Error("Validate() formErrors should have errors")
+		t.Error("Validate()のformErrorsにエラーを期待したが、無かった")
 	}
 }
 
@@ -371,15 +371,15 @@ func TestEmailConfirmationCreateValidator_Validate_GlobalError(t *testing.T) {
 
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("expected ValidationError")
+		t.Fatal("ValidationErrorを期待したが、得られなかった")
 	}
 
 	// グローバルエラーとして返されることを確認 (フィールドエラーではない)
 	if len(ve.Global) == 0 {
-		t.Error("expected global error, not field error")
+		t.Error("フィールドエラーではなくグローバルエラーを期待")
 	}
 	if len(ve.Fields) > 0 {
-		t.Error("should not have field errors for code validation")
+		t.Error("コードの検証ではフィールドエラーが無いことを期待したが、あった")
 	}
 }
 
@@ -411,7 +411,7 @@ func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *test
 
 		ve := model.AsValidationError(err)
 		if ve == nil || len(ve.Global) == 0 {
-			t.Fatal("expected global error message")
+			t.Fatal("グローバルエラーのメッセージを期待したが、無かった")
 		}
 
 		invalidCodeMsg := ve.Global[0]
@@ -426,14 +426,14 @@ func TestEmailConfirmationCreateValidator_Validate_ErrorMessageIsGeneric(t *test
 
 		ve2 := model.AsValidationError(err2)
 		if ve2 == nil || len(ve2.Global) == 0 {
-			t.Fatal("expected global error message")
+			t.Fatal("グローバルエラーのメッセージを期待したが、無かった")
 		}
 
 		notFoundMsg := ve2.Global[0]
 
 		// セキュリティ上、両方のエラーメッセージが同じであることを確認
 		if invalidCodeMsg != notFoundMsg {
-			t.Errorf("エラーメッセージが異なります: invalid code = %q, not found = %q", invalidCodeMsg, notFoundMsg)
+			t.Errorf("エラーメッセージが異なります: 不正なコード = %q、存在しない = %q", invalidCodeMsg, notFoundMsg)
 		}
 	})
 }

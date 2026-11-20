@@ -67,14 +67,14 @@ func TestSignInCreateValidator_Validate_FormatValidation(t *testing.T) {
 			})
 
 			if user != nil {
-				t.Error("expected nil user for validation error")
+				t.Error("バリデーションエラー時のユーザー = 非nil、nilを期待")
 			}
 			ve := model.AsValidationError(err)
 			if ve == nil {
-				t.Fatal("expected ValidationError, got nil")
+				t.Fatal("エラー = nil、ValidationErrorを期待")
 			}
 			if tt.wantFieldError != "" && !ve.HasFieldError(tt.wantFieldError) {
-				t.Errorf("expected field error for %s, but not found", tt.wantFieldError)
+				t.Errorf("%sのフィールドエラーを期待したが、無かった", tt.wantFieldError)
 			}
 		})
 	}
@@ -144,7 +144,7 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 
 	passwordDigest, _ := auth.HashPassword("password123")
 	testutil.NewUserBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("validator-signin-success@example.com").
 		WithPasswordDigest(passwordDigest).
 		Build()
 
@@ -152,18 +152,18 @@ func TestSignInCreateValidator_Validate_Success(t *testing.T) {
 	v := NewSignInCreateValidator(userRepo)
 
 	user, err := v.Validate(ctx, SignInCreateValidatorInput{
-		Email:    "test@example.com",
+		Email:    "validator-signin-success@example.com",
 		Password: "password123",
 	})
 
 	if err != nil {
-		t.Fatalf("Validate() error = %v", err)
+		t.Fatalf("Validate()のエラー = %v", err)
 	}
 	if user == nil {
-		t.Fatal("Validate() user = nil, want non-nil")
+		t.Fatal("Validate()のuser = nil、非nilを期待")
 	}
-	if user.Email != "test@example.com" {
-		t.Errorf("Validate() user.Email = %v, want %v", user.Email, "test@example.com")
+	if user.Email != "validator-signin-success@example.com" {
+		t.Errorf("Validate()のuser.Email = %v、期待値 = %v", user.Email, "validator-signin-success@example.com")
 	}
 }
 
@@ -183,14 +183,14 @@ func TestSignInCreateValidator_Validate_UserNotFound(t *testing.T) {
 	})
 
 	if user != nil {
-		t.Error("expected nil user")
+		t.Error("ユーザー = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("expected ValidationError, got nil")
+		t.Fatal("エラー = nil、ValidationErrorを期待")
 	}
 	if len(ve.Global) == 0 {
-		t.Error("expected global error")
+		t.Error("グローバルエラーを期待したが、無かった")
 	}
 }
 
@@ -203,7 +203,7 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("validator-signin-invalid-password@example.com").
 		WithPasswordDigest(passwordDigest).
 		Build()
 
@@ -211,19 +211,19 @@ func TestSignInCreateValidator_Validate_InvalidPassword(t *testing.T) {
 	v := NewSignInCreateValidator(userRepo)
 
 	user, err := v.Validate(ctx, SignInCreateValidatorInput{
-		Email:    "test@example.com",
+		Email:    "validator-signin-invalid-password@example.com",
 		Password: "wrongpassword",
 	})
 
 	if user != nil {
-		t.Error("expected nil user")
+		t.Error("ユーザー = 非nil、nilを期待")
 	}
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("expected ValidationError, got nil")
+		t.Fatal("エラー = nil、ValidationErrorを期待")
 	}
 	if len(ve.Global) == 0 {
-		t.Error("expected global error")
+		t.Error("グローバルエラーを期待したが、無かった")
 	}
 }
 
@@ -236,7 +236,7 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 
 	passwordDigest, _ := auth.HashPassword("correctpassword")
 	testutil.NewUserBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("validator-signin-generic-message@example.com").
 		WithPasswordDigest(passwordDigest).
 		Build()
 
@@ -252,23 +252,23 @@ func TestSignInCreateValidator_Validate_ErrorMessageIsGeneric(t *testing.T) {
 		})
 		ve1 := model.AsValidationError(err1)
 		if ve1 == nil || len(ve1.Global) == 0 {
-			t.Fatal("expected global error message")
+			t.Fatal("グローバルエラーのメッセージを期待したが、無かった")
 		}
 		notFoundMsg := ve1.Global[0]
 
 		_, err2 := v.Validate(ctx, SignInCreateValidatorInput{
-			Email:    "test@example.com",
+			Email:    "validator-signin-generic-message@example.com",
 			Password: "wrongpassword",
 		})
 		ve2 := model.AsValidationError(err2)
 		if ve2 == nil || len(ve2.Global) == 0 {
-			t.Fatal("expected global error message")
+			t.Fatal("グローバルエラーのメッセージを期待したが、無かった")
 		}
 		wrongPasswordMsg := ve2.Global[0]
 
 		// セキュリティ上、両方のエラーメッセージが同じであることを確認
 		if notFoundMsg != wrongPasswordMsg {
-			t.Errorf("エラーメッセージが異なります: user not found = %q, wrong password = %q", notFoundMsg, wrongPasswordMsg)
+			t.Errorf("エラーメッセージが異なります: ユーザーが存在しない = %q、パスワードの誤り = %q", notFoundMsg, wrongPasswordMsg)
 		}
 	})
 }
@@ -290,15 +290,15 @@ func TestSignInCreateValidator_Validate_GlobalError(t *testing.T) {
 
 	ve := model.AsValidationError(err)
 	if ve == nil {
-		t.Fatal("expected ValidationError")
+		t.Fatal("ValidationErrorを期待したが、得られなかった")
 	}
 
 	// グローバルエラーとして返されることを確認 (フィールドエラーではない)
 	if len(ve.Global) == 0 {
-		t.Error("expected global error, not field error")
+		t.Error("フィールドエラーではなくグローバルエラーを期待")
 	}
 	if len(ve.Fields) > 0 {
-		t.Error("should not have field errors for credential validation")
+		t.Error("資格情報の検証ではフィールドエラーが無いことを期待したが、あった")
 	}
 }
 
@@ -328,8 +328,8 @@ func TestSignInCreateValidator_Validate_ValidEmailFormats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// 親テストの tx を共有しているため、サブテスト間で並行に DB クエリを発行すると
-			// lib/pq の接続状態が壊れて Rollback が "driver: bad connection" で失敗する。
+			// 親テストのtxを共有しているため、サブテスト間で並行にDBクエリを発行すると
+			// lib/pqの接続状態が壊れてRollbackが "driver: bad connection" で失敗する。
 			// サブテストは順次実行する。
 			_, err := v.Validate(ctx, SignInCreateValidatorInput{
 				Email:    tt.email,

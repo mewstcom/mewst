@@ -9,12 +9,12 @@ import (
 	"github.com/mewstcom/mewst/go/internal/repository"
 )
 
-// GetSucceededEmailConfirmationUsecase は確認済みのメール確認を取得するユースケース
+// GetSucceededEmailConfirmationUsecaseは確認済みのメール確認を取得するユースケース
 type GetSucceededEmailConfirmationUsecase struct {
 	emailConfirmationRepo *repository.EmailConfirmationRepository
 }
 
-// NewGetSucceededEmailConfirmationUsecase はGetSucceededEmailConfirmationUsecaseを生成する
+// NewGetSucceededEmailConfirmationUsecaseはGetSucceededEmailConfirmationUsecaseを生成する
 func NewGetSucceededEmailConfirmationUsecase(
 	emailConfirmationRepo *repository.EmailConfirmationRepository,
 ) *GetSucceededEmailConfirmationUsecase {
@@ -23,17 +23,17 @@ func NewGetSucceededEmailConfirmationUsecase(
 	}
 }
 
-// GetSucceededEmailConfirmationInput は確認済みメール確認取得の入力パラメータ
+// GetSucceededEmailConfirmationInputは確認済みメール確認取得の入力パラメータ
 type GetSucceededEmailConfirmationInput struct {
 	ID model.EmailConfirmationID
 }
 
-// GetSucceededEmailConfirmationOutput は確認済みメール確認取得の結果
+// GetSucceededEmailConfirmationOutputは確認済みメール確認取得の結果
 type GetSucceededEmailConfirmationOutput struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute は確認済みのメール確認を取得する
+// Executeは確認済みのメール確認を取得する
 func (uc *GetSucceededEmailConfirmationUsecase) Execute(ctx context.Context, input GetSucceededEmailConfirmationInput) (*GetSucceededEmailConfirmationOutput, error) {
 	ec, err := uc.emailConfirmationRepo.FindSucceededByID(ctx, input.ID)
 	if err != nil {

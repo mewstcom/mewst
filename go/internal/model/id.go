@@ -2,13 +2,13 @@ package model
 
 import "github.com/google/uuid"
 
-// UserID はユーザーのID型
+// UserIDはユーザーのID型
 type UserID uuid.UUID
 
-// String はUserIDを文字列に変換する
+// StringはUserIDを文字列に変換する
 func (id UserID) String() string { return uuid.UUID(id).String() }
 
-// UserIDsToUUIDs はUserIDスライスをuuid.UUIDスライスに変換する
+// UserIDsToUUIDsはUserIDスライスをuuid.UUIDスライスに変換する
 func UserIDsToUUIDs(ids []UserID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -17,7 +17,7 @@ func UserIDsToUUIDs(ids []UserID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToUserIDs はuuid.UUIDスライスをUserIDスライスに変換する
+// UUIDsToUserIDsはuuid.UUIDスライスをUserIDスライスに変換する
 func UUIDsToUserIDs(us []uuid.UUID) []UserID {
 	ids := make([]UserID, len(us))
 	for i, u := range us {
@@ -26,13 +26,13 @@ func UUIDsToUserIDs(us []uuid.UUID) []UserID {
 	return ids
 }
 
-// ProfileID はプロフィールのID型
+// ProfileIDはプロフィールのID型
 type ProfileID uuid.UUID
 
-// String はProfileIDを文字列に変換する
+// StringはProfileIDを文字列に変換する
 func (id ProfileID) String() string { return uuid.UUID(id).String() }
 
-// ProfileIDsToUUIDs はProfileIDスライスをuuid.UUIDスライスに変換する
+// ProfileIDsToUUIDsはProfileIDスライスをuuid.UUIDスライスに変換する
 func ProfileIDsToUUIDs(ids []ProfileID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -41,7 +41,7 @@ func ProfileIDsToUUIDs(ids []ProfileID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToProfileIDs はuuid.UUIDスライスをProfileIDスライスに変換する
+// UUIDsToProfileIDsはuuid.UUIDスライスをProfileIDスライスに変換する
 func UUIDsToProfileIDs(us []uuid.UUID) []ProfileID {
 	ids := make([]ProfileID, len(us))
 	for i, u := range us {
@@ -50,13 +50,13 @@ func UUIDsToProfileIDs(us []uuid.UUID) []ProfileID {
 	return ids
 }
 
-// ActorID はアクターのID型
+// ActorIDはアクターのID型
 type ActorID uuid.UUID
 
-// String はActorIDを文字列に変換する
+// StringはActorIDを文字列に変換する
 func (id ActorID) String() string { return uuid.UUID(id).String() }
 
-// ActorIDsToUUIDs はActorIDスライスをuuid.UUIDスライスに変換する
+// ActorIDsToUUIDsはActorIDスライスをuuid.UUIDスライスに変換する
 func ActorIDsToUUIDs(ids []ActorID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -65,7 +65,7 @@ func ActorIDsToUUIDs(ids []ActorID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToActorIDs はuuid.UUIDスライスをActorIDスライスに変換する
+// UUIDsToActorIDsはuuid.UUIDスライスをActorIDスライスに変換する
 func UUIDsToActorIDs(us []uuid.UUID) []ActorID {
 	ids := make([]ActorID, len(us))
 	for i, u := range us {
@@ -74,13 +74,13 @@ func UUIDsToActorIDs(us []uuid.UUID) []ActorID {
 	return ids
 }
 
-// SessionID はセッションのID型
+// SessionIDはセッションのID型
 type SessionID uuid.UUID
 
-// String はSessionIDを文字列に変換する
+// StringはSessionIDを文字列に変換する
 func (id SessionID) String() string { return uuid.UUID(id).String() }
 
-// SessionIDsToUUIDs はSessionIDスライスをuuid.UUIDスライスに変換する
+// SessionIDsToUUIDsはSessionIDスライスをuuid.UUIDスライスに変換する
 func SessionIDsToUUIDs(ids []SessionID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -89,7 +89,7 @@ func SessionIDsToUUIDs(ids []SessionID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToSessionIDs はuuid.UUIDスライスをSessionIDスライスに変換する
+// UUIDsToSessionIDsはuuid.UUIDスライスをSessionIDスライスに変換する
 func UUIDsToSessionIDs(us []uuid.UUID) []SessionID {
 	ids := make([]SessionID, len(us))
 	for i, u := range us {
@@ -98,13 +98,13 @@ func UUIDsToSessionIDs(us []uuid.UUID) []SessionID {
 	return ids
 }
 
-// EmailConfirmationID はメール確認のID型
+// EmailConfirmationIDはメール確認のID型
 type EmailConfirmationID uuid.UUID
 
-// String はEmailConfirmationIDを文字列に変換する
+// StringはEmailConfirmationIDを文字列に変換する
 func (id EmailConfirmationID) String() string { return uuid.UUID(id).String() }
 
-// EmailConfirmationIDsToUUIDs はEmailConfirmationIDスライスをuuid.UUIDスライスに変換する
+// EmailConfirmationIDsToUUIDsはEmailConfirmationIDスライスをuuid.UUIDスライスに変換する
 func EmailConfirmationIDsToUUIDs(ids []EmailConfirmationID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -113,7 +113,7 @@ func EmailConfirmationIDsToUUIDs(ids []EmailConfirmationID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToEmailConfirmationIDs はuuid.UUIDスライスをEmailConfirmationIDスライスに変換する
+// UUIDsToEmailConfirmationIDsはuuid.UUIDスライスをEmailConfirmationIDスライスに変換する
 func UUIDsToEmailConfirmationIDs(us []uuid.UUID) []EmailConfirmationID {
 	ids := make([]EmailConfirmationID, len(us))
 	for i, u := range us {
@@ -122,13 +122,13 @@ func UUIDsToEmailConfirmationIDs(us []uuid.UUID) []EmailConfirmationID {
 	return ids
 }
 
-// UserProfileID はユーザープロフィール関連付けのID型
+// UserProfileIDはユーザープロフィール関連付けのID型
 type UserProfileID uuid.UUID
 
-// String はUserProfileIDを文字列に変換する
+// StringはUserProfileIDを文字列に変換する
 func (id UserProfileID) String() string { return uuid.UUID(id).String() }
 
-// UserProfileIDsToUUIDs はUserProfileIDスライスをuuid.UUIDスライスに変換する
+// UserProfileIDsToUUIDsはUserProfileIDスライスをuuid.UUIDスライスに変換する
 func UserProfileIDsToUUIDs(ids []UserProfileID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -137,7 +137,7 @@ func UserProfileIDsToUUIDs(ids []UserProfileID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToUserProfileIDs はuuid.UUIDスライスをUserProfileIDスライスに変換する
+// UUIDsToUserProfileIDsはuuid.UUIDスライスをUserProfileIDスライスに変換する
 func UUIDsToUserProfileIDs(us []uuid.UUID) []UserProfileID {
 	ids := make([]UserProfileID, len(us))
 	for i, u := range us {
@@ -146,83 +146,61 @@ func UUIDsToUserProfileIDs(us []uuid.UUID) []UserProfileID {
 	return ids
 }
 
-// FeatureFlagID is the ID type for a feature flag.
-// [Ja] FeatureFlagID はフィーチャーフラグの ID 型。
+// FeatureFlagIDはフィーチャーフラグのID型。
 type FeatureFlagID uuid.UUID
 
-// String returns the string representation of the FeatureFlagID.
-// [Ja] String は FeatureFlagID の文字列表現を返す。
+// StringはFeatureFlagIDの文字列表現を返す。
 func (id FeatureFlagID) String() string { return uuid.UUID(id).String() }
 
-// FeatureFlagName is the type for a feature flag name.
-// [Ja] FeatureFlagName はフィーチャーフラグ名の型。
+// FeatureFlagNameはフィーチャーフラグ名の型。
 type FeatureFlagName string
 
-// String returns the string representation of the FeatureFlagName.
-// [Ja] String は FeatureFlagName の文字列表現を返す。
+// StringはFeatureFlagNameの文字列表現を返す。
 func (n FeatureFlagName) String() string { return string(n) }
 
-// PostID is the ID type for a post.
-// [Ja] PostID は投稿の ID 型。
+// PostIDは投稿のID型。
 type PostID uuid.UUID
 
-// String returns the string representation of the PostID.
-// [Ja] String は PostID の文字列表現を返す。
+// StringはPostIDの文字列表現を返す。
 func (id PostID) String() string { return uuid.UUID(id).String() }
 
-// OauthApplicationID is the ID type for an OAuth application.
-// [Ja] OauthApplicationID は OAuth アプリケーションの ID 型。
+// OauthApplicationIDはOAuthアプリケーションのID型。
 type OauthApplicationID uuid.UUID
 
-// String returns the string representation of the OauthApplicationID.
-// [Ja] String は OauthApplicationID の文字列表現を返す。
+// StringはOauthApplicationIDの文字列表現を返す。
 func (id OauthApplicationID) String() string { return uuid.UUID(id).String() }
 
-// HomeTimelinePostID is the ID type for a home timeline post.
-// [Ja] HomeTimelinePostID はホームタイムライン投稿の ID 型。
+// HomeTimelinePostIDはホームタイムライン投稿のID型。
 type HomeTimelinePostID uuid.UUID
 
-// String returns the string representation of the HomeTimelinePostID.
-// [Ja] String は HomeTimelinePostID の文字列表現を返す。
+// StringはHomeTimelinePostIDの文字列表現を返す。
 func (id HomeTimelinePostID) String() string { return uuid.UUID(id).String() }
 
-// FollowID is the ID type for a follow.
-// [Ja] FollowID はフォローの ID 型。
+// FollowIDはフォローのID型。
 type FollowID uuid.UUID
 
-// String returns the string representation of the FollowID.
-// [Ja] String は FollowID の文字列表現を返す。
+// StringはFollowIDの文字列表現を返す。
 func (id FollowID) String() string { return uuid.UUID(id).String() }
 
-// LinkID is the ID type for a link.
-// [Ja] LinkID はリンクの ID 型。
+// LinkIDはリンクのID型。
 type LinkID uuid.UUID
 
-// String returns the string representation of the LinkID.
-// [Ja] String は LinkID の文字列表現を返す。
+// StringはLinkIDの文字列表現を返す。
 func (id LinkID) String() string { return uuid.UUID(id).String() }
 
-// PostLinkID is the ID type for a post-link association.
-// [Ja] PostLinkID は投稿とリンクの関連付けの ID 型。
+// PostLinkIDは投稿とリンクの関連付けのID型。
 type PostLinkID uuid.UUID
 
-// String returns the string representation of the PostLinkID.
-// [Ja] String は PostLinkID の文字列表現を返す。
+// StringはPostLinkIDの文字列表現を返す。
 func (id PostLinkID) String() string { return uuid.UUID(id).String() }
 
-// ExportID is the ID type for an export.
-//
-// [Ja] ExportID はエクスポートの ID 型。
+// ExportIDはエクスポートのID型。
 type ExportID uuid.UUID
 
-// String returns the string representation of the ExportID.
-//
-// [Ja] String は ExportID の文字列表現を返す。
+// StringはExportIDの文字列表現を返す。
 func (id ExportID) String() string { return uuid.UUID(id).String() }
 
-// ExportIDsToUUIDs converts a slice of ExportID to a slice of uuid.UUID.
-//
-// [Ja] ExportIDsToUUIDs は ExportID スライスを uuid.UUID スライスに変換する。
+// ExportIDsToUUIDsはExportIDスライスをuuid.UUIDスライスに変換する。
 func ExportIDsToUUIDs(ids []ExportID) []uuid.UUID {
 	us := make([]uuid.UUID, len(ids))
 	for i, id := range ids {
@@ -231,9 +209,7 @@ func ExportIDsToUUIDs(ids []ExportID) []uuid.UUID {
 	return us
 }
 
-// UUIDsToExportIDs converts a slice of uuid.UUID to a slice of ExportID.
-//
-// [Ja] UUIDsToExportIDs は uuid.UUID スライスを ExportID スライスに変換する。
+// UUIDsToExportIDsはuuid.UUIDスライスをExportIDスライスに変換する。
 func UUIDsToExportIDs(us []uuid.UUID) []ExportID {
 	ids := make([]ExportID, len(us))
 	for i, u := range us {

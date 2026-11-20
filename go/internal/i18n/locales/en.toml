@@ -1,591 +1,591 @@
-# English translation file
-# English messages for Mewst Go project
+# 英語の翻訳ファイル
+# Mewst Goプロジェクトの英語メッセージ定義
 
 # ============================================
-# Site default
+# サイト全体のデフォルト
 # ============================================
 
 [default_title]
-description = "Site default title"
+description = "サイトのデフォルトタイトル"
 other = "Mewst"
 
 [default_description]
-description = "Site default description"
+description = "サイトのデフォルト説明"
 other = "Mewst is a social network where you can share your current feelings and situation in 160 characters. We aim to provide a service that can be used without any tension."
 
 # ============================================
-# Sign in page (sign_in/new)
+# サインインページ (sign_in/new)
 # ============================================
 
 [sign_in_new_title]
-description = "Sign in page title"
+description = "ログインページのタイトル"
 other = "Sign in to Mewst"
 
 [sign_in_new_email_label]
-description = "Sign in page email label"
+description = "ログインページのメールアドレスラベル"
 other = "Email"
 
 [sign_in_new_password_label]
-description = "Sign in page password label"
+description = "ログインページのパスワードラベル"
 other = "Password"
 
 [sign_in_new_forgot_password_link]
-description = "Sign in page forgot password link text"
+description = "ログインページのパスワードリセットへのリンクテキスト"
 other = "Forgot your password?"
 
 [sign_in_new_submit]
-description = "Sign in page submit button"
+description = "ログインページの送信ボタン"
 other = "Sign in"
 
 [sign_in_new_no_account]
-description = "Sign in page no account message"
+description = "ログインページのアカウント未所持の案内"
 other = "Don't have an account?"
 
 [sign_in_new_sign_up_link]
-description = "Sign in page sign up link text"
+description = "ログインページのサインアップへのリンクテキスト"
 other = "Sign up to Mewst"
 
 # ============================================
-# Sign up page (sign_up/new)
+# サインアップページ (sign_up/new)
 # ============================================
 
 [sign_up_new_title]
-description = "Sign up page title"
+description = "新規登録ページのタイトル"
 other = "Sign up to Mewst"
 
 [sign_up_new_description]
-description = "Sign up page description"
+description = "新規登録ページの説明"
 other = "Enter your email address. We will send you a confirmation code."
 
 [sign_up_new_email_label]
-description = "Sign up page email label"
+description = "新規登録ページのメールアドレスラベル"
 other = "Email"
 
 [sign_up_new_submit]
-description = "Sign up page submit button"
+description = "新規登録ページの送信ボタン"
 other = "Send confirmation code"
 
 [sign_up_new_have_account]
-description = "Sign up page already have account message"
+description = "新規登録ページの既存アカウント案内"
 other = "Already have an account?"
 
 [sign_up_new_sign_in_link]
-description = "Sign up page sign in link text"
+description = "新規登録ページのログインへのリンクテキスト"
 other = "Sign in"
 
 # ============================================
-# Password reset page (password_reset/new)
+# パスワードリセットページ (password_reset/new)
 # ============================================
 
 [password_reset_new_title]
-description = "Password reset page title"
+description = "パスワードリセットページのタイトル"
 other = "Forgot your password?"
 
 [password_reset_new_description]
-description = "Password reset page description"
+description = "パスワードリセットページの説明"
 other = "Enter your registered email address. We will send you a confirmation code."
 
 [password_reset_new_email_label]
-description = "Password reset page email label"
+description = "パスワードリセットページのメールアドレスラベル"
 other = "Email"
 
 [password_reset_new_submit]
-description = "Password reset page submit button"
+description = "パスワードリセットページの送信ボタン"
 other = "Send confirmation code"
 
 [password_reset_new_back_to_sign_in]
-description = "Password reset page back to sign in link"
+description = "パスワードリセットページのログインに戻るリンク"
 other = "Back to sign in"
 
 # ============================================
-# Email confirmation page (email_confirmation/new)
+# メール確認ページ (email_confirmation/new)
 # ============================================
 
 [email_confirmation_new_title]
-description = "Email confirmation page title"
+description = "メール確認ページのタイトル"
 other = "Enter confirmation code"
 
 [email_confirmation_new_description]
-description = "Email confirmation page description"
+description = "メール確認ページの説明"
 other = "Enter the 6-digit confirmation code sent to your email."
 
 [email_confirmation_new_code_label]
-description = "Email confirmation page code label"
+description = "メール確認ページの確認コードラベル"
 other = "Confirmation code"
 
 [email_confirmation_new_submit]
-description = "Email confirmation page submit button"
+description = "メール確認ページの送信ボタン"
 other = "Verify"
 
 [email_confirmation_new_back_to_sign_in]
-description = "Email confirmation page back to sign in link"
+description = "メール確認ページのログインに戻るリンク"
 other = "Back to sign in"
 
 # ============================================
-# Email confirmation (email body subject)
+# メール確認 (送信メール本文用)
 # ============================================
 
 [email_confirmation_subject]
-description = "Email confirmation code email subject"
+description = "メール確認コードのメール件名"
 other = "[Mewst] Confirmation code"
 
 # ============================================
-# Account creation page (account/new)
+# アカウント作成ページ (account/new)
 # ============================================
 
 [account_new_title]
-description = "Account creation page title"
+description = "アカウント作成ページのタイトル"
 other = "Create your account"
 
 [account_new_description]
-description = "Account creation page description"
+description = "アカウント作成ページの説明"
 other = "Set your username and password."
 
 [account_new_email_label]
-description = "Account creation page email label"
+description = "アカウント作成ページのメールアドレスラベル"
 other = "Email"
 
 [account_new_atname_label]
-description = "Account creation page username label"
+description = "アカウント作成ページのアットネームラベル"
 other = "Username"
 
 [account_new_atname_hint]
-description = "Account creation page username hint"
+description = "アカウント作成ページのアットネームのヒント"
 other = "Alphanumeric characters and underscores only (max 20 characters)"
 
 [account_new_password_label]
-description = "Account creation page password label"
+description = "アカウント作成ページのパスワードラベル"
 other = "Password"
 
 [account_new_password_hint]
-description = "Account creation page password hint"
+description = "アカウント作成ページのパスワードのヒント"
 other = "Enter at least 8 characters"
 
 [account_new_submit]
-description = "Account creation page submit button"
+description = "アカウント作成ページの送信ボタン"
 other = "Create account"
 
 # ============================================
-# Password update page (password/edit)
+# パスワード更新ページ (password/edit)
 # ============================================
 
 [password_edit_title]
-description = "Password update page title"
+description = "パスワード更新ページのタイトル"
 other = "Set a new password"
 
 [password_edit_description]
-description = "Password update page description"
+description = "パスワード更新ページの説明"
 other = "Please enter your new password."
 
 [password_edit_password_label]
-description = "Password update page new password label"
+description = "パスワード更新ページの新しいパスワードラベル"
 other = "New password"
 
 [password_edit_password_hint]
-description = "Password update page password hint"
+description = "パスワード更新ページのパスワードのヒント"
 other = "Enter at least 8 characters"
 
 [password_edit_submit]
-description = "Password update page submit button"
+description = "パスワード更新ページの送信ボタン"
 other = "Reset password"
 
 [password_edit_back_to_sign_in]
-description = "Password update page back to sign in link"
+description = "パスワード更新ページのログインに戻るリンク"
 other = "Back to sign in"
 
 # ============================================
-# Validation messages (validation_*)
+# バリデーション共通メッセージ (validation_*)
 # ============================================
 
 [validation_required]
-description = "Required field validation error"
+description = "必須フィールドのバリデーションエラー"
 other = "is required"
 
 [validation_email_invalid]
-description = "Invalid email format validation error"
+description = "メールアドレス形式のバリデーションエラー"
 other = "is not a valid email address"
 
 [validation_credentials_invalid]
-description = "Sign in credentials validation error"
+description = "ログイン認証情報のバリデーションエラー"
 other = "Login failed. Email or password is incorrect"
 
 [validation_password_too_short]
-description = "Password too short validation error"
+description = "パスワードが短すぎるバリデーションエラー"
 other = "Enter at least 8 characters"
 
 [validation_password_too_long]
-description = "Password too long validation error"
+description = "パスワードが長すぎるバリデーションエラー"
 other = "Password is too long"
 
 [validation_email_already_taken]
-description = "Email already taken validation error"
+description = "メールアドレスが既に使用されているバリデーションエラー"
 other = "This email is already registered"
 
 [validation_atname_invalid_format]
-description = "Username invalid format validation error"
+description = "アットネームの形式バリデーションエラー"
 other = "Only alphanumeric characters and underscores are allowed"
 
 [validation_atname_too_long]
-description = "Username too long validation error"
+description = "アットネームが長すぎるバリデーションエラー"
 other = "Must be 20 characters or less"
 
 [validation_content_too_long]
-description = "Post content too long validation error"
+description = "投稿本文が長すぎるバリデーションエラー"
 other = "Must be 160 characters or less"
 
 [validation_atname_already_taken]
-description = "Username already taken validation error"
+description = "アットネームが既に使用されているバリデーションエラー"
 other = "This username is already taken"
 
 [validation_atname_reserved]
-description = "Username reserved validation error"
+description = "アットネームが予約されているバリデーションエラー"
 other = "This username is not available"
 
 [validation_code_incorrect_or_expired]
-description = "Confirmation code incorrect or expired validation error"
+description = "確認コードが間違っているか期限切れのバリデーションエラー"
 other = "The confirmation code is incorrect or has expired."
 
 [validation_code_invalid_format]
-description = "Confirmation code invalid format validation error"
+description = "確認コードの形式バリデーションエラー"
 other = "Please enter a 6-digit confirmation code."
 
 [validation_turnstile_failed]
-description = "Turnstile verification failed validation error"
+description = "Turnstile検証失敗のバリデーションエラー"
 other = "Robot verification failed. Please try again"
 
 [validation_rate_limit_exceeded]
-description = "Rate limit exceeded validation error"
+description = "レート制限超過のバリデーションエラー"
 other = "Too many requests. Please try again later."
 
 [validation_password_update_failed]
-description = "Password update failed validation error"
+description = "パスワード更新失敗のバリデーションエラー"
 other = "Failed to update password. Please try again."
 
 [validation_url_invalid]
-description = "Invalid URL format validation error"
+description = "URL形式のバリデーションエラー"
 other = "is not a valid URL"
 
 [validation_link_fetch_failed]
-description = "Link information fetch failure validation error"
+description = "リンク情報の取得失敗のバリデーションエラー"
 other = "Cannot fetch information from the URL"
 
 # ============================================
-# Flash messages (flash_*)
+# フラッシュメッセージ (flash_*)
 # ============================================
 
 [flash_dismiss]
-description = "Flash message dismiss button"
+description = "フラッシュメッセージの閉じるボタン"
 other = "Dismiss"
 
 [flash_sign_in_success]
-description = "Sign in success message"
+description = "ログイン成功メッセージ"
 other = "Signed in successfully."
 
 [flash_sign_out_success]
-description = "Sign out success message"
+description = "ログアウト成功メッセージ"
 other = "Signed out successfully."
 
 [flash_sign_up_email_sent]
-description = "Sign up email sent success message"
+description = "サインアップメール送信成功メッセージ"
 other = "Confirmation code sent. Please check your email."
 
 [flash_account_created]
-description = "Account created success message"
+description = "アカウント作成成功メッセージ"
 other = "Account created successfully."
 
 [flash_email_confirmed]
-description = "Email confirmed success message"
+description = "メール確認成功メッセージ"
 other = "Confirmation complete."
 
 [flash_password_reset_email_sent]
-description = "Password reset email sent success message"
+description = "パスワードリセットメール送信成功メッセージ"
 other = "Confirmation code sent. Please check your email."
 
 [flash_password_updated]
-description = "Password updated success message"
+description = "パスワード更新成功メッセージ"
 other = "Password updated. Please sign in with your new password."
 
 [flash_post_created]
-description = "Post created success message"
+description = "投稿作成成功メッセージ"
 other = "Post created."
 
 [flash_export_started]
-description = "Export started success message"
+description = "エクスポート開始成功メッセージ"
 other = "Your export has started. We will email you once it is ready."
 
 [flash_export_already_in_progress]
-description = "Message shown when starting an export is refused because one is already in progress"
+description = "エクスポート開始を拒否したメッセージ: すでに進行中のエクスポートがある"
 other = "An export is already in progress. Please wait for it to finish."
 
 [flash_export_profile_deleting]
-description = "Message shown when starting an export is refused because the profile is being deleted"
+description = "エクスポート開始を拒否したメッセージ: プロフィールの削除処理が始まっている"
 other = "Your profile is being deleted, so an export cannot be started."
 
 # ============================================
-# Error pages (error_*)
+# エラーページ (error_*)
 # ============================================
 
 [error_not_found_title]
-description = "404 error page title"
+description = "404エラーページのタイトル"
 other = "Page not found | Mewst"
 
 [error_not_found_message]
-description = "404 error page message"
+description = "404エラーページのメッセージ"
 other = "The page you are looking for could not be found"
 
 [error_not_found_back_to_home]
-description = "404 error page link to home"
+description = "404エラーページのホームリンク"
 other = "Back to home"
 
 [error_bad_gateway_title]
-description = "502 error page title"
+description = "502エラーページのタイトル"
 other = "Service Connection Error | Mewst"
 
 [error_bad_gateway_message]
-description = "502 error page message"
+description = "502エラーページのメッセージ"
 other = "Sorry, we are unable to connect to the service."
 
 [error_bad_gateway_submessage]
-description = "502 error page submessage"
+description = "502エラーページのサブメッセージ"
 other = "Please try again later."
 
 [error_bad_gateway_back_to_home]
-description = "502 error page link to home"
+description = "502エラーページのホームリンク"
 other = "Back to home"
 
 [error_export_unavailable]
-description = "Refusal message on a deployment that does not serve exports (returned as 503, so it is never rendered)"
+description = "エクスポート機能を提供していないデプロイでの拒否メッセージ (503で返すため画面には表示しない)"
 other = "The export feature is currently unavailable."
 
 # ============================================
-# Navigation (navbar_*)
+# ナビゲーション (navbar_*)
 # ============================================
 
 [navbar_home]
-description = "Accessible label for the navbar home link"
+description = "navbarのホームリンクのアクセシブルラベル"
 other = "Home"
 
 [navbar_search]
-description = "Accessible label for the navbar search link"
+description = "navbarの検索リンクのアクセシブルラベル"
 other = "Search"
 
 [navbar_new_post]
-description = "Accessible label for the navbar new post link"
+description = "navbarの新規投稿リンクのアクセシブルラベル"
 other = "New post"
 
 [navbar_notifications]
-description = "Accessible label for the navbar notifications link"
+description = "navbarの通知リンクのアクセシブルラベル"
 other = "Notifications"
 
 [navbar_profile]
-description = "Accessible label for the navbar profile link"
+description = "navbarのプロフィールリンクのアクセシブルラベル"
 other = "Profile"
 
 [navbar_top_label]
-description = "Accessible label for the top navbar (desktop) landmark"
+description = "トップnavbar (PC) のランドマークのアクセシブルラベル"
 other = "Global (desktop)"
 
 [navbar_bottom_label]
-description = "Accessible label for the bottom navbar (mobile) landmark"
+description = "ボトムnavbar (モバイル) のランドマークのアクセシブルラベル"
 other = "Global (mobile)"
 
 # ============================================
-# New post page (post_new_*)
+# 新規投稿ページ (post_new_*)
 # ============================================
 
 [post_new_title]
-description = "New post page title"
+description = "新規投稿ページのタイトル"
 other = "New post"
 
 [post_new_heading]
-description = "New post page heading (sr-only since the form label carries it visually)"
+description = "新規投稿ページの見出し (視覚上はフォームのラベルが担うためsr-only)"
 other = "New post"
 
 [post_new_content_label]
-description = "New post page content label"
+description = "新規投稿ページの本文ラベル"
 other = "What's happening?"
 
 [post_new_submit]
-description = "New post form submit button"
+description = "新規投稿フォームの送信ボタン"
 other = "Post"
 
 # ============================================
-# Settings menu page (setting_index_*)
+# 設定メニューページ (setting_index_*)
 # ============================================
 
 [setting_index_title]
-description = "Settings menu page title"
+description = "設定メニューページのタイトル"
 other = "Settings"
 
 [setting_index_heading]
-description = "Settings menu page heading"
+description = "設定メニューページの見出し"
 other = "Settings"
 
 [setting_index_menu_label]
-description = "Accessible label for the settings menu landmark (to distinguish it from the navbars)"
+description = "設定メニューのランドマークのアクセシブルラベル (navbarと区別するため)"
 other = "Settings menu"
 
 [setting_index_profile_link]
-description = "Link text from the settings menu to the profile edit page"
+description = "設定メニューからプロフィール編集ページへのリンクテキスト"
 other = "Edit profile"
 
 [setting_index_user_link]
-description = "Link text from the settings menu to the user edit page"
+description = "設定メニューからユーザー編集ページへのリンクテキスト"
 other = "Edit user"
 
 [setting_index_email_link]
-description = "Link text from the settings menu to the email change page"
+description = "設定メニューからメールアドレス変更ページへのリンクテキスト"
 other = "Change email"
 
 [setting_index_export_link]
-description = "Link text from the settings menu to the export page"
+description = "設定メニューからエクスポート画面へのリンクテキスト"
 other = "Export posts"
 
 [setting_index_sign_out]
-description = "Sign-out button on the settings menu"
+description = "設定メニューのログアウトボタン"
 other = "Sign out"
 
 [setting_index_sign_out_confirm]
-description = "Message shown in the native confirmation dialog when the settings menu sign-out button is clicked"
+description = "設定メニューのログアウトボタン押下時にネイティブ確認ダイアログへ表示する文言"
 other = "Are you sure you want to sign out?"
 
 # ============================================
-# Export page (export_show_*)
+# エクスポート画面 (export_show_*)
 # ============================================
 
 [export_show_title]
-description = "Export page title"
+description = "エクスポート画面のタイトル"
 other = "Export"
 
 [export_show_heading]
-description = "Export page heading"
+description = "エクスポート画面の見出し"
 other = "Export"
 
 [export_show_description]
-description = "Sentence on the export page describing what an export contains"
+description = "エクスポート画面で、エクスポートに何が含まれるかを説明する文"
 other = "Your posts are collected into monthly HTML files in a zip file. Creating it may take a while."
 
 [export_show_state_none]
-description = "Export page state message: no export has been created yet"
+description = "エクスポート画面の状態表示: まだエクスポートを作成していない"
 other = "You have not created an export yet."
 
 [export_show_state_in_progress]
-description = "Export page state message: the export is being created"
+description = "エクスポート画面の状態表示: エクスポートを作成中"
 other = "Your export is being created. We will email you once it is ready."
 
 [export_show_state_succeeded]
-description = "Export page state message: the export has been created"
+description = "エクスポート画面の状態表示: エクスポートの作成が完了した"
 other = "Your export is ready."
 
 [export_show_state_failed]
-description = "Export page state message: creating the export failed"
+description = "エクスポート画面の状態表示: エクスポートの作成に失敗した"
 other = "Creating your export failed. Please try again."
 
 [export_show_state_unavailable]
-description = "Export page state message: the export feature is unavailable"
+description = "エクスポート画面の状態表示: エクスポート機能を利用できない"
 other = "Export is unavailable right now."
 
 [export_show_submit]
-description = "Button on the export page that starts an export"
+description = "エクスポート画面のエクスポート開始ボタン"
 other = "Create an export"
 
 [export_show_download_link]
-description = "Link text on the export page for downloading the latest export"
+description = "エクスポート画面から最新のエクスポートをダウンロードするリンクテキスト"
 other = "Download your export"
 
 [export_show_previous_download_link]
-description = "Link text on the export page for downloading the previous export while a newer one is being created or has failed"
+description = "エクスポート画面から、より新しいエクスポートが作成中または失敗のときに、以前のエクスポートをダウンロードするリンクテキスト"
 other = "Download your previous export"
 
 # ============================================
-# Back link (back_link)
+# 戻るリンク (back_link)
 # ============================================
 
 [back_link]
-description = "Link text for the back affordance (BackLink component)"
+description = "戻る導線 (BackLinkコンポーネント) のリンクテキスト"
 other = "Back"
 
 # ============================================
-# Skip link (skip_to_main_content)
+# スキップリンク (skip_to_main_content)
 # ============================================
 
 [skip_to_main_content]
-description = "Text for the skip link that jumps to the main content (WCAG 2.4.1)"
+description = "メインコンテンツへ移動するスキップリンクのテキスト (WCAG 2.4.1)"
 other = "Skip to main content"
 
 # ============================================
-# Link card (link_*)
+# リンクカード (link_*)
 # ============================================
 
 [link_new_submit]
-description = "Add link card prompt submit button"
+description = "リンクカード追加プロンプトの送信ボタン"
 other = "Add link card: {{.HostAndPath}}"
 
 [link_create_remove]
-description = "Accessible label for the link card remove button"
+description = "リンクカード削除ボタンのアクセシブルラベル"
 other = "Remove link card"
 
 # ============================================
-# Footer (footer_*)
+# フッター (footer_*)
 # ============================================
 
 [footer_opens_in_new_tab]
-description = "Visually hidden hint telling users that a footer link opens in a new tab"
+description = "フッターの外部リンクが新規タブで開くことを伝える、視覚的に隠したヒント"
 other = "Opens in new tab"
 
 # ============================================
-# Export archive (export_archive_*)
+# エクスポートアーカイブ (export_archive_*)
 # ============================================
 
 [export_archive_index_title]
-description = "Title of the export zip's table of contents (index.html)"
+description = "エクスポートzipの目次 (index.html) のtitle"
 other = "Post export - Mewst"
 
 [export_archive_index_heading]
-description = "Heading of the export zip's table of contents"
+description = "エクスポートzipの目次の見出し"
 other = "Post export"
 
 [export_archive_index_description]
-description = "Explains that the export zip splits posts into one file per month"
+description = "エクスポートzipの目次で、ポストが月ごとのファイルに分かれていることを伝える説明"
 other = "Your posts are split into one file per month. Choose the month you want to read."
 
 [export_archive_index_empty]
-description = "Tells the reader that the export zip contains no posts"
+description = "エクスポートzipの目次で、含まれるポストが1件も無いことを伝える文"
 other = "This export contains no posts."
 
 [export_archive_index_month_link]
-description = "Text of the link from the export zip's table of contents to a month's file"
+description = "エクスポートzipの目次から、その月のファイルへ移動するリンクのテキスト"
 other = "Posts from {{.MonthLabel}}"
 
 [export_archive_index_post_count]
-description = "Number of posts a month holds, shown in the export zip's table of contents"
+description = "エクスポートzipの目次に表示する、その月のポスト件数"
 one = "{{.Count}} post"
 other = "{{.Count}} posts"
 
 [export_archive_month_label]
-description = "How a calendar month is written inside the export zip"
+description = "エクスポートzip内での暦月の表記"
 other = "{{.MonthName}} {{.Year}}"
 
 [export_archive_month_title]
-description = "Title of a month's file (posts/2026-07.html) inside the export zip"
+description = "エクスポートzipの月ごとのファイル (posts/2026-07.html) のtitle"
 other = "Posts from {{.MonthLabel}} - Mewst"
 
 [export_archive_month_heading]
-description = "Heading of a month's file inside the export zip"
+description = "エクスポートzipの月ごとのファイルの見出し"
 other = "Posts from {{.MonthLabel}}"
 
 [export_archive_post_published_at]
-description = "Published time of a post, shown in a month's file inside the export zip"
+description = "エクスポートzipの月ごとのファイルに表示する、ポストの投稿日時"
 other = "{{.MonthName}} {{.Day}}, {{.Year}} {{.Time}}"
 
 [export_archive_format_comment]
-description = "HTML comment at the top of a month's file inside the export zip, documenting the output contract of a post"
+description = "エクスポートzipの月ごとのファイルの先頭に置く、ポストの出力契約を説明するHTMLコメント"
 other = "Mewst export format v{{.Version}}: each post is an article.h-entry. Its ID is in the data-post-id attribute, its published time in the datetime attribute of time.dt-published (RFC 3339), and its body in .e-content."
 
 # ============================================
-# Export completion email (export_completed_email_*)
+# エクスポート完了メール (export_completed_email_*)
 # ============================================
 
 [export_completed_email_subject]
-description = "Subject of the export completion notification email"
+description = "エクスポート完了通知メールの件名"
 other = "[Mewst] Your export is ready"

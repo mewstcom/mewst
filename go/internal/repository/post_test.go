@@ -30,35 +30,35 @@ func TestPostRepository_Create(t *testing.T) {
 		OauthApplicationID: oauthApplicationID,
 	})
 	if err != nil {
-		t.Fatalf("Create() error = %v", err)
+		t.Fatalf("Create()のエラー = %v", err)
 	}
 
 	if post.ProfileID != profileID {
-		t.Errorf("post.ProfileID = %v, want %v", post.ProfileID, profileID)
+		t.Errorf("post.ProfileID = %v、期待値 = %v", post.ProfileID, profileID)
 	}
 	if post.Content != "hello world" {
-		t.Errorf("post.Content = %v, want hello world", post.Content)
+		t.Errorf("post.Content = %v、期待値 = hello world", post.Content)
 	}
 	if post.OauthApplicationID != oauthApplicationID {
-		t.Errorf("post.OauthApplicationID = %v, want %v", post.OauthApplicationID, oauthApplicationID)
+		t.Errorf("post.OauthApplicationID = %v、期待値 = %v", post.OauthApplicationID, oauthApplicationID)
 	}
 	if !post.PublishedAt.Equal(publishedAt) {
-		t.Errorf("post.PublishedAt = %v, want %v", post.PublishedAt, publishedAt)
+		t.Errorf("post.PublishedAt = %v、期待値 = %v", post.PublishedAt, publishedAt)
 	}
 	if post.DiscardedAt != nil {
-		t.Errorf("post.DiscardedAt = %v, want nil", post.DiscardedAt)
+		t.Errorf("post.DiscardedAt = %v、期待値 = nil", post.DiscardedAt)
 	}
 
 	// 作成した投稿がDBに保存され、FindByIDで取得できることを確認
 	found, err := repo.FindByID(ctx, post.ID)
 	if err != nil {
-		t.Fatalf("FindByID() error = %v", err)
+		t.Fatalf("FindByID()のエラー = %v", err)
 	}
 	if found == nil {
-		t.Fatal("FindByID() = nil, want post")
+		t.Fatal("FindByID() = nil、ポストを期待")
 	}
 	if found.ID != post.ID {
-		t.Errorf("found.ID = %v, want %v", found.ID, post.ID)
+		t.Errorf("found.ID = %v、期待値 = %v", found.ID, post.ID)
 	}
 }
 
@@ -83,25 +83,25 @@ func TestPostRepository_FindByID(t *testing.T) {
 	t.Run("存在する投稿を取得できる", func(t *testing.T) {
 		post, err := repo.FindByID(ctx, postID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 		if post == nil {
-			t.Fatal("FindByID() = nil, want post")
+			t.Fatal("FindByID() = nil、ポストを期待")
 		}
 		if post.ID != postID {
-			t.Errorf("post.ID = %v, want %v", post.ID, postID)
+			t.Errorf("post.ID = %v、期待値 = %v", post.ID, postID)
 		}
 		if post.ProfileID != profileID {
-			t.Errorf("post.ProfileID = %v, want %v", post.ProfileID, profileID)
+			t.Errorf("post.ProfileID = %v、期待値 = %v", post.ProfileID, profileID)
 		}
 		if post.Content != "findbyid content" {
-			t.Errorf("post.Content = %v, want findbyid content", post.Content)
+			t.Errorf("post.Content = %v、期待値 = findbyid content", post.Content)
 		}
 		if post.OauthApplicationID != oauthApplicationID {
-			t.Errorf("post.OauthApplicationID = %v, want %v", post.OauthApplicationID, oauthApplicationID)
+			t.Errorf("post.OauthApplicationID = %v、期待値 = %v", post.OauthApplicationID, oauthApplicationID)
 		}
 		if !post.PublishedAt.Equal(publishedAt) {
-			t.Errorf("post.PublishedAt = %v, want %v", post.PublishedAt, publishedAt)
+			t.Errorf("post.PublishedAt = %v、期待値 = %v", post.PublishedAt, publishedAt)
 		}
 	})
 
@@ -117,10 +117,10 @@ func TestPostRepository_FindByID(t *testing.T) {
 
 		post, err := repo.FindByID(ctx, nonExistentID)
 		if err != nil {
-			t.Errorf("FindByID() error = %v, want nil", err)
+			t.Errorf("FindByID()のエラー = %v、期待値 = nil", err)
 		}
 		if post != nil {
-			t.Errorf("FindByID() post = %v, want nil", post)
+			t.Errorf("FindByID()のpost = %v、期待値 = nil", post)
 		}
 	})
 }

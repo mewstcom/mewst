@@ -11,16 +11,10 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// LogoLink wraps its children in an anchor to the site root, labelled as the
-// Mewst brand. It owns only the link itself (destination and accessible name),
-// leaving the logo presentation to each caller: the auth screens frame the logo
-// in a colored tile (see LogoTile), while the top navbar renders a bare,
-// theme-aware glyph.
-//
-// [Ja] LogoLink は子要素を、サイトルートへのリンク (Mewst のブランド名を
-// aria-label に持つ) で包む。担うのはリンクそのもの (遷移先とアクセシブルな
+// LogoLinkは子要素を、サイトルートへのリンク (Mewstのブランド名を
+// aria-labelに持つ) で包む。担うのはリンクそのもの (遷移先とアクセシブルな
 // 名前) だけで、ロゴの見た目は各呼び出し元に委ねる。認証画面は色付きタイルに
-// ロゴを収め (LogoTile を参照)、トップ navbar はテーマに追従する素のグリフを
+// ロゴを収め (LogoTileを参照)、トップnavbarはテーマに追従する素のグリフを
 // 描画する。
 func LogoLink() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -50,7 +44,7 @@ func LogoLink() templ.Component {
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(templates.RootPath())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/logo.templ`, Line: 17, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/logo.templ`, Line: 11, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -72,12 +66,7 @@ func LogoLink() templ.Component {
 	})
 }
 
-// LogoTile renders the brand logo inside a primary-colored rounded tile that
-// links to the site root. It is the shared logo treatment for the auth screens
-// (sign in / sign up / password / password reset / email confirmation), where
-// the tile sets the glyph off from the plain page background.
-//
-// [Ja] LogoTile は primary 色の角丸タイルにブランドロゴを収め、サイトルートへ
+// LogoTileはprimary色の角丸タイルにブランドロゴを収め、サイトルートへ
 // リンクする。認証系の画面 (ログイン / サインアップ / パスワード /
 // パスワードリセット / メール確認) で共有するロゴ表現で、タイルによって素の
 // ページ背景からグリフを際立たせる。

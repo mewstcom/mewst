@@ -1,4 +1,4 @@
-// Package clientip はクライアントIPアドレスの取得機能を提供します
+// Package clientipはクライアントIPアドレスの取得機能を提供します
 package clientip
 
 import (
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// GetClientIP はHTTPリクエストからクライアントのIPアドレスを取得します
+// GetClientIPはHTTPリクエストからクライアントのIPアドレスを取得します
 //
 // 優先順位:
 // 1. CF-Connecting-IP (Cloudflareが設定する実際のクライアントIP)

@@ -11,18 +11,11 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// SkipLink renders the "skip to main content" link that every layout places as
-// its first focusable element (WCAG 2.4.1). It targets #main so keyboard and
-// screen-reader users can bypass preceding chrome such as the navbar and jump
-// straight to the main content. It stays visually hidden until focused, then
-// surfaces at the top-left inside the safe area. Centralizing the markup keeps the skip link
-// consistent across the Simple, Default, and Centered layouts.
-//
-// [Ja] SkipLink は全レイアウトが最初のフォーカス可能要素として置く
-// 「メインコンテンツへスキップ」リンクを描画する (WCAG 2.4.1)。#main を指し、
-// navbar など前段の chrome を飛ばしてメインコンテンツへ直接移動できるようにする。
-// フォーカスされるまで視覚的に隠れ、フォーカス時に safe area 内の左上へ現れる。マークアップを
-// 1 つのコンポーネントに集約し、Simple・Default・Centered の各レイアウトで
+// SkipLinkは全レイアウトが最初のフォーカス可能要素として置く
+// 「メインコンテンツへスキップ」リンクを描画する (WCAG 2.4.1)。#mainを指し、
+// navbarなど前段のchromeを飛ばしてメインコンテンツへ直接移動できるようにする。
+// フォーカスされるまで視覚的に隠れ、フォーカス時にsafe area内の左上へ現れる。マークアップを
+// 1つのコンポーネントに集約し、Simple・Default・Centeredの各レイアウトで
 // スキップリンクを一貫させる。
 func SkipLink() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -52,7 +45,7 @@ func SkipLink() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templates.T(ctx, "skip_to_main_content"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/skip_link.templ`, Line: 23, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/skip_link.templ`, Line: 16, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

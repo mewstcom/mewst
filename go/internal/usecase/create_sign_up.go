@@ -11,14 +11,14 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// CreateSignUpUsecase はサインアップのユースケース
+// CreateSignUpUsecaseはサインアップのユースケース
 type CreateSignUpUsecase struct {
 	signUpValidator  *validator.SignUpCreateValidator
 	emailConfirmRepo *repository.EmailConfirmationRepository
 	dispatcher       *dispatcher.Dispatcher
 }
 
-// NewCreateSignUpUsecase は CreateSignUpUsecase を生成する
+// NewCreateSignUpUsecaseはCreateSignUpUsecaseを生成する
 func NewCreateSignUpUsecase(
 	signUpValidator *validator.SignUpCreateValidator,
 	emailConfirmRepo *repository.EmailConfirmationRepository,
@@ -31,18 +31,18 @@ func NewCreateSignUpUsecase(
 	}
 }
 
-// CreateSignUpInput はサインアップの入力パラメータ
+// CreateSignUpInputはサインアップの入力パラメータ
 type CreateSignUpInput struct {
 	Email  string
 	Locale string
 }
 
-// CreateSignUpOutput はサインアップの出力パラメータ
+// CreateSignUpOutputはサインアップの出力パラメータ
 type CreateSignUpOutput struct {
 	EmailConfirmation *model.EmailConfirmation
 }
 
-// Execute はサインアップ処理を実行する
+// Executeはサインアップ処理を実行する
 func (uc *CreateSignUpUsecase) Execute(ctx context.Context, input CreateSignUpInput) (*CreateSignUpOutput, error) {
 	// 1. バリデーション (トランザクション外)
 	if err := uc.signUpValidator.Validate(ctx, validator.SignUpCreateValidatorInput{
@@ -55,7 +55,7 @@ func (uc *CreateSignUpUsecase) Execute(ctx context.Context, input CreateSignUpIn
 	return uc.createSignUp(ctx, input)
 }
 
-// createSignUp は確認コードを生成し、メール確認レコードの作成とメール送信ジョブのエンキューを行う
+// createSignUpは確認コードを生成し、メール確認レコードの作成とメール送信ジョブのエンキューを行う
 func (uc *CreateSignUpUsecase) createSignUp(ctx context.Context, input CreateSignUpInput) (*CreateSignUpOutput, error) {
 	code, err := generateConfirmationCode()
 	if err != nil {
@@ -73,7 +73,7 @@ func (uc *CreateSignUpUsecase) createSignUp(ctx context.Context, input CreateSig
 
 	// メール送信ジョブをエンキュー。
 	// 失敗時はログのみ残して正常完了する: 確認レコードは作成済みのためユーザーは再申請で回復可能であり、
-	// ジョブキュー障害で 500 を返すのは過剰な扱いになるため。
+	// ジョブキュー障害で500を返すのは過剰な扱いになるため。
 	if err := uc.dispatcher.EnqueueEmailConfirmation(ctx, input.Email, code, input.Locale); err != nil {
 		slog.ErrorContext(ctx, "メール送信ジョブのエンキューに失敗しました",
 			"email", input.Email,

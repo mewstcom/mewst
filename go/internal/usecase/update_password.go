@@ -9,19 +9,19 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// UpdatePasswordInput はパスワード更新の入力データ
+// UpdatePasswordInputはパスワード更新の入力データ
 type UpdatePasswordInput struct {
 	Email    string
 	Password string
 }
 
-// UpdatePasswordUsecase はパスワード更新のユースケース
+// UpdatePasswordUsecaseはパスワード更新のユースケース
 type UpdatePasswordUsecase struct {
 	passwordValidator *validator.PasswordUpdateValidator
 	userRepo          *repository.UserRepository
 }
 
-// NewUpdatePasswordUsecase は新しいUpdatePasswordUsecaseを作成する
+// NewUpdatePasswordUsecaseは新しいUpdatePasswordUsecaseを作成する
 func NewUpdatePasswordUsecase(
 	passwordValidator *validator.PasswordUpdateValidator,
 	userRepo *repository.UserRepository,
@@ -32,9 +32,9 @@ func NewUpdatePasswordUsecase(
 	}
 }
 
-// Execute はパスワード更新を実行する。
-// バリデーション → ハッシュ化 → UPDATE の 1 ステップ書き込みで完結するため、
-// オーケストレーションすべき対象がなく Execute 内で完結させている。
+// Executeはパスワード更新を実行する。
+// バリデーション → ハッシュ化 → UPDATEの1ステップ書き込みで完結するため、
+// オーケストレーションすべき対象がなくExecute内で完結させている。
 func (uc *UpdatePasswordUsecase) Execute(ctx context.Context, input UpdatePasswordInput) error {
 	if err := uc.passwordValidator.Validate(ctx, validator.PasswordUpdateValidatorInput{
 		Password: input.Password,

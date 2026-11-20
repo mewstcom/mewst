@@ -24,7 +24,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// mockTurnstile はテスト用のTurnstile検証モック
+// mockTurnstileはテスト用のTurnstile検証モック
 type mockTurnstile struct {
 	shouldSucceed bool
 }
@@ -33,14 +33,14 @@ func (m *mockTurnstile) Verify(_ context.Context, _ string) (bool, error) {
 	return m.shouldSucceed, nil
 }
 
-// mockInserter はテスト用のモック inserter
+// mockInserterはテスト用のモックinserter
 type mockInserter struct{}
 
 func (m *mockInserter) Insert(_ context.Context, _ river.JobArgs, _ *river.InsertOpts) (*rivertype.JobInsertResult, error) {
 	return &rivertype.JobInsertResult{}, nil
 }
 
-// setupTestHandler はテスト用のハンドラーとテストデータをセットアップする
+// setupTestHandlerはテスト用のハンドラーとテストデータをセットアップする
 func setupTestHandler(t *testing.T, tx *sql.Tx, turnstileSuccess bool) (*handler.Handler, *config.Config) {
 	t.Helper()
 
@@ -85,7 +85,7 @@ func TestNew(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにサインアップフォームが含まれているか確認
@@ -118,7 +118,7 @@ func TestNew_ContainsSignInLink(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	// レスポンスにログインリンクが含まれているか確認
@@ -153,13 +153,13 @@ func TestCreate_Success(t *testing.T) {
 
 	// リダイレクトを検証
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
 	// リダイレクト先を検証
 	location := rr.Header().Get("Location")
 	if location != "/email_confirmation" {
-		t.Errorf("リダイレクト先が不正: got %v, want /email_confirmation", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /email_confirmation", location)
 	}
 
 	// email_confirmation_idクッキーが設定されているか確認
@@ -212,7 +212,7 @@ func TestCreate_EmptyEmail(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// バリデーションエラーが表示されているか確認
@@ -246,7 +246,7 @@ func TestCreate_InvalidEmail(t *testing.T) {
 
 	// ステータスコードを検証 (422 Unprocessable Entity)
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認
@@ -279,7 +279,7 @@ func TestCreate_TurnstileFailed(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// Turnstileエラーメッセージが表示されているか確認
@@ -330,7 +330,7 @@ func TestCreate_RateLimitExceeded(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// レート制限エラーメッセージが表示されているか確認
@@ -356,7 +356,7 @@ func TestNew_WithBackParameter(t *testing.T) {
 	h.New(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusOK)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusOK)
 	}
 
 	body := rr.Body.String()
@@ -391,14 +391,14 @@ func TestCreate_SuccessWithBackParameter(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
-	// /email_confirmation?back=%2Fsettings へリダイレクトすることを検証
+	// /email_confirmation?back=%2Fsettingsへリダイレクトすることを検証
 	location := rr.Header().Get("Location")
 	wantLocation := "/email_confirmation?back=%2Fsettings"
 	if location != wantLocation {
-		t.Errorf("リダイレクト先が不正: got %v, want %v", location, wantLocation)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = %v", location, wantLocation)
 	}
 }
 
@@ -425,13 +425,13 @@ func TestCreate_SuccessWithUnsafeBackParameter(t *testing.T) {
 	h.Create(rr, req)
 
 	if rr.Code != http.StatusFound {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusFound)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusFound)
 	}
 
-	// 危険な back URL は破棄して /email_confirmation へ素のリダイレクト
+	// 危険なback URLは破棄して /email_confirmationへ素のリダイレクト
 	location := rr.Header().Get("Location")
 	if location != "/email_confirmation" {
-		t.Errorf("リダイレクト先が不正: got %v, want /email_confirmation", location)
+		t.Errorf("リダイレクト先が不正: 実測値 = %v、期待値 = /email_confirmation", location)
 	}
 }
 
@@ -465,7 +465,7 @@ func TestCreate_EmailAlreadyTaken(t *testing.T) {
 
 	// ステータスコードを検証
 	if rr.Code != http.StatusUnprocessableEntity {
-		t.Errorf("ステータスコードが不正: got %v, want %v", rr.Code, http.StatusUnprocessableEntity)
+		t.Errorf("ステータスコードが不正: 実測値 = %v、期待値 = %v", rr.Code, http.StatusUnprocessableEntity)
 	}
 
 	// エラーメッセージが表示されているか確認

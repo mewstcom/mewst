@@ -27,16 +27,16 @@ func TestGetLinkUsecase_Execute_Found(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("Execute() error = %v", err)
+		t.Fatalf("Execute()のエラー = %v", err)
 	}
 	if result == nil || result.Link == nil {
-		t.Fatal("Link should not be nil")
+		t.Fatal("Link = nil、非nilを期待")
 	}
 	if result.Link.ID != linkID {
-		t.Errorf("ID = %v, want %v", result.Link.ID, linkID)
+		t.Errorf("ID = %v、期待値 = %v", result.Link.ID, linkID)
 	}
 	if result.Link.Title != "Found Link" {
-		t.Errorf("Title = %v, want %v", result.Link.Title, "Found Link")
+		t.Errorf("Title = %v、期待値 = %v", result.Link.Title, "Found Link")
 	}
 }
 
@@ -46,9 +46,7 @@ func TestGetLinkUsecase_Execute_NotFound(t *testing.T) {
 	_, tx := testutil.SetupTx(t)
 	ctx := context.Background()
 
-	// An unknown URL is not an error: the usecase reports it as a nil Link so
-	// the caller can fall back.
-	// [Ja] 未知の URL はエラーではなく Link = nil として返り、呼び出し側が
+	// 未知のURLはエラーではなくLink = nilとして返り、呼び出し側が
 	// フォールバックできること。
 	linkRepo := repository.NewLinkRepository(testutil.QueriesWithTx(tx))
 	uc := usecase.NewGetLinkUsecase(linkRepo)
@@ -57,12 +55,12 @@ func TestGetLinkUsecase_Execute_NotFound(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("Execute() error = %v", err)
+		t.Fatalf("Execute()のエラー = %v", err)
 	}
 	if result == nil {
-		t.Fatal("Execute() result should not be nil")
+		t.Fatal("Execute()の結果 = nil、非nilを期待")
 	}
 	if result.Link != nil {
-		t.Errorf("Link = %+v, want nil", result.Link)
+		t.Errorf("Link = %+v、期待値 = nil", result.Link)
 	}
 }

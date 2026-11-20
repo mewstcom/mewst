@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Session はセッションのドメインモデル
+// Sessionはセッションのドメインモデル
 type Session struct {
 	ID         SessionID
 	ActorID    ActorID

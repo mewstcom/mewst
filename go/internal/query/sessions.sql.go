@@ -74,11 +74,8 @@ type GetAuthByTokenRow struct {
 	Profile Profile `db:"profile"`
 }
 
-// Resolves a session token to the associated actor, user, and profile in a
-// single JOIN so authenticated-page middleware can avoid issuing four separate
-// queries (session, actor, user, profile) per request.
-// [Ja] セッショントークンに紐づく actor / user / profile を 1 度の JOIN で
-// 取得する。認証後ページの middleware が 1 リクエストあたり 4 クエリ
+// セッショントークンに紐づくactor / user / profileを1度のJOINで
+// 取得する。認証後ページのmiddlewareが1リクエストあたり4クエリ
 // (session, actor, user, profile) を発行するのを避けるため。
 func (q *Queries) GetAuthByToken(ctx context.Context, token string) (GetAuthByTokenRow, error) {
 	row := q.db.QueryRowContext(ctx, getAuthByToken, token)

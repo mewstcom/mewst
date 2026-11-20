@@ -12,7 +12,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/validator"
 )
 
-// setupCreateAccountTest はテスト用のユースケースとリポジトリをセットアップする
+// setupCreateAccountTestはテスト用のユースケースとリポジトリをセットアップする
 func setupCreateAccountTest(t *testing.T) (
 	*usecase.CreateAccountUsecase,
 	*repository.UserRepository,
@@ -94,83 +94,83 @@ func TestCreateAccountUsecase_Execute(t *testing.T) {
 
 			result, err := uc.Execute(ctx, tt.input)
 			if err != nil {
-				t.Fatalf("Execute() error = %v", err)
+				t.Fatalf("Execute()のエラー = %v", err)
 			}
 
 			if result == nil {
-				t.Fatal("Execute() result should not be nil")
+				t.Fatal("Execute()の結果 = nil、非nilを期待")
 			}
 
 			if result.Actor == nil {
-				t.Fatal("Actor should not be nil")
+				t.Fatal("Actor = nil、非nilを期待")
 			}
 
 			// Actorの検証
 			actor, err := actorRepo.FindByID(ctx, result.Actor.ID)
 			if err != nil {
-				t.Fatalf("FindByID() error = %v", err)
+				t.Fatalf("FindByID()のエラー = %v", err)
 			}
 
 			if actor.UserID != result.Actor.UserID {
-				t.Errorf("Actor.UserID = %v, want %v", actor.UserID, result.Actor.UserID)
+				t.Errorf("Actor.UserID = %v、期待値 = %v", actor.UserID, result.Actor.UserID)
 			}
 
 			if actor.ProfileID != result.Actor.ProfileID {
-				t.Errorf("Actor.ProfileID = %v, want %v", actor.ProfileID, result.Actor.ProfileID)
+				t.Errorf("Actor.ProfileID = %v、期待値 = %v", actor.ProfileID, result.Actor.ProfileID)
 			}
 
 			// Userの検証
 			user, err := userRepo.FindByID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("FindByID() error = %v", err)
+				t.Fatalf("FindByID()のエラー = %v", err)
 			}
 
 			if user.Email != tt.input.Email {
-				t.Errorf("User.Email = %v, want %v", user.Email, tt.input.Email)
+				t.Errorf("User.Email = %v、期待値 = %v", user.Email, tt.input.Email)
 			}
 
 			if user.Locale != tt.input.Locale {
-				t.Errorf("User.Locale = %v, want %v", user.Locale, tt.input.Locale)
+				t.Errorf("User.Locale = %v、期待値 = %v", user.Locale, tt.input.Locale)
 			}
 
 			if user.TimeZone != tt.input.TimeZone {
-				t.Errorf("User.TimeZone = %v, want %v", user.TimeZone, tt.input.TimeZone)
+				t.Errorf("User.TimeZone = %v、期待値 = %v", user.TimeZone, tt.input.TimeZone)
 			}
 
 			// Profileの検証
 			profile, err := profileRepo.FindByID(ctx, result.Actor.ProfileID)
 			if err != nil {
-				t.Fatalf("FindByID() error = %v", err)
+				t.Fatalf("FindByID()のエラー = %v", err)
 			}
 
 			if profile.Atname != tt.input.Atname {
-				t.Errorf("Profile.Atname = %v, want %v", profile.Atname, tt.input.Atname)
+				t.Errorf("Profile.Atname = %v、期待値 = %v", profile.Atname, tt.input.Atname)
 			}
 
 			if profile.OwnerType != model.ProfileOwnerTypeUser {
-				t.Errorf("Profile.OwnerType = %v, want %v", profile.OwnerType, model.ProfileOwnerTypeUser)
+				t.Errorf("Profile.OwnerType = %v、期待値 = %v", profile.OwnerType, model.ProfileOwnerTypeUser)
 			}
 
 			if profile.AvatarKind != usecase.DefaultAvatarKind {
-				t.Errorf("Profile.AvatarKind = %v, want %v", profile.AvatarKind, usecase.DefaultAvatarKind)
+				t.Errorf("Profile.AvatarKind = %v、期待値 = %v", profile.AvatarKind, usecase.DefaultAvatarKind)
 			}
 
 			if profile.JoinedAt.IsZero() {
-				t.Error("Profile.JoinedAt should not be zero")
+				t.Error("Profile.JoinedAt = ゼロ値、非ゼロ値を期待")
 			}
 
 			// UserProfileの検証
 			userProfile, err := userProfileRepo.FindByUserID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("FindByUserID() error = %v", err)
+				t.Fatalf("FindByUserID()のエラー = %v", err)
 			}
 
 			if userProfile.UserID != result.Actor.UserID {
-				t.Errorf("UserProfile.UserID = %v, want %v", userProfile.UserID, result.Actor.UserID)
+				t.Errorf("UserProfile.UserID = %v、期待値 = %v", userProfile.UserID, result.Actor.UserID)
 			}
 
 			if userProfile.ProfileID != result.Actor.ProfileID {
-				t.Errorf("UserProfile.ProfileID = %v, want %v", userProfile.ProfileID, result.Actor.ProfileID)
+				t.Errorf("UserProfile.ProfileID = %v、期待値 = %v", userProfile.ProfileID, result.Actor.ProfileID)
 			}
 		})
 	}
@@ -220,29 +220,29 @@ func TestCreateAccountUsecase_Execute_HashesPassword(t *testing.T) {
 			})
 
 			if err != nil {
-				t.Fatalf("Execute() error = %v", err)
+				t.Fatalf("Execute()のエラー = %v", err)
 			}
 
 			user, err := userRepo.FindByID(ctx, result.Actor.UserID)
 			if err != nil {
-				t.Fatalf("FindByID() error = %v", err)
+				t.Fatalf("FindByID()のエラー = %v", err)
 			}
 
 			// パスワードが平文で保存されていないことを確認
 			if user.PasswordDigest == tt.password {
-				t.Error("Password should be hashed, not stored as plain text")
+				t.Error("パスワードが平文のまま保存されている (ハッシュ化を期待)")
 			}
 
 			// bcryptでハッシュ化されていることを確認
 			err = auth.CheckPassword(user.PasswordDigest, tt.password)
 			if err != nil {
-				t.Errorf("Password should be verifiable with bcrypt: %v", err)
+				t.Errorf("パスワードがbcryptで検証できることを期待したが、できなかった: %v", err)
 			}
 
 			// 間違ったパスワードでは検証できないことを確認
 			err = auth.CheckPassword(user.PasswordDigest, "wrongPassword")
 			if err == nil {
-				t.Error("Wrong password should not be verifiable")
+				t.Error("誤ったパスワードで検証が通らないことを期待したが、通った")
 			}
 		})
 	}

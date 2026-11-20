@@ -21,7 +21,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 
 	// テスト用メール確認レコードを作成
 	emailConfirmationID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("usecase-active-email-confirmation@example.com").
 		WithEvent("password_reset").
 		WithCode("123456").
 		Build()
@@ -34,23 +34,23 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Success(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("Execute() error = %v", err)
+		t.Fatalf("Execute()のエラー = %v", err)
 	}
 
 	if result == nil {
-		t.Fatal("Execute() result should not be nil")
+		t.Fatal("Execute()の結果 = nil、非nilを期待")
 	}
 
 	if result.EmailConfirmation == nil {
-		t.Fatal("EmailConfirmation should not be nil")
+		t.Fatal("EmailConfirmation = nil、非nilを期待")
 	}
 
-	if result.EmailConfirmation.Email != "test@example.com" {
-		t.Errorf("Email = %v, want %v", result.EmailConfirmation.Email, "test@example.com")
+	if result.EmailConfirmation.Email != "usecase-active-email-confirmation@example.com" {
+		t.Errorf("Email = %v、期待値 = %v", result.EmailConfirmation.Email, "usecase-active-email-confirmation@example.com")
 	}
 
 	if result.EmailConfirmation.SucceededAt != nil {
-		t.Error("SucceededAt should be nil for active email confirmation")
+		t.Error("有効なメール確認のSucceededAt = 非nil、nilを期待")
 	}
 }
 
@@ -68,15 +68,15 @@ func TestGetActiveEmailConfirmationUsecase_Execute_NotFound(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Fatal("Execute() should return error for non-existent ID")
+		t.Fatal("存在しないIDでExecute()がエラーを返すことを期待したが、nilだった")
 	}
 
 	ae := model.AsAppError(err)
 	if ae == nil {
-		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+		t.Fatalf("Execute()のエラー = %v、*model.AppErrorを期待", err)
 	}
 	if ae.Code != model.AppErrCodeResourceNotFound {
-		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
+		t.Errorf("Execute()のエラーコード = %d、期待値 = %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }
 
@@ -89,7 +89,7 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 	// 期限切れのメール確認レコードを作成 (16分前)
 	expiredTime := time.Now().Add(-16 * time.Minute)
 	emailConfirmationID := testutil.NewEmailConfirmationBuilder(t, tx).
-		WithEmail("test@example.com").
+		WithEmail("usecase-active-email-confirmation-expired@example.com").
 		WithEvent("password_reset").
 		WithCode("123456").
 		WithCreatedAt(expiredTime).
@@ -102,14 +102,14 @@ func TestGetActiveEmailConfirmationUsecase_Execute_Expired(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Fatal("Execute() should return error for expired email confirmation")
+		t.Fatal("期限切れのメール確認でExecute()がエラーを返すことを期待したが、nilだった")
 	}
 
 	ae := model.AsAppError(err)
 	if ae == nil {
-		t.Fatalf("Execute() error should be *model.AppError, got %v", err)
+		t.Fatalf("Execute()のエラー = %v、*model.AppErrorを期待", err)
 	}
 	if ae.Code != model.AppErrCodeResourceNotFound {
-		t.Errorf("Execute() error code = %d, want %d", ae.Code, model.AppErrCodeResourceNotFound)
+		t.Errorf("Execute()のエラーコード = %d、期待値 = %d", ae.Code, model.AppErrCodeResourceNotFound)
 	}
 }

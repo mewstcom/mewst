@@ -23,10 +23,7 @@
   --app-success: var(--color-green-600);
   --app-warning-foreground: var(--color-black);
   --app-warning: var(--color-yellow-600);
-  /* Link colors. Muted links use explicit neutral tokens that keep AA contrast
-     on the app's custom light and dark backgrounds.
-
-     [Ja] リンク色。muted リンクはアプリ固有のライト / ダーク背景上で AA の
+  /* リンク色。mutedリンクはアプリ固有のライト / ダーク背景上でAAの
      コントラストを保つ明示的な無彩色トークンを使う。 */
   --app-link-foreground: var(--foreground);
   --app-link-primary-foreground: var(--color-blue-600);
@@ -99,10 +96,8 @@
 }
 
 @utility link-* {
-  /* We want to write `@apply link-bare-*;` here, but that breaks utilities
-     like .link-bare-muted-foreground, so the shared declarations are repeated.
-     [Ja] ここで `@apply link-bare-*;` と書きたいが、そうすると
-     .link-bare-muted-foreground などが効かなくなるため共通の宣言を再掲している。 */
+  /* ここで `@apply link-bare-*;` と書きたいが、そうすると
+     .link-bare-muted-foregroundなどが効かなくなるため共通の宣言を再掲している。 */
   @apply transition-colors duration-100;
   @apply text-[--value(--color-link-*)] hover:text-[--value(--color-link-*)]/85;
   @apply underline underline-offset-4;

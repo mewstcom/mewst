@@ -11,7 +11,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates"
 )
 
-// BadGateway は502エラーページを表示する
+// BadGatewayは502エラーページを表示する
 func BadGateway() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

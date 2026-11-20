@@ -28,20 +28,20 @@ func TestUserRepository_FindByID(t *testing.T) {
 	t.Run("存在するユーザーを取得できる", func(t *testing.T) {
 		user, err := repo.FindByID(ctx, userID)
 		if err != nil {
-			t.Fatalf("FindByID() error = %v", err)
+			t.Fatalf("FindByID()のエラー = %v", err)
 		}
 
 		if user.ID != userID {
-			t.Errorf("user.ID = %v, want %v", user.ID, userID)
+			t.Errorf("user.ID = %v、期待値 = %v", user.ID, userID)
 		}
 		if user.Email != "findbyid@example.com" {
-			t.Errorf("user.Email = %v, want findbyid@example.com", user.Email)
+			t.Errorf("user.Email = %v、期待値 = findbyid@example.com", user.Email)
 		}
 		if user.Locale != "ja" {
-			t.Errorf("user.Locale = %v, want ja", user.Locale)
+			t.Errorf("user.Locale = %v、期待値 = ja", user.Locale)
 		}
 		if user.TimeZone != "Asia/Tokyo" {
-			t.Errorf("user.TimeZone = %v, want Asia/Tokyo", user.TimeZone)
+			t.Errorf("user.TimeZone = %v、期待値 = Asia/Tokyo", user.TimeZone)
 		}
 	})
 
@@ -55,10 +55,10 @@ func TestUserRepository_FindByID(t *testing.T) {
 
 		user, err := repo.FindByID(ctx, nonExistentID)
 		if err != nil {
-			t.Errorf("FindByID() error = %v, want nil", err)
+			t.Errorf("FindByID()のエラー = %v、期待値 = nil", err)
 		}
 		if user != nil {
-			t.Errorf("FindByID() user = %v, want nil", user)
+			t.Errorf("FindByID()のuser = %v、期待値 = nil", user)
 		}
 	})
 }
@@ -81,27 +81,27 @@ func TestUserRepository_FindByEmail(t *testing.T) {
 	t.Run("存在するユーザーをメールアドレスで取得できる", func(t *testing.T) {
 		user, err := repo.FindByEmail(ctx, "findbyemail@example.com")
 		if err != nil {
-			t.Fatalf("FindByEmail() error = %v", err)
+			t.Fatalf("FindByEmail()のエラー = %v", err)
 		}
 
 		if user.ID != userID {
-			t.Errorf("user.ID = %v, want %v", user.ID, userID)
+			t.Errorf("user.ID = %v、期待値 = %v", user.ID, userID)
 		}
 		if user.Email != "findbyemail@example.com" {
-			t.Errorf("user.Email = %v, want findbyemail@example.com", user.Email)
+			t.Errorf("user.Email = %v、期待値 = findbyemail@example.com", user.Email)
 		}
 		if user.PasswordDigest != passwordDigest {
-			t.Errorf("user.PasswordDigest = %v, want %v", user.PasswordDigest, passwordDigest)
+			t.Errorf("user.PasswordDigest = %v、期待値 = %v", user.PasswordDigest, passwordDigest)
 		}
 	})
 
 	t.Run("存在しないメールアドレスはnilを返す", func(t *testing.T) {
 		user, err := repo.FindByEmail(ctx, "nonexistent@example.com")
 		if err != nil {
-			t.Errorf("FindByEmail() error = %v, want nil", err)
+			t.Errorf("FindByEmail()のエラー = %v、期待値 = nil", err)
 		}
 		if user != nil {
-			t.Errorf("FindByEmail() user = %v, want nil", user)
+			t.Errorf("FindByEmail()のuser = %v、期待値 = nil", user)
 		}
 	})
 }

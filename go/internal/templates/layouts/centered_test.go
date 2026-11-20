@@ -27,18 +27,13 @@ func TestCentered(t *testing.T) {
 
 	var buf bytes.Buffer
 	if err := layouts.Centered(data, content).Render(ctx, &buf); err != nil {
-		t.Fatalf("failed to render: %v", err)
+		t.Fatalf("描画に失敗: %v", err)
 	}
 	html := buf.String()
 
-	// The centered layout must render the document metadata, both responsive
-	// navbars, the skip link and main landmark, and the injected page content.
-	// Checking the fixed wrapper's complete class list also prevents its mobile
-	// hit area from remaining over desktop content.
-	//
-	// [Ja] 中央寄せレイアウトがドキュメントメタデータ、レスポンシブな両 navbar、
-	// スキップリンクと main ランドマーク、差し込んだページ内容を描画することを検証する。
-	// 固定ラッパーの完全なクラス一覧も検証し、モバイル用のヒット領域が PC の
+	// 中央寄せレイアウトがドキュメントメタデータ、レスポンシブな両navbar、
+	// スキップリンクとmainランドマーク、差し込んだページ内容を描画することを検証する。
+	// 固定ラッパーの完全なクラス一覧も検証し、モバイル用のヒット領域がPCの
 	// コンテンツ上に残ることを防ぐ。
 	checks := []string{
 		"<!doctype html>",
@@ -56,17 +51,14 @@ func TestCentered(t *testing.T) {
 	}
 	for _, want := range checks {
 		if !strings.Contains(html, want) {
-			t.Errorf("Centered layout output missing %q", want)
+			t.Errorf("Centeredレイアウトの出力に%qが含まれていない", want)
 		}
 	}
 
-	// The skip link must be the first focusable element, so it must precede the
-	// navbar links in the DOM.
-	//
-	// [Ja] スキップリンクは最初のフォーカス可能要素でなければならないため、DOM 上で
-	// navbar のリンクより前に現れる必要がある。
+	// スキップリンクは最初のフォーカス可能要素でなければならないため、DOM上で
+	// navbarのリンクより前に現れる必要がある。
 	if skip, nav := strings.Index(html, `href="#main"`), strings.Index(html, `href="/@alice"`); skip == -1 || nav == -1 || skip > nav {
-		t.Errorf("skip link (index %d) must precede navbar links (index %d)", skip, nav)
+		t.Errorf("スキップリンク (位置%d) がnavbarのリンク (位置%d) より前に無い", skip, nav)
 	}
 }
 
@@ -82,32 +74,24 @@ func TestCentered_RendersBothNavbars(t *testing.T) {
 
 	var buf bytes.Buffer
 	if err := layouts.Centered(data, templ.Raw("")).Render(ctx, &buf); err != nil {
-		t.Fatalf("failed to render: %v", err)
+		t.Fatalf("描画に失敗: %v", err)
 	}
 	html := buf.String()
 
-	// Top navbar (lg:block) and bottom navbar (lg:hidden) are both present, so the
-	// same five-item menu is rendered twice. The /new link therefore appears once
-	// per menu, i.e. twice in total.
-	//
-	// [Ja] トップ navbar (lg:block) とボトム navbar (lg:hidden) の両方が存在し、
-	// 同じ 5 項目メニューが 2 回描画される。したがって /new リンクはメニューごとに
-	// 1 回、合計 2 回現れる。
+	// トップnavbar (lg:block) とボトムnavbar (lg:hidden) の両方が存在し、
+	// 同じ5項目メニューが2回描画される。したがって /newリンクはメニューごとに
+	// 1回、合計2回現れる。
 	if got := strings.Count(html, `href="/new"`); got != 2 {
-		t.Errorf(`href="/new" count = %d, want 2 (top + bottom navbar menus)`, got)
+		t.Errorf(`href="/new"の件数 = %d、期待値 = 2 (上部とボトムのnavbarメニュー)`, got)
 	}
 
-	// /new is the active menu item on this layout, so exactly one item per menu
-	// (two in total) renders the active filled-icon fill override and exposes
-	// aria-current="page".
-	//
-	// [Ja] このレイアウトでは /new がアクティブなメニュー項目のため、メニューごとに
-	// ちょうど 1 項目 (合計 2 項目) がアクティブの塗りつぶしアイコンの fill 上書きを描画し、
+	// このレイアウトでは /newがアクティブなメニュー項目のため、メニューごとに
+	// ちょうど1項目 (合計2項目) がアクティブの塗りつぶしアイコンのfill上書きを描画し、
 	// aria-current="page" を公開する。
 	if got := strings.Count(html, "[&_.content]:fill-foreground"); got != 2 {
-		t.Errorf("active fill class count = %d, want 2 (new active in top + bottom navbar menus)", got)
+		t.Errorf("アクティブの塗りクラスの件数 = %d、期待値 = 2 (上部とボトムのnavbarメニューで新規投稿がアクティブ)", got)
 	}
 	if got := strings.Count(html, `aria-current="page"`); got != 2 {
-		t.Errorf(`aria-current="page" count = %d, want 2 (new active in top + bottom navbar menus)`, got)
+		t.Errorf(`aria-current="page"の件数 = %d、期待値 = 2 (上部とボトムのnavbarメニューで新規投稿がアクティブ)`, got)
 	}
 }

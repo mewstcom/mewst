@@ -18,7 +18,7 @@ func TestBackLink(t *testing.T) {
 
 	var buf bytes.Buffer
 	if err := components.BackLink(templates.HomePath()).Render(ctx, &buf); err != nil {
-		t.Fatalf("failed to render: %v", err)
+		t.Fatalf("描画に失敗: %v", err)
 	}
 	html := buf.String()
 	const backArrowIconPathFragment = "M232,200a8"
@@ -36,20 +36,16 @@ func TestBackLink(t *testing.T) {
 		"戻る",
 	} {
 		if !strings.Contains(html, want) {
-			t.Errorf("BackLink output missing %q", want)
+			t.Errorf("BackLinkの出力に%qが含まれていない", want)
 		}
 	}
 
-	// BackLink is a bare muted link, so it must carry no button chrome. Basecoat
-	// 1.0 composes buttons as the `btn` root class plus `data-*` modifiers, so
-	// assert on both instead of the removed `btn-outline` alias.
-	//
-	// [Ja] BackLink は枠なしの muted なリンクであり、ボタン風の装飾を持たない。
-	// Basecoat 1.0 のボタンは root クラス `btn` と `data-*` 修飾子の組み合わせで
+	// BackLinkは枠なしのmutedなリンクであり、ボタン風の装飾を持たない。
+	// Basecoat 1.0のボタンはrootクラス `btn` と `data-*` 修飾子の組み合わせで
 	// 表現するため、削除された `btn-outline` エイリアスではなく両方をアサートする。
 	for _, unwanted := range []string{`class="btn`, `data-variant="outline"`} {
 		if strings.Contains(html, unwanted) {
-			t.Errorf("BackLink should not render button chrome %q", unwanted)
+			t.Errorf("BackLinkがボタンの装飾%qを描画している", unwanted)
 		}
 	}
 }

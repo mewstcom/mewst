@@ -1,9 +1,9 @@
-// Package model はドメインモデルを定義する
+// Package modelはドメインモデルを定義する
 package model
 
 import "time"
 
-// User はユーザーのドメインモデル
+// Userはユーザーのドメインモデル
 type User struct {
 	ID             UserID
 	Email          string

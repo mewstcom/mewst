@@ -48,10 +48,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/worker"
 )
 
-// runServe starts the HTTP server and blocks until it has finished shutting
-// down.
-//
-// [Ja] runServe は HTTP サーバーを起動し、シャットダウンが完了するまでブロックする。
+// runServeはHTTPサーバーを起動し、シャットダウンが完了するまでブロックする。
 func runServe() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -61,11 +58,8 @@ func runServe() {
 
 	slog.Info("サーバーを起動します", "port", cfg.Port, "env", cfg.Env)
 
-	// Initialize Sentry (skipped when the DSN is empty). Initializing it before
-	// the database connection lets startup errors reach Sentry too.
-	//
-	// [Ja] Sentry を初期化する (DSN が空の場合はスキップされる)。データベース接続より
-	// 前に初期化することで、起動時のエラーも Sentry に送信できる。
+	// Sentryを初期化する (DSNが空の場合はスキップされる)。データベース接続より
+	// 前に初期化することで、起動時のエラーもSentryに送信できる。
 	if err := mewstsentry.Init(mewstsentry.Config{
 		DSN:              cfg.SentryDSN,
 		Environment:      cfg.SentryEnvironment,
@@ -73,27 +67,18 @@ func runServe() {
 		TracesSampleRate: cfg.SentryTracesSampleRate,
 		Debug:            cfg.SentryDebug,
 	}); err != nil {
-		slog.Error("Sentry の初期化に失敗しました", "error", err)
+		slog.Error("Sentryの初期化に失敗しました", "error", err)
 		os.Exit(1)
 	}
 	defer mewstsentry.Flush(2 * time.Second)
 
-	// Replace slog's default handler with a fan-out to stderr and Sentry. Every
-	// slog.ErrorContext / slog.Error call from here on is sent as a Sentry event,
-	// so no layer (handler / usecase / validator / repository / middleware) has to
-	// call sentry.CaptureError explicitly.
-	//
-	// SetDefault is called after mewstsentry.Init succeeds, because a log written
-	// when that initialization fails should still reach the Go 1.21+ default
-	// handler (TextHandler @ stderr).
-	//
-	// [Ja] slog のデフォルトハンドラーを「標準エラー出力 + Sentry」のファンアウトに
-	// 差し替える。これ以降の slog.ErrorContext / slog.Error 呼び出しは自動的に Sentry の
+	// slogのデフォルトハンドラーを「標準エラー出力 + Sentry」のファンアウトに
+	// 差し替える。これ以降のslog.ErrorContext / slog.Error呼び出しは自動的にSentryの
 	// イベントとして送信されるため、各層 (handler / usecase / validator / repository /
-	// middleware) で sentry.CaptureError を明示的に呼ぶ必要がない。
+	// middleware) でsentry.CaptureErrorを明示的に呼ぶ必要がない。
 	//
-	// SetDefault を mewstsentry.Init の成功後に呼ぶのは、初期化に失敗したときのログを
-	// 引き続き Go 1.21+ のデフォルトハンドラー (TextHandler @ stderr) へ出すため。
+	// SetDefaultをmewstsentry.Initの成功後に呼ぶのは、初期化に失敗したときのログを
+	// 引き続きGo 1.21+ のデフォルトハンドラー (TextHandler @ stderr) へ出すため。
 	baseSlogHandler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelInfo})
 	slog.SetDefault(slog.New(mewstsentry.NewSlogHandler(baseSlogHandler)))
 
@@ -133,43 +118,24 @@ func runServe() {
 	sessionMgr := session.NewManager(sessionRepo, actorRepo, userRepo, cfg)
 	flashMgr := session.NewFlashManager(cfg.CookieDomain, cfg.SessionSecure, cfg.SessionHTTPOnly)
 
-	// Build the Dispatcher first, backed by a DeferredInserter. FanoutPostUsecase
-	// needs the Dispatcher, the Dispatcher needs the River client, and the River
-	// client can only be built after worker.NewClient registers the Workers that
-	// wrap those UseCases — an initialization cycle. Construct the Dispatcher
-	// around an unwired DeferredInserter now and inject the River client via
-	// SetInserter once worker.NewClient has created it.
-	//
-	// [Ja] FanoutPostUsecase → Dispatcher → River クライアント → Worker (UseCase を内包) の
-	// 初期化循環を断つため、先に DeferredInserter で Dispatcher を構築し、River クライアント
+	// FanoutPostUsecase → Dispatcher → Riverクライアント → Worker (UseCaseを内包) の
+	// 初期化循環を断つため、先にDeferredInserterでDispatcherを構築し、Riverクライアント
 	// 生成後に注入する。
 	deferredInserter := &dispatcher.DeferredInserter{}
 	jobDispatcher := dispatcher.NewDispatcher(deferredInserter)
 
-	// Build the fanout UseCases that the Workers register. They depend on
-	// repository, so they cannot be built inside the worker package (depguard
-	// forbids worker → repository); build them here and inject them.
-	// [Ja] Worker に登録する fanout 系 UseCase を構築する (repository 依存のため worker 内で
+	// Workerに登録するfanout系UseCaseを構築する (repository依存のためworker内で
 	// は構築できず、ここで注入する)。
 	fanoutPostUC := usecase.NewFanoutPostUsecase(postRepo, followRepo, jobDispatcher)
 	addPostToTimelineUC := usecase.NewAddPostToTimelineUsecase(profileRepo, postRepo, homeTimelinePostRepo)
 
-	// The mail sender is built here rather than inside worker.NewClient because
-	// the export completion mail is sent by a UseCase that reads the notification
-	// outbox, which puts it among the repository-dependent UseCases built above.
-	//
-	// [Ja] メール sender を worker.NewClient 内ではなくここで構築する。エクスポート
-	// 完了メールを送るのは通知 outbox を読む UseCase であり、上で構築している
-	// repository 依存の UseCase 群に属するため。
+	// メールsenderをworker.NewClient内ではなくここで構築する。エクスポート
+	// 完了メールを送るのは通知outboxを読むUseCaseであり、上で構築している
+	// repository依存のUseCase群に属するため。
 	emailSender := newEmailSender(cfg)
-	// Resolve once whether this deployment can run exports, and give the same
-	// value to everything that depends on it: the Worker registration below and
-	// the export page further down. One expression means the page cannot offer
-	// an action whose Worker was never registered.
-	//
-	// [Ja] このデプロイがエクスポートを実行できるかを一度だけ解決し、それに依存する
-	// すべて (下の Worker 登録と、後ろのエクスポート画面) へ同じ値を渡す。式が 1 つ
-	// であれば、Worker が登録されていない操作を画面が出すことはあり得ない。
+	// このデプロイがエクスポートを実行できるかを一度だけ解決し、それに依存する
+	// すべて (下のWorker登録と、後ろのエクスポート画面) へ同じ値を渡す。式が1つ
+	// であれば、Workerが登録されていない操作を画面が出すことはあり得ない。
 	exportStorageReady := cfg.S3Readiness() == config.S3ReadinessReady
 	exportStorage := newExportStorage(cfg, exportStorageReady)
 	exportUCs := newExportUsecases(
@@ -192,9 +158,7 @@ func runServe() {
 		os.Exit(1)
 	}
 
-	// Wire the real inserter into the DeferredInserter now that the River client
-	// exists (completes the wiring that broke the init cycle).
-	// [Ja] River クライアント生成後に DeferredInserter へ実体を注入する (循環を断った配線の完了)。
+	// Riverクライアント生成後にDeferredInserterへ実体を注入する (循環を断った配線の完了)。
 	deferredInserter.SetInserter(workerClient.Client())
 
 	if err := workerClient.Start(context.Background()); err != nil {
@@ -226,39 +190,21 @@ func runServe() {
 	createAccountUC := usecase.NewCreateAccountUsecase(db, accountValidator, userRepo, profileRepo, userProfileRepo, actorRepo)
 	createPostUC := usecase.NewCreatePostUsecase(db, postCreateValidator, oauthApplicationRepo, linkRepo, postRepo, postLinkRepo, profileRepo, homeTimelinePostRepo, jobDispatcher)
 	getLinkUC := usecase.NewGetLinkUsecase(linkRepo)
-	// blockPrivateHosts is true in production wiring: fetching user-supplied URLs
-	// must not reach internal hosts (SSRF). Passing false still compiles and
-	// passes tests, so review wiring changes here carefully. The 10s timeout
-	// bounds each fetch (applied per redirect hop) so a slow external site cannot
-	// pin a request handler indefinitely.
-	//
-	// [Ja] 本番配線では blockPrivateHosts を true にする。ユーザー入力の URL の
-	// 取得が内部ホストへ到達してはならない (SSRF 対策)。false を渡しても
-	// コンパイル・テストは通るため、この配線の変更は注意して見ること。10 秒の
-	// タイムアウトは取得 1 回ごと (リダイレクトの各ホップ) に適用され、遅い外部
+	// 本番配線ではblockPrivateHostsをtrueにする。ユーザー入力のURLの
+	// 取得が内部ホストへ到達してはならない (SSRF対策)。falseを渡しても
+	// コンパイル・テストは通るため、この配線の変更は注意して見ること。10秒の
+	// タイムアウトは取得1回ごと (リダイレクトの各ホップ) に適用され、遅い外部
 	// サイトがリクエストハンドラーを占有し続けないようにする。
 	fetchLinkMetadataUC := usecase.NewFetchLinkMetadataUsecase(linkDataFetcherValidator, linkRepo, &http.Client{Timeout: 10 * time.Second}, true)
-	// The export page is given the same readiness the export Workers are gated
-	// on, so a deployment without MEWST_S3_* tells the reader the feature is
-	// unavailable instead of offering actions that cannot complete.
-	//
-	// [Ja] エクスポート画面にはエクスポート系 Worker の登録と同じ readiness を渡す。
+	// エクスポート画面にはエクスポート系Workerの登録と同じreadinessを渡す。
 	// MEWST_S3_* が無いデプロイでは、完了し得ない操作を出す代わりに、機能が利用
 	// できないことを読み手へ伝える。
 	getExportShowUC := usecase.NewGetExportShowUsecase(userProfileRepo, exportRepo, exportStorageReady)
-	// Starting an export is gated on the same readiness, so a deployment
-	// without MEWST_S3_* refuses the request instead of persisting a queued
-	// export no Worker is registered to generate.
-	//
-	// [Ja] エクスポートの開始も同じ readiness でゲートする。MEWST_S3_* が無い
-	// デプロイでは、生成する Worker が登録されていない queued のエクスポートを
+	// エクスポートの開始も同じreadinessでゲートする。MEWST_S3_* が無い
+	// デプロイでは、生成するWorkerが登録されていないqueuedのエクスポートを
 	// 永続化する代わりに、リクエストを拒否する。
 	createExportUC := usecase.NewCreateExportUsecase(db, userProfileRepo, exportRepo, jobDispatcher, exportStorageReady)
-	// Downloading is gated on the same readiness as the page and the start, so a
-	// deployment without MEWST_S3_* refuses the request instead of reaching an
-	// object storage it does not have.
-	//
-	// [Ja] ダウンロードも画面・開始と同じ readiness でゲートする。MEWST_S3_* が無い
+	// ダウンロードも画面・開始と同じreadinessでゲートする。MEWST_S3_* が無い
 	// デプロイでは、持っていないオブジェクトストレージへ到達する代わりに、リクエストを
 	// 拒否する。
 	getExportDownloadUC := usecase.NewGetExportDownloadUsecase(userProfileRepo, userRepo, exportRepo, exportStorage, exportStorageReady)
@@ -283,54 +229,31 @@ func runServe() {
 	csrfMiddleware := middleware.NewCSRF(cfg)
 	sentryUserContextMW := middleware.NewSentryUserContext(profileRepo)
 
-	// Sentry's HTTP middleware. Repanic: true sends the panic to Sentry and then
-	// re-panics, leaving the response to the Recoverer that follows it.
-	//
-	// [Ja] Sentry の HTTP ミドルウェア。Repanic: true により、panic を Sentry に送った
-	// あと再 panic させて、後続の Recoverer に処理を委ねる。
+	// SentryのHTTPミドルウェア。Repanic: trueにより、panicをSentryに送った
+	// あと再panicさせて、後続のRecovererに処理を委ねる。
 	sentryHTTPHandler := sentryhttp.New(sentryhttp.Options{Repanic: true})
 
 	r := chi.NewRouter()
 
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.RequestID)
-	// Client IP is resolved on demand via internal/clientip (CF-Connecting-IP first),
-	// so chi's IP middleware is intentionally not registered. chi's RealIP is also
-	// deprecated for IP spoofing (GHSA-3fxj-6jh8-hvhx) and must not be reintroduced.
-	//
-	// [Ja] クライアント IP は internal/clientip (CF-Connecting-IP 優先) で都度解決するため、
-	// chi の IP ミドルウェアは意図的に登録しない。chi の RealIP は IP spoofing
-	// (GHSA-3fxj-6jh8-hvhx) のため deprecated でもあり、再導入しないこと。
+	// クライアントIPはinternal/clientip (CF-Connecting-IP優先) で都度解決するため、
+	// chiのIPミドルウェアは意図的に登録しない。chiのRealIPはIP spoofing
+	// (GHSA-3fxj-6jh8-hvhx) のためdeprecatedでもあり、再導入しないこと。
 
-	// Register Recoverer as the outer middleware (in chi, the first r.Use is the
-	// outermost link of the chain). chi's Recoverer recovers everything except
-	// http.ErrAbortHandler, writes a 500 and does not re-panic, so unless it sits
-	// outside sentryhttp (= where a propagating panic arrives last), sentryhttp
-	// never gets to see the panic.
-	//
-	// [Ja] Recoverer を outer (chi の Use では最初に登録 = チェーンの一番外側) に置く。
-	// chi の Recoverer は http.ErrAbortHandler 以外を recover して 500 を書き、再 panic
-	// しないため、sentryhttp より「外側」(= panic 伝搬の最後に届く位置) に置かないと、
-	// sentryhttp が panic を見られない。
+	// Recovererをouter (chiのUseでは最初に登録 = チェーンの一番外側) に置く。
+	// chiのRecovererはhttp.ErrAbortHandler以外をrecoverして500を書き、再panic
+	// しないため、sentryhttpより「外側」(= panic伝搬の最後に届く位置) に置かないと、
+	// sentryhttpがpanicを見られない。
 	r.Use(chimiddleware.Recoverer)
-	// sentryhttp is registered after Recoverer, which places it further inside the
-	// chi chain (closer to the handler). A panic in a handler is caught first by
-	// sentryhttp's defer, sent to Sentry, and re-panicked because of Repanic: true.
-	// That re-panic reaches the outer Recoverer, which writes the 500 response and
-	// ends the request.
-	//
-	// [Ja] sentryhttp は Recoverer より「あとに登録」= chi のチェーンでは innermost
-	// (= handler に近い側)。handler の panic を sentryhttp の defer がまず捕捉し、
-	// Sentry に送信したあと Repanic: true で再 panic する。再 panic は outer の
-	// Recoverer に到達し、Recoverer が 500 レスポンスを書いて終了する。
+	// sentryhttpはRecovererより「あとに登録」= chiのチェーンではinnermost
+	// (= handlerに近い側)。handlerのpanicをsentryhttpのdeferがまず捕捉し、
+	// Sentryに送信したあとRepanic: trueで再panicする。再panicはouterの
+	// Recovererに到達し、Recovererが500レスポンスを書いて終了する。
 	r.Use(sentryHTTPHandler.Handle)
-	// Overwrite the Sentry transaction name with chi's route pattern (for example
-	// "/users/{id}"). Registering it after sentryhttp makes its defer run (LIFO)
-	// before sentryhttp's transaction.Finish(), so the name is settled first.
-	//
-	// [Ja] chi のルートパターン (例: "/users/{id}") を Sentry のトランザクション名に
-	// 上書きする。sentryhttp より「あとに登録」することで、defer (LIFO) のタイミングで
-	// sentryhttp の transaction.Finish() より先に Name を確定できる。
+	// chiのルートパターン (例: "/users/{id}") をSentryのトランザクション名に
+	// 上書きする。sentryhttpより「あとに登録」することで、defer (LIFO) のタイミングで
+	// sentryhttpのtransaction.Finish() より先にNameを確定できる。
 	r.Use(middleware.SentryTransaction)
 
 	if cfg.RailsAppURL != "" {
@@ -342,21 +265,13 @@ func runServe() {
 		r.Use(proxyMiddleware.Middleware)
 	}
 
-	// Limit the request body size for Go-handled routes. Placed after reverse_proxy so
-	// requests proxied to the Rails version are not affected, and before any middleware /
-	// handler that parses form data (CSRF, MethodOverride, handlers).
-	//
-	// [Ja] Go 版が処理するルートのリクエストボディサイズを制限する。reverse_proxy より
-	// 後に配置することで Rails 版にプロキシされるリクエストには影響させず、フォームを
+	// Go版が処理するルートのリクエストボディサイズを制限する。reverse_proxyより
+	// 後に配置することでRails版にプロキシされるリクエストには影響させず、フォームを
 	// パースするミドルウェア / ハンドラー (CSRF、MethodOverride、各ハンドラー) より前に置く。
 	r.Use(middleware.BodyLimit)
 
-	// The i18n middleware sets the locale on the context from the Accept-Language
-	// header. Placed after reverse_proxy so it does not run for the requests that
-	// are proxied to the Rails version.
-	//
-	// [Ja] i18n ミドルウェアは Accept-Language ヘッダーから ctx にロケールをセットする。
-	// reverse_proxy より後に配置することで、Rails 版にプロキシされるリクエストには
+	// i18nミドルウェアはAccept-Languageヘッダーからctxにロケールをセットする。
+	// reverse_proxyより後に配置することで、Rails版にプロキシされるリクエストには
 	// 走らせない。
 	r.Use(i18n.Middleware)
 
@@ -364,10 +279,7 @@ func runServe() {
 
 	r.NotFound(httperror.NotFound)
 
-	// Serve the static files, which are the build output of the Tailwind CLI and
-	// esbuild.
-	//
-	// [Ja] 静的ファイルを配信する (Tailwind CLI と esbuild のビルド結果)。
+	// 静的ファイルを配信する (Tailwind CLIとesbuildのビルド結果)。
 	fileServer := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
@@ -393,23 +305,13 @@ func runServe() {
 		r.Post("/sign_up", signUpHandler.Create)
 	})
 
-	// Sign out (authenticated users only). The sign-out form is served by the Go
-	// /settings page and submits with method="POST", so the request reaches this
-	// server as POST. DELETE is registered alongside POST for the same handler,
-	// mirroring how /password registers both PATCH and a POST fallback for HTML
-	// forms.
+	// ログアウト (認証済みユーザーのみ)。ログアウトフォームはGo版の /settings
+	// ページが供給し、method="POST" で送信するため、リクエストはPOSTで本サーバーに
+	// 届く。DELETEも同じハンドラーに登録しており、これは /passwordがPATCHとHTML
+	// フォーム用のPOSTを二重登録しているのと同じ扱いである。
 	//
-	// The CSRF middleware protects this endpoint. The /settings page runs under
-	// the same CSRF middleware, so the token cookie is issued when that page loads
-	// and its sign-out form embeds the matching token.
-	//
-	// [Ja] ログアウト (認証済みユーザーのみ)。ログアウトフォームは Go 版の /settings
-	// ページが供給し、method="POST" で送信するため、リクエストは POST で本サーバーに
-	// 届く。DELETE も同じハンドラーに登録しており、これは /password が PATCH と HTML
-	// フォーム用の POST を二重登録しているのと同じ扱いである。
-	//
-	// CSRF ミドルウェアがこのエンドポイントを保護する。/settings ページも同じ CSRF
-	// ミドルウェア配下で動くため、ページ読み込み時にトークン Cookie が発行され、
+	// CSRFミドルウェアがこのエンドポイントを保護する。/settingsページも同じCSRF
+	// ミドルウェア配下で動くため、ページ読み込み時にトークンCookieが発行され、
 	// ログアウトフォームには一致するトークンが埋め込まれる。
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.PrivateCache)
@@ -432,13 +334,9 @@ func runServe() {
 		r.Post("/email_confirmation", emailConfirmationHandler.Create)
 
 		r.Get("/password/edit", passwordHandler.Edit)
-		// PATCH and POST are registered for the same handler because the password
-		// edit form is an HTML form: it submits with method="POST" and carries
-		// _method=PATCH, so the request reaches this server as a POST.
-		//
-		// [Ja] PATCH と POST を同じハンドラーへ登録している。パスワード編集フォームは
-		// HTML フォームで、method="POST" に _method=PATCH を添えて送信するため、
-		// リクエストは POST で本サーバーに届く。
+		// PATCHとPOSTを同じハンドラーへ登録している。パスワード編集フォームは
+		// HTMLフォームで、method="POST" に _method=PATCHを添えて送信するため、
+		// リクエストはPOSTで本サーバーに届く。
 		r.Patch("/password", passwordHandler.Update)
 		r.Post("/password", passwordHandler.Update)
 
@@ -446,20 +344,12 @@ func runServe() {
 		r.Post("/accounts", accountHandler.Create)
 	})
 
-	// New post form, submission, and link card fragments (authenticated users
-	// only). The reverse proxy routes these paths to Go unconditionally via its
-	// goHandledPatterns (exact path + method), so they are no longer behind a
-	// feature flag. POST /posts and POST /links are genuine POSTs, so no Method
-	// Override is needed; the routes are registered directly. GET /links/new sits
-	// under the CSRF middleware so the fragment can embed the CSRF token for its
-	// POST /links form.
-	//
-	// [Ja] 新規投稿フォーム・送信・リンクカードのフラグメント（認証済みユーザーのみ）。
-	// リバースプロキシはこれらのパスを goHandledPatterns (完全一致 + メソッド) で
-	// 無条件に Go 版へ振り分けるため、もうフィーチャーフラグの配下にはない。
-	// POST /posts と POST /links は本来の POST のため Method Override は不要で、
-	// ルートを直接登録する。GET /links/new はフラグメントが POST /links フォーム用の
-	// CSRF トークンを埋め込めるよう CSRF ミドルウェア配下に置く。
+	// 新規投稿フォーム・送信・リンクカードのフラグメント (認証済みユーザーのみ)。
+	// リバースプロキシはこれらのパスをgoHandledPatterns (完全一致 + メソッド) で
+	// 無条件にGo版へ振り分けるため、もうフィーチャーフラグの配下にはない。
+	// POST /postsとPOST /linksは本来のPOSTのためMethod Overrideは不要で、
+	// ルートを直接登録する。GET /links/newはフラグメントがPOST /linksフォーム用の
+	// CSRFトークンを埋め込めるようCSRFミドルウェア配下に置く。
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.PrivateCache)
 		r.Use(csrfMiddleware.Middleware)
@@ -472,13 +362,8 @@ func runServe() {
 		r.Post("/links", linkHandler.Create)
 	})
 
-	// Settings pages (authenticated users only). The CSRF middleware makes its
-	// token available to the sign-out and export forms, while RequireAuth
-	// provides the current user and profile used by the navbar and by the
-	// export page's authorization.
-	//
-	// [Ja] 設定系ページ (認証済みユーザーのみ)。CSRF ミドルウェアはログアウトと
-	// エクスポートのフォームへトークンを渡し、RequireAuth は navbar とエクスポート
+	// 設定系ページ (認証済みユーザーのみ)。CSRFミドルウェアはログアウトと
+	// エクスポートのフォームへトークンを渡し、RequireAuthはnavbarとエクスポート
 	// 画面の認可が使う現在のユーザーとプロフィールを渡す。
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.PrivateCache)
@@ -492,10 +377,7 @@ func runServe() {
 		r.Get("/settings/export/download", exportDownloadHandler.Show)
 	})
 
-	// Listen on 0.0.0.0 rather than the loopback address: inside a Docker
-	// container a listener bound to loopback cannot be reached from outside it.
-	//
-	// [Ja] ループバックではなく 0.0.0.0 でリッスンする。Docker コンテナ内で動かす
+	// ループバックではなく0.0.0.0でリッスンする。Dockerコンテナ内で動かす
 	// 場合、ループバックにバインドしたリスナーには外から到達できないため。
 	addr := fmt.Sprintf("0.0.0.0:%s", cfg.Port)
 	slog.Info("HTTPサーバーを起動します", "addr", addr)
@@ -538,45 +420,28 @@ func runServe() {
 	slog.Info("サーバーが正常に停止しました")
 }
 
-// newEmailSender returns the sender that delivers the app's mail, or the one
-// that discards it when the provider is not configured. Every mail kind goes
-// through the same instance, so whether a deployment delivers mail at all is
-// decided once.
-//
-// [Ja] newEmailSender はアプリのメールを配信する sender を返す。プロバイダーが未設定の
-// 場合はメールを破棄する sender を返す。すべての種類のメールが同じインスタンスを通るため、
-// そのデプロイがメールを配信するかどうかの判断は 1 度だけ行われる。
+// newEmailSenderはアプリのメールを配信するsenderを返す。プロバイダーが未設定の
+// 場合はメールを破棄するsenderを返す。すべての種類のメールが同じインスタンスを通るため、
+// そのデプロイがメールを配信するかどうかの判断は1度だけ行われる。
 func newEmailSender(cfg *config.Config) email.Sender {
 	if cfg.ResendAPIKey == "" || cfg.EmailFrom == "" {
 		slog.Warn("Resend APIキーまたは送信元メールアドレスが設定されていないため、メール送信は無効です")
 		return email.NewDiscardSender()
 	}
 
-	slog.Info("Resend クライアントを初期化しました")
+	slog.Info("Resendクライアントを初期化しました")
 	return email.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom, cfg.EmailFromName)
 }
 
-// newExportStorage returns the object storage the export feature reads and
-// writes, or nil when storageReady is false. The caller resolves that flag from
-// cfg.S3Readiness once and passes the same storage to everything that reaches
-// R2, so a deployment cannot end up with the Workers and the download route
-// addressing different buckets.
-//
-// nil is safe for the readiness that produced it: every UseCase holding this
-// storage is given the same flag and returns before the storage is reached
-// when it is false. Returning the interface type rather than the concrete one
-// keeps that nil a nil interface, so an accidental call fails loudly instead
-// of dialling a client with no credentials.
-//
-// [Ja] newExportStorage はエクスポート機能が読み書きするオブジェクトストレージを
-// 返す。storageReady が false の場合は nil を返す。このフラグは呼び出し側が
-// cfg.S3Readiness から一度だけ解決し、R2 へ到達するすべてへ同じストレージを渡す
-// ため、Worker とダウンロードのルートが別々のバケットを相手にするデプロイは
+// newExportStorageはエクスポート機能が読み書きするオブジェクトストレージを
+// 返す。storageReadyがfalseの場合はnilを返す。このフラグは呼び出し側が
+// cfg.S3Readinessから一度だけ解決し、R2へ到達するすべてへ同じストレージを渡す
+// ため、Workerとダウンロードのルートが別々のバケットを相手にするデプロイは
 // 生じ得ない。
 //
-// nil は、それを生んだ readiness に対して安全である。このストレージを保持する
-// UseCase はいずれも同じフラグを受け取り、false のときはストレージへ到達する前に
-// 返るためである。具象型ではなく interface 型で返すことでこの nil を nil interface に
+// nilは、それを生んだreadinessに対して安全である。このストレージを保持する
+// UseCaseはいずれも同じフラグを受け取り、falseのときはストレージへ到達する前に
+// 返るためである。具象型ではなくinterface型で返すことでこのnilをnil interfaceに
 // 保ち、誤って呼び出した場合は資格情報の無いクライアントで通信するのではなく、
 // その場で失敗する。
 func newExportStorage(cfg *config.Config, storageReady bool) usecase.ExportObjectStorage {
@@ -593,30 +458,15 @@ func newExportStorage(cfg *config.Config, storageReady bool) usecase.ExportObjec
 	})
 }
 
-// newExportUsecases builds the export UseCases the Worker runs, or returns the
-// zero value when storageReady is false. The caller resolves that flag from
-// cfg.S3Readiness once, so the Workers registered here and the export page are
-// gated on the same value rather than on two expressions that can drift apart.
-// exportStorage is the storage newExportStorage built from that same flag, so
-// it is non-nil exactly when these UseCases are built.
-// The zero value keeps the feature flag's off state deployable without any
-// MEWST_S3_* value: no export Worker is registered, no export periodic job is
-// scheduled, and no export work runs. A partial configuration never reaches
-// here, because config.Load rejects it at startup.
-//
-// They are built together even though reconciliation is the one that never
-// reaches the object storage. Without it no export row can be created at all,
-// so reconciling exports would be recovering work that cannot exist.
-//
-// [Ja] newExportUsecases は Worker が実行するエクスポート系 UseCase を構築する。
-// storageReady が false の場合はゼロ値を返す。このフラグは呼び出し側が
-// cfg.S3Readiness から一度だけ解決するため、ここで登録する Worker とエクスポート
-// 画面は、乖離しうる 2 つの式ではなく同じ値でゲートされる。exportStorage は
-// newExportStorage が同じフラグから構築したストレージであり、これらの UseCase を
-// 構築するときにちょうど非 nil になる。ゼロ値を返すことで、
-// MEWST_S3_* を 1 つも設定しないままフィーチャーフラグ OFF の状態をデプロイできる
-// (エクスポート系 Worker も定期ジョブも登録されず、エクスポートの処理は動作しない)。
-// 一部だけ設定された状態は config.Load が起動時に拒否するため、ここには到達しない。
+// newExportUsecasesはWorkerが実行するエクスポート系UseCaseを構築する。
+// storageReadyがfalseの場合はゼロ値を返す。このフラグは呼び出し側が
+// cfg.S3Readinessから一度だけ解決するため、ここで登録するWorkerとエクスポート
+// 画面は、乖離しうる2つの式ではなく同じ値でゲートされる。exportStorageは
+// newExportStorageが同じフラグから構築したストレージであり、これらのUseCaseを
+// 構築するときにちょうど非nilになる。ゼロ値を返すことで、
+// MEWST_S3_* を1つも設定しないままフィーチャーフラグOFFの状態をデプロイできる
+// (エクスポート系Workerも定期ジョブも登録されず、エクスポートの処理は動作しない)。
+// 一部だけ設定された状態はconfig.Loadが起動時に拒否するため、ここには到達しない。
 //
 // オブジェクトストレージに触れないのはリコンシリエーションだけだが、これらはまとめて
 // 構築する。ストレージが無ければエクスポート行自体を作成できないため、

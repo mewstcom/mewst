@@ -102,7 +102,7 @@ func TestGetClientIP(t *testing.T) {
 
 			got := clientip.GetClientIP(req)
 			if got != tt.want {
-				t.Errorf("GetClientIP() = %v, want %v", got, tt.want)
+				t.Errorf("GetClientIP() = %v、期待値 = %v", got, tt.want)
 			}
 		})
 	}

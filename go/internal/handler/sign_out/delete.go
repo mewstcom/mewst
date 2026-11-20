@@ -8,20 +8,13 @@ import (
 	"github.com/mewstcom/mewst/go/internal/usecase"
 )
 
-// Delete signs the current user out (DELETE / POST /sign_out).
-//
-// [Ja] Delete はログアウト処理を実行する (DELETE / POST /sign_out)。
+// Deleteはログアウト処理を実行する (DELETE / POST /sign_out)。
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// Delete the session row so that a copied cookie value cannot be replayed.
-	// If deletion fails, a copied token may remain usable; log the error for
-	// monitoring, but continue so the response still instructs the current
-	// browser to clear its cookie.
-	//
-	// [Ja] コピー済みの Cookie 値を再利用できないよう、セッションレコードを削除する。
+	// コピー済みのCookie値を再利用できないよう、セッションレコードを削除する。
 	// 削除に失敗するとコピー済みトークンが利用可能なまま残るため、監視できるよう
-	// エラーを記録する。ただし現在のブラウザへ Cookie の削除を指示できるよう、
+	// エラーを記録する。ただし現在のブラウザへCookieの削除を指示できるよう、
 	// ログアウト処理は続行する。
 	token := h.sessionMgr.GetSessionToken(r)
 	if err := h.deleteSessionUC.Execute(ctx, usecase.DeleteSessionInput{Token: token}); err != nil {

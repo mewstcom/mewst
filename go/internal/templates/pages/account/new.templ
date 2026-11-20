@@ -6,7 +6,7 @@ import (
 	"github.com/mewstcom/mewst/go/internal/templates/components"
 )
 
-// NewPageData はアカウント作成フォームページのデータ
+// NewPageDataはアカウント作成フォームページのデータ
 type NewPageData struct {
 	CSRFToken        string
 	TurnstileSiteKey string
@@ -16,7 +16,7 @@ type NewPageData struct {
 	BackURL          string
 }
 
-// New はアカウント作成フォームを表示する
+// Newはアカウント作成フォームを表示する
 templ New(data NewPageData) {
 	<div class="max-w-lg w-full flex flex-col gap-6 px-0 md:px-4">
 		<div class="text-center">
