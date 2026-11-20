@@ -26,8 +26,18 @@ var (
 	testDBOnce sync.Once
 )
 
+// initはテスト用にbcryptコストを下げる (DefaultCost 10 → MinCost 4で約64倍高速化)。
+//
+// コストはパッケージレベルの変数であるため、テストの実行中に書き換えると、DBを
+// 使わずにハッシュ化する並列テストの読み取りと競合する。パッケージの初期化は
+// どのテストよりも先に終わるため、ここで書き込めば、テストがどのヘルパーを
+// 呼ぶかによらず競合が起きない。
+func init() {
+	auth.BcryptCost = auth.TestBcryptCost
+}
+
 // SetupTestMainはテストパッケージごとのTestMainで呼び出すヘルパー関数。
-// bcryptコストの低減とDB接続プールの初期化をパッケージ内で1度だけ行ってからm.Run() を実行する。
+// DB接続プールの初期化をパッケージ内で1度だけ行ってからm.Run() を実行する。
 // 戻り値はos.Exitに渡すための終了コード。
 //
 // SetupTx / GetTestDBのいずれもlazy initをサポートしているため、main_test.goの作成は任意。
@@ -100,9 +110,6 @@ func GetTestDB() *sql.DB {
 // SetupTestMain / SetupTx / GetTestDBのいずれから呼ばれても同じ接続を共有する。
 func initTestDB() {
 	testDBOnce.Do(func() {
-		// テスト用にbcryptコストを下げる (DefaultCost 10 → MinCost 4で約64倍高速化)
-		auth.BcryptCost = auth.TestBcryptCost
-
 		dsn := os.Getenv("DATABASE_URL")
 		if dsn == "" {
 			dsn = "postgres://postgres:postgres@postgresql:5432/mewst_test?sslmode=disable"
